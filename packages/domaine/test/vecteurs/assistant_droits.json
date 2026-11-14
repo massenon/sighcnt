@@ -1,0 +1,507 @@
+{
+ "_doc": "ENGENDRÉ par `dart run tool/mesure_assistant.dart --droits` depuis packages/rbac/data/rbac.json et assistant_catalogue.json : ne pas éditer. Pour chaque intention, les écrans de lecture (un parmi) et, par profil type, le droit de lecture. Une intention sans écran est ouverte à tout profil (le geste « utiliser l'assistant » est à créer).",
+ "profils": {
+  "reception": [
+   "reception"
+  ],
+  "caisse": [
+   "caissier"
+  ],
+  "pharmacie": [
+   "caissier"
+  ],
+  "stock": [
+   "stock"
+  ],
+  "comptabilite": [
+   "comptable"
+  ],
+  "laboratoire": [
+   "laborantin"
+  ],
+  "medecin": [
+   "medecin"
+  ],
+  "daf": [
+   "da"
+  ],
+  "direction": [
+   "direction"
+  ],
+  "administrateur": [
+   "admin"
+  ]
+ },
+ "matrice": [
+  {
+   "intention": "I01",
+   "ecrans": [
+    "m1-patients"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": false,
+    "comptabilite": true,
+    "laboratoire": true,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I02",
+   "ecrans": [
+    "m1-patients",
+    "m9-assures",
+    "m8-facturation"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": false,
+    "comptabilite": true,
+    "laboratoire": true,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I03",
+   "ecrans": [
+    "m8-factures",
+    "m8-reliquats"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I04",
+   "ecrans": [
+    "m3-admissions",
+    "m3-plan-lits"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": false,
+    "laboratoire": false,
+    "medecin": true,
+    "daf": false,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I05",
+   "ecrans": [
+    "cfg-tarifs",
+    "m8-facturation"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": false,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I06",
+   "ecrans": [
+    "cfg-tarifs"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": false,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I07",
+   "ecrans": [
+    "m6-produits",
+    "m6-stock-gros",
+    "m6-stock-detail",
+    "m6-lots"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I08",
+   "ecrans": [
+    "m6-alertes",
+    "m6-lots",
+    "m6-produits"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I09",
+   "ecrans": [
+    "m6-mouvements",
+    "m6-point-ventes"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I10",
+   "ecrans": [
+    "m6-point-stock"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I11",
+   "ecrans": [
+    "m6-inventaire"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I12",
+   "ecrans": [
+    "m7-fournisseurs"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I13",
+   "ecrans": [
+    "m7-commandes"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": true,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I14",
+   "ecrans": [
+    "m8-recettes",
+    "m8-caisse"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I15",
+   "ecrans": [
+    "m8-factures",
+    "mecef-factures",
+    "mecef-avoirs",
+    "m8-facture-avoir"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I16",
+   "ecrans": [
+    "m9-creances",
+    "m8-reliquats"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I17",
+   "ecrans": [
+    "m1-documents",
+    "m1-pieces",
+    "m13-courriers"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": false,
+    "laboratoire": false,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I18",
+   "ecrans": [
+    "cfg-tarifs",
+    "cfg-certificats"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": false,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I19",
+   "ecrans": [
+    "m5-demandes",
+    "m5-resultats",
+    "m2-imagerie-demandes"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": false,
+    "laboratoire": true,
+    "medecin": true,
+    "daf": false,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I20",
+   "ecrans": [
+    "m10-planning"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": false,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I21",
+   "ecrans": [
+    "dash-direction",
+    "dash-da",
+    "dash-croise"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": true,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I22",
+   "ecrans": [
+    "mere-supervision"
+   ],
+   "profils": {
+    "reception": false,
+    "caisse": false,
+    "pharmacie": false,
+    "stock": false,
+    "comptabilite": false,
+    "laboratoire": false,
+    "medecin": false,
+    "daf": true,
+    "direction": false,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I23",
+   "ecrans": [
+    "rapports-bibliotheque",
+    "rapports-generateur"
+   ],
+   "profils": {
+    "reception": true,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": true,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I24",
+   "ecrans": [],
+   "profils": {
+    "reception": true,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": true,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  },
+  {
+   "intention": "I25",
+   "ecrans": [],
+   "profils": {
+    "reception": true,
+    "caisse": true,
+    "pharmacie": true,
+    "stock": true,
+    "comptabilite": true,
+    "laboratoire": true,
+    "medecin": true,
+    "daf": true,
+    "direction": true,
+    "administrateur": true
+   }
+  }
+ ]
+}
