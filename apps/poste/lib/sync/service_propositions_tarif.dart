@@ -62,6 +62,8 @@ class ServicePropositionsTarif {
           peutEditerEcran: true,
           peutEditerPour: (r) => matrice.peutEditer(r, 'cfg-tarifs'),
           peutProposerPrixAchatPour: (r) => matrice.peutEditer(r, 'm6-produits'),
+          // La proposition née d'une réception a l'autorité de MODIFIER les réceptions (lot TFIN-2), non celle de modifier « Référentiel produits ».
+          peutProposerReceptionPour: (r) => matrice.peutEditer(r, 'm7-receptions'),
           horloge: _horloge,
           etiquette: 'M');
       final n = tarifs.appliquerDemandes();

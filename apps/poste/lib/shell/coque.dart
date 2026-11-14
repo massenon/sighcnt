@@ -17,6 +17,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../core/jetons_shell.dart';
 import 'contexte_ecran.dart';
 import 'contexte_autonome.dart';
+import 'droit_fileul.dart';
 import '../modules/auth/acc_session.dart';
 import 'acces_rapides.dart';
 import 'activite_fermee.dart';
@@ -294,7 +295,7 @@ class _CoquePosteState extends State<CoquePoste> {
   /// Sur un fileul rattaché, un écran réglé sur la mère le DIT en tête de sa règle (et pas seulement par le refus d'écriture).
   String? _regleAvecMere(String id, String? regle) {
     if (!_surLaMere(id)) return regle;
-    const phrase = 'Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici. Cet écran est en lecture seule sur ce poste.';
+    final phrase = phraseReglageDeLaMere(id, _role);
     return regle == null || regle.isEmpty ? phrase : '$phrase $regle';
   }
 
@@ -306,7 +307,7 @@ class _CoquePosteState extends State<CoquePoste> {
   Droit _droitDe(String id) {
     final d = _nav.matrice.droit(_role, id);
     if (!(_service?.rattache ?? false)) return d;
-    return _surLaMere(id) ? Droit(voir: d.voir, editer: false, annuler: false) : d;
+    return droitSurFileulRattache(ecran: id, role: _role, droit: d, reglageDeLaMere: _surLaMere(id));
   }
 
   // --- L'assistant de première installation : la pastille de la barre, et la modale qui s'ouvre seule sur le tableau de bord de l'administrateur. ---

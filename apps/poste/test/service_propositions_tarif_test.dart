@@ -7,6 +7,7 @@ import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/donnees/tarifs_poste.dart';
 import 'package:sigh_poste/mere/client_mere.dart';
+import 'package:sigh_poste/shell/droit_fileul.dart';
 import 'package:sigh_poste/sync/configuration_sync.dart';
 import 'package:sigh_poste/sync/moteur_fileul.dart';
 import 'package:sigh_poste/sync/pont_activite.dart';
@@ -30,7 +31,8 @@ TarifsPoste poste(Magasin m, String role, String nom, {bool fileul = false, Stri
     role: role,
     auteur: () => nom,
     fileul: fileul,
-    peutEditerEcran: true,
+    // LOT TFIN-2 : le droit d'ÉDITER l'écran d'un fileul est celui que la COQUE donne (la matrice, filtrée par `droitSurFileulRattache`), non un `true` écrit pour le test.
+    peutEditerEcran: droitSurFileulRattache(ecran: 'cfg-tarifs', role: role, droit: donnees.matrice.droit(role, 'cfg-tarifs'), reglageDeLaMere: fileul).editer || (!fileul && role == 'mere'),
     peutEditerPour: (r) => const ['admin', 'da', 'direction'].contains(r),
     horloge: () => auj,
     etiquette: etiquette);
@@ -137,6 +139,17 @@ void main() {
       final vp = mm.collection('versionsTarif').toutes.firstWhere((x) => x['code'] == art['code'] && x['statut'] == 'propose');
       expect([vp['proposePar'], vp['proposeRole'], vp['statut'], vp['prixNonAssure']], ['Gestionnaire fileul', 'stock', 'propose', prixArt + 30]);
       expect(mm.collection('produits').parId(art['id'])!['prixAchat'], prixArt, reason: 'une proposition ne change rien');
+      expect(await service.traiter(), 0, reason: 'rejeu sans effet');
+
+      // 5b. LA PROPOSITION NÉE D'UNE RÉCEPTION (lot TFIN-2) : déposée par un fileul (autorité : modifier les réceptions), appliquée par la mère ; une seule par produit.
+      final art2 = mm.collection('produits').actives.firstWhere((x) => x['id'] != art['id'] && x['categorie'] == 'medicament' && (x['prixAchat'] as num? ?? 0) > 0);
+      final recep = TarifsPoste(mf, role: 'stock', auteur: () => 'Réceptionnaire fileul', fileul: true, peutProposerReception: true, horloge: () => auj, etiquette: 'R');
+      final rr = recep.proposerPrixReception(produit: art2, prixRecu: (art2['prixAchat'] as num) + 45, date: plus(0), reference: 'BL-TFIN2');
+      expect([rr.issue.etat, rr.demande != null], ['ouverte', true], reason: '${rr.issue.refus?.code} ${rr.issue.refus?.motif}');
+      await converger(() => mf.collection('propositionsTarif').toutes.any((d) => d['reception'] == true && d['etat'] == 'appliquee'), 'la mère applique la proposition née d\'une réception');
+      final vr = mm.collection('versionsTarif').toutes.firstWhere((x) => x['code'] == art2['code'] && x['statut'] == 'propose');
+      expect([vr['source'], vr['proposeRole'], vr['prixNonAssure']], ['Réception BL-TFIN2', 'stock', (art2['prixAchat'] as num) + 45]);
+      expect(mm.collection('produits').parId(art2['id'])!['prixAchat'], art2['prixAchat'], reason: 'aucun prix ne change avant le Oui');
       expect(await service.traiter(), 0, reason: 'rejeu sans effet');
 
       // 6. JAMAIS vers un téléphone (RG-13).
