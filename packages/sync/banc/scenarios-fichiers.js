@@ -139,7 +139,7 @@ module.exports = ({ monde, verifier, attendre, dormir, titre }) => ({
       brut.lignes.length >= 3 && fenetres.every((w) => !octets.some((o) => o.includes(w)) && !tout.includes(w.toString('base64'))), brut.lignes.length);
     verifier('aucun mot du texte indexé, aucun nom de fichier, aucun type de pièce en clair, même après décodage base64', !new RegExp(SECRET + '|scan\\.jpg|%PDF|JFIF|courriers|fichiers').test(tout) && octets.every((o) => !new RegExp(SECRET + '|scan\\.jpg|%PDF|courriers|fichiers').test(o.toString('latin1'))));
     const gros = octets.filter((o) => o.length >= 250);
-    verifier('chaque enveloppe a l\'entropie d\'un chiffrement (> 7 bits/octet), pas un simple encodage', gros.length >= 2 && gros.every((o) => entropie(o) > 7.0), octets.map((o) => [o.length, +entropie(o).toFixed(2)]));
+    verifier('chaque enveloppe a l\'entropie d\'un chiffrement (> 7 bits/octet), pas un simple encodage', gros.length >= 1 && gros.every((o) => entropie(o) > 7.0) && octets.every((o) => entropie(o) >= 0.85 * Math.log2(Math.min(o.length, 256))), octets.map((o) => [o.length, +entropie(o).toFixed(2)]));
     verifier('aucune enveloppe de FICHIER au relais (le binaire ne le traverse jamais) et rien d\'aussi gros qu\'un morceau', !brut.lignes.some((l) => /fichier/.test(l.dir)) && Math.max(...octets.map((o) => o.length)) < TM * 2, brut.lignes.map((l) => l.dir));
     verifier('le code du relais n\'a aucune route de fichier', !/fichiers?\//.test(fs.readFileSync(path.join(__dirname, 'relais.js'), 'utf8')));
     await m.fermer();
