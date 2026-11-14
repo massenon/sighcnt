@@ -1,6 +1,6 @@
 # PRD : Assistant de la clinique (conversation locale, base de connaissances, requêtes en lecture)
 
-Statut : **brouillon à valider par la Direction** (14/11/2026). Aucune valeur, aucun moteur, aucune borne n'est choisi ici sans source : ce qui manque est dit en section 10.
+Statut : **brouillon, réponses de la Direction du 14/11/2026 intégrées** (section 10) ; restent ouvertes la conservation des conversations et le modèle de langage local. Aucune valeur, aucun moteur, aucune borne n'est choisi ici sans source : ce qui manque est dit en section 10.
 Sources : demande de la Direction du 14/11/2026 (assistant conversationnel sur le poste fileul et la mère, avec base de connaissances, pour analyser les recettes, vérifier les niveaux de stock, voir les articles qui tournent, produire des rapports, tenir l'inventaire du stock, retrouver vite un nom de patient, le prix d'un acte, un certificat, un fournisseur, la validité de l'assurance d'un patient, etc.), `CLAUDE.md` (règles RG-01 à RG-14, « le texte médical ne quitte jamais la clinique », hors périmètre CDCT §4.3 : « IA d'aide au diagnostic »), skills `sigh-maitre`, `sigh-flutter`, `spec`.
 Règle de rédaction : pas de tiret cadratin comme ponctuation.
 
@@ -35,7 +35,7 @@ Les agents (réception, caisse, pharmacie, stock, comptabilité, Direction) pass
 
 ## 5. Utilisateurs et droits
 
-L'assistant n'a **aucun droit propre** : il agit avec le profil de l'agent connecté. Un rôle sans droit de lecture sur l'écran source obtient le refus nommé `LECTURE_NON_AUTORISEE` (motif : « votre fonction ne lit pas cet écran », geste : « demander l'accès à l'administrateur »). L'entrée du volet elle-même suit un droit (geste réservé « utiliser l'assistant », réglable par rôle sur la fiche RBAC, comme `valider_seuil_labo` et `corriger_texte_ocr`) ; l'activation générale est un réglage de clinique (administrateur ou DAF).
+L'assistant n'a **aucun droit propre** : il agit avec le profil de l'agent connecté. Un rôle sans droit de lecture sur l'écran source obtient le refus nommé `LECTURE_NON_AUTORISEE` (motif : « votre fonction ne lit pas cet écran », geste : « demander l'accès à l'administrateur »). **Tous les utilisateurs du système** disposent du volet (décision du 14/11/2026), chacun avec ses seuls droits : l'entrée du volet suit un geste réservé « utiliser l'assistant », accordé d'origine à tous les rôles qui ont un poste et réglable par rôle sur la fiche RBAC (comme `valider_seuil_labo` et `corriger_texte_ocr`), pour pouvoir le retirer à un rôle si la Direction le décide ; l'activation générale est un réglage de clinique (administrateur ou DAF).
 
 Cloisonnement : une intention qui touche une donnée médicale exige le droit médical habituel ET la zone du scan ou du dossier ; un patient d'une zone interdite est répondu comme inexistant à ce profil (« aucun résultat visible pour votre profil »), jamais « interdit » (qui révélerait l'existence).
 
@@ -71,7 +71,7 @@ Chaque ligne : intention, exemple de question, source à confirmer au lot de mes
 
 **Documents et certificats**
 17. Retrouver un document, un courrier, un certificat déjà émis d'un patient (renvoi vers la pièce, droit de zone).
-18. **Certificat** : l'assistant dit quel modèle utiliser, vérifie les pièces nécessaires (identité, acte) et OUVRE le gabarit imprimable préparé ; la signature et l'émission restent un geste du médecin habilité. Une pièce émise ne se réécrit jamais.
+18. **Prix d'un certificat** (décision du 14/11/2026 : la demande portait sur la consultation du prix, pas sur la production du certificat) : « combien coûte un certificat médical », « quels certificats existent et à quel prix », avec les DEUX prix (non assuré, assuré) comme l'intention 5, lus dans le référentiel de tarifs unique. L'assistant ne prépare, n'ouvre ni n'émet aucun certificat (la signature et l'émission restent un geste du médecin habilité à l'écran, une pièce émise ne se réécrit jamais).
 
 **Laboratoire et imagerie**
 19. État d'une demande (demandée, payée, exécutée, validée) par code d'analyse ; résultats RENDUS seulement (jamais une saisie non validée), droit médical. Aucune interprétation clinique.
@@ -90,7 +90,7 @@ Chaque ligne : intention, exemple de question, source à confirmer au lot de mes
 24. « Comment annuler une facture » / « où saisir une sortie » / « qui valide les commandes » : réponse tirée de la base de connaissances, avec le lien vers l'écran.
 25. Glossaire et règles (« que veut dire FEFO », « qu'est-ce qu'un avoir »).
 
-*Éléments de l'inventaire demandés à confirmer par la Direction : la phrase de la demande « inventaire des trcs a mettre » est lue comme « l'inventaire des tâches (intentions) à mettre en place » ; si elle visait autre chose (par exemple des traces d'audit), le dire.*
+*Confirmé par la Direction le 14/11/2026 : « inventaire des trcs a mettre » signifiait l'inventaire des INTENTIONS (la liste ci-dessus). Le catalogue est EXTENSIBLE : la Direction pourra ajouter des intentions ; ajouter une intention = une entrée du catalogue (source, droit, format, refus nommé) + ses vecteurs + son test, jamais du code éparpillé.*
 
 ## 7. Base de connaissances
 
@@ -109,15 +109,18 @@ Chaque ligne : intention, exemple de question, source à confirmer au lot de mes
 
 Proposition (à valider) : une conversation est **propre au poste et à l'agent**, jamais synchronisée vers la mère, les fileuls ni le relais (elle peut contenir des noms), chiffrée au repos comme le reste de la base locale, conservée 30 jours par défaut (réglable, borné), purgée au-delà (archivage RG-14 : la purge est un archivage de la conversation, la trace RG-12 d'une lecture nominative reste au journal). L'agent peut effacer ses conversations. Aucune conversation ne sert à améliorer un modèle (aucun envoi).
 
-## 10. Ce qui reste à décider (par la Direction)
+## 10. Décisions de la Direction (14/11/2026) et ce qui reste ouvert
 
-1. Intentions de la version 1 : les 25 de la section 6, ou un sous-ensemble (proposition : 1, 2, 5, 7, 8, 9, 12, 14, 20, 23, 24 d'abord).
-2. Quels rôles ont le geste « utiliser l'assistant » (proposition : tous les rôles qui ont un poste, réglable par rôle).
-3. Le certificat : l'assistant prépare et ouvre le gabarit seulement (proposé), ou rien du tout.
-4. Conservation des conversations 30 jours, propres au poste (proposé).
-5. Un modèle de langage local : oui ou non à terme ; si oui, un essai sur trois à dix postes de la clinique avant tout choix (aucune mesure disponible aujourd'hui).
-6. Le volet existe-t-il aussi sur téléphone ? (proposition : non en version 1).
-7. Base de connaissances : qui rédige les fiches et valide leur publication (proposition : l'administrateur propose, la Direction valide).
+Tranché :
+1. **Intentions de la version 1 : les 25 de la section 6**, avec la possibilité d'en AJOUTER (catalogue extensible, section 6).
+2. **Rôles : tous les utilisateurs du système** (chacun avec ses seuls droits, section 5).
+3. **Certificat : consultation du PRIX seulement** (intention 18), l'assistant ne prépare ni n'ouvre aucun gabarit.
+4. **Téléphone : NON** en version 1 (les mobiles passent par le relais et ne portent pas la réplique).
+5. **Base de connaissances : la Direction valide** chaque fiche avant publication (une fiche non validée n'est jamais citée) ; l'administrateur peut en proposer.
+
+Restent ouverts :
+6. **Un modèle de langage local à terme ?** Pas de réponse tranchée. Proposition : ne rien décider maintenant ; la version 1 fonctionne sans modèle (section 8) ; la question se reposera après la mesure du lot AST-0 sur un jeu de questions réelles de la clinique (taux de bonne intention de la version déterministe) : si ce taux est suffisant, aucun modèle n'est nécessaire.
+7. **Conversations** (section 9) : propres au poste, non synchronisées, 30 jours, chiffrées : proposition non encore confirmée.
 
 ## 11. Critères d'acceptation (extraits)
 
@@ -131,8 +134,8 @@ Proposition (à valider) : une conversation est **propre au poste et à l'agent*
 
 ## 12. Plan de livraison proposé (maquette d'abord, doctrine du dépôt)
 
-1. **Lot AST-0 : mesure et catalogue** : lister les moteurs et collections qui répondent à chacune des 25 intentions, dire lesquelles sont déjà calculables (et lesquelles non), jeu de 100 questions réelles de la clinique à fournir par la Direction pour mesurer la compréhension.
-2. **Lot AST-1 : maquette** : volet « Assistant » (poste fileul et mère à venir), intentions 1, 2, 5, 7, 8, 9, 12, 14, 20, 23, 24, base de connaissances semée, vecteurs tirés de l'écran réel.
+1. **Lot AST-0 : mesure et catalogue** : lister les moteurs et collections qui répondent à chacune des 25 intentions, dire lesquelles sont déjà calculables (et lesquelles non : une intention sans source reste « non disponible » et se dit, jamais une réponse inventée), jeu de 100 questions réelles de la clinique à fournir par la Direction pour mesurer la compréhension.
+2. **Lot AST-1 : maquette** : volet « Assistant » (poste fileul et mère à venir), les 25 intentions (livrées par groupes : patients et tarifs, stock, fournisseurs et achats, caisse et recettes, laboratoire et planning, aide et rapports), base de connaissances semée, vecteurs tirés de l'écran réel.
 3. **Lot AST-2 : domaine Dart** : intentions comme fonctions pures sur un port de lecture, reconnaissance en français, vecteurs de la maquette.
 4. **Lot AST-3 : poste** : volet, droits, journal RG-12, conversation locale chiffrée, tests contre la réplique locale ; la mère passe par le même code.
 5. **Lot AST-4 : moteur de langue local (optionnel)** : seulement après la décision 5 et un essai chiffré.
