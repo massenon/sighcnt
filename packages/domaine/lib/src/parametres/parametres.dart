@@ -15,10 +15,10 @@ const String parCollectionUsages = 'usagesParametres';
 
 /// Familles que RG-13 ferme au téléphone (financier, RH, fiscal, sécurité, secrets). Seconde barrière : un paramètre ne va à un mobile que si sa définition le
 /// DÉCLARE (`mobile`), que sa famille n'est pas ici et qu'il n'est pas `sensible`. Liste prudentielle, à valider par la Direction (aucun document ne la fixe).
-const List<String> parFamillesJamaisMobile = ['paie', 'rh', 'fiscal', 'bareme_aib', 'comptabilite', 'mecef', 'securite', 'relais', 'courriel', 'sms', 'ocr'];
+const List<String> parFamillesJamaisMobile = ['paie', 'rh', 'fiscal', 'bareme_aib', 'comptabilite', 'mecef', 'securite', 'relais', 'courriel', 'sms', 'ocr', 'horssite'];
 
 /// Les familles dont le réglage a son PROPRE écran (règles de réglage propres : droit, motif, refus nommés) : le panneau générique des paramètres ne les montre pas, il contournerait ces règles.
-const Set<String> parFamillesReglageDedie = {'ocr'};
+const Set<String> parFamillesReglageDedie = {'ocr', 'horssite'};
 
 enum TypeParametre {
   booleen,

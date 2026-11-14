@@ -81,6 +81,7 @@ export 'src/fichiers/fichiers_donnees.dart';
 export 'src/fichiers/fichiers_regles.dart';
 export 'src/fichiers/pdf_texte.dart';
 export 'src/fichiers/ocr.dart';
+export 'src/sauvegarde/sauvegarde_horssite.dart';
 export 'src/fichiers/ocr_mesure.dart';
 export 'src/fichiers/transfert.dart';
 export 'src/configuration/cfa_regles.dart';
