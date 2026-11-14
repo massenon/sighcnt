@@ -1,0 +1,65 @@
+{
+ "_doc": "Structure de la feuille « Imprimer la grille » de la maquette (Tarifs et prix), tirée du DOM réel ; pagination du PDF Chrome (média print, A4).",
+ "largeurMm": "210mm",
+ "hauteurMm": "297mm",
+ "titre": "Grille tarifaire",
+ "sousTitre": "Prix en vigueur au 16/08/2026 : 201 prestations",
+ "entete": "CLINIQUE NASSIERA TOOBP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020IFU : 3201642748214 RCCM : RB/NAT/2016-B-268E-mail : cliniquenassiera@gmail.comVotre santé, notre raison de vivre",
+ "colonnes": [
+  "Code",
+  "Libellé",
+  "Non assuré",
+  "Assuré",
+  "Version"
+ ],
+ "nbLignes": 201,
+ "premieres": [
+  [
+   "MG01",
+   "Consultation généraliste",
+   "5 000",
+   "3 000",
+   "1"
+  ],
+  [
+   "MG02",
+   "Consultation généraliste à domicile",
+   "8 000",
+   "prix unique",
+   "1"
+  ],
+  [
+   "MG03",
+   "Électrocardiogramme (ECG)",
+   "15 000",
+   "10 000",
+   "1"
+  ]
+ ],
+ "dernieres": [
+  [
+   "CERT-CBV",
+   "Certificat médical initial / de coups et blessures volontaires",
+   "20 000",
+   "20 000",
+   "1"
+  ],
+  [
+   "CERT-VC",
+   "Certificat médical de visite et de contre-visite",
+   "8 000",
+   "8 000",
+   "1"
+  ],
+  [
+   "CERT-APT",
+   "Certificat médical d’aptitude",
+   "7 000",
+   "7 000",
+   "1"
+  ]
+ ],
+ "signatures": [],
+ "texteComplet": "CLINIQUE NASSIERA TOOBP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020IFU : 3201642748214 RCCM : RB/NAT/2016-B-268E-mail : cliniquenassiera@gmail.comVotre santé, notre raison de vivreGrille tarifairePrix en vigueur au 16/08/2026 : 201 prestationsCodeLibelléNon assuréAssuréVersionMG01Consultation généraliste5 0003 0001MG02Consultation généraliste à domicile8 000prix unique1MG03Électrocardiogramme (ECG)15 00010 0001MG04MAPA — mesure ambulatoire de la pression artérielle30 00025 0001MG05Ponction lombaire15 000prix unique1MG06Certificat médical2 000prix unique1CH01Consultation spécialiste10 00010 0001CH02Consultation spécialiste à domicile15 000prix unique1CH03Opération150 000prix unique1CH04Pansement chirurgical5 000prix unique1CH05Petite chirurgie25 000prix unique1CH06Hydrotubation15 000NON COUVERT1CH07Cystostomie60 000prix unique1CH08Ponction pleurale20 000prix unique1CH09Plâtre20 000prix unique1CH10Attelle plâtrée12 000prix unique1CH11Infiltration de kyste synovial15 000prix unique1CH12Infiltration de genou15 000prix unique1MA01Consultation prénatale5 0001 5001MA02Accouchement35 000prix unique1MA03Protocole ACE-MISO12 000prix unique1MA04Pose de planning familial — Sayana Press500NON COUVERT1MA05Pose de planning familial — Implanon ou Jadelle1 100NON COUVERT1MA06Pose de planning familial — DIU2 5001 7001MA07Pose de planning familial — Noristérat450NON COUVERT1MA08Retrait de planning familial — Implanon ou Jadelle2 000NON COUVERT1MA09Retrait de planning familial — DIU2 000NON COUVERT1MA10AMIU — aspiration manuelle intra-utérine20 00015 0001MA11Révision utérine20 000prix unique1MA12Expulsion de fœtus15 000prix unique1MA13Délivrance artificielle8 0005 0001MA14Épisiotomie10 000prix unique1MA15Surveillance de travail d’accouchement8 0005 0001MA16Suture de déchirure8 000prix unique1MA17Surveillance de tocolyse10 000prix unique1MA18BU — bandelette urinaire1 0005001IM01Échographie pelvienne9 0005 0001IM02Échographie obstétricale9 0005 0001IM03Échographie abdominale12 0008 0001IM04Échographie abdomino-pelvienne20 00011 0001IM05Échographie prostatique12 0008 0001IM06Autre échographie8 000prix unique1SO01Prise de voie veineuse (PVV)1 2008001SO02Soins intraveineux (SIV)1 2008001SO03Soins intramusculaires (SIM)800prix unique1SO04Soins sous-cutanés (SC)800prix unique1SO05Pose et surveillance de perfusion (PSP)1 500prix unique1SO06Sondage naso-gastrique3 000prix unique1SO07Sondage vésical3 000prix unique1SO08Suture1 5001 0001SO09Pansement9 0006 0001SO10Ponction drainage d’ascite15 000prix unique1SO11Ablation de frein de langue5 000prix unique1SO12Oxygénothérapie5 000prix unique1SO13Aérosolthérapie2 5002 0001SO14Hospitalisation8 000prix unique1SO15Mise en observation5 000prix unique1SO16Mise à plat d’abcès10 000prix unique1SO17Lavage vésical7 0005 0001SO18Lavage d’oreille2 000prix unique1SO19Ponction sus-pubienne10 000prix unique1SO20Panaris8 000prix unique1SO21Extraction de corps étranger8 0006 0001SO22Infiltration chéloïde10 000prix unique1SO23Glycémie rapide1 000prix unique1SO24Taux d’hémoglobine rapide1 000prix unique1SO25Soins à domicile10 000prix unique1SO26Surveillance de prématuré5 000prix unique1SO27Pousse-seringue5 000prix unique1HO01Journée d’hospitalisation — chambre Standard5 000prix unique1HO02Journée d’hospitalisation — chambre VIP15 000prix unique1HO03Journée d’hospitalisation — chambre VVIP25 000prix unique1GY-SAAAvortement — Soins Après Avortement (SAA)20 00015 0001L01AKOP2 000prix unique1L02ASLO4 000prix unique1L03AZOTEMIE (UREMIE)2 500prix unique1L04BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)3 500prix unique1L05BU1 000prix unique1L06CALCEMIE3 000prix unique1L07CHOLESTEROL TOTAL3 000prix unique1L08CHOLESTEROL HDL3 000prix unique1L09CREATININE2 500prix unique1L10CRP4 000prix unique1L11D-DIMERE12 000prix unique1L12ECBU5 000prix unique1L13ELECTROPHORESE DE L’HEMOGLOBINE8 000prix unique1L14GLYCEMIE1 500prix unique1L15GLYCEMIE CAPILLAIRE1 000prix unique1L16GE-DP / FROTTIS SANGUIN1 500prix unique1L17GROUPE SANGUIN-RHESUS2 000prix unique1L18HEMOGLOBINE CAPILLAIRE1 000prix unique1L19HEPATITE B3 500prix unique1L20HEPATITE C4 500prix unique1L21HIV2 500prix unique1L22IONOGRAMME SANGUIN8 000prix unique1L23MAGNESEMIE3 500prix unique1L24NFS COMPLETE (HEMOGRAMME)4 000prix unique1L25PRELEVEMENT URETRAL (PU)5 000prix unique1L26PRELEVEMENT VAGINAL (PV)5 000prix unique1L27PROLACTINE10 000prix unique1L28PROTIDEMIE2 500prix unique1L29PSA TOTAL12 000prix unique1L30PSA LIBRE12 000prix unique1L31SERODIAGNOSTIC WIDAL (SDW)3 000prix unique1L32SPERMOGRAMME8 000prix unique1L33SPERMOGRAMME SOS10 000prix unique1L34SPERMOGRAMME GRAS SAVOY / ECBK12 000prix unique1L35TBG SERIQUE (SANGUIN)12 000prix unique1L36TEMPS DE COAGULATION (TC)1 500prix unique1L37TEMPS DE CEPHALINE ACTIVEE OU KAOLIN (TCA ou TCK)5 000prix unique1L38TEST D’EMMEL2 000prix unique1L39TP + INR5 000prix unique1L40TPHA3 000prix unique1L41TRANSAMINASE TGO / ASAT3 000prix unique1L42TRANSAMINASE TGP / ALAT3 000prix unique1L43TRANSAMINASE GGT3 000prix unique1L44TRIGLYCERIDE3 000prix unique1L45TEMPS DE SAIGNEMENT1 500prix unique1L46URICEMIE (ACIDE URIQUE)3 000prix unique1L47VITESSE DE SEDIMENTATION (VS)2 000prix unique1L48VDRL2 500prix unique1CONS-DOM-GENConsultation à domicile — généraliste25 00020 0001CONS-DOM-SPEConsultation à domicile — spécialiste30 00025 0001CONS-SPE-SRVConsultation spécialiste sans rendez-vous15 00010 0001IMG-RX-THORadiographie du thorax10 0008 0001IMG-RX-BASRadiographie du bassin12 00010 0001IMG-RX-RACRadiographie du rachis15 00012 0001IMG-RX-MEMRadiographie d’un membre10 0008 0001IMG-RX-CRARadiographie du crâne et des sinus12 00010 0001IMG-RX-ASPAbdomen sans préparation (ASP)10 0008 0001IMG-MAM-DEPMammographie bilatérale de dépistage30 00025 0001IMG-MAM-DIAMammographie diagnostique35 00030 0001IMG-TDM-CERScanner cérébral70 00060 0001IMG-TDM-THOScanner thoracique85 00075 0001IMG-TDM-ABPScanner abdomino-pelvien100 00090 0001IMG-TDM-RACScanner du rachis85 00075 0001IMG-IRM-CERIRM cérébrale150 000130 0001IMG-IRM-RACIRM du rachis lombaire150 000130 0001IMG-IRM-GENIRM du genou140 000120 0001IMG-IRM-PELIRM pelvienne160 000140 0001LAB-SDWSérodiagnostic de Widal (SDW)6 5004 5001ABCGAbcès — grand14 00010 0001ABCMAbcès — moyen12 0008 0001ABCPAbcès — petit8 0005 0001ABCTPAbcès — très petit5 0003 0001DEPMDépistage5 0005 0001EXTNExtraction d’ongle7 0005 0001INFGInfiltration — grande12 00010 0001INFMInfiltration — moyenne10 0007 0001INFPInfiltration — petite7 0005 0001LAVOLavage oculaire4 0003 0001OXY1-3Oxygénothérapie — 1 à 3 heures4 0002 0001OXY4-6Oxygénothérapie — 4 à 6 heures6 0004 0001OXY7-12Oxygénothérapie — 7 à 12 heures8 0006 0001OXY13-24Oxygénothérapie — 13 à 24 heures15 00012 0001PANGPansement — grand8 0005 0001PANMPansement — moyen5 0003 0001PANPPansement — petit2 0001 0001PANTGPansement — très grand12 0008 0001PANTPPansement — très petit1 0005001PONAPonction d’ascite7 0005 0001PONGPonction — grande8 0006 0001PONLAPonction lombaire A4 0003 0001PONLEPonction lombaire E3 0002 0001PONSPonction simple3 0002 5001POSCPose de sonde7 0005 0001PSPPetit soin ponctuel1 5001 0001POTPose de transfusion1 5001 0001PSEPose de sérum1 5001 0001SDISoin de drain15 00010 0001SIMSoin — injection intramusculaire1 0008001SCSoin — injection sous-cutanée1 0008001SNGSonde naso-gastrique5 0003 0001SVSonde vésicale7 0005 0001ACCDCAccouchement dystocique — césarienne18 00012 0001ACCDLAccouchement dystocique — lourd25 00020 0001ACCDMAccouchement dystocique — moyen20 00015 0001ACCDAccouchement dystocique20 00015 0001ACCEAccouchement eutocique15 00010 0001ACCS1Accouchement sous surveillance — 160 00045 0001ACCS2Accouchement sous surveillance — 275 00060 0001BARIBartholinite — incision15 00010 0001DECGDécollement — grand15 00010 0001DECPDécollement — petit10 0006 0001DEGDélivrance — grande12 0008 0001DEMDélivrance — moyenne10 0006 0001DEPDélivrance — petite8 0005 0001EPGÉpisiotomie — grande12 0008 0001EPMÉpisiotomie — moyenne10 0006 0001EPPÉpisiotomie — petite8 0005 0001EXASExamen sous spéculum8 0005 0001EXPUExploration utérine12 0008 0001PCGJPose de cathéter / gel6 0004 0001POSJPose d’injectable1 100NON COUVERT1RETJRetrait d’injectable2 000NON COUVERT1CERT-DPSCertificat médical de dispense aux activités physiques et sportives5 0005 0001CERT-ATGAttestation de grossesse7 0007 0001CERT-DECCertificat médical de décès10 00010 0001CERT-CBVCertificat médical initial / de coups et blessures volontaires20 00020 0001CERT-VCCertificat médical de visite et de contre-visite8 0008 0001CERT-APTCertificat médical d’aptitude7 0007 0001Fait à Natitingou, le 16 août 2026La Directrice AdministrativeTAKI AlimatouSignatureLa DirectionSignatureCLINIQUE NASSIERA TOO SARL — RB/NAT/2016-B-268 — IFU 3201642748214Document généré par BASSONGUI Chabi Séko le 16/08/2026 à 12h00Réf. document : CNT-20260816-0001Édité depuis le SIGH-CNT",
+ "pagesPdf": 3
+}

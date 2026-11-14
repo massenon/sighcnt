@@ -269,18 +269,17 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
                     child: pw.Text('${c.$1} : ${c.$2}', style: s(7.5))),
             ])),
       for (final b in x.blocs) ...[
-        switch (b) {
-          BlocTableau() => pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                children: [
-                  if (b.titre != null)
-                    pw.Text(b.titre!.toUpperCase(), style: s(8, f: p.gras)),
-                  tableau(b.tableau),
-                ]),
-          BlocTexte() => pw.Text(b.texte,
-              style:
-                  s(8, f: b.gras ? p.gras : (b.italique ? p.italique : null))),
-          BlocOrganigramme() => organigramme(b.miseEnPage),
+        // LOT TFIN : le titre du tableau et le tableau sont deux éléments de la liste, JAMAIS un `Column` : un `Column` ne se coupe pas entre deux pages, et un tableau plus haut qu'une
+        // page (la grille tarifaire de 201 lignes) faisait créer des pages sans fin (`PdfTooBigPageException`) dès qu'un pied de page existait. Le `Table` se coupe, son en-tête se répète.
+        ...switch (b) {
+          BlocTableau() => [
+              if (b.titre != null) pw.Text(b.titre!.toUpperCase(), style: s(8, f: p.gras)),
+              tableau(b.tableau),
+            ],
+          BlocTexte() => [
+              pw.Text(b.texte, style: s(8, f: b.gras ? p.gras : (b.italique ? p.italique : null)))
+            ],
+          BlocOrganigramme() => [organigramme(b.miseEnPage)],
         },
         pw.SizedBox(height: 10),
       ],
