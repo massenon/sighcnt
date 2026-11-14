@@ -1,4 +1,5 @@
 import '../configuration/cfb_regles.dart' show CfbFermetures;
+import 'droit_geste.dart';
 import 'droit_import.dart';
 
 /// Droits d'un rôle sur un écran : voir, éditer, annuler. « Lecture seule » n'est pas un quatrième droit : un écran
@@ -34,7 +35,9 @@ class Droit {
 /// La matrice extraite est déjà résolue (surcharges d'écran, modules, écrans universels) ; ce moteur ne recalcule rien.
 class MatriceDroits {
   MatriceDroits._(this._parRole, this._archives, this._libelles, this._accueils,
-      [this.rolesBruts = const [], this.fermetures, MatriceImport? matriceImport]) : matriceImport = matriceImport ?? MatriceImport.vide;
+      [this.rolesBruts = const [], this.fermetures, MatriceImport? matriceImport, MatriceGestes? matriceGestes])
+      : matriceImport = matriceImport ?? MatriceImport.vide,
+        matriceGestes = matriceGestes ?? MatriceGestes.vide;
 
   /// Assemblage public pour la SUPERPOSITION à chaud (`superposerDroits`, `a_chaud.dart`) : la matrice y est recalculée, jamais relue du JSON.
   MatriceDroits.assemblee(
@@ -44,14 +47,20 @@ class MatriceDroits {
       required Map<String, String> accueils,
       required List<Map<String, Object?>> rolesBruts,
       required CfbFermetures fermetures,
-      MatriceImport? matriceImport})
-      : this._(parRole, archives, libelles, accueils, rolesBruts, fermetures, matriceImport);
+      MatriceImport? matriceImport,
+      MatriceGestes? matriceGestes})
+      : this._(parRole, archives, libelles, accueils, rolesBruts, fermetures, matriceImport, matriceGestes);
 
   /// LE DROIT D'IMPORT PAR JEU (lot IMP-C) : voir, importer, annuler, lus de la section `import` de `rbac.json` (puis superposés à chaud), jamais du droit d'éditer
   /// l'écran `imp-*`. Un jeu ou un rôle inconnu est FERMÉ.
   final MatriceImport matriceImport;
 
   DroitImport droitImport(String role, String jeu) => matriceImport.droit(role, jeu);
+
+  /// LES GESTES RÉSERVÉS PAR DROIT (lot C) : lus de la section `gestes` de `rbac.json` (puis superposés à chaud, clé `droitsGestes`). Un geste ou un rôle inconnu est FERMÉ.
+  final MatriceGestes matriceGestes;
+
+  bool droitGeste(String role, String geste) => matriceGestes.droit(role, geste);
 
   /// Les rôles tels que `rbac.json` les porte (libellés d'origine compris) : la base de la superposition.
   final List<Map<String, Object?>> rolesBruts;
@@ -96,6 +105,7 @@ class MatriceDroits {
       [for (final r in roles) r.cast<String, Object?>()],
       null,
       MatriceImport.depuisJson(json['import']),
+      MatriceGestes.depuisJson(json['gestes']),
     );
   }
 

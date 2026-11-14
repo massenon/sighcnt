@@ -10,7 +10,8 @@
   "securite",
   "relais",
   "courriel",
-  "sms"
+  "sms",
+  "ocr"
  ],
  "cas": [
   {
@@ -2801,6 +2802,26 @@
    "champs": {
     "cle": "accueil.affichage",
     "famille": "sms",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée ocr",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "ocr",
     "type": "booleen",
     "valeur": false,
     "defaut": false,

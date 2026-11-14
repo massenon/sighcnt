@@ -13,6 +13,7 @@
 // Le lot U a branché `affichage.planDuSite` (`src/acces/acc_plan_du_site.dart`, lu par les pages d'erreur, la commande des paramètres et l'adresse du plan du site).
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
+import '../fichiers/ocr.dart' show ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrCleDelai, ocrLangueDefaut, ocrDelaiDefautMs;
 import 'parametres.dart';
 
 const String _decisions = 'Décision de la Direction du 09/11/2026 (DECISIONS-A-VALIDER, section D)';
@@ -158,6 +159,52 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot U (plan du site réglable)',
   ),
+  // Lot C : la lecture des scans (OCR) est un réglage de CLINIQUE posé à la poste mère, versionné par date, reçu des fileuls, JAMAIS envoyé à un téléphone (`mobile: false`, famille réservée).
+  // Il se règle à l'écran « Lecture des scans (OCR) » (droit, motif, refus nommés), pas au panneau générique.
+  DefinitionParametre(
+    cle: ocrCleActif,
+    famille: 'ocr',
+    type: TypeParametre.booleen,
+    defaut: false,
+    libelle: 'Lecture automatique des scans (OCR)',
+    aide: 'Désactivée par défaut : l\'administrateur ou la Directrice Administrative l\'active à la main, une fois un moteur installé. Réglage de la clinique, posé à la poste mère.',
+    source: 'Décision de la Direction du 13/11/2026 (DECISIONS-A-VALIDER, sections T et V) : désactivée par défaut, activée à la main',
+    branche: true,
+    appliquePar: 'Lot C (réglage OCR de clinique)',
+  ),
+  DefinitionParametre(
+    cle: ocrCleMoteur,
+    famille: 'ocr',
+    type: TypeParametre.texte,
+    defaut: '',
+    libelle: 'Moteur d\'OCR choisi',
+    aide: 'Identifiant du moteur ; vide : aucun. Chaque poste dit seulement s\'il l\'a installé. Aucun moteur n\'est livré : la Direction le choisit après un essai sur trois vrais scans. Proposition à valider : le choix du moteur est posé par la clinique.',
+    source: 'Proposition à valider (lot C) : la Direction n\'a pas dit qui choisit le moteur',
+    branche: true,
+    appliquePar: 'Lot C (réglage OCR de clinique)',
+  ),
+  DefinitionParametre(
+    cle: ocrCleLangue,
+    famille: 'ocr',
+    type: TypeParametre.texte,
+    defaut: ocrLangueDefaut,
+    libelle: 'Langue de lecture',
+    aide: 'Code de langue du moteur (« fra » pour le français).',
+    source: 'Défaut du lot OCR-prep : français (langue de travail de la clinique)',
+    branche: true,
+    appliquePar: 'Lot C (réglage OCR de clinique)',
+  ),
+  DefinitionParametre(
+    cle: ocrCleDelai,
+    famille: 'ocr',
+    type: TypeParametre.entier,
+    defaut: ocrDelaiDefautMs,
+    libelle: 'Délai de lecture par page (millisecondes)',
+    aide: 'Au-delà, la lecture de la page est arrêtée, puis se relance. Valeur d\'attente de 120 secondes (lot OCR-prep) : aucun document ne la fixe, à valider.',
+    source: 'Proposition à valider (lot OCR-prep) : aucun document ne fixe ce délai',
+    branche: true,
+    appliquePar: 'Lot C (réglage OCR de clinique)',
+  ),
 ];
 
 /// Le libellé d'une famille de paramètres, pour les onglets de l'écran des paramètres. Une famille absente de la table s'affiche sous son identifiant.
@@ -168,6 +215,7 @@ const Map<String, String> libellesFamillesParametres = {
   'paie': 'Paie',
   'securite': 'Sécurité',
   'affichage': 'Affichage',
+  'ocr': 'Lecture des scans (OCR)',
 };
 
 /// La définition d'une clé, ou `null`.

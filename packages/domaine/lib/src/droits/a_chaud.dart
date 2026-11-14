@@ -17,6 +17,7 @@ library;
 import '../configuration/cfb_donnees.dart' show cfbNoyau;
 import '../configuration/cfb_regles.dart' show CfbFermetures;
 import '../navigation/manifeste.dart';
+import 'droit_geste.dart';
 import 'droit_import.dart';
 import 'matrice.dart';
 
@@ -36,7 +37,7 @@ Map<String, Map<String, Object?>> surchargesParRole(Iterable<Map<String, Object?
     final fusion = {...deja};
     f.forEach((k, v) {
       if (v == null) return;
-      if (k == 'droits' || k == 'droitsEcrans' || k == 'droitsImport') {
+      if (k == 'droits' || k == 'droitsEcrans' || k == 'droitsImport' || k == 'droitsGestes') {
         fusion[k] = {
           ...((deja[k] as Map?)?.cast<String, Object?>() ?? const {}),
           ...((v as Map?)?.cast<String, Object?>() ?? const {})
@@ -70,7 +71,8 @@ typedef _Calcul = ({
   Map<String, String> accueils,
   List<Map<String, Object?>> roles,
   CfbFermetures fermetures,
-  MatriceImport imp
+  MatriceImport imp,
+  MatriceGestes gestes
 });
 
 /// Calcule la matrice COMPLÈTE depuis le manifeste et les fiches. `base` ne fournit que la liste des rôles (libellés d'origine, couleurs, accueils).
@@ -213,7 +215,28 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
     if (!archive(id) && droitsModule(id, 'M11').editer) paie.add(id);
   }
   final imp = _matriceImport(declarations, impParRole, paie);
-  return (parRole: parRole, archives: archives, libelles: libelles, accueils: accueils, roles: roles, fermetures: ferm, imp: imp);
+  // LES GESTES RÉSERVÉS : `N.droitGeste`. La liste d'origine ne vaut que pour un rôle que l'extraction connaissait ; un rôle créé part de zéro (jamais « tous les droits »).
+  final connusBase = {for (final r in base.rolesBruts) '${r['id']}'};
+  final gestesParRole = <String, Map<String, bool>>{
+    for (final r in roles)
+      '${r['id']}': {
+        for (final g in base.matriceGestes.declarations)
+          g.id: resoudreDroitGeste(
+              surcharge: bool3(mapDe(sur['${r['id']}']?['droitsGestes'])?[g.id]),
+              roleArchive: archive('${r['id']}'),
+              defaut: connusBase.contains('${r['id']}') && base.matriceGestes.droit('${r['id']}', g.id)),
+      }
+  };
+  return (
+    parRole: parRole,
+    archives: archives,
+    libelles: libelles,
+    accueils: accueils,
+    roles: roles,
+    fermetures: ferm,
+    imp: imp,
+    gestes: MatriceGestes(declarations: base.matriceGestes.declarations, parRole: gestesParRole)
+  );
 }
 
 /// Assemble la matrice d'import : les superviseurs sont TIRÉS du droit (annuler sur chaque jeu), jamais d'une liste de rôles.
@@ -228,7 +251,7 @@ MatriceImport _matriceImport(List<DeclarationImport> declarations, Map<String, M
     );
 
 MatriceDroits _assembler(_Calcul c) => MatriceDroits.assemblee(
-    parRole: c.parRole, archives: c.archives, libelles: c.libelles, accueils: c.accueils, rolesBruts: c.roles, fermetures: c.fermetures, matriceImport: c.imp);
+    parRole: c.parRole, archives: c.archives, libelles: c.libelles, accueils: c.accueils, rolesBruts: c.roles, fermetures: c.fermetures, matriceImport: c.imp, matriceGestes: c.gestes);
 
 /// Superpose les fiches à la matrice.
 ///
@@ -296,6 +319,17 @@ MatriceDroits superposerDroits(MatriceDroits base, Manifeste manifeste,
     final paieMaintenant = maintenant.imp.capacitePaie.contains(id), paieRef = ref.imp.capacitePaie.contains(id);
     if (ancien && paieMaintenant == paieRef ? base.matriceImport.capacitePaie.contains(id) : paieMaintenant) paie.add(id);
   }
+  // Les gestes réservés suivent la même règle : la case de la matrice engendrée reste la BASE, remplacée seulement quand les fiches d'aujourd'hui la font changer par rapport à celles de
+  // l'extraction ; un rôle créé depuis l'extraction n'a que ses fiches.
+  final gestesCases = <String, Map<String, bool>>{};
+  for (final r in maintenant.roles) {
+    final id = '${r['id']}';
+    final ancien = connus.contains(id);
+    gestesCases[id] = {
+      for (final g in base.matriceGestes.declarations)
+        g.id: (ancien && maintenant.gestes.droit(id, g.id) == ref.gestes.droit(id, g.id)) ? base.matriceGestes.droit(id, g.id) : maintenant.gestes.droit(id, g.id),
+    };
+  }
   return MatriceDroits.assemblee(
       parRole: parRole,
       archives: archives,
@@ -303,5 +337,6 @@ MatriceDroits superposerDroits(MatriceDroits base, Manifeste manifeste,
       accueils: accueils,
       rolesBruts: maintenant.roles,
       fermetures: maintenant.fermetures,
-      matriceImport: _matriceImport(decl, impCases, paie));
+      matriceImport: _matriceImport(decl, impCases, paie),
+      matriceGestes: MatriceGestes(declarations: base.matriceGestes.declarations, parRole: gestesCases));
 }

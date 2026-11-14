@@ -324,6 +324,121 @@ void main() {
     });
   });
 
+  group('la correction signée du texte lu (lot C), vecteurs tirés du module réel de la maquette', () {
+    final c = obj(v['corrections']);
+    test('l’identifiant d’une correction est déterministe : empreinte, version de départ, texte sans blancs superflus', () {
+      for (final x in liste(c['ids'])) {
+        expect(ocrIdCorrection('${x['sha']}', '${x['corrigeDe']}', '${x['texte']}'), x['id'], reason: '${x['texte']}');
+      }
+      final ids = liste(c['ids']);
+      expect(ids[0]['id'], ids[1]['id'], reason: 'les blancs de bord et répétés ne comptent pas');
+      expect({ids[0]['id'], ids[2]['id'], ids[3]['id'], ids[4]['id']}, hasLength(4), reason: 'autre version, autre texte ou autre empreinte : autre identifiant');
+    });
+
+    test('version courante, têtes, conflit et état : la correction signée prime sur une lecture machine plus récente, deux têtes font un conflit', () {
+      for (final g in liste(c['courant'])) {
+        final vs = [for (final x in liste(g['versions'])) x];
+        expect(ocrVersionCourante(vs)?['id'], g['courant'], reason: '${g['nom']}');
+        expect([for (final t in ocrTetes(vs)) t['id']], (g['tetes'] as List).cast<String>(), reason: '${g['nom']} : têtes');
+        expect(ocrConflit(vs).length, (g['tetes'] as List).length > 1 ? (g['tetes'] as List).length : 0, reason: '${g['nom']} : conflit');
+        for (final e in liste(g['etats'])) {
+          final f = e['file'] == null ? null : obj(e['file']);
+          final r = ocrEtatIndexation(natif: false, versions: vs, file: f, moteurInstalle: true, actif: true, moteurActif: true);
+          expect(r.code, e['code'], reason: '${g['nom']} $f');
+          expect(r.court, e['court'], reason: '${g['nom']} $f');
+          expect(r.libelle, e['libelle'], reason: '${g['nom']} $f');
+          expect(r.source, e['source'], reason: '${g['nom']} $f');
+          expect(r.marque, e['marque'], reason: '${g['nom']} $f');
+          expect(r.disponible, e['disponible'], reason: '${g['nom']} $f');
+          expect(r.conflit, e['conflit'], reason: '${g['nom']} $f');
+        }
+      }
+    });
+
+    test('corriger : refus nommés (code, motif, geste) et fiche écrite, rejoués sur chaque cas de la maquette', () {
+      for (final k in liste(c['corriger'])) {
+        final avant = liste(k['versionsAvant']);
+        final r = ocrCorriger(
+            sha: '${k['sha']}',
+            texte: '${k['texte']}',
+            natif: k['natif'] == true,
+            versions: avant,
+            corrigeDe: k['corrigeDe'] as String?,
+            par: 'SONDE vec',
+            le: '2026-10-30T10:00:00.000Z',
+            peutDeposer: k['peutDeposer'] == true,
+            zoneLue: k['zoneLue'] == true,
+            gesteAccorde: k['geste'] == true);
+        final nom = '${k['nom']}';
+        if (k['ok'] == true) {
+          expect(r.refus, isNull, reason: nom);
+          if (k['nouvelle'] == true) {
+            expect(r.deja, isFalse, reason: nom);
+            final f = obj(k['fiche']);
+            for (final cle in ['id', 'texteBrut', 'texte', 'nbMots', 'texteSource', 'corrigeDe', 'corrigePar', 'corrigeLe', 'ocrLe']) {
+              expect(r.fiche![cle], f[cle], reason: '$nom : $cle');
+            }
+            expect(r.fiche!['remplace'], f['remplace'], reason: '$nom : remplace');
+          } else {
+            expect(r.deja, isTrue, reason: '$nom : rejeu, aucune seconde version');
+            expect(r.fiche, isNull, reason: nom);
+          }
+        } else {
+          expect(r.refus, isNotNull, reason: nom);
+          expect(r.refus!.code, k['code'], reason: nom);
+          expect(r.refus!.motif, k['motif'], reason: '$nom : motif');
+          expect(r.refus!.geste, isNotEmpty, reason: '$nom : le geste de correction est dit');
+          expect(r.fiche, isNull, reason: nom);
+        }
+      }
+    });
+
+    test('la commande « Corriger » est ABSENTE hors droit, sans lecture, ou sur une couche texte native', () {
+      final machine = [
+        {'id': 'M1', 'nbMots': 3, 'ocrLe': '2026-10-01T10:00:00.000Z', 'texteSource': 'ocr'}
+      ];
+      bool possible({bool d = true, bool z = true, bool g = true, EtatIndexation e = EtatIndexation.ocrIndexe, List<M>? vs}) =>
+          ocrCorrectionPossible(peutDeposer: d, zoneLue: z, gesteAccorde: g, etat: e, versions: vs ?? machine);
+      expect(possible(), isTrue);
+      expect(possible(d: false), isFalse);
+      expect(possible(z: false), isFalse);
+      expect(possible(g: false), isFalse);
+      expect(possible(e: EtatIndexation.indexe), isFalse);
+      expect(possible(vs: const []), isFalse);
+      expect(possible(e: EtatIndexation.ocrCorrige), isTrue);
+    });
+
+    test('la garde d’écriture refuse une correction sans signataire, sans date, sans version de départ ou sans texte ; une lecture machine passe', () {
+      const ok = {'texteSource': 'correction', 'corrigePar': 'A', 'corrigeLe': '2026-10-30T10:00:00.000Z', 'corrigeDe': 'M1', 'texteBrut': 'x'};
+      expect(ocrMotifCorrectionNonSignee(ok), isNull);
+      for (final cle in ['corrigePar', 'corrigeLe', 'corrigeDe', 'texteBrut']) {
+        expect(ocrMotifCorrectionNonSignee({...ok, cle: ' '}), isNotNull, reason: cle);
+        expect(ocrMotifCorrectionNonSignee({...ok}..remove(cle)), isNotNull, reason: cle);
+      }
+      expect(ocrMotifCorrectionNonSignee({'texteSource': 'ocr'}), isNull);
+    });
+
+    test('le droit d’origine, rôle par rôle : celui du manifeste de la maquette, lu de rbac.json, jamais d’un nom de rôle en dur', () {
+      final json = obj(jsonDecode(File('../rbac/data/rbac.json').readAsStringSync()));
+      final m = MatriceDroits.depuisJson(json);
+      final droit = obj(c['droit']);
+      expect(droit, isNotEmpty);
+      droit.forEach((role, oui) => expect(m.droitGeste(role, ocrGesteCorriger), oui, reason: role));
+      expect(m.droitGeste('role_inconnu', ocrGesteCorriger), isFalse);
+      expect(m.droitGeste('admin', 'geste_inconnu'), isFalse);
+    });
+
+    test('le réglage de clinique non reçu se dit : la raison n’est jamais « désactivée » en silence', () {
+      final e = ocrEtatIndexation(natif: false, versions: const [], moteurInstalle: true, actif: false, moteurActif: false, reglageRecu: false);
+      expect(e.raison, ocrRaisonReglageNonRecu);
+      expect(e.raison, isNot(contains('désactivée')));
+      final r = ocrEtatIndexation(natif: false, versions: const [], moteurInstalle: true, actif: false, moteurActif: false);
+      expect(r.raison, 'la lecture OCR est désactivée au réglage');
+      // sans moteur, la raison première reste « aucun moteur installé », reçu ou non
+      expect(ocrEtatIndexation(natif: false, versions: const [], moteurInstalle: false, actif: false, moteurActif: false, reglageRecu: false).raison, ocrRaisonSansMoteur);
+    });
+  });
+
   group('messages', () {
     test('sous « Aucun résultat » : ce que la recherche ne lit pas, avec le bon nombre (grille de la maquette)', () {
       for (final c in liste(obj(v['messages'])['vides'])) {

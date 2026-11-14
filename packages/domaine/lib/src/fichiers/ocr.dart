@@ -35,6 +35,21 @@ const String ocrLangueDefaut = 'fra';
 /// Les profils qui règlent la lecture des scans : l'administrateur et la Directrice Administrative.
 const List<String> ocrRolesReglage = ['admin', 'da'];
 
+/// Les paramètres de CLINIQUE de la lecture des scans (lot C, décision de la Direction du 13/11/2026 : « propre à chaque poste ET remonté à la mère pour une synchronisation uniforme »,
+/// lecture retenue à confirmer, `DECISIONS-A-VALIDER.md` section Y) : posés à la mère, famille R (collection `parametres`, version datée), reçus des fileuls par le journal, JAMAIS vers un
+/// téléphone. Chaque poste ne garde en propre que ce qu'il a d'INSTALLÉ (les moteurs disponibles). Les défauts sont SEMÉS (`definitions.dart`), jamais des constantes de l'écran.
+/// Le geste réservé de la fiche RBAC (`packages/rbac/data/rbac.json`, clé `gestes`) qui donne la correction signée du texte lu.
+const String ocrGesteCorriger = 'corriger_texte_ocr';
+
+const String ocrCleActif = 'ocr.actif';
+const String ocrCleMoteur = 'ocr.moteur';
+const String ocrCleLangue = 'ocr.langue';
+const String ocrCleDelai = 'ocr.delaiMs';
+
+/// Le réglage de clinique est-il REÇU ? Vrai quand la fiche d'activation de la mère (même son semis) est arrivée : sinon la valeur lue serait le défaut, et le défaut peut différer de ce que
+/// la mère a posé. Un réglage non reçu se DIT, il ne se lit jamais comme « désactivé » en silence.
+const String ocrRaisonReglageNonRecu = 'le réglage de la lecture des scans n’est pas encore reçu de la poste mère';
+
 /// Les codes de refus nommés (le même vocabulaire que la maquette).
 class CodeOcr {
   static const moteurAbsent = 'MOTEUR_ABSENT';
@@ -53,6 +68,11 @@ class CodeOcr {
   static const droitRefuse = 'DROIT_REFUSE';
   static const registreAbsent = 'REGISTRE_ABSENT';
   static const sansPiece = 'SANS_PIECE';
+  // Lot C : la correction signée du texte lu.
+  static const correctionReservee = 'CORRECTION_RESERVEE';
+  static const correctionTexteVide = 'CORRECTION_TEXTE_VIDE';
+  static const correctionSansBase = 'CORRECTION_SANS_BASE';
+  static const correctionIdentique = 'CORRECTION_IDENTIQUE';
 }
 
 /// Les gestes de correction de chaque refus.
@@ -71,6 +91,10 @@ const Map<String, String> ocrGestes = {
   'MOTIF_REQUIS': 'Saisir le motif du réglage.',
   'TEXTE_NATIF': 'Ce fichier porte déjà une couche texte : elle prime, rien à lire.',
   'DROIT_REFUSE': 'Demander ce droit à l’administrateur (« Rôles & permissions »).',
+  'CORRECTION_RESERVEE': 'Demander le droit « Corriger le texte lu par machine » à l’administrateur (« Rôles & permissions »), ou faire corriger la pièce par un agent habilité.',
+  'CORRECTION_TEXTE_VIDE': 'Saisir le texte corrigé : une correction ne peut pas être vide.',
+  'CORRECTION_SANS_BASE': 'Corriger à partir d’une lecture de ce scan : aucune lecture n’existe encore (lancer la lecture, ou saisir la pièce à la main hors de ce texte).',
+  'CORRECTION_IDENTIQUE': 'Modifier le texte avant d’enregistrer : il est identique à celui de la version dont la correction part.',
 };
 
 /// Un refus nommé de la lecture : code, motif, geste (le contrat commun de tous les refus de fichier).
@@ -366,10 +390,125 @@ int _cmp(FicheDoc a, FicheDoc b) {
 /// Les versions lues d'une empreinte, de la plus ancienne à la plus récente (date de lecture, puis identifiant : un ordre que tous les postes retrouvent).
 List<FicheDoc> ocrVersionsOrdonnees(Iterable<FicheDoc> versions) => [...versions]..sort(_cmp);
 
-/// La version COURANTE : la plus récente qui porte du texte, ou `null`.
+/// Une version est-elle une CORRECTION signée (et non une lecture machine) ?
+bool ocrEstCorrection(FicheDoc v) => v['texteSource'] == 'correction';
+
+/// Les corrections signées que NULLE autre ne remplace (les « têtes »), de la plus ancienne à la plus récente (lot C). Une correction en remplace d'autres par `remplace` (liste d'identifiants).
+List<FicheDoc> ocrTetes(Iterable<FicheDoc> versions) {
+  final tri = ocrVersionsOrdonnees(versions);
+  final remplacees = <String>{
+    for (final x in tri)
+      for (final id in (x['remplace'] as List? ?? const [])) '$id'
+  };
+  return [
+    for (final x in tri)
+      if (ocrEstCorrection(x) && !remplacees.contains('${x['id']}')) x
+  ];
+}
+
+/// Les corrections CONCURRENTES d'une empreinte (deux têtes ou plus : deux postes ont corrigé la même version), ou une liste vide. Rien n'est perdu : chacune reste une version.
+List<FicheDoc> ocrConflit(Iterable<FicheDoc> versions) {
+  final t = ocrTetes(versions);
+  return t.length > 1 ? t : const [];
+}
+
+/// La version COURANTE (lot C) : la correction signée la plus récente non remplacée ; SANS correction, la lecture machine la plus récente qui porte du texte, ou `null`. Une lecture
+/// machine, même plus récente, ne prend JAMAIS la place d'une correction signée : l'agent décide en signant une nouvelle correction.
 FicheDoc? ocrVersionCourante(Iterable<FicheDoc> versions) {
-  final v = ocrVersionsOrdonnees(versions).where((x) => ((x['nbMots'] as num?) ?? 0) > 0).toList();
+  final t = ocrTetes(versions);
+  if (t.isNotEmpty) return t.last;
+  final v = ocrVersionsOrdonnees(versions).where((x) => !ocrEstCorrection(x) && ((x['nbMots'] as num?) ?? 0) > 0).toList();
   return v.isEmpty ? null : v.last;
+}
+
+// --- la correction signée du texte lu (lot C) -----------------------------------------------------------------------------------------------
+
+/// Le texte comparé à un autre : les blancs répétés et ceux des bords ne comptent pas.
+String ocrBlancs(String t) => t.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+/// L'identifiant d'une correction : DÉTERMINISTE (empreinte, version dont elle part, texte sans blancs superflus). Le même texte sur la même version est la MÊME version, d'un poste à l'autre.
+String ocrIdCorrection(String sha, String corrigeDe, String texte) => 'OCC-${sha.substring(0, 16)}-${sha256Octets(utf8.encode('$corrigeDe|${ocrBlancs(texte)}')).substring(0, 12)}';
+
+/// Le refus de DROIT d'une correction, ou `null`. Il faut ÉCRIRE sur l'écran de la pièce ([peutDeposer]), LIRE la zone du scan ([zoneLue] : toujours vrai hors dossier patient) ET détenir le
+/// geste réservé ([gesteAccorde], `corriger_texte_ocr` de la fiche RBAC). Le motif dit laquelle des trois conditions manque.
+RefusFichier? ocrRefusDroitCorrection({required bool peutDeposer, required bool zoneLue, required bool gesteAccorde}) {
+  if (!peutDeposer) {
+    return ocrRefus(CodeOcr.correctionReservee, 'votre profil n’écrit pas sur l’écran de cette pièce (ou la pièce est d’une zone qu’il ne lit pas) : il ne peut pas corriger son texte');
+  }
+  if (!zoneLue) return ocrRefus(CodeOcr.correctionReservee, 'cette pièce médicale est d’une zone que votre profil ne lit pas (RG-13)');
+  if (!gesteAccorde) return ocrRefus(CodeOcr.correctionReservee, 'le droit « Corriger le texte lu par machine » n’est pas accordé à votre rôle');
+  return null;
+}
+
+/// La commande « Corriger le texte lu » est-elle OFFERTE ? ABSENTE sinon, jamais grisée : droit, pas de couche texte native, une lecture à corriger.
+bool ocrCorrectionPossible(
+    {required bool peutDeposer, required bool zoneLue, required bool gesteAccorde, required EtatIndexation etat, required Iterable<FicheDoc> versions}) =>
+    ocrRefusDroitCorrection(peutDeposer: peutDeposer, zoneLue: zoneLue, gesteAccorde: gesteAccorde) == null &&
+    etat != EtatIndexation.indexe &&
+    versions.any((x) => ((x['nbMots'] as num?) ?? 0) > 0 || ocrEstCorrection(x));
+
+/// La correction demandée : le refus nommé, ou la FICHE de la version à ajouter. [versions] : les lectures de l'empreinte ; [corrigeDe] : la version dont le texte sert de départ (par défaut la
+/// courante) ; [par] et [le] : le signataire et le moment (RG-12 : aucune action anonyme). [deja] : la même version existe, rien à écrire (rejeu, second poste). La fiche REMPLACE les corrections
+/// courantes qu'elle a sous les yeux (`remplace`) : c'est ce qui départage un conflit.
+({RefusFichier? refus, FicheDoc? fiche, bool deja, bool conflit}) ocrCorriger({
+  required String sha,
+  required String texte,
+  required bool natif,
+  required Iterable<FicheDoc> versions,
+  String? corrigeDe,
+  required String par,
+  required String le,
+  required bool peutDeposer,
+  required bool zoneLue,
+  required bool gesteAccorde,
+}) {
+  ({RefusFichier? refus, FicheDoc? fiche, bool deja, bool conflit}) non(RefusFichier r) => (refus: r, fiche: null, deja: false, conflit: false);
+  final d = ocrRefusDroitCorrection(peutDeposer: peutDeposer, zoneLue: zoneLue, gesteAccorde: gesteAccorde);
+  if (d != null) return non(d);
+  if (natif) return non(ocrRefus(CodeOcr.texteNatif, 'ce fichier porte déjà une couche texte : elle prime, il n’y a rien à corriger'));
+  if (texte.trim().isEmpty) return non(ocrRefus(CodeOcr.correctionTexteVide, 'le texte corrigé est vide'));
+  final vs = ocrVersionsOrdonnees(versions);
+  final FicheDoc? base = corrigeDe != null ? vs.where((x) => x['id'] == corrigeDe).firstOrNull : ocrVersionCourante(vs);
+  if (base == null) {
+    return non(ocrRefus(CodeOcr.correctionSansBase, corrigeDe != null ? 'la version « $corrigeDe » n’est pas une lecture de ce scan' : 'ce scan n’a aucune lecture à corriger'));
+  }
+  if (ocrBlancs(texte) == ocrBlancs('${base['texteBrut'] ?? ''}')) {
+    return non(ocrRefus(CodeOcr.correctionIdentique, 'le texte est identique à celui de la version dont la correction part'));
+  }
+  final id = ocrIdCorrection(sha, '${base['id']}', texte);
+  if (vs.any((x) => x['id'] == id)) return (refus: null, fiche: null, deja: true, conflit: ocrConflit(vs).length > 1);
+  final norm = ocrMotsNormalises(texte);
+  final remplace = [for (final t in ocrTetes(vs)) '${t['id']}'];
+  return (
+    refus: null,
+    deja: false,
+    conflit: false,
+    fiche: {
+      'id': id,
+      'sha256': sha,
+      'texteBrut': texte.length > ocrBrutMax ? texte.substring(0, ocrBrutMax) : texte,
+      'brutTronque': texte.length > ocrBrutMax,
+      'texte': norm.take(ocrMotsMax).join(' '),
+      'motsTronques': norm.length > ocrMotsMax,
+      'nbMots': norm.length,
+      'texteSource': 'correction',
+      'corrigeDe': '${base['id']}',
+      'remplace': remplace,
+      'corrigePar': par,
+      'corrigeLe': le,
+      'ocrLe': le,
+    }
+  );
+}
+
+/// La garde d'ÉCRITURE d'une correction : sans signataire, sans date, sans la version dont elle part ou sans texte, elle n'entre pas (RG-12). `null` : recevable.
+String? ocrMotifCorrectionNonSignee(FicheDoc f) {
+  if (f['texteSource'] != 'correction') return null;
+  final vide = (Object? v) => v == null || '$v'.trim().isEmpty;
+  if (vide(f['corrigePar']) || vide(f['corrigeLe']) || vide(f['corrigeDe']) || vide(f['texteBrut'])) {
+    return 'Une correction du texte lu se signe : signataire, date, version dont elle part et texte sont requis.';
+  }
+  return null;
 }
 
 /// Le texte (mots normalisés) que la recherche lit pour un fichier : LA COUCHE TEXTE NATIVE PRIME TOUJOURS ; sinon la version OCR courante, SEULEMENT si le profil lit la zone du
@@ -387,6 +526,7 @@ String ocrTexteRecherche(
 /// Les six états d'indexation d'un fichier, jamais confondus.
 enum EtatIndexation {
   indexe('indexe'),
+  ocrCorrige('ocr_corrige'),
   ocrEnAttente('ocr_en_attente'),
   ocrEnCours('ocr_en_cours'),
   ocrIndexe('ocr_indexe'),
@@ -400,7 +540,7 @@ enum EtatIndexation {
 /// Ce que le poste dit de l'indexation d'un fichier : l'état, le petit mot de la ligne, la phrase de la carte, la raison, la SOURCE du texte (`couche_texte`, `ocr` ou rien), si le
 /// texte est MARQUÉ « à vérifier », et si un texte est disponible pour la recherche.
 class EtatIndexationOcr {
-  const EtatIndexationOcr(this.etat, this.court, this.libelle, this.raison, this.source, this.marque, this.disponible);
+  const EtatIndexationOcr(this.etat, this.court, this.libelle, this.raison, this.source, this.marque, this.disponible, {this.conflit = false});
   final EtatIndexation etat;
   final String court;
   final String libelle;
@@ -408,38 +548,54 @@ class EtatIndexationOcr {
   final String? source;
   final bool marque;
   final bool disponible;
+
+  /// Deux corrections signées concurrentes de la même version (lot C) : à départager par une nouvelle correction.
+  final bool conflit;
   String get code => etat.code;
 }
 
 /// L'état d'indexation. [versions] : les lectures de l'empreinte ; [file] : l'état de lecture en cours (`etat` : `en_attente`, `en_cours`, `echec`, avec `raison`) ou `null`.
 EtatIndexationOcr ocrEtatIndexation(
-    {required bool natif, required Iterable<FicheDoc> versions, FicheDoc? file, required bool moteurInstalle, required bool actif, required bool moteurActif}) {
-  FicheDoc? cur;
-  for (final x in versions) {
-    if (((x['nbMots'] as num?) ?? 0) > 0 && (cur == null || '${x['ocrLe']}'.compareTo('${cur['ocrLe']}') >= 0)) cur = x;
-  }
+    {required bool natif,
+    required Iterable<FicheDoc> versions,
+    FicheDoc? file,
+    required bool moteurInstalle,
+    required bool actif,
+    required bool moteurActif,
+    bool reglageRecu = true}) {
+  final cur = ocrVersionCourante(versions);
+  final signe = cur != null && ocrEstCorrection(cur);
+  final conflit = ocrTetes(versions).length > 1;
   if (natif) {
     return const EtatIndexationOcr(EtatIndexation.indexe, 'texte indexé', 'Texte indexé (couche texte du fichier)', null, 'couche_texte', false, true);
   }
-  final source = cur != null ? 'ocr' : null;
+  final source = cur != null ? (signe ? 'correction' : 'ocr') : null;
   final dispo = cur != null;
+  final marque = dispo && !signe;
+  final precedente = signe ? ' (la correction signée reste le texte courant)' : ' (la version précédente reste lisible)';
   final etatFile = file?['etat'];
   if (etatFile == 'en_cours') {
-    return EtatIndexationOcr(EtatIndexation.ocrEnCours, 'lecture OCR en cours', 'Lecture OCR en cours${cur != null ? ' (la version précédente reste lisible)' : ''}', null, source, dispo, dispo);
+    return EtatIndexationOcr(EtatIndexation.ocrEnCours, 'lecture OCR en cours', 'Lecture OCR en cours${cur != null ? precedente : ''}', null, source, marque, dispo, conflit: conflit);
   }
   if (etatFile == 'en_attente') {
-    return EtatIndexationOcr(EtatIndexation.ocrEnAttente, 'lecture OCR en attente', 'Lecture OCR en attente${cur != null ? ' (la version précédente reste lisible)' : ''}', null, source, dispo, dispo);
+    return EtatIndexationOcr(EtatIndexation.ocrEnAttente, 'lecture OCR en attente', 'Lecture OCR en attente${cur != null ? precedente : ''}', null, source, marque, dispo, conflit: conflit);
   }
   if (etatFile == 'echec') {
     final r = file?['raison'] as String?;
-    return EtatIndexationOcr(EtatIndexation.ocrEchec, 'lecture OCR en échec', 'Lecture OCR en échec : ${r ?? 'cause non renseignée'}', r, source, dispo, dispo);
+    return EtatIndexationOcr(EtatIndexation.ocrEchec, 'lecture OCR en échec', 'Lecture OCR en échec : ${r ?? 'cause non renseignée'}${signe ? ' (la correction signée reste le texte courant)' : ''}', r, source, marque, dispo, conflit: conflit);
+  }
+  if (signe) {
+    final qui = '${cur['corrigePar'] ?? 'auteur inconnu'}';
+    return EtatIndexationOcr(EtatIndexation.ocrCorrige, 'texte corrigé et signé par $qui',
+        'Texte corrigé et signé par $qui${conflit ? ' (deux corrections concurrentes à départager)' : ''}', null, 'correction', false, true,
+        conflit: conflit);
   }
   if (cur != null) {
     return const EtatIndexationOcr(EtatIndexation.ocrIndexe, 'texte lu par machine, à vérifier', 'Texte lu par machine, à vérifier', null, 'ocr', true, true);
   }
   final raison = !moteurInstalle
       ? ocrRaisonSansMoteur
-      : (!actif ? 'la lecture OCR est désactivée au réglage' : (!moteurActif ? 'le moteur choisi au réglage n’est pas installé sur ce poste' : 'lecture OCR non encore demandée'));
+      : (!reglageRecu ? ocrRaisonReglageNonRecu : !actif ? 'la lecture OCR est désactivée au réglage' : (!moteurActif ? 'le moteur choisi au réglage n’est pas installé sur ce poste' : 'lecture OCR non encore demandée'));
   return EtatIndexationOcr(EtatIndexation.nonIndexe, 'texte non indexé', 'Texte non indexé : $raison', raison, null, false, false);
 }
 
