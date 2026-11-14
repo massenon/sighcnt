@@ -329,6 +329,10 @@
    "titre": "Importation des centres de coûts",
    "description": "Axes d’imputation analytique : code, intitulé, type, responsable."
   },
+  "imp-couvertures-assurance": {
+   "titre": "Importation des couvertures d’assurance",
+   "description": "Changement de couverture d’un assuré à une date d’effet : compagnie, police, motif, expiration de la carte. La couverture en cours est close la veille."
+  },
   "imp-emplacements": {
    "titre": "Importation des emplacements de rangement",
    "description": "Casiers et rayons du magasin : code (celui de l’étiquette), intitulé, zone, conservation, capacité."
@@ -336,6 +340,10 @@
   "imp-fournisseurs": {
    "titre": "Importation des fournisseurs",
    "description": "Fournisseurs de la clinique : identité fiscale, coordonnées, délai, banque."
+  },
+  "imp-garanties": {
+   "titre": "Importation des garanties des souscripteurs",
+   "description": "Taux et plafonds par souscripteur et par garantie, avec une date d’effet : chaque ligne qui change crée une NOUVELLE VERSION datée, jamais un écrasement."
   },
   "imp-inventaire-comptage": {
    "titre": "Importation d’un comptage d’inventaire",

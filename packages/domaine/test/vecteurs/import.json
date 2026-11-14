@@ -156,6 +156,34 @@
     "prenom": "Paul",
     "telephone": "0197000001",
     "statut": "actif"
+   },
+   {
+    "id": "PAT0003",
+    "code": "CNT/3/26",
+    "nom": "KOUASSI",
+    "prenom": "Ama",
+    "assureur": "AFR",
+    "assureurNom": "AFRICAINE DES ASSURANCES",
+    "numeroPolice": "AFR/2024/0100",
+    "categorieAssurance": "entreprise",
+    "tauxPriseEnCharge": 80,
+    "carteExpiration": "2029-12-31",
+    "souscripteurId": "SOU001",
+    "statut": "actif"
+   },
+   {
+    "id": "PAT0004",
+    "code": "CNT/4/26",
+    "nom": "DOSSOU",
+    "prenom": "Rose",
+    "assureur": "NSIA",
+    "assureurNom": "NSIA ASSURANCE",
+    "numeroPolice": "NSIA/2024/0200",
+    "categorieAssurance": "entreprise",
+    "tauxPriseEnCharge": 90,
+    "carteExpiration": "2026-12-31",
+    "souscripteurId": "SOU002",
+    "statut": "actif"
    }
   ],
   "personnel": [
@@ -231,6 +259,15 @@
     "nom": "PIB Bénin",
     "police": "AFR/2024/0100",
     "assureur": "AFR",
+    "categorie": "entreprise",
+    "statut": "actif"
+   },
+   {
+    "id": "SOU002",
+    "nom": "Banque du Nord",
+    "police": "NSIA/2024/0200",
+    "assureur": "NSIA",
+    "categorie": "entreprise",
     "statut": "actif"
    }
   ],
@@ -459,6 +496,78 @@
     "etatAssure": "unique",
     "origine": "migration",
     "statut": "valide"
+   }
+  ],
+  "garanties": [
+   {
+    "id": "GAR1",
+    "souscripteurId": "SOU001",
+    "assureur": "AFR",
+    "code": "CS-GEN",
+    "libelle": "Consultation généraliste",
+    "categorie": "consultation",
+    "taux": 80,
+    "zone": "Bénin",
+    "version": 1,
+    "statut": "actif"
+   },
+   {
+    "id": "GAR2",
+    "souscripteurId": "SOU001",
+    "assureur": "AFR",
+    "code": "LAB",
+    "libelle": "Analyses",
+    "categorie": "analyse",
+    "taux": 70,
+    "plafond": 50000,
+    "unitePlafond": "an",
+    "zone": "Bénin",
+    "dateEffet": "2026-01-01",
+    "version": 1,
+    "statut": "actif"
+   },
+   {
+    "id": "GAR3",
+    "souscripteurId": "SOU001",
+    "assureur": "AFR",
+    "code": "LAB",
+    "libelle": "Analyses",
+    "categorie": "analyse",
+    "taux": 60,
+    "plafond": 50000,
+    "unitePlafond": "an",
+    "zone": "Bénin",
+    "dateEffet": "2027-06-01",
+    "version": 2,
+    "statut": "actif"
+   }
+  ],
+  "couverturesAssurance": [
+   {
+    "id": "COU1",
+    "patientId": "PAT0003",
+    "patientCode": "CNT/3/26",
+    "patient": "KOUASSI Ama",
+    "assureur": "AFR",
+    "assureurNom": "AFRICAINE DES ASSURANCES",
+    "numeroPolice": "AFR/2024/0100",
+    "categorieAssurance": "entreprise",
+    "tauxPriseEnCharge": 80,
+    "carteExpiration": "2029-12-31",
+    "souscripteurId": "SOU001",
+    "debut": "2026-01-01",
+    "motif": "Première couverture",
+    "statut": "actif"
+   }
+  ],
+  "factures": [
+   {
+    "id": "FAC1",
+    "numero": "F-2026-0001",
+    "patientId": "PAT0003",
+    "assureur": "AFR",
+    "date": "2026-10-20",
+    "statut": "emise"
    }
   ],
   "examensImagerie": [
@@ -9498,6 +9607,1744 @@
    }
   },
   {
+   "id": "ga-valide",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     70,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ],
+    [
+     "NSIA/2024/0200",
+     "Chirurgie",
+     "Chirurgie courante",
+     90,
+     500000,
+     "par acte",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-suivante",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     65,
+     "",
+     "",
+     "2027-06-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-inchangee",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     80,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 1,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Taux (%)",
+      "code": "GARANTIE_INCHANGEE",
+      "niveau": "info",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Taux (%)",
+      "code": "GARANTIE_INCHANGEE",
+      "niveau": "info",
+      "valeur": "",
+      "motif": "cette garantie porte déjà ces valeurs à cette date : aucune version, la ligne est comptée"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "inchange"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-police-inconnue",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "XXX/0",
+     "Consultations",
+     "Consultation généraliste",
+     70,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de police",
+      "code": "SOUSCRIPTEUR_INCONNU",
+      "niveau": "refus",
+      "valeur": "XXX/0"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de police",
+      "code": "SOUSCRIPTEUR_INCONNU",
+      "niveau": "refus",
+      "valeur": "XXX/0",
+      "motif": "aucun souscripteur ne porte la police « XXX/0 »"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-categorie-hors-liste",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Bijoux",
+     "Consultation généraliste",
+     70,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Catégorie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Catégorie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux",
+      "motif": "« Bijoux » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-taux-hors-bornes",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     101,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Taux (%)",
+      "code": "HORS_BORNES",
+      "niveau": "refus",
+      "valeur": "101"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Taux (%)",
+      "code": "HORS_BORNES",
+      "niveau": "refus",
+      "valeur": "101",
+      "motif": "valeur 101 supérieure au maximum 100"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-unite-requise",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     70,
+     1000,
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Unité du plafond",
+      "code": "UNITE_PLAFOND_REQUISE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Unité du plafond",
+      "code": "UNITE_PLAFOND_REQUISE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "un plafond se dit toujours « par quoi » (acte, jour, an…)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-unite-sans-plafond",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     70,
+     "",
+     "par acte",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Unité du plafond",
+      "code": "UNITE_SANS_PLAFOND",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Unité du plafond",
+      "code": "UNITE_SANS_PLAFOND",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "une unité de plafond sans plafond : elle est ignorée (garantie sans plafond)"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-date-absente",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     70,
+     "",
+     "",
+     "",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-version-meme-date",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Analyses de laboratoire",
+     "Analyses",
+     75,
+     50000,
+     "par an",
+     "2026-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "VERSION_MEME_DATE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "VERSION_MEME_DATE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une version de « Analyses » prend déjà effet le 01/01/2026 avec d’autres valeurs : une version ne se réécrit pas"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-version-anterieure",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Analyses de laboratoire",
+     "Analyses",
+     65,
+     50000,
+     "par an",
+     "2027-03-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "VERSION_ANTERIEURE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "VERSION_ANTERIEURE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une version plus récente de « Analyses » prend effet le 01/06/2027 : on ne glisse pas une version dans le passé d’une série"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-facture-emise",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     75,
+     "",
+     "",
+     "2026-10-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "FACTURE_DEJA_EMISE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "FACTURE_DEJA_EMISE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "la facture F-2026-0001 du 20/10/2026 a été émise sous la grille de ce souscripteur : une pièce émise garde son taux"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-deux-versions",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     70,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     60,
+     "",
+     "",
+     "2027-09-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Date d’effet",
+      "code": "UNE_VERSION_PAR_GARANTIE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Date d’effet",
+      "code": "UNE_VERSION_PAR_GARANTIE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "la garantie porte deux versions dans ce fichier (lignes 2 et 3) : une seule version par garantie et par fichier"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ga-doublon-fichier",
+   "jeu": "garanties",
+   "lignes": [
+    [
+     "N° de police",
+     "Catégorie",
+     "Garantie",
+     "Taux (%)",
+     "Plafond (FCFA)",
+     "Unité du plafond",
+     "Date d’effet",
+     "Motif",
+     "Source"
+    ],
+    [
+     "AFR/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     70,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ],
+    [
+     "afr/2024/0100",
+     "Consultations",
+     "Consultation généraliste",
+     71,
+     "",
+     "",
+     "2027-01-01",
+     "Avenant du 01/12/2026",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "N° de police",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "afr/2024/0100"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "N° de police",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "afr/2024/0100",
+      "motif": "identique à la ligne 2 du même fichier"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-valide",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "NSIA",
+     "NSIA/2024/0200",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     70,
+     "2030-12-31"
+    ],
+    [
+     "CNT/4/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2030-02-01",
+     "Changement de compagnie par l’assuré",
+     "",
+     80,
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-suivante",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2030-06-01",
+     "Changement d’employeur",
+     "",
+     80,
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-patient-inconnu",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/99/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code patient",
+      "code": "PATIENT_INCONNU",
+      "niveau": "refus",
+      "valeur": "CNT/99/26"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code patient",
+      "code": "PATIENT_INCONNU",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "dossier absent du répertoire"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-police-inconnue",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "XXX/0",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de police",
+      "code": "POLICE_INCONNUE",
+      "niveau": "refus",
+      "valeur": "XXX/0"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de police",
+      "code": "POLICE_INCONNUE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "police absente des souscripteurs"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-police-autre-compagnie",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "NSIA",
+     "AFR/2024/0100",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de police",
+      "code": "POLICE_AUTRE_COMPAGNIE",
+      "niveau": "refus",
+      "valeur": "AFR/2024/0100"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de police",
+      "code": "POLICE_AUTRE_COMPAGNIE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "police d’une autre compagnie"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-date-anterieure",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2026-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "DATE_EFFET_ANTERIEURE",
+      "niveau": "refus",
+      "valeur": "2026-01-01"
+     },
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "FACTURE_DEJA_EMISE",
+      "niveau": "avertissement",
+      "valeur": "2026-01-01"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "DATE_EFFET_ANTERIEURE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "date d’effet antérieure à la couverture en cours"
+     },
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "FACTURE_DEJA_EMISE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "facture déjà émise à partir de cette date"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-sans-carte",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Expiration de la carte",
+      "code": "CARTE_SANS_EXPIRATION",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Expiration de la carte",
+      "code": "CARTE_SANS_EXPIRATION",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "carte sans date d’expiration"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-facture-emise",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2026-10-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "FACTURE_DEJA_EMISE",
+      "niveau": "avertissement",
+      "valeur": "2026-10-01"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "FACTURE_DEJA_EMISE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "facture déjà émise à partir de cette date"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-motif-hors-liste",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2030-01-01",
+     "Parce que",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Parce que"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur hors de la liste permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-motif-fin-de-couverture",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2030-01-01",
+     "Fin de couverture — patient redevenu non assuré",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Fin de couverture — patient redevenu non assuré"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur hors de la liste permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-assureur-hors-liste",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "ZZZ",
+     "AFR/2024/0100",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code compagnie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "ZZZ"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code compagnie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur hors de la liste permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "cv-doublon-fichier",
+   "jeu": "couvertures-assurance",
+   "lignes": [
+    [
+     "Code patient",
+     "Code compagnie",
+     "N° de police",
+     "Date d’effet",
+     "Motif",
+     "Catégorie",
+     "Taux de prise en charge (%)",
+     "Expiration de la carte"
+    ],
+    [
+     "CNT/3/26",
+     "AFR",
+     "AFR/2024/0100",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ],
+    [
+     "cnt/3/26",
+     "NSIA",
+     "NSIA/2024/0200",
+     "2030-01-01",
+     "Changement d’employeur",
+     "",
+     "",
+     "2030-12-31"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Code patient",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "cnt/3/26"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Code patient",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "ligne en double dans le fichier"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
    "id": "ic-doublon-fichier",
    "jeu": "inventaire-comptage",
    "lignes": [
@@ -13041,7 +14888,7 @@
    },
    "dUnAutre": {
     "code": "LOT_D_UN_AUTRE",
-    "motif": "le lot IMP-2026-027 a été écrit par un autre agent",
+    "motif": "le lot IMP-2026-031 a été écrit par un autre agent",
     "geste": "Seul son auteur, ou un profil qui supervise les importations, peut l’annuler."
    },
    "etatLot": "applique"
@@ -13545,6 +15392,475 @@
    "versionsAjoutees": 0
   }
  },
+ "assurances": {
+  "garanties": {
+   "analyse": {
+    "accepte": true,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "problemes": [],
+    "details": [
+     [
+      2,
+      "valide",
+      "Ancien : 80 %, sans plafond ; nouveau : 70 %, sans plafond ; variation : -10 pt ; décision : Nouvelle version v2 au 01/01/2027"
+     ],
+     [
+      3,
+      "valide",
+      "Ancien : première version ; nouveau : 90 %, plafond 500 000 par acte ; décision : Première version au 01/01/2027"
+     ]
+    ]
+   },
+   "pose": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "fiches": [
+     {
+      "collection": "garanties",
+      "avant": null,
+      "fiche": {
+       "statut": "actif",
+       "souscripteurId": "SOU001",
+       "assureur": "AFR",
+       "code": "CS-GEN",
+       "libelle": "Consultation généraliste",
+       "categorie": "consultation",
+       "taux": 70,
+       "plafond": null,
+       "unitePlafond": null,
+       "zone": "Bénin",
+       "dateEffet": "2027-01-01",
+       "version": 2,
+       "motif": "Avenant du 01/12/2026",
+       "source": "Lot d’import {A}",
+       "lotImport": "{A}",
+       "validePar": "ADMIN TEST",
+       "dateImport": "2026-11-01",
+       "id": "GAR:SOU001@Consultation généraliste@2027-01-01"
+      }
+     },
+     {
+      "collection": "garanties",
+      "avant": null,
+      "fiche": {
+       "statut": "actif",
+       "souscripteurId": "SOU002",
+       "assureur": "NSIA",
+       "code": null,
+       "libelle": "Chirurgie courante",
+       "categorie": "chirurgie",
+       "taux": 90,
+       "plafond": 500000,
+       "unitePlafond": "acte",
+       "zone": "Bénin",
+       "dateEffet": "2027-01-01",
+       "version": 1,
+       "motif": "Avenant du 01/12/2026",
+       "source": "Lot d’import {A}",
+       "lotImport": "{A}",
+       "validePar": "ADMIN TEST",
+       "dateImport": "2026-11-01",
+       "id": "GAR:SOU002@Chirurgie courante@2027-01-01"
+      }
+     }
+    ]
+   },
+   "rejeu": {
+    "accepte": true,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 2,
+     "non": 0
+    },
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Taux (%)",
+      "code": "GARANTIE_INCHANGEE",
+      "niveau": "info"
+     },
+     {
+      "n": 3,
+      "colonne": "Taux (%)",
+      "code": "GARANTIE_INCHANGEE",
+      "niveau": "info"
+     }
+    ],
+    "details": [
+     [
+      2,
+      "inchange",
+      "Ancien : 70 %, sans plafond ; nouveau : 70 %, sans plafond ; décision : Inchangée"
+     ],
+     [
+      3,
+      "inchange",
+      "Ancien : 90 %, plafond 500 000 par acte ; nouveau : 90 %, plafond 500 000 par acte ; décision : Inchangée"
+     ]
+    ]
+   },
+   "annulationFactureEmise": {
+    "ok": false,
+    "code": "GARANTIE_UTILISEE",
+    "motif": "la facture F-2027-0002 du 01/02/2027 a été émise sous cette version",
+    "geste": "Une version employée par une pièce émise ne s’annule plus : posez une nouvelle version datée."
+   },
+   "annulationVersionPosterieure": {
+    "ok": false,
+    "code": "VERSION_POSTERIEURE",
+    "motif": "une version plus récente de « Consultation généraliste » prend effet le 01/06/2027",
+    "geste": "Annulez d’abord le lot qui a posé la version plus récente."
+   },
+   "annulations": {
+    "suivante": {
+     "ok": true,
+     "archives": 1
+    },
+    "premiere": {
+     "ok": true,
+     "archives": 2
+    },
+    "statuts": [
+     "archive",
+     "archive"
+    ]
+   }
+  },
+  "couvertures": {
+   "avant": {
+    "patients": [
+     {
+      "id": "PAT0003",
+      "assureur": "AFR",
+      "numeroPolice": "AFR/2024/0100",
+      "tauxPriseEnCharge": 80,
+      "carteExpiration": "2029-12-31",
+      "souscripteurId": "SOU001"
+     },
+     {
+      "id": "PAT0004",
+      "assureur": "NSIA",
+      "numeroPolice": "NSIA/2024/0200",
+      "tauxPriseEnCharge": 90,
+      "carteExpiration": "2026-12-31",
+      "souscripteurId": "SOU002"
+     }
+    ],
+    "couvertures": [
+     {
+      "patientId": "PAT0003",
+      "debut": "2026-01-01",
+      "fin": null,
+      "statut": "actif",
+      "assureur": "AFR"
+     }
+    ]
+   },
+   "analyse": {
+    "accepte": true,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "problemes": [],
+    "details": [
+     [
+      2,
+      "valide",
+      ""
+     ],
+     [
+      3,
+      "valide",
+      ""
+     ]
+    ]
+   },
+   "pose": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "fiches": [
+     {
+      "collection": "couverturesAssurance",
+      "avant": null,
+      "fiche": {
+       "statut": "actif",
+       "patientId": "PAT0003",
+       "patientCode": "CNT/3/26",
+       "patient": "KOUASSI Ama",
+       "assureur": "NSIA",
+       "assureurNom": "NSIA ASSURANCE",
+       "numeroPolice": "NSIA/2024/0200",
+       "categorieAssurance": "entreprise",
+       "tauxPriseEnCharge": 70,
+       "carteExpiration": "2030-12-31",
+       "souscripteurId": "SOU002",
+       "debut": "2030-01-01",
+       "fin": null,
+       "motif": "Changement d’employeur",
+       "source": "Import {A}",
+       "lotImport": "{A}",
+       "validePar": "ADMIN TEST",
+       "dateImport": "2026-11-01",
+       "id": "COU:PAT0003@2030-01-01"
+      }
+     },
+     {
+      "collection": "couverturesAssurance",
+      "avant": {
+       "fin": null
+      },
+      "fiche": {
+       "patientId": "PAT0003",
+       "patientCode": "CNT/3/26",
+       "patient": "KOUASSI Ama",
+       "assureur": "AFR",
+       "assureurNom": "AFRICAINE DES ASSURANCES",
+       "numeroPolice": "AFR/2024/0100",
+       "categorieAssurance": "entreprise",
+       "tauxPriseEnCharge": 80,
+       "carteExpiration": "2029-12-31",
+       "souscripteurId": "SOU001",
+       "debut": "2026-01-01",
+       "motif": "Première couverture",
+       "statut": "actif",
+       "fin": "2029-12-31",
+       "id": "COU1"
+      }
+     },
+     {
+      "collection": "patients",
+      "avant": {
+       "souscripteur": null
+      },
+      "fiche": {
+       "code": "CNT/3/26",
+       "nom": "KOUASSI",
+       "prenom": "Ama",
+       "assureur": "AFR",
+       "assureurNom": "AFRICAINE DES ASSURANCES",
+       "numeroPolice": "AFR/2024/0100",
+       "categorieAssurance": "entreprise",
+       "tauxPriseEnCharge": 80,
+       "carteExpiration": "2029-12-31",
+       "souscripteurId": "SOU001",
+       "statut": "actif",
+       "souscripteur": "PIB Bénin",
+       "id": "PAT0003"
+      }
+     },
+     {
+      "collection": "couverturesAssurance",
+      "avant": null,
+      "fiche": {
+       "statut": "actif",
+       "patientId": "PAT0004",
+       "patientCode": "CNT/4/26",
+       "patient": "DOSSOU Rose",
+       "assureur": "AFR",
+       "assureurNom": "AFRICAINE DES ASSURANCES",
+       "numeroPolice": "AFR/2024/0100",
+       "categorieAssurance": "entreprise",
+       "tauxPriseEnCharge": 80,
+       "carteExpiration": "2030-12-31",
+       "souscripteurId": "SOU001",
+       "debut": "2030-02-01",
+       "fin": null,
+       "motif": "Changement de compagnie par l’assuré",
+       "source": "Import {A}",
+       "lotImport": "{A}",
+       "validePar": "ADMIN TEST",
+       "dateImport": "2026-11-01",
+       "id": "COU:PAT0004@2030-02-01"
+      }
+     },
+     {
+      "collection": "couverturesAssurance",
+      "avant": null,
+      "fiche": {
+       "statut": "actif",
+       "patientId": "PAT0004",
+       "patientCode": "CNT/4/26",
+       "patient": "DOSSOU Rose",
+       "assureur": "NSIA",
+       "assureurNom": "NSIA ASSURANCE",
+       "numeroPolice": "NSIA/2024/0200",
+       "categorieAssurance": "entreprise",
+       "tauxPriseEnCharge": 90,
+       "carteExpiration": "2026-12-31",
+       "souscripteurId": "SOU002",
+       "debut": null,
+       "fin": "2030-01-31",
+       "motif": "Couverture reprise du dossier à la première mise à jour",
+       "id": "COU:PAT0004@reprise"
+      }
+     },
+     {
+      "collection": "patients",
+      "avant": {
+       "souscripteur": null
+      },
+      "fiche": {
+       "code": "CNT/4/26",
+       "nom": "DOSSOU",
+       "prenom": "Rose",
+       "assureur": "NSIA",
+       "assureurNom": "NSIA ASSURANCE",
+       "numeroPolice": "NSIA/2024/0200",
+       "categorieAssurance": "entreprise",
+       "tauxPriseEnCharge": 90,
+       "carteExpiration": "2026-12-31",
+       "souscripteurId": "SOU002",
+       "statut": "actif",
+       "souscripteur": "Banque du Nord",
+       "id": "PAT0004"
+      }
+     }
+    ],
+    "patients": [
+     {
+      "id": "PAT0003",
+      "assureur": "AFR",
+      "numeroPolice": "AFR/2024/0100",
+      "tauxPriseEnCharge": 80,
+      "carteExpiration": "2029-12-31",
+      "souscripteurId": "SOU001"
+     },
+     {
+      "id": "PAT0004",
+      "assureur": "NSIA",
+      "numeroPolice": "NSIA/2024/0200",
+      "tauxPriseEnCharge": 90,
+      "carteExpiration": "2026-12-31",
+      "souscripteurId": "SOU002"
+     }
+    ],
+    "couvertures": [
+     {
+      "patientId": "PAT0003",
+      "debut": "2026-01-01",
+      "fin": "2029-12-31",
+      "statut": "actif",
+      "assureur": "AFR"
+     },
+     {
+      "patientId": "PAT0003",
+      "debut": "2030-01-01",
+      "fin": null,
+      "statut": "actif",
+      "assureur": "NSIA"
+     },
+     {
+      "patientId": "PAT0004",
+      "debut": "2030-02-01",
+      "fin": null,
+      "statut": "actif",
+      "assureur": "AFR"
+     },
+     {
+      "patientId": "PAT0004",
+      "debut": null,
+      "fin": "2030-01-31",
+      "statut": "actif",
+      "assureur": "NSIA"
+     }
+    ]
+   },
+   "annulationFactureEmise": {
+    "ok": false,
+    "code": "FACTURE_SOUS_COUVERTURE",
+    "motif": "la facture F-2030-0003 du 01/02/2030 a été émise sous cette couverture",
+    "geste": "Une couverture employée par une pièce émise ne s’annule plus : posez une nouvelle couverture datée à l’écran « Assurés & cartes »."
+   },
+   "annulationPosterieure": {
+    "ok": false,
+    "code": "COUVERTURE_POSTERIEURE",
+    "motif": "une couverture plus récente de cet assuré a été posée depuis (effet le 01/06/2030)",
+    "geste": "Annulez d’abord cette couverture, ou corrigez l’assuré à l’écran « Assurés & cartes »."
+   },
+   "annulations": {
+    "suivante": {
+     "ok": true,
+     "archives": 1
+    },
+    "premiere": {
+     "ok": true,
+     "archives": 3
+    }
+   },
+   "apresAnnulation": {
+    "patients": [
+     {
+      "id": "PAT0003",
+      "assureur": "AFR",
+      "numeroPolice": "AFR/2024/0100",
+      "tauxPriseEnCharge": 80,
+      "carteExpiration": "2029-12-31",
+      "souscripteurId": "SOU001"
+     },
+     {
+      "id": "PAT0004",
+      "assureur": "NSIA",
+      "numeroPolice": "NSIA/2024/0200",
+      "tauxPriseEnCharge": 90,
+      "carteExpiration": "2026-12-31",
+      "souscripteurId": "SOU002"
+     }
+    ],
+    "couvertures": [
+     {
+      "patientId": "PAT0003",
+      "debut": "2026-01-01",
+      "fin": null,
+      "statut": "actif",
+      "assureur": "AFR"
+     },
+     {
+      "patientId": "PAT0003",
+      "debut": "2030-01-01",
+      "fin": null,
+      "statut": "archive",
+      "assureur": "NSIA"
+     },
+     {
+      "patientId": "PAT0003",
+      "debut": "2030-06-01",
+      "fin": null,
+      "statut": "archive",
+      "assureur": "AFR"
+     },
+     {
+      "patientId": "PAT0004",
+      "debut": "2030-02-01",
+      "fin": null,
+      "statut": "archive",
+      "assureur": "AFR"
+     },
+     {
+      "patientId": "PAT0004",
+      "debut": null,
+      "fin": "2030-01-31",
+      "statut": "archive",
+      "assureur": "NSIA"
+     }
+    ]
+   }
+  }
+ },
  "rapport": {
   "feuilles": [
    "Erreurs",
@@ -13767,6 +16083,15 @@
    "Hémostase",
    "Andrologie",
    "Général"
+  ],
+  "motifsCouverture": [
+   "Changement d’employeur",
+   "Changement de compagnie par l’assuré",
+   "Convention non reconduite",
+   "Renouvellement de carte",
+   "Changement de police",
+   "Fin de couverture — patient redevenu non assuré",
+   "Correction d’une saisie erronée"
   ],
   "destinationsTransfert": [
    "Pharmacie d’urgence",

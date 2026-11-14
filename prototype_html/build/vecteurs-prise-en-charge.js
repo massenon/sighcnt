@@ -28,7 +28,12 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       const sB = poser(colSous, { nom: 'Employeur B', assureur: 'ASS-B', numeroPolice: 'PB-1' });
       const sC = poser(colSous, { nom: 'Employeur C sans convention', assureur: 'ASS-C', numeroPolice: 'PC-1' });
       const sD = poser(colSous, { nom: 'Employeur D', assureur: 'ASS-D', numeroPolice: 'PD-1' });
+      /* Lot 8b : des garanties DATÉES (lot IMP-B2 de la maquette). Une série à deux versions, et une série qui ne démarre qu'en 2027. */
+      const sE = poser(colSous, { nom: 'Employeur E, garanties datées', assureur: 'ASS-E', numeroPolice: 'PE-1' });
       const gar = [
+        poser(colGar, { souscripteurId: sE.id, assureur: 'ASS-E', categorie: 'consultation', libelle: 'Consultation', taux: 80, plafond: null, version: 1 }),
+        poser(colGar, { souscripteurId: sE.id, assureur: 'ASS-E', categorie: 'consultation', libelle: 'Consultation', taux: 50, plafond: 2000, unitePlafond: 'acte', dateEffet: '2026-09-01', version: 2 }),
+        poser(colGar, { souscripteurId: sE.id, assureur: 'ASS-E', categorie: 'analyse', libelle: 'Analyses', taux: 90, plafond: null, dateEffet: '2027-01-01', version: 1 }),
         poser(colGar, { souscripteurId: sA.id, assureur: 'ASS-A', categorie: 'consultation', libelle: 'Consultation généraliste', taux: 80, plafond: 5000, unitePlafond: 'acte' }),
         poser(colGar, { souscripteurId: sA.id, assureur: 'ASS-A', categorie: 'consultation', libelle: 'Consultation spécialiste ou professeur', taux: 80, plafond: 10000, unitePlafond: 'acte' }),
         poser(colGar, { souscripteurId: sA.id, assureur: 'ASS-A', categorie: 'medicament', libelle: 'Médicaments', taux: 70, plafond: null }),
@@ -75,6 +80,9 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         ['garanties de la COMPAGNIE en repli (souscripteur sans garantie propre)', assure('P-11', sD, '2026-12-31'), '2026-08-16', [L('Consultation', 'consultation', 10000), L('Analyse', 'analyse', 5000)]],
         ['la garantie archivée de B ne couvre rien', assure('P-12', sB, '2026-12-31'), '2026-08-16', [L('Glycémie', 'analyse', 2000), L('Consultation', 'consultation', 4000)]],
         ['montants texte, absents ou nuls : traités comme nombre ou zéro', assure('P-13', sA, '2026-12-31'), '2026-08-16', [L('Consultation généraliste', 'consultation', '10000'), L('Consultation généraliste', 'consultation', null), L('Consultation généraliste', 'consultation', 'abc'), { libelle: 'Sans catégorie', montant: 1000 }]],
+        ['garanties datées : AVANT la version du 2026-09-01 → 80 %', assure('P-16', sE, '2026-12-31'), '2026-08-16', [L('Consultation', 'consultation', 10000), L('Glycémie', 'analyse', 2000)]],
+        ['garanties datées : LE JOUR de la version (2026-09-01) → 50 %, plafond 2000 ; l\'analyse ne démarre qu\'en 2027 : non couverte', assure('P-17', sE, '2026-12-31'), '2026-09-01', [L('Consultation', 'consultation', 10000), L('Glycémie', 'analyse', 2000)]],
+        ['garanties datées : APRÈS le 2027-01-01, les deux séries sont en vigueur', assure('P-18', sE, '2027-12-31'), '2027-01-15', [L('Consultation', 'consultation', 10000), L('Glycémie', 'analyse', 2000)]],
         ['liste de lignes vide', assure('P-14', sA, '2026-12-31'), '2026-08-16', []],
         ['date avec heure (UTC) : la carte qui expire le jour même devient non valide à midi', assure('P-15', sA, '2026-08-16'), '2026-08-16T12:00:00Z', lignesA],
       ];
@@ -86,7 +94,7 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         /* Les ids du magasin servent à relier garanties et souscripteurs : on les conserve tels quels. */
         const r = PR.repartir(p, lignes, { date });
         out.push({
-          entree: { nom, patient: propre(p), couvertures: propre(couvertures), souscripteurs: propre([sA, sB, sC, sD]), garanties: propre(garRelues), lignes: propre(lignes), date },
+          entree: { nom, patient: propre(p), couvertures: propre(couvertures), souscripteurs: propre([sA, sB, sC, sD, sE]), garanties: propre(garRelues), lignes: propre(lignes), date },
           sortie: propre({ lignes: r.lignes, souscripteurId: r.souscripteur ? r.souscripteur.id : null, carteValide: r.carteValide, grilleSaisie: r.grilleSaisie, total: r.total, partAssureur: r.partAssureur, partPatient: r.partPatient }),
         });
       }

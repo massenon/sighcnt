@@ -14,6 +14,7 @@ library;
 
 import '../format/format_fr.dart';
 import '../format/js.dart';
+import '../format/recherche.dart' show normaliser;
 
 const _unitesPlafond = {
   'acte': 'par acte',
@@ -130,18 +131,37 @@ Map<String, Object?>? souscripteurDe(
   return null;
 }
 
-/// Garanties applicables : celles du souscripteur de la date, sinon celles de la compagnie (sans souscripteur).
+/// LES GARANTIES SONT DATÉES (lot IMP-B2 de la maquette, porté au lot 8b) : une garantie est une SÉRIE (souscripteur, catégorie, libellé normalisé) ; chaque changement de taux ou de
+/// plafond est une nouvelle ligne de la série, qui porte sa `dateEffet` et son rang `version`. Une ligne sans `dateEffet` vaut « depuis l'origine ».
+String cleSerieGarantie(Map<String, Object?> g) =>
+    [_vrai(g['souscripteurId']) ? '${g['souscripteurId']}' : '~${g['assureur'] ?? ''}', '${g['categorie'] ?? ''}', normaliser(g['libelle'] ?? '').trim()].join('|');
+
+/// UNE version par série : la plus récente dont la date d'effet est atteinte au [jour] dit (une ligne sans date vaut « depuis l'origine ») ; l'ordre d'origine est conservé.
+List<Map<String, Object?>> garantiesEnVigueur(Iterable<Map<String, Object?>> lignes, String jour) {
+  final parSerie = <String, ({Map<String, Object?> g, int i})>{};
+  var i = -1;
+  for (final g in lignes) {
+    i++;
+    final d = '${g['dateEffet'] ?? ''}';
+    if (d.isNotEmpty && d.compareTo(jour) > 0) continue;
+    final k = cleSerieGarantie(g), cur = parSerie[k];
+    if (cur == null || d.compareTo('${cur.g['dateEffet'] ?? ''}') > 0 || (d == '${cur.g['dateEffet'] ?? ''}' && i > cur.i)) parSerie[k] = (g: g, i: i);
+  }
+  final out = parSerie.values.toList()..sort((a, b) => a.i.compareTo(b.i));
+  return [for (final x in out) x.g];
+}
+
+/// Garanties applicables : celles du souscripteur de la date, sinon celles de la compagnie (sans souscripteur), chacune dans sa VERSION EN VIGUEUR au [jour] (`garantiesDe` de la maquette).
 List<Map<String, Object?>> garantiesDe(
-    Map<String, Object?>? sous, List<Map<String, Object?>> garanties) {
+    Map<String, Object?>? sous, List<Map<String, Object?>> garanties, {required String jour}) {
   if (sous == null) return const [];
   final toutes = garanties.where(_actif).toList();
   final propres =
       toutes.where((g) => g['souscripteurId'] == sous['id']).toList();
-  if (propres.isNotEmpty) return propres;
-  return toutes
-      .where((g) =>
-          !_vrai(g['souscripteurId']) && g['assureur'] == sous['assureur'])
-      .toList();
+  // Un souscripteur qui porte sa propre grille la porte seule, même si aucune de ses versions n'est encore en vigueur à cette date : pas de repli sur la compagnie.
+  if (propres.isNotEmpty) return garantiesEnVigueur(propres, jour);
+  return garantiesEnVigueur(
+      toutes.where((g) => !_vrai(g['souscripteurId']) && g['assureur'] == sous['assureur']), jour);
 }
 
 // --- proximité de libellés ---------------------------------------------------------------------------------------------
@@ -222,7 +242,7 @@ Repartition repartir({
   List<Map<String, Object?>> garanties = const [],
 }) {
   final sous = souscripteurDe(patient, couvertures, souscripteurs, date);
-  final grille = garantiesDe(sous, garanties);
+  final grille = garantiesDe(sous, garanties, jour: _jourEcrit(date));
   final valide = carteValide(patient, couvertures, date);
 
   final detail = lignes.map((l) {

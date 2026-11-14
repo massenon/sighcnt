@@ -230,7 +230,7 @@ void main() {
     await ouvrir(t, m, 'imp-patients');
     await choisirFichier(t, 'pa-code-existant');
     expect(find.textContaining('RG-01 : le code CNT/1/25 est déjà attribué'), findsOneWidget);
-    expect(m.collection('patients').toutes.length, 2);
+    expect(m.collection('patients').toutes.length, 4, reason: 'le magasin contrôlé tient quatre dossiers (deux assurés pour les jeux de garanties et de couvertures) : le fichier refusé n\'en ajoute aucun');
   });
 
   cas('les droits : la Direction lit et télécharge le modèle, mais « Téléverser » est ABSENT (jamais grisé)', (t) async {

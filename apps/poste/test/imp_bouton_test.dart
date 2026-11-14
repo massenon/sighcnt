@@ -199,10 +199,10 @@ void main() {
     await toucher(t, find.widgetWithText(BoutonSigh, 'Téléverser un fichier (.xlsx ou .csv)'));
     await t.pump(const Duration(milliseconds: 300));
     expect(find.textContaining('Analyse conforme. 3 ligne(s)'), findsOneWidget);
-    expect(m.collection('patients').toutes.length, 2, reason: 'la vérification n\'écrit rien');
+    expect(m.collection('patients').toutes.length, 4, reason: 'la vérification n\'écrit rien (le magasin contrôlé tient quatre dossiers)');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Confirmer l’importation (3 lignes)'));
     await toucher(t, find.widgetWithText(BoutonSigh, 'Écrire le lot'));
-    expect(m.collection('patients').toutes.length, 5);
+    expect(m.collection('patients').toutes.length, 7);
     expect(m.collection('lotsImportation').toutes.single['etat'], 'applique');
     expect(m.collection('lotsImportation').toutes.single['validePar'], isNotEmpty);
   });

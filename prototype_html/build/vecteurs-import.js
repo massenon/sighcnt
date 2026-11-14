@@ -39,6 +39,8 @@ const MAGASIN = {
   patients: [
     { id: 'PAT0001', code: 'CNT/1/25', nom: 'TCHANE', prenom: 'Bertine', dateNaissance: '1989-07-01', telephone: '0372398919', statut: 'actif' },
     { id: 'PAT0002', code: 'CNT/7/26', nom: 'ADJOVI', prenom: 'Paul', telephone: '0197000001', statut: 'actif' },
+    { id: 'PAT0003', code: 'CNT/3/26', nom: 'KOUASSI', prenom: 'Ama', assureur: 'AFR', assureurNom: 'AFRICAINE DES ASSURANCES', numeroPolice: 'AFR/2024/0100', categorieAssurance: 'entreprise', tauxPriseEnCharge: 80, carteExpiration: '2029-12-31', souscripteurId: 'SOU001', statut: 'actif' },
+    { id: 'PAT0004', code: 'CNT/4/26', nom: 'DOSSOU', prenom: 'Rose', assureur: 'NSIA', assureurNom: 'NSIA ASSURANCE', numeroPolice: 'NSIA/2024/0200', categorieAssurance: 'entreprise', tauxPriseEnCharge: 90, carteExpiration: '2026-12-31', souscripteurId: 'SOU002', statut: 'actif' },
   ],
   personnel: [
     { id: 'EMP01', matricule: '1', nom: 'BASSONGUI', prenom: 'Chabi Séko', service: 'Direction', statut: 'actif' },
@@ -54,7 +56,7 @@ const MAGASIN = {
     { id: 'ASS01', code: 'AFR', nom: 'AFRICAINE DES ASSURANCES', convention: 'Signée', statut: 'actif' },
     { id: 'ASS02', code: 'NSIA', nom: 'NSIA ASSURANCE', convention: 'Signée', statut: 'actif' },
   ],
-  souscripteurs: [{ id: 'SOU001', nom: 'PIB Bénin', police: 'AFR/2024/0100', assureur: 'AFR', statut: 'actif' }],
+  souscripteurs: [{ id: 'SOU001', nom: 'PIB Bénin', police: 'AFR/2024/0100', assureur: 'AFR', categorie: 'entreprise', statut: 'actif' }, { id: 'SOU002', nom: 'Banque du Nord', police: 'NSIA/2024/0200', assureur: 'NSIA', categorie: 'entreprise', statut: 'actif' }],
   comptes: [
     { id: 'CPT001', num: '101100', libelle: 'Capital souscrit, non appelé', classe: 1, journal: 'OD', statut: 'actif' },
     { id: 'CPT002', num: '571000', libelle: 'Caisse', classe: 5, journal: 'CAI', statut: 'actif' },
@@ -88,6 +90,17 @@ const MAGASIN = {
     { id: 'IMG-ECHO-PEL@origine@1', code: 'IMG-ECHO-PEL', version: 1, prixNonAssure: 15000, prixAssure: 10000, etatAssure: 'montant', origine: 'migration', statut: 'valide' },
     { id: 'PARA500@origine@1', code: 'PARA500', version: 1, prixNonAssure: 1200, etatAssure: 'unique', origine: 'migration', statut: 'valide' },
   ],
+  /* Lot 8b, groupe GARANTIES ET COUVERTURES : deux souscripteurs, des garanties versionnées (une série sans date, une série à deux versions), deux assurés (l'un avec un historique de
+     couverture, l'autre sans : la première modification reprend alors la couverture du dossier) et une facture émise sous la grille du premier souscripteur. */
+  garanties: [
+    { id: 'GAR1', souscripteurId: 'SOU001', assureur: 'AFR', code: 'CS-GEN', libelle: 'Consultation généraliste', categorie: 'consultation', taux: 80, zone: 'Bénin', version: 1, statut: 'actif' },
+    { id: 'GAR2', souscripteurId: 'SOU001', assureur: 'AFR', code: 'LAB', libelle: 'Analyses', categorie: 'analyse', taux: 70, plafond: 50000, unitePlafond: 'an', zone: 'Bénin', dateEffet: '2026-01-01', version: 1, statut: 'actif' },
+    { id: 'GAR3', souscripteurId: 'SOU001', assureur: 'AFR', code: 'LAB', libelle: 'Analyses', categorie: 'analyse', taux: 60, plafond: 50000, unitePlafond: 'an', zone: 'Bénin', dateEffet: '2027-06-01', version: 2, statut: 'actif' },
+  ],
+  couverturesAssurance: [
+    { id: 'COU1', patientId: 'PAT0003', patientCode: 'CNT/3/26', patient: 'KOUASSI Ama', assureur: 'AFR', assureurNom: 'AFRICAINE DES ASSURANCES', numeroPolice: 'AFR/2024/0100', categorieAssurance: 'entreprise', tauxPriseEnCharge: 80, carteExpiration: '2029-12-31', souscripteurId: 'SOU001', debut: '2026-01-01', motif: 'Première couverture', statut: 'actif' },
+  ],
+  factures: [{ id: 'FAC1', numero: 'F-2026-0001', patientId: 'PAT0003', assureur: 'AFR', date: '2026-10-20', statut: 'emise' }],
   examensImagerie: [{ id: 'EXI01', code: 'IMG-ECHO-PEL', label: 'Échographie pelvienne', modalite: 'echographie', icone: 'scan-line', statut: 'actif' }],
   lotsImportation: [],
 };
@@ -111,6 +124,8 @@ const SD = (o) => Object.assign({ code: null, lot: null, peremption: null, quant
 const TL = (o) => Object.assign({ code: null, lot: null, quantite: null, destination: 'Pharmacie d’urgence', date: null, motif: null }, o);
 const IC = (o) => Object.assign({ magasin: 'Stock gros', code: null, compte: null, type: null, date: null }, o);
 const TA = (o) => Object.assign({ code: null, designation: null, famille: null, secteur: null, prixNonAssure: null, prixAssure: null, couverture: null, dateEffet: '2027-01-01', valider: null, motif: 'Nouvelle grille tarifaire', source: null }, o);
+const GA = (o) => Object.assign({ police: 'AFR/2024/0100', categorie: 'Consultations', garantie: 'Consultation généraliste', taux: null, plafond: null, unite: null, dateEffet: '2027-01-01', motif: 'Avenant du 01/12/2026', source: null }, o);
+const CV = (o) => Object.assign({ patient: null, assureur: null, police: null, dateEffet: '2030-01-01', motif: 'Changement d’employeur', categorie: null, taux: null, carteExpiration: '2030-12-31' }, o);
 const CI = (o) => Object.assign({ code: null, libelle: null, modalite: null, voie: null, tarifCode: null }, o);
 const AN = (o) => Object.assign({ code: null, designation: null, section: null, echantillon: null, delai: null }, o);
 
@@ -274,6 +289,36 @@ const CAS = [
   ['ci-code-invalide', 'catalogue-imagerie', [CI({ code: 'X', libelle: 'Examen', modalite: 'Scanner' })]],
   ['ci-obligatoire-vide', 'catalogue-imagerie', [CI({ code: 'IMG-SC1', libelle: null, modalite: 'Scanner' })]],
   ['ci-doublon-fichier', 'catalogue-imagerie', [CI({ code: 'IMG-SC2', libelle: 'Scanner crâne', modalite: 'Scanner' }), CI({ code: 'img-sc2', libelle: 'Scanner crâne bis', modalite: 'Scanner' })]],
+  /* Lot 8b, groupe GARANTIES ET COUVERTURES. */
+  ['ga-valide', 'garanties', [GA({ taux: 70 }), GA({ police: 'NSIA/2024/0200', categorie: 'Chirurgie', garantie: 'Chirurgie courante', taux: 90, plafond: 500000, unite: 'par acte' })]],
+  ['ga-suivante', 'garanties', [GA({ taux: 65, dateEffet: '2027-06-01' })]],
+  ['ga-inchangee', 'garanties', [GA({ taux: 80 })]],
+  ['ga-police-inconnue', 'garanties', [GA({ police: 'XXX/0', taux: 70 })]],
+  ['ga-categorie-hors-liste', 'garanties', [GA({ categorie: 'Bijoux', taux: 70 })]],
+  ['ga-taux-hors-bornes', 'garanties', [GA({ taux: 101 })]],
+  ['ga-unite-requise', 'garanties', [GA({ taux: 70, plafond: 1000 })]],
+  ['ga-unite-sans-plafond', 'garanties', [GA({ taux: 70, unite: 'par acte' })]],
+  ['ga-date-absente', 'garanties', [GA({ taux: 70, dateEffet: null })]],
+  ['ga-version-meme-date', 'garanties', [GA({ categorie: 'Analyses de laboratoire', garantie: 'Analyses', taux: 75, plafond: 50000, unite: 'par an', dateEffet: '2026-01-01' })]],
+  ['ga-version-anterieure', 'garanties', [GA({ categorie: 'Analyses de laboratoire', garantie: 'Analyses', taux: 65, plafond: 50000, unite: 'par an', dateEffet: '2027-03-01' })]],
+  ['ga-facture-emise', 'garanties', [GA({ taux: 75, dateEffet: '2026-10-01' })]],
+  ['ga-deux-versions', 'garanties', [GA({ taux: 70 }), GA({ taux: 60, dateEffet: '2027-09-01' })]],
+  ['ga-doublon-fichier', 'garanties', [GA({ taux: 70 }), GA({ police: 'afr/2024/0100', taux: 71 })]],
+  ['cv-valide', 'couvertures-assurance', [
+    CV({ patient: 'CNT/3/26', assureur: 'NSIA', police: 'NSIA/2024/0200', dateEffet: '2030-01-01', taux: 70 }),
+    CV({ patient: 'CNT/4/26', assureur: 'AFR', police: 'AFR/2024/0100', dateEffet: '2030-02-01', motif: 'Changement de compagnie par l’assuré', taux: 80, carteExpiration: '2030-12-31' }),
+  ]],
+  ['cv-suivante', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100', dateEffet: '2030-06-01', taux: 80 })]],
+  ['cv-patient-inconnu', 'couvertures-assurance', [CV({ patient: 'CNT/99/26', assureur: 'AFR', police: 'AFR/2024/0100' })]],
+  ['cv-police-inconnue', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'XXX/0' })]],
+  ['cv-police-autre-compagnie', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'NSIA', police: 'AFR/2024/0100' })]],
+  ['cv-date-anterieure', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100', dateEffet: '2026-01-01' })]],
+  ['cv-sans-carte', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100', carteExpiration: null })]],
+  ['cv-facture-emise', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100', dateEffet: '2026-10-01' })]],
+  ['cv-motif-hors-liste', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100', motif: 'Parce que' })]],
+  ['cv-motif-fin-de-couverture', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100', motif: 'Fin de couverture — patient redevenu non assuré' })]],
+  ['cv-assureur-hors-liste', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'ZZZ', police: 'AFR/2024/0100' })]],
+  ['cv-doublon-fichier', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100' }), CV({ patient: 'cnt/3/26', assureur: 'NSIA', police: 'NSIA/2024/0200' })]],
   ['ic-doublon-fichier', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1 }), IC({ code: 'coton', compte: 2 })]],
 ];
 
@@ -515,6 +560,53 @@ const CAS = [
         /* Les références de lot dépendent de ce qui précède : elles se disent {A} et {B} (le test rejoue sur son propre magasin). */
         out.prix = JSON.parse(JSON.stringify(out.prix).split(rA.lot.reference).join('{A}').split(rB.lot.reference).join('{B}'));
       }
+      /* 6 quater. LOT 8b, groupe GARANTIES ET COUVERTURES : une version datée ne réécrit jamais une pièce émise. Une garantie ne s'annule plus sous une facture émise ou sous une version plus
+         récente de sa série ; une couverture de même (la précédente reprend sa fin, le dossier retrouve son état). */
+      out.assurances = {};
+      {
+        const detailDe = (x) => (x && x.decision !== undefined ? ['Ancien : ' + x.ancien, 'nouveau : ' + x.nouveau].concat(x.variation ? ['variation : ' + x.variation] : []).concat(['décision : ' + x.decision]).join(' ; ') : '');
+        const resume = (a) => ({ accepte: a.accepte, compte: a.compte, problemes: I.problemes(a).map((p) => ({ n: p.n, colonne: p.colonne, code: p.code, niveau: p.niveau })), details: a.lignes.map((l) => [l.n, l.etat, detailDe(l.extra)]) });
+        const net = (f) => { const c = nettoyer(f, {}); c.id = f.id; if (/^COU[a-z0-9]{8,}$/.test(String(f.id))) c.id = 'COU:' + f.patientId + '@' + (f.debut || 'reprise'); if (/^GAR[a-z0-9]{8,}$/.test(String(f.id))) c.id = 'GAR:' + f.souscripteurId + '@' + f.libelle + '@' + (f.dateEffet || 'origine'); return c; };
+        const fiches = (lot) => lot.ecrits.map((e) => ({ collection: e.collection, avant: e.avant || null, fiche: net(S.collection(e.collection).get(e.id)) }));
+        const refusDe = (r) => ({ ok: r.ok, code: r.code || null, motif: r.motif || null, geste: r.geste || null });
+        const analyser = (id) => enRole('admin', 'ADMIN TEST', () => I.analyserOctets(I.jeu(id.startsWith('ga-') ? 'garanties' : 'couvertures-assurance').id, octetsDe(id), id + '.xlsx'));
+        const poser = (id) => { const r = enRole('admin', 'ADMIN TEST', () => I.appliquer(id.startsWith('ga-') ? 'garanties' : 'couvertures-assurance', analyser(id))); if (!r.ok) throw new Error('lot non posé ' + id + ' : ' + JSON.stringify({ code: r.code, motif: r.motif })); return r.lot; };
+        const annuler = (lot) => enRole('admin', 'ADMIN TEST', () => I.annulerLot(lot.id, 'essai'));
+        const mask = (o, refs) => { let t = JSON.stringify(o); refs.forEach((r, i) => { t = t.split(r).join('{' + 'ABCD'[i] + '}'); }); return JSON.parse(t); };
+        const refsG = [], refsC = [];
+        /* Garanties */
+        const G = out.assurances.garanties = {};
+        G.analyse = resume(analyser('ga-valide'));
+        const g1 = poser('ga-valide'); refsG.push(g1.reference);
+        G.pose = { etat: g1.etat, nbLignes: g1.nbLignes, fiches: fiches(g1) };
+        G.rejeu = resume(analyser('ga-valide'));
+        const fac2 = S.collection('factures').insert({ numero: 'F-2027-0002', patientId: 'PAT0003', assureur: 'AFR', date: '2027-02-01', statut: 'emise' });
+        G.annulationFactureEmise = refusDe(annuler(g1));
+        S.collection('factures').archive(fac2.record.id, 'essai');
+        const g3 = poser('ga-suivante'); refsG.push(g3.reference);
+        G.annulationVersionPosterieure = refusDe(annuler(g1));
+        const r3 = annuler(g3), r1 = annuler(g1);
+        G.annulations = { suivante: { ok: r3.ok, archives: r3.archives === undefined ? null : r3.archives }, premiere: { ok: r1.ok, archives: r1.archives === undefined ? null : r1.archives },
+          statuts: g1.ecrits.map((e) => S.collection(e.collection).get(e.id).statut) };
+        /* Couvertures */
+        const C_ = out.assurances.couvertures = {};
+        const patientsEtat = () => ['PAT0003', 'PAT0004'].map((id) => { const p = S.collection('patients').get(id); return { id: id, assureur: p.assureur || null, numeroPolice: p.numeroPolice || null, tauxPriseEnCharge: p.tauxPriseEnCharge === undefined ? null : p.tauxPriseEnCharge, carteExpiration: p.carteExpiration || null, souscripteurId: p.souscripteurId || null }; });
+        const couverturesEtat = () => S.collection('couverturesAssurance').all().map((c) => ({ patientId: c.patientId, debut: c.debut || null, fin: c.fin || null, statut: c.statut, assureur: c.assureur || null })).sort((a, b) => (a.patientId + a.debut + a.statut) < (b.patientId + b.debut + b.statut) ? -1 : 1);
+        C_.avant = { patients: patientsEtat(), couvertures: couverturesEtat() };
+        C_.analyse = resume(analyser('cv-valide'));
+        const c1 = poser('cv-valide'); refsC.push(c1.reference);
+        C_.pose = { etat: c1.etat, nbLignes: c1.nbLignes, fiches: fiches(c1), patients: patientsEtat(), couvertures: couverturesEtat() };
+        const fac3 = S.collection('factures').insert({ numero: 'F-2030-0003', patientId: 'PAT0003', assureur: 'NSIA', date: '2030-02-01', statut: 'emise' });
+        S.collection('factures').update(fac3.record.id, { _creeLe: '2999-01-01T00:00:00.000Z' });
+        C_.annulationFactureEmise = refusDe(annuler(c1));
+        S.collection('factures').archive(fac3.record.id, 'essai');
+        const c3 = poser('cv-suivante'); refsC.push(c3.reference);
+        C_.annulationPosterieure = refusDe(annuler(c1));
+        const rc3 = annuler(c3), rc1 = annuler(c1);
+        C_.annulations = { suivante: { ok: rc3.ok, archives: rc3.archives === undefined ? null : rc3.archives }, premiere: { ok: rc1.ok, archives: rc1.archives === undefined ? null : rc1.archives } };
+        C_.apresAnnulation = { patients: patientsEtat(), couvertures: couverturesEtat() };
+        out.assurances = { garanties: mask(out.assurances.garanties, refsG), couvertures: mask(out.assurances.couvertures, refsC) };
+      }
       {
         /* 1. Analyse sans le droit d'importer : refusée en nommant, rien n'est consigné. */
         const avant = nbLots();
@@ -584,6 +676,7 @@ const CAS = [
         secteursActes: Array.from(new Set(D.ACTES.map((a) => a.secteur).filter(Boolean))),
         /* Lot IMP-C : les listes de saisie des cinq référentiels portés, lues des colonnes des jeux (aucune recopiée à la main). */
         secteursActivite: D.SECTEURS_ACTIVITE, specialitesPrestataire: D.SPECIALITES_PRESTATAIRE, domainesUnitesLabo: D.DOMAINES_UNITES_LABO,
+        motifsCouverture: D.MOTIFS_COUVERTURE,
         destinationsTransfert: SIGH.parcours.DESTINATIONS_TRANSFERT, typesInventaire: I.jeu('inventaire-comptage').colonnes.find((c) => c.cle === 'type').liste, magasinsInventaire: I.jeu('inventaire-comptage').colonnes.find((c) => c.cle === 'magasin').liste,
         zonesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'zone').liste, temperaturesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'temperature').liste,
       };
@@ -621,6 +714,8 @@ const CAS = [
       + '/// Zones et températures de conservation d\'un emplacement de rangement (colonnes du jeu `emplacements`).\n'
       + 'const importZonesEmplacement = <String>[' + R.zonesEmplacement.map(q).join(', ') + '];\n'
       + 'const importTemperaturesEmplacement = <String>[' + R.temperaturesEmplacement.map(q).join(', ') + '];\n\n'
+      + '/// Motifs d\'un changement de couverture (`D.MOTIFS_COUVERTURE`).\n'
+      + 'const importMotifsCouverture = <String>[' + R.motifsCouverture.map(q).join(', ') + '];\n\n'
       + '/// Services destinataires d\'un bon de transfert (`PR.DESTINATIONS_TRANSFERT`).\n'
       + 'const importDestinationsTransfert = <String>[' + R.destinationsTransfert.map(q).join(', ') + '];\n\n'
       + '/// Types d\'un inventaire et magasins nommés (colonnes du jeu `inventaire-comptage`) : [valeur, libellé].\n'

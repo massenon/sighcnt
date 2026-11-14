@@ -97,6 +97,7 @@ export 'src/qualite/qual_ged.dart';
 // Moteur de validation commun des référentiels (Direction, 07/11/2026) : registre des 14 familles, compte lu, geste unitaire, remise à valider.
 export 'src/validation/validation.dart';
 export 'src/assurances/ass_regles.dart';
+export 'src/assurances/ass_garanties.dart';
 export 'src/securite/securite.dart';
 export 'src/securite/verrou_secours.dart';
 export 'src/rh/rha_regles.dart';

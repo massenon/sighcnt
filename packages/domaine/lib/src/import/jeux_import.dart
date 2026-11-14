@@ -6,7 +6,9 @@
 library;
 
 import '../comptabilite/cpb_gestion.dart' show cpbReferenceSuivante;
-import '../format/format_fr.dart' show nombre;
+import '../assurances/ass_garanties.dart';
+import '../assurances/ass_regles.dart' show assCategoriesGarantie, assChangerCouverture, assDate, assLibelleUnite, assUnitesPlafond;
+import '../format/format_fr.dart' show dateFR, nombre;
 import '../format/js.dart' show arrondiJs;
 import '../imagerie/cr_modalites.dart' show modalitesImagerie;
 import '../tarifs/tarifs.dart'
@@ -18,6 +20,7 @@ import 'moteur_import.dart';
 
 part 'jeux_import_stock.dart';
 part 'jeux_import_prix.dart';
+part 'jeux_import_assurance.dart';
 
 typedef _V = Map<String, Object?>;
 
@@ -1280,6 +1283,9 @@ final List<JeuImport> jeuxImport = [
   // Lot 8b, groupe PRIX : les prix de prestations (versions datées) et le catalogue de l'imagerie.
   jeuTarifs,
   jeuCatalogueImagerie,
+  // Lot 8b, groupe GARANTIES ET COUVERTURES : les versions datées de garantie et les couvertures datées des assurés.
+  jeuGaranties,
+  jeuCouverturesAssurance,
 ];
 
 JeuImport? jeuImportParId(String id) => jeuxImport.where((j) => j.id == id).firstOrNull;

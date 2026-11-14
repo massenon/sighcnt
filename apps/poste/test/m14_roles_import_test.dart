@@ -65,8 +65,8 @@ void main() {
     expect([coche(t, 'import:fournisseurs:voir'), coche(t, 'import:fournisseurs:importer'), coche(t, 'import:fournisseurs:annuler')], [true, true, true]);
     expect([coche(t, 'import:patients:voir'), coche(t, 'import:patients:importer'), coche(t, 'import:patients:annuler')], [false, false, false]);
     expect(find.text('défaut du manifeste'), findsWidgets);
-    await t.ensureVisible(find.byKey(const Key('import:garanties:non-porte')));
-    expect(find.byKey(const Key('import:garanties:non-porte')), findsOneWidget, reason: 'un jeu que le poste ne porte pas encore le dit');
+    await t.ensureVisible(find.byKey(const Key('import:tarifs-produits:non-porte')));
+    expect(find.byKey(const Key('import:tarifs-produits:non-porte')), findsOneWidget, reason: 'un jeu que le poste ne porte pas encore le dit');
     expect(find.byKey(const Key('import:fournisseurs:non-porte')), findsNothing);
     sem.dispose();
   });

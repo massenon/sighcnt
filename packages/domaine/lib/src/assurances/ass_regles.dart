@@ -185,7 +185,8 @@ String _jour(DateTime d) => iso(d);
 /// `PR.changerCouverture(patient, v)` — ferme la couverture en cours à la veille de la date d'effet et en ouvre une nouvelle.
 /// [historique] : les couvertures ACTIVES de ce patient. [maintenant] : l'horloge du poste.
 AssChangement assChangerCouverture(AssFiche? patient,
-    List<AssFiche> historique, AssFiche? v, DateTime maintenant) {
+    List<AssFiche> historique, AssFiche? v, DateTime maintenant,
+    {Iterable<AssFiche>? souscripteurs}) {
   if (patient == null) return const AssChangement.refus('Aucun patient désigné.');
   if (v == null || !_vrai(v['dateEffet'])) {
     return const AssChangement.refus(
@@ -284,6 +285,14 @@ AssChangement assChangerCouverture(AssFiche? patient,
       'tauxPriseEnCharge': _vrai(e['tauxPriseEnCharge']) ? e['tauxPriseEnCharge'] : 0,
       'carteExpiration': _vrai(e['carteExpiration']) ? e['carteExpiration'] : null,
       'souscripteurId': _vrai(e['souscripteurId']) ? e['souscripteurId'] : null,
+      // Le NOM du souscripteur suit son identifiant (lot IMP-B2 de la maquette, porté au lot 8b) : un changement de police par l'importation change aussi le souscripteur, et le
+      // répertoire des assurés lit le nom sur la fiche. L'écran qui ne passe pas la liste des souscripteurs ne touche pas ce champ.
+      if (souscripteurs != null)
+        'souscripteur': () {
+          if (!_vrai(e['souscripteurId'])) return null;
+          final sc = souscripteurs.where((x) => x['id'] == e['souscripteurId']).firstOrNull;
+          return sc != null ? sc['nom'] : (patient['souscripteur'] ?? null);
+        }(),
     },
   );
 }

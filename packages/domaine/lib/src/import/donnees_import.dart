@@ -49,6 +49,9 @@ const importDomainesUnitesLabo = <String>['Hématologie', 'Biochimie', 'Hormonol
 const importZonesEmplacement = <String>['Rayonnage sec', 'Chaîne du froid', 'Armoire sécurisée', 'Réserve', 'Salle de soins'];
 const importTemperaturesEmplacement = <String>['Ambiante', '2 à 8 °C', '− 20 °C', 'Sous clé, ambiante'];
 
+/// Motifs d'un changement de couverture (`D.MOTIFS_COUVERTURE`).
+const importMotifsCouverture = <String>['Changement d’employeur', 'Changement de compagnie par l’assuré', 'Convention non reconduite', 'Renouvellement de carte', 'Changement de police', 'Fin de couverture — patient redevenu non assuré', 'Correction d’une saisie erronée'];
+
 /// Services destinataires d'un bon de transfert (`PR.DESTINATIONS_TRANSFERT`).
 const importDestinationsTransfert = <String>['Pharmacie d’urgence', 'Pharmacie externe', 'Laboratoire', 'Hospitalisation', 'Maternité', 'Bloc opératoire', 'Salle de soins'];
 

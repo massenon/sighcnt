@@ -9,7 +9,7 @@
 | Hubs de module (un par module, engendrés) | 23 |
 | Écrans nommés par au moins un scénario de la maquette | 262 (73 %) |
 | Écrans **sans** scénario (recette à écrire) | 95 |
-| Écrans portés | 346 |
+| Écrans portés | 348 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 180 |
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 51 | 67 | 0 |
 | 5 · assurances et comptabilité | 32 | 24 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 180 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 182 | 0 |
 
 ## Par écran
 
@@ -288,10 +288,10 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-catalogue-imagerie` | Importation du catalogue de l’imagerie | IMP | 3 | 144 | porté |
 | `imp-centres-couts` | Importation des centres de coûts | IMP | 5 | 144 | porté |
 | `imp-courriers` | Importation des courriers | IMP | 4 | 144, 153 | non commencé |
-| `imp-couvertures-assurance` | Importation des couvertures d’assurance | IMP | 5 | 144 | non commencé |
+| `imp-couvertures-assurance` | Importation des couvertures d’assurance | IMP | 5 | 144 | porté |
 | `imp-emplacements` | Importation des emplacements de rangement | IMP | 3 | 130 | porté |
 | `imp-fournisseurs` | Importation des fournisseurs | IMP | 6 | 125, 126, 130, 143 | porté |
-| `imp-garanties` | Importation des garanties des souscripteurs | IMP | 5 | 144 | non commencé |
+| `imp-garanties` | Importation des garanties des souscripteurs | IMP | 5 | 144 | porté |
 | `imp-immobilisations` | Importation des immobilisations | IMP | 5 | 144 | non commencé |
 | `imp-inventaire-comptage` | Importation d’un comptage d’inventaire | IMP | 3 | 130 | porté |
 | `imp-natures-facture` | Importation des natures de facture | IMP | 3 | 144 | porté |
