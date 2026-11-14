@@ -212,7 +212,7 @@ class EcranEcritures extends StatelessWidget with EcranMaquette {
             libelle: 'Journal',
             type: TypeChamp.select,
             requis: true,
-            options: [for (final j in cpaJournaux) OptionChamp(j.$1, '${j.$1} — ${j.$2}')]),
+            options: [for (final j in cpaJournaux) if (!cpaJournauxReserves.any((r) => r.$1 == j.$1)) OptionChamp(j.$1, '${j.$1} — ${j.$2}')]),
         const ChampDef(nom: 'libelle', libelle: 'Libellé de l’opération', requis: true, col: ColChamp.plein),
         ChampDef(
             nom: 'centreCout',

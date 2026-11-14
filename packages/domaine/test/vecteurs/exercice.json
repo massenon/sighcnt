@@ -2189,22 +2189,22 @@
    {
     "action": "Création",
     "entite": "Document",
-    "reference": "DOCxmvuswnagsu9g4"
+    "reference": "DOCxmvuswnchi99j1"
    },
    {
     "action": "Création",
     "entite": "Archive de clôture",
-    "reference": "ARCxmvuswnafa4wne"
+    "reference": "ARCxmvuswnch5d9p2"
    },
    {
     "action": "Création",
     "entite": "notification",
-    "reference": "NOTxmvuswna2t2x7z"
+    "reference": "NOTxmvuswnc4ufpsa"
    },
    {
     "action": "Création",
     "entite": "notification",
-    "reference": "NOTxmvuswna2hnq1p"
+    "reference": "NOTxmvuswnc46lmr8"
    },
    {
     "action": "Clôture d’exercice",
@@ -2212,9 +2212,9 @@
     "reference": "2026"
    },
    {
-    "action": "Création",
-    "entite": "Clôture",
-    "reference": "CLOxmvuswn9zzfguk"
+    "action": "Ouverture d’exercice",
+    "entite": "Exercice",
+    "reference": "2027"
    }
   ],
   "toasts": []
@@ -3177,7 +3177,7 @@
    "titre": ""
   },
   "lettrage": {
-   "texte": "Exercice affiché 2026 État En clôture Résultat provisoire -23 087 218 FCFA Contrôles bloquants en échec 0 Exercices Périodes de l’exercice Lettrage des tiers Comptes de résultat Circuit de clôture Un lettrage rapproche des lignes d’un même compte de tiers dont le total s’annule (une facture et son règlement). À la clôture, seules les lignes non lettrées sont reprises une à une aux à-nouveaux. Compte 401000 — Fournisseurs 411000 — Clients — Patients 411100 — 411100 411200 — Clients — Compagnies d’assurance 422000 — Personnel — Rémunérations dues 431000 — Caisse de sécurité social 442100 — Etat impôts et taxes Lignes du compte 401000 Colonnes Exporter PIÈCE DATE LIBELLÉ DÉBIT CRÉDIT LETTRAGE OD-2026-00045 15/08/2026 Honoraires du comptable 0 523 000 non lettrée ACH-2026-00005 10/08/2026 Produits d’entretien 0 291 000 non lettrée OD-2026-00118 09/08/2026 Maintenance de l’échographe 0 217 000 non lettrée ACH-2026-00003 01/08/2026 Achat de marchandises — Médicaments 0 580 000 non lettrée OD-2026-00048 28/07/2026 Maintenance des automates 0 553 000 non lettrée OD-2026-00073 18/07/2026 Maintenance des automates 0 557 000 non lettrée OD-2026-00069 17/07/2026 Entretien et réparations 0 177 000 non lettrée ACH-2026-00017 16/07/2026 Fournitures de bureau 0 172 000 non lettrée OD-2026-00111 16/07/2026 Entretien et réparations 0 615 000 non lettrée OD-2026-00013 09/07/2026 Entretien et réparations 0 719 000 non lettrée Affichage de 1 à 10 sur 65 enregistrements 1 2 3 4 5 Lettrer la sélection Dé-lettrer un code…",
+   "texte": "Exercice affiché 2026 État En clôture Résultat provisoire -23 087 218 FCFA Contrôles bloquants en échec 0 Exercices Périodes de l’exercice Lettrage des tiers Comptes de résultat Circuit de clôture Un lettrage rapproche des lignes d’un même compte de tiers dont le total s’annule (une facture et son règlement). À la clôture, seules les lignes non lettrées sont reprises une à une aux à-nouveaux. Compte 401000 — Fournisseurs 411000 — Clients — Patients 411200 — Clients — Compagnies d’assurance 422000 — Personnel — Rémunérations dues 431000 — Caisse de sécurité social 442100 — Etat impôts et taxes Lignes du compte 401000 Colonnes Exporter PIÈCE DATE LIBELLÉ DÉBIT CRÉDIT LETTRAGE OD-2026-00045 15/08/2026 Honoraires du comptable 0 523 000 non lettrée ACH-2026-00005 10/08/2026 Produits d’entretien 0 291 000 non lettrée OD-2026-00118 09/08/2026 Maintenance de l’échographe 0 217 000 non lettrée ACH-2026-00003 01/08/2026 Achat de marchandises — Médicaments 0 580 000 non lettrée OD-2026-00048 28/07/2026 Maintenance des automates 0 553 000 non lettrée OD-2026-00073 18/07/2026 Maintenance des automates 0 557 000 non lettrée OD-2026-00069 17/07/2026 Entretien et réparations 0 177 000 non lettrée ACH-2026-00017 16/07/2026 Fournitures de bureau 0 172 000 non lettrée OD-2026-00111 16/07/2026 Entretien et réparations 0 615 000 non lettrée OD-2026-00013 09/07/2026 Entretien et réparations 0 719 000 non lettrée Affichage de 1 à 10 sur 65 enregistrements 1 2 3 4 5 Lettrer la sélection Dé-lettrer un code…",
    "boutons": [
     "Exercices",
     "Périodes de l’exercice",
@@ -3203,10 +3203,6 @@
     [
      "411000",
      "411000 — Clients — Patients"
-    ],
-    [
-     "411100",
-     "411100 — 411100"
     ],
     [
      "411200",
@@ -3273,6 +3269,98 @@
     ]
    ],
    "nbLignes": 10
+  }
+ },
+ "ouverture": {
+  "aout2026": {
+   "date": "2026-08-16",
+   "ouverts": [
+    2024,
+    2025,
+    2026
+   ],
+   "existants": [
+    2024,
+    2025,
+    2026
+   ],
+   "pieceEcrite": false,
+   "trace": [
+    {
+     "annee": "2026",
+     "apres": "{\"etat\":\"ouvert\",\"origine\":\"ecriture\"}"
+    }
+   ]
+  },
+  "dec2026": {
+   "date": "2026-12-20",
+   "ouverts": [
+    2024,
+    2025,
+    2026,
+    2027
+   ],
+   "existants": [
+    2024,
+    2025,
+    2026,
+    2027
+   ],
+   "pieceEcrite": false,
+   "trace": [
+    {
+     "annee": "2027",
+     "apres": "{\"etat\":\"ouvert\",\"origine\":\"ouverture_anticipee\"}"
+    },
+    {
+     "annee": "2026",
+     "apres": "{\"etat\":\"ouvert\",\"origine\":\"ecriture\"}"
+    }
+   ]
+  },
+  "jan2028": {
+   "date": "2028-01-02",
+   "ouverts": [
+    2024,
+    2025,
+    2026,
+    2028
+   ],
+   "existants": [
+    2024,
+    2025,
+    2026,
+    2028
+   ],
+   "pieceEcrite": false,
+   "trace": [
+    {
+     "annee": "2028",
+     "apres": "{\"etat\":\"ouvert\",\"origine\":\"annee_en_cours\"}"
+    },
+    {
+     "annee": "2026",
+     "apres": "{\"etat\":\"ouvert\",\"origine\":\"ecriture\"}"
+    }
+   ]
+  },
+  "journauxReserves": {
+   "CL": {
+    "insere": false,
+    "detail": [
+     "JOURNAL_RESERVE : le journal CL (Journal de clôture) n’est alimenté que par la clôture de l’exercice ; il ne se saisit pas à la main. Saisir l’écriture au journal des opérations diverses (OD)."
+    ]
+   },
+   "AN": {
+    "insere": false,
+    "detail": [
+     "JOURNAL_RESERVE : le journal AN (Journal des à-nouveaux) n’est alimenté que par la clôture de l’exercice, le report des à-nouveaux et l’import des soldes d’ouverture ; il ne se saisit pas à la main. Saisir l’écriture au journal des opérations diverses (OD)."
+    ]
+   },
+   "OD": {
+    "insere": true,
+    "detail": []
+   }
   }
  },
  "soldesGL": {
@@ -4591,7 +4679,7 @@
    "inserts": {
     "ecritures": [
      {
-      "id": "ECRxmvuswq8k65olj",
+      "id": "ECRxmvuswqc53yeqr",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4606,7 +4694,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswq8k38a1e",
+      "id": "ECRxmvuswqc402cy5",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4621,7 +4709,7 @@
       "credit": 3142456
      },
      {
-      "id": "ECRxmvuswq8kalkij",
+      "id": "ECRxmvuswqc42ksnu",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4636,7 +4724,7 @@
       "credit": 3220000
      },
      {
-      "id": "ECRxmvuswq8ka1ij4",
+      "id": "ECRxmvuswqc4dpf6s",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4651,7 +4739,7 @@
       "credit": 2610000
      },
      {
-      "id": "ECRxmvuswq8jxwtyc",
+      "id": "ECRxmvuswqc4dlvv2",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4666,7 +4754,7 @@
       "credit": 1286000
      },
      {
-      "id": "ECRxmvuswq8jrgjkx",
+      "id": "ECRxmvuswqc3pf1z7",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4681,7 +4769,7 @@
       "credit": 272000
      },
      {
-      "id": "ECRxmvuswq8j4nhuj",
+      "id": "ECRxmvuswqc3ucby1",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4696,7 +4784,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswq8ibzxzq",
+      "id": "ECRxmvuswqc35qe0u",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -4711,7 +4799,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswq8hz9g56",
+      "id": "ECRxmvuswqc27ql9c",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5038,5 +5126,5 @@
    ]
   }
  },
- "toastsTotal": 9
+ "toastsTotal": 11
 }

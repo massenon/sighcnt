@@ -84,7 +84,7 @@ if ($action === 'executer') {
         sigh_repondre(['erreur' => 'accès refusé', 'detail' => 'Seul l’administrateur système lance une tâche à la main.'], 403);
     }
     $code = (string) ($corps['code'] ?? '');
-    $rapport = sigh_cron_executer($pdo, 'manuel:' . ($session['identifiant'] ?? '?'), true, $code !== '' ? $code : null);
+    $rapport = sigh_cron_executer($pdo, 'manuel:' . ($session['identifiant'] ?? '?'), true, $code !== '' ? $code : null, isset($corps['maintenant']) ? (string) $corps['maintenant'] : null);
     sigh_repondre(['ok' => true, 'rapport' => $rapport]);
 }
 

@@ -45,7 +45,10 @@ bool _estDeLiasse(int annee) => cpcDepot['exerciceN'] == annee || cpcDepot['exer
 
 /// Les fiches d'exercice À AMORCER (`exercices()`), dans l'ordre où la maquette les insère EN TÊTE : années croissantes, donc la plus récente finit première.
 /// [exercices] : TOUTES les fiches de la collection (archivées comprises) ; [ecritures] : TOUTES les écritures (archivées comprises).
-List<CpaFiche> cpcExercicesAAmorcer(Iterable<CpaFiche> exercices, Iterable<CpaFiche> ecritures, DateTime auj) {
+///
+/// [moisOuvertureSuivant] (lot CLO C4, réglage du circuit de clôture, défaut semé : 12) : à partir de ce mois, l'exercice de l'ANNÉE SUIVANTE est ouvert aussi ; `null` : aucune
+/// ouverture anticipée. La fiche ouverte ne porte AUCUNE pièce : un exercice qui s'ouvre n'écrit ni à-nouveau ni écriture.
+List<CpaFiche> cpcExercicesAAmorcer(Iterable<CpaFiche> exercices, Iterable<CpaFiche> ecritures, DateTime auj, {int? moisOuvertureSuivant}) {
   final annees = <int>{};
   for (final e in ecritures) {
     final a = cpaAnnee(e['date']);
@@ -53,6 +56,7 @@ List<CpaFiche> cpcExercicesAAmorcer(Iterable<CpaFiche> exercices, Iterable<CpaFi
   }
   annees
     ..add(auj.year)
+    ..addAll([if (moisOuvertureSuivant != null && auj.month >= moisOuvertureSuivant) auj.year + 1])
     ..add(cpcDepot['exerciceN'] as int)
     ..add(cpcDepot['exerciceN1'] as int);
   final tries = annees.toList()..sort();
@@ -75,6 +79,15 @@ List<CpaFiche> cpcExercicesAAmorcer(Iterable<CpaFiche> exercices, Iterable<CpaFi
           };
         }(),
   ];
+}
+
+/// Pourquoi l'exercice [annee] s'ouvre (la trace du journal d'audit, lot CLO C4) : `liasse` (déposée, close d'office), `ecriture` (une pièce porte cette année), `annee_en_cours`
+/// (l'horloge), `ouverture_anticipee` (le mois réglé du circuit est atteint : l'année suivante).
+String cpcCauseOuverture(int annee, Iterable<CpaFiche> ecritures, DateTime auj, {int? moisOuvertureSuivant}) {
+  if (_estDeLiasse(annee)) return 'liasse';
+  if (ecritures.any((e) => cpaAnnee(e['date']) == annee)) return 'ecriture';
+  if (annee == auj.year) return 'annee_en_cours';
+  return 'ouverture_anticipee';
 }
 
 /// `exercices()` : les exercices non archivés, du plus récent au plus ancien.
@@ -115,7 +128,17 @@ String? cpcGardeBudgets(Iterable<CpaFiche> exercices, Object? exercice) {
 ///  * exercice EN CLÔTURE : les modules n'écrivent plus ; seuls les rôles de la liste lue du circuit ([CpcCircuit.inventaire]) y passent leurs écritures d'inventaire, en SAISIE MANUELLE ;
 ///  * les pièces de la clôture elle-même (CL, AN, contre-passations : `origineCloture`) passent à l'INSERTION, jamais à la modification ni à l'archivage.
 String? cpcGardeEcritures(Iterable<CpaFiche> exercices, Object? date,
-    {String op = 'inserer', Object? origineCloture, Object? origine, String role = '', CpcCircuit circuit = const CpcCircuit(demarrer: [], inventaire: [], cloturer: [], rouvrir: [])}) {
+    {String op = 'inserer',
+    Object? origineCloture,
+    Object? origine,
+    Object? journal,
+    String role = '',
+    CpcCircuit circuit = const CpcCircuit(demarrer: [], inventaire: [], cloturer: [], rouvrir: [])}) {
+  // EF-CLO-6 : les journaux CL et AN ne se saisissent pas à la main, quel que soit l'état de l'exercice.
+  if (op != 'archiver') {
+    final r = cpaRefusJournalReserve(journal, origine);
+    if (r != null) return r;
+  }
   final a = cpaAnnee(date);
   if (a == null) return null;
   if (origineCloture != null && '$origineCloture'.isNotEmpty && op == 'inserer') return null;

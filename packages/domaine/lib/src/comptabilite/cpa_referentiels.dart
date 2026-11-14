@@ -23,6 +23,24 @@ const List<(String, String, String?)> cpaJournaux = [
   ('AN', 'Journal des à-nouveaux', null),
 ];
 
+/// `D.JOURNAUX_RESERVES` (lot CLO C4, EF-CLO-6) : les journaux qu'AUCUNE saisie manuelle n'alimente, avec ce qui les alimente : (code, libellé, alimenté par).
+/// Le journal CL n'existe qu'à la clôture ; le journal AN se pose par la clôture, le report des à-nouveaux ou l'import des soldes d'ouverture.
+const List<(String, String, String)> cpaJournauxReserves = [
+  ('CL', 'Journal de clôture', 'la clôture de l’exercice'),
+  ('AN', 'Journal des à-nouveaux', 'la clôture de l’exercice, le report des à-nouveaux et l’import des soldes d’ouverture'),
+];
+
+/// Le refus nommé d'une SAISIE MANUELLE aux journaux réservés CL et AN, ou `null`.
+String? cpaRefusJournalReserve(Object? journal, Object? origine) {
+  if ('$origine' != 'Saisie manuelle') return null;
+  for (final j in cpaJournauxReserves) {
+    if (j.$1 == '$journal') {
+      return 'JOURNAL_RESERVE : le journal ${j.$1} (${j.$2}) n’est alimenté que par ${j.$3} ; il ne se saisit pas à la main. Saisir l’écriture au journal des opérations diverses (OD).';
+    }
+  }
+  return null;
+}
+
 /// `D.CATEGORIES_DEPENSE` : (identifiant, libellé) — la lecture de GESTION, distincte du compte SYSCOHADA.
 const List<(String, String)> cpaCategoriesDepense = [
   ('medical', 'Consommables et produits médicaux'),

@@ -570,7 +570,7 @@
 
         var f = U.form([
           { name: 'date', label: 'Date de l’opération', type: 'date', required: true, value: C.iso(AUJ) },
-          { name: 'journal', label: 'Journal', type: 'select', required: true, options: D.JOURNAUX.map(function (j) { return { value: j.code, label: j.code + ' — ' + j.libelle }; }) },
+          { name: 'journal', label: 'Journal', type: 'select', required: true, options: D.JOURNAUX.filter(function (j) { return !(D.JOURNAUX_RESERVES || []).some(function (r) { return r.code === j.code; }); }).map(function (j) { return { value: j.code, label: j.code + ' — ' + j.libelle }; }) },
           { name: 'libelle', label: 'Libellé de l’opération', required: true, col: 'full' },
           {
             name: 'centreCout', label: 'Centre de coûts', type: 'select', options: optionsCentres(),

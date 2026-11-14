@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/service_parametres.dart';
@@ -48,4 +50,34 @@ CpcRefusCircuit? reglerCircuitCloture(Magasin m,
   }
   m.journaliser('Circuit de clôture : nouvelle version', 'M12', 'reglagesCloture', cle, {'valeur': avant}, {'valeur': voulu, 'dateEffet': date, 'motif': (motif ?? '').trim()});
   return null;
+}
+
+/// L'OUVERTURE DES EXERCICES (lot CLO C4, EF-CLO-1, E1 et E2) : une fiche par année portée par le journal, l'horloge et la liasse déposée ; l'année SUIVANTE s'ouvre à partir du mois
+/// réglé du circuit de clôture (défaut semé : décembre). Idempotente : une année déjà ouverte ne se rouvre pas. CHAQUE ouverture est TRACÉE au journal d'audit (RG-12) avec sa cause
+/// (`ecriture`, `annee_en_cours`, `ouverture_anticipee` ; la liasse, close d'office, n'est pas une ouverture du logiciel) et n'écrit AUCUNE pièce (ni à-nouveau ni écriture : les
+/// à-nouveaux de N+1 restent PROVISOIRES et calculés jusqu'à la clôture de N). Rend les années ouvertes.
+List<int> ouvrirExercices(Magasin m, DateTime auj) {
+  final col = m.collection('exercices');
+  final mois = circuitClotureDe(m, horloge: () => auj).moisOuvertureSuivant;
+  final toutes = m.collection('ecritures').toutes;
+  final fiches = cpcExercicesAAmorcer(col.toutes, toutes, auj, moisOuvertureSuivant: mois);
+  final ouvertes = <int>[];
+  for (final f in fiches) {
+    col.inserer(f);
+    final a = f['annee'] as int;
+    final cause = cpcCauseOuverture(a, toutes, auj, moisOuvertureSuivant: mois);
+    if (cause != 'liasse') {
+      m.journaliser('Ouverture d’exercice', 'M12', 'Exercice', '$a', null, {'etat': 'ouvert', 'origine': cause});
+      ouvertes.add(a);
+    }
+  }
+  return ouvertes;
+}
+
+/// LA TÂCHE QUOTIDIENNE du poste : l'ouverture au démarrage, puis toutes les six heures (un poste resté ouvert la nuit du 31 décembre ouvre l'exercice sans attendre un écran). Un fileul
+/// l'exécute comme la mère : les fiches portent un identifiant déterministe (`EXO-<année>`), deux postes qui ouvrent la même année produisent la même fiche.
+Timer demarrerOuvertureDesExercices(Magasin m, {DateTime Function()? horloge, Duration periode = const Duration(hours: 6)}) {
+  final h = horloge ?? m.horloge;
+  ouvrirExercices(m, h());
+  return Timer.periodic(periode, (_) => ouvrirExercices(m, h()));
 }

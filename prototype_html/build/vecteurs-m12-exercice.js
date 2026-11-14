@@ -265,6 +265,37 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         poserJeu(); session(base.role, base.nom);
       }
 
+      /* ---------- 9. l'ouverture automatique des exercices et les journaux réservés (lot CLO C4) ------------------------------------------ */
+      {
+        poserJeu();
+        const o = {};
+        const auj0 = C.aujourdhui;
+        const ouvrir = (a, m, j) => {
+          db().exercices = []; db().audit = []; C.aujourdhui = () => new Date(a, m, j, 12, 0, 0);
+          const r = X.ouvrirDuJour();
+          const tr = (db().audit || []).filter((l) => l.action === 'Ouverture d’exercice').map((l) => ({ annee: String(l.reference), apres: l.nouvelleValeur }));
+          return propre({ date: r.date, ouverts: r.ouverts, existants: r.existants, pieceEcrite: r.pieceEcrite, trace: tr });
+        };
+        try {
+          o.aout2026 = ouvrir(2026, 7, 16);
+          o.dec2026 = ouvrir(2026, 11, 20);
+          o.jan2028 = ouvrir(2028, 0, 2);
+        } finally { C.aujourdhui = auj0; }
+        poserJeu();
+        const refus = {};
+        ['CL', 'AN'].forEach((jr) => {
+          const t = O.toasts.length;
+          const r = S.collection('ecritures').insert({ numero: 'VEC-JR-' + jr, date: '2026-12-11', journal: jr, compte: '606000', debit: 5, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' });
+          refus[jr] = { insere: r !== null, detail: O.toasts.slice(t).map((x) => x.detail) };
+        });
+        const tOd = O.toasts.length;
+        const od = S.collection('ecritures').insert({ numero: 'VEC-JR-OD', date: '2026-12-11', journal: 'OD', compte: '606000', debit: 5, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' });
+        refus.OD = { insere: od !== null, detail: O.toasts.slice(tOd).map((x) => x.detail) };
+        o.journauxReserves = refus;
+        rep.ouverture = o;
+        poserJeu();
+      }
+
       /* ---------- 8. les soldes d'ouverture et de clôture d'un compte au grand livre (lot CLO C3) ----------------------------------- */
       {
         poserJeu(); valideTout();

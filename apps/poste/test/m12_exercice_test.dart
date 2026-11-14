@@ -304,6 +304,54 @@ void main() {
     });
   });
 
+  group('l\'ouverture automatique des exercices et les journaux réservés (lot CLO C4)', () {
+    int nbEcritures(Magasin m) => m.collection('ecritures').toutes.length;
+    test('au 20/12/2026 l\'exercice 2027 s\'ouvre, tracé au journal d\'audit, SANS aucune pièce ; la tâche est idempotente', () {
+      final m = magasinComplet();
+      final avant = nbEcritures(m);
+      final o1 = ouvrirExercices(m, DateTime(2026, 12, 20, 12));
+      expect(o1, [2027]);
+      expect(m.collection('exercices').toutes.any((x) => x['annee'] == 2027 && x['etat'] == 'ouvert'), true);
+      expect(nbEcritures(m), avant, reason: 'une ouverture n\'écrit aucune pièce');
+      final trace = m.collection('audit').toutes.where((a) => a['action'] == 'Ouverture d’exercice' && '${a['reference']}' == '2027').toList();
+      expect(trace.length, 1);
+      expect('${trace.first['apres']}', contains('ouverture_anticipee'));
+      expect(ouvrirExercices(m, DateTime(2026, 12, 21, 12)), isEmpty, reason: 'idempotente');
+    });
+    test('au 02/01/2028 l\'année en cours s\'ouvre ; au 05/10/2026 rien (décembre), sauf si le circuit règle le mois à 10', () {
+      final m = magasinComplet();
+      expect(ouvrirExercices(m, DateTime(2028, 1, 2, 12)), [2028]);
+      final n = magasinComplet();
+      expect(ouvrirExercices(n, DateTime(2026, 10, 5, 12)).contains(2027), false);
+      final refus = reglerCircuitCloture(n,
+          cle: cpcCleMoisOuverture, valeur: 10, role: 'admin', gesteAccorde: true, motif: 'Ouvrir en octobre', horloge: () => DateTime(2026, 10, 5, 12));
+      expect(refus, isNull);
+      expect(ouvrirExercices(n, DateTime(2026, 10, 5, 12)), [2027]);
+    });
+    test('le magasin refuse une saisie manuelle au journal CL et au journal AN (JOURNAL_RESERVE), accepte OD', () {
+      final m = magasinComplet();
+      Fiche ligne(String j) => {'numero': 'T-$j', 'date': '2026-12-11', 'journal': j, 'compte': '606000', 'debit': 5, 'credit': 0, 'statut': 'brouillon', 'origine': 'Saisie manuelle'};
+      for (final j in ['CL', 'AN']) {
+        expect(() => m.collection('ecritures').inserer(ligne(j)), throwsA(isA<EcritureRefusee>().having((e) => e.motif, 'motif', startsWith('JOURNAL_RESERVE : le journal $j'))));
+      }
+      expect(() => m.collection('ecritures').inserer(ligne('OD')), returnsNormally);
+    });
+  });
+
+  group('E3 (lot CLO C5, MESURE seulement) : le rejeu d\'une pièce datée d\'un exercice clos', () {
+    Fiche piece(String id) => {'id': id, 'numero': 'VTE-2025-E3', 'date': '2025-03-01', 'journal': 'VTE', 'compte': '706000', 'debit': 0, 'credit': 10, 'statut': 'brouillon', 'origine': 'Facturation'};
+    test('MESURE : la saisie de l\'agent est refusée par la garde, MAIS une fiche reçue d\'un autre poste passe `appliquerDistante`, qui ne passe par aucune garde', () {
+      final m = magasinComplet();
+      expect(() => m.collection('ecritures').inserer(piece('E3-LOCALE')), throwsA(isA<EcritureRefusee>()));
+      expect(m.collection('ecritures').appliquerDistante(piece('E3-DISTANTE')), true, reason: 'ÉCART E3 constaté : la mère applique la pièce au rejeu au lieu de la refuser en la nommant');
+    });
+    test('CIBLE, non faite : la mère refuse au rejeu la pièce d\'un fileul datée d\'un exercice clos, refus nommé « exercice clôturé », rangée en tâche à traiter',
+        skip: 'E3 non corrigé dans ce lot : le refus au rejeu est dans `pont_activite.dart` et le banc de synchronisation à deux postes reste à écrire (voir ECARTS-MAQUETTE.md, lot CLO)', () {
+      final m = magasinComplet();
+      expect(m.collection('ecritures').appliquerDistante(piece('E3-DISTANTE')), false);
+    });
+  });
+
   group('m12-grand-livre : soldes d\'ouverture et de clôture (lot CLO C3), inconnu jamais zéro', () {
     casM14('2026 : l\'ouverture est INCONNUE (2025 clos par la liasse, sans à-nouveau) : la tuile dit « Inconnu », la clôture aussi ; jamais 0', (t) async {
       final m = magasinComplet();

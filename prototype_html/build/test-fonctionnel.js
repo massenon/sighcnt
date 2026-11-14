@@ -26633,7 +26633,7 @@ async function viderMessages(page) {
 
   /* LOT CLO C0 DÉBUT */
   await etape(async () => {
-    scenario('Vague 179 : lot CLO C0, mesure des lignes « à sonder » du PRD de clôture annuelle (E2, E4, E6, E8, E9, E17, E18) : une assertion par ligne ; E10 et la trace de E2 sont mesurées en défaut et rejoignent le scénario avec leur correction (C4)');
+    scenario('Vague 179 : lot CLO C0, mesure des lignes « à sonder » du PRD de clôture annuelle (E2, E4, E6, E8, E9, E10, E17, E18) : une assertion par ligne, chacune échoue si le comportement manque (E10 et la trace de E2 ont été mesurées en défaut avant C4)');
     erreursJS = [];
     await poserSessionServeur({ role: 'admin', nom: 'ADMIN179', nomComplet: 'ADMIN179', fonction: 'admin', identifiant: 's179.admin', secteur: 'DIR' });
     await ouvrir('m12-cloture.html');
@@ -26647,6 +26647,7 @@ async function viderMessages(page) {
       return { avant: !!avant, insere: !!r, existe: !!x, etat: x && x.etat, trace: trace.length };
     });
     verifier('E2 : une pièce datée du 1er janvier d’une année sans exercice FAIT exister l’exercice (ouvert)', e2.avant === false && e2.insere && e2.existe && e2.etat === 'ouvert', JSON.stringify(e2));
+    verifier('E2 : l’ouverture de cet exercice est TRACÉE au journal d’audit (une entrée « Ouverture d’exercice », référence 2057)', e2.trace === 1, JSON.stringify(e2));
     /* --- E4 : en clôture, seule la saisie manuelle du comptable (et de l'administrateur) passe --- */
     const e4 = await page.evaluate(() => {
       const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
@@ -26663,6 +26664,23 @@ async function viderMessages(page) {
     verifier('E4 : en clôture, la saisie manuelle du comptable et de l’administrateur passe', e4.dem && e4.etat === 'en_cloture' && e4.comptableManuelle === true && e4.adminManuelle === true, JSON.stringify(e4));
     verifier('E4 : en clôture, une pièce de module (même par le comptable) et la saisie manuelle d’un autre profil sont refusées', e4.comptableModule === false && e4.caissierManuelle === false, JSON.stringify(e4));
     await page.evaluate(() => window.SIGH.store.reset());
+    /* --- E10 : journaux CL et AN hors de la saisie manuelle (moteur ET écran) --- */
+    const e10m = await page.evaluate(() => {
+      const S = window.SIGH.store, ecr = S.collection('ecritures'), o = {};
+      ['CL', 'AN'].forEach((j) => { o[j] = !!ecr.insert({ numero: 'CLO-E10-' + j, date: '2026-12-11', journal: j, compte: '606000', debit: 5, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' }); });
+      return o;
+    });
+    verifier('E10 : le moteur refuse une saisie manuelle au journal CL et au journal AN', e10m.CL === false && e10m.AN === false, JSON.stringify(e10m));
+    await page.evaluate(() => window.SIGH.store.reset());
+    await ouvrir('m12-ecritures.html');
+    const e10e = await page.evaluate(async () => {
+      const b = [...document.querySelectorAll('button')].find((x) => /Nouvelle écriture/.test(x.textContent));
+      if (!b) return { bouton: false };
+      b.click(); await new Promise((r) => setTimeout(r, 400));
+      const sel = [...document.querySelectorAll('[role="dialog"] select')].find((s) => [...s.options].some((o) => o.value === 'ACH'));
+      return { bouton: true, options: sel ? [...sel.options].map((o) => o.value) : null };
+    });
+    verifier('E10 : la liste des journaux de la saisie ne propose ni CL ni AN', e10e.options && e10e.options.indexOf('ACH') >= 0 && e10e.options.indexOf('AN') < 0 && e10e.options.indexOf('CL') < 0, JSON.stringify(e10e));
     /* --- E8 : un seul bandeau de statut, posé au socle ; E6 : encadré d'à-nouveaux provisoires --- */
     const garde8 = require('fs').readFileSync(path.join(ROOT, 'assets/js/app.js'), 'utf8');
     const ailleurs = require('child_process').execSync("grep -rlE \"<strong>Exercice ' [+] \" assets/js || true", { cwd: ROOT, encoding: 'utf8' }).split('\n').filter(Boolean);
@@ -26989,6 +27007,96 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CLO C2 C3 FIN */
+
+  /* LOT CLO C4 DÉBUT */
+  await etape(async () => {
+    scenario('Vague 182 : lot CLO C4, ouverture automatique des exercices (horloge décalée en décembre puis en janvier, mois réglé par le circuit, aucune pièce écrite, ouverture tracée, tâche du serveur qui lit et alerte sans rien écrire)');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN182', nomComplet: 'ADMIN182', fonction: 'admin', identifiant: 's182.admin', secteur: 'DIR' });
+    await page.evaluate(() => { window.SIGH.store.reset(); window.SIGH.exercice.choisir(new Date().getFullYear()); });
+    await ouvrir('m12-cloture.html');
+    const h0 = await page.evaluate(() => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1); });
+    /* 1. En août (horloge du banc) : rien à ouvrir pour l'année suivante */
+    const j = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const n0 = S.raw().ecritures.length;
+      const r = X.ouvrirDuJour();
+      return { annee: new Date().getFullYear(), mois: new Date().getMonth() + 1, ouverts: r.ouverts, a2027: !!S.collection('exercices').all().filter((x) => x.annee === 2027)[0], piece: r.pieceEcrite, n: S.raw().ecritures.length - n0 };
+    });
+    verifier('En août 2026 (date du banc), la tâche d’ouverture n’ouvre rien pour 2027 (décembre n’est pas atteint)', j.mois === 8 && j.a2027 === false && j.ouverts.indexOf(2027) < 0 && j.piece === false, JSON.stringify(j));
+    /* 2. Horloge en décembre : 2027 s'ouvre, tracé, sans aucune pièce, idempotent */
+    const d = await page.evaluate(() => {
+      window.__SIGH_HORLOGE.poser(2026, 11, 20);
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const nEcr = S.raw().ecritures.length, nAn = S.raw().ecritures.filter((e) => e.journal === 'AN' && String(e.date).slice(0, 4) === '2027').length;
+      const r1 = X.ouvrirDuJour(), r2 = X.ouvrirDuJour();
+      const fiche = S.collection('exercices').all().filter((x) => x.annee === 2027)[0];
+      const trace = (S.raw().audit || []).filter((l) => l.action === 'Ouverture d’exercice' && String(l.reference) === '2027');
+      return { date: r1.date, ouverts: r1.ouverts, second: r2.ouverts, etat: fiche && fiche.etat, source: fiche && fiche.source, piece: r1.pieceEcrite, dEcr: S.raw().ecritures.length - nEcr,
+        dAn: S.raw().ecritures.filter((e) => e.journal === 'AN' && String(e.date).slice(0, 4) === '2027').length - nAn, trace: trace.length, cause: trace[0] && trace[0].nouvelleValeur, prov: X.provisoires(2027).length > 0 };
+    });
+    verifier('Au 20/12/2026 : l’exercice 2027 s’ouvre (ouvert), la tâche est idempotente, l’ouverture est TRACÉE au journal d’audit (cause « ouverture_anticipee »), et AUCUNE pièce n’est écrite (ni écriture, ni à-nouveau : les à-nouveaux restent provisoires et calculés)',
+      d.date === '2026-12-20' && JSON.stringify(d.ouverts) === '[2027]' && d.second.length === 0 && d.etat === 'ouvert' && d.piece === false && d.dEcr === 0 && d.dAn === 0 && d.trace === 1 && /ouverture_anticipee/.test(d.cause || '') && d.prov === true, JSON.stringify(d));
+    /* 3. Horloge en janvier 2028 : l'année en cours s'ouvre (personne n'a ouvert 2028 en décembre 2027) */
+    const g = await page.evaluate(() => {
+      window.__SIGH_HORLOGE.poser(2028, 0, 2);
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const avant = !!S.collection('exercices').all().filter((x) => x.annee === 2028)[0];
+      const r = X.ouvrirDuJour();
+      const trace = (S.raw().audit || []).filter((l) => l.action === 'Ouverture d’exercice' && String(l.reference) === '2028');
+      return { avant, ouverts: r.ouverts, piece: r.pieceEcrite, cause: trace[0] && trace[0].nouvelleValeur };
+    });
+    verifier('Au 02/01/2028 : l’exercice 2028 (année en cours) s’ouvre, cause « annee_en_cours », aucune pièce', g.avant === false && g.ouverts.indexOf(2028) >= 0 && g.piece === false && /annee_en_cours/.test(g.cause || ''), JSON.stringify(g));
+    /* 4. Le mois d'ouverture est un RÉGLAGE du circuit, pas une constante : en octobre, il suffit de le régler à 10 */
+    const m = await page.evaluate(() => {
+      window.SIGH.store.reset();
+      window.__SIGH_HORLOGE.poser(2026, 9, 5);
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      S.setSession({ role: 'admin', nom: 'ADMIN182', nomComplet: 'ADMIN182', fonction: 'admin', secteur: 'DIR' });
+      const avant = X.ouvrirDuJour().ouverts;
+      const r = X.definirCircuit({ cle: 'moisOuvertureSuivant', valeur: 10, motif: 'Sonde 182 : ouvrir en octobre' });
+      const apres = X.ouvrirDuJour().ouverts;
+      return { avant, reglage: r.ok, apres };
+    });
+    verifier('Le mois d’ouverture est lu du circuit : le 05/10/2026 rien ne s’ouvre (défaut décembre) ; réglé à 10, l’exercice 2027 s’ouvre', m.avant.indexOf(2027) < 0 && m.reglage === true && JSON.stringify(m.apres) === '[2027]', JSON.stringify(m));
+    /* 5. Le serveur (tâche planifiée exercices_ouverture) : elle LIT et alerte, elle n'écrit aucune collection ; l'alerte disparaît quand le poste a ouvert l'exercice */
+    await page.evaluate(() => { window.SIGH.store.reset(); window.__SIGH_HORLOGE.poser(2026, 7, 16); window.SIGH.exercice.ouvrirDuJour(); });
+    await pause(1500);
+    await page.evaluate(async () => { const S = window.SIGH.store; S.pousserMaintenant(); for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250)); });
+    const cronPlan = () => page.evaluate(async () => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() }, body: JSON.stringify({ action: 'executer', code: 'exercices_ouverture', maintenant: '2026-12-10T12:00:00' }) });
+      const o = await r.json();
+      /* lecture DIRECTE de la liste du serveur (le sondage de la cloche peut être en vol et rendre l'état précédent) */
+      const r2 = await fetch(racine + 'api/notifications.php', { headers: { 'X-Sigh-Jeton': S.jetonServeur(), Accept: 'application/json' } });
+      const lst = ((await r2.json()).notifications || []);
+      const al = lst.filter((a) => /^exercice-a-ouvrir:/.test(a.cle));
+      const rap = o.rapport && o.rapport.exercices_ouverture;
+      return { statut: rap && rap.statut, message: rap && rap.message, alertes: al.map((a) => a.cle), postes: al[0] ? al[0].postes : null };
+    });
+    /* l'empreinte de la base doit être STABLE (les envois du poste sont arrivés) avant de mesurer que la tâche n'écrit rien */
+    let empAvantCron = null;
+    for (let i = 0; i < 20; i++) {
+      await pause(900);
+      const e = JSON.parse(outilsSauv.cli('../build/_sonde-sauvegarde.php', ['magasin']).out || '{}');
+      if (empAvantCron && e.empreinte === empAvantCron.empreinte) break;
+      empAvantCron = e;
+    }
+    const s1 = await cronPlan();
+    const empApresCron = JSON.parse(outilsSauv.cli('../build/_sonde-sauvegarde.php', ['magasin']).out || '{}');
+    verifier('La tâche du serveur n’écrit AUCUNE collection : l’empreinte de toutes les collections en base est la même avant et après son exécution', !!empAvantCron.empreinte && empAvantCron.empreinte === empApresCron.empreinte, JSON.stringify([empAvantCron, empApresCron]));
+    verifier('Le serveur, au 10/12/2026 (2026 ouvert, 2027 non), alerte « Exercice 2027 à ouvrir » aux rôles du circuit (ceux qui démarrent la clôture) et dit qu’il n’écrit aucune collection',
+      s1.statut === 'ok' && s1.alertes.indexOf('exercice-a-ouvrir:2027') >= 0 && /à ouvrir : 2027/.test(s1.message || '') && /Aucune collection écrite/.test(s1.message || '') && JSON.stringify((s1.postes || []).slice().sort()) === '["admin","comptable","da"]', JSON.stringify(s1));
+    await page.evaluate(async () => { window.__SIGH_HORLOGE.poser(2026, 11, 10); window.SIGH.exercice.ouvrirDuJour(); const S = window.SIGH.store; S.pousserMaintenant(); for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250)); });
+    const s2 = await cronPlan();
+    verifier('Le poste ayant ouvert 2027, la tâche du serveur ne trouve plus rien à ouvrir : l’alerte a disparu (jamais supprimée, résolue)', s2.statut === 'ok' && s2.alertes.indexOf('exercice-a-ouvrir:2027') < 0 && /à ouvrir : aucun/.test(s2.message || ''), JSON.stringify(s2));
+    await page.evaluate(() => { window.__SIGH_HORLOGE.poser(2026, 7, 16); window.SIGH.exercice.choisir(2026); window.SIGH.store.reset(); });
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CLO C4 FIN */
+
 
 
 

@@ -3800,7 +3800,11 @@
     var col = S.collection('exercices', { module: 'M12', entite: 'Exercice' });
     var annees = {};
     S.collection('ecritures').all().forEach(function (e) { var a = anneeDe(e.date); if (a) annees[a] = true; });
+    var aDesEcritures = {}; Object.keys(annees).forEach(function (a) { aDesEcritures[a] = true; });
     annees[anneeCourante()] = true;
+    /* LOT CLO C4 : à partir du mois réglé du circuit (défaut semé : décembre), l'exercice de l'année SUIVANTE s'ouvre aussi. Aucune pièce n'est écrite. */
+    var moisOuv = circuitALaDate('moisOuvertureSuivant');
+    if (moisOuv.ok && C.aujourdhui().getMonth() + 1 >= Number(moisOuv.valeur)) annees[anneeCourante() + 1] = true;
     if (global.SIGH.liasse && global.SIGH.liasse.DEPOT) {
       annees[global.SIGH.liasse.DEPOT.exerciceN] = true;
       annees[global.SIGH.liasse.DEPOT.exerciceN1] = true;
@@ -3819,7 +3823,12 @@
         motif: deposee ? 'Exercice antérieur à la mise en service : fait par la liasse déposée.' : null,
       });
       ajoute = true;
-      if (!deposee) nouveaux.push(a);
+      if (!deposee) {
+        nouveaux.push(a);
+        /* TOUTE OUVERTURE EST TRACÉE (RG-12), avec sa cause ; elle n'écrit aucune pièce. */
+        S.log('Ouverture d’exercice', 'M12', 'Exercice', String(a), null,
+          { etat: 'ouvert', origine: aDesEcritures[a] ? 'ecriture' : (a === anneeCourante() ? 'annee_en_cours' : 'ouverture_anticipee') });
+      }
     });
     /* Le 05/11/2026 l'état « en attente de clôture » devient « en clôture » (la demande verrouille les modules) : les fiches d'avant sont reprises. */
     col.all().forEach(function (x) { if (x.etat === 'en_attente_cloture') { x.etat = 'en_cloture'; ajoute = true; } });
@@ -3830,6 +3839,16 @@
       .sort(function (a, b) { return b.annee - a.annee; });
   }
   function exercice(annee) { return exercices().filter(function (x) { return x.annee === Number(annee); })[0] || null; }
+  /* LA TÂCHE QUOTIDIENNE D'OUVERTURE DES EXERCICES (lot CLO C4, EF-CLO-1) : ouvre l'année en cours et, à partir du mois réglé du circuit, l'année suivante. Idempotente, tracée au
+     journal d'audit, n'écrit AUCUNE pièce (ni à-nouveau ni écriture). Rend { date, ouverts: [années], existants: [années] }. Le poste la joue à son ouverture ; le serveur
+     (api/cron.php, tâche `exercices_ouverture`) vérifie chaque jour que ce qui doit être ouvert l'est, et le dit au rôle qui démarre la clôture sinon. */
+  function ouvrirExercicesDuJour() {
+    var avant = {}; S.collection('exercices', { module: 'M12', entite: 'Exercice' }).all().forEach(function (x) { avant[x.annee] = true; });
+    var nbEcritures = S.collection('ecritures').all().length;
+    var liste = exercices();
+    var ouverts = liste.filter(function (x) { return !avant[x.annee]; }).map(function (x) { return x.annee; }).sort();
+    return { date: aujIso(), ouverts: ouverts, existants: liste.map(function (x) { return x.annee; }).sort(), pieceEcrite: S.collection('ecritures').all().length !== nbEcritures };
+  }
   function etatExercice(annee) { var x = exercice(annee); return x ? x.etat : 'ouvert'; }
 
   /* LE CHOIX DE L'EXERCICE VIT DANS LA SESSION DE L'UTILISATEUR, en un seul endroit : cette fonction. Tous les écrans la lisent, aucun ne garde de copie.
@@ -3865,6 +3884,11 @@
   /* Drapeau posé par lettrer/delettrer : poser un lettrage est le geste attendu d'un exercice en clôture, quelle que soit l'origine. */
   var lettrageEnCours = false;
   S.garder('ecritures', function (op, rec) {
+    /* EF-CLO-6 : les journaux CL et AN ne se saisissent pas à la main, quel que soit l'état de l'exercice (le moteur refuse aussi : masquer une option ne protège rien). */
+    if (op !== 'archiver' && rec && rec.origine === 'Saisie manuelle') {
+      var jr = (D.JOURNAUX_RESERVES || []).filter(function (j) { return j.code === rec.journal; })[0];
+      if (jr) return 'JOURNAL_RESERVE : le journal ' + jr.code + ' (' + jr.libelle + ') n’est alimenté que par ' + jr.alimente + ' ; il ne se saisit pas à la main. Saisir l’écriture au journal des opérations diverses (OD).';
+    }
     var a = anneeDe(rec && rec.date);
     if (!a) return null;
     /* Les pièces de la clôture elle-même (CL, AN, contre-passations) passent : c'est elles qui font l'état. */
@@ -4331,6 +4355,7 @@
     if (!exercice(annee + 1)) {
       S.collection('exercices').all().unshift({ id: 'EXO-' + (annee + 1), annee: annee + 1, debut: (annee + 1) + '-01-01', fin: (annee + 1) + '-12-31',
         statut: 'actif', etat: 'ouvert', source: 'journal' });
+      S.log('Ouverture d’exercice', 'M12', 'Exercice', String(annee + 1), null, { etat: 'ouvert', origine: 'cloture' });
     }
     S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_cloture' }, { etat: 'clos', resultat: res, cl: numCL, an: numAN });
     notifierCircuit('rolesRouvrir', { type: 'cloture', libelle: 'Exercice ' + annee + ' clôturé', detail: 'Résultat ' + C.money(res) + ' ; pièces ' + numCL + ' et ' + numAN + ' écrites.', reference: String(annee) });
@@ -4665,7 +4690,7 @@
 
   global.SIGH.exercice = {
     dansExercice: dansExerciceChoisi, fenetre: fenetreExercice,
-    liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
+    liste: exercices, ouvrirDuJour: ouvrirExercicesDuJour, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
     dateReference: dateReference, voisin: exerciceVoisin, parDefaut: exerciceParDefaut,
     anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
     provisoires: aNouveauxProvisoires, soldesCompte: soldesGrandLivre, preCloture: preCloture, demander: demanderCloture, demarrer: demarrerCloture, reprendre: reprendreSaisie,

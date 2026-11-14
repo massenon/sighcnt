@@ -297,6 +297,44 @@ void main() {
     });
   });
 
+  group('l\'OUVERTURE automatique des exercices et les journaux réservés (lot CLO C4), rejoués sur les vecteurs de la maquette', () {
+    final ov = carte(v['ouverture']);
+    final cas = <String, DateTime>{'aout2026': DateTime(2026, 8, 16, 12), 'dec2026': DateTime(2026, 12, 20, 12), 'jan2028': DateTime(2028, 1, 2, 12)};
+    for (final e in cas.entries) {
+      test('${e.key} : les exercices ouverts, leur cause tracée, aucune pièce', () {
+        final att = carte(ov[e.key]);
+        final fiches = cpcExercicesAAmorcer([], ecr, e.value, moisOuvertureSuivant: circuit.moisOuvertureSuivant);
+        expect([for (final f in fiches) f['annee'] as int]..sort(), [for (final a in (att['existants'] as List)) a as int], reason: 'les mêmes exercices que la maquette');
+        final causes = {
+          for (final f in fiches)
+            if (cpcCauseOuverture(f['annee'] as int, ecr, e.value, moisOuvertureSuivant: circuit.moisOuvertureSuivant) != 'liasse')
+              '${f['annee']}': cpcCauseOuverture(f['annee'] as int, ecr, e.value, moisOuvertureSuivant: circuit.moisOuvertureSuivant)
+        };
+        final tracees = {for (final t in liste(att['trace'])) '${t['annee']}': carte(jsonDecode('${t['apres']}'))['origine']};
+        expect(causes, tracees);
+        expect(att['pieceEcrite'], false);
+        expect(fiches.every((f) => f.containsKey('compte') == false && f['journal'] == null), true, reason: 'une fiche d\'exercice n\'est pas une pièce');
+      });
+    }
+    test('sans mois réglé (null) aucune ouverture anticipée ; le mois réglé à 10 ouvre l\'année suivante en octobre', () {
+      final oct = DateTime(2026, 10, 5, 12);
+      expect([for (final f in cpcExercicesAAmorcer([], ecr, oct)) f['annee']], isNot(contains(2027)));
+      expect([for (final f in cpcExercicesAAmorcer([], ecr, oct, moisOuvertureSuivant: 12)) f['annee']], isNot(contains(2027)));
+      expect([for (final f in cpcExercicesAAmorcer([], ecr, oct, moisOuvertureSuivant: 10)) f['annee']], contains(2027));
+    });
+    test('les journaux CL et AN refusent la saisie manuelle, avec le message de la maquette ; OD passe ; une pièce de clôture passe', () {
+      final r = carte(ov['journauxReserves']);
+      for (final j in ['CL', 'AN']) {
+        final attendu = List<Object?>.from(carte(r[j])['detail'] as List).single;
+        expect(cpcGardeEcritures(exo, '2026-12-11', origine: 'Saisie manuelle', journal: j, role: 'admin', circuit: circuit), attendu, reason: j);
+        expect(carte(r[j])['insere'], false);
+      }
+      expect(cpcGardeEcritures(exo, '2026-12-11', origine: 'Saisie manuelle', journal: 'OD', role: 'admin', circuit: circuit), isNull);
+      expect(cpcGardeEcritures(exo, '2026-12-11', origine: 'Clôture : résultat', origineCloture: 'cl', journal: 'CL', role: 'admin', circuit: circuit), isNull);
+      expect(cpcGardeEcritures(exo, '2026-12-11', origine: 'Saisie manuelle', journal: 'CL', op: 'archiver', role: 'admin', circuit: circuit), isNull, reason: 'archiver n\'est pas saisir');
+    });
+  });
+
   group('les SOLDES du grand livre : ouverture et clôture, inconnu jamais zéro (lot CLO C3), rejoués sur les vecteurs de la maquette', () {
     final g = carte(v['soldesGL']);
     final comptes = [for (final c in (g['comptes'] as List)) '$c'];

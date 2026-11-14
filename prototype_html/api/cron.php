@@ -130,6 +130,35 @@ function sigh_cron_delai_a_payer(PDO $pdo, int $auj): int
     return (int) $retenu['delaiAPayer'];
 }
 
+/**
+ * LE CIRCUIT DE CLÔTURE ANNUELLE (lot CLO C1, C4) : la valeur d'un réglage de la collection `reglagesCloture` (une fiche par version datée), en vigueur le jour `$iso`. Aucune valeur de
+ * repli écrite ici : un réglage sans version FAIT ÉCHOUER la tâche, nommément, plutôt que d'agir sur une liste que personne n'a arrêtée. Aucun nom de rôle n'est écrit dans ce fichier
+ * pour la clôture : les destinataires des alertes sont les rôles de la liste lue.
+ */
+function sigh_cron_circuit(PDO $pdo, string $cle, string $iso)
+{
+    $retenu = null;
+    $dateRetenue = '';
+    foreach (sigh_cron_collection($pdo, 'reglagesCloture') as $v) {
+        if (($v['cle'] ?? '') !== $cle) {
+            continue;
+        }
+        $d = substr((string) ($v['dateEffet'] ?? ''), 0, 10);
+        $fin = substr((string) ($v['dateFin'] ?? ''), 0, 10);
+        if ($d === '' || $d > $iso || ($fin !== '' && $fin < $iso)) {
+            continue;
+        }
+        if ($retenu === null || $d >= $dateRetenue) {
+            $retenu = $v;
+            $dateRetenue = $d;
+        }
+    }
+    if ($retenu === null || !array_key_exists('valeur', $retenu) || $retenu['valeur'] === null || $retenu['valeur'] === [] || $retenu['valeur'] === '') {
+        throw new RuntimeException('Réglage « ' . $cle . ' » absent du magasin : le circuit de clôture annuelle n\'est pas arrêté (écran Exercices & clôtures, onglet Circuit de clôture).');
+    }
+    return $retenu['valeur'];
+}
+
 /** Une sauvegarde qui n'a pas pu s'écrire : exécution en ERREUR (jamais « ok » sans rien avoir écrit) ET alerte critique routée à l'administrateur et à la DAF. */
 function sigh_cron_echec_sauvegarde(string $cle, string $titre, array $refus): array
 {
@@ -174,6 +203,45 @@ function sigh_cron_taches(): array
                     ];
                 }
                 return $out;
+            },
+        ],
+        'exercices_ouverture' => [
+            'libelle' => 'Ouverture des exercices : l’année en cours, et l’année suivante à partir du mois réglé (la tâche n’écrit aucune pièce ni aucune collection)',
+            'frequence_min' => 1440,
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                $iso = gmdate('Y-m-d', $auj * 86400);
+                $annee = (int) substr($iso, 0, 4);
+                $mois = (int) substr($iso, 5, 2);
+                $moisOuverture = (int) sigh_cron_circuit($pdo, 'moisOuvertureSuivant', $iso);
+                if ($moisOuverture < 1 || $moisOuverture > 12) {
+                    throw new RuntimeException('Réglage « moisOuvertureSuivant » invalide (' . $moisOuverture . ') : un entier de 1 à 12 est attendu.');
+                }
+                $destinataires = sigh_cron_circuit($pdo, 'rolesDemarrer', $iso);
+                $attendus = [$annee];
+                if ($mois >= $moisOuverture) {
+                    $attendus[] = $annee + 1;
+                }
+                $existants = [];
+                foreach (sigh_cron_collection($pdo, 'exercices') as $e) {
+                    $existants[(int) ($e['annee'] ?? 0)] = true;
+                }
+                $out = [];
+                $manque = [];
+                foreach ($attendus as $a) {
+                    if (isset($existants[$a])) {
+                        continue;
+                    }
+                    $manque[] = $a;
+                    $out[] = [
+                        'cle' => 'exercice-a-ouvrir:' . $a,
+                        'priorite' => 'important',
+                        'titre' => 'Exercice ' . $a . ' à ouvrir',
+                        'detail' => 'L’exercice ' . $a . ' n’est pas encore ouvert dans le magasin : il s’ouvre à la prochaine ouverture d’un poste (aucune pièce n’est écrite par la tâche).',
+                        'lien' => 'm12-cloture',
+                        'postes' => is_array($destinataires) ? array_values($destinataires) : [],
+                    ];
+                }
+                return ['alertes' => $out, 'statut' => 'ok', 'message' => 'Au ' . $iso . ' : exercices attendus ' . implode(', ', $attendus) . ' ; à ouvrir : ' . ($manque ? implode(', ', $manque) : 'aucun') . '. Aucune collection écrite.'];
             },
         ],
         'stock_seuils' => [
@@ -390,12 +458,17 @@ function sigh_cron_taches(): array
 /* --------------------------------------------------------------------------
  * L'EXÉCUTION
  * ------------------------------------------------------------------------ */
-function sigh_cron_executer(PDO $pdo, string $origine = 'systeme', bool $force = false, ?string $seule = null): array
+function sigh_cron_executer(PDO $pdo, string $origine = 'systeme', bool $force = false, ?string $seule = null, ?string $maintenant = null): array
 {
     sigh_cron_installer($pdo);
     $pg = sigh_est_postgres();
     $rapport = [];
-    $auj = (int) floor(time() / 86400);
+    /* L'horloge du serveur ; (BANC SEULEMENT, derrière SIGH_BANC=1) celle que la sonde impose, pour éprouver une tâche datée sans attendre décembre. */
+    $instant = time();
+    if ($maintenant !== null && getenv('SIGH_BANC') === '1' && strtotime($maintenant) !== false) {
+        $instant = strtotime($maintenant);
+    }
+    $auj = (int) floor($instant / 86400);
     foreach (sigh_cron_taches() as $code => $t) {
         if ($seule !== null && $seule !== $code) {
             continue;

@@ -954,6 +954,12 @@
       motif: 'Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026).' },
   ];
 
+  /* LES JOURNAUX RÉSERVÉS (lot CLO C4, EF-CLO-6) : aucune saisie manuelle n'alimente le journal de clôture CL ni le journal des à-nouveaux AN ; ce qui les alimente est dit au refus. */
+  var JOURNAUX_RESERVES = [
+    { code: 'CL', libelle: 'Journal de clôture', alimente: 'la clôture de l’exercice' },
+    { code: 'AN', libelle: 'Journal des à-nouveaux', alimente: 'la clôture de l’exercice, le report des à-nouveaux et l’import des soldes d’ouverture' },
+  ];
+
   /* --------------------------------------------------------------------------
    * LE CIRCUIT DE CLÔTURE ANNUELLE (Direction, 11/11/2026, réponses Q1 et Q2 ; lot CLO C1, 14/11/2026) : qui démarre, qui passe les écritures d'inventaire en clôture, qui
    * clôture définitivement, qui rouvre, et à partir de quel mois l'exercice suivant s'ouvre. Ce tableau ne DÉFINIT que les clés ; la valeur en vigueur se lit dans la collection
@@ -2463,7 +2469,7 @@
     NS131: NS131, NS132: NS132,
     ASSUREURS: ASSUREURS, ANALYSES: ANALYSES,
     CATEGORIES_PRODUIT: CATEGORIES_PRODUIT, TYPES_STOCK: TYPES_STOCK, TYPES_MOUVEMENT: TYPES_MOUVEMENT,
-    FOURNISSEURS: FOURNISSEURS, PLAN_COMPTABLE: PLAN_COMPTABLE, JOURNAUX: JOURNAUX, CENTRES_COUT: CENTRES_COUT,
+    FOURNISSEURS: FOURNISSEURS, PLAN_COMPTABLE: PLAN_COMPTABLE, JOURNAUX: JOURNAUX, JOURNAUX_RESERVES: JOURNAUX_RESERVES, CENTRES_COUT: CENTRES_COUT,
     PARAM_FISCAL: PARAM_FISCAL,
     SITUATIONS_AIB: SITUATIONS_AIB,
     BAREME_AIB: BAREME_AIB,

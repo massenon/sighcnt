@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../donnees/circuit_cloture_poste.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -12,12 +13,10 @@ export 'cpa_commun.dart';
 
 /// `exercices()` amorce la collection (une fiche par année portée par le journal, l'horloge et la liasse déposée). À appeler AVANT le premier rendu :
 /// insérer pendant un rendu déclencherait les écouteurs en pleine construction.
-void amorcerExercices(Magasin m, DateTime auj) {
-  final col = m.collection('exercices');
-  final fiches = cpcExercicesAAmorcer(col.toutes, m.collection('ecritures').toutes, auj);
-  for (final f in fiches) {
-    col.inserer(f);
-  }
+///
+/// LOT CLO C4 : l'ouverture elle-même est [ouvrirExercices] (donnees/circuit_cloture_poste.dart), la même que celle de la tâche quotidienne du poste. Rend les années ouvertes.
+List<int> amorcerExercices(Magasin m, DateTime auj) {
+  final ouvertes = ouvrirExercices(m, auj);
   // La table PARAMÉTRABLE des comptes de résultat (131 bénéfice, 139 perte) : amorcée une fois, modifiable ensuite.
   final cr = m.collection('comptesResultat');
   if (cr.toutes.isEmpty) {
@@ -25,6 +24,7 @@ void amorcerExercices(Magasin m, DateTime auj) {
       cr.inserer({...f});
     }
   }
+  return ouvertes;
 }
 
 List<Fiche> exercicesActifs(Magasin m) => cpcListeExercices(m.collection('exercices').toutes);

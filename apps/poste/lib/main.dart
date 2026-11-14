@@ -8,6 +8,7 @@ import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
 
+import 'donnees/circuit_cloture_poste.dart';
 import 'donnees/fichiers_poste.dart';
 import 'donnees/ocr_poste.dart';
 import 'donnees/horssite_poste.dart';
@@ -187,6 +188,9 @@ Future<void> main() async {
   // LA REPRISE DES PRIX (lot T6) : un poste qui avait enregistré ses actes avant le référentiel de prix le garde, le prix facturé hier devient la version 1. Seule la MÈRE
   // (ou un poste autonome) reconstruit les collections de lecture ; un fileul les reçoit avec la configuration.
   TarifsPoste.reprendre(magasin, fileul: params.rejoint && params.mode != ModePoste.mere);
+  // L'OUVERTURE DES EXERCICES (lot CLO C4, EF-CLO-1) : au démarrage puis toutes les six heures, l'année en cours et, à partir du mois réglé du circuit de clôture (défaut : décembre),
+  // l'année suivante. Tracée au journal d'audit, aucune pièce écrite ; deux postes qui ouvrent la même année produisent la même fiche (identifiant déterministe).
+  demarrerOuvertureDesExercices(magasin);
   // LES FICHIERS NUMÉRISÉS (lot D5) : rangés hors du magasin, par empreinte SHA-256, chiffrés au repos par la clé du poste (en clair sous `SIGH_CHIFFREMENT=non`). Installés pour les écrans
   // des courriers (M13) et des documents du patient (M1) ; un fileul rattaché leur ajoute le transfert du binaire à part (`ServiceFichiers`, ci-dessous).
   final fichiersPoste = FichiersPoste(magasin, StockageFichiers('$dossierDonnees/fichiers', cle: cle))..installer();
