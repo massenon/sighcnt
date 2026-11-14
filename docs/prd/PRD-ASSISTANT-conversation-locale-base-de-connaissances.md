@@ -1,6 +1,6 @@
 # PRD : Assistant de la clinique (conversation locale, base de connaissances, requêtes en lecture)
 
-Statut : **brouillon, réponses de la Direction du 14/11/2026 intégrées** (section 10) ; restent ouvertes la conservation des conversations et le modèle de langage local. Aucune valeur, aucun moteur, aucune borne n'est choisi ici sans source : ce qui manque est dit en section 10.
+Statut : **brouillon, réponses de la Direction du 14/11/2026 intégrées** (section 10) ; toutes les décisions de la section 10 sont tranchées. Aucune valeur, aucun moteur, aucune borne n'est choisi ici sans source : ce qui manque est dit en section 10.
 Sources : demande de la Direction du 14/11/2026 (assistant conversationnel sur le poste fileul et la mère, avec base de connaissances, pour analyser les recettes, vérifier les niveaux de stock, voir les articles qui tournent, produire des rapports, tenir l'inventaire du stock, retrouver vite un nom de patient, le prix d'un acte, un certificat, un fournisseur, la validité de l'assurance d'un patient, etc.), `CLAUDE.md` (règles RG-01 à RG-14, « le texte médical ne quitte jamais la clinique », hors périmètre CDCT §4.3 : « IA d'aide au diagnostic »), skills `sigh-maitre`, `sigh-flutter`, `spec`.
 Règle de rédaction : pas de tiret cadratin comme ponctuation.
 
@@ -119,8 +119,10 @@ Tranché :
 5. **Base de connaissances : la Direction valide** chaque fiche avant publication (une fiche non validée n'est jamais citée) ; l'administrateur peut en proposer.
 
 Restent ouverts :
-6. **Un modèle de langage local à terme ?** Pas de réponse tranchée. Proposition : ne rien décider maintenant ; la version 1 fonctionne sans modèle (section 8) ; la question se reposera après la mesure du lot AST-0 sur un jeu de questions réelles de la clinique (taux de bonne intention de la version déterministe) : si ce taux est suffisant, aucun modèle n'est nécessaire.
-7. **Conversations** (section 9) : propres au poste, non synchronisées, 30 jours, chiffrées : proposition non encore confirmée.
+6. **Un modèle de langage local à terme ?** TRANCHÉ le 14/11/2026 (« on suit ta recommandation ») : rien n'est décidé maintenant ; la version 1 fonctionne sans modèle (section 8) ; la question se reposera après la mesure du lot AST-0 (taux de bonne intention de la version déterministe) : si ce taux est suffisant, aucun modèle n'est nécessaire.
+7. **Conversations** (section 9) : TRANCHÉ le 14/11/2026 (« on suit ta recommandation ») : propres au poste et à l'agent, non synchronisées, chiffrées, gardées 30 jours (réglable, borné).
+
+Le lot de mesure AST-0 est lancé dès que le lot 8 est poussé (décision du 14/11/2026). Jeu de questions : `ANNEXE-ASSISTANT-100-questions-AST-0.md` (100 questions proposées, à compléter par les agents).
 
 ## 11. Critères d'acceptation (extraits)
 
