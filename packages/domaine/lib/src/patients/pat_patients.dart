@@ -7,7 +7,7 @@ library;
 
 import '../caisse/prise_en_charge.dart' show carteValide;
 import '../format/format_fr.dart';
-import '../referentiels/regles.dart' show codePatient;
+import '../referentiels/regles.dart' show codePatient, resultatRendu;
 import '../labo/res_saisie.dart' show agePatient;
 
 typedef FichePat = Map<String, Object?>;
@@ -255,3 +255,67 @@ String patFormatDocument(String? nomFichier) {
   if (f.endsWith('webp')) return 'WEBP';
   return 'JPEG';
 }
+
+/// Une ligne de la vue unifiée du dossier : un RENVOI vers une pièce que le logiciel produit (jamais une copie). [ecran] : l'écran qui tient la pièce, ou `null` si le profil ne l'ouvre pas.
+class PatPieceProduite {
+  const PatPieceProduite(this.famille, this.reference, this.date, this.resume, this.ecran);
+  final String famille, reference, date, resume;
+  final String? ecran;
+}
+
+/// `piecesProduites(patientId)` de `m1-patients.js` (lot 8 : élargie aux comptes rendus de maternité et aux fiches de consultation, décision de la Direction du 14/11/2026). [collections] :
+/// les fiches ACTIVES de chaque collection lue (`ordonnances`, `demandesAnalyses`, `crOperatoires`, `resultatsImagerie`, `crMaternite`, `dossiersConsultation`). [peutVoirResultat] : la règle
+/// d'habilitation du résultat (une analyse n'est listée que rendue ET lisible du profil). [renvoi] : l'écran si le profil l'ouvre, sinon `null`. La ZONE (pièces médicales, RG-13) se vérifie
+/// AVANT : la vue entière est réservée aux profils qui lisent la zone médicale, un profil qui ne la lit pas ne voit pas un seul renvoi. Trié par date décroissante, à date égale dans l'ordre
+/// des familles puis des fiches (tri stable de la maquette).
+List<PatPieceProduite> patPiecesProduites({
+  required String patientId,
+  required Map<String, List<FichePat>> collections,
+  required bool Function(FichePat demande) peutVoirResultat,
+  required String? Function(String ecran) renvoi,
+}) {
+  List<FichePat> sien(String nom) => [
+        for (final x in collections[nom] ?? const <FichePat>[])
+          if (x['patientId'] == patientId) x
+      ];
+  String jour(Object? v) {
+    final t = v == null ? '' : '$v';
+    return t.length > 10 ? t.substring(0, 10) : t;
+  }
+
+  final out = <PatPieceProduite>[];
+  for (final o in sien('ordonnances')) {
+    out.add(PatPieceProduite('Ordonnance', _pieceVrai(o['numero']) ? '${o['numero']}' : '${o['id']}', jour(o['date']), _pieceVrai(o['diagnostic']) ? '${o['diagnostic']}' : 'Ordonnance', renvoi('m2-ordonnances')));
+  }
+  for (final d in sien('demandesAnalyses')) {
+    final rendu = _pieceVrai(d['resultat']) && (!_pieceVrai(d['etatAnalyse']) || resultatRendu('${d['etatAnalyse']}'));
+    if (rendu && peutVoirResultat(d)) {
+      out.add(PatPieceProduite('Résultat d’analyse rendu', _pieceVrai(d['reference']) ? '${d['reference']}' : '${d['id']}', jour(d['dateHeure']), '${d['analyse'] ?? ''}', renvoi('m5-impression-resultats')));
+    }
+  }
+  for (final c in sien('crOperatoires')) {
+    out.add(PatPieceProduite('Compte rendu opératoire', _pieceVrai(c['reference']) ? '${c['reference']}' : '${c['id']}', jour(c['dateOperation']), '${c['intervention'] ?? ''}', renvoi('m3-bloc-cro')));
+  }
+  for (final r in sien('resultatsImagerie')) {
+    if (r['statut'] == 'rendu') {
+      out.add(PatPieceProduite('Compte rendu d’imagerie', _pieceVrai(r['reference']) ? '${r['reference']}' : '${r['id']}', jour(r['date']), '${r['examen'] ?? ''}', renvoi('m2-imagerie-demandes')));
+    }
+  }
+  for (final c in sien('crMaternite')) {
+    out.add(PatPieceProduite('Compte rendu de maternité', _pieceVrai(c['reference']) ? '${c['reference']}' : '${c['id']}', jour(c['dateHeure']),
+        _pieceVrai(c['typeLabel']) ? '${c['typeLabel']}' : 'Compte rendu de maternité', renvoi('m4-comptes-rendus')));
+  }
+  for (final d in sien('dossiersConsultation')) {
+    out.add(PatPieceProduite('Fiche de consultation', _pieceVrai(d['reference']) ? '${d['reference']}' : '${d['id']}', jour(d['dateArrivee']),
+        _pieceVrai(d['motifVenue']) ? '${d['motifVenue']}' : 'Fiche de consultation', renvoi('m2-consultation-fiche')));
+  }
+  // Date décroissante, tri STABLE (les ex æquo gardent leur ordre d'écriture, comme `C.sortBy` de la maquette).
+  final rang = {for (var i = 0; i < out.length; i++) out[i]: i};
+  final tries = [...out]..sort((a, b) {
+      final c = b.date.compareTo(a.date);
+      return c != 0 ? c : rang[a]!.compareTo(rang[b]!);
+    });
+  return tries;
+}
+
+bool _pieceVrai(Object? v) => v != null && v != '' && v != false && v != 0;

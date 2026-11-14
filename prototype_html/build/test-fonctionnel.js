@@ -24438,6 +24438,11 @@ async function viderMessages(page) {
     await page.evaluate(() => { [...document.querySelectorAll('#page-content [role=tab], #page-content .tab')].find((b) => /Pièces produites/.test(b.textContent)).click(); });
     await pause(600);
     await page.evaluate((id) => { const v = document.querySelector('[data-vue-produites]'); const e = v.querySelector('[id], button'); void e; }, patients.p.id);
+    /* LOT 8 : la vue s'élargit aux comptes rendus de maternité et aux fiches de consultation (renvois seulement). Une fiche de chaque est posée au dossier choisi, et une au dossier d'un AUTRE patient. */
+    await page.evaluate((id) => { const S = window.SIGH.store, autre = S.collection('patients').active().find((x) => x.id !== id);
+      S.collection('crMaternite').insert({ reference: 'CRM-L8-0001', typeCr: 'accouchement', typeLabel: 'Compte rendu d’accouchement', patientId: id, dateHeure: '2026-10-20T08:30', statut: 'actif' });
+      S.collection('dossiersConsultation').insert({ reference: 'DOS-L8-0001', patientId: id, dateArrivee: '2026-10-21', motifVenue: 'Contrôle tensionnel', etat: 'cloture', statut: 'actif' });
+      S.collection('crMaternite').insert({ reference: 'CRM-L8-AUTRE', typeCr: 'amiu', typeLabel: 'Compte rendu d’AMIU', patientId: autre.id, dateHeure: '2026-10-20T09:30', statut: 'actif' }); }, patients.p.id);
     const choisi = await page.evaluate((id) => { const v = document.querySelector('[data-vue-produites]'); const nodes = [...v.querySelectorAll('*')].filter((n) => Object.getOwnPropertyDescriptor(n, 'value') && typeof n.options !== 'undefined' || (n.hasAttribute && n.hasAttribute('data-combo')));
       const c = nodes[0] || null; if (!c) return false; c.value = id; c.dispatchEvent(new Event('change', { bubbles: true })); return true; }, patients.p.id);
     await pause(900);
@@ -24446,6 +24451,8 @@ async function viderMessages(page) {
     const apres = await page.evaluate(() => { const r = window.SIGH.store.raw(); return { noms: Object.keys(r).filter((k) => Array.isArray(r[k])).sort(), docs: r.documentsPatient.length }; });
     verifier('La vue unifiée du dossier choisi liste ses scans (dont le compte rendu déposé) ET ses ordonnances produites, chacune avec un renvoi « Ouvrir » vers son écran',
       choisi && unif.texte.indexOf(doc2.ref) >= 0 && unif.lignes.filter((l) => l[0] === 'Ordonnance').length === patients.p.ordos && patients.p.ordos > 0 && unif.ouvrir > 0, JSON.stringify({ choisi: choisi, ordos: patients.p.ordos, lignes: unif.lignes.slice(0, 3), ouvrir: unif.ouvrir }));
+    verifier('La vue unifiée s’élargit : le compte rendu de maternité et la fiche de consultation du dossier choisi y figurent en renvois (famille, référence, objet), celui d’un autre patient n’y est pas',
+      unif.lignes.some((l) => l[0] === 'Compte rendu de maternité' && l[1] === 'CRM-L8-0001' && /accouchement/.test(l[3])) && unif.lignes.some((l) => l[0] === 'Fiche de consultation' && l[1] === 'DOS-L8-0001' && /tensionnel/.test(l[3])) && unif.texte.indexOf('CRM-L8-AUTRE') < 0, JSON.stringify(unif.lignes));
     verifier('Les pièces produites ne sont JAMAIS copiées : aucune collection nouvelle au magasin, le nombre de documents numérisés est inchangé par la consultation de la vue', JSON.stringify(avant.noms) === JSON.stringify(apres.noms) && avant.docs === apres.docs && apres.noms.indexOf('piecesProduites') < 0, JSON.stringify({ avant: avant.noms.length, apres: apres.noms.length }));
     const jv = await page.evaluate(() => window.SIGH.store.raw().audit.filter((x) => x.action === 'Consultation du dossier documentaire du patient').length);
     verifier('Ouvrir la vue unifiée d’un dossier est journalisé (RG-12)', jv >= 1, String(jv));

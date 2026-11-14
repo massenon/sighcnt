@@ -1503,8 +1503,19 @@
     sien('resultatsImagerie').forEach(function (r) {
       if (r.statut === 'rendu') out.push({ famille: 'Compte rendu d’imagerie', reference: r.reference || r.id, date: String(r.date || '').slice(0, 10), resume: r.examen, ecran: renvoi('m2-imagerie-demandes') });
     });
+    /* LOT 8 (Direction, 14/11/2026) : la vue unifiée s'élargit aux comptes rendus de MATERNITÉ et aux FICHES DE CONSULTATION. Des renvois seulement, jamais des copies ; la zone est celle de
+       l'onglet entier (`PR.peutVoirDocument('Compte rendu médical')`, vérifiée par `vueProduites`) : un profil qui ne lit pas la zone ne voit pas un seul renvoi. */
+    sien('crMaternite').forEach(function (c) {
+      out.push({ famille: 'Compte rendu de maternité', reference: c.reference || c.id, date: String(c.dateHeure || '').slice(0, 10), resume: c.typeLabel || 'Compte rendu de maternité', ecran: renvoi('m4-comptes-rendus') });
+    });
+    sien('dossiersConsultation').forEach(function (d) {
+      out.push({ famille: 'Fiche de consultation', reference: d.reference || d.id, date: String(d.dateArrivee || '').slice(0, 10), resume: d.motifVenue || 'Fiche de consultation', ecran: renvoi('m2-consultation-fiche') });
+    });
     return C.sortBy(out, 'date', 'desc');
   }
+
+  /* Exposée pour les vecteurs du port (`build/vecteurs-pieces.js`) : la fonction que la vue unifiée appelle, jamais une seconde règle. */
+  global.SIGH.piecesProduites = piecesProduites;
 
   global.SIGH.screen('m1-documents', {
     title: 'Documents numérisés du patient',

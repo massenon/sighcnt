@@ -15,7 +15,6 @@ import 'package:sigh_poste/import/port_magasin.dart';
 import 'package:sigh_poste/import/selecteurs_import.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
-import 'package:sigh_poste/sync/configuration_sync.dart';
 
 import 'aide_polices.dart';
 

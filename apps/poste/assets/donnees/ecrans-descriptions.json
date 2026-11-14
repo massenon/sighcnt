@@ -333,6 +333,10 @@
    "titre": "Importation des fournisseurs",
    "description": "Fournisseurs de la clinique : identité fiscale, coordonnées, délai, banque."
   },
+  "imp-inventaire-comptage": {
+   "titre": "Importation d’un comptage d’inventaire",
+   "description": "Un comptage physique déjà fait : une ligne par article et par magasin nommé (gros ou détail), avec la quantité comptée."
+  },
   "imp-natures-facture": {
    "titre": "Importation des natures de facture",
    "description": "Natures proposées à l’émission d’une facture : code, nature, secteur émetteur."
@@ -360,6 +364,14 @@
   "imp-souscripteurs": {
    "titre": "Importation des souscripteurs",
    "description": "Souscripteurs rattachés à une compagnie : n° de police, catégorie, effectif, période."
+  },
+  "imp-stock-detail-initial": {
+   "titre": "Importation du stock détail initial",
+   "description": "Situation initiale de la pharmacie d’urgence : quantité de chaque article, avec son lot et sa péremption pour un médicament ou un réactif."
+  },
+  "imp-transfert-lignes": {
+   "titre": "Importation d’un bon de transfert",
+   "description": "Un bon de transfert du magasin central vers la pharmacie de détail : une ligne par article (et par lot), un service destinataire pour tout le fichier."
   },
   "imp-unites-labo": {
    "titre": "Importation des unités de mesure",

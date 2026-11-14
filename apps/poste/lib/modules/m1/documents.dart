@@ -12,6 +12,7 @@ import '../../kit/fichiers_ui.dart';
 import '../../kit/kit.dart';
 import '../../kit/ocr_ui.dart';
 import '../../shell/contexte_ecran.dart';
+import '../m5/res_commun.dart' show profilLabo;
 import 'commun_m1.dart';
 
 String _t(Object? v, [String vide = '—']) => patVrai(v) ? '$v' : vide;
@@ -20,8 +21,8 @@ String _t(Object? v, [String vide = '—']) => patVrai(v) ? '$v' : vide;
 /// hors du magasin, sous son empreinte SHA-256 (lot D5 : sélecteur de fichier injectable, visionneuse, téléchargement sous le nom normalisé, zones RG-13). RG-14 : retirer un document l'archive,
 /// avec son motif ; retirer sa pièce la garde au journal.
 ///
-/// NON PORTÉ (ECARTS-MAQUETTE.md) : l'onglet « Pièces produites par le logiciel » (vue unifiée de renvois) et le vecteur `m1.json` de la maquette DOCS-1 (non régénéré : la parité N1 de
-/// cet écran reste celle de la version d'avant).
+/// LOT 8 : l'onglet « Pièces produites par le logiciel » (vue unifiée de renvois, élargie aux comptes rendus de maternité et aux fiches de consultation) est porté ; son vecteur est
+/// `pieces_produites.json`. NON PORTÉ : le vecteur `m1.json` de la maquette DOCS-1 (non régénéré : la parité N1 de cet écran reste celle de la version d'avant).
 class EcranDocuments extends StatelessWidget with EcranMaquette {
   const EcranDocuments({super.key});
 
@@ -252,7 +253,7 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
           final rows = [for (final r in toutes) if (docPeutVoir('${r['type']}', c.role).autorise) r];
           final cachees = toutes.length - rows.length;
           final k = patKpisDocuments(rows);
-          return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          final scans = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             bandeauLectureSeule(c),
             if (cachees > 0)
               Padding(
@@ -364,6 +365,11 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
                     ColonneTableau(cle: 'etat', libelle: 'Statut', texte: (r) => statutsMetier['${r['etat']}']?.$1 ?? '${r['etat']}', rendu: (_, r) => statutBadge(r['etat'])),
                   ],
                 )),
+          ]);
+          // Lot 8 : la vue unifiée du dossier (des renvois, jamais des copies) est le second onglet, comme à la maquette.
+          return OngletsSigh(onglets: [
+            OngletDef(id: 'scans', libelle: 'Documents numérisés', compte: rows.length, construire: (_) => scans),
+            OngletDef(id: 'produites', libelle: 'Pièces produites par le logiciel', construire: (_) => _VuePieces(c)),
           ]);
         });
   }
@@ -538,5 +544,102 @@ class EcranRenvoiM1 extends StatelessWidget with EcranMaquette {
                           onPressed: () => c.aller(b.$2)),
                   ]),
                 ]))));
+  }
+}
+
+/// LOT 8, « Pièces produites par le logiciel » : la vue unifiée du dossier. Des RENVOIS vers les pièces que le logiciel produit (ordonnances, résultats d'analyses rendus, comptes rendus
+/// opératoires, d'imagerie et de maternité, fiches de consultation), JAMAIS des copies : la liste est relue à chaque affichage. La zone médicale (RG-13) ferme la vue ENTIÈRE à qui ne la lit
+/// pas : ni choix de dossier, ni tableau, ni un seul renvoi. Le bouton « Ouvrir » n'existe que si le profil ouvre l'écran de la pièce. Ouvrir la vue d'un dossier se journalise (RG-12).
+class _VuePieces extends StatefulWidget {
+  const _VuePieces(this.c);
+  final ContexteEcran c;
+  @override
+  State<_VuePieces> createState() => _VuePiecesEtat();
+}
+
+class _VuePiecesEtat extends State<_VuePieces> {
+  late final ControleurFormulaire _choix;
+  String? _journalise;
+
+  @override
+  void initState() {
+    super.initState();
+    final c = widget.c;
+    _choix = ControleurFormulaire([
+      ChampDef(
+          nom: 'patientId',
+          libelle: 'Dossier patient',
+          type: TypeChamp.select,
+          col: ColChamp.plein,
+          options: [
+            for (final p in trierPar(c.magasin.collection('patients').actives, (p) => p['code'])) OptionChamp('${p['id']}', '${p['code']} : ${p['nom']} ${p['prenom']}')
+          ]),
+    ], {});
+  }
+
+  @override
+  void dispose() {
+    _choix.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = widget.c;
+    if (!docPeutVoir('Compte rendu médical', c.role).autorise) {
+      return const Column(key: Key('pieces:zone-refusee'), crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        NoteSigh(
+            'Les pièces produites par le logiciel (ordonnances, résultats, comptes rendus, imagerie) sont des pièces médicales : votre profil ne les lit pas (RG-13). Elles se lisent depuis le dossier par les profils cliniques.',
+            ton: TonSigh.attention,
+            icone: LucideIcons.lock),
+      ]);
+    }
+    const noms = ['ordonnances', 'demandesAnalyses', 'crOperatoires', 'resultatsImagerie', 'crMaternite', 'dossiersConsultation'];
+    return ListenableBuilder(
+        listenable: Listenable.merge([_choix, for (final n in noms) c.magasin.collection(n)]),
+        builder: (context, _) {
+          final id = '${_choix['patientId'] ?? ''}';
+          final p = id.isEmpty ? null : c.magasin.collection('patients').parId(id);
+          final profil = profilLabo(c);
+          final pieces = id.isEmpty
+              ? <PatPieceProduite>[]
+              : patPiecesProduites(
+                  patientId: id,
+                  collections: {for (final n in noms) n: c.magasin.collection(n).actives},
+                  peutVoirResultat: (d) => peutVoirResultat(d, profil.session).autorise,
+                  renvoi: (e) => c.donnees?.matrice.peutVoir(c.role, e) == true ? e : null);
+          if (p != null && _journalise != id) {
+            _journalise = id;
+            WidgetsBinding.instance.addPostFrameCallback((_) => c.magasin.journaliser('Consultation du dossier documentaire du patient', 'M1', 'document', '${p['code'] ?? id}', null, {'ecran': 'm1-documents'}));
+          }
+          return Column(key: const Key('pieces:vue'), crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            FormulaireSigh(controleur: _choix),
+            const SizedBox(height: 12),
+            if (p != null)
+              TableauSigh(
+                  titre: 'Pièces produites par le logiciel (${pieces.length})',
+                  lignes: [for (final x in pieces) {'famille': x.famille, 'reference': x.reference, 'date': x.date, 'resume': x.resume, 'ecran': x.ecran}],
+                  taillePage: 10,
+                  messageVide: 'Aucune pièce produite pour ce dossier.',
+                  colonnes: [
+                    ColonneTableau(cle: 'famille', libelle: 'Pièce', texte: (r) => '${r['famille']}', rendu: (_, r) => BadgeSigh('${r['famille']}', ton: TonSigh.neutre)),
+                    ColonneTableau(cle: 'reference', libelle: 'Référence', sansCoupure: true, texte: (r) => '${r['reference']}', rendu: (_, r) => enMono('${r['reference']}')),
+                    ColonneTableau(cle: 'date', libelle: 'Date', sansCoupure: true, texte: (r) => dateFrM1(r['date'])),
+                    const ColonneTableau(cle: 'resume', libelle: 'Objet'),
+                  ],
+                  actionsLigne: (ctx, r) => [
+                        if (r['ecran'] != null)
+                          BoutonSigh(
+                              key: Key('pieces:ouvrir-${r['reference']}'),
+                              libelle: 'Ouvrir',
+                              icone: LucideIcons.externalLink,
+                              taille: TailleBouton.sm,
+                              variante: VarianteBouton.secondaire,
+                              onPressed: () => c.aller('${r['ecran']}')),
+                      ]),
+            const SizedBox(height: 12),
+            const NoteSigh('Les pièces produites par le logiciel ne sont jamais copiées ici : ce sont des renvois vers l’écran qui les tient, relus à chaque affichage.', icone: LucideIcons.info),
+          ]);
+        });
   }
 }

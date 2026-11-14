@@ -20,6 +20,9 @@ import 'aide_polices.dart';
 /// refus nommés, atomicité, annulation du lot, droits. Les fichiers sont ceux que la maquette a écrits.
 final donnees = DonneesNavigation.depuisDossier();
 final vecteurs = (jsonDecode(File('../../packages/domaine/test/vecteurs/import.json').readAsStringSync()) as Map).cast<String, Object?>();
+
+/// Les articles du magasin contrôlé des vecteurs (le lot 8 en a posé sept pour éprouver le stock) : ce que « rien n'est écrit » compare.
+final nbProduitsDuMagasin = ((vecteurs['magasin'] as Map)['produits'] as List).length;
 Uint8List fixture(String nom) => File('test/fixtures/import/$nom.xlsx').readAsBytesSync();
 
 Magasin magasin() => Magasin({
@@ -143,7 +146,7 @@ void main() {
     await toucher(t, find.widgetWithText(BoutonSigh, 'Téléverser un fichier (.xlsx ou .csv)'));
     expect(find.textContaining('fichier illisible'), findsOneWidget);
     expect(m.collection(collectionLots).actives.length, 2, reason: 'les deux fichiers refusés sont consignés');
-    expect(m.collection('produits').toutes.length, 2);
+    expect(m.collection('produits').toutes.length, nbProduitsDuMagasin, reason: 'rien n\'est écrit');
   });
 
   cas('un fichier conforme : aperçu, confirmation, lot écrit d\'un seul geste et signé, historique, annulation par archivage (RG-14)', (t) async {
@@ -152,7 +155,7 @@ void main() {
     await choisirFichier(t, 'gs-valide');
     expect(find.textContaining('Analyse conforme. 3 ligne(s) peuvent être écrites, dont 1 avec avertissement. Rien n’est encore écrit.'), findsOneWidget);
     expect(find.byKey(const Key('imp-constat-A_VALORISER')), findsOneWidget);
-    expect(m.collection('produits').toutes.length, 2, reason: 'rien n\'est écrit avant la confirmation');
+    expect(m.collection('produits').toutes.length, nbProduitsDuMagasin, reason: 'rien n\'est écrit avant la confirmation');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Confirmer l’importation (3 lignes)'));
     expect(find.text('Écrire ce lot ?'), findsOneWidget);
     await toucher(t, find.widgetWithText(BoutonSigh, 'Écrire le lot'));
@@ -247,7 +250,8 @@ void main() {
     expect(find.text('Non porté au poste'), findsNWidgets(visibles.length - portes), reason: 'un jeu que le poste ne porte pas le dit, sans bouton');
     expect(find.text('Proposition à valider'), findsOneWidget);
     expect(find.textContaining('Source : Inventaire initial (reprise)'), findsOneWidget);
-    expect(find.textContaining('Écrit dans : produits, lots, mouvements. Aucun lot à ce jour.'), findsOneWidget);
+    // Le Grand Stock ET le stock détail initial (lot 8) écrivent produits, lots et mouvements : deux cartes le disent.
+    expect(find.textContaining('Écrit dans : produits, lots, mouvements. Aucun lot à ce jour.'), findsNWidgets(2));
     await toucher(t, find.text('Historique des lots'));
     expect(find.text('Aucun lot.'), findsOneWidget);
   });
