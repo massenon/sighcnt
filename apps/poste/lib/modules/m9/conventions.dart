@@ -248,12 +248,16 @@ Fiche _souscripteurSaisi(Map<String, Object?> s) => {
       'dateFin': s['dateFin'] ?? '',
     };
 
+/// LOT TFIN (constat 2 du lot 8b) : les garanties d'un souscripteur telles que l'écran les COMPTE et les liste : UNE version par série, celle EN VIGUEUR au [jour] (comme la prise en charge
+/// et l'écran de la maquette, `m9-assurances.js`). Lister toutes les versions faisait dire « 6 garanties » pour trois séries dont deux avaient changé de taux.
+List<Fiche> garantiesAffichees(Iterable<Fiche> garanties, Object? souscripteurId, String jour) =>
+    garantiesEnVigueur([for (final g in garanties) if (g['souscripteurId'] == souscripteurId) g], jour);
+
 class _OngletSouscripteurs extends StatelessWidget {
   const _OngletSouscripteurs({required this.c});
   final ContexteEcran c;
 
-  List<Fiche> _garantiesDe(Object? id) =>
-      actives(c, 'garanties').where((g) => g['souscripteurId'] == id).toList();
+  List<Fiche> _garantiesDe(Object? id) => garantiesAffichees(actives(c, 'garanties'), id, tarIso(c.aujourdhui));
   List<Fiche> _assuresDe(Object? id) => actives(c, 'patients')
       .where((p) => p['souscripteurId'] == id)
       .toList();
