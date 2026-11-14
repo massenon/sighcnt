@@ -136,6 +136,19 @@ void main() {
     });
   });
 
+  group('lot CLO C2 : la colonne de l\'exercice précédent au compte de résultat', () {
+    casM14('un journal qui porte 2025 : le compte de résultat a SA colonne « Exercice 2025 (journal) » ; sans précédent dans le journal, elle est absente', (t) async {
+      final m = magasinAvec2025();
+      await ouvrirM14(t, m, 'm12-etats-financiers');
+      await onglet(t, 'Compte de résultat');
+      expect(find.text('EXERCICE 2025 (JOURNAL)'), findsOneWidget);
+      final sans = magasinComplet();
+      await ouvrirM14(t, sans, 'm12-etats-financiers');
+      await onglet(t, 'Compte de résultat');
+      expect(find.text('EXERCICE 2025 (JOURNAL)'), findsNothing);
+    });
+  });
+
   group('les quatre autres feuillets', () {
     casM14('compte de résultat : la marge commerciale NULLE confirme RG-02 ; les charges en négatif', (t) async {
       final m = magasinComplet();

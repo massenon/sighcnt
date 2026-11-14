@@ -197,7 +197,7 @@ class _EtatEtats extends State<EcranEtatsFinanciers> {
     ]);
   }
 
-  Widget _resultat(List<Fiche> courant) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+  Widget _resultat(ContexteEcran c, List<Fiche> courant, List<Fiche>? n1) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         _carte(
             'COMPTE DE RÉSULTAT (feuillet 7/51)',
             _table(_l.resultat, [
@@ -208,6 +208,10 @@ class _EtatEtats extends State<EcranEtatsFinanciers> {
               _Col('Exercice ${_l.exerciceN}', (l) => cellule(l['n'] as num?, gras: l['t'] != null), largeur: _wMontant, droite: true),
               _Col('Exercice ${_l.exerciceN1}', (l) => cellule(l['n1'] as num?), largeur: _wMontant, droite: true),
               _Col('Exercice en cours', (l) => l['t'] != null ? const SizedBox.shrink() : cellule(cpcCalculResultat(l, courant), vide: '—'), largeur: _wMontant, droite: true),
+              // Lot CLO C2 : la colonne de l'exercice PRÉCÉDENT, tirée du journal au MÊME filtre de statut que le bilan (validées seulement).
+              if (n1 != null)
+                _Col('Exercice ${exerciceChoisi(c) - 1} (journal)', (l) => l['t'] != null ? const SizedBox.shrink() : cellule(cpcCalculResultat(l, n1), vide: '—'),
+                    largeur: _wMontant, droite: true),
             ])),
         const SizedBox(height: 16),
         const NoteSigh(
@@ -459,7 +463,7 @@ class _EtatEtats extends State<EcranEtatsFinanciers> {
           const SizedBox(height: 16),
           OngletsSigh(onglets: [
             OngletDef(id: 'bilan', libelle: 'Bilan', construire: (_) => _bilan(c, courant, n1)),
-            OngletDef(id: 'resultat', libelle: 'Compte de résultat', construire: (_) => _resultat(courant)),
+            OngletDef(id: 'resultat', libelle: 'Compte de résultat', construire: (_) => _resultat(c, courant, n1)),
             OngletDef(id: 'flux', libelle: 'Tableau des flux de trésorerie', construire: (_) => _flux()),
             OngletDef(id: 'disponibilites', libelle: 'Disponibilités', construire: (_) => _disponibilites(courant)),
             OngletDef(id: 'synthese', libelle: 'Fiche de synthèse', construire: (_) => _synthese()),

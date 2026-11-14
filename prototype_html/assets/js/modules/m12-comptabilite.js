@@ -2588,10 +2588,10 @@
     var libOf = function (d, v) { return d.type === 'roles' ? X.nomsRoles(v) : String(v); };
     wrap.appendChild(U.card('Circuit en vigueur aujourd’hui', K.miniTable(['Réglage', 'Valeur lue', 'En vigueur depuis', 'Version'], defs.map(function (d) {
       var r = X.circuit(d.cle);
-      return [d.libelle, r.ok ? libOf(d, r.valeur) : 'Non arrêté : ' + r.motif, r.ok ? C.dateFR(r.dateEffet) : '—', r.ok ? String(r.version) : '—'];
+      return [d.libelle, r.ok ? libOf(d, r.valeur) : 'Non arrêté : ' + r.motif, r.ok ? C.dateFR(r.dateEffet) : 'aucune', r.ok ? String(r.version) : 'aucune'];
     }))));
     var histo = [];
-    defs.forEach(function (d) { X.versionsCircuit(d.cle).forEach(function (v) { histo.push([d.libelle, libOf(d, v.valeur), C.dateFR(v.dateEffet) + (v.dateFin ? ' au ' + C.dateFR(v.dateFin) : ' (en cours)'), v.creePar || '—', v.motif || '—']); }); });
+    defs.forEach(function (d) { X.versionsCircuit(d.cle).forEach(function (v) { histo.push([d.libelle, libOf(d, v.valeur), C.dateFR(v.dateEffet) + (v.dateFin ? ' au ' + C.dateFR(v.dateFin) : ' (en cours)'), v.creePar || 'non renseigné', v.motif || 'non renseigné']); }); });
     wrap.appendChild(U.card('Historique des versions (jamais réécrites)', K.miniTable(['Réglage', 'Valeur', 'Période', 'Par', 'Motif'], histo)));
     if (!peut) {
       wrap.appendChild(K.note('Le droit « Régler le circuit de la clôture annuelle » n’est pas accordé à votre profil : le circuit se <strong>lit</strong> ici, il se règle depuis un profil qui détient ce droit (matrice des droits). Aucune commande n’est proposée.', { tone: 'info', icon: 'lock' }));

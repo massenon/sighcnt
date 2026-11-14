@@ -1,6 +1,6 @@
 # PRD : clôture annuelle et passage à N+1, écarts mesurés, et droits sans rôle écrit en dur
 
-Statut : **en cours de livraison** (lot CLO, 14/11/2026) : C0 mesuré, voir la section 8. Brouillon du 11/11/2026, réponses de la Direction en section 6
+Statut : **livré en partie** (lot CLO, 14/11/2026) : C0 à C4 faits, C5 non fait (E3 mesuré), C6 commencé ; voir les sections 8 et 9. Brouillon du 11/11/2026, réponses de la Direction en section 6
 Sources : texte de spécification fourni par la Direction le 11/11/2026 (clôture annuelle, réouverture réservée au comptable, archive SYSCOHADA révisé / DGI Bénin, navigation N, N-1, N+1) · `PRD-M12-cloture-exercice.md` et vague 69 (moteur `SIGH.exercice`) · relecture du code de la maquette faite dans cette session (`parcours.js` 3260 à 3660, `api/cron.php`, `m12-comptabilite.js`)
 
 Ce PRD n'est pas écrit avec l'outil `sdlc-kit` (aucun coffre `.sdlc` dans le dépôt) : il suit la forme des PRD de `docs/prd/`.
@@ -126,3 +126,24 @@ Scénario « Vague 179 » du banc fonctionnel (une assertion par ligne, tirée d
 | E18 | **lu** : le journal CL est exclu des états de N, le résultat de l'année reste (celui des états égale celui de la fiche, non nul ; avec CL il tomberait à zéro) ; l'écran du compte de résultat de N montre les produits et charges non soldés | rien |
 
 Observation hors lot : la colonne « Exercice en cours » du compte de résultat laisse vides les lignes de total (XI, XB, etc.) ; un total d'état est CALCULÉ (règle du dépôt), celui-ci ne l'est pas encore.
+
+## 9. Livraison du lot CLO (14/11/2026) : état par exigence et par écart
+
+| Lot | Exigence | État | Preuve |
+|---|---|---|---|
+| C0 | mesure des lignes « à sonder » | **fait** (section 8) | scénario « Vague 179 », 15 vérifications |
+| C1 | EF-DRO-1, 2, 3 : circuit réglable, garde de génération, refus qui cite la liste lue | **fait**, maquette et poste | scénario « Vague 180 » (17), vecteurs `exercice.json` (section `circuit`), garde `build/garde-roles-en-dur.js` (95 sites inscrits avant, 86 après) |
+| C2 | EF-CLO-2, 3, 7 : boutons de pas, bandeau, encadré, colonnes N et N-1 | **fait** à la maquette (les boutons et le bandeau existaient : le PRD se trompait, E7 était « lu ») ; la colonne N-1 du compte de résultat est ajoutée à la maquette ET au poste ; le sélecteur ‹ Exercice N › du poste existait déjà ; le bandeau d'état du socle n'est pas porté au poste (inchangé) | scénario « Vague 181 », test `m12_etats_test` |
+| C3 | EF-CLO-4 : soldes d'ouverture et de clôture du grand livre | **fait**, maquette et poste | « Vague 181 », vecteurs `soldesGL`, test du poste |
+| C4 | EF-CLO-1, EF-CLO-6, E1, E2, E10 : ouverture automatique, journaux CL et AN retirés de la saisie | **fait**, maquette, serveur de la maquette et poste | scénario « Vague 182 » (8), « Vague 179 », vecteurs `ouverture` |
+| C5 | EF-CLO-5, E3, E13 : postes appairés | **NON FAIT** : l'écart E3 est **confirmé** par la lecture du code et **mesuré** par un test du poste (`appliquerDistante` ne passe par aucune garde : la mère applique au rejeu la pièce d'un exercice clos) ; le refus nommé au rejeu, l'avertissement avant « Démarrer la clôture » et le banc à deux postes restent à écrire | test « E3 MESURE » du poste, une cible laissée en test sauté |
+| C6 | migration des listes de rôles en dur | **commencé** : M12 (clôture, comptes de résultat, notifications de clôture) est migré, 95 sites inscrits avant, 86 après ; les 86 restants sont listés et plafonnés par la garde | `build/garde-roles-en-dur.liste.json` |
+
+**Décisions prises** (aucune n'est une décision de la Direction, toutes sont à confirmer, voir `DECISIONS-A-VALIDER.md` section AG) :
+
+1. Le circuit a **cinq réglages**, pas trois : démarrer, passer l'inventaire en clôture, clôturer définitivement, rouvrir, et le mois d'ouverture de l'exercice suivant. La liste d'inventaire existait en dur (comptable, administrateur) dans la garde des écritures : elle devait venir d'un réglage pour que la règle « aucun nom de rôle dans le code » tienne.
+2. Défauts semés : ceux d'avant le lot, sauf la clôture définitive, élargie au comptable (Q2). La séparation « jamais la personne qui a démarré la clôture » est conservée : un comptable seul ne peut donc toujours pas démarrer ET clôturer.
+3. **Régler le circuit est un geste réservé de la fiche RBAC** (`regler_circuit_cloture`), administrateur et Directrice Administrative d'origine : proposition, le PRD disait « réservé à l'administrateur et à la DAF » sans que la Direction l'ait confirmé.
+4. **La tâche quotidienne du serveur ne peut pas ouvrir un exercice** : la doctrine du planificateur (`api/cron.php`) interdit à une tâche d'écrire une collection (les postes réécrivent leurs collections entières), et le relais cible est opaque. L'ouverture est donc faite par le **poste** (au démarrage, puis toutes les six heures, et à chaque lecture de la liste des exercices à la maquette), tracée au journal d'audit avec sa cause ; la tâche du serveur `exercices_ouverture` LIT, vérifie chaque jour que ce qui doit être ouvert l'est, et alerte les rôles qui démarrent la clôture sinon. Le PRD écrivait « tâche planifiée qui écrit la fiche » (E1) : écart assumé.
+5. Un exercice ouvert n'écrit **aucune pièce** : les à-nouveaux de N+1 restent provisoires et calculés jusqu'à la clôture de N (E6, inchangé).
+6. Ouverture « inconnue » : quand l'exercice précédent est clos (ou celui de la liasse) sans à-nouveau écrit, l'ouverture et la clôture d'un compte de bilan sont **inconnues** à l'écran, jamais zéro. Un compte de gestion s'ouvre à zéro et se clôt à zéro après la pièce CL.

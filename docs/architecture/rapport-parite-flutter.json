@@ -1310,8 +1310,8 @@
   {
    "id": "m12-cloture",
    "mesure": true,
-   "attendus": 19,
-   "presents": 19,
+   "attendus": 21,
+   "presents": 21,
    "taux": 1.0,
    "manquants": []
   },
@@ -1382,8 +1382,8 @@
   {
    "id": "m12-grand-livre",
    "mesure": true,
-   "attendus": 20,
-   "presents": 20,
+   "attendus": 22,
+   "presents": 22,
    "taux": 1.0,
    "manquants": []
   },
