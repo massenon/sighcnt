@@ -16,6 +16,7 @@ class Opacite extends Component
             'mesure' => MesureOpacite::mesurer(),
             'cle' => MesureOpacite::cleDeCliniqueAuRelais(),
             'synchro' => MesureOpacite::historiqueSynchro(),
+            'blocs' => MesureOpacite::mesurerBlocs(),
         ]);
     }
 }

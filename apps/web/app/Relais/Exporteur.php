@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
  * Export de la base du RELAIS (jamais des comptes ni des sessions) : un fichier gzip, une ligne JSON par enregistrement.
  * Le contenu est déjà chiffré de bout en bout : l'export ne contient aucune donnée lisible. Il sert à restaurer la mère
  * (journal chiffré) et à revenir en arrière après une migration.
+ *
+ * Lot 5 : l'export n'embarque PAS les copies de sauvegarde hors site : ni les blocs (sur disque, sous `storage/app/sauvegardes`), ni les tables `relais_sauv_*` qui les décrivent (inutiles sans eux).
+ * Les blocs sont déjà une copie chiffrée ; les recopier doublerait l'espace pour rien.
  */
 class Exporteur
 {

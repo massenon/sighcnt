@@ -13,6 +13,9 @@ return [
     // Crochets réservés au banc d'essai (altérer / retirer une enveloppe). JAMAIS en production.
     'banc' => (bool) env('RELAIS_BANC', false),
 
+    // Lot 5 (ADR-0007) : le dossier des blocs opaques de la sauvegarde hors site (sur disque, jamais en base). Les limites (quota, etc.) sont EN BASE, réglables au panneau.
+    'sauvegardes_dir' => env('RELAIS_SAUVEGARDES_DIR', storage_path('app/sauvegardes')),
+
     // Conservation du journal d'audit (jours). Les enveloppes ne sont JAMAIS purgées par le relais.
     'retention_audit_jours' => (int) env('RELAIS_RETENTION_AUDIT_JOURS', 365),
 

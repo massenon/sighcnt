@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\RecuperationController;
 use App\Http\Controllers\RelaisController;
+use App\Http\Controllers\SauvegardeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,3 +28,18 @@ Route::post('/banc/alterer', [RelaisController::class, 'bancAlterer']);
 Route::post('/banc/retirer', [RelaisController::class, 'bancRetirer']);
 Route::get('/banc/tout', [RelaisController::class, 'bancTout']);
 Route::get('/banc/ids', [RelaisController::class, 'bancIds']);
+
+/* Lot 5 (ADR-0007) : la sauvegarde hors site, RÉSERVÉE À LA MÈRE (blocs opaques chiffrés par la clé de la clinique, que le relais ne détient pas). Contrat : packages/sync/banc/relais-sauvegarde.js. */
+Route::get('/sauvegarde/etat', [SauvegardeController::class, 'etat']);
+Route::post('/sauvegarde/manquants', [SauvegardeController::class, 'manquants']);
+Route::put('/sauvegarde/bloc/{id}', [SauvegardeController::class, 'deposerBloc']);
+Route::get('/sauvegarde/bloc/{id}', [SauvegardeController::class, 'lireBloc']);
+Route::post('/sauvegarde/copie', [SauvegardeController::class, 'ouvrir']);
+Route::post('/sauvegarde/copie/{id}/blocs', [SauvegardeController::class, 'attacher']);
+Route::post('/sauvegarde/copie/{id}/valider', [SauvegardeController::class, 'valider']);
+Route::get('/sauvegarde/copies', [SauvegardeController::class, 'copies']);
+Route::get('/sauvegarde/copie/{id}', [SauvegardeController::class, 'copie']);
+Route::post('/banc/sauvegarde/reglage', [SauvegardeController::class, 'bancReglage']);
+Route::post('/banc/sauvegarde/alterer', [SauvegardeController::class, 'bancAlterer']);
+Route::post('/banc/sauvegarde/vieillir', [SauvegardeController::class, 'bancVieillir']);
+Route::get('/banc/sauvegarde/tout', [SauvegardeController::class, 'bancTout']);

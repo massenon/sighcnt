@@ -40,6 +40,48 @@ class Opacite
         ];
     }
 
+    /** Lot 5 (ADR-0007) : les SIGNATURES de fichiers qu'un bloc en clair laisserait voir au début (SQLite, PDF, JPEG, PNG, WebP/RIFF, ZIP, gzip). */
+    public const SIGNATURES = ['SQLite format 3', '%PDF-', "\xFF\xD8\xFF", "\x89PNG", 'RIFF', "PK\x03\x04", "\x1F\x8B"];
+
+    /**
+     * Lot 5 : la MESURE d'opacité des BLOCS de sauvegarde hors site, sur un échantillon des plus récents (disque du relais) : entropie moyenne, nombre de blocs qui commencent par une signature de fichier
+     * ou qui laissent lire une suite de 24 caractères imprimables (un mot de texte, un nom). Le relais ne déchiffre rien : il regarde seulement si les octets stockés ressemblent à du hasard.
+     * Un bloc de moins de 4 Kio (manifeste court) est écarté de l'entropie : trop court pour être mesuré.
+     *
+     * @return array{echantillon: int, entropie: ?float, signatures: int, lisibles: int, ecartes: int}
+     */
+    public static function mesurerBlocs(int $max = 20): array
+    {
+        $entropies = [];
+        $signatures = 0;
+        $lisibles = 0;
+        $ecartes = 0;
+        foreach (DB::table('relais_sauv_blocs')->orderByDesc('recu')->limit($max)->pluck('id') as $id) {
+            $chemin = \App\Relais\Sauvegarde\Entrepot::chemin((string) $id);
+            $octets = is_file($chemin) ? (string) file_get_contents($chemin) : '';
+            if ($octets === '') {
+                continue;
+            }
+            foreach (self::SIGNATURES as $s) {
+                if (str_contains($octets, $s)) {
+                    $signatures++;
+                    break;
+                }
+            }
+            if (preg_match('/[\x20-\x7e]{24,}/', $octets)) {
+                $lisibles++;
+            }
+            if (strlen($octets) < 4096) {
+                $ecartes++;
+
+                continue;
+            }
+            $entropies[] = self::entropie($octets);
+        }
+
+        return ['echantillon' => count($entropies), 'entropie' => $entropies === [] ? null : array_sum($entropies) / count($entropies), 'signatures' => $signatures, 'lisibles' => $lisibles, 'ecartes' => $ecartes];
+    }
+
     public static function entropie(string $octets): float
     {
         $n = strlen($octets);
