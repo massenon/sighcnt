@@ -26320,6 +26320,9 @@ async function viderMessages(page) {
     await poserSessionServeur(roleImp('admin', 'ADMIN176'));
     await ouvrir('m13-courriers.html');
     const reglageAvant = await page.evaluate(() => JSON.parse(JSON.stringify(window.SIGH.store.reglage('ocr', null))));
+    /* Derrière d'autres scénarios le réglage et la file portent leur état : on part d'un réglage connu (désactivé, 120 s) et on mène la file jusqu'au scan de la sonde (le plus ancien d'abord). */
+    await page.evaluate(() => window.SIGH.store.setReglage('ocr', { actif: false, moteur: null, langue: 'fra', delaiMs: 120000 }));
+    const lireJusque = (sha) => page.evaluate(async (s) => { for (let i = 0; i < 120; i++) { const e = window.SIGH.ocr.etatDe({ sha256: s }); if (e && e.code === 'ocr_indexe') return true; await window.SIGH.ocr.traiterSuivant(); await new Promise((r) => setTimeout(r, 40)); } return false; }, sha);
     await Q.installerMoteur({ texte: 'Ordonnance ' + FAUX + ' paracétamol' });
 
     /* 0. Le réglage est celui de la CLINIQUE : la fenêtre le dit et porte le délai. */
@@ -26333,6 +26336,7 @@ async function viderMessages(page) {
     verifier('L’administrateur active la lecture par la fenêtre : activée, moteur choisi, délai posé à 5 secondes (en base, journalisé)', reg.actif === true && reg.moteur === 'factice' && reg.delaiMs === 5000, JSON.stringify(reg));
 
     const d = await Q.deposer('courrier', png, { suffixe: 'c' });
+    await lireJusque(d.sha);
     const lu = await Q.attendreEtat(d.sha, 'ocr_indexe', 20000);
     verifier('Le scan est lu par machine (« à vérifier ») : la lecture machine est la version 1', lu && lu.code === 'ocr_indexe' && lu.marque === true && (await Q.versions(d.sha)).length === 1, JSON.stringify(lu));
     const machine = (await Q.versions(d.sha))[0];
@@ -26436,6 +26440,7 @@ async function viderMessages(page) {
     erreursJS = [];
     const O = outilsDocs, Fx = await O.fabrique(), Q = outilsOcr, sfx = O.sfx();
     const MOT = ('zebrazonec' + sfx).toLowerCase(), LU = ('zebralucrc' + sfx).toLowerCase();
+    const lireJusque = (sha) => page.evaluate(async (s) => { for (let i = 0; i < 120; i++) { const e = window.SIGH.ocr.etatDe({ sha256: s }); if (e && e.code === 'ocr_indexe') return true; await window.SIGH.ocr.traiterSuivant(); await new Promise((r) => setTimeout(r, 40)); } return false; }, sha);
     await poserSessionServeur(roleImp('admin', 'ADMIN177'));
     await ouvrir('m1-documents.html');
     const depart = await page.evaluate(() => { const S = window.SIGH.store; S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' }); return { rbac: JSON.stringify(S.raw().rbac || []), reglage: JSON.parse(JSON.stringify(S.reglage('ocr', null))) }; });
@@ -26458,6 +26463,7 @@ async function viderMessages(page) {
     await ouvrir('m1-documents.html');
     await Q.installerMoteur({ texte: 'Compte rendu ' + LU + ' confidentiel' });
     const z2 = await Q.deposer('patient', await Fx2.image('png', 1771), { type: 'Compte rendu médical', patientId: pid });
+    await lireJusque(z2.sha);
     verifier('Le médecin dépose un compte rendu (zone 2) : lu par machine', z2.ok && (await Q.attendreEtat(z2.sha, 'ocr_indexe', 20000)).code === 'ocr_indexe', JSON.stringify(z2));
     const ctx2 = { peutDeposer: true, famille: 'patient', type: 'Compte rendu médical' };
     await O.chercher(z2.ref); await O.ouvrirLigne(z2.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
@@ -26495,6 +26501,7 @@ async function viderMessages(page) {
     await ouvrir('m1-documents.html');
     await Q.installerMoteur({ texte: 'Carte ' + LU + ' assurance' });
     const z1 = await Q.deposer('patient', await Fx2.image('png', 1772), { type: 'Pièce d’identité', patientId: pid });
+    await lireJusque(z1.sha);
     await Q.attendreEtat(z1.sha, 'ocr_indexe', 20000);
     await page.evaluate(() => {
       const N = window.SIGH.nav, S = window.SIGH.store, col = S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' });

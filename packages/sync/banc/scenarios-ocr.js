@@ -109,7 +109,7 @@ module.exports = ({ monde, verifier, attendre, dormir, titre }) => ({
     const idMachine = 'OCR-' + empreinte.slice(0, 16) + '-' + sha(Buffer.from('factice|0.1|fra|ordonnance lue')).slice(0, 12);
     const idCorr = (de, texte) => 'OCC-' + empreinte.slice(0, 16) + '-' + sha(Buffer.from(de + '|' + texte.replace(/\s+/g, ' ').trim())).slice(0, 12);
     const corr = (de, texte, par, le, remplace) => ({ sha256: empreinte, texteBrut: texte, texte: texte.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(), nbMots: texte.split(/\s+/).length, texteSource: 'correction', corrigeDe: de, remplace: remplace || [], corrigePar: par, corrigeLe: le, ocrLe: le });
-    const liste = async (poste, col) => (await poste.liste(col)).map((x) => x.data);
+    const liste = async (poste, col) => (await poste.liste(col)).map((x) => Object.assign({}, x.data, { id: x.id }));
 
     /* 1. La lecture machine, puis la correction signée du poste F1 : elles arrivent chez F2, la lecture machine intacte. */
     await f1.ecrire({ type: 'creer', collection: 'lecturesOcr', fiche: idMachine, champs: { sha256: empreinte, texteBrut: 'Ordonnance lue', texte: 'ordonnance lue', nbMots: 2, texteSource: 'ocr', moteur: 'factice', moteurVersion: '0.1', langue: 'fra', ocrLe: '2026-11-14T08:00:00.000Z', ocrPar: 'Agent F1', declencheur: 'automatique', pages: 1 } });
