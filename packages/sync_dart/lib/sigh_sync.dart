@@ -21,3 +21,20 @@ export 'src/sauvegarde_fichiers.dart'
         RapportSauvegardeFichiers,
         RapportControleSauvegarde,
         RapportRestaurationFichiers;
+// La sauvegarde hors site (lot 5, ADR-0007) : blocs opaques chiffrés par la clé de la clinique, relais web ou dossier distant monté, restauration vérifiée avant d'écrire.
+export 'src/sauvegarde_horssite.dart'
+    show
+        ErreurSauvegarde,
+        BlocScelle,
+        ChiffreurSauvegarde,
+        DestinationSauvegarde,
+        DestinationRelais,
+        DestinationDossier,
+        ElementASauver,
+        ElementIllisible,
+        IndexBlocs,
+        ResultatDepot,
+        ResultatRestauration,
+        sauvegarderHorsSite,
+        restaurerHorsSite,
+        controlerHorsSite;

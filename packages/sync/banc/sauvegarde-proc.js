@@ -10,5 +10,7 @@ const elements = fs.statSync(a.source).isDirectory()
   ? fs.readdirSync(a.source).sort().map((n) => ({ ref: n, taille: fs.statSync(path.join(a.source, n)).size, lire: () => fs.readFileSync(path.join(a.source, n)) }))
   : [{ ref: 'magasin', taille: fs.statSync(a.source).size, lire: () => fs.readFileSync(a.source) }];
 sauvegarder({ dest: new DestRelais(a.relais, a.secret), cle: Buffer.from(a.cle, 'hex'), type: a.type, elements, tailleBloc: a.tailleBloc, garder: a.garder, lentMs: a.lentMs || 0, coupureApres: a.coupureApres ?? null })
-  .then((r) => { process.send({ ok: true, ...r }, () => process.exit(0)); })
-  .catch((e) => { process.send({ ok: false, refus: e instanceof ErreurSauvegarde ? e.refus : { code: 'ERREUR', motif: String(e && e.message) } }, () => process.exit(1)); });
+  .then((r) => sortir({ ok: true, ...r }, 0))
+  .catch((e) => sortir({ ok: false, refus: e instanceof ErreurSauvegarde ? e.refus : { code: 'ERREUR', motif: String(e && e.message) } }, 1));
+/* Lancé par le banc (fork, IPC) ou par un test Dart (sortie standard, une ligne JSON) : même résultat. */
+function sortir(o, code) { if (process.send) process.send(o, () => process.exit(code)); else { process.stdout.write(JSON.stringify(o) + '\n', () => process.exit(code)); } }

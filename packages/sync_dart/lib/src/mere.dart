@@ -26,6 +26,8 @@ import 'commun.dart';
 import 'depot.dart';
 import 'pont.dart';
 import 'fichiers_mere.dart';
+import 'horssite_mere.dart';
+import 'sauvegarde_horssite.dart' show ErreurSauvegarde;
 import 'pont_pair.dart';
 import 'stockage_fichiers.dart';
 import 'supervision.dart';
@@ -235,6 +237,9 @@ class Mere {
   StockageFichiers? stockageFichiers;
   FichiersMere? fichiersMere;
 
+  /// Lot 5 (ADR-0007) : la copie hors site (relais web ou dossier distant), désactivée par défaut ; planificateur, journal technique, alertes, restauration.
+  late final HorsSiteMere horsSite;
+
   static Future<Mere> creer(ConfigMere cfg) async {
     final base = await Depot.ouvrir(cfg.dbChemin, cfg.cleStockage);
     await base.initialiser(_ddl);
@@ -255,6 +260,16 @@ class Mere {
     }
     await m.pont.initialiser();
     await m.pair.initialiser();
+    m.horsSite = HorsSiteMere(
+        base: base,
+        verrou: m.verrou,
+        cle: () => base64.decode(m.pont.cleBase64),
+        relais: cfg.relais,
+        secretRelais: cfg.secretRelais,
+        dossierSauvegardes: cfg.dossierSauvegardes,
+        evenement: m.evenementAsync,
+        stockage: m.stockageFichiers,
+        cleStockage: cfg.cleStockage.isEmpty ? null : [for (var i = 0; i + 1 < cfg.cleStockage.length; i += 2) int.parse(cfg.cleStockage.substring(i, i + 2), radix: 16)]);
     return m;
   }
 
@@ -794,6 +809,35 @@ class Mere {
     throw Err(404, 'route_inconnue', 'Route inconnue.');
   }
 
+  /// Lot 5 : les routes d'administration de la copie hors site, HORS verrou (elles travaillent sur le réseau et le disque ; seules les lectures et écritures de la base prennent le verrou).
+  Future<Object?> routeHorsSite(String cle, HttpRequest req, Map<String, Object?> b, Map<String, String> q) async {
+    adminOk(req);
+    try {
+      switch (cle) {
+        case 'GET /admin/horssite/etat':
+          return await horsSite.etat();
+        case 'GET /admin/horssite/copies':
+          return {'copies': await horsSite.copies(q['type'] ?? 'magasin')};
+        case 'POST /admin/horssite/lancer':
+          return await horsSite.lancer('${b['type']}', manuel: true);
+        case 'POST /admin/horssite/controler':
+          return await horsSite.controler();
+        case 'POST /admin/horssite/restaurer':
+          return await horsSite.restaurer(type: '${b['type']}', copie: '${b['copie']}', cible: '${b['cible']}');
+      }
+    } on ErreurSauvegarde catch (e) {
+      final statut = switch (e.code) {
+        'HORSSITE_DESACTIVEE' || 'COPIE_EN_COURS' || 'CIBLE_EXISTE' => 409,
+        'SAUVEGARDE_TROP_GROSSE' => 413,
+        'ESPACE_RELAIS_INSUFFISANT' => 507,
+        'DOSSIER_INTROUVABLE' => 503,
+        _ => (e.refus.plus['statut'] as int?) ?? 422,
+      };
+      throw Err(statut, e.code, e.refus.motif, {'geste': e.refus.geste, ...e.refus.plus});
+    }
+    throw Err(404, 'route_inconnue', 'Route inconnue.');
+  }
+
   /// Sauvegarde chiffrée (AES-256-GCM, clé de clinique) : le fichier en clair n'existe que le temps de l'écriture.
   /// Conserve les `conservation` dernières ; rend le chemin du fichier chiffré. Appelée sous le verrou.
   Future<String> sauvegarderChiffre({String prefixe = 'quotidienne'}) async {
@@ -828,6 +872,7 @@ class Mere {
   Future<void> demarrer() async {
     _serveur = await HttpServer.bind(InternetAddress.loopbackIPv4, cfg.port);
     pont.demarrer();
+    horsSite.demarrer();
     // Sauvegarde quotidienne : toutes les 5 minutes on regarde si l'heure est venue et si la dernière a plus de 20 h.
     _sauvegardeur = Timer.periodic(const Duration(minutes: 5), (_) async {
       try {
@@ -856,7 +901,11 @@ class Mere {
       Object? out;
       try {
         final cle = '${req.method} ${req.uri.path}';
-        out = cle == 'POST /admin/code-mobile' ? await codeMobile(req, b) : await verrou.executer(() => route(cle, req, b, q));
+        out = cle == 'POST /admin/code-mobile'
+            ? await codeMobile(req, b)
+            : req.uri.path.startsWith('/admin/horssite/')
+                ? await routeHorsSite(cle, req, b, q) // réseau et disque : jamais sous le verrou de la base
+                : await verrou.executer(() => route(cle, req, b, q));
       } on Err catch (e) {
         statut = e.statut;
         out = e.corps;
@@ -873,6 +922,7 @@ class Mere {
   }
 
   Future<void> arreter() async {
+    horsSite.arreter();
     _sauvegardeur?.cancel();
     await _serveur?.close(force: true);
     await base.fermer();
