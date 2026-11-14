@@ -26631,6 +26631,126 @@ async function viderMessages(page) {
   });
   /* LOT TFIN T7 FIN */
 
+  /* LOT CLO C0 DÉBUT */
+  await etape(async () => {
+    scenario('Vague 179 : lot CLO C0, mesure des lignes « à sonder » du PRD de clôture annuelle (E2, E4, E6, E8, E9, E17, E18) : une assertion par ligne ; E10 et la trace de E2 sont mesurées en défaut et rejoignent le scénario avec leur correction (C4)');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN179', nomComplet: 'ADMIN179', fonction: 'admin', identifiant: 's179.admin', secteur: 'DIR' });
+    await ouvrir('m12-cloture.html');
+    /* --- E2 : la première pièce du 1er janvier ouvre l'année, et le journal d'audit le DIT --- */
+    const e2 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const avant = X.de(2028);
+      const r = S.collection('ecritures').insert({ numero: 'CLO-E2', date: '2028-01-01', journal: 'OD', compte: '606000', debit: 10, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' });
+      const x = X.de(2028);
+      const trace = (S.raw().audit || []).filter((l) => /Ouverture d.exercice/.test(l.action) && String(l.reference) === '2028');
+      return { avant: !!avant, insere: !!r, existe: !!x, etat: x && x.etat, trace: trace.length };
+    });
+    verifier('E2 : une pièce datée du 1er janvier d’une année sans exercice FAIT exister l’exercice (ouvert)', e2.avant === false && e2.insere && e2.existe && e2.etat === 'ouvert', JSON.stringify(e2));
+    /* --- E4 : en clôture, seule la saisie manuelle du comptable (et de l'administrateur) passe --- */
+    const e4 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const dem = X.demander(2026);
+      const tenter = (role, origine, num) => { S.setSession({ role, nom: role, nomComplet: 'Sonde ' + role, fonction: role }); const r = ecr.insert({ numero: num, date: '2026-12-10', journal: 'OD', compte: '606000', debit: 5, credit: 0, statut: 'brouillon', origine }); return !!r; };
+      const o = { dem: dem.ok, etat: X.etat(2026),
+        comptableManuelle: tenter('comptable', 'Saisie manuelle', 'CLO-E4A'),
+        comptableModule: tenter('comptable', 'Facturation', 'CLO-E4B'),
+        caissierManuelle: tenter('caissier', 'Saisie manuelle', 'CLO-E4C'),
+        adminManuelle: tenter('admin', 'Saisie manuelle', 'CLO-E4D') };
+      S.setSession({ role: 'admin', nom: 'ADMIN179', nomComplet: 'ADMIN179', fonction: 'admin', secteur: 'DIR' });
+      return o;
+    });
+    verifier('E4 : en clôture, la saisie manuelle du comptable et de l’administrateur passe', e4.dem && e4.etat === 'en_cloture' && e4.comptableManuelle === true && e4.adminManuelle === true, JSON.stringify(e4));
+    verifier('E4 : en clôture, une pièce de module (même par le comptable) et la saisie manuelle d’un autre profil sont refusées', e4.comptableModule === false && e4.caissierManuelle === false, JSON.stringify(e4));
+    await page.evaluate(() => window.SIGH.store.reset());
+    /* --- E8 : un seul bandeau de statut, posé au socle ; E6 : encadré d'à-nouveaux provisoires --- */
+    const garde8 = require('fs').readFileSync(path.join(ROOT, 'assets/js/app.js'), 'utf8');
+    const ailleurs = require('child_process').execSync("grep -rlE \"<strong>Exercice ' [+] \" assets/js || true", { cwd: ROOT, encoding: 'utf8' }).split('\n').filter(Boolean);
+    verifier('E8 : le bandeau de statut de l’exercice est posé UNE fois, au socle (app.js), et nulle part écran par écran', /Exercice ' \+ xc\.annee \+ ' en clôture/.test(garde8) && ailleurs.filter((f) => !/app\.js$/.test(f)).length === 0, JSON.stringify(ailleurs));
+    const b8 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      S.collection('ecritures').insert({ numero: 'CLO-E6', date: '2027-02-02', journal: 'OD', compte: '606000', debit: 10, credit: 0, statut: 'validee', origine: 'Saisie manuelle' });
+      X.choisir(2027);
+      return { etat2027: X.etat(2027), prov: X.provisoires(2027).length };
+    });
+    const lire = async (ecran) => { await ouvrir(ecran); return page.evaluate(() => (document.getElementById('page-header') || document.body).textContent.replace(/\s+/g, ' ')); };
+    const txBal = await lire('m12-balance.html'), txBil = await lire('m12-etats-financiers.html');
+    verifier('E6 : la balance et le bilan de N+1 portent l’encadré « à-nouveaux provisoires » tant que N n’est pas clos', b8.prov > 0 && /À-nouveaux provisoires/.test(txBal) && /À-nouveaux provisoires/.test(txBil), JSON.stringify({ b8, bal: /À-nouveaux provisoires/.test(txBal), bil: /À-nouveaux provisoires/.test(txBil) }));
+    await page.evaluate(() => { window.SIGH.exercice.choisir(2025); });
+    const t25 = await lire('m12-grand-livre.html');
+    verifier('E8 : un exercice clos affiche son bandeau (lecture seule) sur le grand livre, comme sur tout écran à année', /Exercice 2025 clôturé/.test(t25) && /lecture seule/.test(t25), t25.slice(0, 200));
+    await page.evaluate(() => { window.SIGH.store.reset(); window.SIGH.exercice.choisir(new Date().getFullYear()); });
+    /* --- E9 : colonnes N et N-1 du bilan au MÊME filtre de statut (un brouillon n'entre dans aucune des deux) ; grand livre propre pour des montants uniques --- */
+    await ouvrir('m12-etats-financiers.html');
+    await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      S.raw().ecritures.splice(0);
+      const mk = (num, date, compte, d, c, statut) => ecr.insert({ numero: num, date, journal: 'OD', compte, debit: d, credit: c, statut, origine: 'Saisie manuelle' });
+      mk('CLO-E9A', '2026-05-05', '411000', 123457, 0, 'validee'); mk('CLO-E9B', '2026-05-05', '411000', 654321, 0, 'brouillon');
+      mk('CLO-E9C', '2027-05-05', '411000', 234569, 0, 'validee'); mk('CLO-E9D', '2027-05-05', '411000', 765431, 0, 'brouillon');
+      X.choisir(2027);
+    });
+    await ouvrir('m12-etats-financiers.html');
+    const tx9 = await page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/[\s  ]+/g, ''));
+    verifier('E9 : le bilan lit les écritures VALIDÉES dans les deux colonnes (N-1 : 123 457 ; N : 234 569 plus le report provisoire 123 457 = 358 026) ; les deux brouillons 654 321 et 765 431 n’entrent dans aucune',
+      /358026/.test(tx9) && /123457/.test(tx9) && !/654321/.test(tx9) && !/765431/.test(tx9), JSON.stringify({ n: /358026/.test(tx9), n1: /123457/.test(tx9), c: /654321/.test(tx9), d: /765431/.test(tx9) }));
+    await page.evaluate(() => { window.SIGH.store.reset(); window.SIGH.exercice.choisir(new Date().getFullYear()); });
+    /* --- E17 et E18 : la pièce de clôture centre par centre, contrepartie 131 ou 139 ; les états de N gardent le résultat --- */
+    const e17 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      S.raw().ecritures.splice(0);
+      /* un centre qui perd, un centre qui gagne, des lignes sans centre : la sonde fabrique ses trois cas */
+      const mk = (num, compte, d, c, centre) => ecr.insert({ numero: num, date: '2026-09-09', journal: 'OD', compte, debit: d, credit: c, statut: 'validee', origine: 'Saisie manuelle', centreCout: centre });
+      mk('CLO-E17A', '706000', 0, 900000, 'CC01'); mk('CLO-E17A', '571000', 900000, 0, null);
+      mk('CLO-E17B', '606000', 1300000, 0, 'CC02'); mk('CLO-E17B', '571000', 0, 1300000, null);
+      mk('CLO-E17C', '601000', 200000, 0, null); mk('CLO-E17C', '571000', 0, 200000, null);
+      const dem = X.demander(2026);
+      S.setSession({ role: 'da', nom: 'Directrice Administrative', nomComplet: 'TAKI Alimatou', fonction: 'direction' });
+      const base = X.ecrituresDe(2026);
+      const res = X.valider(2026, 'Clôture de la sonde CLO C0');
+      const cl = ecr.active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2026' && !e.contrePasseDe);
+      const centres = {}; base.filter((e) => '678'.indexOf(String(e.compte).charAt(0)) >= 0).forEach((e) => { centres[e.centreCout || ''] = true; });
+      const parCentre = {};
+      cl.forEach((e) => { const k = e.centreCout || ''; (parCentre[k] = parCentre[k] || []).push(e); });
+      const detail = Object.keys(centres).map((k) => {
+        const lignes = parCentre[k] || [];
+        const contre = lignes.filter((e) => /^13[19]/.test(String(e.compte)));
+        const resultatCentre = X.resultat(base.filter((e) => (e.centreCout || '') === k));
+        const solde = lignes.reduce((n, e) => n + e.debit - e.credit, 0);
+        return { centre: k || '(sans centre)', nbContre: contre.length, equilibre: Math.abs(solde) < 1, compteContre: contre[0] && contre[0].compte, resultatCentre };
+      });
+      const resEtats = X.resultat(X.ecrituresDe(2026));
+      const avecCL = X.resultat(X.ecrituresDe(2026, false, true));
+      return { dem: dem.ok, ok: res.ok, motif: res.motif || '', detail, resEtats, avecCL, resFiche: res.resultat, nbCentres: Object.keys(centres).length };
+    });
+    verifier('E17 : la clôture réussit sur le jeu de la sonde', e17.dem && e17.ok, e17.motif);
+    verifier('E17 : chaque centre de coûts est soldé SÉPARÉMENT (pièce équilibrée par centre) et porte sa propre contrepartie en 131 (bénéfice) ou 139 (perte)',
+      e17.detail.length >= 3 && e17.detail.every((d) => d.equilibre && d.nbContre === 1 && (d.resultatCentre >= 0 ? /^131/.test(d.compteContre) : /^139/.test(d.compteContre))), JSON.stringify(e17.detail));
+    verifier('E18 : les états de N gardent le résultat de l’année (le journal CL est exclu : résultat des états = résultat de la fiche, non zéro) ; avec CL il tomberait à zéro',
+      e17.resEtats !== 0 && Math.abs(e17.resEtats - e17.resFiche) < 1 && Math.abs(e17.avecCL) < 1, JSON.stringify({ etats: e17.resEtats, fiche: e17.resFiche, avecCL: e17.avecCL }));
+    await page.evaluate(() => { window.SIGH.exercice.choisir(2026); });
+    await ouvrir('m12-etats-financiers.html');
+    await page.evaluate(() => { window.SIGH.exercice.choisir(2026); });
+    await ouvrir('m12-etats-financiers.html');
+    const cr18 = await page.evaluate(async () => {
+      const t = document.querySelector('button.tab[data-tab="resultat"]');
+      if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
+      const lignes = {};
+      [...document.querySelectorAll('#page-content table tbody tr')].forEach((tr) => {
+        const c = [...tr.children].map((x) => x.textContent.replace(/[\s  ]+/g, ''));
+        if (c.length > 4 && /^[A-Z]{2}$/.test(c[0])) lignes[c[0]] = c[c.length - 1];
+      });
+      return { TC: lignes.TC, RA: lignes.RA, XI: lignes.XI, n: Object.keys(lignes).length };
+    });
+    const chiffres = (v) => String(v || '').replace(/[^0-9]/g, '');
+    verifier('E18 : l’écran du compte de résultat de N, après la clôture, montre le résultat de l’année (les produits 900 000 et l’achat 200 000 y sont encore : le journal CL n’y entre pas)',
+      chiffres(cr18.TC) === '900000' && chiffres(cr18.RA) === '200000', JSON.stringify(cr18));
+    await page.evaluate(() => { window.SIGH.exercice.choisir(new Date().getFullYear()); window.SIGH.store.reset(); });
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CLO C0 FIN */
+
+
 
 
 

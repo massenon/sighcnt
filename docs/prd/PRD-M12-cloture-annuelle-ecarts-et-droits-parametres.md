@@ -1,11 +1,11 @@
 # PRD : clôture annuelle et passage à N+1, écarts mesurés, et droits sans rôle écrit en dur
 
-Statut : **brouillon** du 11/11/2026, à arrêter par la Direction et le Comptable
+Statut : **en cours de livraison** (lot CLO, 14/11/2026) : C0 mesuré, voir la section 8. Brouillon du 11/11/2026, réponses de la Direction en section 6
 Sources : texte de spécification fourni par la Direction le 11/11/2026 (clôture annuelle, réouverture réservée au comptable, archive SYSCOHADA révisé / DGI Bénin, navigation N, N-1, N+1) · `PRD-M12-cloture-exercice.md` et vague 69 (moteur `SIGH.exercice`) · relecture du code de la maquette faite dans cette session (`parcours.js` 3260 à 3660, `api/cron.php`, `m12-comptabilite.js`)
 
 Ce PRD n'est pas écrit avec l'outil `sdlc-kit` (aucun coffre `.sdlc` dans le dépôt) : il suit la forme des PRD de `docs/prd/`.
 
-**Limite de cette analyse** : c'est une **lecture du code**, pas encore une mesure au banc. Chaque ligne du tableau dit si elle est « lue » ou « à sonder ». Aucune ligne n'a été rejouée dans Chrome. Le texte fourni décrit un autre produit (application web progressive, tâche planifiée nommée d'après lui) : on reprend ses **comportements**, jamais ses noms ni ses écrans.
+**Limite de la première analyse (11/11/2026)** : c'était une **lecture du code**. Le lot C0 (14/11/2026) a mesuré au banc chaque ligne « à sonder » : voir la section 8. Chaque ligne du tableau dit si elle est « lue » ou « à sonder ». Aucune ligne n'a été rejouée dans Chrome. Le texte fourni décrit un autre produit (application web progressive, tâche planifiée nommée d'après lui) : on reprend ses **comportements**, jamais ses noms ni ses écrans.
 
 ## 1. Nouvelle règle de la Direction : pas de masquage d'interface en dur
 
@@ -106,3 +106,23 @@ Le circuit de clôture est un paramètre de **branche** : il se règle à la mè
 - 0 liste de rôles en dur dans les trois transitions de clôture après C1.
 - 0 nouvelle liste de rôles en dur acceptée par la garde de génération.
 - Chaque ligne « à sonder » du tableau devient « lue » ou « écart » après C0.
+
+## 8. Constats du lot C0 (mesure au banc, 14/11/2026)
+
+Scénario « Vague 179 » du banc fonctionnel (une assertion par ligne, tirée du comportement réel de la maquette, sans rien corriger). Mesuré sur l'arbre d'avant le lot : **12 vérifications vraies, 3 en défaut** (les trois défauts sont corrigés dans les étapes ci-dessous et leurs assertions rejoignent le scénario avec la correction, pour que chaque comportement ait un test qui échoue sur l'arbre d'avant).
+
+| N° | Constat C0 | Suite |
+|---|---|---|
+| E2 | **lu** : une pièce du 01/01 d'une année sans exercice fait exister l'exercice (ouvert). **Écart confirmé** : aucune trace au journal d'audit | C4 : toute ouverture est tracée |
+| E3 | non mesurable à la maquette (un seul magasin) | C5, banc de synchronisation |
+| E4 | **lu** : en clôture, la saisie manuelle du comptable et de l'administrateur passe ; une pièce de module (même par le comptable) et la saisie manuelle d'un autre profil sont refusées. La liste est en dur | C1 : liste lue dans le circuit |
+| E6 | **lu** : l'encadré « À-nouveaux provisoires » est posé au socle et paraît sur la balance et sur le bilan de N+1 | rien |
+| E7 | **lu, le PRD se trompait** : les boutons « ‹ N-1 » et « N+1 › » existent dans la barre supérieure (`#exercice-precedent`, `#exercice-suivant`), absents si l'exercice voisin n'existe pas | C2 : libellé « Exercice N », onglet conservé |
+| E8 | **lu** : le bandeau de statut (clos, en clôture, à-nouveaux provisoires) est posé UNE fois, dans `app.js` ; grand livre d'un exercice clos : bandeau et lecture seule vérifiés | C1 : le texte nomme les rôles lus |
+| E9 | bilan **lu** : colonnes N et N-1 au même filtre (validées seulement, brouillons absents des deux). **Écart confirmé** : le compte de résultat n'a pas de colonne N-1 tirée du journal (seulement les deux colonnes de la liasse déposée) | C2 |
+| E10 | **écart confirmé** : le journal AN est proposé à la saisie manuelle ; le moteur ne refuse ni CL ni AN ; CL n'est pas dans la liste (absent du référentiel des journaux) | C4 |
+| E11 | à mesurer au grand livre | C3 |
+| E17 | **lu** : la pièce CL solde chaque centre séparément (pièce équilibrée par centre), contrepartie 131 (bénéfice) ou 139 (perte) par centre ; les lignes sans centre forment leur propre groupe. Le centre « Structure » du texte fourni n'existe pas dans le référentiel de la clinique : **sans objet** | rien |
+| E18 | **lu** : le journal CL est exclu des états de N, le résultat de l'année reste (celui des états égale celui de la fiche, non nul ; avec CL il tomberait à zéro) ; l'écran du compte de résultat de N montre les produits et charges non soldés | rien |
+
+Observation hors lot : la colonne « Exercice en cours » du compte de résultat laisse vides les lignes de total (XI, XB, etc.) ; un total d'état est CALCULÉ (règle du dépôt), celui-ci ne l'est pas encore.
