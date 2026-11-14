@@ -409,7 +409,8 @@
    "scenarios": [
     34,
     41,
-    44
+    44,
+    176
    ],
    "statut": "porté"
   },
@@ -483,7 +484,13 @@
    "scenarios": [
     23,
     32,
-    90
+    90,
+    155,
+    156,
+    159,
+    160,
+    174,
+    180
    ],
    "statut": "porté"
   },
@@ -877,7 +884,8 @@
    ],
    "scenarios": [
     22,
-    68
+    68,
+    176
    ],
    "statut": "porté"
   },
@@ -947,7 +955,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    34
+    34,
+    176
    ],
    "statut": "porté"
   },
@@ -1155,7 +1164,9 @@
     "chirurgien",
     "anesthesiste"
    ],
-   "scenarios": [],
+   "scenarios": [
+    176
+   ],
    "statut": "porté"
   },
   {
@@ -1582,7 +1593,15 @@
     16,
     32,
     49,
-    68
+    68,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    177,
+    178
    ],
    "statut": "porté"
   },
@@ -1659,7 +1678,10 @@
     31,
     40,
     43,
-    58
+    58,
+    168,
+    171,
+    177
    ],
    "statut": "porté"
   },
@@ -1683,7 +1705,14 @@
     "anesthesiste"
    ],
    "scenarios": [
-    49
+    49,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    177
    ],
    "statut": "porté"
   },
@@ -1778,7 +1807,12 @@
     1,
     28,
     95,
-    105
+    105,
+    169,
+    170,
+    175,
+    177,
+    178
    ],
    "statut": "porté"
   },
@@ -4250,8 +4284,16 @@
     "assistant_comptable"
    ],
    "scenarios": [
+    1,
     44,
-    53
+    53,
+    155,
+    157,
+    158,
+    160,
+    172,
+    173,
+    179
    ],
    "statut": "porté"
   },
@@ -4439,7 +4481,8 @@
     89,
     94,
     105,
-    122
+    122,
+    178
    ],
    "statut": "porté"
   },
@@ -4701,7 +4744,8 @@
     32,
     34,
     125,
-    153
+    153,
+    175
    ],
    "statut": "porté"
   },
@@ -4791,9 +4835,12 @@
     "da"
    ],
    "scenarios": [
+    1,
     72,
     73,
-    74
+    74,
+    163,
+    165
    ],
    "statut": "porté"
   },
@@ -5526,7 +5573,7 @@
    "scenarios": [
     130
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-transfert-lignes",
@@ -5544,7 +5591,7 @@
    "scenarios": [
     130
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-inventaire-comptage",
@@ -5562,7 +5609,7 @@
    "scenarios": [
     130
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-natures-facture",
@@ -6336,7 +6383,10 @@
    "scenarios": [
     32,
     37,
-    43
+    43,
+    175,
+    178,
+    180
    ],
    "statut": "porté"
   },

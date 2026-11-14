@@ -7,11 +7,11 @@
 |---|---|
 | Écrans du manifeste (hors hubs de module) | **357** |
 | Hubs de module (un par module, engendrés) | 23 |
-| Écrans nommés par au moins un scénario de la maquette | 261 (73 %) |
-| Écrans **sans** scénario (recette à écrire) | 96 |
-| Écrans portés | 341 |
+| Écrans nommés par au moins un scénario de la maquette | 262 (73 %) |
+| Écrans **sans** scénario (recette à écrire) | 95 |
+| Écrans portés | 344 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 154 |
+| Scénarios de la maquette analysés | 180 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -22,9 +22,9 @@
 | 1 · caisse + MECeF + impression | 17 | 13 | 17 | 0 |
 | 2 · pharmacie, stocks, achats | 27 | 23 | 27 | 0 |
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
-| 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
+| 4 · parcours clinique (M1–M4) | 67 | 51 | 67 | 0 |
 | 5 · assurances et comptabilité | 32 | 24 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 175 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 178 | 0 |
 
 ## Par écran
 
@@ -99,7 +99,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m2-imagerie-scanner` | Tableau Scanner | M2 | 7 | 63, 67 | porté |
 | `m5-banque-sang` | Banque de sang | M5 | 0 | 28 | porté |
 | `m5-catalogue` | Catalogue des analyses | M5 | 8 | 3, 117 | porté |
-| `m5-demandes` | Demandes d’analyses | M5 | 9 | 16, 32, 49, 68 | porté |
+| `m5-demandes` | Demandes d’analyses | M5 | 9 | 16, 32, 49, 68, 166, 167, 168, 169, 170, 171, 177, 178 | porté |
 | `m5-demandes-hospitalisation` | Demandes — hospitalisation | M5 | 9 | 49 | porté |
 | `m5-demandes-maternite` | Demandes — maternité | M5 | 9 | 49 | porté |
 | `m5-donneurs` | Donneurs & transfusions | M5 | 0 | 28 | porté |
@@ -107,11 +107,11 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m5-prelevement` | Salle de prélèvement | M5 | 8 | 28, 41 | porté |
 | `m5-reactifs` | Réactifs & consommables | M5 | 6 | 28, 34 | porté |
 | `m5-reactifs-stats` | Statistiques des réactifs | M5 | 8 | 49 | porté |
-| `m5-resultats` | Saisie des résultats | M5 | 9 | 21, 28, 31, 40, 43, 58 | porté |
-| `m5-resultats-comparatif` | Comparatif des résultats | M5 | 9 | 49 | porté |
+| `m5-resultats` | Saisie des résultats | M5 | 9 | 21, 28, 31, 40, 43, 58, 168, 171, 177 | porté |
+| `m5-resultats-comparatif` | Comparatif des résultats | M5 | 9 | 49, 166, 167, 168, 169, 170, 171, 177 | porté |
 | `m5-stats` | Statistiques du laboratoire | M5 | 8 | 28 | porté |
 | `m5-unites` | Unités de mesure | M5 | 5 | 1, 95, 105 | porté |
-| `m5-valeurs-reference` | Valeurs de référence | M5 | 8 | 1, 28, 95, 105 | porté |
+| `m5-valeurs-reference` | Valeurs de référence | M5 | 8 | 1, 28, 95, 105, 169, 170, 175, 177, 178 | porté |
 
 ### Tranche 4 · parcours clinique (M1–M4)
 
@@ -119,9 +119,9 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 |---|---|---|---|---|---|
 | `m1-antecedents` | Antécédents & allergies | M1 | 9 | 32, 40, 41 | porté |
 | `m1-certificats-externes` | Certificats — patients externes | M1 | 13 | 52 | porté |
-| `m1-constantes` | Constantes à l’accueil | M1 | 10 | 34, 41, 44 | porté |
+| `m1-constantes` | Constantes à l’accueil | M1 | 10 | 34, 41, 44, 176 | porté |
 | `m1-contre-reference` | Fiches de contre-référence | M1 | 9 | 41 | porté |
-| `m1-documents` | Documents numérisés | M1 | 9 | 23, 32, 90 | porté |
+| `m1-documents` | Documents numérisés | M1 | 9 | 23, 32, 90, 155, 156, 159, 160, 174, 180 | porté |
 | `m1-dossier-etendu` | Dossier de consultation étendu | M1 | 8 | 21, 36, 41, 46 | porté |
 | `m1-dossier-medical` | Dossier médical informatisé | M1 | 9 | 32, 34, 41, 46 | porté |
 | `m1-externe` | Patient externe | M1 | 10 | 30, 32, 44, 60, 102 | porté |
@@ -158,15 +158,15 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m3-cpa` | Consultation pré-anesthésique | M3 | 8 | 50 | porté |
 | `m3-cr-anesthesie` | Comptes rendus d’anesthésie | M3 | 8 | 50 | porté |
 | `m3-demande-examen` | Demande d’examen | M3 | 8 | 50 | porté |
-| `m3-feuille-temperature` | Feuille de température | M3 | 9 | 34 | porté |
+| `m3-feuille-temperature` | Feuille de température | M3 | 9 | 34, 176 | porté |
 | `m3-glasgow` | Score de Glasgow | M3 | 8 | 43 | porté |
-| `m3-observation` | Mise en observation | M3 | 8 | 22, 68 | porté |
+| `m3-observation` | Mise en observation | M3 | 8 | 22, 68, 176 | porté |
 | `m3-plan-lits` | Plan des lits | M3 | 9 | 34 | porté |
 | `m3-rapport` | Rapport médical | M3 | 8 | — | porté |
 | `m3-soins` | Feuille de soins | M3 | 8 | 21 | porté |
 | `m3-sortie-avis-medical` | Sortie contre avis médical | M3 | 8 | — | porté |
 | `m3-sorties` | Sorties d’hospitalisation | M3 | 8 | 6 | porté |
-| `m3-surveillance` | Fiche de surveillance | M3 | 8 | — | porté |
+| `m3-surveillance` | Fiche de surveillance | M3 | 8 | 176 | porté |
 | `m3-transfusion` | Surveillance transfusionnelle | M3 | 8 | — | porté |
 | `m3-visites-patients` | Visites aux hospitalisés | M3 | 8 | — | porté |
 | `m4-accouchements` | Accouchements | M4 | 5 | 43 | porté |
@@ -293,7 +293,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-fournisseurs` | Importation des fournisseurs | IMP | 6 | 125, 126, 130, 143 | porté |
 | `imp-garanties` | Importation des garanties des souscripteurs | IMP | 5 | 144 | non commencé |
 | `imp-immobilisations` | Importation des immobilisations | IMP | 5 | 144 | non commencé |
-| `imp-inventaire-comptage` | Importation d’un comptage d’inventaire | IMP | 3 | 130 | non commencé |
+| `imp-inventaire-comptage` | Importation d’un comptage d’inventaire | IMP | 3 | 130 | porté |
 | `imp-natures-facture` | Importation des natures de facture | IMP | 3 | 144 | porté |
 | `imp-patients` | Importation du répertoire patients | IMP | 5 | 125, 126, 130 | porté |
 | `imp-personnel` | Importation du personnel | IMP | 3 | 125, 126, 130 | porté |
@@ -302,9 +302,9 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-produits-referentiel` | Importation du référentiel produits | IMP | 3 | 130, 131, 139, 141 | non commencé |
 | `imp-soldes-ouverture` | Importation des soldes d’ouverture | IMP | 5 | — | porté |
 | `imp-souscripteurs` | Importation des souscripteurs | IMP | 5 | — | porté |
-| `imp-stock-detail-initial` | Importation du stock détail initial | IMP | 3 | 130 | non commencé |
+| `imp-stock-detail-initial` | Importation du stock détail initial | IMP | 3 | 130 | porté |
 | `imp-tarifs-produits` | Importation des prix d’achat | IMP | 4 | 138 | non commencé |
-| `imp-transfert-lignes` | Importation d’un bon de transfert | IMP | 3 | 130 | non commencé |
+| `imp-transfert-lignes` | Importation d’un bon de transfert | IMP | 3 | 130 | porté |
 | `imp-unites-labo` | Importation des unités de mesure | IMP | 4 | 144 | porté |
 | `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112, 118 | porté |
 | `m10-badges` | Badges du personnel | M10 | 5 | 56, 68 | porté |
@@ -343,10 +343,10 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m11-validation` | Validation Direction | M11 | 4 | 79 | porté |
 | `adm-enquetes` | Enquêtes & questionnaires | M13 | 5 | 1, 53, 57, 95, 105 | porté |
 | `adm-satisfaction` | Satisfaction des patients | M13 | 5 | 53, 54 | porté |
-| `adm-validations` | Validations en attente | M13 | 11 | 54, 89, 94, 105, 122 | porté |
+| `adm-validations` | Validations en attente | M13 | 11 | 54, 89, 94, 105, 122, 178 | porté |
 | `enquete-publique` | Fiche d’enquête (lien partagé) | M13 | 11 | — | porté |
 | `m13-ambulance` | Interventions ambulance | M13 | 6 | — | porté |
-| `m13-courriers` | Courriers (départ / arrivée) | M13 | 6 | 44, 53 | porté |
+| `m13-courriers` | Courriers (départ / arrivée) | M13 | 6 | 1, 44, 53, 155, 157, 158, 160, 172, 173, 179 | porté |
 | `m13-evenements` | Événements & notifications | M13 | 5 | 14, 23 | porté |
 | `m13-maintenance` | Parc technique & maintenance | M13 | 4 | 38, 41 | porté |
 | `m13-notes-service` | Notes de service | M13 | 5 | — | porté |
@@ -355,12 +355,12 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m13-reunions` | Réunions | M13 | 5 | — | porté |
 | `m13-sms-journal` | Journal des envois SMS | M13 | 4 | 96, 97 | non commencé |
 | `m14-audit` | Journal d’audit | M14 | 3 | — | porté |
-| `m14-roles` | Rôles & permissions (RBAC) | M14 | 3 | 21, 32, 34, 125, 153 | porté |
+| `m14-roles` | Rôles & permissions (RBAC) | M14 | 3 | 21, 32, 34, 125, 153, 175 | porté |
 | `m14-sauvegardes` | Sauvegardes & restauration | M14 | 3 | 24, 90 | porté |
 | `m14-securite-utilisateurs` | Sécurité des utilisateurs | M14 | 1 | 78 | porté |
 | `m14-sessions` | Sessions actives | M14 | 3 | 78, 115 | porté |
 | `m14-soignants` | Prescripteurs & exécutants de soins | M14 | 3 | 34 | porté |
-| `m14-taches` | Tâches planifiées | M14 | 3 | 72, 73, 74 | porté |
+| `m14-taches` | Tâches planifiées | M14 | 3 | 1, 72, 73, 74, 163, 165 | porté |
 | `m14-utilisateurs` | Utilisateurs | M14 | 3 | 91 | porté |
 | `mere-a-traiter` | « À traiter » consolidé | MERE | 2 | — | porté |
 | `mere-appareils` | Appareils et appairage | MERE | 2 | — | porté |
@@ -384,7 +384,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `mere-sauvegardes` | Sauvegardes et restauration | MERE | 2 | — | porté |
 | `mere-service` | Service et démarrage | MERE | 2 | — | porté |
 | `mere-supervision` | Supervision | MERE | 2 | — | porté |
-| `dash-admin` | Administrateur | PIL | 1 | 32, 37, 43 | porté |
+| `dash-admin` | Administrateur | PIL | 1 | 32, 37, 43, 175, 178, 180 | porté |
 | `dash-croise` | Tableau de bord dynamique croisé | PIL | 5 | 37, 40, 58, 92, 93 | porté |
 | `dash-da` | Statistiques de la Direction | PIL | 5 | 37, 62 | porté |
 | `dash-direction` | Direction | PIL | 4 | 10, 12, 15, 37 | porté |

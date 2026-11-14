@@ -23,8 +23,18 @@ const MAGASIN = {
   produits: [
     { id: 'PRD0001', code: 'ABA', designation: 'ABAISSE LANGUE', unite: 'Unité', categorie: 'conso_medical', stock: 2, stockGros: 2, stockDetail: 0, statut: 'actif' },
     { id: 'PRD0002', code: 'PARA500', designation: 'PARACETAMOL 500 MG CP B/100', unite: 'Boîte', categorie: 'medicament', stock: 10, stockGros: 10, stockDetail: 0, statut: 'actif' },
+    /* Lot 8 (jeux du stock) : de quoi éprouver le stock détail initial, le bon de transfert et le comptage d'inventaire. */
+    { id: 'PRD0003', code: 'AMOXI', designation: 'AMOXICILLINE 500 MG B/100', unite: 'Boîte', categorie: 'medicament', stock: 30, stockGros: 30, stockDetail: 0, cump: 100, statut: 'actif' },
+    { id: 'PRD0004', code: 'COTON', designation: 'COTON HYDROPHILE 500 G', unite: 'Unité', categorie: 'conso_medical', stock: 12, stockGros: 12, stockDetail: 0, cump: 50, statut: 'actif' },
+    { id: 'PRD0005', code: 'SIROP', designation: 'SIROP TOUX 125 ML', unite: 'Flacon', categorie: 'medicament', stock: 20, stockGros: 15, stockDetail: 5, cump: 80, statut: 'actif' },
+    { id: 'PRD0006', code: 'INCOH', designation: 'ARTICLE INCOHERENT', unite: 'Unité', categorie: 'conso_medical', stock: 10, stockGros: 4, stockDetail: 4, cump: 10, statut: 'actif' },
+    { id: 'PRD0007', code: 'DOLIP', designation: 'DOLIPRANE 1 G B/8', unite: 'Boîte', categorie: 'medicament', stock: 40, stockGros: 40, stockDetail: 0, cump: 200, statut: 'actif' },
   ],
-  lots: [], mouvements: [{ id: 'MVT00001', reference: 'M000001', produitId: 'PRD0001', produit: 'ABAISSE LANGUE', type: 'entree', typeLabel: 'Entrée', quantite: 2, statut: 'actif' }],
+  lots: [
+    { id: 'LOT0001', produitId: 'PRD0003', produit: 'AMOXICILLINE 500 MG B/100', numeroLot: 'L-A', datePeremption: '2026-12-15', quantiteRestante: 20, magasin: 'gros', statut: 'alerte' },
+    { id: 'LOT0002', produitId: 'PRD0003', produit: 'AMOXICILLINE 500 MG B/100', numeroLot: 'L-B', datePeremption: '2027-05-31', quantiteRestante: 10, magasin: 'gros', statut: 'actif' },
+    { id: 'LOT0003', produitId: 'PRD0003', produit: 'AMOXICILLINE 500 MG B/100', numeroLot: 'L-OLD', datePeremption: '2025-01-31', quantiteRestante: 5, magasin: 'gros', statut: 'perime' },
+  ], mouvements: [{ id: 'MVT00001', reference: 'M000001', produitId: 'PRD0001', produit: 'ABAISSE LANGUE', type: 'entree', typeLabel: 'Entrée', quantite: 2, statut: 'actif' }],
   fournisseurs: [{ id: 'F001', code: 'SOBAPS', nom: 'SoBAPS SA', statut: 'actif' }],
   patients: [
     { id: 'PAT0001', code: 'CNT/1/25', nom: 'TCHANE', prenom: 'Bertine', dateNaissance: '1989-07-01', telephone: '0372398919', statut: 'actif' },
@@ -58,6 +68,7 @@ const MAGASIN = {
   unitesLabo: [{ id: 'UNI1', symbole: 'g/dl', libelle: 'gramme par décilitre', domaine: 'Biochimie', statut: 'actif' }],
   prestataires: [{ id: 'PE1', reference: 'PE-0001', nom: 'Dr ADJO Marius', specialite: 'Chirurgie', tarifActe: 20000, actesRealises: 3, ifu: '3202112446712', statut: 'actif' }],
   emplacements: [{ id: 'EMP1', code: 'A2', libelle: 'Rayon A, casier 2', zone: 'Rayonnage sec', statut: 'actif' }],
+  transferts: [], inventaires: [],
   lotsImportation: [],
 };
 
@@ -76,6 +87,9 @@ const CE = (o) => Object.assign({ code: null, libelle: null, type: 'Centre d’e
 const UN = (o) => Object.assign({ symbole: null, libelle: null, domaine: null }, o);
 const PS = (o) => Object.assign({ nom: null, specialite: null, telephone: null, tarifActe: null, ifu: null, factureNormalisee: null }, o);
 const EM = (o) => Object.assign({ code: null, libelle: null, zone: null, temperature: null, capacite: null, observation: null }, o);
+const SD = (o) => Object.assign({ code: null, lot: null, peremption: null, quantite: null }, o);
+const TL = (o) => Object.assign({ code: null, lot: null, quantite: null, destination: 'Pharmacie d’urgence', date: null, motif: null }, o);
+const IC = (o) => Object.assign({ magasin: 'Stock gros', code: null, compte: null, type: null, date: null }, o);
 const AN = (o) => Object.assign({ code: null, designation: null, section: null, echantillon: null, delai: null }, o);
 
 const CAS = [
@@ -175,6 +189,38 @@ const CAS = [
   ['em-doublon-casse', 'emplacements', [EM({ code: 'a2', libelle: 'Doublon par la casse' }), EM({ code: 'A-2', libelle: 'Casier distinct : le tiret compte' })]],
   ['em-zone-inconnue', 'emplacements', [EM({ code: 'Z9', libelle: 'Zone inconnue', zone: 'Cave' })]],
   ['em-capacite-negative', 'emplacements', [EM({ code: 'N1', libelle: 'Capacité négative', capacite: -3 })]],
+  /* Lot 8, groupe STOCK : le stock détail initial, le bon de transfert et le comptage d'inventaire. */
+  ['sd-valide', 'stock-detail-initial', [SD({ code: 'DOLIP', lot: 'D1', peremption: '2028-03-31', quantite: 25 }), SD({ code: 'DOLIP', lot: 'D2', peremption: '2029-01-31', quantite: 15 })]],
+  ['sd-deja-mouvemente', 'stock-detail-initial', [SD({ code: 'ABA', quantite: 1 })]],
+  ['sd-deja-en-stock', 'stock-detail-initial', [SD({ code: 'SIROP', lot: 'X1', peremption: '2028-01-01', quantite: 3 })]],
+  ['sd-incoherent', 'stock-detail-initial', [SD({ code: 'INCOH', quantite: 2 })]],
+  ['sd-article-inconnu', 'stock-detail-initial', [SD({ code: 'NOPE', quantite: 2 })]],
+  ['sd-lot-obligatoire', 'stock-detail-initial', [SD({ code: 'DOLIP', quantite: 2 })]],
+  ['sd-lot-incomplet', 'stock-detail-initial', [SD({ code: 'COTON', lot: 'X', quantite: 2 })]],
+  ['sd-peremption-passee', 'stock-detail-initial', [SD({ code: 'DOLIP', lot: 'P1', peremption: '2020-01-01', quantite: 5 })]],
+  ['sd-quantite-negative', 'stock-detail-initial', [SD({ code: 'COTON', quantite: -3 })]],
+  ['sd-quantite-nulle', 'stock-detail-initial', [SD({ code: 'COTON', quantite: 0 }), SD({ code: 'DOLIP', lot: 'Q1', peremption: '2028-03-31', quantite: 2 })]],
+  ['sd-doublon-fichier', 'stock-detail-initial', [SD({ code: 'DOLIP', lot: 'D1', peremption: '2028-03-31', quantite: 5 }), SD({ code: 'dolip', lot: 'd1', peremption: '2028-03-31', quantite: 5 })]],
+  ['tl-valide', 'transfert-lignes', [TL({ code: 'AMOXI', quantite: 10, date: '2026-10-30', motif: 'Réapprovisionnement' }), TL({ code: 'COTON', quantite: 4 }), TL({ code: 'AMOXI', lot: 'L-A', quantite: 5 })]],
+  ['tl-stock-insuffisant', 'transfert-lignes', [TL({ code: 'COTON', quantite: 20 })]],
+  ['tl-cumul-bon', 'transfert-lignes', [TL({ code: 'AMOXI', quantite: 20 }), TL({ code: 'AMOXI', lot: 'L-A', quantite: 15 })]],
+  ['tl-lot-inconnu', 'transfert-lignes', [TL({ code: 'AMOXI', lot: 'ZZ', quantite: 1 })]],
+  ['tl-lot-perime', 'transfert-lignes', [TL({ code: 'AMOXI', lot: 'L-OLD', quantite: 1 })]],
+  ['tl-lot-non-fefo', 'transfert-lignes', [TL({ code: 'AMOXI', lot: 'L-B', quantite: 1 })]],
+  ['tl-destinations-multiples', 'transfert-lignes', [TL({ code: 'COTON', quantite: 1 }), TL({ code: 'AMOXI', quantite: 1, destination: 'Laboratoire' })]],
+  ['tl-destination-absente', 'transfert-lignes', [TL({ code: 'COTON', quantite: 1, destination: null })]],
+  ['tl-dates-multiples', 'transfert-lignes', [TL({ code: 'COTON', quantite: 1, date: '2026-10-01' }), TL({ code: 'AMOXI', quantite: 1, date: '2026-10-02' })]],
+  ['tl-motifs-multiples', 'transfert-lignes', [TL({ code: 'COTON', quantite: 1, motif: 'A' }), TL({ code: 'AMOXI', quantite: 1, motif: 'B' })]],
+  ['tl-date-future', 'transfert-lignes', [TL({ code: 'COTON', quantite: 1, date: '2031-01-01' })]],
+  ['tl-quantite-nulle', 'transfert-lignes', [TL({ code: 'COTON', quantite: 0 })]],
+  ['tl-article-inconnu', 'transfert-lignes', [TL({ code: 'NOPE', quantite: 1 })]],
+  ['ic-valide', 'inventaire-comptage', [IC({ code: 'AMOXI', compte: 28, type: 'Mensuel', date: '2026-10-31' }), IC({ code: 'COTON', compte: 12, type: 'Mensuel', date: '2026-10-31' }), IC({ magasin: 'Stock détail', code: 'SIROP', compte: 6 })]],
+  ['ic-article-inconnu', 'inventaire-comptage', [IC({ code: 'NOPE', compte: 1 })]],
+  ['ic-date-future', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1, date: '2031-01-01' })]],
+  ['ic-feuille-unique', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1, type: 'Mensuel' }), IC({ code: 'AMOXI', compte: 1, type: 'Annuel' })]],
+  ['ic-compte-negatif', 'inventaire-comptage', [IC({ code: 'COTON', compte: -1 })]],
+  ['ic-magasin-invalide', 'inventaire-comptage', [IC({ magasin: 'Cave', code: 'COTON', compte: 1 })]],
+  ['ic-doublon-fichier', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1 }), IC({ code: 'coton', compte: 2 })]],
 ];
 
 (async () => {
@@ -185,7 +231,7 @@ const CAS = [
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/import.js') });
     const GS_LOT = GS({ code: 'MED77', designation: 'IBUPROFENE 400 MG CP B/30', categorie: 'Médicaments', unite: 'Boîte', quantite: 10, lot: 'L77', peremption: '2028-06-30', prixRevient: 100 });
     const sortie = await m.page.evaluate(async ([MAG, CAS, GS_LOT]) => {
-      const S = SIGH.store, C = SIGH.core, D = SIGH.data, I = SIGH.importer, X = SIGH.xlsx;
+      const S = SIGH.store, C = SIGH.core, D = SIGH.data, I = SIGH.importer, X = SIGH.xlsx, PR = SIGH.parcours;
       C.aujourdhui = () => new Date(2026, 10, 1, 12, 0, 0);
       S.currentUser = () => 'ADMIN TEST';
       const propre = (x) => JSON.parse(JSON.stringify(x));
@@ -243,7 +289,7 @@ const CAS = [
         };
       });
       /* 3. Application, relevé des fiches, annulation. L'ordre fixe les références de lot. */
-      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide'];
+      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide'];
       out.applications = [];
       const refus = I.analyserOctets('grand-stock', Uint8Array.from(out.fixtures['gs-quantite-negative']), 'gs-quantite-negative.xlsx');
       const lotRefus = I.consigner(I.jeu('grand-stock'), refus);
@@ -283,6 +329,73 @@ const CAS = [
       });
       const deux = I.annulerLot(lots['gs-valide'].id, 'encore');
       out.annulations.push({ cas: 'gs-valide-deuxieme-fois', ok: deux.ok, code: deux.code || null });
+      /* 5 bis. LOT 8, groupe STOCK : les garde-fous que seul un stock VIVANT éprouve (un détail déjà dispensé, un transfert déjà dispensé, un comptage déjà régularisé,
+         un magasin qui a bougé entre l'analyse et la confirmation, la régularisation STRICTE d'une feuille importée). */
+      out.stock = {};
+      {
+        const lu = (code) => S.collection('produits').all().find((p) => p.code === code);
+        const poser = (id) => {
+          const cas = out.cas.find((c) => c.id === id);
+          const r = I.appliquer(cas.jeu, I.analyserOctets(cas.jeu, Uint8Array.from(out.fixtures[id]), id + '.xlsx'));
+          if (!r.ok) throw new Error('lot du stock non posé ' + id + ' : ' + JSON.stringify({ code: r.code, motif: r.motif }));
+          return r.lot;
+        };
+        const refusDe = (r) => ({ ok: r.ok, code: r.code || null, motif: r.motif || null, geste: r.geste || null });
+        const stocks = (codes) => { const o = {}; codes.forEach((c) => { const p = lu(c); o[c] = { stock: p.stock, stockGros: p.stockGros, stockDetail: p.stockDetail }; }); return o; };
+        /* Stock détail initial : dispensé, puis mouvement postérieur, puis annulation qui passe. */
+        {
+          const lot = poser('sd-valide');
+          out.stock.detailPose = stocks(['DOLIP']);
+          const avant = lu('DOLIP').stockDetail;
+          S.collection('produits').update(lu('DOLIP').id, { stockDetail: avant - 10 });
+          out.stock.detailDejaDispense = refusDe(I.annulerLot(lot.id, 'essai'));
+          S.collection('produits').update(lu('DOLIP').id, { stockDetail: avant });
+          const mvx = S.collection('mouvements').insert({ reference: 'M000060', date: '2026-11-01', produitId: lu('DOLIP').id, produit: 'DOLIPRANE 1 G B/8', type: 'sortie', typeLabel: 'Sortie', quantite: 1, stockType: 'detail', justificatif: 'Dispensation test' });
+          out.stock.detailMouvementPosterieur = refusDe(I.annulerLot(lot.id, 'essai'));
+          S.collection('mouvements').archive(mvx.record.id, 'test');
+          const ok = I.annulerLot(lot.id, 'essai');
+          out.stock.detailAnnule = { ok: ok.ok, archives: ok.archives === undefined ? null : ok.archives, stocks: stocks(['DOLIP']) };
+        }
+        /* Bon de transfert : dispensé, puis annulation qui restitue gros ET détail ; magasin qui bouge entre l'analyse et la confirmation. */
+        {
+          const lot = poser('tl-valide');
+          out.stock.transfertPose = stocks(['AMOXI', 'COTON']);
+          const bon = S.collection('transferts').all().find((b) => b.lotImport === lot.reference);
+          out.stock.transfertBon = nettoyer(bon, {});
+          const am = lu('AMOXI').stockDetail;
+          S.collection('produits').update(lu('AMOXI').id, { stockDetail: 3 });
+          out.stock.transfertDejaDispense = refusDe(I.annulerLot(lot.id, 'essai'));
+          S.collection('produits').update(lu('AMOXI').id, { stockDetail: am });
+          const ok = I.annulerLot(lot.id, 'essai');
+          out.stock.transfertAnnule = { ok: ok.ok, archives: ok.archives === undefined ? null : ok.archives, stocks: stocks(['AMOXI', 'COTON']) };
+          const analyse = I.analyserOctets('transfert-lignes', Uint8Array.from(out.fixtures['tl-valide']), 'tl-valide.xlsx');
+          const g = lu('COTON').stockGros;
+          S.collection('produits').update(lu('COTON').id, { stockGros: 1 });
+          const r = I.appliquer('transfert-lignes', analyse);
+          out.stock.magasinChange = { ok: r.ok, code: r.code || null, stocks: stocks(['AMOXI', 'COTON']) };
+          S.collection('produits').update(lu('COTON').id, { stockGros: g });
+        }
+        /* Comptage : régularisation STRICTE de la feuille importée (un mouvement par écart), refusée si le stock a bougé ; annulation refusée une fois régularisée. */
+        {
+          const lot = poser('ic-valide');
+          const feuilles = S.collection('inventaires').all().filter((f) => f.lotImport === lot.reference);
+          out.stock.feuilles = feuilles.map((f) => nettoyer(f, {}));
+          const gros = feuilles.find((f) => f.magasin === 'gros');
+          const g0 = lu('AMOXI').stockGros;
+          S.collection('produits').update(lu('AMOXI').id, { stockGros: g0 + 1 });
+          const perimee = PR.regulariserInventaire(gros, { strict: true, operateur: 'ADMIN TEST' });
+          out.stock.regularisationPerimee = { ok: perimee.ok, code: perimee.code || null, motif: perimee.motif || null, geste: perimee.geste || null, stocks: stocks(['AMOXI']) };
+          S.collection('produits').update(lu('AMOXI').id, { stockGros: g0 });
+          const reg = PR.regulariserInventaire(gros, { strict: true, operateur: 'ADMIN TEST' });
+          out.stock.regularisation = { ok: reg.ok, nb: reg.nb, mouvements: (reg.mouvements || []).map((m) => nettoyer(m, {})), stocks: stocks(['AMOXI', 'COTON']) };
+          S.collection('inventaires').update(gros.id, { statutInv: 'valide' });
+          out.stock.inventaireRegularise = refusDe(I.annulerLot(lot.id, 'essai'));
+          reg.annuler();
+          S.collection('inventaires').update(gros.id, { statutInv: 'importe' });
+          const ok = I.annulerLot(lot.id, 'essai');
+          out.stock.comptageAnnule = { ok: ok.ok, archives: ok.archives === undefined ? null : ok.archives, stocks: stocks(['AMOXI', 'COTON']) };
+        }
+      }
       /* 6. Atomicité : l'écriture comptable est refusée en cours de lot, rien ne subsiste. */
       const avantEcr = S.collection('ecritures').all().length, avantLots = S.collection('lotsImportation').all().length;
       S.garder('ecritures', (op) => (op === 'inserer' && S.collection('ecritures').all().length >= avantEcr + 2 ? 'exercice clos (garde d’essai)' : null));
@@ -370,6 +483,7 @@ const CAS = [
         secteursActes: Array.from(new Set(D.ACTES.map((a) => a.secteur).filter(Boolean))),
         /* Lot IMP-C : les listes de saisie des cinq référentiels portés, lues des colonnes des jeux (aucune recopiée à la main). */
         secteursActivite: D.SECTEURS_ACTIVITE, specialitesPrestataire: D.SPECIALITES_PRESTATAIRE, domainesUnitesLabo: D.DOMAINES_UNITES_LABO,
+        destinationsTransfert: SIGH.parcours.DESTINATIONS_TRANSFERT, typesInventaire: I.jeu('inventaire-comptage').colonnes.find((c) => c.cle === 'type').liste, magasinsInventaire: I.jeu('inventaire-comptage').colonnes.find((c) => c.cle === 'magasin').liste,
         zonesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'zone').liste, temperaturesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'temperature').liste,
       };
       out.lienCellules = { serie1: X.versDate(1), serie60: X.versDate(61), serie45000: X.versDate(45000), serie46023: X.versDate(46023) };
@@ -406,6 +520,11 @@ const CAS = [
       + '/// Zones et températures de conservation d\'un emplacement de rangement (colonnes du jeu `emplacements`).\n'
       + 'const importZonesEmplacement = <String>[' + R.zonesEmplacement.map(q).join(', ') + '];\n'
       + 'const importTemperaturesEmplacement = <String>[' + R.temperaturesEmplacement.map(q).join(', ') + '];\n\n'
+      + '/// Services destinataires d\'un bon de transfert (`PR.DESTINATIONS_TRANSFERT`).\n'
+      + 'const importDestinationsTransfert = <String>[' + R.destinationsTransfert.map(q).join(', ') + '];\n\n'
+      + '/// Types d\'un inventaire et magasins nommés (colonnes du jeu `inventaire-comptage`) : [valeur, libellé].\n'
+      + 'const importTypesInventaire = <String>[' + R.typesInventaire.map(q).join(', ') + '];\n'
+      + 'const importMagasinsInventaire = <List<String>>[' + R.magasinsInventaire.map((c) => '[' + q(c.valeur) + ', ' + q(c.label) + ']').join(', ') + '];\n\n'
       + '/// Sections du laboratoire (`SIGH.labo.SECTIONS`) : [identifiant, libellé].\n'
       + 'const importSectionsLabo = <List<String>>[\n' + R.sectionsLabo.map((c) => '  [' + q(c[0]) + ', ' + q(c[1]) + '],').join('\n') + '\n];\n';
     const dir = path.join(REPO, 'packages/domaine/lib/src/import');

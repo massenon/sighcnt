@@ -25,9 +25,100 @@
     "stockGros": 10,
     "stockDetail": 0,
     "statut": "actif"
+   },
+   {
+    "id": "PRD0003",
+    "code": "AMOXI",
+    "designation": "AMOXICILLINE 500 MG B/100",
+    "unite": "Boîte",
+    "categorie": "medicament",
+    "stock": 30,
+    "stockGros": 30,
+    "stockDetail": 0,
+    "cump": 100,
+    "statut": "actif"
+   },
+   {
+    "id": "PRD0004",
+    "code": "COTON",
+    "designation": "COTON HYDROPHILE 500 G",
+    "unite": "Unité",
+    "categorie": "conso_medical",
+    "stock": 12,
+    "stockGros": 12,
+    "stockDetail": 0,
+    "cump": 50,
+    "statut": "actif"
+   },
+   {
+    "id": "PRD0005",
+    "code": "SIROP",
+    "designation": "SIROP TOUX 125 ML",
+    "unite": "Flacon",
+    "categorie": "medicament",
+    "stock": 20,
+    "stockGros": 15,
+    "stockDetail": 5,
+    "cump": 80,
+    "statut": "actif"
+   },
+   {
+    "id": "PRD0006",
+    "code": "INCOH",
+    "designation": "ARTICLE INCOHERENT",
+    "unite": "Unité",
+    "categorie": "conso_medical",
+    "stock": 10,
+    "stockGros": 4,
+    "stockDetail": 4,
+    "cump": 10,
+    "statut": "actif"
+   },
+   {
+    "id": "PRD0007",
+    "code": "DOLIP",
+    "designation": "DOLIPRANE 1 G B/8",
+    "unite": "Boîte",
+    "categorie": "medicament",
+    "stock": 40,
+    "stockGros": 40,
+    "stockDetail": 0,
+    "cump": 200,
+    "statut": "actif"
    }
   ],
-  "lots": [],
+  "lots": [
+   {
+    "id": "LOT0001",
+    "produitId": "PRD0003",
+    "produit": "AMOXICILLINE 500 MG B/100",
+    "numeroLot": "L-A",
+    "datePeremption": "2026-12-15",
+    "quantiteRestante": 20,
+    "magasin": "gros",
+    "statut": "alerte"
+   },
+   {
+    "id": "LOT0002",
+    "produitId": "PRD0003",
+    "produit": "AMOXICILLINE 500 MG B/100",
+    "numeroLot": "L-B",
+    "datePeremption": "2027-05-31",
+    "quantiteRestante": 10,
+    "magasin": "gros",
+    "statut": "actif"
+   },
+   {
+    "id": "LOT0003",
+    "produitId": "PRD0003",
+    "produit": "AMOXICILLINE 500 MG B/100",
+    "numeroLot": "L-OLD",
+    "datePeremption": "2025-01-31",
+    "quantiteRestante": 5,
+    "magasin": "gros",
+    "statut": "perime"
+   }
+  ],
   "mouvements": [
    {
     "id": "MVT00001",
@@ -237,6 +328,8 @@
     "statut": "actif"
    }
   ],
+  "transferts": [],
+  "inventaires": [],
   "lotsImportation": []
  },
  "cas": [
@@ -5273,6 +5366,1949 @@
      ]
     ]
    }
+  },
+  {
+   "id": "sd-valide",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "DOLIP",
+     "D1",
+     "2028-03-31",
+     25
+    ],
+    [
+     "DOLIP",
+     "D2",
+     "2029-01-31",
+     15
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-deja-mouvemente",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "ABA",
+     "",
+     "",
+     1
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DETAIL_DEJA_MOUVEMENTE",
+      "niveau": "refus",
+      "valeur": "ABA"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DETAIL_DEJA_MOUVEMENTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "article déjà mouvementé : le stock détail initial ne se pose qu’une fois"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-deja-en-stock",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "SIROP",
+     "X1",
+     "2028-01-01",
+     3
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DETAIL_DEJA_EN_STOCK",
+      "niveau": "refus",
+      "valeur": "SIROP"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DETAIL_DEJA_EN_STOCK",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "stock détail déjà présent"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-incoherent",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "INCOH",
+     "",
+     "",
+     2
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DETAIL_DEJA_EN_STOCK",
+      "niveau": "refus",
+      "valeur": "INCOH"
+     },
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "STOCK_INCOHERENT",
+      "niveau": "refus",
+      "valeur": "INCOH"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DETAIL_DEJA_EN_STOCK",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "stock détail déjà présent"
+     },
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "STOCK_INCOHERENT",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "stocks gros et détail incohérents avec le stock total"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-article-inconnu",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "NOPE",
+     "",
+     "",
+     2
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "NOPE"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "article absent du référentiel produits"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-lot-obligatoire",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "DOLIP",
+     "",
+     "",
+     2
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "lot et péremption obligatoires (RG-05)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-lot-incomplet",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "COTON",
+     "X",
+     "",
+     2
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "LOT_INCOMPLET",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "LOT_INCOMPLET",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "lot et péremption vont ensemble"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-peremption-passee",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "DOLIP",
+     "P1",
+     "2020-01-01",
+     5
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "PEREMPTION_PASSEE",
+      "niveau": "avertissement",
+      "valeur": "2020-01-01"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "PEREMPTION_PASSEE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "lot déjà périmé"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-quantite-negative",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "COTON",
+     "",
+     "",
+     -3
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_NEGATIF",
+      "niveau": "refus",
+      "valeur": "-3"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_NEGATIF",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "quantité négative (RG-03)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-quantite-nulle",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "COTON",
+     "",
+     "",
+     0
+    ],
+    [
+     "DOLIP",
+     "Q1",
+     "2028-03-31",
+     2
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "QUANTITE_NULLE",
+      "niveau": "avertissement",
+      "valeur": "0"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "QUANTITE_NULLE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "quantité nulle"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sd-doublon-fichier",
+   "jeu": "stock-detail-initial",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Date de péremption",
+     "Quantité"
+    ],
+    [
+     "DOLIP",
+     "D1",
+     "2028-03-31",
+     5
+    ],
+    [
+     "dolip",
+     "d1",
+     "2028-03-31",
+     5
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "dolip"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "ligne en double dans le fichier"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-valide",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "AMOXI",
+     "",
+     10,
+     "Pharmacie d’urgence",
+     "2026-10-30",
+     "Réapprovisionnement"
+    ],
+    [
+     "COTON",
+     "",
+     4,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ],
+    [
+     "AMOXI",
+     "L-A",
+     5,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 3,
+    "compte": {
+     "valides": 3,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 3,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-stock-insuffisant",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "COTON",
+     "",
+     20,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_INSUFFISANT",
+      "niveau": "refus",
+      "valeur": "20"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_INSUFFISANT",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "stock du magasin insuffisant (RG-03)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-cumul-bon",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "AMOXI",
+     "",
+     20,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ],
+    [
+     "AMOXI",
+     "L-A",
+     15,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_INSUFFISANT",
+      "niveau": "refus",
+      "valeur": "15"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_INSUFFISANT",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "stock du magasin insuffisant (RG-03)"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-lot-inconnu",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "AMOXI",
+     "ZZ",
+     1,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_INCONNU",
+      "niveau": "refus",
+      "valeur": "ZZ"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_INCONNU",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "lot absent pour cet article"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-lot-perime",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "AMOXI",
+     "L-OLD",
+     1,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_PERIME",
+      "niveau": "refus",
+      "valeur": "L-OLD"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_PERIME",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "lot périmé"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-lot-non-fefo",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "AMOXI",
+     "L-B",
+     1,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_NON_FEFO",
+      "niveau": "refus",
+      "valeur": "L-B"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_NON_FEFO",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "lot qui ne part pas en premier (FEFO, RG-05)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-destinations-multiples",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "COTON",
+     "",
+     1,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ],
+    [
+     "AMOXI",
+     "",
+     1,
+     "Laboratoire",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Service destinataire",
+      "code": "DESTINATIONS_MULTIPLES",
+      "niveau": "refus",
+      "valeur": "Pharmacie d’urgence, Laboratoire"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Service destinataire",
+      "code": "DESTINATIONS_MULTIPLES",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "plusieurs services destinataires : une feuille est un seul bon"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-destination-absente",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "COTON",
+     "",
+     1,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Service destinataire",
+      "code": "DESTINATION_ABSENTE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Service destinataire",
+      "code": "DESTINATION_ABSENTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "aucun service destinataire"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-dates-multiples",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "COTON",
+     "",
+     1,
+     "Pharmacie d’urgence",
+     "2026-10-01",
+     ""
+    ],
+    [
+     "AMOXI",
+     "",
+     1,
+     "Pharmacie d’urgence",
+     "2026-10-02",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Date du transfert",
+      "code": "BON_UNIQUE",
+      "niveau": "refus",
+      "valeur": "2026-10-01, 2026-10-02"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Date du transfert",
+      "code": "BON_UNIQUE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "plusieurs valeurs pour un bon unique"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-motifs-multiples",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "COTON",
+     "",
+     1,
+     "Pharmacie d’urgence",
+     "",
+     "A"
+    ],
+    [
+     "AMOXI",
+     "",
+     1,
+     "Pharmacie d’urgence",
+     "",
+     "B"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Motif",
+      "code": "BON_UNIQUE",
+      "niveau": "refus",
+      "valeur": "A, B"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Motif",
+      "code": "BON_UNIQUE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "plusieurs valeurs pour un bon unique"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-date-future",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "COTON",
+     "",
+     1,
+     "Pharmacie d’urgence",
+     "2031-01-01",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date du transfert",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "2031-01-01"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date du transfert",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "date dans le futur"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-quantite-nulle",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "COTON",
+     "",
+     0,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "QUANTITE_NULLE",
+      "niveau": "refus",
+      "valeur": "0"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "QUANTITE_NULLE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "quantité nulle"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tl-article-inconnu",
+   "jeu": "transfert-lignes",
+   "lignes": [
+    [
+     "Code article",
+     "N° de lot",
+     "Quantité",
+     "Service destinataire",
+     "Date du transfert",
+     "Motif"
+    ],
+    [
+     "NOPE",
+     "",
+     1,
+     "Pharmacie d’urgence",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "NOPE"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "article absent du référentiel produits"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ic-valide",
+   "jeu": "inventaire-comptage",
+   "lignes": [
+    [
+     "Magasin",
+     "Code article",
+     "Quantité comptée",
+     "Type d’inventaire",
+     "Date du comptage"
+    ],
+    [
+     "Stock gros",
+     "AMOXI",
+     28,
+     "Mensuel",
+     "2026-10-31"
+    ],
+    [
+     "Stock gros",
+     "COTON",
+     12,
+     "Mensuel",
+     "2026-10-31"
+    ],
+    [
+     "Stock détail",
+     "SIROP",
+     6,
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 3,
+    "compte": {
+     "valides": 3,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 3,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ic-article-inconnu",
+   "jeu": "inventaire-comptage",
+   "lignes": [
+    [
+     "Magasin",
+     "Code article",
+     "Quantité comptée",
+     "Type d’inventaire",
+     "Date du comptage"
+    ],
+    [
+     "Stock gros",
+     "NOPE",
+     1,
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "NOPE"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "article absent du référentiel produits"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ic-date-future",
+   "jeu": "inventaire-comptage",
+   "lignes": [
+    [
+     "Magasin",
+     "Code article",
+     "Quantité comptée",
+     "Type d’inventaire",
+     "Date du comptage"
+    ],
+    [
+     "Stock gros",
+     "COTON",
+     1,
+     "",
+     "2031-01-01"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date du comptage",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "2031-01-01"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date du comptage",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "date dans le futur"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ic-feuille-unique",
+   "jeu": "inventaire-comptage",
+   "lignes": [
+    [
+     "Magasin",
+     "Code article",
+     "Quantité comptée",
+     "Type d’inventaire",
+     "Date du comptage"
+    ],
+    [
+     "Stock gros",
+     "COTON",
+     1,
+     "Mensuel",
+     ""
+    ],
+    [
+     "Stock gros",
+     "AMOXI",
+     1,
+     "Annuel",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Type d’inventaire",
+      "code": "FEUILLE_UNIQUE",
+      "niveau": "refus",
+      "valeur": "Mensuel, Annuel"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Type d’inventaire",
+      "code": "FEUILLE_UNIQUE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "plusieurs valeurs pour une feuille unique"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ic-compte-negatif",
+   "jeu": "inventaire-comptage",
+   "lignes": [
+    [
+     "Magasin",
+     "Code article",
+     "Quantité comptée",
+     "Type d’inventaire",
+     "Date du comptage"
+    ],
+    [
+     "Stock gros",
+     "COTON",
+     -1,
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Quantité comptée",
+      "code": "RG03_STOCK_NEGATIF",
+      "niveau": "refus",
+      "valeur": "-1"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Quantité comptée",
+      "code": "RG03_STOCK_NEGATIF",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "quantité négative (RG-03)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ic-magasin-invalide",
+   "jeu": "inventaire-comptage",
+   "lignes": [
+    [
+     "Magasin",
+     "Code article",
+     "Quantité comptée",
+     "Type d’inventaire",
+     "Date du comptage"
+    ],
+    [
+     "Cave",
+     "COTON",
+     1,
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Magasin",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Cave"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Magasin",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur hors de la liste permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ic-doublon-fichier",
+   "jeu": "inventaire-comptage",
+   "lignes": [
+    [
+     "Magasin",
+     "Code article",
+     "Quantité comptée",
+     "Type d’inventaire",
+     "Date du comptage"
+    ],
+    [
+     "Stock gros",
+     "COTON",
+     1,
+     "",
+     ""
+    ],
+    [
+     "Stock gros",
+     "coton",
+     2,
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Magasin",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "Stock gros"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Magasin",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "ligne en double dans le fichier"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
   }
  ],
  "modeles": {
@@ -7851,6 +9887,362 @@
     "validePar": "ADMIN TEST",
     "date": "2026-11-01"
    }
+  },
+  {
+   "cas": "sd-valide",
+   "jeu": "stock-detail-initial",
+   "ok": true,
+   "reference": "IMP-2026-016",
+   "ecrits": 4,
+   "fiches": {
+    "lots": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du stock détail initial (sd-valide.xlsx)",
+      "lotImport": "IMP-2026-016",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "produitId": "code:DOLIP",
+      "produit": "DOLIPRANE 1 G B/8",
+      "numeroLot": "D1",
+      "datePeremption": "2028-03-31",
+      "quantiteRestante": 25,
+      "emplacement": "",
+      "magasin": "detail"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du stock détail initial (sd-valide.xlsx)",
+      "lotImport": "IMP-2026-016",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "produitId": "code:DOLIP",
+      "produit": "DOLIPRANE 1 G B/8",
+      "numeroLot": "D2",
+      "datePeremption": "2029-01-31",
+      "quantiteRestante": 15,
+      "emplacement": "",
+      "magasin": "detail"
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du stock détail initial (sd-valide.xlsx)",
+      "lotImport": "IMP-2026-016",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "M000005",
+      "date": "2026-11-01",
+      "produitId": "code:DOLIP",
+      "produit": "DOLIPRANE 1 G B/8",
+      "type": "entree",
+      "typeLabel": "Entrée",
+      "quantite": 25,
+      "stockType": "detail",
+      "justificatif": "Import IMP-2026-016 (stock détail initial, lot D1)",
+      "utilisateur": "ADMIN TEST"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du stock détail initial (sd-valide.xlsx)",
+      "lotImport": "IMP-2026-016",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "M000006",
+      "date": "2026-11-01",
+      "produitId": "code:DOLIP",
+      "produit": "DOLIPRANE 1 G B/8",
+      "type": "entree",
+      "typeLabel": "Entrée",
+      "quantite": 15,
+      "stockType": "detail",
+      "justificatif": "Import IMP-2026-016 (stock détail initial, lot D2)",
+      "utilisateur": "ADMIN TEST"
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 0,
+    "jeu": "stock-detail-initial",
+    "fichier": "sd-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "tl-valide",
+   "jeu": "transfert-lignes",
+   "ok": true,
+   "reference": "IMP-2026-017",
+   "ecrits": 7,
+   "fiches": {
+    "transferts": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Pharmacie d’urgence",
+      "motif": "Réapprovisionnement",
+      "source": "Import Importation d’un bon de transfert",
+      "lotImport": "IMP-2026-017",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "TR-00001",
+      "lignes": [
+       {
+        "produitId": "PRD0003",
+        "code": "AMOXI",
+        "produit": "AMOXICILLINE 500 MG B/100",
+        "categorie": "medicament",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 10,
+        "lot": "L-A",
+        "peremption": "2026-12-15"
+       },
+       {
+        "produitId": "PRD0004",
+        "code": "COTON",
+        "produit": "COTON HYDROPHILE 500 G",
+        "categorie": "conso_medical",
+        "unite": "Unité",
+        "cump": 50,
+        "quantite": 4,
+        "lot": null,
+        "peremption": null
+       },
+       {
+        "produitId": "PRD0003",
+        "code": "AMOXI",
+        "produit": "AMOXICILLINE 500 MG B/100",
+        "categorie": "medicament",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 5,
+        "lot": "L-A",
+        "peremption": "2026-12-15"
+       }
+      ],
+      "nbLignes": 3,
+      "quantiteTotale": 19,
+      "valeur": 1700,
+      "operateur": "ADMIN TEST",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "3 articles",
+      "unite": "",
+      "quantite": 19
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "code:AMOXI",
+      "produit": "AMOXICILLINE 500 MG B/100",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 10,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "ADMIN TEST",
+      "source": "Import Importation d’un bon de transfert",
+      "lotImport": "IMP-2026-017",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "code:AMOXI",
+      "produit": "AMOXICILLINE 500 MG B/100",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 10,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "ADMIN TEST",
+      "source": "Import Importation d’un bon de transfert",
+      "lotImport": "IMP-2026-017",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "code:COTON",
+      "produit": "COTON HYDROPHILE 500 G",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 4,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "ADMIN TEST",
+      "source": "Import Importation d’un bon de transfert",
+      "lotImport": "IMP-2026-017",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "code:COTON",
+      "produit": "COTON HYDROPHILE 500 G",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 4,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "ADMIN TEST",
+      "source": "Import Importation d’un bon de transfert",
+      "lotImport": "IMP-2026-017",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "code:AMOXI",
+      "produit": "AMOXICILLINE 500 MG B/100",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 5,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "ADMIN TEST",
+      "source": "Import Importation d’un bon de transfert",
+      "lotImport": "IMP-2026-017",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "code:AMOXI",
+      "produit": "AMOXICILLINE 500 MG B/100",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 5,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "ADMIN TEST",
+      "source": "Import Importation d’un bon de transfert",
+      "lotImport": "IMP-2026-017",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01"
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 3,
+    "nbAvertissements": 0,
+    "jeu": "transfert-lignes",
+    "fichier": "tl-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "ic-valide",
+   "jeu": "inventaire-comptage",
+   "ok": true,
+   "reference": "IMP-2026-018",
+   "ecrits": 2,
+   "fiches": {
+    "inventaires": [
+     {
+      "statut": "actif",
+      "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
+      "lotImport": "IMP-2026-018",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "INV-0001",
+      "date": "2026-10-31",
+      "type": "Mensuel",
+      "perimetre": "Comptage importé (2 articles)",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "ADMIN TEST",
+      "statutInv": "importe",
+      "nbArticles": 2,
+      "nbEcarts": 2,
+      "valeurEcart": 1500,
+      "lignes": [
+       {
+        "produitId": "PRD0003",
+        "code": "AMOXI",
+        "designation": "AMOXICILLINE 500 MG B/100",
+        "unite": "Boîte",
+        "theorique": 15,
+        "physique": 28,
+        "ecart": 13,
+        "cump": 100,
+        "valeur": 1300
+       },
+       {
+        "produitId": "PRD0004",
+        "code": "COTON",
+        "designation": "COTON HYDROPHILE 500 G",
+        "unite": "Unité",
+        "theorique": 8,
+        "physique": 12,
+        "ecart": 4,
+        "cump": 50,
+        "valeur": 200
+       }
+      ]
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
+      "lotImport": "IMP-2026-018",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "INV-0002",
+      "date": "2026-11-01",
+      "type": "Ponctuel",
+      "perimetre": "Comptage importé (1 article)",
+      "magasin": "detail",
+      "magasinLabel": "Stock détail (pharmacie d’urgence)",
+      "operateur": "ADMIN TEST",
+      "statutInv": "importe",
+      "nbArticles": 1,
+      "nbEcarts": 1,
+      "valeurEcart": 80,
+      "lignes": [
+       {
+        "produitId": "PRD0005",
+        "code": "SIROP",
+        "designation": "SIROP TOUX 125 ML",
+        "unite": "Flacon",
+        "theorique": 5,
+        "physique": 6,
+        "ecart": 1,
+        "cump": 80,
+        "valeur": 80
+       }
+      ]
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 3,
+    "nbAvertissements": 0,
+    "jeu": "inventaire-comptage",
+    "fichier": "ic-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
   }
  ],
  "lotRefus": {
@@ -7990,11 +10382,313 @@
    "etatLot": "annule"
   },
   {
+   "cas": "sd-valide",
+   "ok": true,
+   "code": null,
+   "archives": 4,
+   "archivesVerifiees": 4,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "tl-valide",
+   "ok": true,
+   "code": null,
+   "archives": 7,
+   "archivesVerifiees": 7,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "ic-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
    "cas": "gs-valide-deuxieme-fois",
    "ok": false,
    "code": "LOT_NON_APPLIQUE"
   }
  ],
+ "stock": {
+  "detailPose": {
+   "DOLIP": {
+    "stock": 80,
+    "stockGros": 40,
+    "stockDetail": 40
+   }
+  },
+  "detailDejaDispense": {
+   "ok": false,
+   "code": "DETAIL_DEJA_DISPENSE",
+   "motif": "l’article « DOLIPRANE 1 G B/8 » n’a plus assez de stock détail pour retirer le stock initial (RG-03)",
+   "geste": "Régularisez le stock détail par un inventaire."
+  },
+  "detailMouvementPosterieur": {
+   "ok": false,
+   "code": "MOUVEMENT_POSTERIEUR",
+   "motif": "l’article « DOLIPRANE 1 G B/8 » a déjà un mouvement de stock postérieur (M000060, Sortie)",
+   "geste": "Annulez d’abord ce mouvement, ou régularisez le stock détail par un inventaire : le lot ne peut pas être retiré sous un stock vivant (RG-03)."
+  },
+  "detailAnnule": {
+   "ok": true,
+   "archives": 4,
+   "stocks": {
+    "DOLIP": {
+     "stock": 40,
+     "stockGros": 40,
+     "stockDetail": 0
+    }
+   }
+  },
+  "transfertPose": {
+   "AMOXI": {
+    "stock": 30,
+    "stockGros": 15,
+    "stockDetail": 15
+   },
+   "COTON": {
+    "stock": 12,
+    "stockGros": 8,
+    "stockDetail": 4
+   }
+  },
+  "transfertBon": {
+   "statut": "actif",
+   "date": "2026-10-30",
+   "demandeur": "Pharmacie d’urgence",
+   "motif": "Réapprovisionnement",
+   "source": "Import Importation d’un bon de transfert",
+   "lotImport": "IMP-2026-020",
+   "validePar": "ADMIN TEST",
+   "dateImport": "2026-11-01",
+   "reference": "TR-00002",
+   "lignes": [
+    {
+     "produitId": "PRD0003",
+     "code": "AMOXI",
+     "produit": "AMOXICILLINE 500 MG B/100",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "cump": 100,
+     "quantite": 10,
+     "lot": "L-A",
+     "peremption": "2026-12-15"
+    },
+    {
+     "produitId": "PRD0004",
+     "code": "COTON",
+     "produit": "COTON HYDROPHILE 500 G",
+     "categorie": "conso_medical",
+     "unite": "Unité",
+     "cump": 50,
+     "quantite": 4,
+     "lot": null,
+     "peremption": null
+    },
+    {
+     "produitId": "PRD0003",
+     "code": "AMOXI",
+     "produit": "AMOXICILLINE 500 MG B/100",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "cump": 100,
+     "quantite": 5,
+     "lot": "L-A",
+     "peremption": "2026-12-15"
+    }
+   ],
+   "nbLignes": 3,
+   "quantiteTotale": 19,
+   "valeur": 1700,
+   "operateur": "ADMIN TEST",
+   "etat": "receptionne",
+   "dateReception": "2026-10-30",
+   "produit": "3 articles",
+   "unite": "",
+   "quantite": 19
+  },
+  "transfertDejaDispense": {
+   "ok": false,
+   "code": "TRANSFERT_DEJA_DISPENSE",
+   "motif": "l’article « AMOXICILLINE 500 MG B/100 » n’a plus assez de stock détail pour rendre ce transfert (15 à rendre, 3 au détail) : une partie a déjà été dispensée (RG-03)",
+   "geste": "Régularisez le stock détail par un inventaire, ou annulez d’abord les dispensations."
+  },
+  "transfertAnnule": {
+   "ok": true,
+   "archives": 7,
+   "stocks": {
+    "AMOXI": {
+     "stock": 30,
+     "stockGros": 30,
+     "stockDetail": 0
+    },
+    "COTON": {
+     "stock": 12,
+     "stockGros": 12,
+     "stockDetail": 0
+    }
+   }
+  },
+  "magasinChange": {
+   "ok": false,
+   "code": "MAGASIN_CHANGE",
+   "stocks": {
+    "AMOXI": {
+     "stock": 30,
+     "stockGros": 30,
+     "stockDetail": 0
+    },
+    "COTON": {
+     "stock": 12,
+     "stockGros": 1,
+     "stockDetail": 0
+    }
+   }
+  },
+  "feuilles": [
+   {
+    "statut": "actif",
+    "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
+    "lotImport": "IMP-2026-022",
+    "validePar": "ADMIN TEST",
+    "dateImport": "2026-11-01",
+    "reference": "INV-0004",
+    "date": "2026-11-01",
+    "type": "Ponctuel",
+    "perimetre": "Comptage importé (1 article)",
+    "magasin": "detail",
+    "magasinLabel": "Stock détail (pharmacie d’urgence)",
+    "operateur": "ADMIN TEST",
+    "statutInv": "importe",
+    "nbArticles": 1,
+    "nbEcarts": 1,
+    "valeurEcart": 80,
+    "lignes": [
+     {
+      "produitId": "PRD0005",
+      "code": "SIROP",
+      "designation": "SIROP TOUX 125 ML",
+      "unite": "Flacon",
+      "theorique": 5,
+      "physique": 6,
+      "ecart": 1,
+      "cump": 80,
+      "valeur": 80
+     }
+    ]
+   },
+   {
+    "statut": "actif",
+    "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
+    "lotImport": "IMP-2026-022",
+    "validePar": "ADMIN TEST",
+    "dateImport": "2026-11-01",
+    "reference": "INV-0003",
+    "date": "2026-10-31",
+    "type": "Mensuel",
+    "perimetre": "Comptage importé (2 articles)",
+    "magasin": "gros",
+    "magasinLabel": "Stock gros (magasin central)",
+    "operateur": "ADMIN TEST",
+    "statutInv": "importe",
+    "nbArticles": 2,
+    "nbEcarts": 1,
+    "valeurEcart": -200,
+    "lignes": [
+     {
+      "produitId": "PRD0003",
+      "code": "AMOXI",
+      "designation": "AMOXICILLINE 500 MG B/100",
+      "unite": "Boîte",
+      "theorique": 30,
+      "physique": 28,
+      "ecart": -2,
+      "cump": 100,
+      "valeur": -200
+     },
+     {
+      "produitId": "PRD0004",
+      "code": "COTON",
+      "designation": "COTON HYDROPHILE 500 G",
+      "unite": "Unité",
+      "theorique": 12,
+      "physique": 12,
+      "ecart": 0,
+      "cump": 50,
+      "valeur": 0
+     }
+    ]
+   }
+  ],
+  "regularisationPerimee": {
+   "ok": false,
+   "code": "REGULARISATION_PERIMEE",
+   "motif": "le stock gros de « AMOXICILLINE 500 MG B/100 » a bougé depuis le comptage (théorique 30, aujourd’hui 31)",
+   "geste": "Recompter cet article et importer une nouvelle feuille : un écart calculé sur un théorique périmé ne se régularise pas.",
+   "stocks": {
+    "AMOXI": {
+     "stock": 30,
+     "stockGros": 31,
+     "stockDetail": 0
+    }
+   }
+  },
+  "regularisation": {
+   "ok": true,
+   "nb": 1,
+   "mouvements": [
+    {
+     "statut": "actif",
+     "reference": "M000061",
+     "date": "2026-10-31",
+     "produitId": "PRD0003",
+     "produit": "AMOXICILLINE 500 MG B/100",
+     "type": "inventaire",
+     "typeLabel": "Régularisation inventaire",
+     "quantite": 2,
+     "stockType": "gros",
+     "justificatif": "Inventaire INV-0003",
+     "utilisateur": "ADMIN TEST"
+    }
+   ],
+   "stocks": {
+    "AMOXI": {
+     "stock": 28,
+     "stockGros": 28,
+     "stockDetail": 0
+    },
+    "COTON": {
+     "stock": 12,
+     "stockGros": 12,
+     "stockDetail": 0
+    }
+   }
+  },
+  "inventaireRegularise": {
+   "ok": false,
+   "code": "INVENTAIRE_REGULARISE",
+   "motif": "la feuille INV-0003 a été régularisée : des mouvements de stock s’appuient sur elle",
+   "geste": "Annulez d’abord la régularisation par un inventaire inverse : un lot ne peut pas être retiré sous un stock régularisé (RG-03)."
+  },
+  "comptageAnnule": {
+   "ok": true,
+   "archives": 2,
+   "stocks": {
+    "AMOXI": {
+     "stock": 30,
+     "stockGros": 30,
+     "stockDetail": 0
+    },
+    "COTON": {
+     "stock": 12,
+     "stockGros": 12,
+     "stockDetail": 0
+    }
+   }
+  }
+ },
  "atomicite": {
   "ok": false,
   "code": "ECRITURE_REFUSEE",
@@ -8034,7 +10728,7 @@
    },
    "dUnAutre": {
     "code": "LOT_D_UN_AUTRE",
-    "motif": "le lot IMP-2026-017 a été écrit par un autre agent",
+    "motif": "le lot IMP-2026-024 a été écrit par un autre agent",
     "geste": "Seul son auteur, ou un profil qui supervise les importations, peut l’annuler."
    },
    "etatLot": "applique"
@@ -8369,6 +11063,32 @@
    "Hémostase",
    "Andrologie",
    "Général"
+  ],
+  "destinationsTransfert": [
+   "Pharmacie d’urgence",
+   "Pharmacie externe",
+   "Laboratoire",
+   "Hospitalisation",
+   "Maternité",
+   "Bloc opératoire",
+   "Salle de soins"
+  ],
+  "typesInventaire": [
+   "Hebdomadaire",
+   "Mensuel",
+   "Annuel",
+   "Tournant",
+   "Ponctuel"
+  ],
+  "magasinsInventaire": [
+   {
+    "valeur": "gros",
+    "label": "Stock gros"
+   },
+   {
+    "valeur": "detail",
+    "label": "Stock détail"
+   }
   ],
   "zonesEmplacement": [
    "Rayonnage sec",

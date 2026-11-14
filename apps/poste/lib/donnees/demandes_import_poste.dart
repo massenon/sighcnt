@@ -44,6 +44,14 @@ class DemandesImportPoste {
       ? VoieImportFileul.directe
       : voieImportFileul(declaration, configuration: collectionsDeLaMere());
 
+  /// LOT 8 : les jeux que ce poste ne peut PAS écrire (le moteur refuse, nommé) : sur un fileul rattaché, ceux dont la voie est « réservée à la mère » (jeu restreint qui écrit la configuration :
+  /// le personnel, le stock détail initial, le bon de transfert). Ailleurs, aucun.
+  static Set<String> reservesALaMere({required bool fileulRattache, required MatriceImport matrice}) => {
+        if (fileulRattache)
+          for (final d in matrice.declarations)
+            if (voie(fileulRattache: true, declaration: d) == VoieImportFileul.reserveeALaMere) d.id
+      };
+
   String get _jour {
     final d = aujourdhui();
     return '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';

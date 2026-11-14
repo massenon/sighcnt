@@ -153,8 +153,12 @@ class AnalyseImport {
 /// doublon, la capacité paie et la supervision viennent de la section `import` de `rbac.json` (superposée à chaud par les fiches RBAC). Le moteur REFUSE sans le droit :
 /// masquer un bouton ne protège rien.
 class ProfilImport {
-  const ProfilImport({required this.role, required this.libelleRole, required this.matrice, this.bornes = const {}});
+  const ProfilImport({required this.role, required this.libelleRole, required this.matrice, this.bornes = const {}, this.reservesALaMere = const {}});
   final String role, libelleRole;
+
+  /// LOT 8 : les jeux que CE poste ne peut pas écrire parce qu'il est un fileul rattaché et que le jeu est RESTREINT et écrit de la configuration de la mère (le personnel, le stock détail
+  /// initial, le bon de transfert : voir `voieImportFileul`). Le moteur refuse l'écriture, nommée ; l'analyse reste permise (le fichier peut être vérifié ici).
+  final Set<String> reservesALaMere;
   final MatriceImport matrice;
 
   /// Le réglage `importBornes` (lignes maximales par jeu), lu en base ; un jeu sans réglage prend [borneParDefaut].
@@ -501,6 +505,12 @@ ResultatImport? refusDroitImport(JeuImport j, String geste, PortImport port) {
       'le profil « ${p.libelleRole.isEmpty ? 'inconnu' : p.libelleRole} » ne détient pas le droit de $verbe le jeu « ${j.libelle} »',
       'Demander ce droit à l’administrateur : il se règle par jeu dans « Rôles & permissions », section Importation.');
 }
+
+/// LOT 8 : un jeu réservé au poste de la mère ne s'écrit pas sur un fileul rattaché (le moteur refuse, masquer le bouton ne protège rien). Le refus se NOMME.
+ResultatImport? refusReserveALaMere(JeuImport j, PortImport port) => port.profil.reservesALaMere.contains(j.id)
+    ? ResultatImport.refus('JEU_RESERVE_A_LA_MERE', 'le jeu « ${j.libelle} » est réservé au poste de la mère : ce poste est un fileul rattaché',
+        'Importez ce fichier au poste de la mère : un jeu restreint qui écrit la configuration ne voyage pas dans une demande (RG-13).')
+    : null;
 
 /// Les colonnes du modèle SELON LE PROFIL : une colonne de capacité (« Salaire de base », capacité paie) n'existe que pour qui la détient.
 List<ColonneImport> colonnesDe(JeuImport j, PortImport port) => [
@@ -927,6 +937,8 @@ Map<String, Object?> _ignoresDe(JeuImport j, AnalyseImport a, PortImport port) {
 ResultatImport appliquer(JeuImport j, AnalyseImport analyse, PortImport port) {
   final rd = refusDroitImport(j, 'importer', port);
   if (rd != null) return rd;
+  final rm = refusReserveALaMere(j, port);
+  if (rm != null) return rm;
   if (!analyse.accepte) {
     return const ResultatImport.refus('ANALYSE_REFUSEE', 'le fichier n’a pas passé l’analyse', 'Corrigez les refus listés, puis téléversez de nouveau.');
   }

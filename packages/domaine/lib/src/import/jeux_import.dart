@@ -6,10 +6,13 @@
 library;
 
 import '../comptabilite/cpb_gestion.dart' show cpbReferenceSuivante;
+import '../format/format_fr.dart' show nombre;
 import '../format/recherche.dart' show normaliser;
 import 'demande_import.dart' show champDepartCompteurs, champRefuseeParMere;
 import 'donnees_import.dart';
 import 'moteur_import.dart';
+
+part 'jeux_import_stock.dart';
 
 typedef _V = Map<String, Object?>;
 
@@ -1265,6 +1268,10 @@ final List<JeuImport> jeuxImport = [
   jeuUnitesLabo,
   jeuPrestataires,
   jeuEmplacements,
+  // Lot 8, groupe STOCK : le stock détail initial, le bon de transfert et le comptage d'inventaire.
+  jeuStockDetailInitial,
+  jeuTransfertLignes,
+  jeuInventaireComptage,
 ];
 
 JeuImport? jeuImportParId(String id) => jeuxImport.where((j) => j.id == id).firstOrNull;

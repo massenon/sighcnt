@@ -1,5 +1,7 @@
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../core/service_installation.dart';
+import '../donnees/demandes_import_poste.dart';
 import '../shell/contexte_ecran.dart';
 
 /// Le PROFIL qui importe, tel que le moteur du domaine le lit (`ProfilImport`) : le rôle de la session, son libellé, la matrice d'import EN FORCE (celle de `rbac.json`,
@@ -16,5 +18,8 @@ ProfilImport profilImportDe(ContexteEcran c) {
       if (n is num && n > 0 && n.isFinite) bornes['${e.key}'] = n.floor();
     }
   }
-  return ProfilImport(role: c.role, libelleRole: m?.libelle(c.role) ?? c.role, matrice: m?.matriceImport ?? MatriceImport.vide, bornes: bornes);
+  final matrice = m?.matriceImport ?? MatriceImport.vide;
+  // LOT 8 : sur un fileul rattaché, les jeux restreints qui écrivent la configuration de la mère ne s'écrivent PAS ici (le moteur refuse, nommé).
+  final reserves = DemandesImportPoste.reservesALaMere(fileulRattache: ServiceInstallation.de(c.magasin).rattache, matrice: matrice);
+  return ProfilImport(role: c.role, libelleRole: m?.libelle(c.role) ?? c.role, matrice: matrice, bornes: bornes, reservesALaMere: reserves);
 }

@@ -49,6 +49,13 @@ const importDomainesUnitesLabo = <String>['Hématologie', 'Biochimie', 'Hormonol
 const importZonesEmplacement = <String>['Rayonnage sec', 'Chaîne du froid', 'Armoire sécurisée', 'Réserve', 'Salle de soins'];
 const importTemperaturesEmplacement = <String>['Ambiante', '2 à 8 °C', '− 20 °C', 'Sous clé, ambiante'];
 
+/// Services destinataires d'un bon de transfert (`PR.DESTINATIONS_TRANSFERT`).
+const importDestinationsTransfert = <String>['Pharmacie d’urgence', 'Pharmacie externe', 'Laboratoire', 'Hospitalisation', 'Maternité', 'Bloc opératoire', 'Salle de soins'];
+
+/// Types d'un inventaire et magasins nommés (colonnes du jeu `inventaire-comptage`) : [valeur, libellé].
+const importTypesInventaire = <String>['Hebdomadaire', 'Mensuel', 'Annuel', 'Tournant', 'Ponctuel'];
+const importMagasinsInventaire = <List<String>>[['gros', 'Stock gros'], ['detail', 'Stock détail']];
+
 /// Sections du laboratoire (`SIGH.labo.SECTIONS`) : [identifiant, libellé].
 const importSectionsLabo = <List<String>>[
   ['hematologie', 'Hématologie'],

@@ -90,11 +90,16 @@ class EcranInventaires extends StatelessWidget with EcranMaquette {
               ColonneTableau(
                   cle: 'statutInv',
                   libelle: 'Statut',
-                  texte: (i) => i['statutInv'] == 'valide' ? 'Validé' : 'Brouillon',
-                  rendu: (_, i) => statutBadge(i['statutInv'] == 'valide' ? 'valide' : 'brouillon')),
+                  texte: (i) => i['statutInv'] == 'importe' ? 'Comptage importé, à régulariser' : (i['statutInv'] == 'valide' ? 'Validé' : 'Brouillon'),
+                  rendu: (_, i) => i['statutInv'] == 'importe'
+                      ? const BadgeSigh('Comptage importé, à régulariser', ton: TonSigh.attention)
+                      : statutBadge(i['statutInv'] == 'valide' ? 'valide' : 'brouillon')),
             ],
             actionsLigne: (ctx, i) => [
               BoutonIcone(icone: LucideIcons.eye, libelle: 'Consulter', onPressed: () => _consulter(context, i)),
+              // Lot 8 : la régularisation d'une feuille IMPORTÉE est un geste humain (l'import ne touche à aucun stock) : une écriture, donc ABSENTE sans le droit d'éditer l'écran.
+              if (c.droit.editer && i['statutInv'] == 'importe')
+                BoutonIcone(key: Key('inventaire-regulariser-${i['reference']}'), icone: LucideIcons.checkCheck, libelle: 'Régulariser le comptage', onPressed: () => _regulariser(context, c, i)),
               BoutonIcone(icone: LucideIcons.printer, libelle: 'Imprimer l’état', onPressed: () => _etat(context, i)),
             ],
           ),
@@ -189,6 +194,41 @@ class EcranInventaires extends StatelessWidget with EcranMaquette {
               : const VideSigh('Aucun écart constaté : stock physique conforme au stock théorique.', icone: LucideIcons.circleCheck),
         ]),
         pied: (fermer) => [BoutonSigh(libelle: 'Imprimer l’état', icone: LucideIcons.printer, onPressed: () => _etat(ctx, i))]);
+  }
+
+  /// LOT 8 : régulariser une feuille IMPORTÉE : un mouvement par écart sur le magasin compté (RG-03), en mode STRICT (refusée, nommée, si le stock a bougé depuis le comptage).
+  Future<void> _regulariser(BuildContext ctx, ContexteEcran c, Fiche i) async {
+    final ok = await confirmerSigh(ctx,
+        titre: 'Régulariser ce comptage ?',
+        message:
+            'L’inventaire ${i['reference']} (${i['magasinLabel'] ?? i['magasin']}) régularise ${nombre(i['nbEcarts'] ?? 0)} écart(s) : un mouvement de stock par écart, justificatif = ${i['reference']}. Les stocks changent.',
+        libelleOk: 'Régulariser');
+    if (!ok || !ctx.mounted) return;
+    final produits = c.magasin.collection('produits');
+    final mouvements = c.magasin.collection('mouvements');
+    final inventaires = c.magasin.collection('inventaires');
+    final r = regulariserInventaireImporte(inventaire: i, produits: produits.toutes, mouvements: mouvements.toutes, operateur: acteur(c).nom);
+    if (!r.ok) {
+      ToastsSigh.afficher(ctx, 'Régularisation refusée.', type: TypeToast.erreur, detail: '${r.motif}. ${r.geste ?? ''}');
+      return;
+    }
+    final annulations = <VoidCallback>[];
+    for (var k = 0; k < r.produits.length; k++) {
+      produits.mettreAJour(r.produits[k].id, r.produits[k].patch);
+      annulations.add(mouvements.inserer(r.mouvements[k], prefixe: 'MVT').annuler);
+    }
+    final avantFiche = {'statutInv': i['statutInv']};
+    inventaires.mettreAJour('${i['id']}', {'statutInv': 'valide', 'regulariseLe': iso(c.aujourdhui), 'regularisePar': acteur(c).nom});
+    if (!ctx.mounted) return;
+    annonce(ctx, 'Inventaire ${i['reference']} régularisé — ${r.mouvements.length} mouvement(s) de régularisation écrit(s).', duree: const Duration(seconds: 12), annuler: () {
+      for (final a in r.avant.reversed) {
+        produits.mettreAJour(a.id, a.patch);
+      }
+      for (final u in annulations) {
+        u();
+      }
+      inventaires.mettreAJour('${i['id']}', avantFiche);
+    });
   }
 
   /// L'état d'inventaire : tous les articles comptés, le total des écarts CALCULÉ, trois signatures (magasinier, pharmacien, DAF).

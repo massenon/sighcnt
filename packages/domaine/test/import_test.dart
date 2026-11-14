@@ -197,7 +197,7 @@ void main() {
       expect({for (final n in ['produits', 'lots', 'mouvements']) n: port.toutes(n).length}, avant);
     });
 
-    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide'];
+    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide'];
     for (final app in liste(V['applications'])) {
       test('application de ${app['cas']}', () {
         final id = '${app['cas']}';
@@ -259,6 +259,85 @@ void main() {
       r = annulerLot(jeuImportParId, lots['gs-valide']!['id'], 'encore', port);
       expect(r.ok, isFalse);
       expect(r.code, 'LOT_NON_APPLIQUE');
+    });
+
+    Map<String, Object?> stocks(List<String> codes) => {
+          for (final c in codes)
+            c: {
+              for (final k in ['stock', 'stockGros', 'stockDetail']) k: port.toutes('produits').firstWhere((p) => p['code'] == c)[k]
+            }
+        };
+    Map<String, Object?> lu(String code) => port.toutes('produits').firstWhere((p) => p['code'] == code);
+    Map<String, Object?> refusDe(ResultatImport r) => {'ok': r.ok, 'code': r.code, 'motif': r.motif, 'geste': r.geste};
+    Map<String, Object?> poser(String id) {
+      final c = liste(V['cas']).firstWhere((x) => x['id'] == id);
+      final r = appliquer(jeuImportParId('${c['jeu']}')!, analyseDuCas(id), port);
+      expect(r.ok, isTrue, reason: '${r.motif}');
+      return r.lot!;
+    }
+
+    test('LOT 8, stock détail initial : posé, puis annulation refusée détail dispensé (RG-03), puis sous un mouvement postérieur, puis réussie', () {
+      final S = (V['stock'] as Map).cast<String, Object?>();
+      final lot = poser('sd-valide');
+      memes(stocks(['DOLIP']), S['detailPose'], 'detailPose');
+      final avant = lu('DOLIP')['stockDetail'] as num;
+      port.mettreAJour('produits', lu('DOLIP')['id'], {'stockDetail': avant - 10});
+      var r = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      memes(refusDe(r), S['detailDejaDispense'], 'detailDejaDispense');
+      port.mettreAJour('produits', lu('DOLIP')['id'], {'stockDetail': avant});
+      final mvx = port.inserer('mouvements', {'reference': 'M000060', 'date': '2026-11-01', 'produitId': lu('DOLIP')['id'], 'produit': 'DOLIPRANE 1 G B/8', 'type': 'sortie', 'typeLabel': 'Sortie', 'quantite': 1});
+      r = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      memes(refusDe(r), S['detailMouvementPosterieur'], 'detailMouvementPosterieur');
+      port.archiver('mouvements', mvx['id'], 'test');
+      r = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      final att = (S['detailAnnule'] as Map).cast<String, Object?>();
+      expect(r.ok, att['ok']);
+      expect(r.archives, att['archives']);
+      memes(stocks(['DOLIP']), att['stocks'], 'detailAnnule.stocks');
+    });
+
+    test('LOT 8, bon de transfert : le bon et ses deux mouvements par ligne, annulation refusée si dispensé, puis restitue gros ET détail ; magasin qui bouge : MAGASIN_CHANGE', () {
+      final S = (V['stock'] as Map).cast<String, Object?>();
+      final lot = poser('tl-valide');
+      memes(stocks(['AMOXI', 'COTON']), S['transfertPose'], 'transfertPose');
+      final bon = port.toutes('transferts').firstWhere((b) => b['lotImport'] == lot['reference']);
+      memes(_net(bon, {}), S['transfertBon'], 'transfertBon');
+      final am = lu('AMOXI')['stockDetail'];
+      port.mettreAJour('produits', lu('AMOXI')['id'], {'stockDetail': 3});
+      var r = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      memes(refusDe(r), S['transfertDejaDispense'], 'transfertDejaDispense');
+      port.mettreAJour('produits', lu('AMOXI')['id'], {'stockDetail': am});
+      r = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      final att = (S['transfertAnnule'] as Map).cast<String, Object?>();
+      expect(r.ok, att['ok']);
+      expect(r.archives, att['archives']);
+      memes(stocks(['AMOXI', 'COTON']), att['stocks'], 'transfertAnnule.stocks');
+      final analyse = analyseDuCas('tl-valide');
+      final g = lu('COTON')['stockGros'];
+      port.mettreAJour('produits', lu('COTON')['id'], {'stockGros': 1});
+      final m = appliquer(jeuTransfertLignes, analyse, port);
+      port.mettreAJour('produits', lu('COTON')['id'], {'stockGros': g});
+      final mc = (S['magasinChange'] as Map).cast<String, Object?>();
+      expect(m.ok, mc['ok']);
+      expect(m.code, mc['code']);
+    });
+
+    test('LOT 8, comptage : une feuille par magasin nommé, aucun stock touché ; annulation refusée une fois la feuille régularisée', () {
+      final S = (V['stock'] as Map).cast<String, Object?>();
+      final avantStocks = stocks(['AMOXI', 'COTON', 'SIROP']);
+      final lot = poser('ic-valide');
+      memes(stocks(['AMOXI', 'COTON', 'SIROP']), avantStocks, 'le comptage ne touche aucun stock');
+      final feuilles = [for (final f in port.toutes('inventaires')) if (f['lotImport'] == lot['reference']) f];
+      memes([for (final f in feuilles) _net(f, {})], S['feuilles'], 'feuilles');
+      final gros = feuilles.firstWhere((f) => f['magasin'] == 'gros');
+      gros['statutInv'] = 'valide';
+      final r = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      memes(refusDe(r), S['inventaireRegularise'], 'inventaireRegularise');
+      gros['statutInv'] = 'importe';
+      final ok = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      final att = (S['comptageAnnule'] as Map).cast<String, Object?>();
+      expect(ok.ok, att['ok']);
+      expect(ok.archives, att['archives']);
     });
 
     test('atomicité : une écriture refusée en cours de lot ne laisse rien, le fichier est consigné', () {

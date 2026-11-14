@@ -395,6 +395,84 @@ class InventaireValide {
   final List<({String id, FicheStock patch})> avant;
 }
 
+/// LOT 8 : la RÉGULARISATION d'une feuille IMPORTÉE (`statutInv` = `importe`), geste humain du registre des inventaires (`PR.regulariserInventaire(inv, {strict: true})` de la maquette).
+/// L'import crée la feuille et ne touche à aucun stock ; ici, un mouvement par écart sur le magasin COMPTÉ (RG-03), le total qui en découle, jamais sous zéro. STRICT : si le stock du magasin
+/// a bougé depuis le comptage (le théorique de la ligne n'est plus celui d'aujourd'hui), la régularisation est REFUSÉE en nommant l'article (un écart calculé sur un théorique périmé
+/// régulariserait un chiffre faux). Un refus porte code, motif et geste ; rien n'est écrit.
+class RegularisationImportee {
+  const RegularisationImportee.refus(String this.code, String this.motif, String this.geste)
+      : mouvements = const [],
+        produits = const [],
+        avant = const [];
+  const RegularisationImportee._ok(this.mouvements, this.produits, this.avant)
+      : code = null,
+        motif = null,
+        geste = null;
+  final String? code, motif, geste;
+  bool get ok => code == null;
+
+  /// Un mouvement de régularisation par écart, dans l'ordre d'écriture.
+  final List<FicheStock> mouvements;
+
+  /// Correctifs de stock par produit (`stock` et le stock du magasin compté) et leur état d'avant (l'annulation les restitue).
+  final List<({String id, FicheStock patch})> produits, avant;
+}
+
+RegularisationImportee regulariserInventaireImporte({
+  required FicheStock inventaire,
+  required List<FicheStock> produits,
+  required List<FicheStock> mouvements,
+  required String operateur,
+}) {
+  final magasin = inventaire['magasin'] == 'detail' ? 'detail' : 'gros';
+  final champ = magasin == 'detail' ? 'stockDetail' : 'stockGros';
+  final ecarts = [
+    for (final l in (inventaire['lignes'] as List? ?? const []).cast<Map>())
+      if (l['ecart'] != null && _n(l['ecart']) != 0) l.cast<String, Object?>()
+  ];
+  for (final x in ecarts) {
+    final pr = _produitDe(produits, x['produitId']);
+    if (pr == null) {
+      return RegularisationImportee.refus('PRODUIT_INCONNU', 'l’article « ${x['designation']} » n’existe plus', 'Retirer l’article de la feuille ou le restaurer.');
+    }
+    if (_n(pr[champ]) != _n(x['theorique'])) {
+      return RegularisationImportee.refus(
+          'REGULARISATION_PERIMEE',
+          'le stock ${magasin == 'detail' ? 'détail' : 'gros'} de « ${pr['designation']} » a bougé depuis le comptage (théorique ${_js(_n(x['theorique']))}, aujourd’hui ${_js(_n(pr[champ]))})',
+          'Recompter cet article et importer une nouvelle feuille : un écart calculé sur un théorique périmé ne se régularise pas.');
+    }
+    if (_n(pr[champ]) + _n(x['ecart']) < 0) {
+      return RegularisationImportee.refus('RG03_STOCK_NEGATIF', 'RG-03 : la régularisation de « ${pr['designation']} » rendrait le stock négatif', 'Corriger le comptage.');
+    }
+  }
+  final mvts = <FicheStock>[];
+  final maj = <({String id, FicheStock patch})>[];
+  final avant = <({String id, FicheStock patch})>[];
+  // Un article qui figure sur deux lignes : les correctifs se cumulent sur l'état COURANT (la maquette relit la fiche à chaque écart).
+  final courant = <Object?, FicheStock>{};
+  for (final x in ecarts) {
+    final pr = courant[x['produitId']] ?? _produitDe(produits, x['produitId'])!;
+    final e = _n(x['ecart']);
+    avant.add((id: '${pr['id']}', patch: {'stockGros': pr['stockGros'], 'stockDetail': pr['stockDetail'], 'stock': pr['stock']}));
+    final patch = <String, Object?>{'stock': _max0(_n(pr['stock']) + e), champ: _max0(_n(pr[champ]) + e)};
+    maj.add((id: '${pr['id']}', patch: patch));
+    courant[x['produitId']] = {...pr, ...patch};
+    mvts.add({
+      'reference': referenceSuivante('M', 6, [...mouvements, ...mvts]),
+      'date': inventaire['date'],
+      'produitId': pr['id'],
+      'produit': pr['designation'],
+      'type': 'inventaire',
+      'typeLabel': 'Régularisation inventaire',
+      'quantite': e.abs(),
+      'stockType': magasin,
+      'justificatif': 'Inventaire ${inventaire['reference']}',
+      'utilisateur': operateur,
+    });
+  }
+  return RegularisationImportee._ok(mvts, maj, avant);
+}
+
 /// « Valider l'inventaire ». [physiques] : le stock compté par identifiant de produit (un article non saisi garde son théorique, écart nul).
 InventaireValide validerInventaire({
   required Map<String, Object?> entete,

@@ -59,7 +59,7 @@ void main() {
   // Lot IMP-C : s'y ajoutent les PAGES DE JEU d'import que le poste ne porte pas encore (leur jeu n'est pas au registre `jeuxImport`) ; porter un jeu retire sa page d'ici, de
   // `gen-poste-jeu.js` (`JEUX_IMPORT_NON_PORTES`) et de `parite-statuts.json`.
   const impNonPortes = {
-    'imp-actes', 'imp-tarifs-produits', 'imp-produits-referentiel', 'imp-stock-detail-initial', 'imp-transfert-lignes', 'imp-inventaire-comptage',
+    'imp-actes', 'imp-tarifs-produits', 'imp-produits-referentiel',
     'imp-catalogue-imagerie', 'imp-garanties', 'imp-couvertures-assurance', 'imp-immobilisations', 'imp-budgets', 'imp-courriers',
   };
   const nonPortesNommes = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
