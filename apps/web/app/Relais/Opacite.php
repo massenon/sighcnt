@@ -40,7 +40,7 @@ class Opacite
         ];
     }
 
-    /** Lot 5 (ADR-0007) : les SIGNATURES de fichiers qu'un bloc en clair laisserait voir au début (SQLite, PDF, JPEG, PNG, WebP/RIFF, ZIP, gzip). */
+    /** Lot 5 (ADR-0007) : les SIGNATURES de fichiers qu'un bloc en clair laisserait voir AU DÉBUT (SQLite, PDF, JPEG, PNG, WebP/RIFF, ZIP, gzip). */
     public const SIGNATURES = ['SQLite format 3', '%PDF-', "\xFF\xD8\xFF", "\x89PNG", 'RIFF', "PK\x03\x04", "\x1F\x8B"];
 
     /**
@@ -62,8 +62,9 @@ class Opacite
             if ($octets === '') {
                 continue;
             }
+            // Une signature de fichier se cherche AU DÉBUT du bloc : la chercher dans toute la masse déclencherait de fausses alertes (trois octets apparaissent par hasard dans du chiffré à raison d'une fois par 16 Mio).
             foreach (self::SIGNATURES as $s) {
-                if (str_contains($octets, $s)) {
+                if (str_starts_with($octets, $s)) {
                     $signatures++;
                     break;
                 }

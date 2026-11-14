@@ -96,10 +96,12 @@ module.exports = ({ monde, verifier, attendre, dormir, titre }) => {
       const dossierRelais = path.join(m.dir, 'sauvegardes-relais', 'blocs');
       const fichiers = []; for (const a of fs.readdirSync(dossierRelais)) for (const n of fs.readdirSync(path.join(dossierRelais, a))) if (!n.endsWith('.tmp')) fichiers.push(fs.readFileSync(path.join(dossierRelais, a, n)));
       const gros = fichiers.filter((b) => b.length > 100 * 1024);
-      const signatures = [Buffer.from('SQLite format 3'), Buffer.from('%PDF-'), Buffer.from([0xff, 0xd8, 0xff]), Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.from('RIFF')];
+      /* Une signature de fichier se cherche AU DÉBUT d'un bloc (c'est là qu'un format se signe) : la chercher dans toute la masse serait un faux rouge presque certain (une suite de trois octets
+         apparaît par hasard dans du chiffré à raison d'une fois par 16 Mio : intermittence trouvée au premier passage complet du banc). Les mots se cherchent entiers (plus de sept caractères). */
+      const signatures = [Buffer.from('SQLite format 3'), Buffer.from('%PDF-'), Buffer.from([0xff, 0xd8, 0xff]), Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.from('RIFF'), Buffer.from('PK\x03\x04', 'latin1'), Buffer.from([0x1f, 0x8b])];
       verifier('les blocs du relais sont des chiffrés : entropie > 7,99 bits par octet sur chaque bloc de plus de 100 Kio', gros.length >= 6 && gros.every((b) => entropie(b) > 7.99), gros.map((b) => entropie(b).toFixed(4)).slice(0, 4));
-      verifier('aucune signature de fichier (SQLite, PDF, JPEG, PNG, RIFF) au début ni ailleurs dans les blocs, aucun mot du texte (« Hyperglycemie », « AKPO », « patient »)',
-        fichiers.every((b) => signatures.every((s) => !b.includes(s)) && !b.includes(Buffer.from('Hyperglycemie')) && !b.includes(Buffer.from('AKPO')) && !b.includes(Buffer.from('patient'))));
+      verifier('aucune signature de fichier (SQLite, PDF, JPEG, PNG, RIFF, ZIP, gzip) au début d\'un bloc, aucun mot du texte (« Hyperglycemie », « patient », le secret entier)',
+        fichiers.every((b) => signatures.every((s) => !b.subarray(0, s.length).equals(s)) && !b.includes(Buffer.from('Hyperglycemie')) && !b.includes(Buffer.from('patient')) && !b.includes(Buffer.from(SECRET))));
       const lignes = JSON.stringify(await c.tout());
       verifier('les tables du relais ne portent que des identifiants, des tailles, des dates, des compteurs : aucun nom de fichier, aucun mot du texte, aucune clé', !/\.(jpg|png|pdf|sqlite)|Hyperglycemie|AKPO|patient|magasin-A/.test(lignes) && !lignes.includes(c.cle.toString('hex')) && !lignes.includes(c.cle.toString('base64')));
       /* un téléphone (ou un fileul) appairé n'y voit RIEN */

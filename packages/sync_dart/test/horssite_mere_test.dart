@@ -99,14 +99,14 @@ void main() {
       for (final f in Directory('${relais.dir.path}/blocs-relais/blocs').listSync(recursive: true).whereType<File>()) {
         tout.add(f.readAsBytesSync());
       }
-      expect(utf8.decode(tout.takeBytes(), allowMalformed: true), isNot(contains('AKPO')));
+      expect(utf8.decode(tout.takeBytes(), allowMalformed: true), isNot(contains('Hyperglycémie')), reason: 'un mot entier du texte (un mot court apparaîtrait par hasard dans du chiffré)');
       final copies = await m.horsSite.copies('magasin');
       final cible = '${tmp.path}/restauration';
       final res = await m.horsSite.restaurer(type: 'magasin', copie: (await relais.dest.copies('magasin')).first['id'] as String, cible: cible);
       expect(res['ok'], true);
       expect(copies.length, 1);
       final bd = sql.sqlite3.open('$cible/magasin');
-      addTearDown(bd.dispose);
+      addTearDown(bd.close);
       expect(bd.select("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients'").first['n'], 1);
       // le rejeu du même état est la même copie (rien de redéposé)
       final r2 = await m.horsSite.lancer('magasin');
