@@ -1500,6 +1500,22 @@ COMMENT ON TABLE "m12"."rapprochements" IS 'Collection « rapprochements » — 
 CREATE INDEX IF NOT EXISTS "ix_rapprochements_statut" ON "m12"."rapprochements" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_rapprochements_periode" ON "m12"."rapprochements" ("periode");
 CREATE INDEX IF NOT EXISTS "ix_rapprochements_reference" ON "m12"."rapprochements" ("reference");
+CREATE TABLE IF NOT EXISTS "m12"."reglages_cloture" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "date_fin" text,
+  "cree_le" date,
+  "cree_par" text,
+  "cle" text,
+  "valeur" jsonb,
+  "date_effet" date,
+  "source" text,
+  "motif" text,
+  "libelle" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m12"."reglages_cloture" IS 'Collection « reglagesCloture » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_reglages_cloture_statut" ON "m12"."reglages_cloture" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."ambulance" (
   "id" text PRIMARY KEY,
   "etat" text,

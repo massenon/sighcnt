@@ -10,7 +10,7 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `m1` — M1 Patients & DMI | 6 | 0 | 163 | 532 |
 | `m10` — M10 Ressources humaines | 22 | 1 | 270 | 2957 |
 | `m11` — M11 Paie & primes | 4 | 0 | 66 | 12 |
-| `m12` — M12 Comptabilité SYSCOHADA | 13 | 2 | 188 | 691 |
+| `m12` — M12 Comptabilité SYSCOHADA | 14 | 2 | 199 | 696 |
 | `m13` — M13 Administration & ambulance | 14 | 2 | 186 | 112 |
 | `m14` — M14 Sécurité & audit | 10 | 0 | 151 | 703 |
 | `m2` — M2 RDV, visites, consultations, imagerie | 10 | 4 | 242 | 1221 |
@@ -1252,6 +1252,22 @@ Table fille `m12.depenses_lignes` — 0 lignes : libelle text, montant integer, 
 | `source` | source | text |  |
 | `statut` | statut | text |  |
 | `a_valider` | aValider | boolean |  |
+
+### `m12.reglages_cloture` (collection « reglagesCloture », 5 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `date_fin` | dateFin | text |  |
+| `cree_le` | creeLe | date |  |
+| `cree_par` | creePar | text |  |
+| `cle` | cle | text |  |
+| `valeur` | valeur | jsonb |  |
+| `date_effet` | dateEffet | date |  |
+| `source` | source | text |  |
+| `motif` | motif | text |  |
+| `libelle` | libelle | text |  |
 
 ### `m12.rapprochements` (collection « rapprochements », 0 fiches)
 

@@ -12186,8 +12186,8 @@ async function viderMessages(page) {
       lignes: [...document.querySelectorAll('#page-content table')][0] ? [...document.querySelectorAll('#page-content table')][0].querySelectorAll('tbody tr').length : 0,
       texte: document.querySelector('#page-content').textContent,
     }));
-    verifier('L’écran « Tâches planifiées » lit le registre du serveur : huit tâches (les six d’origine plus la sauvegarde et le contrôle des fichiers numérisés), dont la sauvegarde et les échéances fiscales',
-      reg.lignes === 8 && /Sauvegarde du magasin/.test(reg.texte) && /Sauvegarde des fichiers numérisés/.test(reg.texte) && /Contrôle d’intégrité des fichiers/.test(reg.texte) && /Échéances fiscales/.test(reg.texte), 'lignes=' + reg.lignes);
+    verifier('L’écran « Tâches planifiées » lit le registre du serveur : chaque tâche connue y figure (la sauvegarde, les fichiers numérisés, les échéances fiscales, l’ouverture des exercices), sans figer le nombre de lignes',
+      reg.lignes >= 8 && /Ouverture des exercices/.test(reg.texte) && /Sauvegarde du magasin/.test(reg.texte) && /Sauvegarde des fichiers numérisés/.test(reg.texte) && /Contrôle d’intégrité des fichiers/.test(reg.texte) && /Échéances fiscales/.test(reg.texte), 'lignes=' + reg.lignes);
 
     /* Isolation : le registre du planificateur survit à la remise à neuf des collections, et chaque tâche a une fréquence
        minimale (60 min pour les échéances). Un passage précédent, ses alertes résolues, ferait paraître la tâche « déjà faite »
@@ -24572,7 +24572,7 @@ async function viderMessages(page) {
     /* 1. L'ÉCRAN : les trois tâches, la destination par défaut et le mot sur le même disque. */
     const lignes0 = await Z.lignesRegistre();
     const libelles0 = lignes0.map((l) => l[0]).join(' | ');
-    verifier('L’écran « Tâches planifiées » liste la sauvegarde du magasin, la sauvegarde des fichiers numérisés et le contrôle d’intégrité (8 tâches)', lignes0.length === 8 && /Sauvegarde du magasin/.test(libelles0) && /Sauvegarde des fichiers numérisés/.test(libelles0) && /Contrôle d’intégrité des fichiers/.test(libelles0), String(lignes0.length) + ' ' + libelles0);
+    verifier('L’écran « Tâches planifiées » liste la sauvegarde du magasin, la sauvegarde des fichiers numérisés et le contrôle d’intégrité (comptés par référence, sans figer le nombre de lignes)', lignes0.length >= 8 && /Ouverture des exercices/.test(libelles0) && /Sauvegarde du magasin/.test(libelles0) && /Sauvegarde des fichiers numérisés/.test(libelles0) && /Contrôle d’intégrité des fichiers/.test(libelles0), String(lignes0.length) + ' ' + libelles0);
     const c0 = await Z.carte();
     verifier('La carte de sauvegarde donne la destination par défaut (celle du banc), le dit (« par défaut »), et DIT que le même disque ne protège pas d’une panne de disque', !!c0 && c0.destination === Z.dest() && /par défaut/.test(c0.texte) && /Même disque que les données/.test(c0.texte) && /ne protège PAS d’une panne de disque/.test(c0.texte), JSON.stringify(c0));
 
