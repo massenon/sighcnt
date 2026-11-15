@@ -393,6 +393,17 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot CLO C4 (ouverture des exercices)',
   ),
+  DefinitionParametre(
+    cle: cpcCleDelaiPostes,
+    famille: 'exercice',
+    type: TypeParametre.entier,
+    defaut: 24,
+    libelle: cpcLibelleDelaiPostes,
+    aide: 'Entier d\'au moins 1. Avant « Démarrer la clôture », un poste sans contact depuis ce délai est signalé « état inconnu » (avertissement non bloquant).',
+    source: 'Texte de spécification de la Direction du 11/11/2026 : état inconnu au-delà de 24 heures',
+    branche: true,
+    appliquePar: 'Lot CLO-2 C5 (postes appairés)',
+  ),
 ];
 
 /// Le libellé d'une famille de paramètres, pour les onglets de l'écran des paramètres. Une famille absente de la table s'affiche sous son identifiant.

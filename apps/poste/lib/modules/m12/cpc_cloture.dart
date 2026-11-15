@@ -100,10 +100,14 @@ class _EtatCloture extends State<EcranCloture> {
 
   Future<void> _demarrer(BuildContext ctx, ContexteEcran c, Fiche x) async {
     final annee = x['annee'] as int;
+    // EF-CLO-5 (lot CLO-2) : l'avertissement sur les postes appairés est NON BLOQUANT, il s'ajoute au message de confirmation.
+    final avertissement = await avertissementPostesAvantCloture(c.magasin, annee, c.aujourdhui);
+    if (!ctx.mounted) return;
     final ok = await confirmerSigh(ctx,
         titre: 'Démarrer la clôture de l’exercice $annee ?',
         message:
-            'Dès maintenant, les modules n’écrivent plus dans $annee : seul le comptable y passe ses écritures d’inventaire. Rien n’est figé : la saisie peut reprendre tant que la Direction n’a pas clôturé définitivement.',
+            'Dès maintenant, les modules n’écrivent plus dans $annee : seul le comptable y passe ses écritures d’inventaire. Rien n’est figé : la saisie peut reprendre tant que la Direction n’a pas clôturé définitivement.'
+            '${avertissement.isEmpty ? '' : ' $avertissement'}',
         libelleOk: 'Démarrer la clôture');
     if (!ok || !ctx.mounted) return;
     final r = cpcDemarrerCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee,

@@ -338,17 +338,51 @@ void main() {
     });
   });
 
-  group('E3 (lot CLO C5, MESURE seulement) : le rejeu d\'une pièce datée d\'un exercice clos', () {
+  group('E3 (lot CLO C5) : la garde du rejeu est CELLE DE LA MÈRE (cloture_rejeu_sync_test.dart), pas celle de la collection', () {
     Fiche piece(String id) => {'id': id, 'numero': 'VTE-2025-E3', 'date': '2025-03-01', 'journal': 'VTE', 'compte': '706000', 'debit': 0, 'credit': 10, 'statut': 'brouillon', 'origine': 'Facturation'};
-    test('MESURE : la saisie de l\'agent est refusée par la garde, MAIS une fiche reçue d\'un autre poste passe `appliquerDistante`, qui ne passe par aucune garde', () {
+    test('la saisie de l\'agent est refusée par la garde de la collection ; une fiche REÇUE passe `appliquerDistante`, qui ne passe par aucune garde (voulu : la mère a déjà jugé, voir le banc à deux postes)', () {
       final m = magasinComplet();
       expect(() => m.collection('ecritures').inserer(piece('E3-LOCALE')), throwsA(isA<EcritureRefusee>()));
-      expect(m.collection('ecritures').appliquerDistante(piece('E3-DISTANTE')), true, reason: 'ÉCART E3 constaté : la mère applique la pièce au rejeu au lieu de la refuser en la nommant');
+      expect(m.collection('ecritures').appliquerDistante(piece('E3-DISTANTE')), true, reason: 'la collection ne rejuge pas : le refus est à la mère, au rejeu');
     });
-    test('CIBLE, non faite : la mère refuse au rejeu la pièce d\'un fileul datée d\'un exercice clos, refus nommé « exercice clôturé », rangée en tâche à traiter',
-        skip: 'E3 non corrigé dans ce lot : le refus au rejeu est dans `pont_activite.dart` et le banc de synchronisation à deux postes reste à écrire (voir ECARTS-MAQUETTE.md, lot CLO)', () {
+  });
+
+  group('lot CLO-2, C5 : l\'avertissement NON BLOQUANT sur les postes appairés avant « Démarrer la clôture »', () {
+    final maintenant = DateTime(2026, 11, 15, 10);
+    test('les règles : jamais vu et sans contact depuis plus de 24 h = état INCONNU ; retard non nul = à rapprocher ; un poste à jour ne dit rien', () {
+      final a = cpcAvertissementsPostes([
+        CpcPosteAppaire(nom: 'F1', dernierContact: null, retardJournal: null),
+        CpcPosteAppaire(nom: 'F2', dernierContact: maintenant.subtract(const Duration(hours: 25)), retardJournal: 0),
+        CpcPosteAppaire(nom: 'F3', dernierContact: maintenant.subtract(const Duration(hours: 1)), retardJournal: 4),
+        CpcPosteAppaire(nom: 'F4', dernierContact: maintenant.subtract(const Duration(hours: 1)), retardJournal: 0),
+        CpcPosteAppaire(nom: 'F5', dernierContact: maintenant.subtract(const Duration(hours: 1)), retardJournal: null),
+      ], maintenant, delaiHeures: 24);
+      expect([for (final x in a) '${x.nom}:${x.raison}'], ['F1:etat_inconnu', 'F2:etat_inconnu', 'F3:a_envoyer', 'F5:etat_inconnu']);
+      expect(cpcAvertissementsPostes([CpcPosteAppaire(nom: 'F2', dernierContact: maintenant.subtract(const Duration(hours: 25)), retardJournal: 0)], maintenant, delaiHeures: 48), isEmpty,
+          reason: 'le délai est un réglage : à 48 h, 25 h de silence ne sont plus un état inconnu');
+      expect(cpcTexteAvertissementPostes(const [], 2026), '');
+    });
+    casM14('la mère affiche l\'avertissement dans la confirmation et la clôture DÉMARRE quand même (non bloquant) ; sans avertissement à signaler, le message est celui d\'avant', (t) async {
       final m = magasinComplet();
-      expect(m.collection('ecritures').appliquerDistante(piece('E3-DISTANTE')), false);
+      validerBrouillons(m);
+      PostesAppaires.fournisseur = () async => [CpcPosteAppaire(nom: 'FILEUL-ACCUEIL', dernierContact: null, retardJournal: null)];
+      addTearDown(() => PostesAppaires.fournisseur = null);
+      await ouvrirM14(t, m, 'm12-cloture', role: 'comptable');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Pré-clôture'));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Démarrer la clôture'));
+      expect(find.textContaining('FILEUL-ACCUEIL', findRichText: true), findsOneWidget);
+      expect(find.textContaining('Avertissement, non bloquant', findRichText: true), findsOneWidget);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Démarrer la clôture').last);
+      expect(m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026)['etat'], 'en_cloture', reason: 'un avertissement ne verrouille rien');
+      await t.pump(const Duration(seconds: 10));
+    });
+    casM14('une mère dont le service ne répond pas le DIT (état inconnu), sans bloquer ; sans fournisseur (fileul, poste autonome) rien n\'est inventé', (t) async {
+      final m = magasinComplet();
+      PostesAppaires.fournisseur = () async => throw StateError('service injoignable');
+      addTearDown(() => PostesAppaires.fournisseur = null);
+      expect(await avertissementPostesAvantCloture(m, 2026, maintenant), contains('ne répond pas'));
+      PostesAppaires.fournisseur = null;
+      expect(await avertissementPostesAvantCloture(m, 2026, maintenant), '');
     });
   });
 

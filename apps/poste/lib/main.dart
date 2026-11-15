@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles, droitsDepuisMatrice, tarCollectionsReferentiel, valCollectionValidations;
+import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, tarCollectionsReferentiel, valCollectionValidations;
 import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
@@ -307,6 +307,17 @@ Future<void> main() async {
     // La détection de l'étape « appairages » : combien d'appareils la mère connaît (sa console, sur le port local de son service).
     final consoleMere = ClientMere(base: Uri.parse('http://127.0.0.1:9000'), secretAdmin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin);
     installation.compterAppareils = () async => (await consoleMere.etat()).appareils.length;
+    // LOT CLO-2 (C5) : avant « Démarrer la clôture », la MÈRE connaît l'état de ses fileuls (dernier contact, retard du journal) : un avertissement non bloquant, jamais une porte fermée.
+    if (params.mode == ModePoste.mere) {
+      PostesAppaires.fournisseur = () async {
+        final e = await consoleMere.etat();
+        return [
+          for (final a in e.appareils)
+            if (a.role == 'fileul' && !a.revoque)
+              CpcPosteAppaire(nom: a.etiquette.isEmpty ? a.uuid : a.etiquette, dernierContact: a.dernierContact, retardJournal: a.dernierContact == null ? null : e.seqMax - a.derniereSeq)
+        ];
+      };
+    }
     installation.rattacherMoteur = ({required adresse, required code}) => moteur.rattacher(adresse, code);
     installation.surRattache = (_) => demarrerApplicationEtPont();
     if (params.mode == ModePoste.mere) {

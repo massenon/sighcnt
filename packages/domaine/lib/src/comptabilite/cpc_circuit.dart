@@ -11,6 +11,7 @@ const String cpcCleInventaire = 'exercice.circuit.inventaire';
 const String cpcCleCloturer = 'exercice.circuit.cloturer';
 const String cpcCleRouvrir = 'exercice.circuit.rouvrir';
 const String cpcCleMoisOuverture = 'exercice.ouverture.mois';
+const String cpcCleDelaiPostes = 'exercice.postes.delaiEtatInconnuHeures';
 
 /// Les libellés des cinq réglages (une seule source : le registre des paramètres et les refus nommés les lisent ici ; ce sont ceux de la maquette).
 const String cpcLibelleDemarrer = 'Qui démarre la clôture (ou reprend la saisie)';
@@ -18,12 +19,14 @@ const String cpcLibelleInventaire = 'Qui passe les écritures d’inventaire en 
 const String cpcLibelleCloturer = 'Qui clôture définitivement';
 const String cpcLibelleRouvrir = 'Qui rouvre un exercice clôturé';
 const String cpcLibelleMoisOuverture = 'Mois à partir duquel l’exercice suivant s’ouvre';
+const String cpcLibelleDelaiPostes = 'Délai sans contact au-delà duquel l’état d’un poste est inconnu (heures)';
 const Map<String, String> cpcLibellesReglage = {
   cpcCleDemarrer: cpcLibelleDemarrer,
   cpcCleInventaire: cpcLibelleInventaire,
   cpcCleCloturer: cpcLibelleCloturer,
   cpcCleRouvrir: cpcLibelleRouvrir,
   cpcCleMoisOuverture: cpcLibelleMoisOuverture,
+  cpcCleDelaiPostes: cpcLibelleDelaiPostes,
 };
 
 /// Le geste réservé de la fiche RBAC qui règle le circuit (déclaré au manifeste de la maquette, `N.GESTES`).
@@ -43,22 +46,27 @@ List<String> cpcListeRoles(Object? v) {
 }
 
 class CpcCircuit {
-  const CpcCircuit({required this.demarrer, required this.inventaire, required this.cloturer, required this.rouvrir, this.moisOuvertureSuivant = 12, this.libelles = const {}});
+  const CpcCircuit({required this.demarrer, required this.inventaire, required this.cloturer, required this.rouvrir, this.moisOuvertureSuivant = 12, this.delaiEtatPosteHeures = 24, this.libelles = const {}});
 
   /// Lit le circuit par une fonction qui rend la valeur en vigueur d'un paramètre (le poste : `ServiceParametres.valeur(cle, aujourdhui)`).
   factory CpcCircuit.lire(Object? Function(String cle) valeur, {Map<String, String> libelles = const {}}) {
     final mois = valeur(cpcCleMoisOuverture);
+    final delai = valeur(cpcCleDelaiPostes);
     return CpcCircuit(
         demarrer: cpcListeRoles(valeur(cpcCleDemarrer)),
         inventaire: cpcListeRoles(valeur(cpcCleInventaire)),
         cloturer: cpcListeRoles(valeur(cpcCleCloturer)),
         rouvrir: cpcListeRoles(valeur(cpcCleRouvrir)),
         moisOuvertureSuivant: mois is num && mois >= 1 && mois <= 12 ? mois.toInt() : 12,
+        delaiEtatPosteHeures: delai is num && delai >= 1 ? delai.toInt() : 24,
         libelles: libelles);
   }
 
   final List<String> demarrer, inventaire, cloturer, rouvrir;
   final int moisOuvertureSuivant;
+
+  /// Au-delà de ce délai sans contact, l'état d'un poste est INCONNU (défaut semé : 24 heures, lot CLO-2).
+  final int delaiEtatPosteHeures;
 
   /// Identifiant de rôle vers libellé (la matrice des rôles) : sans libellé, l'identifiant.
   final Map<String, String> libelles;
@@ -95,8 +103,8 @@ class CpcRefusCircuit {
 /// [clesRolesConnus] : les rôles de la matrice, non archivés. [gesteAccorde] : le rôle de la session détient le geste réservé [cpcGesteRegler]. [motif] : au moins trois caractères.
 CpcRefusCircuit? cpcControleReglageCircuit(
     {required String cle, required Object? valeur, required bool gesteAccorde, required String libelleRole, required String? motif, required Set<String> rolesConnus}) {
-  final roles = cle == cpcCleMoisOuverture ? null : cpcListeRoles(valeur);
-  if (!const [cpcCleDemarrer, cpcCleInventaire, cpcCleCloturer, cpcCleRouvrir, cpcCleMoisOuverture].contains(cle)) {
+  final roles = (cle == cpcCleMoisOuverture || cle == cpcCleDelaiPostes) ? null : cpcListeRoles(valeur);
+  if (!const [cpcCleDemarrer, cpcCleInventaire, cpcCleCloturer, cpcCleRouvrir, cpcCleMoisOuverture, cpcCleDelaiPostes].contains(cle)) {
     return CpcRefusCircuit('CIRCUIT_REGLAGE_INCONNU', 'Le réglage « $cle » n’existe pas parmi ceux de la clôture annuelle.',
         'Choisir un réglage listé à l’écran « Exercices & clôtures », onglet « Circuit de clôture ».');
   }
@@ -117,9 +125,63 @@ CpcRefusCircuit? cpcControleReglageCircuit(
     }
   } else {
     final n = valeur is num ? valeur : num.tryParse('${valeur ?? ''}');
+    if (cle == cpcCleDelaiPostes) {
+      if (n == null || n < 1 || n != n.truncate()) {
+        return CpcRefusCircuit('CIRCUIT_DELAI_INVALIDE', 'Le délai est un nombre entier d’heures, au moins 1 (reçu « ${valeur ?? ''} »).', 'Saisir un nombre d’heures.');
+      }
+      return null;
+    }
     if (n == null || n < 1 || n > 12 || n != n.truncate()) {
       return CpcRefusCircuit('CIRCUIT_MOIS_INVALIDE', 'Le mois doit être un entier de 1 à 12 (reçu « ${valeur ?? ''} »).', 'Saisir un mois de 1 à 12.');
     }
   }
   return null;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// LES POSTES APPAIRÉS AVANT « DÉMARRER LA CLÔTURE » (lot CLO-2, C5, EF-CLO-5) : un AVERTISSEMENT, jamais un blocage
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Ce que la mère sait d'un fileul (indicateurs de supervision RLS-SYNC : un horodatage et un compteur, aucune donnée de santé). [retardJournal] : opérations du journal que ce fileul
+/// n'a pas encore rapprochées de la mère ; `null` : retard non calculable (jamais vu).
+class CpcPosteAppaire {
+  const CpcPosteAppaire({required this.nom, required this.dernierContact, required this.retardJournal});
+  final String nom;
+  final DateTime? dernierContact;
+  final int? retardJournal;
+}
+
+class CpcAvertissementPoste {
+  const CpcAvertissementPoste(this.nom, this.raison, this.detail);
+  final String nom;
+
+  /// `etat_inconnu` (jamais vu, ou aucun contact depuis le délai) ou `a_envoyer` (retard du journal non nul).
+  final String raison, detail;
+}
+
+/// Les postes à vérifier avant de démarrer la clôture : ceux dont l'état est INCONNU (aucun contact depuis [delaiHeures] heures, ou jamais vu : inconnu n'est pas « à jour ») et ceux qui
+/// ont des opérations à rapprocher. HYPOTHÈSE à confirmer par la Direction : « opérations à envoyer » = retard du journal non nul, la mère ne voyant pas la file du fileul. Une
+/// liste vide dit « rien à signaler », jamais « tout est à jour » pour un poste qui ne répond pas. L'avertissement ne BLOQUE rien : la clôture démarre, et la mère refusera au rejeu
+/// les pièces datées de l'exercice que ces postes enverraient.
+List<CpcAvertissementPoste> cpcAvertissementsPostes(Iterable<CpcPosteAppaire> postes, DateTime maintenant, {required int delaiHeures}) {
+  final out = <CpcAvertissementPoste>[];
+  for (final p in postes) {
+    final c = p.dernierContact;
+    if (c == null) {
+      out.add(CpcAvertissementPoste(p.nom, 'etat_inconnu', 'jamais vu de la mère : état inconnu'));
+    } else if (maintenant.difference(c) > Duration(hours: delaiHeures)) {
+      out.add(CpcAvertissementPoste(p.nom, 'etat_inconnu', 'aucun contact depuis plus de $delaiHeures h : état inconnu'));
+    } else if (p.retardJournal == null) {
+      out.add(CpcAvertissementPoste(p.nom, 'etat_inconnu', 'retard du journal non calculable : état inconnu'));
+    } else if (p.retardJournal! > 0) {
+      out.add(CpcAvertissementPoste(p.nom, 'a_envoyer', '${p.retardJournal} opération(s) du journal pas encore rapprochées'));
+    }
+  }
+  return out;
+}
+
+/// Le texte de l'avertissement (vide : rien à signaler).
+String cpcTexteAvertissementPostes(List<CpcAvertissementPoste> a, int annee) => a.isEmpty
+    ? ''
+    : 'Avertissement, non bloquant : ${a.map((x) => '« ${x.nom} » (${x.detail})').join(', ')}. Une fois $annee en clôture, la mère REFUSE les pièces datées de $annee que ces postes lui enverraient ; '
+        'les faire synchroniser d’abord.';

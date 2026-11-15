@@ -41,7 +41,7 @@ CpcRefusCircuit? reglerCircuitCloture(Magasin m,
   final service = serviceParametres(m, auteur: () => m.utilisateur, horloge: h);
   final date = parametreDateIso(h());
   final avant = service.valeur(cle, date);
-  final voulu = cle == cpcCleMoisOuverture ? (valeur is num ? valeur.toInt() : int.parse('$valeur')) : cpcListeRoles(valeur).join(',');
+  final voulu = (cle == cpcCleMoisOuverture || cle == cpcCleDelaiPostes) ? (valeur is num ? valeur.toInt() : int.parse('$valeur')) : cpcListeRoles(valeur).join(',');
   try {
     final w = service.regler(cle, voulu, date, motif: (motif ?? '').trim());
     if (!w.ok) return CpcRefusCircuit('CIRCUIT_REGLAGE_REFUSE', '${w.refus!.code} : ${w.refus!.motif}', w.refus!.geste);
@@ -80,4 +80,25 @@ Timer demarrerOuvertureDesExercices(Magasin m, {DateTime Function()? horloge, Du
   final h = horloge ?? m.horloge;
   ouvrirExercices(m, h());
   return Timer.periodic(periode, (_) => ouvrirExercices(m, h()));
+}
+
+/// Ce que la mère sait de ses fileuls (lot CLO-2, C5) : fourni par `main.dart` sur un poste MÈRE (sa console, indicateurs de supervision). Absent (fileul, poste autonome) : aucun
+/// avertissement n'est inventé.
+class PostesAppaires {
+  PostesAppaires._();
+  static Future<List<CpcPosteAppaire>> Function()? fournisseur;
+}
+
+/// L'avertissement non bloquant avant « Démarrer la clôture » : le texte, ou `''` (rien à signaler, ou aucune mère à interroger). Un service de la mère qui ne répond pas est DIT
+/// (l'état des postes est inconnu), jamais lu comme « tout est à jour ».
+Future<String> avertissementPostesAvantCloture(Magasin m, int annee, DateTime maintenant) async {
+  final f = PostesAppaires.fournisseur;
+  if (f == null) return '';
+  final delai = circuitClotureDe(m, horloge: () => maintenant).delaiEtatPosteHeures;
+  try {
+    return cpcTexteAvertissementPostes(cpcAvertissementsPostes(await f(), maintenant, delaiHeures: delai), annee);
+  } catch (_) {
+    return 'Avertissement, non bloquant : le service de la mère ne répond pas, l’état des postes appairés est inconnu. Une fois $annee en clôture, la mère refuse les pièces datées de $annee '
+        'qu’un poste lui enverrait ; vérifier les postes d’abord.';
+  }
 }
