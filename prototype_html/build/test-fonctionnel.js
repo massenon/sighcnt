@@ -27060,9 +27060,43 @@ async function viderMessages(page) {
     });
     verifier('Le mois d’ouverture est lu du circuit : le 05/10/2026 rien ne s’ouvre (défaut décembre) ; réglé à 10, l’exercice 2027 s’ouvre', m.avant.indexOf(2027) < 0 && m.reglage === true && JSON.stringify(m.apres) === '[2027]', JSON.stringify(m));
     /* 5. Le serveur (tâche planifiée exercices_ouverture) : elle LIT et alerte, elle n'écrit aucune collection ; l'alerte disparaît quand le poste a ouvert l'exercice */
-    await page.evaluate(() => { window.SIGH.store.reset(); window.__SIGH_HORLOGE.poser(2026, 7, 16); window.SIGH.exercice.ouvrirDuJour(); });
+    /* ÉTAT DE DÉPART POSÉ PAR LE SCÉNARIO (règle 11) : le magasin est remis à la semence, l'exercice 2026 est ouvert par le geste de la maquette (la tâche du jour),
+       vérifié ouvert localement PUIS vu par le SERVEUR (la tâche du serveur le lit : une réinitialisation derrière une grosse suite repousse tout le magasin et l'envoi
+       peut arriver bien après la fin de la file). On n'asserte rien avant que le serveur ne l'ait ; sinon la vérification dit la précondition manquée. */
+    /* La remise à la semence repousse TOUT le magasin d'un coup (plus de 2 Mo derrière une grosse suite). Un geste posé pendant que cet envoi vole part en PARALLÈLE et peut
+       arriver AVANT lui : le serveur garde alors la collection vide du gros envoi, alors que le poste croit l'avoir donnée (mesuré : la suite complète du 15/11/2026 rendait
+       « exercices » vide au serveur). On laisse donc l'envoi de la remise ARRIVER, puis on pose l'état. */
+    await page.evaluate(async () => { window.SIGH.store.reset(); const S = window.SIGH.store; await new Promise((r) => setTimeout(r, 400)); for (let i = 0; i < 160 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250)); });
     await pause(1500);
-    await page.evaluate(async () => { const S = window.SIGH.store; S.pousserMaintenant(); for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250)); });
+    const dep = await page.evaluate(() => { window.__SIGH_HORLOGE.poser(2026, 7, 16); window.SIGH.exercice.ouvrirDuJour(); const f = window.SIGH.exercice.de(2026); return { local: f ? f.etat : null, a2027: !!window.SIGH.exercice.de(2027) }; });
+    const cronAu = (maintenant) => page.evaluate(async (m) => {
+      const S = window.SIGH.store;
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() }, body: JSON.stringify({ action: 'executer', code: 'exercices_ouverture', maintenant: m }) });
+      const o = await r.json();
+      const rap = o.rapport && o.rapport.exercices_ouverture;
+      return { statut: rap && rap.statut, message: rap && rap.message };
+    }, maintenant);
+    let vuServeur = null;
+    for (let i = 0; i < 15; i++) {
+      await page.evaluate(async () => { const S = window.SIGH.store; S.pousserMaintenant(); for (let k = 0; k < 80 && S.fileEnAttente() > 0; k++) await new Promise((r) => setTimeout(r, 250)); });
+      vuServeur = await cronAu('2026-08-16T12:00:00');
+      if (/à ouvrir : aucun/.test(vuServeur.message || '')) break;
+      await pause(1000);
+    }
+    let diag = null;
+    if (!(vuServeur && /à ouvrir : aucun/.test(vuServeur.message || ''))) {
+      diag = await page.evaluate(async () => {
+        const S = window.SIGH.store, racine = document.documentElement.getAttribute('data-root') || '';
+        const g = await fetch(racine + 'api/magasin.php', { headers: { 'X-Sigh-Jeton': S.jetonServeur(), Accept: 'application/json' } });
+        const t = await g.text();
+        let o = null; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+        const loc = (S.raw().exercices || []).map((x) => ({ id: x.id, etat: x.etat, statut: x.statut }));
+        return { getStatut: g.status, taille: t.length, serveurExercices: o && o.exercices ? o.exercices.map((x) => ({ id: x.id, etat: x.etat, statut: x.statut })) : (o ? 'clé absente' : 'non JSON'), local: loc, file: S.fileEnAttente() };
+      });
+    }
+    verifier('Départ posé par le scénario : 2026 est ouvert dans le poste (geste de la maquette) ET le serveur le voit (à 16/08/2026 il n’a rien à ouvrir) ; 2027 n’est pas supposé absent, il est absent parce que le magasin a été remis à la semence',
+      dep.local === 'ouvert' && dep.a2027 === false && vuServeur && vuServeur.statut === 'ok' && /à ouvrir : aucun/.test(vuServeur.message || ''), JSON.stringify([dep, vuServeur, diag, erreursJS.slice(0, 6)]));
     const cronPlan = () => page.evaluate(async () => {
       const S = window.SIGH.store;
       for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
