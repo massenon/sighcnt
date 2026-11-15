@@ -157,6 +157,37 @@ String? cpcGardeEcritures(Iterable<CpaFiche> exercices, Object? date,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
+// LE REJEU D'UNE PIÈCE D'UN AUTRE POSTE (lot CLO-2, C5, E3) : la mère REFUSE en nommant la pièce datée d'un exercice qu'elle sait clos ou en clôture
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Le refus nommé du rejeu : code, motif, geste.
+class CpcRefusRejeu {
+  const CpcRefusRejeu(this.code, this.motif, this.geste);
+  final String code, motif, geste;
+}
+
+/// La garde de l'agent protège l'écriture LOCALE ; un fileul qui n'a pas encore reçu le statut d'un exercice écrit en croyant l'exercice ouvert. La MÈRE, qui fait foi du statut,
+/// refait donc le contrôle au REJEU de la pièce qu'il lui envoie : exercice CLOS, refus ; exercice EN CLÔTURE, refus (« les modules n'y écrivent plus »), SAUF la saisie manuelle
+/// (l'inventaire : le rôle de l'auteur a été contrôlé sur son poste, la mère ne le connaît pas) ; les pièces de la clôture elle-même (`origineCloture`) passent à la création.
+/// Le refus est NOMMÉ et ne bloque rien d'autre : le poste met la pièce de côté, la dit, la réessaie dès qu'elle change (jamais un travail courant verrouillé).
+CpcRefusRejeu? cpcRefusRejeuPiece(Iterable<CpaFiche> exercices, CpaFiche piece, {String op = 'inserer'}) {
+  if (op == 'inserer' && '${piece['origineCloture'] ?? ''}'.isNotEmpty) return null;
+  final a = cpaAnnee(piece['date']);
+  if (a == null) return null;
+  final etat = cpcEtatExercice(exercices, a);
+  const geste = 'Dater la pièce dans l’exercice ouvert depuis le poste qui l’a écrite, ou faire rouvrir l’exercice (circuit de clôture).';
+  if (etat == 'clos') {
+    final motif = cpcGardeEcritures(exercices, piece['date'], op: op, origine: piece['origine'], journal: piece['journal']);
+    return CpcRefusRejeu('exercice_clos', 'Pièce reçue d’un autre poste, REFUSÉE au rejeu : ${motif ?? 'exercice $a clôturé : lecture seule.'}', geste);
+  }
+  if (etat == 'en_cloture' && '${piece['origine']}' != 'Saisie manuelle') {
+    return CpcRefusRejeu('exercice_en_cloture',
+        'Pièce reçue d’un autre poste, REFUSÉE au rejeu : exercice $a en clôture, les modules n’y écrivent plus (origine « ${piece['origine'] ?? 'inconnue'} »).', geste);
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
 // LECTURES D'UN EXERCICE
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 

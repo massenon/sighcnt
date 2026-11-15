@@ -19,6 +19,8 @@ import 'transcription_mobile.dart' show PieceSync;
 /// CE QUE LE PONT NE PORTE PAS, ET QU'IL FAUT DIRE : factures, avoirs, écritures (numérotation certifiée), stock, lots et mouvements (RG-03), admissions et lits
 /// (un lit, une admission active). Leurs règles de fusion ne sont pas posées : les y faire passer en « dernier geste gagne » les corromprait.
 const Set<String> collectionsActivite = {
+  // LOT CLO-2 (C5, E3) : le STATUT des exercices voyage comme une donnée métier (fiche descriptive, identité commune `EXO-<année>`) : un fileul sait qu'un exercice est en clôture ou clos.
+  'exercices',
   'patients',
   'rendezvous',
   'constantes',
@@ -267,7 +269,7 @@ class PontActivite {
         // préfixée, elle faisait de chaque article créé après le jeu d'origine DEUX fiches chez un fileul (mesuré avec un import de la mère).
         // Lot D5 : une fiche du registre `fichiers` a pour identifiant `FIC-<empreinte>` : déterministe, elle est la MÊME sur tous les postes (préfixée, deux postes qui déposent le même fichier
         // feraient deux fiches et le texte indexé deux fois).
-        final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c) || c == 'fichiers' || c == 'lecturesOcr';
+        final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c) || c == 'fichiers' || c == 'lecturesOcr' || c == 'exercices';
         f['idSync'] = identiteCommune ? '${f['id']}' : '$etiquette-${f['id']}';
       }
     }

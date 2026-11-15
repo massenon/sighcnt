@@ -14,6 +14,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         Parametres,
         RefusMobile,
         cfbEssentielles,
+        cpcRefusRejeuPiece,
         mobMotifFonctionNonHabilitee,
         mobPeutPrescrire,
         mobRefusAffectation,
@@ -48,6 +49,8 @@ final familles = <String, String>{
 };
 const familleDeBase = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
+  // Lot CLO-2 (C5) : le statut des exercices (identité commune `EXO-<année>`) : fiche descriptive, champ à champ.
+  'exercices': 'A',
   // L'ACTIVITÉ que le pont du poste synchronise (E2130) : des fiches descriptives, sans invariant entre fiches. Factures, stock, écritures et lits en restent
   // exclus tant que leurs règles de fusion (numérotation, RG-03, unicité du lit) ne sont pas posées.
   'releves': 'A', 'observations': 'A', 'visites': 'A', 'appels': 'A', 'consultations': 'A', 'dossiersConsultation': 'A', 'antecedents': 'A',
@@ -347,6 +350,16 @@ class Mere {
     final champsOp = ((op['champs'] ?? {}) as Map).cast<String, Object?>();
     final f = await lire(collection, ficheId);
 
+    // LOT CLO-2 (C5, E3) : la mère refait au REJEU la garde des exercices que le poste n'a pu faire s'il n'avait pas reçu le statut. Refus nommé, jamais un blocage du poste
+    // (la pièce est mise de côté, dite, réessayée dès qu'elle change). Les pièces de la mère elle-même ont passé sa propre garde.
+    if (collection == 'ecritures' && (type == 'creer' || type == 'modifier') && app.role != 'mere') {
+      final exercices = <Map<String, Object?>>[
+        for (final r in await base.select("SELECT data FROM fiches WHERE collection='exercices' AND archive=0")) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
+      ];
+      final r = cpcRefusRejeuPiece(exercices, {...?f?.data, ...champsOp}, op: type == 'creer' ? 'inserer' : 'modifier');
+      if (r != null) return refus(r.code, r.motif, r.geste);
+    }
+
     // L0 : une version de paramètre est une fiche IMMUABLE. La mère REFAIT le contrôle du poste (même fonction, domaine) : version croissante, type, date d'effet,
     // valeur déjà utilisée par une pièce (usages relevés des postes), téléphone interdit pour un paramètre réservé. Un refus est nommé, jamais avalé.
     if (collection == parCollectionParametres) {
@@ -407,6 +420,9 @@ class Mere {
 
     // A, C et R : fusion par champ
     if (type == 'creer') {
+      // Lot CLO-2 (C5) : l'exercice `EXO-<année>` est une identité COMMUNE (chaque poste en dérive la fiche) : la seconde création est ACCEPTÉE SANS EFFET, jamais un refus bruyant
+      // à « traiter ». Ses changements d'état arrivent ensuite par des modifications champ à champ.
+      if (f != null && collection == 'exercices') return {'id': id, 'statut': 'acceptee', 'seq': await seqMax(), 'rejeu': true};
       if (f != null) return refus('fiche_existe', 'Cette fiche existe déjà.', 'Aucun');
       final champs = {...champsOp};
       String? numero;
