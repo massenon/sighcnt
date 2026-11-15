@@ -1,6 +1,6 @@
 # PRD : tableaux, export Excel (.xlsx) et impression des lignes cochées
 
-Statut : **brouillon du 15/11/2026, à valider par la Direction**. Source : question de la Direction du 15/11/2026 (« est-ce que les différents écrans ont le bouton Exporter en xlsx, et aussi l'option de sélection par case à cocher des lignes de tables pour imprimer ? »). Skills : `spec`, `sigh-maitre`, `sigh-flutter`.
+Statut : **brouillon du 15/11/2026, précisé le 15/11/2026 par la Direction** : la demande porte sur (a) l'**exportation en masse**, (b) les **lignes cochées** et (c) l'**impression des lignes cochées** (section 3 bis). Source : question de la Direction du 15/11/2026 (« est-ce que les différents écrans ont le bouton Exporter en xlsx, et aussi l'option de sélection par case à cocher des lignes de tables pour imprimer ? »). Skills : `spec`, `sigh-maitre`, `sigh-flutter`.
 Règle de rédaction : pas de tiret cadratin comme ponctuation.
 
 ## 1. Ce qui existe aujourd'hui (mesuré dans le code le 15/11/2026, pas un audit écran par écran)
@@ -28,6 +28,13 @@ Un agent veut sortir un tableau dans Excel (comptabilité, stock, recettes, plan
 - **O5.** Un export ou une impression de données nominatives est **journalisé** (RG-12 : utilisateur, date, écran, nombre de lignes, identifiants des fiches, jamais le contenu).
 - **O6.** Une limite de lignes par export est un **réglage en base** (défaut semé, borné, à valider), avec refus nommé au-delà (code, motif, geste : affiner le filtre ou cocher moins de lignes).
 
+## 3 bis. Précision de la Direction (15/11/2026) : trois besoins
+
+- **(a) Exportation en masse** : sortir en un geste TOUT le contenu d'un tableau (toutes les pages, pas seulement la page affichée ni les 12 lignes visibles), avec le filtre actif ou sans filtre au choix. Lecture proposée, à confirmer : « en masse » = toutes les lignes du tableau en un seul fichier ; une variante « plusieurs tableaux d'un module dans un même classeur, une feuille par tableau » est proposée en P2 (section 5), pas en version 1.
+- **(b) Lignes cochées** : cocher des lignes (une, plusieurs, toutes) et exporter SEULEMENT celles-ci.
+- **(c) Impression des lignes cochées** : imprimer SEULEMENT les lignes cochées, au gabarit du document (A4, rouleau 80 mm, carte CR80 quand ils s'appliquent).
+Les trois suivent les mêmes règles de droits, de journal et de limite (O3, O5, O6 ci-dessous). L'export en masse est le seul qui peut dépasser la limite de lignes réglable : il est alors refusé nommé avec le geste (affiner le filtre) et jamais tronqué en silence.
+
 ## 4. Non-objectifs
 
 - Aucun envoi par courriel ni par service externe (le texte médical ne quitte jamais la clinique) : le fichier est écrit sur le poste.
@@ -47,6 +54,8 @@ Un agent veut sortir un tableau dans Excel (comptabilité, stock, recettes, plan
 | EF-TAB-6 | Journal d'export et d'impression nominatifs (RG-12) | P0 |
 | EF-TAB-7 | Limite de lignes par export réglable en base, refus nommé | P1 |
 | EF-TAB-8 | Impression de la sélection aux gabarits A4 et rouleau 80 mm, totaux calculés | P1 |
+| EF-TAB-10 | **Exportation en masse** : un geste « Tout exporter » écrit toutes les lignes du tableau (toutes pages), avec ou sans le filtre actif au choix, en arrière-plan avec un compteur de progression au-delà d'un seuil réglable ; jamais de troncature silencieuse | P0 |
+| EF-TAB-11 | **Export multi-feuilles** : plusieurs tableaux d'un même module dans un seul classeur, une feuille par tableau | P2 |
 | EF-TAB-9 | Droit réservé « exporter les données d'un écran » réglable par rôle (comme `corriger_texte_ocr`), commande ABSENTE sans le droit, le moteur refuse aussi | P1 |
 
 ## 6. Critères d'acceptation (extraits)
