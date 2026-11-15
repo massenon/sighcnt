@@ -30,7 +30,7 @@ Un agent veut sortir un tableau dans Excel (comptabilité, stock, recettes, plan
 
 ## 3 bis. Précision de la Direction (15/11/2026) : trois besoins
 
-- **(a) Exportation en masse** : sortir en un geste TOUT le contenu d'un tableau (toutes les pages, pas seulement la page affichée ni les 12 lignes visibles), avec le filtre actif ou sans filtre au choix. Lecture proposée, à confirmer : « en masse » = toutes les lignes du tableau en un seul fichier ; une variante « plusieurs tableaux d'un module dans un même classeur, une feuille par tableau » est proposée en P2 (section 5), pas en version 1.
+- **(a) Exportation en masse** : sortir en un geste TOUT le contenu d'un tableau (toutes les pages, pas seulement la page affichée ni les 12 lignes visibles), avec le filtre actif ou sans filtre au choix. Confirmé par la Direction le 15/11/2026 : « en masse » = toutes les lignes du tableau en un seul fichier ; une variante « plusieurs tableaux d'un module dans un même classeur, une feuille par tableau » est proposée en P2 (section 5), pas en version 1.
 - **(b) Lignes cochées** : cocher des lignes (une, plusieurs, toutes) et exporter SEULEMENT celles-ci.
 - **(c) Impression des lignes cochées** : imprimer SEULEMENT les lignes cochées, au gabarit du document (A4, rouleau 80 mm, carte CR80 quand ils s'appliquent).
 Les trois suivent les mêmes règles de droits, de journal et de limite (O3, O5, O6 ci-dessous). L'export en masse est le seul qui peut dépasser la limite de lignes réglable : il est alors refusé nommé avec le geste (affiner le filtre) et jamais tronqué en silence.
@@ -66,7 +66,10 @@ Les trois suivent les mêmes règles de droits, de journal et de limite (O3, O5,
 - Un export de 12 000 lignes est refusé nommé tant que la limite réglée est plus basse, avec le geste de correction.
 - Aucun tableau de l'application n'est sans case à cocher ni sans bouton « Exporter » (test de garde de génération qui énumère les tableaux, comme `garde-roles-en-dur.js`).
 
-## 7. Décisions à demander à la Direction
+## 7. Décisions de la Direction (15/11/2026, « OUI à tout », voir `DECISIONS-A-VALIDER.md` section AH)
+
+Les cinq propositions ci-dessous sont VALIDÉES telles quelles (limite de lignes : valeur encore à fixer sur la plus grande table réelle).
+
 
 1. Faut-il conserver le CSV à côté du `.xlsx` (proposition : oui, les deux).
 2. Tous les rôles peuvent-ils exporter, ou seulement certains (proposition : droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran, hors rôles d'accueil pour les données financières).
