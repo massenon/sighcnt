@@ -3643,6 +3643,9 @@
     envoye: {},        /* dernière forme envoyée, par collection */
     meta: {},          /* idem, pour les clés hors collections */
     enVol: false,
+    /* Lot CONT étape 0 : un geste est arrivé pendant qu'un envoi volait. Il n'est PAS envoyé tout de suite (deux envois en vol peuvent arriver dans le désordre, le dernier
+       ARRIVÉ gagnerait, pas le dernier PARTI) : le delta sera calculé à la fin de l'envoi en vol, avec l'état le plus récent. Le geste local, lui, reste immédiat. */
+    reprise: false,
     erreurDite: false,
     /* TENTÉE n'est pas TERMINÉE. `teste` passe à vrai dès le DÉPART de
        l'hydratation ; toute lecture faite pendant la requête voyait donc
@@ -3861,9 +3864,24 @@
     return SRV.promesseSession;
   }
 
-  /** Envoie le delta. Ouvre une session si le serveur la réclame, puis reprend. */
+  /** Envoie le delta. Ouvre une session si le serveur la réclame, puis reprend.
+   *  LOT CONT ÉTAPE 0 : UN SEUL ENVOI EN VOL. `enVol` n'était qu'un drapeau : deux envois parallèles pouvaient ARRIVER dans le désordre (un gros envoi, remise à la semence ou
+   *  amorçage, puis un petit geste : le serveur remplace la collection entière, le dernier arrivé gagne, et le geste posé juste après était écrasé en silence, jamais renvoyé puisque
+   *  le poste croyait l'avoir donné). Désormais `ecrire()` ne calcule PAS le delta tant qu'un envoi vole : il note `reprise`, et la fin de l'envoi en vol (réussi OU échoué) rappelle
+   *  `ecrire()`, qui calcule alors le delta avec l'état le plus récent : ordre conservé, rafales fusionnées, aucun geste perdu. Le geste local n'attend jamais, seul l'envoi attend.
+   *  Seul l'envoi de DÉPART DE PAGE (`urgent`, keepalive) ne peut pas attendre : la page meurt, mieux vaut un envoi de plus qu'un geste perdu. */
   function pousserServeur(charge, reessai, urgent) {
-    SRV.enVol = true;
+    if (!urgent) SRV.enVol = true;
+    return envoyerCharge(charge, reessai, urgent).then(function (o) {
+      if (!urgent) finirEnvoi();
+      return o;
+    }, function (e) { if (!urgent) finirEnvoi(); throw e; });
+  }
+  function finirEnvoi() {
+    SRV.enVol = false;
+    if (SRV.reprise) { SRV.reprise = false; ecrire(); }
+  }
+  function envoyerCharge(charge, reessai, urgent) {
     /* `keepalive` QUAND LA PAGE S'EN VA. Un `fetch` ordinaire meurt avec la
        page qui l'a lancé : l'envoi déclenché par `pagehide` n'arrivait donc
        jamais, et le drapeau « déjà peuplé » avec lui — le jeu se reconstruisait
@@ -3882,14 +3900,13 @@
         var attente = SRV.promesseSession || ouvrirSessionServeur(session());
         return attente.then(function (jeton) {
           if (!jeton) throw new Error('401 — aucune session de poste');
-          return pousserServeur(charge, true);
+          return envoyerCharge(charge, true);
         });
       }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
-    }).then(function (o) { SRV.enVol = false; return o; })
+    }).then(function (o) { SRV.echecs = 0; return o; })
       .catch(function (e) {
-        SRV.enVol = false;
         /* Le delta a été marqué comme envoyé : il ne repartirait jamais. On
            REVIENT donc en arrière, pour que la prochaine écriture le reprenne. */
         Object.keys(charge.collections || {}).forEach(function (k) { delete SRV.envoye[k]; });
@@ -3904,7 +3921,7 @@
         /* UNE SEULE NOUVELLE TENTATIVE, puis on s'arrête en le disant. Le
            delta a été remis en attente ; reprogrammer sans fin ferait tourner
            une boucle muette pendant que l'agent continue de saisir dans le
-           vide. */
+           vide. Les échecs comptés sont les échecs CONSÉCUTIFS (un envoi réussi remet le compte à zéro). */
         SRV.echecs = (SRV.echecs || 0) + 1;
         if (SRV.echecs < 2) { save(); return null; }
         signalerPanne('Le serveur a refusé l’enregistrement à deux reprises — ' + e.message);
@@ -4072,6 +4089,8 @@
          tentative se reprogrammerait en boucle. Avant la connexion il n'y a
          d'ailleurs aucune donnée d'agent à perdre. */
       if (!session() || SRV.sansMagasin) return;
+      /* Un envoi vole déjà : on n'en lance pas un second (lot CONT étape 0). Le delta sera calculé à sa fin, avec l'état le plus récent. */
+      if (SRV.enVol && !_enPartant) { SRV.reprise = true; return; }
       var charge = delta();
       if (charge) pousserServeur(charge, false, _enPartant);
       return;

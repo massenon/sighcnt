@@ -27165,6 +27165,63 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CLO-2 C6 FIN */
+  /* LOT CONT ETAPE 0 DEBUT */
+  await etape(async () => {
+    scenario('Vague 184 : lot CONT étape 0, les envois du magasin vers le serveur sont SÉRIALISÉS (un seul en vol, ordre conservé, un geste posé juste après un gros envoi n’est jamais écrasé, un envoi qui échoue est renvoyé, le geste local reste immédiat)');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN184', nomComplet: 'ADMIN184', fonction: 'admin', identifiant: 's184.admin', secteur: 'DIR' });
+    await ouvrir('adm-validations.html');
+    /* La sonde pose elle-même son état de départ : une collection neuve (nom unique par passage), un espion de fetch qui RETARDE le premier envoi du magasin (la course est ainsi
+       déterministe : sans sérialisation le petit envoi part, arrive, puis le gros arrive en dernier et gagne). */
+    const nom = 'essai184' + Date.now().toString(36);
+    const mesure = await page.evaluate(async (nom) => {
+      const S = window.SIGH.store, jeton = () => S.jetonServeur();
+      const attendre = async (cond, ms) => { const f = Date.now() + ms; while (Date.now() < f && !cond()) await new Promise((r) => setTimeout(r, 50)); return cond(); };
+      await attendre(() => S.fileEnAttente() === 0, 15000);
+      const orig = window.fetch.bind(window);
+      let vol = 0, maxVol = 0, retarde = false, echec = false; const envois = [];
+      window.fetch = function (u, o) {
+        if (/api\/magasin\.php$/.test(String(u)) && o && o.method === 'POST') {
+          const corps = JSON.parse(o.body), cles = Object.keys(corps.collections || {});
+          if (cles.indexOf(nom) < 0) return orig(u, o);
+          const n = ((corps.collections[nom]) || []).length;
+          envois.push({ n: n, t: Date.now() });
+          vol++; maxVol = Math.max(maxVol, vol);
+          const fin = (x) => { vol--; return x; };
+          if (echec) { echec = false; return new Promise((r) => setTimeout(r, 100)).then(() => fin(new Response('{"erreur":"coupure"}', { status: 500 }))); }
+          if (!retarde) { retarde = true; return new Promise((r) => setTimeout(r, 1500)).then(() => orig(u, o)).then(fin, (e) => { fin(); throw e; }); }
+          return orig(u, o).then(fin, (e) => { fin(); throw e; });
+        }
+        return orig(u, o);
+      };
+      const col = S.collection(nom);
+      /* gros envoi : vingt fiches posées en lot, l'envoi part (retardé) */
+      S.enLot(() => { for (let i = 0; i < 20; i++) col.insert({ rang: i, marque: 'gros' }); });
+      /* geste immédiat juste après : le local doit rendre la main tout de suite */
+      const t0 = performance.now();
+      S.enLot(() => { col.insert({ rang: 20, marque: 'petit' }); });
+      const dureeGesteLocal = performance.now() - t0;
+      const localTout = col.all().length;
+      const fini = await attendre(() => S.fileEnAttente() === 0 && vol === 0, 20000);
+      const lire = () => orig('../api/magasin.php?collections=' + encodeURIComponent(nom), { headers: { Accept: 'application/json', 'X-Sigh-Jeton': jeton() } }).then((r) => r.json());
+      const rangsDe = (serveur) => (serveur[nom] || []).map((x) => x.rang).sort((a, b) => a - b);
+      /* ce que garde le serveur APRÈS le gros envoi et le petit geste, avant tout autre geste */
+      const rangsApresGros = rangsDe(await lire());
+      /* un envoi qui échoue est renvoyé : une panne unique de l'envoi suivant, puis on attend que le serveur ait tout */
+      echec = true;
+      S.enLot(() => { col.insert({ rang: 21, marque: 'apres-coupure' }); });
+      const fini2 = await attendre(() => S.fileEnAttente() === 0 && vol === 0, 20000);
+      const rangs = rangsDe(await lire());
+      window.fetch = orig;
+      return { dureeGesteLocal: Math.round(dureeGesteLocal), localTout: localTout, fini: fini && fini2, maxVol: maxVol, envois: envois.map((e) => e.n), rangsApresGros: rangsApresGros, rangs: rangs };
+    }, nom);
+    verifier('Le geste local reste immédiat (rend la main en moins de 100 ms, la fiche est déjà en mémoire) pendant qu’un gros envoi est en vol', mesure.dureeGesteLocal < 100 && mesure.localTout === 21, JSON.stringify(mesure));
+    verifier('Jamais deux envois du magasin en vol à la fois (un seul, le suivant attend)', mesure.maxVol === 1, JSON.stringify(mesure));
+    verifier('Aucun geste perdu : le serveur garde les vingt fiches du gros envoi ET celle posée juste après (le petit n’est pas écrasé par l’arrivée tardive du gros)', JSON.stringify(mesure.rangsApresGros) === JSON.stringify(Array.from({ length: 21 }, (_, i) => i)), JSON.stringify(mesure));
+    verifier('Un envoi qui échoue est renvoyé : la fiche posée pendant la coupure arrive au serveur sans nouveau geste', mesure.fini && mesure.rangs.indexOf(21) >= 0 && mesure.rangs.length === 22, JSON.stringify(mesure));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401|500|refusée/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CONT ETAPE 0 FIN */
 
 
 
