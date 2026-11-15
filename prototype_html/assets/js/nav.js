@@ -211,6 +211,11 @@
       defautSiEcritSur: ['M13', 'M1'] },
     /* Lot CLO C1 (14/11/2026) : régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre). PRD M12 section 1 : réservé à l'administrateur et à la Directrice Administrative,
        PROPOSITION À VALIDER (la Direction n'a pas nommé qui règle). Un droit de la fiche RBAC par RÔLE, jamais un nom de rôle dans le moteur : il ne donne aucun écran. */
+    /* Lot CLO-2 (C6, 15/11/2026) : voir TOUT le centre « Validations en attente » (les files de tous les postes). Les sept profils qui l'ouvraient d'origine le gardent ; les autres (biologiste,
+       échographiste, praticiens du bloc) n'y voient que les familles de référentiels de leur rôle. C'était une liste de rôles écrite dans l'écran, au poste comme à la maquette : c'est
+       désormais un DROIT de la fiche RBAC (migration de `ELARGIS`), réglable par rôle, jamais un nom de rôle dans l'écran. Défaut = l'ancienne liste. */
+    { id: 'voir_toutes_les_validations', libelle: 'Voir toutes les files du centre « Validations en attente » (sinon : les seules familles de référentiels du rôle)', module: 'M13', ecran: 'adm-validations',
+      rolesDefaut: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'] },
     { id: 'regler_circuit_cloture', libelle: 'Régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre)', module: 'M12', ecran: 'm12-cloture',
       rolesDefaut: ['admin', 'da'] },
   ];

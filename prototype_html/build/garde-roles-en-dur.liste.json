@@ -17,9 +17,6 @@
    "['surveillant', 'da', 'admin']": 3,
    "['surveillant', 'da', 'admin', 'direction', 'rh']": 1
   },
-  "js/modules/m13-administration.js": {
-   "['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin']": 1
-  },
   "js/modules/m14-securite.js": {
    "['dm', 'da', 'direction', 'admin']": 3,
    "['admin', 'da']": 1

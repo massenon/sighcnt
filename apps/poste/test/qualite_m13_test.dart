@@ -143,6 +143,16 @@ void main() {
       });
     }
 
+    cas('lot CLO-2, C6 : voir toutes les files est un DROIT (`voir_toutes_les_validations`) : la DAF voit tout, le biologiste ne voit que les familles de son ressort', (t) async {
+      final c = casDe('validations').first;
+      await ouvrir(t, magasinDeCas(c), 'adm-validations', role: 'da');
+      expect(find.textContaining('Référentiels en attente de validation, par famille', findRichText: true), findsOneWidget);
+      await ouvrir(t, magasinDeCas(c), 'adm-validations', role: 'comptable');
+      expect(find.textContaining('Référentiels en attente de validation, par famille', findRichText: true), findsOneWidget, reason: 'le comptable est l\'un des sept profils d\'origine');
+      await ouvrir(t, magasinDeCas(c), 'adm-validations', role: 'laborantin');
+      expect(find.textContaining('Les référentiels de votre ressort', findRichText: true), findsOneWidget);
+    });
+
     cas('non amorcé : « — » et la file le dit, jamais un faux 0', (t) async {
       final c = premier(casDe('validations'), 'besoins et commandes non amorcés');
       await ouvrir(t, magasinDeCas(c), 'adm-validations');

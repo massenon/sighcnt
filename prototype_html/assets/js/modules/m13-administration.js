@@ -2027,8 +2027,8 @@
       var roleAdm = sessionAdm.role;
       /* Les sept profils qui ouvraient d\u00e9j\u00e0 le centre gardent tout ce qu'ils y voyaient ; le biologiste,
          l'\u00e9chographiste et les praticiens du bloc n'y voient QUE les familles de r\u00e9f\u00e9rentiels de leur r\u00f4le. */
-      var ELARGIS = ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'];
-      var restreint = ELARGIS.indexOf(roleAdm) < 0;
+      /* Un DROIT de la fiche RBAC (`voir_toutes_les_validations`), plus une liste de rôles écrite ici (lot CLO-2, C6). */
+      var restreint = !global.SIGH.nav.droitGeste(roleAdm, 'voir_toutes_les_validations');
       function ouvrable(id) {
         var e = id && global.SIGH.nav.get(id);
         return !!e && global.SIGH.nav.can(roleAdm, e);

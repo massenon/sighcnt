@@ -27097,6 +27097,42 @@ async function viderMessages(page) {
   });
   /* LOT CLO C4 FIN */
 
+  /* LOT CLO-2 C6 DÉBUT */
+  await etape(async () => {
+    scenario('Vague 183 : lot CLO-2 C6, voir toutes les files du centre « Validations en attente » est un droit de la fiche RBAC (les sept profils d’origine, refus des autres, accord et retrait par la fiche), plus une liste de rôles écrite dans l’écran');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN183', nomComplet: 'ADMIN183', fonction: 'admin', identifiant: 's183.admin', secteur: 'DIR' });
+    await ouvrir('adm-validations.html');
+    const g = await page.evaluate(() => { const N = window.SIGH.nav; return { geste: !!N.geste('voir_toutes_les_validations'), detenteurs: N.rolesAvecGeste('voir_toutes_les_validations').slice().sort(),
+      laborantin: N.droitGeste('laborantin', 'voir_toutes_les_validations'), echo: N.droitGeste('echographiste', 'voir_toutes_les_validations') }; });
+    verifier('Le droit existe au manifeste ; d’origine il est détenu par les sept profils qui ouvraient déjà le centre, ni le biologiste ni l’échographiste',
+      g.geste && JSON.stringify(g.detenteurs) === JSON.stringify(['admin', 'agentadmin', 'comptable', 'da', 'direction', 'dm', 'surveillant']) && g.laborantin === false && g.echo === false, JSON.stringify(g));
+    const lire = async (role, nom) => {
+      await poserSessionServeur({ role, nom, nomComplet: nom, fonction: role, identifiant: 's183.' + role, secteur: role === 'da' ? 'DIR' : 'LAB' });
+      await ouvrir('adm-validations.html');
+      return page.evaluate(() => { const t = (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '); return { restreint: /Les référentiels de votre ressort/.test(t), complet: /Référentiels en attente de validation, par famille/.test(t) }; });
+    };
+    const da = await lire('da', 'DA183'), lab = await lire('laborantin', 'LABO183');
+    verifier('L’écran suit le droit : la Directrice Administrative voit toutes les files, le biologiste médical ne voit que les familles de son ressort', da.complet && !da.restreint && lab.restreint && !lab.complet, JSON.stringify({ da, lab }));
+    /* accord puis retrait par la fiche RBAC : aucun nom de rôle dans l'écran */
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN183', nomComplet: 'ADMIN183', fonction: 'admin', identifiant: 's183.admin', secteur: 'DIR' });
+    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('rbac'); let f = col.all().filter((x) => x.role === 'laborantin')[0];
+      const g = Object.assign({}, (f && f.droitsGestes) || {}, { voir_toutes_les_validations: true });
+      if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'laborantin', statut: 'actif', droitsGestes: g }); window.SIGH.nav.invaliderRbac(); });
+    const accord = await lire('laborantin', 'LABO183');
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN183', nomComplet: 'ADMIN183', fonction: 'admin', identifiant: 's183.admin', secteur: 'DIR' });
+    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'laborantin')[0]; col.update(f.id, { droitsGestes: { voir_toutes_les_validations: false } }); window.SIGH.nav.invaliderRbac(); });
+    const retrait = await lire('laborantin', 'LABO183');
+    verifier('Accorder le droit au biologiste lui ouvre toutes les files (sans toucher au code) ; le retirer le ramène à son ressort', accord.complet && !accord.restreint && retrait.restreint && !retrait.complet, JSON.stringify({ accord, retrait }));
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN183', nomComplet: 'ADMIN183', fonction: 'admin', identifiant: 's183.admin', secteur: 'DIR' });
+    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'laborantin')[0]; if (f) col.update(f.id, { droitsGestes: {} }); window.SIGH.nav.invaliderRbac(); });
+    const garde = require('./garde-roles-en-dur.js').analyser(path.join(ROOT, 'assets/js'));
+    verifier('La garde de génération est exacte (plus aucune liste ELARGIS dans m13-administration.js)', garde.nouveaux.length === 0 && garde.disparus.length === 0 && !/ELARGIS/.test(fs.readFileSync(path.join(ROOT, 'assets/js/modules/m13-administration.js'), 'utf8')), JSON.stringify([garde.nouveaux.slice(0, 2), garde.disparus.slice(0, 2)]));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CLO-2 C6 FIN */
+
+
 
 
 

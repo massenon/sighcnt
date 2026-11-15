@@ -31,9 +31,9 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
   String get regle =>
       'Cet écran oriente, il ne valide jamais en masse : la validation est un geste humain, porté à son poste, le biologiste au laboratoire, le comptable au journal, la DA sur le bon, la Direction à l’écran du référentiel. Les comptes de la liste des référentiels sont relus dans le magasin à chaque affichage ; chaque profil n’y voit que les familles de son ressort, et la Direction ne signe jamais à la place d’un professionnel nommé.';
 
-  /// Les sept profils qui ouvraient déjà le centre gardent tout ce qu'ils y voyaient ; le biologiste, l'échographiste et les praticiens du bloc n'y voient
-  /// QUE les familles de référentiels de leur rôle.
-  static const _elargis = ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'];
+  /// Lot CLO-2 (C6) : voir toutes les files est un DROIT de la fiche RBAC (`voir_toutes_les_validations`, d'origine les sept profils qui ouvraient déjà le centre) ; les autres
+  /// (biologiste, échographiste, praticiens du bloc) n'y voient QUE les familles de référentiels de leur rôle. Plus de liste de rôles écrite ici.
+  static const _geste = 'voir_toutes_les_validations';
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
       // Le compte d'une famille est LU dans le magasin : toute collection qu'elle lit rafraîchit le centre.
       ...valCollectionsLues(),
     ];
-    final restreint = !_elargis.contains(c.role);
+    final restreint = !(c.donnees?.matrice.droitGeste(c.role, _geste) ?? false);
     final vp = ValidationPoste(c);
     return ListenableBuilder(
         listenable: Listenable.merge([for (final n in noms) m.collection(n)]),
