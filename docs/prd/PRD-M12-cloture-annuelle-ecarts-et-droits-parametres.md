@@ -1,6 +1,6 @@
 # PRD : clôture annuelle et passage à N+1, écarts mesurés, et droits sans rôle écrit en dur
 
-Statut : **livré en partie** (lot CLO, 14/11/2026) : C0 à C4 faits, C5 non fait (E3 mesuré), C6 commencé ; voir les sections 8 et 9. Brouillon du 11/11/2026, réponses de la Direction en section 6
+Statut : **livré en partie** (lots CLO et CLO-2, 14 et 15/11/2026) : C0 à C5 faits, C6 en cours (85 sites restants) ; voir les sections 8 et 9. Brouillon du 11/11/2026, réponses de la Direction en section 6
 Sources : texte de spécification fourni par la Direction le 11/11/2026 (clôture annuelle, réouverture réservée au comptable, archive SYSCOHADA révisé / DGI Bénin, navigation N, N-1, N+1) · `PRD-M12-cloture-exercice.md` et vague 69 (moteur `SIGH.exercice`) · relecture du code de la maquette faite dans cette session (`parcours.js` 3260 à 3660, `api/cron.php`, `m12-comptabilite.js`)
 
 Ce PRD n'est pas écrit avec l'outil `sdlc-kit` (aucun coffre `.sdlc` dans le dépôt) : il suit la forme des PRD de `docs/prd/`.
@@ -136,8 +136,8 @@ Observation hors lot : la colonne « Exercice en cours » du compte de résultat
 | C2 | EF-CLO-2, 3, 7 : boutons de pas, bandeau, encadré, colonnes N et N-1 | **fait** à la maquette (les boutons et le bandeau existaient : le PRD se trompait, E7 était « lu ») ; la colonne N-1 du compte de résultat est ajoutée à la maquette ET au poste ; le sélecteur ‹ Exercice N › du poste existait déjà ; le bandeau d'état du socle n'est pas porté au poste (inchangé) | scénario « Vague 181 », test `m12_etats_test` |
 | C3 | EF-CLO-4 : soldes d'ouverture et de clôture du grand livre | **fait**, maquette et poste | « Vague 181 », vecteurs `soldesGL`, test du poste |
 | C4 | EF-CLO-1, EF-CLO-6, E1, E2, E10 : ouverture automatique, journaux CL et AN retirés de la saisie | **fait**, maquette, serveur de la maquette et poste | scénario « Vague 182 » (8), « Vague 179 », vecteurs `ouverture` |
-| C5 | EF-CLO-5, E3, E13 : postes appairés | **NON FAIT** : l'écart E3 est **confirmé** par la lecture du code et **mesuré** par un test du poste (`appliquerDistante` ne passe par aucune garde : la mère applique au rejeu la pièce d'un exercice clos) ; le refus nommé au rejeu, l'avertissement avant « Démarrer la clôture » et le banc à deux postes restent à écrire | test « E3 MESURE » du poste, une cible laissée en test sauté |
-| C6 | migration des listes de rôles en dur | **commencé** : M12 (clôture, comptes de résultat, notifications de clôture) est migré, 95 sites inscrits avant, 86 après ; les 86 restants sont listés et plafonnés par la garde | `build/garde-roles-en-dur.liste.json` |
+| C5 | EF-CLO-5, E3, E13 : postes appairés | **fait au lot CLO-2** (poste et mère Dart ; la maquette n'a pas de fileul) : refus nommé au rejeu par la mère (`exercice_clos`, `exercice_en_cloture`), statut des exercices synchronisé, avertissement non bloquant avant « Démarrer la clôture » (délai réglable, 24 h), banc à deux postes | `cloture_rejeu_sync_test.dart` (vraie mère), `m12_exercice_test.dart`, mutations rouges |
+| C6 | migration des listes de rôles en dur | **en cours** : M12 (clôture, comptes de résultat, notifications) puis le centre « Validations en attente » de M13 sont migrés, 95 sites inscrits avant, 85 après CLO-2 ; les 85 restants sont listés et plafonnés par la garde | `build/garde-roles-en-dur.liste.json` |
 
 **Décisions prises** (aucune n'est une décision de la Direction, toutes sont à confirmer, voir `DECISIONS-A-VALIDER.md` section AG) :
 
