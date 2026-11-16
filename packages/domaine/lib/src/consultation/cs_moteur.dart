@@ -1018,7 +1018,11 @@ PrixProduit csPrixProduitALaDate(ReferentielTarifs h, FicheCs prod, String jour)
   final h = csReferentielTarifs(s);
   // Un examen ABSENT du catalogue n'est pas une ligne sans prix : refusé en le nommant, avant toute écriture. Un examen du catalogue SANS TARIF se prescrit (lot
   // TARIF-FIX-2) : la ligne dit « prix à définir » et seule la caisse l'attend.
-  final inconnus = codes.where((c) => !catalogue.any((x) => x['code'] == c)).toList();
+  final inconnus = codes.where((c) {
+    if (catalogue.any((x) => x['code'] == c)) return false;
+    final t = csTarifPrix(s, c, assure, date: date, referentiel: h);
+    return !(t.montant != null && t.montant! > 0);
+  }).toList();
   if (inconnus.isNotEmpty) {
     throw RefusCs('Examen absent du catalogue d’imagerie : ${inconnus.join(', ')}. Choisir l’examen dans le catalogue d’imagerie (ou l’y créer).', 'EXAMEN_INCONNU');
   }

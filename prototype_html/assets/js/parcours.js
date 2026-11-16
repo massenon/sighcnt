@@ -521,7 +521,8 @@
     if (!rec) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Réessayer ; le refus est au journal.');
     D.TARIFS.invalider();
     /* Une création n'a rien à projeter (la fiche porte déjà ce prix) ; une validation en un geste met la fiche au pas. */
-    if (!creation && valide) { leverMarquageTarif(code); S.projeterTarifs(); }
+    /* LOT TARIF-FIX-2 : un prix d'achat validé en un geste VALORISE aussitôt les pièces en attente dont la date est couverte. */
+    if (!creation && valide) { leverMarquageTarif(code); S.projeterTarifs(); valoriserEnAttente(); }
     return { ok: true, version: rec.record, identite: identite ? identite.record : null, creation: creation, valideeEnUnGeste: !creation && valide };
   }
 
@@ -1729,9 +1730,14 @@
     var assure = carteValide(p, date);
     var col_ = S.collection('demandesImagerie', { module: 'M2', entite: 'demande d’imagerie', prefix: 'IME' });
 
-    /* Un examen ABSENT du catalogue d'imagerie n'est pas une ligne sans prix : c'est une demande qui ne désigne rien. Refusée en le nommant, avant toute écriture.
-       Un examen du catalogue SANS TARIF, lui, se prescrit (lot TARIF-FIX-2) : la ligne dit « prix à définir » et seule la caisse l'attend. */
-    var inconnus = codes.filter(function (code) { return !examenImagerieParCode(code); });
+    /* Un code ABSENT du catalogue d'imagerie ET sans tarif n'est pas une ligne sans prix : c'est une demande qui ne désigne rien. Refusée en le nommant, avant toute
+       écriture (elle l'était déjà, sous « Tarif non renseigné »). Un code hors catalogue mais tarifé à la grille se prescrit comme avant ; un examen du catalogue SANS
+       TARIF se prescrit (lot TARIF-FIX-2) : la ligne dit « prix à définir » et seule la caisse l'attend. */
+    var inconnus = codes.filter(function (code) {
+      if (examenImagerieParCode(code)) return false;
+      var t = D.tarifPrix ? D.tarifPrix(code, carteValide(p, date), date) : { montant: null };
+      return !(t.montant != null && Number(t.montant) > 0);
+    });
     if (inconnus.length) {
       var refusEx = new Error('Examen absent du catalogue d’imagerie : ' + inconnus.join(', ') + '. Choisir l’examen dans le catalogue d’imagerie (ou l’y créer).');
       refusEx.code = 'EXAMEN_INCONNU';
