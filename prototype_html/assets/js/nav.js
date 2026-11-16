@@ -228,6 +228,11 @@
        réglage réservé à l'administrateur et à la DAF a son DROIT PROPRE ; d'origine l'administrateur et la Directrice Administrative, PROPOSITION À VALIDER. Il ne donne aucun écran. */
     { id: 'regler_parametres_clinique', libelle: 'Régler les paramètres de clinique (préavis de péremption, tranches de la balance âgée)', module: 'CFG', ecran: 'cfg-regles',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot CLO-3 (Direction, 16/11/2026, section AH point 3 et AQ point 1) : VALIDER une commande de stock gros (RG-04) est un DROIT de la fiche RBAC par rôle, jamais un nom écrit dans le
+       moteur ni dans l'écran. D'ORIGINE la Directrice Administrative SEULE (l'administrateur et la Direction ne l'ont plus : ils ne valident pas à sa place) ; la fiche l'étend à un autre
+       rôle. Le moteur revérifie (refus nommé qui cite le droit) ; la commande est ABSENTE sans le droit ; le validateur enregistré est l'agent de la session. */
+    { id: 'valider_commande_stock', libelle: 'Valider une commande de stock gros (RG-04) avant sa transmission au fournisseur', module: 'M7', ecran: 'm7-commandes',
+      rolesDefaut: ['da'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

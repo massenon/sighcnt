@@ -81,7 +81,7 @@
   "_doc": "Les quatre vues de m7-besoins par profil : onglets visibles (avec leur compte), KPI, ruban du circuit, première page de chaque onglet (tri date décroissant) et commandes de la première ligne.",
   "bons": [
    {
-    "id": "BESxmvvapgi8eg4sv",
+    "id": "BESxmvux6z5xsokq2",
     "statut": "actif",
     "reference": "BEB-2099-0005",
     "date": "2099-01-05",
@@ -103,7 +103,7 @@
     "montantEstime": 6500
    },
    {
-    "id": "BESxmvvapgi8f84kl",
+    "id": "BESxmvux6z5xy1596",
     "statut": "actif",
     "reference": "BEB-2099-0004",
     "date": "2099-01-04",
@@ -125,7 +125,7 @@
     "montantEstime": 250
    },
    {
-    "id": "BESxmvvapgi8z57de",
+    "id": "BESxmvux6z5xvbyxt",
     "statut": "actif",
     "reference": "BEB-2099-0003",
     "date": "2099-01-03",
@@ -147,7 +147,7 @@
     "montantEstime": 500
    },
    {
-    "id": "BESxmvvapgi8hs4z0",
+    "id": "BESxmvux6z5xe2snw",
     "statut": "actif",
     "reference": "BEB-2099-0002",
     "date": "2099-01-02",
@@ -169,7 +169,7 @@
     "montantEstime": 4000
    },
    {
-    "id": "BESxmvvapgi7j6ewo",
+    "id": "BESxmvux6z5w2qg11",
     "statut": "actif",
     "reference": "BEB-2099-0001",
     "date": "2099-01-01",
@@ -2242,7 +2242,7 @@
      "Observation (facultative)"
     ],
     "avant": {
-     "id": "BESxmvvapiq18zf0s",
+     "id": "BESxmvux71db0hfyi",
      "statut": "actif",
      "reference": "BEB-2098-0101",
      "date": "2098-01-01",
@@ -2273,7 +2273,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvvapiq18zf0s",
+     "id": "BESxmvux71db0hfyi",
      "statut": "actif",
      "reference": "BEB-2098-0101",
      "date": "2098-01-01",
@@ -2343,7 +2343,7 @@
      "Observation (facultative)"
     ],
     "avant": {
-     "id": "BESxmvvapiz0m3jfo",
+     "id": "BESxmvux71m3f1b47",
      "statut": "actif",
      "reference": "BEB-2098-0102",
      "date": "2098-01-01",
@@ -2374,7 +2374,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvvapiz0m3jfo",
+     "id": "BESxmvux71m3f1b47",
      "statut": "actif",
      "reference": "BEB-2098-0102",
      "date": "2098-01-01",
@@ -2444,7 +2444,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvvapj8ar6mfh",
+     "id": "BESxmvux71v1opx5s",
      "statut": "actif",
      "reference": "BEB-2098-0103",
      "date": "2098-01-01",
@@ -2475,7 +2475,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvvapj8ar6mfh",
+     "id": "BESxmvux71v1opx5s",
      "statut": "actif",
      "reference": "BEB-2098-0103",
      "date": "2098-01-01",
@@ -2528,7 +2528,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvvapjhufi6sw",
+     "id": "BESxmvux7243ugels",
      "statut": "actif",
      "reference": "BEB-2098-0104",
      "date": "2098-01-01",
@@ -2559,7 +2559,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvvapjhufi6sw",
+     "id": "BESxmvux7243ugels",
      "statut": "actif",
      "reference": "BEB-2098-0104",
      "date": "2098-01-01",
@@ -2609,7 +2609,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvvapjrkfbpnj",
+     "id": "BESxmvux72d7205cx",
      "statut": "actif",
      "reference": "BEB-2098-0105",
      "date": "2098-01-01",
@@ -2640,7 +2640,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvvapjrkfbpnj",
+     "id": "BESxmvux72d7205cx",
      "statut": "actif",
      "reference": "BEB-2098-0105",
      "date": "2098-01-01",
@@ -2693,7 +2693,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvvapk16pvprg",
+     "id": "BESxmvux72m4eqtat",
      "statut": "actif",
      "reference": "BEB-2098-0106",
      "date": "2098-01-01",
@@ -2724,7 +2724,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvvapk16pvprg",
+     "id": "BESxmvux72m4eqtat",
      "statut": "actif",
      "reference": "BEB-2098-0106",
      "date": "2098-01-01",
@@ -2770,7 +2770,7 @@
    {
     "quoi": "versCommande",
     "avant": {
-     "id": "BESxmvvapkb0muixe",
+     "id": "BESxmvux72v10057l",
      "statut": "actif",
      "reference": "BEB-2097-0107",
      "date": "2097-01-01",
@@ -2793,7 +2793,7 @@
      "preparePar": "MAMAN Zoukanéri"
     },
     "apres": {
-     "id": "BESxmvvapkb0muixe",
+     "id": "BESxmvux72v10057l",
      "statut": "actif",
      "reference": "BEB-2097-0107",
      "date": "2097-01-01",
@@ -2824,7 +2824,7 @@
    {
     "quoi": "distribuer",
     "avant": {
-     "id": "BESxmvvapkko1i0er",
+     "id": "BESxmvux7340yhl3t",
      "statut": "actif",
      "reference": "BEB-2097-0108",
      "date": "2097-01-01",
@@ -2847,7 +2847,7 @@
      "distribuePar": "MAMAN Zoukanéri"
     },
     "apres": {
-     "id": "BESxmvvapkko1i0er",
+     "id": "BESxmvux7340yhl3t",
      "statut": "actif",
      "reference": "BEB-2097-0108",
      "date": "2097-01-01",
@@ -2933,7 +2933,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvvapl1a8p5zh",
+     "id": "BESxmvux73joxuhtr",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Laboratoire",
@@ -3008,7 +3008,7 @@
     "optionsEtape": null,
     "lignesAffichees": 2,
     "bon": {
-     "id": "BESxmvvaplckig64k",
+     "id": "BESxmvux73u1w9ic2",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Hospitalisation",
@@ -3096,7 +3096,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvvaplndlg2hs",
+     "id": "BESxmvux743cdxfd0",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Administration",
@@ -3176,7 +3176,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvvaplxgqqtj4",
+     "id": "BESxmvux74cmxgco4",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Maternité",
@@ -3257,7 +3257,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvvapm7ja2b92",
+     "id": "BESxmvux74lou2a3z",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Maternité",
@@ -3463,7 +3463,7 @@
   {
    "nom": "étape portée à « Validation DA » : le validateur est posé (E73)",
    "avant": {
-    "id": "BESxmvvapn213midj",
+    "id": "BESxmvux75f6ikdxv",
     "statut": "actif",
     "reference": "BEB-2095-0109",
     "date": "2099-12-31",
@@ -3498,7 +3498,7 @@
     "etape": "validation_da"
    },
    "apres": {
-    "id": "BESxmvvapn213midj",
+    "id": "BESxmvux75f6ikdxv",
     "statut": "actif",
     "reference": "BEB-2095-0109",
     "date": "2099-12-31",
@@ -3533,7 +3533,7 @@
   {
    "nom": "étape portée à « Validation DA », validateur déjà connu : conservé",
    "avant": {
-    "id": "BESxmvvapnc5lmpj7",
+    "id": "BESxmvux75p0saz5k",
     "statut": "actif",
     "reference": "BEB-2095-0110",
     "date": "2099-12-31",
@@ -3569,7 +3569,7 @@
     "etape": "validation_da"
    },
    "apres": {
-    "id": "BESxmvvapnc5lmpj7",
+    "id": "BESxmvux75p0saz5k",
     "statut": "actif",
     "reference": "BEB-2095-0110",
     "date": "2099-12-31",
@@ -3604,7 +3604,7 @@
   {
    "nom": "étape ramenée à « Brouillon » : rien de posé",
    "avant": {
-    "id": "BESxmvvapnmwficy5",
+    "id": "BESxmvux75yxm4spp",
     "statut": "actif",
     "reference": "BEB-2095-0111",
     "date": "2099-12-31",
@@ -3640,7 +3640,7 @@
     "motif": "Revu"
    },
    "apres": {
-    "id": "BESxmvvapnmwficy5",
+    "id": "BESxmvux75yxm4spp",
     "statut": "actif",
     "reference": "BEB-2095-0111",
     "date": "2099-12-31",

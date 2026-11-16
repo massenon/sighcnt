@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../m14/commun_m14.dart' show libelleRole;
 import 'besoins_commun.dart';
 
 /// Le bon de commande imprimé : le total est celui de SES lignes, refait à l'impression — la commande engage la clinique.
@@ -44,12 +45,24 @@ PieceA4 pieceCommande(Fiche cm,
             somme: (l) => n(l['montant'])),
       ], lignes: lignesDeBonAchat(cm))),
     ],
-    signatures: const [
-      Signature('Le Gestionnaire de Stock', nom: 'MAMAN Zoukanéri'),
-      Signature('La Directrice Administrative',
-          nom: directriceAdministrative, mention: 'Bon pour commande (RG-04)'),
+    signatures: [
+      const Signature('Le Gestionnaire de Stock', nom: 'MAMAN Zoukanéri'),
+      Signature('Validation de la commande',
+          nom: cm['valideePar'] == null ? null : '${cm['valideePar']}', mention: 'Bon pour commande (RG-04)'),
     ],
   );
+}
+
+/// Le droit de valider une commande de stock gros (RG-04) : geste réservé de la fiche RBAC (d'origine la Directrice Administrative seule), jamais un nom de rôle.
+bool _peutValider(ContexteEcran c) => c.donnees?.matrice.droitGeste(c.role, gesteValiderCommandeStock) ?? false;
+
+/// Les libellés des rôles qui détiennent le droit (liste DÉRIVÉE du droit, comme `libellesValidentCommandeStock` de la maquette).
+String _valideurs(ContexteEcran c) {
+  final n = [
+    for (final r in c.donnees?.matrice.matriceGestes.rolesAvec(gesteValiderCommandeStock) ?? const <String>[]) libelleRole(c.magasin, r)
+  ];
+  if (n.isEmpty) return 'aucun rôle';
+  return n.length > 1 ? '${n.sublist(0, n.length - 1).join(', ')} ou ${n.last}' : n.first;
 }
 
 /// `m7-commandes` — « Bons de commande » : RG-04, toute commande d'achat de stock gros est validée par la Directrice Administrative AVANT transmission
@@ -62,11 +75,11 @@ class EcranCommandes extends StatelessWidget with EcranMaquette {
 
   @override
   String get description =>
-      'Commandes fournisseurs, validation par la Directrice Administrative et transmission.';
+      'Commandes fournisseurs, validation (RG-04) et transmission.';
 
   @override
   String get regle =>
-      'RG-04 — toute commande d’achat de stock gros doit être validée par la Directrice Administrative avant transmission au fournisseur.';
+      'RG-04 — toute commande d’achat de stock gros doit être validée (geste réservé « Valider une commande de stock gros » de la fiche du rôle) avant transmission au fournisseur.';
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +97,7 @@ class EcranCommandes extends StatelessWidget with EcranMaquette {
             children: [
               if (attente.isNotEmpty) ...[
                 NoteSigh(
-                    '${attente.length} commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).',
+                    '${attente.length} commande(s) en attente de validation (${_valideurs(c)}). Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).',
                     ton: TonSigh.attention,
                     icone: LucideIcons.shieldAlert),
                 const SizedBox(height: 16),
@@ -191,11 +204,11 @@ class EcranCommandes extends StatelessWidget with EcranMaquette {
                       icone: LucideIcons.eye,
                       libelle: 'Consulter',
                       onPressed: () => _consulter(context, x)),
-                  // LA VALIDATION RG-04 EST L'ACTE DE LA DIRECTRICE ADMINISTRATIVE — mais la maquette l'offre à tout profil qui écrit dans M7 (E72).
-                  if (x['statutCommande'] == 'attente_validation' && c.droit.editer)
+                  // LA VALIDATION RG-04 EST UN GESTE RÉSERVÉ (`valider_commande_stock`) : ABSENTE sans le droit, le moteur refuse aussi.
+                  if (x['statutCommande'] == 'attente_validation' && _peutValider(c))
                     BoutonIcone(
                         icone: LucideIcons.shieldCheck,
-                        libelle: 'Valider (DA)',
+                        libelle: 'Valider la commande',
                         onPressed: () => _valider(context, x)),
                   BoutonIcone(
                       icone: LucideIcons.printer,
@@ -227,11 +240,21 @@ Future<void> _valider(BuildContext ecran, Fiche cm) async {
           'En application de la règle RG-04, cette validation autorise la transmission au fournisseur ${cm['fournisseurNom']} pour un montant de ${money(cm['montant'])}. L’opération est journalisée.',
       libelleOk: 'Valider la commande');
   if (!ok || !ecran.mounted) return;
-  final annuler = c.magasin
-      .collection('commandes')
-      .mettreAJour(cm['id'], validationCommande(jour: iso(c.aujourdhui)));
-  dire(ecran, 'Commande validée par la Directrice Administrative.',
-      type: TypeToast.succes, annuler: annuler);
+  final Fiche patch;
+  try {
+    patch = validationCommande(
+        commande: c.magasin.collection('commandes').parId(cm['id']),
+        jour: iso(c.aujourdhui),
+        agent: acteur(c).nom,
+        gesteAccorde: _peutValider(c),
+        libelleRole: libelleRole(c.magasin, c.role),
+        valideurs: _valideurs(c));
+  } on RefusAchat catch (e) {
+    dire(ecran, e.motif, type: TypeToast.erreur);
+    return;
+  }
+  final annuler = c.magasin.collection('commandes').mettreAJour(cm['id'], patch);
+  dire(ecran, 'Commande validée par ${patch['valideePar']}.', type: TypeToast.succes, annuler: annuler);
 }
 
 void _consulter(BuildContext ecran, Fiche cm) {
@@ -260,8 +283,8 @@ void _consulter(BuildContext ecran, Fiche cm) {
         ]),
         if (cm['statutCommande'] == 'attente_validation') ...[
           const SizedBox(height: 16),
-          const NoteSigh(
-              'Cette commande ne peut être transmise au fournisseur tant que la Directrice Administrative ne l’a pas validée (RG-04).',
+          NoteSigh(
+              'Cette commande ne peut être transmise au fournisseur tant qu’elle n’est pas validée (RG-04 : ${_valideurs(c)}).',
               ton: TonSigh.attention,
               icone: LucideIcons.shieldAlert),
         ],
@@ -278,9 +301,9 @@ void _consulter(BuildContext ecran, Fiche cm) {
             ], lignes: lignesDeBonAchat(cm))),
       ]),
       pied: (fermer) => [
-            if (cm['statutCommande'] == 'attente_validation' && c.droit.editer)
+            if (cm['statutCommande'] == 'attente_validation' && _peutValider(c))
               BoutonSigh(
-                  libelle: 'Valider (DA)',
+                  libelle: 'Valider la commande',
                   icone: LucideIcons.shieldCheck,
                   variante: VarianteBouton.succes,
                   onPressed: () {
@@ -378,7 +401,8 @@ class _EtatModaleCommande extends State<_ModaleCommande> {
           existante: widget.record,
           fournisseurs: c.magasin.collection('fournisseurs').actives,
           commandes: col.toutes,
-          jour: iso(c.aujourdhui));
+          jour: iso(c.aujourdhui),
+          valideurs: _valideurs(c));
     } on RefusAchat catch (e) {
       dire(widget.ecran, e.motif, type: TypeToast.erreur);
       return;

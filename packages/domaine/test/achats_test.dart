@@ -280,15 +280,45 @@ void main() {
     final produits = liste(cmd['produits']);
     final fournisseurs = liste(rec['fournisseurs']);
     final jour = '${cmd['jour']}';
+    const valideurs = 'Directrice de l’Administration et des Finances (DAF)';
     for (final v in liste(cmd['validations'])) {
       test('validation par ${v['role']}', () {
-        if (v['apres'] == null) return; // le geste n'est pas offert à ce profil : il n'y a rien à rejouer
         final avant = (v['avant']! as Map).cast<String, Object?>();
-        memes({...avant, ...validationCommande(jour: jour)}, v['apres'], 'commande');
         expect(avant['statutCommande'], 'attente_validation');
-        expect(liste(v['toasts']).first['message'], 'Commande validée par la Directrice Administrative.');
+        final offert = (v['actions'] as List).contains('Valider la commande');
+        // Le geste est un DROIT de la fiche RBAC (d'origine la DAF seule) : la commande est ABSENTE sans lui, et le moteur refuse aussi.
+        expect(offert, v['role'] == 'da');
+        if (!offert) {
+          expect(v['apres'], isNull);
+          expect(
+              () => validationCommande(commande: avant, jour: jour, agent: 'X', gesteAccorde: false, libelleRole: '${v['role']}', valideurs: valideurs),
+              throwsA(isA<RefusAchat>().having((e) => e.motif, 'motif', contains('VALIDATION_COMMANDE_RESERVEE'))));
+          return;
+        }
+        final patch = validationCommande(commande: avant, jour: jour, agent: 'TAKI Alimatou', gesteAccorde: true, libelleRole: 'DAF', valideurs: valideurs);
+        memes({...avant, ...patch}, v['apres'], 'commande');
+        expect(liste(v['toasts']).first['message'], 'Commande validée par ${patch['valideePar']}.');
       });
     }
+    test('le refus de validation dit le droit, et une validation posée ne se réécrit pas', () {
+      String refus() {
+        try {
+          validationCommande(commande: {'statutCommande': 'attente_validation'}, jour: jour, agent: 'X', gesteAccorde: false, libelleRole: 'Comptable', valideurs: valideurs);
+        } on RefusAchat catch (x) {
+          return x.motif;
+        }
+        return '';
+      }
+
+      expect(refus(), contains('Valider une commande de stock gros'));
+      expect(refus(), contains(valideurs));
+      for (final c in [
+        {'statutCommande': 'validee', 'valideePar': 'A', 'reference': 'BC'},
+        {'statutCommande': 'brouillon', 'reference': 'BC'},
+      ]) {
+        expect(() => validationCommande(commande: c, jour: jour, agent: 'X', gesteAccorde: true, libelleRole: 'DAF', valideurs: valideurs), throwsA(isA<RefusAchat>()));
+      }
+    });
     final serie = <M>[
       for (final r in (cmd['serieBC'] as List).take(15)) {'reference': r}
     ];
@@ -313,7 +343,7 @@ void main() {
         M? obtenue;
         try {
           obtenue = commandeEnregistree(
-              saisie: form, lignes: lignes, fournisseurs: fournisseurs, commandes: serie, jour: jour);
+              saisie: form, lignes: lignes, fournisseurs: fournisseurs, commandes: serie, jour: jour, valideurs: valideurs);
         } on RefusAchat catch (e) {
           refus.add(e.motif);
         }
@@ -334,13 +364,22 @@ void main() {
           ...(m['defauts']! as Map).cast<String, Object?>(),
           'statutCommande': m['statut'],
         };
-        final patch = commandeEnregistree(
-            saisie: form,
-            lignes: liste(avant['lignes']),
-            existante: avant,
-            fournisseurs: fournisseurs,
-            commandes: serie,
-            jour: jour);
+        Map<String, Object?> patch;
+        try {
+          patch = commandeEnregistree(
+              saisie: form,
+              lignes: liste(avant['lignes']),
+              existante: avant,
+              fournisseurs: fournisseurs,
+              commandes: serie,
+              jour: jour,
+              valideurs: valideurs);
+        } on RefusAchat catch (e) {
+          // Refusée : rien n'est écrit, la commande reste telle qu'elle était, le message est celui de la maquette.
+          expect(e.motif, liste(m['toasts']).first['message']);
+          memes(avant, (m['apres']! as Map).cast<String, Object?>(), 'commande');
+          return;
+        }
         memes({...avant, ...patch}, (m['apres']! as Map).cast<String, Object?>(), 'commande');
         expect(patch['reference'], isNull);
       });

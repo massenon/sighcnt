@@ -84,6 +84,7 @@ function verifier(libelle, condition, detail) {
 async function etape(bloc) {
   try { await bloc(); }
   catch (e) {
+    if (process.env.SIGH_DBG) console.log(String(e && e.stack));
     const message = String((e && e.message) || e).split('\n')[0];
     if (!courant) scenario('(exception avant tout scenario())');
     verifier('Le scénario s’exécute sans erreur', false, message);
@@ -22872,7 +22873,9 @@ async function viderMessages(page) {
     await T.produit({ code: pd, designation: 'Médicament D sonde 139', prixAchat: 70, stockDetail: 2 });
     const commande = (ref, lignes) => page.evaluate((r, ls, jour) => { const S = window.SIGH.store; const ps = S.collection('produits').all();
       const L = ls.map((l) => { const p = ps.filter((x) => x.code === l.code)[0]; return { produitId: p.id, produit: p.designation, unite: p.unite, quantite: l.quantite, prixUnitaire: l.prix }; });
-      const rec = S.collection('commandes', { module: 'M7', entite: 'BonCommande' }).insert({ reference: r, date: jour, fournisseur: 'ZZ139', fournisseurNom: 'Fournisseur sonde 139', montant: L.reduce((t, l) => t + l.quantite * l.prixUnitaire, 0), lignes: L, statutCommande: 'validee', valideePar: 'TAKI Alimatou', sondeT5b: true });
+      const rec = S.collection('commandes', { module: 'M7', entite: 'BonCommande' }).insert({ reference: r, date: jour, fournisseur: 'ZZ139', fournisseurNom: 'Fournisseur sonde 139', montant: L.reduce((t, l) => t + l.quantite * l.prixUnitaire, 0), lignes: L, statutCommande: 'brouillon', sondeT5b: true });
+      /* lot CLO-3 (RG-04) : un statut validé ne s'écrit pas sans le geste ; l'état de départ de la sonde est posé à même la fiche, comme la semence */
+      if (rec && rec.record) Object.assign(rec.record, { statutCommande: 'validee', valideePar: 'TAKI Alimatou' });
       return rec.record.id; }, ref, lignes, D.aujourdhui);
     const etat = (code) => page.evaluate((c, jour) => { const S = window.SIGH.store, PR = window.SIGH.parcours; const p = S.collection('produits').all().filter((x) => x.code === c)[0];
       const v = S.collection('versionsTarif').all().filter((x) => x.code === c).sort((a, b) => a.version - b.version).map((x) => ({ version: x.version, statut: x.statut, achat: x.prixNonAssure, dateEffet: x.dateEffet || null, motif: x.motif, source: x.source || null }));
@@ -28262,9 +28265,107 @@ async function viderMessages(page) {
 
 
 
+  /* LOT CLO-3 DEBUT (Vagues 210 à 219) : commande de stock gros en geste réservé, rôles en dur migrés, exercice du jour, continuité (Direction, 16/11/2026, sections AH, AL, AQ) */
+  await etape(async () => {
+    scenario('Vague 210 : lot CLO-3 point 1, RG-04 : valider une commande de stock gros est le geste réservé `valider_commande_stock` (la Directrice Administrative SEULE d’origine, extensible par la fiche RBAC), commande ABSENTE sans le droit, moteur qui refuse en citant le droit, validateur = l’agent de la session (jamais un nom écrit), statut « Validée », « Transmise », « Livrée » ou « Soldée » refusé au formulaire tant que la validation n’est pas posée par le geste');
+    erreursJS = [];
+    const DA210 = { role: 'da', nom: 'AGENTE Da210', nomComplet: 'AGENTE Da210', fonction: 'da', identifiant: 's210.da', secteur: 'DIR' };
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN210', nomComplet: 'ADMIN210', fonction: 'direction', identifiant: 's210.admin0', secteur: 'DIR' });
+    await ouvrir('m7-commandes.html');
+    const c210 = await page.evaluate(() => { try {
+      const S = window.SIGH.store, col = S.collection('commandes');
+      const lg = [{ produitId: 'PRD0001', produit: 'ABAISSE LANGUE', unite: 'Unité', quantite: 2, prixUnitaire: 100, montant: 200 }];
+      const mk = (ref, st) => col.insert({ reference: ref, date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), fournisseur: 'CAME', fournisseurNom: 'CAME', lignes: lg, montant: 200, statutCommande: st, delaiLivraison: 7 }).record;
+      const a = mk('BC-S210-A', 'attente_validation'), b = mk('BC-S210-B', 'brouillon'), c = mk('BC-S210-C', 'attente_validation');
+      const N = window.SIGH.nav;
+      return { a: a.id, b: b.id, c: c.id, detenteurs: N.rolesAvecGeste('valider_commande_stock').slice().sort(), geste: !!N.geste('valider_commande_stock') };
+    } catch (e) { return { erreur: String(e && e.stack || e) }; } });
+    await attendreEcritures();
+    verifier('Le geste réservé est au manifeste et détenu D’ORIGINE par la Directrice Administrative SEULE (ni l’administrateur ni la Direction)',
+      c210.geste && JSON.stringify(c210.detenteurs) === JSON.stringify(['da']), JSON.stringify(c210));
+    /* la DA voit la commande (icône Valider la commande) ; elle valide : l'agent de la SESSION est enregistré */
+    await poserSessionServeur(DA210);
+    await ouvrir('m7-commandes.html');
+    const voitDA = await page.evaluate((id) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('BC-S210-A') >= 0);
+      return { bouton: !!tr && [...tr.querySelectorAll('button')].some((b) => /Valider la commande/.test(b.getAttribute('title') || b.getAttribute('aria-label') || '')) };
+    }, c210.a);
+    const valide = await page.evaluate((id) => {
+      const PR = window.SIGH.parcours, S = window.SIGH.store;
+      const r = PR.validerCommandeStock(id);
+      const c = S.collection('commandes').get(id);
+      const j = S.collection('audit').all().filter((x) => /Commande de stock gros validée/.test(x.action || '') && x.cible === id || /Commande de stock gros validée/.test(x.action || '')).length;
+      return { ok: r.ok, par: c.valideePar, st: c.statutCommande, date: c.dateValidation, journal: j };
+    }, c210.a);
+    verifier('La DA a la commande À l’écran ; elle valide : « Validée », validateur = l’AGENT de la session (« AGENTE Da210 », jamais « TAKI Alimatou » écrit), date du jour, une ligne de journal RG-12',
+      voitDA.bouton && valide.ok && valide.st === 'validee' && valide.par === 'AGENTE Da210' && valide.par !== 'TAKI Alimatou' && !!valide.date && valide.journal >= 1, JSON.stringify({ voitDA, valide }));
+    /* admin et Direction : commande ABSENTE, le moteur refuse en citant le droit */
+    const refusPar = {};
+    for (const role of ['admin', 'direction']) {
+      await poserSessionServeur({ role, nom: role.toUpperCase() + '210', nomComplet: role.toUpperCase() + '210', fonction: role, identifiant: 's210.' + role, secteur: 'DIR' });
+      await ouvrir('m7-commandes.html');
+      refusPar[role] = await page.evaluate((id) => {
+        const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('BC-S210-C') >= 0);
+        const r = window.SIGH.parcours.validerCommandeStock(id);
+        return { ligne: !!tr, bouton: !!tr && [...tr.querySelectorAll('button')].some((b) => /Valider/.test(b.getAttribute('title') || b.getAttribute('aria-label') || '')), code: r.code, droit: r.droit, geste: r.geste,
+          statut: window.SIGH.store.collection('commandes').get(id).statutCommande };
+      }, c210.c);
+    }
+    verifier('L’administrateur et la Direction : commande « Valider » ABSENTE de la ligne, et le MOTEUR refuse (VALIDATION_COMMANDE_RESERVEE, qui cite le droit et dit à qui demander) ; la commande reste « en attente »',
+      ['admin', 'direction'].every((r) => refusPar[r].ligne && !refusPar[r].bouton && refusPar[r].code === 'VALIDATION_COMMANDE_RESERVEE' && refusPar[r].droit === 'valider_commande_stock' && /Directrice/.test(refusPar[r].geste) && refusPar[r].statut === 'attente_validation'), JSON.stringify(refusPar));
+    /* le formulaire : « Transmise » sur une commande jamais validée est refusé, rien n'est écrit ; la garde de la collection refuse aussi une écriture directe */
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN210', nomComplet: 'ADMIN210', fonction: 'direction', identifiant: 's210.admin', secteur: 'DIR' });
+    await ouvrir('m7-commandes.html');
+    const direct = await page.evaluate((o) => {
+      const col = window.SIGH.store.collection('commandes');
+      const tentatives = {};
+      ['validee', 'transmise', 'livree', 'soldee'].forEach((st) => { tentatives[st] = col.update(o.b, { statutCommande: st }) ? 'ACCEPTEE' : 'refusee'; });
+      tentatives.validateur = col.update(o.b, { valideePar: 'Quelqu’un' }) ? 'ACCEPTEE' : 'refusee';
+      tentatives.insertion = col.insert({ reference: 'BC-S210-D', date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), fournisseur: 'CAME', lignes: [], montant: 0, statutCommande: 'validee' }) ? 'ACCEPTEE' : 'refusee';
+      const b = col.get(o.b);
+      const figee = col.update(o.a, { valideePar: 'Autre' }) ? 'ACCEPTEE' : 'refusee';
+      const ap = col.get(o.a);
+      const apres = col.update(o.a, { statutCommande: 'transmise' }) ? 'transmise' : 'refusee';
+      return { tentatives, statutB: b.statutCommande, valideB: b.valideePar || null, figee, validateurA: ap.valideePar, progressionApresValidation: apres };
+    }, c210);
+    verifier('Garde de la collection : « Validée », « Transmise », « Livrée », « Soldée » ou un validateur écrits sans le geste sont REFUSÉS (aussi à la création) ; une validation posée ne se réécrit pas, mais la commande validée peut poursuivre son circuit (transmise)',
+      Object.values(direct.tentatives).every((v) => v === 'refusee') && direct.statutB === 'brouillon' && !direct.valideB && direct.figee === 'refusee' && direct.validateurA === 'AGENTE Da210' && direct.progressionApresValidation === 'transmise', JSON.stringify(direct));
+    /* la fiche RBAC étend le droit à un autre rôle (comptable) puis le retire */
+    const etendu = await page.evaluate((id) => {
+      const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      const f = col.all().filter((x) => x.role === 'comptable')[0];
+      const g = Object.assign({}, (f && f.droitsGestes) || {}, { valider_commande_stock: true });
+      if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'comptable', droitsGestes: g, libelleOrigine: 'Comptable' });
+      N.invaliderRbac();
+      return { liste: N.rolesAvecGeste('valider_commande_stock').slice().sort() };
+    }, c210.c);
+    await poserSessionServeur({ role: 'comptable', nom: 'COMPTA210', nomComplet: 'COMPTA210', fonction: 'comptable', identifiant: 's210.cpt', secteur: 'DIR' });
+    await ouvrir('m7-commandes.html');
+    const parCompta = await page.evaluate((id) => {
+      const r = window.SIGH.parcours.validerCommandeStock(id);
+      return { ok: r.ok, par: window.SIGH.store.collection('commandes').get(id).valideePar };
+    }, c210.c);
+    verifier('Étendu par la fiche RBAC au comptable : la liste des détenteurs suit (da, comptable) et la commande est validée au nom de l’agent COMPTA210',
+      JSON.stringify(etendu.liste) === JSON.stringify(['comptable', 'da']) && parCompta.ok && parCompta.par === 'COMPTA210', JSON.stringify({ etendu, parCompta }));
+    /* restauration : le droit retiré, les commandes de la sonde archivées (RG-14) */
+    await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      const f = col.all().filter((x) => x.role === 'comptable')[0];
+      if (f) { const g = Object.assign({}, f.droitsGestes || {}); delete g.valider_commande_stock; col.update(f.id, { droitsGestes: g }); }
+      N.invaliderRbac();
+      S.collection('commandes').active().filter((c) => /^BC-S210-/.test(c.reference)).forEach((c) => S.collection('commandes').archive(c.id, 'restauration de la sonde 210'));
+    });
+    await attendreEcritures();
+    const fin210 = await page.evaluate(() => ({ det: window.SIGH.nav.rolesAvecGeste('valider_commande_stock').slice().sort(), restes: window.SIGH.store.collection('commandes').active().filter((c) => /^BC-S210-/.test(c.reference)).length }));
+    verifier('État restauré : le droit est retiré du comptable (da seul), aucune commande de la sonde active (archivées, RG-14)', JSON.stringify(fin210.det) === JSON.stringify(['da']) && fin210.restes === 0, JSON.stringify(fin210));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CLO-3 FIN */
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
+
 
   /* --- Restitution --------------------------------------------------------- */
   const ligne = '─'.repeat(72);

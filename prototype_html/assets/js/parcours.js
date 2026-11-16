@@ -5971,6 +5971,72 @@
   };
 
   /* ==========================================================================
+   * LA COMMANDE DE STOCK GROS (RG-04) : VALIDER EST UN GESTE RÉSERVÉ (lot CLO-3, 16/11/2026 ; Direction, section AH point 3 et AQ point 1)
+   * --------------------------------------------------------------------------
+   * Toute commande d'achat de stock gros est validée AVANT transmission au fournisseur. Valider est le geste réservé `valider_commande_stock` de la fiche RBAC (d'origine la Directrice
+   * Administrative SEULE, jamais un nom de rôle dans le moteur), vérifié ICI aussi : masquer un bouton ne protège rien. Le validateur enregistré est l'AGENT DE LA SESSION (jamais un nom écrit).
+   * Choisir « Validée », « Transmise », « Livrée » ou « Soldée » au formulaire ne vaut PAS validation : la garde de la collection refuse tout statut validé qu'un geste n'a pas posé, d'où
+   * qu'il vienne (formulaire, import, rejeu). Une validation posée ne se réécrit pas (RG-14) : le validateur et la date sont figés.
+   * ======================================================================== */
+  var GESTE_VALIDER_COMMANDE_STOCK = 'valider_commande_stock';
+  var STATUTS_COMMANDE_VALIDES = ['validee', 'transmise', 'livree', 'soldee'];
+  var enValidationCommande = false;
+  function colCommandesStock() { return S.collection('commandes', { module: 'M7', entite: 'BonCommande' }); }
+  function peutValiderCommandeStock(role) {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_VALIDER_COMMANDE_STOCK));
+  }
+  function libellesValidentCommandeStock() {
+    var N = global.SIGH.nav;
+    var n = (N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_VALIDER_COMMANDE_STOCK) : []).map(function (r) { return libelleRole(r); });
+    return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle');
+  }
+  function refusValidationCommande() {
+    return refusCfg('VALIDATION_COMMANDE_RESERVEE', 'Valider une commande de stock gros (RG-04) est un droit réservé de la fiche du rôle (« Valider une commande de stock gros ») : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+      'Demander la validation à : ' + libellesValidentCommandeStock() + '.', { droit: GESTE_VALIDER_COMMANDE_STOCK });
+  }
+  /** Valider la commande `id` (état « en attente de validation » seulement). Rend { ok, id, valideePar, dateValidation, undo } ou le refus nommé. */
+  function validerCommandeStock(id) {
+    if (!peutValiderCommandeStock()) return refusValidationCommande();
+    var c = colCommandesStock().get(id);
+    if (!c || c.statut === 'archive') return refusCfg('COMMANDE_INCONNUE', 'La commande est introuvable ou archivée.', 'Rafraîchir l’écran.');
+    if (STATUTS_COMMANDE_VALIDES.indexOf(c.statutCommande) >= 0 && c.valideePar) {
+      return refusCfg('COMMANDE_DEJA_VALIDEE', 'La commande ' + c.reference + ' est déjà validée par ' + c.valideePar + ' : une validation ne se réécrit pas.', 'Aucun geste : la commande peut suivre son circuit.');
+    }
+    if (c.statutCommande !== 'attente_validation') {
+      return refusCfg('COMMANDE_PAS_EN_ATTENTE', 'La commande ' + c.reference + ' est « ' + c.statutCommande + ' » : seule une commande en attente de validation se valide.', 'Soumettre la commande à la validation d’abord (statut « En attente de validation »).');
+    }
+    var res;
+    enValidationCommande = true;
+    try {
+      res = colCommandesStock().update(id, { statutCommande: 'validee', valideePar: acteur(), dateValidation: aujIso() },
+        { journal: { action: 'Commande de stock gros validée (RG-04)', module: 'M7', entite: 'BonCommande', avant: { statutCommande: c.statutCommande }, apres: { statutCommande: 'validee', valideePar: acteur(), dateValidation: aujIso() } } });
+    } finally { enValidationCommande = false; }
+    if (!res) return refusCfg('COMMANDE_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la validation.', 'Relire le journal.');
+    return { ok: true, id: id, valideePar: acteur(), dateValidation: aujIso(), undo: res.undo };
+  }
+  S.garder('commandes', function (op, rec) {
+    if (op === 'archiver' || enValidationCommande || !rec) return null;
+    var valide = STATUTS_COMMANDE_VALIDES.indexOf(rec.statutCommande) >= 0;
+    var avant = op === 'modifier' && rec.id ? colCommandesStock().get(rec.id) : null;
+    var avantValidee = !!(avant && STATUTS_COMMANDE_VALIDES.indexOf(avant.statutCommande) >= 0 && avant.valideePar);
+    if (avantValidee) {
+      if (String(avant.valideePar) !== String(rec.valideePar || '') || String(avant.dateValidation || '') !== String(rec.dateValidation || '')) {
+        return 'VALIDATION_COMMANDE_FIGEE : la validation de la commande ' + avant.reference + ' (' + avant.valideePar + ') ne se réécrit pas.';
+      }
+      return null;
+    }
+    if (valide || rec.valideePar) {
+      return 'COMMANDE_NON_VALIDEE : un statut « validée », « transmise », « livrée » ou « soldée » (ou un validateur) ne se pose que par le geste « Valider une commande de stock gros » (RG-04), jamais par le formulaire.';
+    }
+    return null;
+  });
+  global.SIGH.parcours.validerCommandeStock = validerCommandeStock;
+  global.SIGH.parcours.peutValiderCommandeStock = peutValiderCommandeStock;
+  global.SIGH.parcours.libellesValidentCommandeStock = libellesValidentCommandeStock;
+  global.SIGH.parcours.STATUTS_COMMANDE_VALIDES = STATUTS_COMMANDE_VALIDES;
+
+  /* ==========================================================================
    * PASSERELLE SMS : LA FABRIQUE UNIQUE D’ENVOI (étape S2, 08/11/2026)
    * --------------------------------------------------------------------------
    * Tout déclencheur (rappel de rendez-vous, anniversaire, plus tard fêtes, relances, résultat disponible) passe par PR.envoyerSms, et par rien

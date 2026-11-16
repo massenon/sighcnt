@@ -82,12 +82,12 @@
    "role": "da",
    "actions": [
     "Consulter",
-    "Valider (DA)",
+    "Valider la commande",
     "Imprimer",
     "Modifier"
    ],
    "avant": {
-    "id": "COMxmvvapny7olvg6",
+    "id": "COMxmvux768rc74f3",
     "statut": "actif",
     "reference": "BC-2098-0112",
     "date": "2098-02-01",
@@ -104,11 +104,11 @@
      }
     ],
     "montant": 6500,
-    "statutCommande": "attente_validation",
-    "delaiLivraison": 7
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation"
    },
    "apres": {
-    "id": "COMxmvvapny7olvg6",
+    "id": "COMxmvux768rc74f3",
     "statut": "actif",
     "reference": "BC-2098-0112",
     "date": "2098-02-01",
@@ -125,15 +125,15 @@
      }
     ],
     "montant": 6500,
-    "statutCommande": "validee",
     "delaiLivraison": 7,
+    "statutCommande": "validee",
     "valideePar": "TAKI Alimatou",
     "dateValidation": "2026-10-30"
    },
    "message": "Valider la commande BC-2098-0112 ?En application de la règle RG-04, cette validation autorise la transmission au fournisseur CAME — Centrale d'Achat des Médicaments Essentiels pour un montant de 6 500 FCFA. L’opération est journalisée.AnnulerValider la commande",
    "toasts": [
     {
-     "message": "Commande validée par la Directrice Administrative.",
+     "message": "Commande validée par TAKI Alimatou.",
      "type": "success",
      "detail": null
     }
@@ -158,13 +158,14 @@
    ]
   },
   {
-   "role": "comptable",
+   "role": "admin",
    "actions": [
     "Consulter",
-    "Imprimer"
+    "Imprimer",
+    "Modifier"
    ],
    "avant": {
-    "id": "COMxmvvapo5aiaor9",
+    "id": "COMxmvux76frq3hne",
     "statut": "actif",
     "reference": "BC-2098-0113",
     "date": "2098-02-01",
@@ -181,8 +182,8 @@
      }
     ],
     "montant": 6500,
-    "statutCommande": "attente_validation",
-    "delaiLivraison": 7
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation"
    },
    "apres": null,
    "message": null,
@@ -207,15 +208,13 @@
    ]
   },
   {
-   "role": "stock",
+   "role": "direction",
    "actions": [
     "Consulter",
-    "Valider (DA)",
-    "Imprimer",
-    "Modifier"
+    "Imprimer"
    ],
    "avant": {
-    "id": "COMxmvvapo7swp2bp",
+    "id": "COMxmvux76i4h23qt",
     "statut": "actif",
     "reference": "BC-2098-0114",
     "date": "2098-02-01",
@@ -232,40 +231,12 @@
      }
     ],
     "montant": 6500,
-    "statutCommande": "attente_validation",
-    "delaiLivraison": 7
-   },
-   "apres": {
-    "id": "COMxmvvapo7swp2bp",
-    "statut": "actif",
-    "reference": "BC-2098-0114",
-    "date": "2098-02-01",
-    "fournisseur": "CAME",
-    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
-    "lignes": [
-     {
-      "produitId": "PRD0001",
-      "produit": "ABAISSE LANGUE",
-      "unite": "Unité",
-      "quantite": 10,
-      "prixUnitaire": 650,
-      "montant": 6500
-     }
-    ],
-    "montant": 6500,
-    "statutCommande": "validee",
     "delaiLivraison": 7,
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
+    "statutCommande": "attente_validation"
    },
-   "message": "Valider la commande BC-2098-0114 ?En application de la règle RG-04, cette validation autorise la transmission au fournisseur CAME — Centrale d'Achat des Médicaments Essentiels pour un montant de 6 500 FCFA. L’opération est journalisée.AnnulerValider la commande",
-   "toasts": [
-    {
-     "message": "Commande validée par la Directrice Administrative.",
-     "type": "success",
-     "detail": null
-    }
-   ],
+   "apres": null,
+   "message": null,
+   "toasts": [],
    "kpisAvant": [
     [
      "Commandes enregistrées",
@@ -278,6 +249,105 @@
     [
      "Montant commandé",
      "7 763 835 FCFA"
+    ],
+    [
+     "Livrées",
+     "11"
+    ]
+   ]
+  },
+  {
+   "role": "comptable",
+   "actions": [
+    "Consulter",
+    "Imprimer"
+   ],
+   "avant": {
+    "id": "COMxmvux76kibq1jn",
+    "statut": "actif",
+    "reference": "BC-2098-0115",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation"
+   },
+   "apres": null,
+   "message": null,
+   "toasts": [],
+   "kpisAvant": [
+    [
+     "Commandes enregistrées",
+     "19"
+    ],
+    [
+     "En attente de validation",
+     "5"
+    ],
+    [
+     "Montant commandé",
+     "7 770 335 FCFA"
+    ],
+    [
+     "Livrées",
+     "11"
+    ]
+   ]
+  },
+  {
+   "role": "stock",
+   "actions": [
+    "Consulter",
+    "Imprimer",
+    "Modifier"
+   ],
+   "avant": {
+    "id": "COMxmvux76muoht9d",
+    "statut": "actif",
+    "reference": "BC-2098-0116",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation"
+   },
+   "apres": null,
+   "message": null,
+   "toasts": [],
+   "kpisAvant": [
+    [
+     "Commandes enregistrées",
+     "20"
+    ],
+    [
+     "En attente de validation",
+     "6"
+    ],
+    [
+     "Montant commandé",
+     "7 776 835 FCFA"
     ],
     [
      "Livrées",
@@ -315,7 +385,7 @@
     }
    ],
    "commande": {
-    "id": "COMxmvvaponvqij8u",
+    "id": "COMxmvux76xnjg0um",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "CAME",
@@ -375,7 +445,7 @@
     }
    ],
    "commande": {
-    "id": "COMxmvvapoyk3mhjl",
+    "id": "COMxmvux7777tlsbu",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "MEDIPLUS",
@@ -426,35 +496,12 @@
      "puDefaut": "650"
     }
    ],
-   "commande": {
-    "id": "COMxmvvapp9utgvf7",
-    "statut": "actif",
-    "date": "2026-10-30",
-    "fournisseur": "SOBAPS",
-    "statutCommande": "transmise",
-    "observations": "",
-    "fournisseurNom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
-    "delaiLivraison": 5,
-    "lignes": [
-     {
-      "produitId": "PRD0001",
-      "produit": "ABAISSE LANGUE",
-      "unite": "Unité",
-      "quantite": 2,
-      "prixUnitaire": 700,
-      "montant": 1400
-     }
-    ],
-    "montant": 1400,
-    "reference": "BC-2026-0018",
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
-   },
-   "ouverte": false,
+   "commande": null,
+   "ouverte": true,
    "toasts": [
     {
-     "message": "Commande créée — BC-2026-0018",
-     "type": "success",
+     "message": "Statut refusé (COMMANDE_NON_VALIDEE) : « Transmise au fournisseur » ne se choisit pas au formulaire, la commande doit d’abord être validée par le geste « Valider une commande de stock gros » (Directrice de l’Administration et des Finances (DAF), RG-04). Choisir « En attente de validation ».",
+     "type": "error",
      "detail": null
     }
    ]
@@ -480,35 +527,12 @@
      "puDefaut": "650"
     }
    ],
-   "commande": {
-    "id": "COMxmvvappl7jwm7j",
-    "statut": "actif",
-    "date": "2026-10-30",
-    "fournisseur": "NATIFOURN",
-    "statutCommande": "soldee",
-    "observations": "",
-    "fournisseurNom": "NATI Fournitures",
-    "delaiLivraison": 2,
-    "lignes": [
-     {
-      "produitId": "PRD0001",
-      "produit": "ABAISSE LANGUE",
-      "unite": "Unité",
-      "quantite": 1,
-      "prixUnitaire": 500,
-      "montant": 500
-     }
-    ],
-    "montant": 500,
-    "reference": "BC-2026-0019",
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
-   },
-   "ouverte": false,
+   "commande": null,
+   "ouverte": true,
    "toasts": [
     {
-     "message": "Commande créée — BC-2026-0019",
-     "type": "success",
+     "message": "Statut refusé (COMMANDE_NON_VALIDEE) : « Soldée » ne se choisit pas au formulaire, la commande doit d’abord être validée par le geste « Valider une commande de stock gros » (Directrice de l’Administration et des Finances (DAF), RG-04). Choisir « En attente de validation ».",
+     "type": "error",
      "detail": null
     }
    ]
@@ -549,32 +573,32 @@
     ],
     [
      "En attente de validation",
-     "5"
+     "8"
     ],
     [
      "Montant commandé",
-     "7 798 035 FCFA"
+     "7 809 135 FCFA"
     ],
     [
      "Livrées",
-     "12"
+     "11"
     ]
    ],
    "refs": [
+    "BC-2095-0119",
+    "BC-2095-0118",
     "BC-2095-0117",
-    "BC-2095-0116",
-    "BC-2095-0115",
+    "BC-2098-0116",
+    "BC-2098-0115",
     "BC-2098-0114",
     "BC-2098-0113",
     "BC-2098-0112",
-    "BC-2026-0019",
-    "BC-2026-0018",
     "BC-2026-0017",
     "BC-2026-0016",
     "BC-2026-0012",
     "BC-2026-0007"
    ],
-   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+   "note": "8 commande(s) en attente de validation (Directrice de l’Administration et des Finances (DAF)). Aucune transmission au fournisseur n’est possible avant cette val"
   },
   {
    "role": "da",
@@ -586,32 +610,32 @@
     ],
     [
      "En attente de validation",
-     "5"
+     "8"
     ],
     [
      "Montant commandé",
-     "7 798 035 FCFA"
+     "7 809 135 FCFA"
     ],
     [
      "Livrées",
-     "12"
+     "11"
     ]
    ],
    "refs": [
+    "BC-2095-0119",
+    "BC-2095-0118",
     "BC-2095-0117",
-    "BC-2095-0116",
-    "BC-2095-0115",
+    "BC-2098-0116",
+    "BC-2098-0115",
     "BC-2098-0114",
     "BC-2098-0113",
     "BC-2098-0112",
-    "BC-2026-0019",
-    "BC-2026-0018",
     "BC-2026-0017",
     "BC-2026-0016",
     "BC-2026-0012",
     "BC-2026-0007"
    ],
-   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+   "note": "8 commande(s) en attente de validation (Directrice de l’Administration et des Finances (DAF)). Aucune transmission au fournisseur n’est possible avant cette val"
   },
   {
    "role": "direction",
@@ -623,32 +647,32 @@
     ],
     [
      "En attente de validation",
-     "5"
+     "8"
     ],
     [
      "Montant commandé",
-     "7 798 035 FCFA"
+     "7 809 135 FCFA"
     ],
     [
      "Livrées",
-     "12"
+     "11"
     ]
    ],
    "refs": [
+    "BC-2095-0119",
+    "BC-2095-0118",
     "BC-2095-0117",
-    "BC-2095-0116",
-    "BC-2095-0115",
+    "BC-2098-0116",
+    "BC-2098-0115",
     "BC-2098-0114",
     "BC-2098-0113",
     "BC-2098-0112",
-    "BC-2026-0019",
-    "BC-2026-0018",
     "BC-2026-0017",
     "BC-2026-0016",
     "BC-2026-0012",
     "BC-2026-0007"
    ],
-   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+   "note": "8 commande(s) en attente de validation (Directrice de l’Administration et des Finances (DAF)). Aucune transmission au fournisseur n’est possible avant cette val"
   },
   {
    "role": "comptable",
@@ -660,32 +684,32 @@
     ],
     [
      "En attente de validation",
-     "5"
+     "8"
     ],
     [
      "Montant commandé",
-     "7 798 035 FCFA"
+     "7 809 135 FCFA"
     ],
     [
      "Livrées",
-     "12"
+     "11"
     ]
    ],
    "refs": [
+    "BC-2095-0119",
+    "BC-2095-0118",
     "BC-2095-0117",
-    "BC-2095-0116",
-    "BC-2095-0115",
+    "BC-2098-0116",
+    "BC-2098-0115",
     "BC-2098-0114",
     "BC-2098-0113",
     "BC-2098-0112",
-    "BC-2026-0019",
-    "BC-2026-0018",
     "BC-2026-0017",
     "BC-2026-0016",
     "BC-2026-0012",
     "BC-2026-0007"
    ],
-   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+   "note": "8 commande(s) en attente de validation (Directrice de l’Administration et des Finances (DAF)). Aucune transmission au fournisseur n’est possible avant cette val"
   },
   {
    "role": "stock",
@@ -697,41 +721,41 @@
     ],
     [
      "En attente de validation",
-     "5"
+     "8"
     ],
     [
      "Montant commandé",
-     "7 798 035 FCFA"
+     "7 809 135 FCFA"
     ],
     [
      "Livrées",
-     "12"
+     "11"
     ]
    ],
    "refs": [
+    "BC-2095-0119",
+    "BC-2095-0118",
     "BC-2095-0117",
-    "BC-2095-0116",
-    "BC-2095-0115",
+    "BC-2098-0116",
+    "BC-2098-0115",
     "BC-2098-0114",
     "BC-2098-0113",
     "BC-2098-0112",
-    "BC-2026-0019",
-    "BC-2026-0018",
     "BC-2026-0017",
     "BC-2026-0016",
     "BC-2026-0012",
     "BC-2026-0007"
    ],
-   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+   "note": "8 commande(s) en attente de validation (Directrice de l’Administration et des Finances (DAF)). Aucune transmission au fournisseur n’est possible avant cette val"
   }
  ],
  "modifications": [
   {
    "nom": "brouillon → « Validée » : la DAF est portée validatrice (E72)",
    "avant": {
-    "id": "COMxmvvappx4o9qlc",
+    "id": "COMxmvux781bolsd6",
     "statut": "actif",
-    "reference": "BC-2095-0115",
+    "reference": "BC-2095-0117",
     "date": "2099-06-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME",
@@ -757,12 +781,12 @@
    },
    "statut": "validee",
    "apres": {
-    "id": "COMxmvvappx4o9qlc",
+    "id": "COMxmvux781bolsd6",
     "statut": "actif",
-    "reference": "BC-2095-0115",
+    "reference": "BC-2095-0117",
     "date": "2099-06-01",
     "fournisseur": "CAME",
-    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "fournisseurNom": "CAME",
     "lignes": [
      {
       "produitId": "PRD0001",
@@ -775,15 +799,12 @@
     ],
     "montant": 6500,
     "delaiLivraison": 7,
-    "statutCommande": "validee",
-    "observations": "",
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
+    "statutCommande": "brouillon"
    },
    "toasts": [
     {
-     "message": "Commande mise à jour.",
-     "type": "success",
+     "message": "Statut refusé (COMMANDE_NON_VALIDEE) : « Validée » ne se choisit pas au formulaire, la commande doit d’abord être validée par le geste « Valider une commande de stock gros » (Directrice de l’Administration et des Finances (DAF), RG-04). Choisir « En attente de validation ».",
+     "type": "error",
      "detail": null
     }
    ]
@@ -791,9 +812,9 @@
   {
    "nom": "déjà validée par quelqu'un d'autre → « Transmise » : le validateur reste",
    "avant": {
-    "id": "COMxmvvapq5gw0s8t",
+    "id": "COMxmvux7890ldo6x",
     "statut": "actif",
-    "reference": "BC-2095-0116",
+    "reference": "BC-2095-0118",
     "date": "2099-06-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME",
@@ -821,9 +842,9 @@
    },
    "statut": "transmise",
    "apres": {
-    "id": "COMxmvvapq5gw0s8t",
+    "id": "COMxmvux7890ldo6x",
     "statut": "actif",
-    "reference": "BC-2095-0116",
+    "reference": "BC-2095-0118",
     "date": "2099-06-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
@@ -855,9 +876,9 @@
   {
    "nom": "brouillon → en attente : aucun validateur",
    "avant": {
-    "id": "COMxmvvapqduq03ti",
+    "id": "COMxmvux78gzu79l6",
     "statut": "actif",
-    "reference": "BC-2095-0117",
+    "reference": "BC-2095-0119",
     "date": "2099-06-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME",
@@ -883,9 +904,9 @@
    },
    "statut": "attente_validation",
    "apres": {
-    "id": "COMxmvvapqduq03ti",
+    "id": "COMxmvux78gzu79l6",
     "statut": "actif",
-    "reference": "BC-2095-0117",
+    "reference": "BC-2095-0119",
     "date": "2099-06-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
@@ -930,15 +951,13 @@
   "BC-2026-0014",
   "BC-2026-0015",
   "BC-2026-0016",
-  "BC-2026-0017",
-  "BC-2026-0018",
-  "BC-2026-0019"
+  "BC-2026-0017"
  ],
  "commandes": [
   {
-   "id": "COMxmvvapqduq03ti",
+   "id": "COMxmvux78gzu79l6",
    "statut": "actif",
-   "reference": "BC-2095-0117",
+   "reference": "BC-2095-0119",
    "date": "2099-06-01",
    "fournisseur": "CAME",
    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
@@ -958,9 +977,9 @@
    "observations": ""
   },
   {
-   "id": "COMxmvvapq5gw0s8t",
+   "id": "COMxmvux7890ldo6x",
    "statut": "actif",
-   "reference": "BC-2095-0116",
+   "reference": "BC-2095-0118",
    "date": "2099-06-01",
    "fournisseur": "CAME",
    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
@@ -982,12 +1001,12 @@
    "observations": ""
   },
   {
-   "id": "COMxmvvappx4o9qlc",
+   "id": "COMxmvux781bolsd6",
    "statut": "actif",
-   "reference": "BC-2095-0115",
+   "reference": "BC-2095-0117",
    "date": "2099-06-01",
    "fournisseur": "CAME",
-   "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+   "fournisseurNom": "CAME",
    "lignes": [
     {
      "produitId": "PRD0001",
@@ -1000,61 +1019,10 @@
    ],
    "montant": 6500,
    "delaiLivraison": 7,
-   "statutCommande": "validee",
-   "observations": "",
-   "valideePar": "TAKI Alimatou",
-   "dateValidation": "2026-10-30"
+   "statutCommande": "brouillon"
   },
   {
-   "id": "COMxmvvappl7jwm7j",
-   "statut": "actif",
-   "date": "2026-10-30",
-   "fournisseur": "NATIFOURN",
-   "statutCommande": "soldee",
-   "observations": "",
-   "fournisseurNom": "NATI Fournitures",
-   "delaiLivraison": 2,
-   "lignes": [
-    {
-     "produitId": "PRD0001",
-     "produit": "ABAISSE LANGUE",
-     "unite": "Unité",
-     "quantite": 1,
-     "prixUnitaire": 500,
-     "montant": 500
-    }
-   ],
-   "montant": 500,
-   "reference": "BC-2026-0019",
-   "valideePar": "TAKI Alimatou",
-   "dateValidation": "2026-10-30"
-  },
-  {
-   "id": "COMxmvvapp9utgvf7",
-   "statut": "actif",
-   "date": "2026-10-30",
-   "fournisseur": "SOBAPS",
-   "statutCommande": "transmise",
-   "observations": "",
-   "fournisseurNom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
-   "delaiLivraison": 5,
-   "lignes": [
-    {
-     "produitId": "PRD0001",
-     "produit": "ABAISSE LANGUE",
-     "unite": "Unité",
-     "quantite": 2,
-     "prixUnitaire": 700,
-     "montant": 1400
-    }
-   ],
-   "montant": 1400,
-   "reference": "BC-2026-0018",
-   "valideePar": "TAKI Alimatou",
-   "dateValidation": "2026-10-30"
-  },
-  {
-   "id": "COMxmvvapoyk3mhjl",
+   "id": "COMxmvux7777tlsbu",
    "statut": "actif",
    "date": "2026-10-30",
    "fournisseur": "MEDIPLUS",
@@ -1076,7 +1044,7 @@
    "reference": "BC-2026-0017"
   },
   {
-   "id": "COMxmvvaponvqij8u",
+   "id": "COMxmvux76xnjg0um",
    "statut": "actif",
    "date": "2026-10-30",
    "fournisseur": "CAME",
@@ -1106,7 +1074,49 @@
    "reference": "BC-2026-0016"
   },
   {
-   "id": "COMxmvvapo7swp2bp",
+   "id": "COMxmvux76muoht9d",
+   "statut": "actif",
+   "reference": "BC-2098-0116",
+   "date": "2098-02-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "delaiLivraison": 7,
+   "statutCommande": "attente_validation"
+  },
+  {
+   "id": "COMxmvux76kibq1jn",
+   "statut": "actif",
+   "reference": "BC-2098-0115",
+   "date": "2098-02-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "delaiLivraison": 7,
+   "statutCommande": "attente_validation"
+  },
+  {
+   "id": "COMxmvux76i4h23qt",
    "statut": "actif",
    "reference": "BC-2098-0114",
    "date": "2098-02-01",
@@ -1123,13 +1133,11 @@
     }
    ],
    "montant": 6500,
-   "statutCommande": "validee",
    "delaiLivraison": 7,
-   "valideePar": "TAKI Alimatou",
-   "dateValidation": "2026-10-30"
+   "statutCommande": "attente_validation"
   },
   {
-   "id": "COMxmvvapo5aiaor9",
+   "id": "COMxmvux76frq3hne",
    "statut": "actif",
    "reference": "BC-2098-0113",
    "date": "2098-02-01",
@@ -1146,11 +1154,11 @@
     }
    ],
    "montant": 6500,
-   "statutCommande": "attente_validation",
-   "delaiLivraison": 7
+   "delaiLivraison": 7,
+   "statutCommande": "attente_validation"
   },
   {
-   "id": "COMxmvvapny7olvg6",
+   "id": "COMxmvux768rc74f3",
    "statut": "actif",
    "reference": "BC-2098-0112",
    "date": "2098-02-01",
@@ -1167,8 +1175,8 @@
     }
    ],
    "montant": 6500,
-   "statutCommande": "validee",
    "delaiLivraison": 7,
+   "statutCommande": "validee",
    "valideePar": "TAKI Alimatou",
    "dateValidation": "2026-10-30"
   },
