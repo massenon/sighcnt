@@ -730,7 +730,7 @@ async function viderMessages(page) {
       await page.waitForFunction(() => /Registre des tâches/.test(document.body.textContent) && !!document.querySelector('[data-carte-sauvegarde]'), { timeout: 30000 });
       await pause(300);
     }
-    const lignesRegistre = () => page.evaluate(() => { const t = document.querySelectorAll('#page-content table')[0]; return t ? [...t.querySelectorAll('tbody tr')].map((tr) => [...tr.cells].map((c) => c.textContent.replace(/\s+/g, ' ').trim())) : []; });
+    const lignesRegistre = () => page.evaluate(() => { const t = document.querySelectorAll('#page-content table')[0]; return t ? [...t.querySelectorAll('tbody tr')].map((tr) => [...tr.cells].filter((c) => !c.hasAttribute('data-case-selection')).map((c) => c.textContent.replace(/\s+/g, ' ').trim())) : []; });
     const carte = () => page.evaluate(() => {
       const c = document.querySelector('[data-carte-sauvegarde]'); if (!c) return null;
       const d = c.querySelector('[data-sauv-destination]');
@@ -27383,12 +27383,15 @@ async function viderMessages(page) {
       cel.masque === '•• •• 12 34' && cel.mont === 12500 && cel.date && cel.date.date === '2026-08-14', JSON.stringify(cel));
 
     /* le droit : retiré à un rôle par la fiche RBAC, la commande est ABSENTE et le moteur refuse ; rendu, elle revient */
+    /* L'état d'origine de la fiche se garde CÔTÉ BANC : une navigation efface tout ce qui vit dans la page. */
+    let fiche190 = null;
     const fiche = async (val) => {
       await poserSessionServeur(ADM);
-      await page.evaluate((v) => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'caissier')[0];
-        if (!window.__fiche190) window.__fiche190 = { existait: !!f, avant: f ? JSON.stringify(f.droitsGestes || {}) : '{}' };
+      const etat = await page.evaluate((v) => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'caissier')[0];
+        const avant = { existait: !!f, avant: f ? JSON.stringify(f.droitsGestes || {}) : '{}' };
         const g = Object.assign({}, (f && f.droitsGestes) || {}); if (v === null) delete g.exporter_donnees; else g.exporter_donnees = v;
-        if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'caissier', statut: 'actif', droitsGestes: g }); window.SIGH.nav.invaliderRbac(); }, val);
+        if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'caissier', statut: 'actif', droitsGestes: g }); window.SIGH.nav.invaliderRbac(); return avant; }, val);
+      if (!fiche190) fiche190 = etat;
     };
     const lireCaissier = async () => {
       await poserSessionServeur({ role: 'caissier', nom: 'CAISSE190', nomComplet: 'CAISSE190', fonction: 'caissier', identifiant: 's190.caissier', secteur: 'CAI' });
@@ -27404,13 +27407,15 @@ async function viderMessages(page) {
     await fiche(true);
     const avec = await lireCaissier();
     await poserSessionServeur(ADM);
-    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'caissier')[0]; const o = window.__fiche190;
-      if (f) { if (o.existait) col.update(f.id, { droitsGestes: JSON.parse(o.avant) }); else col.archive(f.id); } window.__fiche190 = null; window.SIGH.nav.invaliderRbac(); });
+    await page.evaluate((o) => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'caissier')[0];
+      if (f) { if (o.existait) col.update(f.id, { droitsGestes: JSON.parse(o.avant) }); else col.archive(f.id); } window.SIGH.nav.invaliderRbac(); }, fiche190);
+    await attendreEcritures();
     verifier('Sans le droit (fiche RBAC du caissier, exporter_donnees = false), « Exporter » est ABSENT du tableau et le moteur refuse EXPORT_NON_AUTORISE en nommant le profil ; accordé, la commande revient ; fiche restaurée',
       sans.tableau && !sans.exporter && sans.refus === 'EXPORT_NON_AUTORISE' && /Caissier/i.test(sans.motif) && avec.exporter && avec.refus === 'ok', JSON.stringify({ sans, avec }));
 
     /* encarts et tableaux à la main : équipés ; la garde de génération est exacte */
-    await ouvrir('dash-direction.html');
+    /* un tableau de bord qui porte des encarts K.miniTable (dash-direction n'en a pas) */
+    await ouvrir('dash-maternite.html');
     const enc = await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content [data-tableau-equipe="oui"]')]; return { barres: b.length, exporter: b.filter((x) => x.querySelector('button[data-commande="exporter"]')).length, cases: document.querySelectorAll('#page-content td[data-case-selection="ligne"]').length }; });
     const garde = require('./garde-tableaux.js').analyser(path.join(ROOT, 'assets/js'));
     verifier('Les encarts (K.miniTable) portent cases et « Exporter » ; la garde de génération énumère tous les tableaux hors composant (équipés ou inscrits avec leur nature et leur motif) et ne relève aucune faute',
