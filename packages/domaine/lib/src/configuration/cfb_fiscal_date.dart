@@ -319,6 +319,87 @@ CfbEcritureIdentite cfbNouvelleVersionIdentite(Iterable<CfaFiche> versions, Map<
 }
 
 // =============================================================================================================================================
+// MIGRATION AUTOMATIQUE DE L'IDENTITÉ (lot IDENT-MIG, décision de la Direction du 16/11/2026)
+// =============================================================================================================================================
+
+/// La date de fin de la version 1 (RCCM d'origine) et la date d'effet de la version 2 (RCCM à jour, date à confirmer par la Direction).
+const String cfbMigrationFinVersion1 = '2026-11-15';
+const String cfbMigrationDebutVersion2 = '2026-11-16';
+
+/// Le nom sous lequel la migration signe ses écritures (champs `creePar` et `modifiePar`, journal RG-12).
+const String cfbActeurMigrationIdentite = 'Migration automatique de l’identité (décision de la Direction du 16/11/2026)';
+
+/// Le résultat de [cfbMigrerIdentiteV2] : `migree` (une version 2 est à écrire), `sans_objet` (rien à faire, [raison] le dit) ou `refusee` (conflit nommé, rien n'est écrit).
+class CfbMigrationIdentite {
+  const CfbMigrationIdentite._(this.etat, {this.raison, this.refus, this.fiche, this.precedenteId, this.patchPrecedente});
+  const CfbMigrationIdentite.sansObjet(String raison) : this._('sans_objet', raison: raison);
+  const CfbMigrationIdentite.refusee(CfbRefus refus) : this._('refusee', refus: refus);
+  final String etat;
+  final String? raison;
+  final CfbRefus? refus;
+
+  /// `migree` : la version 2 à insérer, la version 1 à clore (`null` si elle l'est déjà) et son patch (la fin seule, signée).
+  final CfaFiche? fiche;
+  final String? precedenteId;
+  final CfaFiche? patchPrecedente;
+
+  bool get migree => etat == 'migree';
+}
+
+bool _memeValeur(Object? a, Object? b) {
+  if (a is List && b is List) return a.length == b.length && [for (var i = 0; i < a.length; i++) _memeValeur(a[i], b[i])].every((x) => x);
+  return '${a ?? ''}' == '${b ?? ''}';
+}
+
+/// Un poste DÉJÀ INSTALLÉ qui n'a que la version 1 de `identiteLegale` (RCCM d'origine) reçoit la version 2 (RCCM à jour, effet le 16/11/2026) ; la version 1 est CLOSE au 15/11/2026, jamais
+/// réécrite (seuls `fin`, `modifieLe` et `modifiePar` changent). Pure : rend ce qu'il faut écrire, le poste l'écrit, signe et journalise. IDEMPOTENTE : une fois la version 2 là, `sans_objet`.
+///
+/// Jamais d'écrasement : une version 2 (ou toute version au-delà de la 1, même archivée) ou la fiche `IDL002` déjà présentes, aucune écriture ; une version 1 dont l'identité a été MODIFIÉE à ce poste
+/// (un champ différent de la semence, ou `modifieLe`), ou close à une AUTRE date, ou en plusieurs exemplaires : refus NOMMÉ (code, motif, geste), rien n'est écrit.
+CfbMigrationIdentite cfbMigrerIdentiteV2(Iterable<CfaFiche> versions, {required DateTime maintenant, String acteur = cfbActeurMigrationIdentite}) {
+  final toutes = versions.toList();
+  if (toutes.isEmpty) return const CfbMigrationIdentite.sansObjet('AUCUNE_VERSION');
+  if (toutes.any((v) => nombreOuZero(v['version']).toInt() >= 2)) return const CfbMigrationIdentite.sansObjet('DEJA_A_JOUR');
+  if (toutes.any((v) => '${v['id']}' == 'IDL002')) {
+    return const CfbMigrationIdentite.refusee(CfbRefus('IDENTITE_ID_PRIS',
+        'La fiche IDL002 existe déjà et n’est pas une version 2 : la migration ne l’écrase pas.', 'Vérifier la fiche IDL002 dans « Configuration fiscale », puis créer la version 2 à la main.'));
+  }
+  final uns = toutes.where((v) => _actif(v) && nombreOuZero(v['version']).toInt() == 1).toList();
+  if (uns.isEmpty) {
+    return const CfbMigrationIdentite.refusee(CfbRefus('IDENTITE_VERSION_1_ABSENTE',
+        'Aucune version 1 active de l’identité légale : la migration n’a rien à clore.', 'Créer la version 2 depuis « Configuration fiscale » (date d’effet le 16/11/2026, motif).'));
+  }
+  if (uns.length > 1) {
+    return const CfbMigrationIdentite.refusee(CfbRefus('IDENTITE_VERSION_1_EN_DOUBLE',
+        'Plusieurs versions 1 actives de l’identité légale : la migration ne choisit pas à la place de la Direction.', 'Archiver le doublon, puis relancer le poste.'));
+  }
+  final v1 = uns.single;
+  final semence = cfbChampsIdentite(cfbSemenceIdentite());
+  final reel = cfbChampsIdentite(v1);
+  final differents = [for (final k in champsIdentiteLegale) if (!_memeValeur(reel[k], semence[k])) k];
+  if (differents.isNotEmpty || v1['modifieLe'] != null) {
+    return CfbMigrationIdentite.refusee(CfbRefus('IDENTITE_MODIFIEE',
+        'L’identité de la version 1 a été modifiée à ce poste (${differents.isEmpty ? 'fiche réécrite' : differents.join(', ')}) : la migration ne l’écrase pas.',
+        'Créer la version 2 à la main depuis « Configuration fiscale » (date d’effet le 16/11/2026, motif) ou confirmer que la version 1 d’origine peut être restaurée.'));
+  }
+  final fin = v1['fin'];
+  if (fin != null && isoJour(fin) != cfbMigrationFinVersion1) {
+    return CfbMigrationIdentite.refusee(CfbRefus('IDENTITE_FIN_DIFFERENTE',
+        'La version 1 de l’identité est déjà close au ${isoJour(fin)}, non au 15/11/2026 : la migration ne la rouvre ni ne la déplace.',
+        'Créer la version 2 à la main depuis « Configuration fiscale » à la date voulue.'));
+  }
+  final v2 = <String, Object?>{
+    ...cfbSemenceIdentiteV2(),
+    'creePar': acteur,
+    'source': 'Migration automatique au démarrage du poste, décision de la Direction du 16/11/2026 (RCCM à jour, date d’effet à confirmer)',
+  };
+  return CfbMigrationIdentite._('migree',
+      fiche: v2,
+      precedenteId: fin == null ? '${v1['id']}' : null,
+      patchPrecedente: fin == null ? {'fin': cfbMigrationFinVersion1, 'modifieLe': _horodatage(maintenant), 'modifiePar': acteur} : null);
+}
+
+// =============================================================================================================================================
 // Validation et état affiché
 // =============================================================================================================================================
 

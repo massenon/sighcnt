@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'donnees/circuit_cloture_poste.dart';
 import 'donnees/fichiers_poste.dart';
+import 'donnees/identite_migration_poste.dart';
 import 'donnees/ocr_poste.dart';
 import 'donnees/horssite_poste.dart';
 import 'donnees/sms_poste.dart';
@@ -219,6 +220,8 @@ Future<void> main() async {
     .installer();
   // Les écrans SMS (MODP02 et MODP04) étaient fermés tant que le poste ne les portait pas : un poste déjà installé les rouvre une fois, sans toucher à une fermeture que l'agent a refaite depuis.
   reouvrirFermeturesLevees(magasin);
+  // Lot IDENT-MIG (Direction, 16/11/2026) : un poste déjà installé qui n'a que la version 1 de l'identité reçoit la version 2 (RCCM à jour, effet le 16/11/2026), la version 1 close au 15/11/2026 ; signé, journalisé, idempotent.
+  migrerIdentiteVersion2(magasin, fileul: params.rejoint && params.mode != ModePoste.mere);
   // LOT TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC, lu À CHAUD (une fiche modifiée vaut aussitôt).
   tarInstallerDroitDecider((role) => navigation.aChaud(magasin).matrice.droitGeste(role, tarGesteDecider));
   // LOT VAL : validations, barème AIB, retransmission MECeF, étapes RH, pont : des gestes réservés lus À CHAUD par les moteurs du domaine (`gesDroit`), plus de liste de rôles.
