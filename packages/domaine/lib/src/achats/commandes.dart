@@ -160,7 +160,12 @@ _Commande commandeEnregistree(
   v['lignes'] = lignes;
   v['montant'] = montantCommande(lignes);
   if (existante == null) {
-    v['reference'] = referenceAchatSuivante('BC-2026-', 4, commandes);
+    // Année de la DATE DE LA PIÈCE (lot MIL) : jamais une année écrite ; le jour est un ISO AAAA-MM-JJ.
+    final annee = RegExp(r'^\d{4}').firstMatch(jour)?.group(0);
+    if (annee == null) {
+      throw const RefusAchat('Date de la commande illisible : le numéro ne peut pas être attribué.');
+    }
+    v['reference'] = referenceAchatSuivante('BC-$annee-', 4, commandes);
   }
   // RG-04 : choisir un statut validé ne vaut PAS validation (refus nommé) ; une commande déjà validée garde son validateur et sa date.
   if (statutsCommandeValides.contains(v['statutCommande']) &&
