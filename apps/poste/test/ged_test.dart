@@ -160,11 +160,14 @@ void main() {
       expect(sp(kpi(t, 'Rejetés à corriger')), isNot(sp(m_(liste(c0['kpis'])[1])['valeur'])), reason: 'un rejet de plus');
     });
 
-    cas('plus de validation en masse : ni « Valider la sélection », ni case de sélection, seulement le geste unitaire de la ligne', (t) async {
+    cas('plus de validation en masse : ni « Valider la sélection », ni « Valider » dans la barre de sélection (les cases ne servent qu’à sortir des lignes, lot EXP), seulement le geste unitaire de la ligne', (t) async {
       final m = magasin();
       await ouvrir(t, m, 'ged-workflow');
       expect(find.widgetWithText(BoutonSigh, 'Valider la sélection'), findsNothing);
-      expect(find.bySemanticsLabel('Sélectionner la ligne'), findsNothing);
+      await t.tap(find.bySemanticsLabel('Sélectionner la ligne').first);
+      await t.pump();
+      expect(find.descendant(of: find.byKey(const Key('kit:tableau-selection')), matching: find.widgetWithText(BoutonSigh, 'Valider')), findsNothing);
+      expect(find.byKey(const Key('kit:tableau-exporter-selection')), findsOneWidget, reason: 'la sélection sert à sortir les lignes');
       expect(find.widgetWithText(BoutonSigh, 'Valider'), findsWidgets, reason: 'le geste unitaire reste offert sur chaque ligne');
     });
 
@@ -198,7 +201,7 @@ void main() {
       await ouvrir(t, magasin(), 'ged-workflow', role: role);
       expect(find.widgetWithText(BoutonSigh, 'Valider'), findsNothing);
       expect(find.byTooltip('Rejeter'), findsNothing);
-      expect(find.bySemanticsLabel('Sélectionner la ligne'), findsNothing);
+      expect(find.widgetWithText(BoutonSigh, 'Valider la sélection'), findsNothing);
       expect(find.text('Documents à valider'), findsOneWidget, reason: 'la file se lit toujours');
     });
 
