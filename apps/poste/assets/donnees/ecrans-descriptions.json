@@ -85,6 +85,10 @@
    "titre": "Règles métier versionnées",
    "description": "Matrice de traçabilité : chaque règle du système est rattachée au document de cadrage qui la fonde."
   },
+  "cfg-sms": {
+   "titre": "Passerelle SMS",
+   "description": "Fournisseur de SMS de la clinique (Twilio ou Vonage), plafond, heures calmes et test d’envoi : seuls les patients reçoivent des SMS."
+  },
   "cfg-smtp": {
    "titre": "Messagerie (SMTP)",
    "description": "Serveur de courriel de la clinique et test d’envoi : sert à écrire à l’éditeur et, plus tard, à tout envoi de la clinique."
@@ -732,6 +736,10 @@
   "m13-reunions": {
    "titre": "Réunions",
    "description": "Planification des réunions, convocations, ordres du jour et comptes rendus."
+  },
+  "m13-sms-journal": {
+   "titre": "Journal des envois SMS",
+   "description": "Les envois de la passerelle SMS : motif, statut, refus nommé, numéro masqué et identifiant chez le fournisseur."
   },
   "m14-audit": {
    "titre": "Journal d’audit",

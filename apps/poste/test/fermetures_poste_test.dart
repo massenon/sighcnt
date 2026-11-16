@@ -7,6 +7,7 @@ import 'package:sigh_domaine/sigh_domaine.dart' show Droit, cfbEssentielles, tar
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/donnees/persistance.dart';
+import 'package:sigh_poste/donnees/sms_poste.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/modules/cfg/cfb_modules.dart';
 import 'package:sigh_poste/modules/registre.dart';
@@ -17,7 +18,10 @@ import 'aide_polices.dart';
 /// LES QUATRE ÉCRANS NON PORTÉS SONT FERMÉS PAR LE JEU DU POSTE (Direction, 11/11/2026, ECARTS E2422 à E2425) : la fermeture est une fiche de `modulesActifs`
 /// (`proprePoste`), l'inventaire des écrans ouverts à chaque rôle est éprouvé à `ecrans_sans_chantier_test.dart`. Ici : ce qui arrive à un poste D'AVANT (magasin
 /// déjà posé sur le disque), et ce que l'écran des activités propose pour un écran que le poste ne porte pas.
-const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms'};
+const quatre = {'m12-calendrier-fiscal', 'cfg-bareme-aib'};
+
+/// Les deux écrans SMS, d'abord fermés, PORTÉS par le lot SMS-R (16/11/2026) : leur fermeture est levée.
+const ecransSms = {'m13-sms-journal', 'cfg-sms'};
 
 /// Les collections fusionnables du démarrage réel (`main.dart`).
 final fusionnables = {...cfbEssentielles, valCollectionValidations, ...tarCollectionsReferentiel}.difference({'utilisateurs', 'identifiants'});
@@ -45,6 +49,11 @@ void main() {
           if (!donnees.aChaud(m).matrice.peutVoir(role, id)) id
       };
 
+  Set<String> fermesPour2(Magasin m, String role) => {
+        for (final id in ecransSms)
+          if (!donnees.aChaud(m).matrice.peutVoir(role, id)) id
+      };
+
   group('un poste d\'AVANT reçoit la fermeture par la reprise du jeu livré, sans écraser ce que l\'agent a fait à l\'écran', () {
     test('magasin déjà posé AVEC des fiches d\'activité : les quatre fermetures sont ajoutées, la réouverture de la banque de sang est gardée', () async {
       final p = PersistanceMemoire();
@@ -60,10 +69,12 @@ void main() {
       await v2.brancherPersistance(p, fusionnables: fusionnables);
       // Les quatre écrans non portés plus les pages de jeux d'import non portés (lot IMP-C) : une fiche `proprePoste` du jeu livré par écran, comptées du fichier même.
       final nbPropres = nbPropresDuJeu();
-      expect(nbPropres, 4, reason: 'quatre écrans non portés ; plus aucune page de jeu d\'import n\'est fermée (les deux dernières, prix d\'achat et référentiel produits, sont portées par le lot TFIN-2)');
+      expect(nbPropres, 2, reason: 'deux écrans non portés (calendrier fiscal et barème de l\'AIB) ; plus aucune page de jeu d\'import n\'est fermée (les deux dernières, prix d\'achat et référentiel produits, sont portées par le lot TFIN-2)');
       expect(v2.jeuxFusionnes, {'modulesActifs': nbPropres}, reason: 'les fiches propres au poste arrivent, rien d\'autre');
       final col = v2.collection('modulesActifs');
-      expect([for (final id in ['MODP01', 'MODP02', 'MODP03', 'MODP04']) col.parId(id)!['actif']], everyElement(false));
+      expect([for (final id in ['MODP01', 'MODP03']) col.parId(id)!['actif']], everyElement(false));
+      expect(col.parId('MODP02'), isNull, reason: 'le jeu livré ne porte plus la fermeture du journal SMS');
+      expect(col.parId('MODP04'), isNull, reason: 'ni celle de la passerelle SMS');
       expect(col.parId('MOD01')!['actif'], true, reason: 'la réouverture faite à l\'écran n\'est pas écrasée');
       expect(col.parId('MOD01')!['rouvertLe'], '2026-11-02');
       for (final role in ['admin', 'direction', 'da', 'comptable']) {
@@ -108,25 +119,56 @@ void main() {
       final p = PersistanceMemoire();
       final v1 = Magasin.depuisDossier(['rbac', 'modulesActifs']);
       await v1.brancherPersistance(p, delai: Duration.zero, fusionnables: fusionnables);
-      v1.collection('modulesActifs').mettreAJour('MODP04', {'actif': true, 'rouvertLe': '2026-11-12', 'rouvertPar': 'Direction'});
+      v1.collection('modulesActifs').mettreAJour('MODP03', {'actif': true, 'rouvertLe': '2026-11-12', 'rouvertPar': 'Direction'});
       await v1.ecrireMaintenant();
       final v2 = Magasin.depuisDossier(['rbac', 'modulesActifs']);
       await v2.brancherPersistance(p, fusionnables: fusionnables);
       expect(v2.jeuxFusionnes, isEmpty, reason: 'le jeu livré est connu : rien à fusionner');
-      expect(v2.collection('modulesActifs').parId('MODP04')!['actif'], true);
-      expect(fermesPour(v2, 'admin'), quatre.difference({'cfg-sms'}), reason: 'cfg-sms rouvert aux droits ; les trois autres restent fermés');
+      expect(v2.collection('modulesActifs').parId('MODP03')!['actif'], true);
+      expect(fermesPour(v2, 'admin'), quatre.difference({'cfg-bareme-aib'}), reason: 'le barème rouvert aux droits ; le calendrier fiscal reste fermé');
     });
 
     test('une fiche de fermeture ARCHIVÉE (corbeille) ne referme rien et n\'est pas rajoutée par la fusion', () async {
       final p = PersistanceMemoire();
       final v1 = jeuDAvant();
       await v1.brancherPersistance(p, delai: Duration.zero, fusionnables: fusionnables);
-      v1.collection('modulesActifs').inserer({'id': 'MODP02', 'statut': 'archive', 'module': 'M13', 'ecrans': ['m13-sms-journal'], 'actif': false});
+      v1.collection('modulesActifs').inserer({'id': 'MODP03', 'statut': 'archive', 'module': 'CFG', 'ecrans': ['cfg-bareme-aib'], 'actif': false});
       await v1.ecrireMaintenant();
       final v2 = Magasin.depuisDossier(['rbac', 'modulesActifs']);
       await v2.brancherPersistance(p, fusionnables: fusionnables);
-      expect(v2.jeuxFusionnes, {'modulesActifs': nbPropresDuJeu() - 1}, reason: 'la fiche MODP02 est déjà là (archivée) : toutes les autres fiches propres au poste arrivent');
-      expect(fermesPour(v2, 'admin'), quatre.difference({'m13-sms-journal'}));
+      expect(v2.jeuxFusionnes, {'modulesActifs': nbPropresDuJeu() - 1}, reason: 'la fiche MODP03 est déjà là (archivée) : toutes les autres fiches propres au poste arrivent');
+      expect(fermesPour(v2, 'admin'), quatre.difference({'cfg-bareme-aib'}));
+    });
+  });
+
+  group('lot SMS-R : un poste déjà installé rouvre les deux écrans SMS au démarrage, une fois', () {
+    Magasin posteInstalle({String fermeLe = '2026-11-11'}) {
+      final m = Magasin.depuisDossier(['rbac', 'modulesActifs']);
+      for (final (id, mod, ecran) in [('MODP02', 'M13', 'm13-sms-journal'), ('MODP04', 'CFG', 'cfg-sms')]) {
+        m.collection('modulesActifs').inserer({'id': id, 'module': mod, 'ecrans': [ecran], 'actif': false, 'proprePoste': true, 'fermeLe': fermeLe, 'fermePar': 'Direction'});
+      }
+      return m;
+    }
+
+    test('les fiches fermées d\'origine sont rouvertes ; tous les rôles voient alors les écrans que leur matrice leur donne', () {
+      final m = posteInstalle();
+      expect(fermesPour2(m, 'admin'), ecransSms, reason: 'avant : fermés');
+      expect(reouvrirFermeturesLevees(m), ['MODP02', 'MODP04']);
+      expect(fermesPour2(m, 'admin'), isEmpty);
+      expect(m.collection('modulesActifs').parId('MODP04')!['rouvertPar'], 'Lot SMS-R (écran porté au poste)');
+      expect(reouvrirFermeturesLevees(m), isEmpty, reason: 'idempotent : une fois');
+    });
+
+    test('une fermeture refaite depuis par un agent (autre date) est GARDÉE', () {
+      final m = posteInstalle(fermeLe: '2026-11-20');
+      expect(reouvrirFermeturesLevees(m), isEmpty);
+      expect(fermesPour2(m, 'admin'), ecransSms);
+    });
+
+    test('un poste neuf (jeu livré sans ces fermetures) : rien à rouvrir', () {
+      final m = Magasin.depuisDossier(['rbac', 'modulesActifs']);
+      expect(reouvrirFermeturesLevees(m), isEmpty);
+      expect(fermesPour2(m, 'admin'), isEmpty);
     });
   });
 
@@ -159,17 +201,18 @@ void main() {
       expect(find.byTooltip('Rouvrir cette activité'), findsNWidgets(2), reason: 'seules la banque de sang et la transfusion se rouvrent');
       // Les pages de jeux d'import non portés sont dans le même cas : fermées, sans commande de réouverture (leur jeu n'a pas de widget).
       expect(find.textContaining('que ce poste ne porte pas encore'), findsOneWidget);
-      for (final l in ['Calendrier fiscal mensuel', 'Journal des envois SMS', 'Barème de l’AIB', 'Passerelle SMS']) {
+      for (final l in ['Calendrier fiscal mensuel', 'Barème de l’AIB']) {
         expect(find.textContaining('« $l »'), findsOneWidget, reason: l);
       }
-      expect(find.textContaining('Non porté au poste, à porter'), findsAtLeastNWidgets(4), reason: 'le motif de chaque fiche se lit dans le tableau');
+      expect(find.textContaining('Non porté au poste, à porter'), findsAtLeastNWidgets(2), reason: 'le motif de chaque fiche se lit dans le tableau');
     });
 
     testWidgets('dès qu\'un écran a un widget, sa réouverture est proposée et il quitte la note', (t) async {
-      await monter(t, ecranPorte: (id) => id == 'cfg-sms' || portes.containsKey(id));
+      await monter(t, ecranPorte: (id) => id == 'cfg-bareme-aib' || portes.containsKey(id));
       expect(find.byTooltip('Rouvrir cette activité'), findsNWidgets(3));
       expect(find.textContaining('« Passerelle SMS »'), findsNothing);
-      expect(find.textContaining('« Barème de l’AIB »'), findsOneWidget);
+      expect(find.textContaining('« Barème de l’AIB »'), findsNothing);
+      expect(find.textContaining('« Calendrier fiscal mensuel »'), findsOneWidget);
     });
 
     testWidgets('coque qui ne dit rien (`ecranPorte` absent) : tout est réputé porté, rien ne change pour les écrans de la maquette', (t) async {

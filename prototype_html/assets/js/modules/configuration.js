@@ -5176,7 +5176,7 @@
    * ========================================================================== */
   global.SIGH.screen('cfg-sms', {
     title: 'Passerelle SMS',
-    description: 'Fournisseur de SMS de la clinique (Twilio ou Vonage), plafond, heures calmes et test d’envoi : seuls les patients reçoivent des SMS.',
+    description: 'Fournisseur de SMS de la clinique (Twilio ou Vonage), plafond, heures calmes et test d’envoi : les patients, et le personnel qui y consent, reçoivent des SMS.',
     regle: 'Les <strong>identifiants du fournisseur ne sont jamais relus</strong> : l’écran affiche « enregistré », le magasin exporté et le journal ne les contiennent pas. Le test envoie un <strong>vrai message</strong> et nomme le refus s’il échoue. Un message accepté par le fournisseur n’est pas un message reçu.',
     render: function (root) {
       var hote = el('div.space-y-4');

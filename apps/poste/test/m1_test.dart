@@ -182,7 +182,25 @@ void main() {
       expect(cree['ageReferenceLe'], '2026-10-30');
       expect(cree['statut'], 'actif');
       expect(cree['dateCreation'], '2026-10-30');
+      expect(cree['consentementSms'], true, reason: 'consentant par défaut (retirable)');
       expect(m.collection('audit').toutes, isNotEmpty, reason: 'RG-12 : la création est journalisée');
+    });
+
+    cas('consentement SMS (lot SMS-R) : coché par défaut, daté et signé ; décoché à la demande du patient, il est enregistré à faux', (t) async {
+      final m = petit({'patients': [p('1', 'CNT/1109/26')], 'audit': []});
+      await ouvrir(t, m, 'm1-patient-nouveau');
+      expect(find.text('Accepte de recevoir des SMS de la clinique'), findsOneWidget);
+      await saisir(t, 'nom', 'Bio');
+      await saisir(t, 'prenom', 'Zakari');
+      await choisir(t, 'naissanceConnue', 'Inconnue — indiquer l’âge déclaré');
+      await saisir(t, 'age', '41');
+      await saisir(t, 'telephone', '97000001');
+      await toucher(t, find.text('Accepte de recevoir des SMS de la clinique'));
+      await toucher(t, find.text('Ouvrir le dossier').last);
+      final cree = m.collection('patients').toutes.firstWhere((f) => f['nom'] == 'Bio');
+      expect(cree['consentementSms'], false);
+      expect('${cree['consentementSmsLe']}', startsWith('2026-10-30'));
+      expect('${cree['consentementSmsPar']}', isNotEmpty);
     });
 
     cas('un champ obligatoire vide : rien n\'est écrit', (t) async {

@@ -11,6 +11,7 @@ import 'dart:math';
 
 import 'package:sigh_domaine/sigh_domaine.dart'
     show
+        MatriceDroits,
         Parametres,
         RefusMobile,
         cfbEssentielles,
@@ -24,6 +25,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         mobRefusFonctionPiece,
         parCollectionParametres,
         parCollectionUsages,
+        smsGesteRegler,
         valCollectionValidations;
 
 import 'commun.dart';
@@ -899,6 +901,23 @@ class Mere {
     throw Err(404, 'route_inconnue', 'Route inconnue.');
   }
 
+  MatriceDroits? _matriceSms;
+
+  /// Le geste réservé `regler_passerelle_sms` (fiche RBAC, défaut administrateur et DAF) : contrôlé ICI à chaque geste d'écriture de la passerelle, sur le rôle déclaré par le poste
+  /// (`x-sigh-role`). Sans rôle, sans matrice lisible ou sans le droit : refus nommé (403), jamais un accès par défaut.
+  void exigerGesteSms([String? role]) {
+    if (role == null || role.isEmpty) throw Err(403, 'ROLE_REQUIS', 'le rôle de l\'agent n\'est pas déclaré', {'geste': 'Mettre le poste à jour.'});
+    final MatriceDroits m;
+    try {
+      m = _matriceSms ??= chargerMatriceRbac(cfg.matriceChemin);
+    } on ErreurFichier catch (e) {
+      throw Err(503, e.refus.code, e.refus.motif, {'geste': e.refus.geste});
+    }
+    if (!m.droitGeste(role, smsGesteRegler)) {
+      throw Err(403, 'GESTE_RESERVE', 'le réglage de la passerelle SMS est un droit réservé de la fiche RBAC', {'geste': 'Demander à l\'administrateur ou à la Directrice Administrative.'});
+    }
+  }
+
   /// Lot SMS-R : les routes d'administration des envois automatiques de SMS, HORS verrou (réseau). Réservées à la mère de cette machine (secret d'administration).
   Future<Object?> routeSms(String cle, HttpRequest req, Map<String, Object?> b, Map<String, String> q) async {
     adminOk(req);
@@ -907,8 +926,10 @@ class Mere {
         case 'GET /admin/sms/etat':
           return await sms.etat();
         case 'POST /admin/sms/passe':
+          exigerGesteSms(req.headers.value('x-sigh-role'));
           return await sms.passe(manuel: true);
         case 'POST /admin/sms/tester':
+          exigerGesteSms(req.headers.value('x-sigh-role'));
           return await sms.tester('${b['numero'] ?? ''}');
         case 'GET /admin/sms/journal':
           return {'messages': await sms.journal()};

@@ -68,6 +68,12 @@ List<ChampDef> champsPatient(ContexteEcran c, Fiche? r) {
     ChampDef(nom: 'quartier', libelle: 'Quartier', type: TypeChamp.select, options: [for (final q in quartiers) OptionChamp(q)]),
     const ChampDef(nom: 'adresse', libelle: 'Adresse', col: ColChamp.plein),
     const ChampDef(nom: 'personneAPrevenir', libelle: 'Personne à prévenir', col: ColChamp.plein),
+    const ChampDef(
+        nom: 'consentementSms',
+        libelle: 'Accepte de recevoir des SMS de la clinique',
+        type: TypeChamp.case_,
+        col: ColChamp.plein,
+        aide: 'Rappels de rendez-vous et vœux. Aucune donnée de santé ne part par SMS. Décocher dès que le patient refuse : aucun message ne lui sera plus envoyé, et les envois déjà planifiés sont retirés.'),
     const ChampDef.section('Éléments médicaux'),
     ChampDef(
         nom: 'antecedents',
@@ -101,13 +107,18 @@ List<ChampDef> champsPatient(ContexteEcran c, Fiche? r) {
   ];
 }
 
+/// La transformation d'un dossier à l'enregistrement (celle du domaine) PLUS le consentement SMS tracé : activé par défaut, retirable, date et auteur du changement (RG-12, lot SMS-R).
+Fiche patTransformerPatientSms(ContexteEcran c, Map<String, Object?> saisie, Fiche? existante) =>
+    smsTracerConsentement(patTransformerPatient(saisie, existante, c.aujourdhui), existante, defautActif: true, maintenant: c.aujourdhui, par: acteur(c).nom);
+
 /// Les valeurs du formulaire pour un dossier : la branche « âge déclaré » se lit SUR LA FICHE (rouvrir un dossier sans date doit proposer « Inconnue »).
 Map<String, Object?> valeursPatient(Fiche? r) {
-  if (r == null) return {'naissanceConnue': 'date', 'tauxPriseEnCharge': '0'};
+  if (r == null) return {'naissanceConnue': 'date', 'tauxPriseEnCharge': '0', 'consentementSms': true};
   final v = valeursFormulaire(r);
   v['naissanceConnue'] = (!patVrai(r['dateNaissance']) && r['age'] != null && r['age'] != '') ? 'age' : 'date';
   v['antecedents'] = patListe(r['antecedents']);
   v['allergies'] = patListe(r['allergies']);
+  v['consentementSms'] = r['consentementSms'] != false;
   return v;
 }
 
@@ -290,7 +301,7 @@ class EcranPatients extends StatelessWidget with EcranMaquette {
                       messageVide: 'Aucun patient enregistré.',
                       triInitial: 'code',
                       transformer: (cc, s, e) {
-                        final v = patTransformerPatient(s, e, cc.aujourdhui);
+                        final v = patTransformerPatientSms(cc, s, e);
                         return v;
                       },
                       detail: (cc, f) => FichePatient(f),
@@ -377,7 +388,7 @@ class _EtatPatientNouveau extends State<EcranPatientNouveau> {
       ToastsSigh.afficher(context, refus, type: TypeToast.erreur);
       return;
     }
-    final v = patTransformerPatient(convertirSaisie(_champs, brut), null, c.aujourdhui);
+    final v = patTransformerPatientSms(c, convertirSaisie(_champs, brut), null);
     final r = col.inserer({
       'statut': 'actif',
       'code': _code,
@@ -516,7 +527,7 @@ class _EtatProfil extends State<EcranPatientProfil> {
                       return;
                     }
                     // La MÊME transformation que le répertoire (écart E315).
-                    final v = patTransformerPatient(convertirSaisie(defs, brut), p, c.aujourdhui);
+                    final v = patTransformerPatientSms(c, convertirSaisie(defs, brut), p);
                     fermer();
                     final annuler = c.magasin.collection('patients').mettreAJour(p['id'], v);
                     ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler);

@@ -246,4 +246,12 @@ void main() {
     final t = await sms.tester('+22997000009');
     expect(t['ok'], true);
   });
+
+  test('le geste réservé regler_passerelle_sms est contrôlé par la mère : administrateur et DAF oui, les autres refusés, sans rôle refusé', () {
+    m.exigerGesteSms('admin');
+    m.exigerGesteSms('da');
+    for (final role in ['reception', 'direction', 'infirmier', '', null]) {
+      expect(() => m.exigerGesteSms(role), throwsA(isA<Err>().having((e) => e.code, 'code', role == null || role.isEmpty ? 'ROLE_REQUIS' : 'GESTE_RESERVE')), reason: '$role');
+    }
+  });
 }

@@ -96,6 +96,8 @@
      que le magasin ne porte pas : check-listes du bloc…) est semée au socle.
      71 (08/11/2026) : fiches RBAC de l'échographiste et du Directeur Médical (le catalogue
      de l'imagerie s'ouvre à eux en lecture, pour y valider) ; les fiches étant semées.
+     92 (16/11/2026, lot SMS-R) : geste réservé `regler_passerelle_sms` (fiches RBAC semées : défaut administrateur et DAF) ; la fiche du personnel porte `dateNaissance`
+     et `consentementSms` (décoché par défaut). Les fiches RBAC étant semées, la version monte.
      72 (08/11/2026) : passerelle SMS. La fiche RBAC21 (Direction) lit `cfg-sms` et `m13-sms-journal` sans les modifier
      (écrans nommés) ; la collection `messagesSms` (journal des envois) naît à l'usage, elle est déclarée à la corbeille.
      73 (08/11/2026) : moteur SMS (étape S2). Le dossier patient porte `consentementSms` (actif par défaut, retirable), `consentementSmsLe` et
@@ -161,7 +163,7 @@
      Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
      `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
   */
-  var VERSION = 91;
+  var VERSION = 92;
   var db = null;
   var listeners = {};
 

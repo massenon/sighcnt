@@ -102,4 +102,33 @@ void main() {
       expect(t, 'Dr  vous attend');
     });
   });
+
+  group('consentement SMS tracé à l\'enregistrement (RG-12)', () {
+    final t0 = DateTime(2026, 11, 16, 10);
+    final t1 = DateTime(2026, 11, 17, 11);
+
+    test('patient : consentant PAR DÉFAUT, daté et signé à la création', () {
+      final v = smsTracerConsentement({'nom': 'A'}, null, defautActif: true, maintenant: t0, par: 'Accueil');
+      expect([v['consentementSms'], v['consentementSmsPar']], [true, 'Accueil']);
+      expect(v['consentementSmsLe'], t0.toIso8601String());
+    });
+
+    test('personnel : DÉCOCHÉ par défaut (rien ne part sans un oui)', () {
+      final v = smsTracerConsentement({'nom': 'A'}, null, defautActif: false, maintenant: t0, par: 'RH');
+      expect(v['consentementSms'], false);
+    });
+
+    test('un retrait est un CHANGEMENT : nouvelle date et nouvel auteur ; sans changement, la date et l\'auteur d\'origine sont gardés', () {
+      final cree = smsTracerConsentement({'consentementSms': true}, null, defautActif: true, maintenant: t0, par: 'Accueil');
+      final inchange = smsTracerConsentement({'consentementSms': true}, cree, defautActif: true, maintenant: t1, par: 'Autre');
+      expect([inchange['consentementSmsLe'], inchange['consentementSmsPar']], [t0.toIso8601String(), 'Accueil']);
+      final retire = smsTracerConsentement({'consentementSms': false}, cree, defautActif: true, maintenant: t1, par: 'Autre');
+      expect([retire['consentementSms'], retire['consentementSmsLe'], retire['consentementSmsPar']], [false, t1.toIso8601String(), 'Autre']);
+    });
+
+    test('une fiche d\'avant (sans consentement) est consentante pour un patient, non consentante pour le personnel', () {
+      expect(smsTracerConsentement({}, {'nom': 'ancien'}, defautActif: true, maintenant: t0, par: 'x')['consentementSms'], true);
+      expect(smsTracerConsentement({}, {'nom': 'ancien'}, defautActif: false, maintenant: t0, par: 'x')['consentementSms'], false);
+    });
+  });
 }

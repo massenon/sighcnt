@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
+import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, smsGesteRegler, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
 import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
@@ -12,6 +12,7 @@ import 'donnees/circuit_cloture_poste.dart';
 import 'donnees/fichiers_poste.dart';
 import 'donnees/ocr_poste.dart';
 import 'donnees/horssite_poste.dart';
+import 'donnees/sms_poste.dart';
 import 'donnees/sauvegarde_fichiers_poste.dart';
 import 'donnees/organigramme_poste.dart';
 import 'sync/service_demandes_import.dart';
@@ -207,6 +208,16 @@ Future<void> main() async {
       source: SourceHorsSiteHttp(base: Uri.parse('http://127.0.0.1:9000'), admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin))
     .installer();
   final navigation = await DonneesNavigation.chargerAssets();
+  // Lot SMS-R (ADR-0008) : la passerelle SMS. Le réglage est un paramètre de clinique en base ; l'état, le calcul et le test passent par le service de la mère de cette machine ; le geste réservé
+  // `regler_passerelle_sms` est lu À CHAUD de la fiche RBAC.
+  SmsPoste(magasin,
+      estFileul: () => params.rejoint && params.mode != ModePoste.mere,
+      estMere: () => controleur.config.mode == ModePoste.mere,
+      source: SourceSmsHttp(base: Uri.parse('http://127.0.0.1:9000'), admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin),
+      gesteDe: (role) => navigation.aChaud(magasin).matrice.droitGeste(role, smsGesteRegler))
+    .installer();
+  // Les écrans SMS (MODP02 et MODP04) étaient fermés tant que le poste ne les portait pas : un poste déjà installé les rouvre une fois, sans toucher à une fermeture que l'agent a refaite depuis.
+  reouvrirFermeturesLevees(magasin);
   // LOT TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC, lu À CHAUD (une fiche modifiée vaut aussitôt).
   tarInstallerDroitDecider((role) => navigation.aChaud(magasin).matrice.droitGeste(role, tarGesteDecider));
   SessionPoste? session;

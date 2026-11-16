@@ -3,7 +3,7 @@
 //
 // Défauts VALIDÉS par la Direction (16/11/2026, section AQ, points 27 et 28) : rappel à 18 h la veille d'un rendez-vous, vœux d'anniversaire à 9 h (patients ET personnel), accord du
 // personnel DÉCOCHÉ par défaut, modèles de message par défaut. Heures calmes de 21 h à 7 h (Direction, 07/11/2026). Tout est un PARAMÈTRE EN BASE (famille `sms`, versionné par date).
-// Les valeurs marquées « à valider » ne sont fixées par aucun document : activation (désactivée par défaut), horizon de calcul, tolérance, 29 février, texte exact des modèles.
+// Les valeurs marquées « à valider » ne sont fixées par aucun document : activation (désactivée par défaut), horizon de calcul, tolérance, 29 février.
 //
 // Un modèle n'a que cinq variables : {{nom}} {{date}} {{heure}} {{clinique}} {{telephone}}. Le médecin, le service et le motif n'ont AUCUNE variable : un rappel ne peut donc jamais les nommer.
 // Le texte médical ne quitte jamais la clinique : un modèle qui contient un mot de la liste médicale (proposition à valider par un médecin nommé) est refusé à l'enregistrement.
@@ -11,6 +11,9 @@ library;
 
 /// La famille de paramètres, réservée à la mère (jamais un téléphone) et réglée à son propre écran.
 const String smsFamille = 'sms';
+
+/// Le geste réservé de la fiche RBAC (défaut administrateur et DAF) : régler la passerelle, calculer et déposer maintenant, tester l'envoi.
+const String smsGesteRegler = 'regler_passerelle_sms';
 
 const String smsCleActif = 'sms.auto.actif';
 const String smsCleRappelHeure = 'sms.rappel.heure';
@@ -33,7 +36,7 @@ const int smsCalmeFinDefaut = 7;
 const int smsHorizonJoursDefaut = 2;
 const int smsToleranceMinutesDefaut = 120;
 
-/// Modèles par défaut (Direction : « modèles de message par défaut, toute validée »). Texte PROPOSÉ ici, sans mot médical, sans médecin ni service ni motif.
+/// Modèles par défaut, VALIDÉS par la Direction (16/11/2026) : sans mot médical, sans médecin ni service ni motif.
 const String smsModeleRappelDefaut = '{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.';
 const String smsModeleAnniversairePatientDefaut = '{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.';
 const String smsModeleAnniversairePersonnelDefaut = '{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement.';
@@ -298,4 +301,30 @@ RefusSms? smsVerifierReglage(ReglageSmsAuto r) {
     if (x != null) return x;
   }
   return null;
+}
+
+/// Le consentement SMS d'une FICHE (dossier patient, fiche du personnel), tracé à l'enregistrement : valeur booléenne, date et auteur posés à la création et à chaque CHANGEMENT (RG-12 : l'ancienne
+/// valeur reste lisible au journal d'audit). `defautActif` : le patient est consentant PAR DÉFAUT (décision de la Direction, retirable) ; le personnel NE L'EST PAS (décoché par défaut, validé le 16/11/2026).
+/// Retirer le consentement n'a pas d'autre geste : la mère retire au prochain calcul les envois planifiés de la personne.
+Map<String, Object?> smsTracerConsentement(Map<String, Object?> saisie, Map<String, Object?>? existante, {required bool defautActif, required DateTime maintenant, required String par}) {
+  bool lire(Map<String, Object?>? m) {
+    final x = m?['consentementSms'];
+    if (x is bool) return x;
+    if (x is String && (x == 'true' || x == 'false')) return x == 'true';
+    return defautActif;
+  }
+
+  final v = {...saisie};
+  final voulu = lire(v);
+  final avant = existante == null ? null : lire(existante);
+  v['consentementSms'] = voulu;
+  final dejaTrace = existante != null && '${existante['consentementSmsLe'] ?? ''}'.isNotEmpty;
+  if (avant == null || avant != voulu || !dejaTrace) {
+    v['consentementSmsLe'] = maintenant.toIso8601String();
+    v['consentementSmsPar'] = par;
+  } else {
+    v['consentementSmsLe'] = existante['consentementSmsLe'];
+    v['consentementSmsPar'] = existante['consentementSmsPar'] ?? par;
+  }
+  return v;
 }
