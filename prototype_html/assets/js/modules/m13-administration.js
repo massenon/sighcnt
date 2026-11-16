@@ -262,7 +262,7 @@
         /* E531 : C.nextRef est un compteur de PAGE (le premier « Nouveau » donnait RU-2026-001, déjà pris) et la modification recalculait la référence. */
         transform: function (v, record) {
           if (record && record.reference) v.reference = record.reference;
-          if (!v.reference) v.reference = C.referenceSuivante('RU-2026-', 3, S.collection('reunions').all());
+          if (!v.reference) v.reference = C.referenceAnnuelle('RU-', v.date, 3, S.collection('reunions').all());
           return v;
         },
         onCreate: function () { return { date: C.iso(AUJ), heure: '09:00', lieu: 'Salle de réunion', participants: 8 }; },
@@ -542,14 +542,14 @@
       gantt.appendChild(U.equiperTableau(t, { nom: 'plan-annuel', titre: 'Plan annuel de travail' }));
       gantt.appendChild(t);
 
-      host.appendChild(U.card('Plan annuel de travail 2026', gantt, [
+      host.appendChild(U.card('Plan annuel de travail ' + AUJ.getFullYear(), gantt, [
         K.btn('Imprimer le plan', {
           size: 'sm', icon: 'printer',
           onclick: function () {
             P.etat({
               titre: 'Plan annuel de travail',
-              sousTitre: 'Exercice 2026',
-              cartouche: [['Exercice', '2026'], ['Actions programmées', C.num(rows.length)],
+              sousTitre: 'Exercice ' + AUJ.getFullYear(),
+              cartouche: [['Exercice', String(AUJ.getFullYear())], ['Actions programmées', C.num(rows.length)],
                 ['Réalisées', C.num(rows.filter(function (r) { return r.avancement === 'Réalisée'; }).length)],
                 ['Date d’édition', C.dateFR(AUJ)]],
               contenu: P.tableau([
@@ -755,7 +755,7 @@
           if (!v.tarif) v.tarif = 5000 + (Number(v.kilometrage) || 0) * 500;
           /* E534 : C.nextRef = compteur de page (le premier « Nouveau » donnait AM-2026-0001, déjà pris) ; la modification recalculait la référence. */
           if (record && record.reference) v.reference = record.reference;
-          if (!v.reference) v.reference = C.referenceSuivante('AM-2026-', 4, S.collection('ambulance').all());
+          if (!v.reference) v.reference = C.referenceAnnuelle('AM-', v.dateHeure, 4, S.collection('ambulance').all());
           return v;
         },
         onCreate: function () { return { chauffeur: 'TCHANE Nourou', facture: false, kilometrage: 10, etat: 'demandee' }; },

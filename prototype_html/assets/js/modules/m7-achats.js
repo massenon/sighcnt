@@ -629,7 +629,7 @@
                 if (!record && !v.etape) v.etape = 'soumis';
                 v.montantEstime = C.sum(lignes, function (l) { return l.quantiteDemandee * l.prixAchat; });
                 /* E75 : le formulaire ne porte pas la référence ; à la modification, `!v.reference` était toujours vrai et le bon était RENUMÉROTÉ. */
-                if (!record) v.reference = C.referenceSuivante('BEB-2026-', 4, col.all());   /* E70 : série lue sur les bons existants, plus un compteur de page */
+                if (!record) v.reference = C.referenceAnnuelle('BEB-', v.date, 4, col.all());   /* E70 : série lue sur les bons existants, plus un compteur de page */
                 /* E74 : le formulaire ne porte pas le validateur ; sans cette garde, modifier un bon DÉJÀ validé écrasait le vrai validateur. */
                 if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar && !(record && record.valideePar)) {
                   v.valideePar = 'TAKI Alimatou';
@@ -889,7 +889,7 @@
                 v.delaiLivraison = four ? four.delai : null;
                 v.lignes = lignes; v.montant = C.sum(lignes, 'montant');
                 /* E75 : idem — modifier une commande ne change pas son numéro. */
-                if (!record) v.reference = C.referenceSuivante('BC-2026-', 4, col.all());   /* E70 */
+                if (!record) v.reference = C.referenceAnnuelle('BC-', v.date, 4, col.all());   /* E70 */
                 /* E74 : idem — ne jamais remplacer le validateur ni la date de validation d'une commande déjà validée. */
                 if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar && !(record && record.valideePar)) {
                   v.valideePar = 'TAKI Alimatou'; v.dateValidation = C.iso(AUJ);

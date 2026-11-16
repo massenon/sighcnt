@@ -173,8 +173,10 @@
   }
 
   /** Douze derniers mois, libellés courts. */
-  function moisGlissants(n) {
-    var out = [], d = new Date(2026, 7, 1);
+  /* LOT MIL (16/11/2026) : la fenêtre se termine au mois de `fin` (une date), le MOIS DU JOUR par défaut, jamais août 2026 écrit en dur. */
+  function moisGlissants(n, fin) {
+    var f = fin ? C.toDate(fin) : C.aujourdhui();
+    var out = [], d = new Date(f.getFullYear(), f.getMonth(), 1);
     for (var i = (n || 12) - 1; i >= 0; i--) {
       var m = new Date(d.getFullYear(), d.getMonth() - i, 1);
       out.push(C.MOIS[m.getMonth()].slice(0, 4) + '. ' + String(m.getFullYear()).slice(-2));

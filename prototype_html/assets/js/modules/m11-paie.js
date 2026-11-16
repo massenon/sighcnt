@@ -17,6 +17,24 @@
   var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
   var PP = D.PARAM_PAIE;
 
+  /* LOT MIL (16/11/2026) : aucune année écrite. L'exercice de paie est CHOISI (le sélecteur « Exercice »), celui du jour par défaut, lu à l'horloge
+     au moment de l'affichage : le 01/01/2027, la paie s'ouvre sur 2027 sans toucher au code. */
+  function exerciceDuJour() { return C.aujourdhui().getFullYear(); }
+  function libellePeriode(mois, annee) { return C.MOIS[mois].charAt(0).toUpperCase() + C.MOIS[mois].slice(1) + ' ' + annee; }
+  /** Les périodes proposées à la saisie : les mois de l'exercice du jour et ceux de l'exercice précédent (une fiche de l'an passé reste modifiable). */
+  function optionsPeriodes() {
+    var a = exerciceDuJour(), out = [];
+    [a - 1, a].forEach(function (an) { C.MOIS.forEach(function (m, i) { out.push(libellePeriode(i, an)); }); });
+    return out;
+  }
+  /** Le sélecteur d'exercice : les quatre derniers exercices, celui du jour sélectionné. */
+  function selecteurExercice() {
+    var sel = el('select.select'), a = exerciceDuJour();
+    for (var an = a; an >= a - 3; an--) sel.appendChild(el('option', { value: String(an) }, String(an)));
+    sel.value = String(a);
+    return sel;
+  }
+
   function personnel() { return S.collection('personnel').active(); }
   /* SANS SALAIRE DE BASE, UN AGENT NE SE CALCULE PAS (01/11/2026). Le vidage des jeux de test retire les salaires de
      démonstration et garde l'effectif : calculer une paie sur un salaire inconnu produirait des zéros qui se liraient
@@ -150,7 +168,7 @@
         col.all().push({
           id: 'HS' + C.pad(i + 1, 4), statut: 'actif',
           reference: 'HS-' + C.pad(i + 1, 4),
-          periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' ' + AUJ.getFullYear(),
+          periode: libellePeriode(AUJ.getMonth(), AUJ.getFullYear()),
           employeId: e.id, employe: e.nomComplet, matricule: e.matricule, service: e.service,
           heures: h, tauxHoraire: taux, majoration: 25, montant: h * taux,
           motif: C.pick(rnd, ['Renfort de garde', 'Urgence', 'Remplacement', 'Surcroît d’activité']),
@@ -401,14 +419,15 @@
       + 'Aucun montant n’est saisi manuellement : tout découle des référentiels versionnés.',
     render: function (root) {
       var host = el('div.space-y-4');
-      var selMois = el('select.select');
+      var selMois = el('select.select'), selAnnee = selecteurExercice();
       C.MOIS.forEach(function (m, i) {
-        selMois.appendChild(el('option', { value: String(i) }, m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'));
+        selMois.appendChild(el('option', { value: String(i) }, m.charAt(0).toUpperCase() + m.slice(1)));
       });
-      selMois.value = String(AUJ.getMonth());
+      selMois.value = String(C.aujourdhui().getMonth());
 
       var barre = el('div.card');
       var bbody = el('div.card-body.flex.flex-wrap.items-end.gap-3');
+      bbody.appendChild(el('div.min-w-\\[14rem\\]', null, [el('label.label', { text: 'Exercice' }), selAnnee]));
       bbody.appendChild(el('div.min-w-\\[14rem\\]', null, [el('label.label', { text: 'Période de paie' }), selMois]));
       bbody.appendChild(K.btn('Lancer le calcul', { variant: 'primary', icon: 'play', onclick: afficher }));
       bbody.appendChild(K.btn('Générer les bulletins', { variant: 'success', icon: 'file-plus', onclick: genererBulletins }));
@@ -419,11 +438,12 @@
       var vue = el('div.space-y-4');
       host.appendChild(vue);
       selMois.addEventListener('change', afficher);
+      selAnnee.addEventListener('change', afficher);
       root.appendChild(host);
       afficher();
       return null;
 
-      function calculs() { return calculerTous(2026, Number(selMois.value)); }
+      function calculs() { return calculerTous(Number(selAnnee.value), Number(selMois.value)); }
 
       function afficher() {
         var calc = calculs();
@@ -438,7 +458,7 @@
         ]));
 
         vue.appendChild(U.dataTable({
-          title: 'Détail du calcul — ' + C.MOIS[Number(selMois.value)] + ' 2026',
+          title: 'Détail du calcul — ' + C.MOIS[Number(selMois.value)] + ' ' + selAnnee.value,
           rows: calc, exportName: 'calcul-paie', pageSize: 20,
           defaultSort: 'net', defaultDir: 'desc',
           columns: [
@@ -569,7 +589,7 @@
         var calc = calculs();
         U.confirm({
           title: 'Générer ' + calc.length + ' bulletin(s) de paie ?',
-          message: 'Les bulletins seront enregistrés pour la période ' + C.MOIS[Number(selMois.value)] + ' 2026 '
+          message: 'Les bulletins seront enregistrés pour la période ' + C.MOIS[Number(selMois.value)] + ' ' + selAnnee.value + ' '
             + 'et soumis à la validation de la Direction avant diffusion.',
           confirmLabel: 'Générer',
         }).then(function (ok) {
@@ -631,8 +651,8 @@
         var calc = calculs();
         P.etat({
           titre: 'Journal de paie',
-          sousTitre: C.MOIS[Number(selMois.value)] + ' 2026',
-          cartouche: [['Période', C.MOIS[Number(selMois.value)] + ' 2026'],
+          sousTitre: C.MOIS[Number(selMois.value)] + ' ' + selAnnee.value,
+          cartouche: [['Période', C.MOIS[Number(selMois.value)] + ' ' + selAnnee.value],
             ['Effectif', C.num(calc.length)],
             ['Masse salariale brute', montantPaie(calc, 'brut')],
             ['Net à payer', montantPaie(calc, 'net')],
@@ -799,7 +819,7 @@
         },
       ],
       filters: [
-        { name: 'periode', label: 'Période', options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'; }) },
+        { name: 'periode', label: 'Période', options: optionsPeriodes() },
         { name: 'service', label: 'Service', options: D.SERVICES },
         { name: 'statutBulletin', label: 'Statut', options: [{ value: 'a_valider', label: 'À valider' }, { value: 'valide', label: 'Validé' }, { value: 'diffuse', label: 'Diffusé' }] },
       ],
@@ -860,14 +880,15 @@
       + '<strong>Télé 3 000 F au-delà de 60 000 F en juin</strong>, les deux se cumulant.',
     render: function (root) {
       var host = el('div.space-y-4');
-      var selMois = el('select.select');
+      var selMois = el('select.select'), selAnnee = selecteurExercice();
       C.MOIS.forEach(function (m, i) {
-        selMois.appendChild(el('option', { value: String(i) }, m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'));
+        selMois.appendChild(el('option', { value: String(i) }, m.charAt(0).toUpperCase() + m.slice(1)));
       });
-      selMois.value = String(AUJ.getMonth());
+      selMois.value = String(C.aujourdhui().getMonth());
 
       var barre = el('div.card');
       var bbody = el('div.card-body.flex.flex-wrap.items-end.gap-3');
+      bbody.appendChild(el('div.min-w-\\[14rem\\]', null, [el('label.label', { text: 'Exercice' }), selAnnee]));
       bbody.appendChild(el('div.min-w-\\[14rem\\]', null, [el('label.label', { text: 'Période' }), selMois]));
       bbody.appendChild(K.btn('État CNSS', { icon: 'printer', onclick: function () { etatCotisation('CNSS'); } }));
       bbody.appendChild(K.btn('État ITS', { icon: 'printer', onclick: function () { etatCotisation('ITS'); } }));
@@ -879,11 +900,12 @@
       var vue = el('div.space-y-4');
       host.appendChild(vue);
       selMois.addEventListener('change', afficher);
+      selAnnee.addEventListener('change', afficher);
       root.appendChild(host);
       afficher();
       return null;
 
-      function calc() { return calculerTous(2026, Number(selMois.value)); }
+      function calc() { return calculerTous(Number(selAnnee.value), Number(selMois.value)); }
 
       function afficher() {
         var c = calc();
@@ -908,7 +930,7 @@
         ]));
 
         vue.appendChild(U.dataTable({
-          title: 'Détail des cotisations — ' + C.MOIS[Number(selMois.value)] + ' 2026',
+          title: 'Détail des cotisations — ' + C.MOIS[Number(selMois.value)] + ' ' + selAnnee.value,
           rows: c, exportName: 'cotisations', pageSize: 20,
           columns: [
             { key: 'matricule', label: 'Mat.', align: 'right', nowrap: true, value: function (x) { return x.employe.matricule; }, render: function (x) { return x.employe.matricule; } },
@@ -982,8 +1004,8 @@
 
         P.etat({
           titre: titre,
-          sousTitre: C.MOIS[Number(selMois.value)] + ' 2026',
-          cartouche: [['Période', C.MOIS[Number(selMois.value)] + ' 2026'],
+          sousTitre: C.MOIS[Number(selMois.value)] + ' ' + selAnnee.value,
+          cartouche: [['Période', C.MOIS[Number(selMois.value)] + ' ' + selAnnee.value],
             ['Effectif', C.num(c.length)], ['Masse salariale', montantPaie(c, 'brut')],
             ['Montant à verser', C.money(total)],
             ['IFU employeur', C.BRAND.ifu], ['Date d’édition', C.dateFR(AUJ)]],
@@ -1027,7 +1049,7 @@
               name: 'employeId', label: 'Agent', type: 'select', required: true, col: 'full',
               options: C.sortBy(personnel(), 'nomComplet').map(function (e) { return { value: e.id, label: e.matricule + ' — ' + e.nomComplet }; }),
             },
-            { name: 'periode', label: 'Période', type: 'select', required: true, options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'; }) },
+            { name: 'periode', label: 'Période', type: 'select', required: true, options: optionsPeriodes() },
             { name: 'heures', label: 'Nombre d’heures', type: 'number', min: 1, required: true },
             { name: 'majoration', label: 'Majoration (%)', type: 'number', min: 0, value: 25 },
             { name: 'motif', label: 'Motif', type: 'select', required: true, options: ['Renfort de garde', 'Urgence', 'Remplacement', 'Surcroît d’activité'] },
@@ -1045,9 +1067,9 @@
           if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('HS-', 4, col.all().concat(col.archived()));   /* E680 */
           return v;
         },
-        onCreate: function () { return { majoration: 25, valide: false, periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' 2026' }; },
+        onCreate: function () { return { majoration: 25, valide: false, periode: libellePeriode(C.aujourdhui().getMonth(), exerciceDuJour()) }; },
         filters: [
-          { name: 'periode', label: 'Période', options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'; }) },
+          { name: 'periode', label: 'Période', options: optionsPeriodes() },
           { name: 'service', label: 'Service', options: D.SERVICES },
         ],
         kpis: function (rows) {
@@ -1538,22 +1560,25 @@
       + 'Chacune n’apparaît que sur le bulletin de son mois — les porter chaque mois majorerait '
       + 'les retenues de onze douzièmes.',
     render: function (root) {
-      var annee = 2026;
+      var selAnnee = selecteurExercice();
+      function anneeSel() { return Number(selAnnee.value); }
       var PO = PP.ortb;
       var RADIO = (PO.redevances || []).filter(function (r) { return r.id === 'radio'; })[0] || {};
       var TELE = (PO.redevances || []).filter(function (r) { return r.id === 'tele'; })[0] || {};
       var selMois = el('select.select');
-      for (var m = 0; m < 12; m++) selMois.appendChild(el('option', { value: String(m) }, C.MOIS[m] + ' ' + annee));
+      for (var m = 0; m < 12; m++) selMois.appendChild(el('option', { value: String(m) }, C.MOIS[m]));
       selMois.value = String(AUJ.getMonth());
       var vue = el('div.space-y-4');
 
       var barre = el('div.card');
       barre.appendChild(el('div.card-body.flex.flex-wrap.items-end.gap-3', null, [
+        el('div', null, [el('label.label', { text: 'Exercice' }), selAnnee]),
         el('div', null, [el('label.label', { text: 'Mois de paie' }), selMois]),
         K.btn('Imprimer l’état', { variant: 'primary', icon: 'printer', onclick: imprimer }),
         K.btn('Obligations', { icon: 'book-open-check', onclick: function () { global.SIGH.app.go('cfg-comptabilite'); } }),
       ]));
       selMois.addEventListener('change', afficher);
+      selAnnee.addEventListener('change', afficher);
       root.appendChild(el('div.space-y-4', null, [barre, vue]));
       afficher();
       return null;
@@ -1562,7 +1587,7 @@
       function lignes() {
         var mois = Number(selMois.value);
         return personnelPaye().map(function (e) {
-          var c = calculer(e, annee, mois);
+          var c = calculer(e, anneeSel(), mois);
           var d = c.detailOrtb || { lignes: [], parCategorie: {} };
           var radio = d.parCategorie.radio || null;
           var tele = d.parCategorie.tele || null;
@@ -1622,13 +1647,13 @@
 
         vue.appendChild(K.note('La radio et la télé sont <strong>deux redevances distinctes qui se cumulent</strong> : '
           + 'un salaire supérieur à ' + C.money(PO.seuilTele, false) + ' n’est pas dispensé de la radio, il acquitte les deux. '
-          + 'Total dû sur l’exercice ' + annee + ' : <strong>' + C.money(totalExercice) + '</strong> — '
+          + 'Total dû sur l’exercice ' + anneeSel() + ' : <strong>' + C.money(totalExercice) + '</strong> — '
           + C.money(rows.length * (RADIO.montant || 0)) + ' en ' + (RADIO.moisLabel || '—') + ' (radio) et '
           + C.money(avecTele.length * (TELE.montant || 0)) + ' en ' + (TELE.moisLabel || '—') + ' (télé).',
         { tone: 'info', icon: 'landmark' }));
 
         vue.appendChild(U.dataTable({
-          title: 'Redevances par agent — ' + C.MOIS[mois] + ' ' + annee,
+          title: 'Redevances par agent — ' + C.MOIS[mois] + ' ' + anneeSel(),
           rows: rows, exportName: 'redevance-ortb', pageSize: 20, searchable: true,
           defaultSort: 'agent',
           filters: [
@@ -1714,8 +1739,8 @@
         var duCeMois = C.sum(rows, 'duCeMois');
         P.etat({
           titre: 'État des redevances ORTB',
-          sousTitre: C.MOIS[mois] + ' ' + annee,
-          cartouche: [['Période', C.MOIS[mois] + ' ' + annee],
+          sousTitre: C.MOIS[mois] + ' ' + anneeSel(),
+          cartouche: [['Période', C.MOIS[mois] + ' ' + anneeSel()],
             ['Agents redevables', C.num(rows.length)],
             ['ORTB Radio', C.num(rows.filter(function (r) { return r.radio > 0; }).length) + ' agents — '
               + C.money(RADIO.montant, false) + ' en ' + (RADIO.moisLabel || '—')],

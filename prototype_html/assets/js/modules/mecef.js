@@ -872,9 +872,9 @@
         { name: 'email', label: 'Adresse électronique', value: C.BRAND.email },
 
         { type: 'section', label: 'Paramètres d’émission' },
-        { name: 'prefixeFacture', label: 'Préfixe des factures', value: 'FN-2026-', help: 'La numérotation doit rester strictement séquentielle.' },
-        { name: 'prefixeAvoir', label: 'Préfixe des avoirs', value: 'AV-2026-' },
-        { name: 'prefixeProforma', label: 'Préfixe des pro-forma', value: 'PRO-2026-' },
+        { name: 'prefixeFacture', label: 'Préfixe des factures', value: 'FN-' + C.aujourdhui().getFullYear() + '-', help: 'La numérotation doit rester strictement séquentielle.' },
+        { name: 'prefixeAvoir', label: 'Préfixe des avoirs', value: 'AV-' + C.aujourdhui().getFullYear() + '-' },
+        { name: 'prefixeProforma', label: 'Préfixe des pro-forma', value: 'PRO-' + C.aujourdhui().getFullYear() + '-' },
         { name: 'prochainNumero', label: 'Prochain numéro', type: 'number', value: normalisees().length + 1 },
         {
           name: 'regimeTva', label: 'Régime de TVA', type: 'select', required: true,

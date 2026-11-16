@@ -524,10 +524,11 @@
         transform: function (v, record) { rattacher(v); if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('DEC-', 4, S.collection('deces').all()); return v; },
         filters: [{ name: 'lieu', label: 'Lieu', options: ['Hospitalisation', 'Urgences', 'Bloc opératoire', 'Maternité', 'Domicile'] }],
         kpis: function (rows) {
-          var annee = rows.filter(function (r) { return C.toDate(r.dateHeure).getFullYear() === 2026; });
+          var exo = C.aujourdhui().getFullYear();   /* lot MIL : l'exercice du jour */
+          var annee = rows.filter(function (r) { return C.toDate(r.dateHeure).getFullYear() === exo; });
           return [
             { label: 'Décès enregistrés', value: C.num(rows.length), icon: 'file-text', tone: 'neutral' },
-            { label: 'Sur l’année 2026', value: C.num(annee.length), icon: 'calendar', tone: 'navy' },
+            { label: 'Sur l’année ' + exo, value: C.num(annee.length), icon: 'calendar', tone: 'navy' },
             { label: 'À déclarer', value: C.num(rows.filter(function (r) { return !r.declare; }).length), icon: 'file-clock', tone: 'warning' },
             { label: 'Causes distinctes', value: C.num(Object.keys(C.groupBy(rows, 'cause')).length), icon: 'list', tone: 'info' },
           ];

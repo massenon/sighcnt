@@ -1465,9 +1465,11 @@
   }
 
   /* --- Agrégations fréquentes ---------------------------------------------- */
-  function parMois(rows, dateKey, valueKey, nbMois) {
-    var n = nbMois || 12, labels = G.moisGlissants(n), buckets = new Array(n).fill(0);
-    var ref = new Date(2026, 7, 1);
+  /* LOT MIL (16/11/2026) : la fenêtre glissante se termine au mois de `fin` (une date), le MOIS DU JOUR par défaut ; plus de mois de référence écrit en dur. */
+  function parMois(rows, dateKey, valueKey, nbMois, fin) {
+    var n = nbMois || 12, labels = G.moisGlissants(n, fin), buckets = new Array(n).fill(0);
+    var f0 = fin ? C.toDate(fin) : C.aujourdhui();
+    var ref = new Date(f0.getFullYear(), f0.getMonth(), 1);
     rows.forEach(function (r) {
       var d = C.toDate(r[dateKey]);
       if (isNaN(d)) return;

@@ -2013,20 +2013,21 @@
       host.appendChild(U.card('Identification fiscale de l’établissement', el('div', null, [f, actions])));
       host.appendChild(U.card('Versions de l’identité légale', tableVersionsIdentite()));
 
+      var anneeNum = C.aujourdhui().getFullYear();   /* lot MIL : l'année affichée est celle du jour ; un numéro prend celle de la date de SA pièce (`C.referenceAnnuelle`) */
       host.appendChild(U.card('Numérotation des documents', K.miniTable([
         { label: 'Type de document', key: 'type' },
         { label: 'Préfixe', render: function (x) { return el('span.font-mono.text-xs.font-semibold', { text: x.prefixe }); } },
         { label: 'Format', key: 'format' },
         { label: 'Séquence', key: 'sequence' },
       ], [
-        { type: 'Facture normalisée', prefixe: 'FN-2026-', format: 'FN-AAAA-NNNNN', sequence: 'Strictement séquentielle' },
-        { type: 'Facture pro-forma', prefixe: 'PRO-2026-', format: 'PRO-AAAA-NNNNN', sequence: 'Indépendante' },
-        { type: 'Avoir', prefixe: 'AV-2026-', format: 'AV-AAAA-NNNN', sequence: 'Strictement séquentielle' },
+        { type: 'Facture normalisée', prefixe: 'FN-' + anneeNum + '-', format: 'FN-AAAA-NNNNN', sequence: 'Strictement séquentielle' },
+        { type: 'Facture pro-forma', prefixe: 'PRO-' + anneeNum + '-', format: 'PRO-AAAA-NNNNN', sequence: 'Indépendante' },
+        { type: 'Avoir', prefixe: 'AV-' + anneeNum + '-', format: 'AV-AAAA-NNNN', sequence: 'Strictement séquentielle' },
         { type: 'Dossier patient', prefixe: 'CNT', format: 'CNT/[n°]/[AA]', sequence: 'Par année civile (RG-01)' },
-        { type: 'Bon de commande', prefixe: 'BC-2026-', format: 'BC-AAAA-NNNN', sequence: 'Par exercice' },
-        { type: 'Bon d’expression de besoins', prefixe: 'BEB-2026-', format: 'BEB-AAAA-NNNN', sequence: 'Par exercice' },
+        { type: 'Bon de commande', prefixe: 'BC-' + anneeNum + '-', format: 'BC-AAAA-NNNN', sequence: 'Par exercice' },
+        { type: 'Bon d’expression de besoins', prefixe: 'BEB-' + anneeNum + '-', format: 'BEB-AAAA-NNNN', sequence: 'Par exercice' },
         { type: 'Bulletin de paie', prefixe: 'BP-', format: 'BP-NNNNN', sequence: 'Par période de paie' },
-        { type: 'Écriture comptable', prefixe: '[JOURNAL]-2026-', format: 'JJJ-AAAA-NNNNN', sequence: 'Par journal' },
+        { type: 'Écriture comptable', prefixe: '[JOURNAL]-' + anneeNum + '-', format: 'JJJ-AAAA-NNNNN', sequence: 'Par journal' },
       ])));
 
       host.appendChild(U.card('Obligations déclaratives (dérivées des obligations en vigueur)', tableObligationsDeclaratives()));
@@ -3540,7 +3541,7 @@
                 if (!v) return;
                 var p = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
                 v.type = t.id;
-                v.numero = 'CERT-2026-' + C.pad(colCertificats().all().length + 1, 4);
+                v.numero = C.referenceAnnuelle('CERT-', C.iso(C.aujourdhui()), 4, colCertificats().all(), 'numero');
                 v.patientId = p ? p.id : null;
                 v.patient = p ? p.nom + ' ' + p.prenom : '—';
                 v.texte = composer(t.trame, Object.assign({}, v, { patient: v.patient }));

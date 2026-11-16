@@ -1741,7 +1741,7 @@
               id: 'RAP' + C.uid(), statut: 'actif',
               reference: 'RB-' + C.pad(col.all().length + 1, 4),
               banque: b, compte: '521000',
-              periode: C.MOIS[m + 2].charAt(0).toUpperCase() + C.MOIS[m + 2].slice(1) + ' 2026',
+              periode: C.MOIS[m + 2].charAt(0).toUpperCase() + C.MOIS[m + 2].slice(1) + ' ' + C.aujourdhui().getFullYear(),
               soldeComptable: soldeCompta,
               soldeReleve: soldeCompta + ecart,
               ecart: ecart,
@@ -3220,13 +3220,14 @@
           },
         },
         {
-          id: 'comparaison', label: 'Comparaison 2025 / 2026',
+          id: 'comparaison', label: 'Comparaison 2025 / ' + C.aujourdhui().getFullYear(),
           render: function () {
+            var exo = C.aujourdhui().getFullYear();   /* lot MIL : l'exercice du jour face à la liasse 2025 déposée */
             var factures = S.collection('factures').active();
             var rows = E.mois.map(function (m, i) {
               var ca2026 = C.sum(factures.filter(function (f) {
                 var d = C.toDate(f.date);
-                return d.getFullYear() === 2026 && d.getMonth() === i;
+                return d.getFullYear() === exo && d.getMonth() === i;
               }), 'montantTTC');
               var ca2025 = E.chiffreAffaires[i];
               return {
@@ -3237,19 +3238,19 @@
               };
             });
             return el('div.space-y-3', null, [
-              K.note('L’exercice 2026 est alimenté par le jeu de démonstration du prototype : la comparaison illustre le mécanisme, '
+              K.note('L’exercice ' + exo + ' est alimenté par le jeu de démonstration du prototype : la comparaison illustre le mécanisme, '
                 + 'elle ne reflétera l’activité réelle qu’après la bascule en production.', { tone: 'info' }),
-              U.card('Chiffre d’affaires 2025 et 2026',
+              U.card('Chiffre d’affaires 2025 et ' + exo,
                 G.barres(moisCourts.map(function (m) { return m.slice(0, 4); }), [
                   { label: '2025 (réel)', data: rows.map(function (r) { return r.ca2025; }), color: G.TONES.navy },
-                  { label: '2026 (prototype)', data: rows.map(function (r) { return r.ca2026; }), color: G.TONES.vert },
+                  { label: exo + ' (prototype)', data: rows.map(function (r) { return r.ca2026; }), color: G.TONES.vert },
                 ])),
               U.dataTable({
-                rows: rows, exportName: 'comparaison-2025-2026', pageSize: 13, searchable: false,
+                rows: rows, exportName: 'comparaison-2025-' + exo, pageSize: 13, searchable: false,
                 columns: [
                   { key: 'mois', label: 'Mois', nowrap: true },
                   { key: 'ca2025', label: 'CA 2025 (réel)', align: 'right', text: function (r) { return C.money(r.ca2025, false); }, render: function (r) { return C.money(r.ca2025, false); } },
-                  { key: 'ca2026', label: 'CA 2026', align: 'right', text: function (r) { return C.money(r.ca2026, false); }, render: function (r) { return C.money(r.ca2026, false); } },
+                  { key: 'ca2026', label: 'CA ' + exo, align: 'right', text: function (r) { return C.money(r.ca2026, false); }, render: function (r) { return C.money(r.ca2026, false); } },
                   {
                     key: 'ecart', label: 'Écart', align: 'right',
                     text: function (r) { return C.money(r.ecart, false); },

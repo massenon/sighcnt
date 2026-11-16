@@ -1088,10 +1088,11 @@
       kpis: function (rows) {
         var assures = rows.filter(function (p) { return !!p.assureur; });
         var expirees = assures.filter(function (p) { return !carteValide(p); });
-        var annee = rows.filter(function (p) { return C.toDate(p.dateCreation).getFullYear() === 2026; });
+        var exo = C.aujourdhui().getFullYear();   /* lot MIL : l'exercice du jour, jamais une année écrite */
+        var annee = rows.filter(function (p) { return C.toDate(p.dateCreation).getFullYear() === exo; });
         return [
           { label: 'Dossiers actifs', value: C.num(rows.length), icon: 'users', tone: 'navy' },
-          { label: 'Créés en 2026', value: C.num(annee.length), icon: 'user-plus', tone: 'success' },
+          { label: 'Créés en ' + exo, value: C.num(annee.length), icon: 'user-plus', tone: 'success' },
           { label: 'Patients assurés', value: C.num(assures.length), icon: 'shield-check', tone: 'info', hint: C.pct(rows.length ? assures.length / rows.length * 100 : 0) + ' du répertoire' },
           { label: 'Cartes expirées', value: C.num(expirees.length), icon: 'shield-alert', tone: expirees.length ? 'danger' : 'neutral', hint: 'Facturation intégrale (RG-09)' },
         ];

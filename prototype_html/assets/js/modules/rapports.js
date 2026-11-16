@@ -172,7 +172,7 @@
         { name: 'sousTitre', label: 'Sous-titre', col: 'full', value: 'Période : ' + C.moisAnnee(AUJ) },
         { name: 'destinataire', label: 'Destinataire', type: 'select', options: ['Direction', 'Conseil de gestion', 'Partenaire technique', 'Usage interne'] },
         { name: 'periode', label: 'Période', type: 'select', required: true, options: ['Journalière', 'Hebdomadaire', 'Mensuelle', 'Trimestrielle', 'Annuelle'], value: 'Mensuelle' },
-        { name: 'dateDebut', label: 'Du', type: 'date', value: C.iso(new Date(2026, 7, 1)) },
+        { name: 'dateDebut', label: 'Du', type: 'date', value: C.iso(new Date(AUJ.getFullYear(), AUJ.getMonth(), 1)) },
         { name: 'dateFin', label: 'Au', type: 'date', value: C.iso(AUJ) },
         { name: 'filigrane', label: 'Filigrane', type: 'select', options: ['', 'Document officiel', 'Confidentiel', 'Brouillon'] },
       ], {});

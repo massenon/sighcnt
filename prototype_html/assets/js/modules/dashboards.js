@@ -1443,7 +1443,7 @@
                 render: function () {
                   var jours = [], data = [];
                   for (var d = 1; d <= AUJ.getDate(); d++) {
-                    var jour = new Date(2026, 7, d);
+                    var jour = new Date(AUJ.getFullYear(), AUJ.getMonth(), d);   /* lot MIL : le mois du jour */
                     jours.push(String(d));
                     data.push(C.sum(factures().filter(function (f) { return C.iso(f.date) === C.iso(jour); }), 'montantPaye'));
                   }
@@ -4250,7 +4250,7 @@
           emptyMessage: 'Aucun bulletin \u00e9mis pour cet agent : la paie se g\u00e9n\u00e8re \u00e0 l\u2019\u00e9cran '
             + '\u00ab Calcul de la paie \u00bb (M11). Cet \u00e9cran LIT, il ne g\u00e9n\u00e8re pas.',
           columns: [
-            { key: 'periode', label: 'P\u00e9riode', render: function (b) { return b.periode || (b.mois != null ? C.MOIS[b.mois] + ' ' + (b.annee || 2026) : '\u2014'); } },
+            { key: 'periode', label: 'P\u00e9riode', render: function (b) { return b.periode || (b.mois != null ? C.MOIS[b.mois] + ' ' + (b.annee || C.aujourdhui().getFullYear()) : '\u2014'); } },
             { key: 'brut', label: 'Brut', align: 'right', render: function (b) { return C.money(b.brut, false); } },
             { key: 'net', label: 'Net pay\u00e9', align: 'right', render: function (b) { return C.money(b.net, false); } },
           ],

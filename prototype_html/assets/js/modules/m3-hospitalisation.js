@@ -343,7 +343,7 @@
                 var p = patients().filter(function (x) { return x.code === v.patientCode; })[0];
                 var u = D.UNITES_OBSERVATION.filter(function (x) { return x.id === v.unite; })[0];
                 var res = colObs().insert({
-                  reference: 'OBS-2026-' + C.pad(colObs().all().length + 1, 4),
+                  reference: C.referenceAnnuelle('OBS-', C.iso(C.aujourdhui()), 4, colObs().all()),
                   patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
                   unite: v.unite, uniteLabel: u ? u.label : v.unite, place: v.place || null,
                   motif: v.motif,
@@ -3220,7 +3220,7 @@
             transform: function (v) {
               var pt = patientParCode3(v.patientCode);
               return Object.assign({}, v, {
-                reference: C.referenceSuivante('CPA-2026-', 4, colCpa().all()),
+                reference: C.referenceAnnuelle('CPA-', v.date, 4, colCpa().all()),
                 patientId: pt ? pt.id : null,
                 patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
               });
@@ -3368,7 +3368,7 @@
             transform: function (v) {
               var pt = patientParCode3(v.patientCode);
               return Object.assign({}, v, {
-                reference: C.referenceSuivante('CRA-2026-', 4, colCrAnesthesie().all()),
+                reference: C.referenceAnnuelle('CRA-', v.dateOperation, 4, colCrAnesthesie().all()),
                 patientId: pt ? pt.id : null,
                 patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
               });

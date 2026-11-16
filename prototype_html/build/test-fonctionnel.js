@@ -28253,6 +28253,130 @@ async function viderMessages(page) {
   });
   /* LOT TARIF-FIX-2 FIN */
 
+  /* LOT MIL DEBUT (Vagues 290 à 292) : plus aucune année écrite (numéros, paie, agrégats), horloge posée au 31/12/2026 puis au 01/01/2027 */
+  await etape(async () => {
+    scenario('Vague 290 : lot MIL, les numéros annuels (RU, AM, CPA, CRA, BC) prennent l’ANNÉE DE LA DATE DE LA PIÈCE par une fabrique unique à compteur par année : à la veille du 01/01/2027 une pièce datée du jour porte 2026, le 01/01/2027 une pièce du jour repart à 0001 de 2027, un numéro émis ne se réécrit pas');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN290', nomComplet: 'ADMIN290', fonction: 'direction', identifiant: 's290.admin', secteur: 'DIR' });
+    const sousHorloge = async (a, m, j, f) => {
+      const h = await page.evaluateOnNewDocument((x, y, z) => { if (window.__SIGH_HORLOGE) window.__SIGH_HORLOGE.poser(x, y, z); }, a, m, j);
+      try { return await f(); } finally { await page.removeScriptToEvaluateOnNewDocument(h.identifier); }
+    };
+    const creer = async (ecran, collection, jourIso) => {
+      await ouvrir(ecran + '.html');
+      const avant = await page.evaluate((c) => window.SIGH.store.collection(c).all().map((x) => x.id), collection);
+      const clic = await page.evaluate(() => {
+        const b = [...document.querySelectorAll('#page-content button')].find((x) => /^\s*(Nouvel|Nouvelle|Nouveau)/.test(x.textContent));
+        if (b) b.click(); return !!b;
+      });
+      await page.waitForSelector('.drawer-backdrop [name]', { timeout: 10000 }).catch(() => null);
+      await page.evaluate((jour) => {
+        const racine = [...document.querySelectorAll('.drawer-backdrop')].pop();
+        [...racine.querySelectorAll('[name]')].forEach((f) => {
+          let v = null;
+          if (f.tagName === 'SELECT') { const o = [...f.options].find((x) => x.value !== ''); v = o ? o.value : null; }
+          else if (f.type === 'checkbox') return;
+          else if (f.type === 'date') v = jour;
+          else if (f.type === 'datetime-local') v = jour + 'T10:00';
+          else if (f.type === 'time') v = '09:00';
+          else if (f.type === 'number') v = f.min || '1';
+          else if (!f.value) v = 'Sonde 290';
+          if (v == null) return;
+          f.value = v; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        const b = [...racine.querySelectorAll('button')].find((x) => /^\s*Créer/.test(x.textContent)); if (b) b.click();
+      }, jourIso);
+      await attendreEcritures();
+      const neuf = await page.evaluate((c, deja) => window.SIGH.store.collection(c).all().filter((x) => deja.indexOf(x.id) < 0).map((x) => ({ id: x.id, reference: x.reference || x.numero })), collection, avant);
+      return { clic, neuf };
+    };
+    const ecrans = [['m13-reunions', 'reunions', 'RU-'], ['m13-ambulance', 'ambulance', 'AM-'], ['m3-cpa', 'cpa', 'CPA-'], ['m3-cr-anesthesie', 'crAnesthesie', 'CRA-']];
+    const veille = {}, jour = {}, nettoyer = [];
+    await sousHorloge(2026, 11, 31, async () => { for (const [e, c] of ecrans) veille[c] = await creer(e, c, '2026-12-31'); });
+    await sousHorloge(2027, 0, 1, async () => { for (const [e, c] of ecrans) jour[c] = await creer(e, c, '2027-01-01'); });
+    const lus = {};
+    for (const [, c, pref] of ecrans) {
+      const v = veille[c].neuf[0], j = jour[c].neuf[0];
+      lus[c] = { clic: veille[c].clic && jour[c].clic, veille: v && v.reference, jour: j && j.reference };
+      lus[c].ok = !!v && !!j && new RegExp('^' + pref + '2026-\\d+$').test(v.reference) && new RegExp('^' + pref + '2027-0*1$').test(j.reference);
+      [v, j].forEach((x) => x && nettoyer.push([c, x.id]));
+    }
+    verifier('Pièce créée le 31/12/2026 et datée du jour : numéro de 2026 ; créée le 01/01/2027 et datée du jour : numéro de 2027, compteur de 2027 repartant à 1 (réunion, intervention d’ambulance, CPA, compte rendu d’anesthésie)',
+      ecrans.every(([, c]) => lus[c].ok), JSON.stringify(lus));
+    /* la fabrique unique : une année par date de pièce, le rang LU sur les fiches existantes de CETTE année */
+    const fab = await page.evaluate(() => {
+      const C = window.SIGH.core;
+      const f = [{ reference: 'BEB-2026-0007' }, { reference: 'BEB-2027-0002' }, { reference: 'BC-2026-0099' }];
+      return { a: C.referenceAnnuelle('BEB-', '2026-12-31', 4, f), b: C.referenceAnnuelle('BEB-', '2027-01-01', 4, f), c: C.referenceAnnuelle('BC-', '2027-01-01', 4, f), d: C.referenceAnnuelle('BC-', '2025-06-01', 4, f),
+        e: C.referenceAnnuelle('CERT-', '2027-02-02', 4, [{ numero: 'CERT-2027-0004' }], 'numero'), an: [C.anneeDePiece('2027-01-01'), C.anneeDePiece('2026-12-31T23:59:00'), C.anneeDePiece(new Date(2027, 0, 1))] };
+    });
+    verifier('La fabrique unique : BEB du 31/12/2026 = BEB-2026-0008, du 01/01/2027 = BEB-2027-0003 (compteur par année), BC de 2027 = BC-2027-0001, d’un exercice passé = BC-2025-0001, CERT sur son champ `numero`, année lue de la date de la pièce',
+      fab.a === 'BEB-2026-0008' && fab.b === 'BEB-2027-0003' && fab.c === 'BC-2027-0001' && fab.d === 'BC-2025-0001' && fab.e === 'CERT-2027-0005' && JSON.stringify(fab.an) === '[2027,2026,2027]', JSON.stringify(fab));
+    await page.evaluate((l) => { const S = window.SIGH.store; l.forEach(([c, id]) => S.collection(c).archive(id, 'restauration de la sonde 290')); }, nettoyer);
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 291 : lot MIL, la paie lit l’EXERCICE CHOISI (celui du jour par défaut) : au 31/12/2026 le calcul, les cotisations et l’état ORTB s’ouvrent sur 2026, au 01/01/2027 sur 2027, et le sélecteur d’exercice rend 2026 sans toucher au code');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN291', nomComplet: 'ADMIN291', fonction: 'direction', identifiant: 's291.admin', secteur: 'DIR' });
+    const lire = async (a, m, j) => {
+      const h = await page.evaluateOnNewDocument((x, y, z) => { if (window.__SIGH_HORLOGE) window.__SIGH_HORLOGE.poser(x, y, z); }, a, m, j);
+      try {
+        const R = {};
+        for (const e of ['m11-calcul', 'm11-cotisations', 'm11-ortb']) {
+          await ouvrir(e + '.html');
+          R[e] = await page.evaluate(() => {
+            const sel = [...document.querySelectorAll('#page-content select')];
+            const exo = sel.find((s) => [...s.options].some((o) => /^20\d\d$/.test(o.value)));
+            return { exercice: exo && exo.value, annees: exo ? [...exo.options].map((o) => o.value) : [], texte: document.getElementById('page-content').textContent.replace(/\s+/g, ' ') };
+          });
+        }
+        return R;
+      } finally { await page.removeScriptToEvaluateOnNewDocument(h.identifier); }
+    };
+    const v = await lire(2026, 11, 31), n = await lire(2027, 0, 1);
+    verifier('Calcul de la paie : l’exercice proposé est celui du jour (2026 le 31/12/2026, 2027 le 01/01/2027), le tableau porte « Décembre 2026 » puis « Janvier 2027 », et rien d’une autre année n’y est écrit',
+      v['m11-calcul'].exercice === '2026' && n['m11-calcul'].exercice === '2027' && /Détail du calcul — Décembre 2026/i.test(v['m11-calcul'].texte) && /Détail du calcul — Janvier 2027/i.test(n['m11-calcul'].texte)
+      && !/janvier 2026/i.test(n['m11-calcul'].texte), JSON.stringify({ v: [v['m11-calcul'].exercice, v['m11-calcul'].texte.slice(0, 200)], n: [n['m11-calcul'].exercice, n['m11-calcul'].texte.slice(0, 200)] }));
+    verifier('Cotisations CNSS / ITS / VPS et état ORTB : même exercice du jour (2026 puis 2027), la période de l’état imprimé n’est plus figée',
+      v['m11-cotisations'].exercice === '2026' && n['m11-cotisations'].exercice === '2027' && /Détail des cotisations — Décembre 2026/i.test(v['m11-cotisations'].texte) && /Détail des cotisations — Janvier 2027/i.test(n['m11-cotisations'].texte)
+      && v['m11-ortb'].exercice === '2026' && n['m11-ortb'].exercice === '2027' && /sur l’exercice 2027/.test(n['m11-ortb'].texte) && /sur l’exercice 2026/.test(v['m11-ortb'].texte),
+      JSON.stringify({ c: [v['m11-cotisations'].exercice, n['m11-cotisations'].exercice], o: [v['m11-ortb'].exercice, n['m11-ortb'].exercice] }));
+    verifier('Le sélecteur d’exercice propose les quatre derniers exercices, 2027 en tête au 01/01/2027, 2024 en dernier : l’exercice 2026 reste consultable',
+      JSON.stringify(n['m11-calcul'].annees) === '["2027","2026","2025","2024"]' && JSON.stringify(v['m11-calcul'].annees) === '["2026","2025","2024","2023"]', JSON.stringify([n['m11-calcul'].annees, v['m11-calcul'].annees]));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 292 : lot MIL, les agrégats glissants (`K.parMois`, `G.moisGlissants`) se terminent au MOIS DU JOUR (ou à celui qu’on choisit) : au 31/12/2026 la dernière barre est décembre 2026, au 01/01/2027 janvier 2027 et une pièce de janvier 2027 y est comptée ; les KPI « Créés en AAAA » suivent l’exercice du jour');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN292', nomComplet: 'ADMIN292', fonction: 'direction', identifiant: 's292.admin', secteur: 'DIR' });
+    const lire = async (a, m, j) => {
+      const h = await page.evaluateOnNewDocument((x, y, z) => { if (window.__SIGH_HORLOGE) window.__SIGH_HORLOGE.poser(x, y, z); }, a, m, j);
+      try {
+        await ouvrir('m1-patients.html');
+        return await page.evaluate(() => {
+          const K = window.SIGH.kit, G = window.SIGH.charts;
+          const rows = [{ date: '2026-12-20', q: 5 }, { date: '2027-01-15', q: 7 }, { date: '2026-01-10', q: 3 }];
+          const p = K.parMois(rows, 'date', 'q'), imp = K.parMois(rows, 'date', 'q', 12, '2026-03-05');
+          return { fin: p.labels[p.labels.length - 1], debut: p.labels[0], data: p.data.slice(-2), total: p.data.reduce((x, y) => x + y, 0),
+            impose: { fin: imp.labels[imp.labels.length - 1], total: imp.data.reduce((x, y) => x + y, 0) }, glissants: G.moisGlissants(3), texte: document.getElementById('page-content').textContent.replace(/\s+/g, ' ') };
+        });
+      } finally { await page.removeScriptToEvaluateOnNewDocument(h.identifier); }
+    };
+    const v = await lire(2026, 11, 31), n = await lire(2027, 0, 1);
+    verifier('Au 31/12/2026 : la fenêtre de 12 mois finit en « Déc. 26 » (débute en « Janv. 26 »), la pièce du 15/01/2027 n’y est pas comptée (5 + 3 = 8) ; au 01/01/2027 elle finit en « Janv. 27 » et compte la pièce de janvier 2027 (7 + 5 = 12, celle de janvier 2026 sort de la fenêtre)',
+      /^déce\. 26$/i.test(v.fin) && /^janv\. 26$/i.test(v.debut) && v.total === 8 && /^janv\. 27$/i.test(n.fin) && n.total === 12 && n.data[1] === 7, JSON.stringify({ v: [v.fin, v.debut, v.total, v.data], n: [n.fin, n.debut, n.total, n.data] }));
+    verifier('Une fin explicite (mars 2026) est respectée : la fenêtre finit en « Mars 26 » et ne compte que la pièce de janvier 2026 (3) ; `G.moisGlissants(3)` finit au mois du jour',
+      /^mars\. 26$/i.test(n.impose.fin) && n.impose.total === 3 && /26$/.test(v.glissants[2]) && /27$/.test(n.glissants[2]), JSON.stringify({ i: n.impose, g: [v.glissants, n.glissants] }));
+    verifier('Le KPI du répertoire des patients suit l’exercice du jour : « Créés en 2026 » le 31/12/2026, « Créés en 2027 » le 01/01/2027',
+      /Créés en 2026/.test(v.texte) && !/Créés en 2027/.test(v.texte) && /Créés en 2027/.test(n.texte), JSON.stringify([/Créés en \d{4}/.exec(v.texte), /Créés en \d{4}/.exec(n.texte)]));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT MIL FIN */
+
 
 
 
