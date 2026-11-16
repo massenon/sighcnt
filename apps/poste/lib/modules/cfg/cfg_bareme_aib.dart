@@ -3,8 +3,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../donnees/aib_poste.dart';
+import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
 import 'cfg_aib_achats.dart';
@@ -20,8 +22,7 @@ class EcranBaremeAib extends StatefulWidget with EcranMaquette {
   @override
   String get titre => 'Barème de l’AIB';
   @override
-  String get description =>
-      'Taux de l’acompte sur impôt assis sur les bénéfices par situation de l’acheteur et par qualité du tiers, daté, versionné et modifiable sans toucher au code.';
+  String get description => 'Taux de l’acompte sur impôt assis sur les bénéfices par situation de l’acheteur, daté, versionné et modifiable sans toucher au code.';
   @override
   String get regle =>
       'Deux barèmes datés : la situation de l’acheteur et la retenue sur la facture d’un tiers (personne physique, personne morale). La facture d’un patient ne porte aucun AIB : il s’impute opération par opération, par le comptable, à l’onglet « Imputations » ; le logiciel propose le taux du barème à la date de l’opération, il ne décide jamais.';
@@ -142,6 +143,50 @@ class _EtatBaremeAib extends State<EcranBaremeAib> {
             ]);
   }
 
+  bool _peutEcrire(ContexteEcran c) => aibRolesEcriture.contains(c.role) && !ServiceInstallation.de(c.magasin).rattache;
+
+  /// « Nouvelle version » : une version DATÉE du barème (situation, taux, date d'effet, source, motif). Elle ferme la précédente à la veille ; une version ne se réécrit pas ; la source
+  /// est dite (on n'invente pas un taux). Arrêtée à l'enregistrement par un profil de la famille de validation, « à valider » sinon.
+  void _nouvelleVersion(BuildContext ctx, ContexteEcran c, AibPoste aib) {
+    final situations = aibSituationsActives(aib.donnees(), famille: 'tous');
+    final f = ControleurFormulaire([
+      ChampDef(nom: 'situation', libelle: 'Situation', type: TypeChamp.select, requis: true, col: ColChamp.plein, options: [for (final s in situations) OptionChamp('${s['code']}', '${s['libelle']}')]),
+      const ChampDef(nom: 'taux', libelle: 'Taux (%)', type: TypeChamp.nombre, requis: true, col: ColChamp.tiers, aide: 'Pourcentage entier.'),
+      const ChampDef(nom: 'dateEffet', libelle: 'Date d’effet', type: TypeChamp.date, requis: true, col: ColChamp.tiers, aide: 'Postérieure à la version la plus récente de la situation, qui sera fermée à la veille.'),
+      const ChampDef(nom: 'source', libelle: 'Source du taux', type: TypeChamp.textarea, lignes: 2, requis: true, col: ColChamp.plein, aide: 'Le texte, la décision ou la déclaration d’où vient le taux. On n’invente pas un taux.'),
+      const ChampDef(nom: 'motif', libelle: 'Motif', type: TypeChamp.textarea, lignes: 2, requis: true, col: ColChamp.plein),
+    ], {'dateEffet': isoJour(c.aujourdhui)});
+    afficherModale<void>(ctx,
+        titre: 'Nouvelle version du barème',
+        taille: TailleModale.lg,
+        corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+          const NoteSigh('La version ferme la précédente de la même situation à la veille de sa date d’effet ; une version ne se réécrit pas.', icone: LucideIcons.calendarClock),
+          const SizedBox(height: 12),
+          FormulaireSigh(controleur: f),
+        ]),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  key: const Key('aib:version:enregistrer'),
+                  libelle: 'Enregistrer la version',
+                  icone: LucideIcons.check,
+                  onPressed: () {
+                    final v = f.valider();
+                    if (v == null) {
+                      ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
+                      return;
+                    }
+                    final r = aib.nouvelleVersion({'situation': v['situation'], 'taux': v['taux'], 'dateEffet': v['dateEffet'], 'source': v['source'], 'motif': v['motif']});
+                    if (r['ok'] != true) {
+                      ToastsSigh.afficher(ctx, '${r['code']} : ${r['motif']}', type: TypeToast.erreur, detail: '${r['geste'] ?? ''}', duree: const Duration(seconds: 12));
+                      return;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Version enregistrée.', type: TypeToast.succes, detail: r['enAttenteDeValidation'] == true ? 'Elle naît « à valider ».' : 'Arrêtée à l’enregistrement (profil de validation).');
+                  }),
+            ]);
+  }
+
   void _annuler(BuildContext ctx, ContexteEcran c, AibPoste aib, Fiche x) {
     final f = ControleurFormulaire(const [ChampDef(nom: 'motif', libelle: 'Motif de l’annulation', requis: true, col: ColChamp.plein)], const {});
     afficherModale<void>(ctx,
@@ -205,6 +250,7 @@ class _EtatBaremeAib extends State<EcranBaremeAib> {
             for (final k in c.magasin.collection('comptes').actives) k
           ]..sort((a, b) => '${a['num']}'.compareTo('${b['num']}'));
           final droit = _droitImputer(c);
+          final br0 = aibBranchementALaDate(d, auj);
           final fileul = ServiceInstallation.de(c.magasin).rattache;
           return cfaPile([
             if (aValider > 0)
@@ -214,28 +260,46 @@ class _EtatBaremeAib extends State<EcranBaremeAib> {
                   icone: LucideIcons.clipboardCheck),
             KpiGrilleSigh(kpis: [
               KpiSigh(libelle: 'Situations actives', valeur: nombre(situations.length), icone: LucideIcons.users, ton: TonSigh.navy),
-              KpiSigh(libelle: 'Versions du barème', valeur: nombre(versions.length), icone: LucideIcons.percent, ton: TonSigh.succes, indice: 'Deux barèmes datés'),
+              KpiSigh(
+                  libelle: 'Versions en vigueur',
+                  valeur: nombre(versions.where((v) => _etat(v, auj) == 'En vigueur').length),
+                  icone: LucideIcons.percent,
+                  ton: TonSigh.succes,
+                  indice: 'À la date du jour'),
               KpiSigh(libelle: 'Versions en attente de validation', valeur: nombre(aValider), icone: LucideIcons.clipboardCheck, ton: aValider > 0 ? TonSigh.attention : TonSigh.neutre),
+              KpiSigh(libelle: 'Versions archivées', valeur: nombre(c.magasin.collection('baremeAib').toutes.where((v) => v['statut'] == 'archive').length), icone: LucideIcons.archive, ton: TonSigh.neutre),
               KpiSigh(libelle: 'Imputations', valeur: nombre(imputations.length), icone: LucideIcons.scale, ton: TonSigh.info, indice: 'Opération par opération'),
             ]),
             OngletsSigh(onglets: [
               OngletDef(
                   id: 'versions',
                   libelle: 'Barème par version (${versions.length})',
-                  construire: (_) => MiniTableauSigh(
-                          vide: 'Aucune version : sans version, le taux est refusé (AIB_SANS_BAREME), jamais rendu à zéro.',
-                          colonnes: [
-                            ColonneMini('Situation', (v) => libSit(v['situation'])),
-                            ColonneMini('Barème', (v) => famille(v['situation'])),
-                            ColonneMini('Taux', (v) => '${v['taux']} %', droite: true),
-                            ColonneMini('Du', (v) => aibDateFr('${v['dateEffet']}')),
-                            ColonneMini('Au', (v) => v['dateFin'] == null ? 'Ouverte' : aibDateFr('${v['dateFin']}')),
-                            ColonneMini('État', (v) => _etat(v, auj)),
-                            ColonneMini('Arrêtée', (v) => v['aValider'] == true ? 'À valider' : 'Validée',
-                                rendu: (v) => v['aValider'] == true ? const BadgeSigh('À valider', ton: TonSigh.attention) : const BadgeSigh('Validée', ton: TonSigh.succes)),
-                            ColonneMini('Source', (v) => '${v['source'] ?? 'Non renseignée'}'.length > 90 ? '${v['source']}'.substring(0, 90) : '${v['source'] ?? 'Non renseignée'}'),
+                  construire: (_) => TableauSigh(
+                      titre: 'Versions du barème',
+                      lignes: versions,
+                      taillePage: 20,
+                      nomExport: 'bareme-aib',
+                      messageVide: 'Aucune version : sans version, le taux est refusé (AIB_SANS_BAREME), jamais rendu à zéro.',
+                      actions: [
+                        if (c.droit.editer && _peutEcrire(c))
+                          BoutonSigh(key: const Key('aib:nouvelle-version'), libelle: 'Nouvelle version', icone: LucideIcons.plus, taille: TailleBouton.sm, onPressed: () => _nouvelleVersion(context, c, aib)),
+                      ],
+                      actionsLigne: (ctx, v) => [
+                            if (ValidationPoste(c).bouton(ctx, 'bareme_aib', v['id'], apres: () => setState(() {})) case final b?) b,
                           ],
-                          lignes: versions)),
+                      colonnes: [
+                        ColonneTableau(cle: 'situation', libelle: 'Situation', texte: (v) => libSit(v['situation']), rendu: (_, v) => Text(libSit(v['situation']), style: const TextStyle(fontWeight: FontWeight.w500))),
+                        ColonneTableau(cle: 'taux', libelle: 'Taux', droite: true, texte: (v) => '${v['taux']} %', rendu: (_, v) => Text('${v['taux']} %', style: const TextStyle(fontWeight: FontWeight.w600))),
+                        ColonneTableau(cle: 'dateEffet', libelle: 'Du', texte: (v) => aibDateFr('${v['dateEffet']}'), valeur: (v) => '${v['dateEffet']}'),
+                        ColonneTableau(cle: 'dateFin', libelle: 'Au', texte: (v) => v['dateFin'] == null ? 'Ouverte' : aibDateFr('${v['dateFin']}'), valeur: (v) => '${v['dateFin'] ?? '9999'}'),
+                        ColonneTableau(cle: 'etat', libelle: 'État', texte: (v) => _etat(v, auj), valeur: (v) => _etat(v, auj)),
+                        ColonneTableau(
+                            cle: 'arrete',
+                            libelle: 'Arrêtée',
+                            texte: (v) => ValidationPoste(c).texteBadge('bareme_aib', v['id']),
+                            rendu: (ctx, v) => ValidationPoste(c).badge('bareme_aib', v['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention)),
+                        ColonneTableau(cle: 'source', libelle: 'Source', texte: (v) => '${v['source'] ?? 'Non renseignée'}', rendu: (_, v) => Text(('${v['source'] ?? 'Non renseignée'}').length > 90 ? ('${v['source']}').substring(0, 90) : '${v['source'] ?? 'Non renseignée'}', style: const TextStyle(fontSize: 12, color: JetonsShell.slate500))),
+                      ])),
               OngletDef(
                   id: 'situations',
                   libelle: 'Situations et lignes (${situations.length})',
@@ -286,7 +350,62 @@ class _EtatBaremeAib extends State<EcranBaremeAib> {
                             ],
                             lignes: imputations),
                       ], espace: 12)),
+              OngletDef(
+                  id: 'reglages',
+                  libelle: 'Réglages',
+                  construire: (_) {
+                    final charge = aibChargeALaDate(d, auj);
+                    final br = aibBranchementALaDate(d, auj);
+                    return cfaPile([
+                      const NoteSigh(
+                          'Les réglages de l’AIB (charge des 5 %, branchement différé sur les achats, deux comptes) se règlent aux paramètres du poste, carte « AIB » : droit, compte au plan, motif, date postérieure, activation complète. Ici, leur état à la date du jour.',
+                          icone: LucideIcons.sliders),
+                      MiniTableauSigh(colonnes: [
+                        ColonneMini('Réglage', (x) => '${x['libelle']}'),
+                        ColonneMini('Valeur à la date', (x) => '${x['valeur']}'),
+                      ], lignes: [
+                        {'libelle': 'Qui supporte le prélèvement de 5 %', 'valeur': charge['ok'] == true ? '${charge['libelle']}${charge['arrete'] == true ? '' : ' (réglage non arrêté)'}' : '${charge['code']}'},
+                        {'libelle': 'Brancher l’AIB sur les écritures d’achat', 'valeur': br['actif'] == true ? 'Activé' : 'Désactivé (le moteur liste, n’écrit rien)'},
+                      ]),
+                    ], espace: 12);
+                  }),
               OngletDef(id: 'achats', libelle: 'Achats à écrire', construire: (_) => SectionAibAchats(c: c, estMere: !fileul)),
+              OngletDef(
+                  id: 'abrancher',
+                  libelle: 'Ce qu’il faudrait y brancher',
+                  construire: (_) => cfaPile([
+                        const NoteSigh(
+                            'Cette liste est en lecture seule : le moteur dit ce qu’il faudrait brancher sur le barème, il ne branche rien. Brancher l’AIB sur les écritures d’achat fausserait la comptabilité sans décision de la Direction.',
+                            icone: LucideIcons.listChecks),
+                        MiniTableauSigh(colonnes: [
+                          ColonneMini('Lieu', (x) => '${x['lieu']}'),
+                          ColonneMini('État', (x) => '${x['etat']}', rendu: (x) => x['etat'] == 'Branché' ? const BadgeSigh('Branché', ton: TonSigh.succes) : const BadgeSigh('Non branché', ton: TonSigh.attention)),
+                          ColonneMini('Ce qu’il faudrait faire', (x) => '${x['detail']}'),
+                        ], lignes: [
+                          {
+                            'lieu': 'Factures fournisseurs et bons de commande (M7)',
+                            'etat': br0['actif'] == true ? 'Branché' : 'Non branché',
+                            'detail': br0['actif'] == true
+                                ? 'Le branchement est actif : chaque facture listée à l’onglet « Achats à écrire » reçoit sa pièce en brouillon.'
+                                : 'Désactivé : les achats sont listés avec leur taux, sans écriture. L’activation exige les deux comptes et la charge arrêtés.'
+                          },
+                          {
+                            'lieu': 'Facture d’un patient (émission, registre des paiements, file de caisse)',
+                            'etat': 'Branché',
+                            'detail': 'Aucun AIB : le patient paie le montant total, seul affiché sur sa facture de caisse ; le moteur refuse un taux demandé (AIB_FACTURE_PATIENT). L’AIB s’impute opération par opération, par le comptable (onglet « Imputations »).'
+                          },
+                          {
+                            'lieu': 'Règlements à des tiers et règlements reçus des assureurs',
+                            'etat': 'Branché',
+                            'detail': 'S’imputent un à un, par le comptable (onglet « Imputations »), sans écriture comptable.'
+                          },
+                          {
+                            'lieu': 'Retenues à la source et échéance mensuelle de l’AIB (calendrier fiscal)',
+                            'etat': 'Non branché',
+                            'detail': 'L’échéance mensuelle ne lit aucun taux. À brancher pour rapprocher l’AIB retenu de l’AIB déclaré ; imputable sur l’impôt sur les bénéfices, pas une charge.'
+                          },
+                        ]),
+                      ], espace: 12)),
             ]),
           ], espace: 12);
         });

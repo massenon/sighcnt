@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show cfbFicheCnssVersement, cfbGenEcheances;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/core/controleur_poste.dart';
@@ -166,6 +167,16 @@ void main() {
         for (final fm in avant)
           ((fm['ecrans'] as List?) ?? const []).contains(id) ? {...fm, 'statut': 'archive'} : fm
       ]);
+    }
+    // Lot FISC-2 : la fiche de `m12-calendrier-fiscal` est tirée d'une maquette qui porte le versement CNSS (le 15) ; le jeu du poste ne le sème pas encore (ECARTS E2797) : la mesure
+    // le pose le temps de l'écran, comme le ferait un jeu régénéré, sans rien changer d'autre.
+    if (id == 'm12-calendrier-fiscal') {
+      fixture = {
+        'echeancesFiscales': [
+          for (final fm in magasin.collection('echeancesFiscales').toutes) {...fm},
+          for (final e in cfbGenEcheances(2026, obligations: [cfbFicheCnssVersement()], sansReglement: true)) {...e, 'id': 'ECH-CNSS-VERSEMENT-${e['echeanceTheorique']}'}
+        ]
+      };
     }
     final avantFixture = {
       for (final k in fixture.keys) k: [for (final fm in magasin.collection(k).toutes) {...fm}]

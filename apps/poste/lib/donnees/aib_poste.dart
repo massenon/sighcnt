@@ -94,6 +94,27 @@ class AibPoste {
     return {'ok': true, 'pieces': (r['pieces'] as List).where((p) => posees.contains('${(p as Map)['numero']}')).toList(), 'refusees': refusees, 'du': r['du'], 'au': r['au']};
   }
 
+  // --- Une version nouvelle du barème (lot FISC-2 : portée au poste) -----------------------------------------------------------------------------
+
+  /// Écrit une version NOUVELLE du barème : le domaine décide du refus nommé ou rend la fiche et la fermeture de la précédente (à la veille) ; ICI on écrit et on journalise
+  /// (RG-12). Un profil de la famille de validation l'arrête à l'enregistrement (signée), tout autre la laisse « à valider ». Une version ne se réécrit pas.
+  Map<String, Object?> nouvelleVersion(Map<String, Object?> saisie) {
+    final maintenant = _horloge();
+    final col = m.collection('baremeAib');
+    final marq = valMarquageEnregistrement('bareme_aib',
+        role: role, acteur: auteur(), maintenant: maintenant, libelles: {role: libelleRole}, avant: null, valeurs: {'taux': saisie['taux'], 'situation': saisie['situation']});
+    final id = 'BAI${(col.toutes.length + 1).toString().padLeft(3, '0')}';
+    final r = aibNouvelleVersion(donnees(), saisie, role: role, libelleRole: libelleRole, fileul: fileul, id: id, creeLe: aujourdhui, auteur: auteur(), marquage: marq.patch);
+    if (r['ok'] != true) return r;
+    final ferm = r['fermeture'] as Map?;
+    if (ferm != null) col.mettreAJour(ferm['id'], {'dateFin': ferm['dateFin'], 'modifieLe': aujourdhui, 'modifiePar': auteur()}, journaliser: false);
+    final fiche = (r['fiche'] as Map).cast<String, Object?>();
+    col.inserer(fiche, prefixe: 'BAI');
+    m.journaliser('Barème AIB : nouvelle version', 'CFG', 'baremeAib', id, {'precedente': r['precedente']},
+        {'etat': r['enAttenteDeValidation'] == true ? 'à valider' : 'validé', 'situation': fiche['situation'], 'taux': fiche['taux'], 'dateEffet': fiche['dateEffet'], 'precedenteFermeeLe': r['precedenteFermeeLe']});
+    return r;
+  }
+
   // --- L'imputation de l'AIB, opération par opération (lot FISC-2, Direction, 16/11/2026) -------------------------------------------------------
 
   CollectionMagasin get imputations => m.collection('imputationsAib');

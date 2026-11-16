@@ -80,3 +80,19 @@ num _nombre(Object? x) => x is num ? x : (num.tryParse('${x ?? ''}') ?? 0);
   final total = _nombre(v['montantTotal']);
   return (total: total, tranches: n, tranche: total / n);
 }
+
+/// `resumeParametre(p)` : la valeur d'une version, lue par l'écran (« à payer sous 10 jours, déclaration sous 30 jours » ; le montant de la CCIB en nombre).
+String cfbResumeParametre(CfaFiche p, String Function(num) montant) {
+  if (p['code'] == 'DELAIS-ALERTE') return 'à payer sous ${p['delaiAPayer']} jours, déclaration sous ${p['delaiDeclaration']} jours';
+  return montant(_nombre(p['montantTotal']));
+}
+
+/// Les versions À VENIR d'un paramètre (date d'effet non atteinte), de la plus proche à la plus lointaine.
+List<CfaFiche> cfbVersionsAVenirParametre(Iterable<CfaFiche> fiches, String code, Object date) {
+  final d = _jour(date);
+  return [
+    for (final p in cfbVersionsParametreFiscal(fiches, code))
+      if (p['dateEffet'] != null && _jour(p['dateEffet']).compareTo(d) > 0) p
+  ];
+}
+

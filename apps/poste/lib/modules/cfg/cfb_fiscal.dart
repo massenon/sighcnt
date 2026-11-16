@@ -681,6 +681,37 @@ class _EtatComptabilite extends State<EcranComptabilite> {
               BoutonSigh(libelle: 'Suivi des échéances', icone: LucideIcons.calendarClock, variante: VarianteBouton.secondaire, onPressed: () => c.aller('m12-echeances')),
             ]),
             cfaKpis(cfbKpisComptabilite(obligations: _calendrier(cal))),
+            // Lot FISC-2 : les PARAMÈTRES du calendrier fiscal (délais d'alerte, montant de la CCIB), datés, en LECTURE (l'écriture d'une version n'est pas portée au poste).
+            CarteSigh(
+                titre: 'Paramètres du calendrier : délais d’alerte et montant de la CCIB',
+                child: cfaPile([
+                  cfbNote(
+                      'Ces valeurs vivaient dans le code. Elles sont des paramètres datés, lus par le suivi des échéances, la vue mensuelle, l’écran des paramètres fiscaux, la cloche et le planificateur du serveur : une seule définition de « proche » pour les cinq.'),
+                  MiniTableauSigh(colonnes: [
+                    ColonneMini('Paramètre', (p) => '${p['libelle']}',
+                        rendu: (p) => Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                              Text('${p['libelle']}', style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500, color: JetonsShell.slate800)),
+                              _mono12('${p['code']}', couleur: JetonsShell.slate500),
+                            ])),
+                    ColonneMini('Valeur en vigueur', (p) => cfbResumeParametre(p['v'] as Fiche, (n) => money(n, avecDevise: false)), rendu: (p) => Text(cfbResumeParametre(p['v'] as Fiche, (n) => money(n, avecDevise: false)), key: Key('cfb:parametre:${p['code']}'))),
+                    ColonneMini('Version', (p) {
+                      final v = p['v'] as Fiche;
+                      return '${v['dateEffet'] != null ? 'depuis le ${_dateFr(v['dateEffet'])}' : 'd’origine'}${v['aValider'] == true ? ', à confirmer' : ''}';
+                    }),
+                    ColonneMini('À venir', (p) {
+                      final l = (p['avenir'] as List).cast<Fiche>();
+                      return l.isEmpty ? 'aucune' : l.map((f) => 'À compter du ${_dateFr(f['dateEffet'])} : ${cfbResumeParametre(f, (n) => money(n, avecDevise: false))}').join(' ; ');
+                    }),
+                  ], lignes: [
+                    for (final s in cfbSemenceParametresFiscaux())
+                      {
+                        'code': s['code'],
+                        'libelle': s['libelle'],
+                        'v': cfbParametreFiscalALaDate(c.magasin.collection('parametresFiscaux').actives, '${s['code']}', c.aujourdhui) ?? s,
+                        'avenir': cfbVersionsAVenirParametre(c.magasin.collection('parametresFiscaux').actives, '${s['code']}', c.aujourdhui),
+                      }
+                  ]),
+                ], espace: 12)),
             CarteSigh(
                 titre: titreMensuelles,
                 child: cfaPile([

@@ -19,8 +19,7 @@
  ],
  "regle": [
   "Patient non assuré : la facturation est intégrale à sa charge.",
-  "Base MECeF : 0 FCFA — seule la part réglée par le patient est normalisée.",
-  "Facture normaliséeIFU de l’acheteurNom de l’acheteurTaux d’AIBAucun1 % (taux de la facture de référence, à confirmer)5 %Toute vente est normalisée : ces trois champs sont les seuls à saisir. L’IFU, s’il est renseigné, compte 13 chiffres."
+  "Base MECeF : 0 FCFA — seule la part réglée par le patient est normalisée."
  ],
  "onglets": [],
  "kpis": [],
@@ -52,10 +51,7 @@
   "Motif de remise",
   "Mode de règlement",
   "Montant réglé (FCFA)",
-  "Opération de caisse détachée du dossier patient (vente au comptoir)",
-  "IFU de l’acheteur",
-  "Nom de l’acheteur",
-  "Taux d’AIB"
+  "Opération de caisse détachée du dossier patient (vente au comptoir)"
  ],
  "nbTableaux": 0,
  "nbKpis": 0

@@ -6509,8 +6509,8 @@
   /** Ce qu'il FAUDRAIT brancher sur le barème, en lecture : le moteur liste, il ne branche pas (décision comptable de la Direction). */
   function aibABrancher() {
     return [
-      { id: 'fenetre_mecef', lieu: 'Fenêtre « Facture normalisée » de la caisse (registre, file de caisse, émission)', etat: 'branche',
-        detail: 'Branchée par le lot A1 : le taux par défaut vient du barème selon l’IFU saisi, les choix aussi ; le taux et sa version voyagent avec la vente.' },
+      { id: 'fenetre_mecef', lieu: 'Facture d’un patient (émission, registre des paiements, file de caisse)', etat: 'branche',
+        detail: 'Aucun AIB : le patient paie le montant total, seul affiché sur sa facture de caisse ; le moteur refuse un taux demandé (AIB_FACTURE_PATIENT). L’AIB s’impute opération par opération, par le comptable (onglet « Imputations »).' },
       { id: 'registre_mecef', lieu: 'Registre fiscal MECeF et impression de la pièce normalisée (mecef.js)', etat: 'non_branche',
         detail: 'Lisent encore le paramètre fiscal fixe (AIB 1 %) pour décomposer les pièces anciennes. À brancher sur le taux et la version portés par chaque vente.' },
       { id: 'achats', lieu: 'Factures fournisseurs et bons de commande (M7)', etat: aibBranchementALaDate().actif ? 'branche' : 'non_branche',

@@ -150,6 +150,37 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       out.parametresFiscaux.delais = ['2026-10-30', '2026-11-30', '2026-12-01', '2027-03-01'].map((d) => { const r = D.delaisFiscauxALaDate(d); return { date: d, delaiAPayer: r.delaiAPayer, delaiDeclaration: r.delaiDeclaration }; });
       out.parametresFiscaux.ccib = ['2026-10-30', '2026-12-31', '2027-01-01', '2027-06-01'].map((d) => { const r = D.montantCcibALaDate(d); return { date: d, total: r.total, tranches: r.tranches, tranche: r.tranche }; });
       colP.all().filter((x) => avantP.indexOf(x.id) < 0).forEach((x) => colP.archive(x.id, 'Vecteur : restauration'));
+      /* ---------- 5. une version nouvelle du barème de l'AIB : B.nouvelleVersion (le moteur réel), refus nommés puis versions enchaînées ---------- */
+      const colB = S.collection('baremeAib');
+      const avantB = colB.all().map((x) => x.id);
+      const versions = [];
+      const nv = (nom, role, fileul, entree) => {
+        const droit = true;
+        const r = sous(role, fileul, () => B.nouvelleVersion(entree));
+        const lignes = propre(colB.all().filter((x) => x.situation === (entree.situation || '')).map((x) => ({ id: x.id, situation: x.situation, taux: x.taux, dateEffet: x.dateEffet, dateFin: x.dateFin || null, aValider: x.aValider === true })));
+        let fiche = null;
+        if (r.ok) { fiche = propre(colB.get(r.id)); ['id', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', 'creeLe', 'creePar', 'valideLe', 'validePar', 'valideRole', 'statut'].forEach((k) => { delete fiche[k]; }); }
+        versions.push({ nom, role, fileul: !!fileul, entree: propre(entree), sortie: r.ok ? { ok: true, version: r.version, precedenteFermeeLe: r.precedenteFermeeLe, enAttenteDeValidation: r.enAttenteDeValidation, fiche } : { ok: false, code: r.code, motif: r.motif, geste: r.geste || null }, apres: lignes });
+      };
+      const baseV = { situation: 'personne_morale', taux: 6, dateEffet: '2027-01-01', source: 'Loi de finances 2027, article test', motif: 'Vecteur : taux relevé' };
+      nv('rôle hors écriture (caissier)', 'caissier', false, baseV);
+      nv('poste fileul', 'comptable', true, baseV);
+      nv('situation inconnue', 'comptable', false, Object.assign({}, baseV, { situation: 'nexiste_pas' }));
+      nv('taux absent', 'comptable', false, Object.assign({}, baseV, { taux: '' }));
+      nv('taux décimal', 'comptable', false, Object.assign({}, baseV, { taux: 2.5 }));
+      nv('taux au dessus de 100', 'comptable', false, Object.assign({}, baseV, { taux: 101 }));
+      nv('date illisible', 'comptable', false, Object.assign({}, baseV, { dateEffet: 'bientôt' }));
+      nv('source absente', 'comptable', false, Object.assign({}, baseV, { source: '  ' }));
+      nv('motif absent', 'comptable', false, Object.assign({}, baseV, { motif: '' }));
+      nv('date déjà prise (01/01/2026)', 'comptable', false, Object.assign({}, baseV, { dateEffet: '2026-01-01' }));
+      nv('date antérieure à la plus récente', 'comptable', false, Object.assign({}, baseV, { dateEffet: '2025-06-01' }));
+      nv('version à venir (6 % au 01/01/2027) : ferme la précédente à la veille', 'comptable', false, baseV);
+      nv('une seconde version après elle (7 % au 01/07/2027)', 'da', false, Object.assign({}, baseV, { taux: 7, dateEffet: '2027-07-01', motif: 'Vecteur : seconde version' }));
+      nv('situation de l’acheteur (prestation de service, 4 % au 01/01/2027)', 'admin', false, { situation: 'prestation_service', taux: 4, dateEffet: '2027-01-01', source: 'Texte test', motif: 'Vecteur' });
+      out.versionsBareme = versions;
+      out.versionsBaremeDepart = propre(colB.all().filter((x) => avantB.indexOf(x.id) >= 0));
+      colB.all().filter((x) => avantB.indexOf(x.id) < 0).forEach((x) => colB.archive(x.id, 'Vecteur : restauration'));
+      avantB.forEach((id) => { const cur = colB.get(id); const o = out.versionsBaremeDepart.filter((y) => y.id === id)[0]; if (cur && o && (cur.dateFin || null) !== (o.dateFin || null)) colB.update(id, { dateFin: o.dateFin || null }); });
       out.situationsParFamille = { acheteur: B.situations().map((x) => x.code), retenue: B.situations('retenue_tiers').map((x) => x.code), tous: B.situations('tous').map((x) => x.code) };
       /* restitution : les imputations posées sont archivées */
       colI.all().forEach((x) => { if (x.statut !== 'archive') colI.archive(x.id, 'Vecteur : restauration'); });

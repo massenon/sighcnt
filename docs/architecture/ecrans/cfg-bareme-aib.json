@@ -1,0 +1,68 @@
+{
+ "id": "cfg-bareme-aib",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Barème de l’AIB",
+ "acces": "ouvert",
+ "titre": "Barème de l’AIB",
+ "description": "Taux de l’acompte sur impôt assis sur les bénéfices par situation de l’acheteur, daté, versionné et modifiable sans toucher au code.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Barème de l’AIB"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Proposition à valider. 6 version(s) du barème ne sont pas encore arrêtées : la source de chaque taux est écrite sur sa fiche, et aucun texte réglementaire n’est au dépôt. La validation appartient à la Direction, à la DAF, au comptable ou à l’administrateur système.",
+  "Un IFU saisi est présumé actif. La maquette ne peut pas interroger la DGI : elle applique la situation « avec IFU » à tout IFU de 13 chiffres et le dit à la caisse."
+ ],
+ "onglets": [
+  "Barème par version",
+  "Situations et lignes",
+  "Imputations",
+  "Réglages",
+  "Achats à écrire",
+  "Ce qu’il faudrait y brancher"
+ ],
+ "kpis": [
+  "Situations actives",
+  "Versions en vigueur",
+  "Versions en attente de validation",
+  "Versions archivées"
+ ],
+ "cartes": [
+  "Versions du barème"
+ ],
+ "tableaux": [
+  [
+   "Situation",
+   "Taux",
+   "Du",
+   "Au",
+   "État",
+   "Arrêtée",
+   "Source",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Barème par version6",
+  "Situations et lignes5",
+  "Imputations",
+  "Réglages2",
+  "Achats à écrire",
+  "Ce qu’il faudrait y brancher3",
+  "Colonnes",
+  "Exporter",
+  "Nouvelle version",
+  "Valider"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

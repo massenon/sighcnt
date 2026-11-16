@@ -12,16 +12,16 @@ void main() {
   setUpAll(chargerPolices);
   tearDown(ToastsSigh.viderPourTests);
 
-  casM14('fiscalité au 30/10/2026 : 20 échéances, 5 mensuelles (dont le versement CNSS du 15, lot FISC-2), 5 dans les 30 jours (ITS, AIB, VPS, CNSS le 10/11/2026, versement CNSS le 16/11/2026), CCIB 300 000 FCFA', (t) async {
+  casM14('fiscalité au 30/10/2026 : 19 échéances, 4 mensuelles, 4 dans les 30 jours (ITS, AIB, VPS, CNSS le 10/11/2026), CCIB 300 000 FCFA', (t) async {
     final m = magasinM14();
     await ouvrirM14(t, m, 'cfg-fiscalite');
-    for (final k in ['Échéances suivies', 'Mensuelles', 'Dans les 30 jours', 'CCIB annuelle', '20']) {
+    for (final k in ['Échéances suivies', 'Mensuelles', 'Dans les 30 jours', 'CCIB annuelle', '19']) {
       expect(find.text(k), findsWidgets, reason: k);
     }
     expect(find.textContaining('300 000'), findsWidgets);
-    expect(find.textContaining('5 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026 …'), findsOneWidget);
+    expect(find.textContaining('4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026.'), findsOneWidget);
     expect(find.text('11 j'), findsNWidgets(4));
-    expect(find.text('reportée : jour ouvrable'), findsNWidgets(3), reason: 'PATENTE-DECL (31/01/2027, un dimanche), CCIB-DECL (28/02/2027, un dimanche) et le versement CNSS (15/11/2026, un dimanche, lot FISC-2)');
+    expect(find.text('reportée : jour ouvrable'), findsNWidgets(2), reason: 'PATENTE-DECL (31/01/2027, un dimanche) et CCIB-DECL (28/02/2027, un dimanche)');
     expect(find.text('01/02/2027'), findsOneWidget);
     expect(find.text('01/03/2027'), findsOneWidget);
   });
@@ -48,7 +48,7 @@ void main() {
       expect(find.text(k), findsWidgets, reason: k);
     }
     // Le formulaire d'identité est l'écran (Direction, 06/11/2026) ; la table des obligations déclaratives est DÉRIVÉE des quatre mensuelles + deux fixes.
-    expect(find.widgetWithText(BoutonSigh, 'Éditer'), findsNWidgets(7), reason: 'les six lignes d\'avant et le versement CNSS du 15 (lot FISC-2)');
+    expect(find.widgetWithText(BoutonSigh, 'Éditer'), findsNWidgets(6));
     expect(find.widgetWithText(BoutonSigh, 'Configuration MECeF'), findsOneWidget);
     expect(find.widgetWithText(BoutonSigh, 'Enregistrer'), findsOneWidget);
     expect(find.widgetWithText(BoutonSigh, 'Valider l’identité légale'), findsOneWidget);

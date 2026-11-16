@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 357,
- "ecrans_portes": 376,
+ "ecrans_portes": 378,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -54,6 +54,14 @@
    "id": "auth-reset",
    "mesure": false,
    "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
+  },
+  {
+   "id": "cfg-bareme-aib",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "cfg-branding",
@@ -186,8 +194,8 @@
   {
    "id": "cfg-regles",
    "mesure": true,
-   "attendus": 35,
-   "presents": 35,
+   "attendus": 42,
+   "presents": 42,
    "taux": 1.0,
    "manquants": []
   },
@@ -1308,6 +1316,14 @@
    "manquants": []
   },
   {
+   "id": "m12-calendrier-fiscal",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m12-cloture",
    "mesure": true,
    "attendus": 21,
@@ -2246,8 +2262,8 @@
   {
    "id": "m6-dashboard",
    "mesure": true,
-   "attendus": 24,
-   "presents": 24,
+   "attendus": 25,
+   "presents": 25,
    "taux": 1.0,
    "manquants": []
   },
@@ -2278,16 +2294,16 @@
   {
    "id": "m6-inventaire",
    "mesure": true,
-   "attendus": 10,
-   "presents": 10,
+   "attendus": 11,
+   "presents": 11,
    "taux": 1.0,
    "manquants": []
   },
   {
    "id": "m6-inventaire-feuille",
    "mesure": true,
-   "attendus": 17,
-   "presents": 17,
+   "attendus": 19,
+   "presents": 19,
    "taux": 1.0,
    "manquants": []
   },
@@ -2470,8 +2486,8 @@
   {
    "id": "m8-facturation",
    "mesure": true,
-   "attendus": 28,
-   "presents": 28,
+   "attendus": 25,
+   "presents": 25,
    "taux": 1.0,
    "manquants": []
   },
@@ -2550,8 +2566,8 @@
   {
    "id": "m9-compagnies",
    "mesure": true,
-   "attendus": 20,
-   "presents": 20,
+   "attendus": 21,
+   "presents": 21,
    "taux": 1.0,
    "manquants": []
   },

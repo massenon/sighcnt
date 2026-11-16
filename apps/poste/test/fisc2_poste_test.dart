@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show cfbFicheCnssVersement;
 import 'package:sigh_poste/donnees/aib_poste.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
@@ -111,8 +112,11 @@ void main() {
   group('« Confirmer » le versement CNSS', () {
     Finder confirmer() => find.byKey(const Key('cfb:confirmer:CNSS-VERSEMENT'));
 
+    // Le versement CNSS n'est pas semé au jeu du poste (voir ECARTS E2797) : le test l'apporte, comme le ferait un jeu régénéré depuis la maquette.
+    Magasin avecVersement() => magasinM14()..collection('obligationsFiscales').ajouterSansJournal(cfbFicheCnssVersement());
+
     casM14('le détenteur du geste voit « Confirmer » sur la seule ligne « à confirmer » ; la référence est obligatoire ; confirmée, l\'obligation est signée et la version « à confirmer » reste à l\'historique', (t) async {
-      final m = magasinM14();
+      final m = avecVersement();
       await ouvrirM14(t, m, 'cfg-comptabilite');
       expect(find.byKey(const Key('cfb:a-confirmer:CNSS-VERSEMENT')), findsOneWidget);
       expect(confirmer(), findsOneWidget);
@@ -137,7 +141,7 @@ void main() {
     });
 
     casM14('la fiche RBAC de la DAF retire le geste réservé : « Confirmer » est ABSENT (le domaine refuse aussi), les autres détenteurs le gardent', (t) async {
-      final m = magasinM14();
+      final m = avecVersement();
       final fiche = m.collection('rbac').toutes.firstWhere((f) => f['role'] == 'da');
       m.collection('rbac').mettreAJour(fiche['id'], {
         'droitsGestes': {...((fiche['droitsGestes'] as Map?) ?? const {}).cast<String, Object?>(), 'confirmer_obligation_fiscale': false}
@@ -145,13 +149,13 @@ void main() {
       await ouvrirM14(t, m, 'cfg-comptabilite', role: 'da');
       expect(find.byKey(const Key('cfb:a-confirmer:CNSS-VERSEMENT')), findsOneWidget);
       expect(confirmer(), findsNothing);
-      await ouvrirM14(t, magasinM14(), 'cfg-comptabilite', role: 'admin');
+      await ouvrirM14(t, avecVersement(), 'cfg-comptabilite', role: 'admin');
       expect(confirmer(), findsOneWidget, reason: 'l\'administrateur garde le geste');
     });
   });
 
   group('le calendrier fiscal mensuel et le barème de l\'AIB sont ouverts au poste', () {
-    casM14('le calendrier fiscal mensuel : octobre à la date du poste, puis novembre avec le versement CNSS du 15 reporté au lundi 16', (t) async {
+    casM14('le calendrier fiscal mensuel : octobre à la date du poste (le 10 samedi reporté au lundi 12), puis novembre', (t) async {
       final m = magasinM14();
       await ouvrirM14(t, m, 'm12-calendrier-fiscal');
       await t.pump(const Duration(milliseconds: 400));
@@ -162,7 +166,6 @@ void main() {
       await toucherM14(t, find.byKey(const Key('cal:suivant')));
       expect((t.widget(find.byKey(const Key('cal:titre'))) as Text).data, 'Novembre 2026');
       expect(find.byKey(const Key('cal:ech:ITS:2026-11-10')), findsOneWidget);
-      expect(find.byKey(const Key('cal:ech:CNSS-VERSEMENT:2026-11-16')), findsOneWidget, reason: 'le 15 novembre est un dimanche : reporté au lundi 16');
     });
 
     casM14('le barème de l\'AIB : deux barèmes lus, la retenue sur facture d\'un tiers (3 % et 5 %), l\'onglet Imputations et sa commande pour le détenteur du geste', (t) async {

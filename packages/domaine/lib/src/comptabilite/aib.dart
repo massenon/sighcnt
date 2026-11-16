@@ -495,6 +495,94 @@ AibFiche aibDefinirReglage(
   };
 }
 
+/// Une version nouvelle du barème (`SIGH.baremeAib.nouvelleVersion`, lot FISC-2 : portée au poste) : la situation existe, le taux est un entier de 0 à 100, la date d'effet est lisible,
+/// la SOURCE est dite (on n'invente pas un taux), le motif est dit, aucune version ne commence déjà ce jour-là, la date est postérieure à la plus récente. Elle FERME la précédente à
+/// la veille. Une version saisie par un profil de la famille de validation naît ARRÊTÉE ([marquage] : `{aValider: false, valideLe, validePar, valideRole}`) ; hors famille, « à valider ».
+/// Rend `{ok, fiche, fermeture, ...}` ou le refus nommé ; l'appelant écrit la fiche, ferme la précédente et journalise (RG-12).
+AibFiche aibNouvelleVersion(
+  AibDonnees d,
+  AibFiche entree, {
+  required String role,
+  required String libelleRole,
+  bool fileul = false,
+  required String id,
+  required String creeLe,
+  required String auteur,
+  Map<String, Object?>? marquage,
+}) {
+  final refus = aibMotifEcriture(role: role, libelleRole: libelleRole, fileul: fileul);
+  if (refus != null) return refus;
+  final situation = entree['situation'];
+  AibFiche? sit;
+  for (final s in d.situations) {
+    if (_actif(s) && s['code'] == situation) {
+      sit = s;
+      break;
+    }
+  }
+  if (sit == null) {
+    return aibRefus('AIB_SITUATION_INCONNUE', 'La situation « ${situation ?? ''} » n’existe pas au barème de l’AIB.', 'Choisir une situation listée ou la créer d’abord.');
+  }
+  final brut = entree['taux'];
+  final taux = brut is num ? brut : num.tryParse(_s(brut));
+  if (brut == null || brut == '' || taux == null || !taux.isFinite || taux.floor() != taux || taux < 0 || taux > 100) {
+    return aibRefus('AIB_TAUX_INVALIDE', 'Le taux (« ${brut ?? ''} ») doit être un pourcentage entier de 0 à 100 : la maquette calcule en montants entiers.', 'Saisir un entier, par exemple 5.');
+  }
+  final dateEffet = _vide(entree['dateEffet']) ? '' : _jour('${entree['dateEffet']}');
+  if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dateEffet)) {
+    return aibRefus('AIB_DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle le taux s’applique.');
+  }
+  final source = _s(entree['source']).trim();
+  if (source.isEmpty) {
+    return aibRefus('AIB_SOURCE_ABSENTE', 'Aucune source n’est dite pour ce taux : on n’invente pas un taux, on cite son texte.', 'Indiquer le texte, la décision ou la déclaration d’où vient le taux.');
+  }
+  final motif = _s(entree['motif']).trim();
+  if (motif.isEmpty) {
+    return aibRefus('AIB_MOTIF_ABSENT', 'Le motif de cette version est obligatoire.', 'Dire pourquoi le taux change ou pourquoi la version est ajoutée.');
+  }
+  final existantes = aibVersionsBareme(d, '$situation');
+  final derniere = existantes.isEmpty ? null : existantes.last;
+  if (existantes.any((v) => _s(v['dateEffet']) == dateEffet)) {
+    return aibRefus('AIB_DATE_EXISTANTE', 'Une version de cette situation commence déjà le ${aibDateFr(dateEffet)} : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure, ou retirer l’autre version (archive).');
+  }
+  if (derniere != null && _s(derniere['dateEffet']).compareTo(dateEffet) > 0) {
+    return aibRefus('AIB_DATE_ANTERIEURE', 'La version la plus récente de cette situation commence le ${aibDateFr(_s(derniere['dateEffet']))} : une version insérée avant elle masquerait l’historique.',
+        'Choisir une date d’effet postérieure au ${aibDateFr(_s(derniere['dateEffet']))}.');
+  }
+  final veillee = aibVeille(dateEffet);
+  AibFiche? fermeture;
+  if (derniere != null && (_vide(derniere['dateFin']) || _s(derniere['dateFin']).compareTo(veillee) > 0)) {
+    fermeture = {'id': derniere['id'], 'dateFin': veillee, 'avant': _vide(derniere['dateFin']) ? null : derniere['dateFin']};
+  }
+  final patch = marquage ?? const {'aValider': true};
+  final fiche = <String, Object?>{
+    'id': id,
+    'statut': 'actif',
+    'situation': situation,
+    'taux': taux.toInt(),
+    'dateEffet': dateEffet,
+    'dateFin': null,
+    'source': source,
+    'motif': motif,
+    'creeLe': creeLe,
+    'creePar': auteur,
+    ...patch,
+  };
+  return {
+    'ok': true,
+    'id': id,
+    'version': existantes.length + 1,
+    'situation': situation,
+    'taux': taux.toInt(),
+    'dateEffet': dateEffet,
+    'precedente': derniere?['id'],
+    'precedenteFermeeLe': fermeture == null ? null : veillee,
+    'enAttenteDeValidation': patch['aValider'] == true,
+    'fiche': fiche,
+    'fermeture': fermeture,
+  };
+}
+
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // Les achats : ce qu'il faudrait écrire, puis ce qui s'écrit quand le branchement est actif
 // ---------------------------------------------------------------------------------------------------------------------------------------------

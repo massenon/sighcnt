@@ -166,6 +166,39 @@ void main() {
     }
   });
 
+  group('une version nouvelle du barème de l’AIB (aibNouvelleVersion, rejouée sur le moteur réel de la maquette)', () {
+    test('refus nommés puis versions enchaînées : la précédente est fermée à la veille, la source et le motif sont exigés', () {
+      var etat = [for (final x in liste(v['versionsBaremeDepart'])) {...x}];
+      final situations = liste(v['situations']);
+      for (final c in liste(v['versionsBareme'])) {
+        final s = obj(c['sortie']);
+        final r = aibNouvelleVersion(AibDonnees(situations: situations, bareme: etat), obj(c['entree']),
+            role: '${c['role']}', libelleRole: '${c['role']}', fileul: c['fileul'] == true, id: 'NEW-${etat.length}', creeLe: '2026-10-30', auteur: 'Acteur', marquage: const {'aValider': false});
+        if (s['ok'] != true) {
+          expect(r['ok'], isFalse, reason: '${c['nom']} : refus attendu');
+          expect(r['code'], s['code'], reason: '${c['nom']}');
+          continue;
+        }
+        expect(r['ok'], isTrue, reason: '${c['nom']}');
+        expect(r['version'], s['version'], reason: '${c['nom']} : rang de la version');
+        expect(r['precedenteFermeeLe'], s['precedenteFermeeLe'], reason: '${c['nom']} : la précédente est fermée à la veille');
+        final f = obj(r['fiche']);
+        final att = obj(s['fiche']);
+        for (final k in ['situation', 'taux', 'dateEffet', 'dateFin', 'source', 'motif', 'aValider']) {
+          expect(f[k], att.containsKey(k) ? att[k] : null, reason: '${c['nom']} : $k');
+        }
+        final ferm = r['fermeture'];
+        if (ferm != null) {
+          etat = [for (final x in etat) x['id'] == (ferm as Map)['id'] ? {...x, 'dateFin': ferm['dateFin']} : x];
+        }
+        etat = [...etat, f];
+        final apres = [for (final x in etat) if (x['situation'] == obj(c['entree'])['situation'] && x['statut'] != 'archive') x]..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
+        final attendu = liste(c['apres']);
+        expect([for (final x in apres) [x['taux'], x['dateEffet'], x['dateFin']]], [for (final x in attendu) [x['taux'], x['dateEffet'], x['dateFin']]], reason: '${c['nom']} : le barème de la situation après');
+      }
+    });
+  });
+
   group('imputer l’AIB opération par opération (le comptable décide, le logiciel propose)', () {
     for (final c in liste(v['imputations'])) {
       test('${c['nom']}', () {
