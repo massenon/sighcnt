@@ -149,6 +149,10 @@ void main() {
       expect(d2.ok, isTrue, reason: '${d2.refus?.motif}');
       f1.m.collection('commandes').inserer(commande('2026-11-18', 'F2', 3, ref: referenceCommandeProvisoire(date: '2026-11-18', poste: f1.m.poste, commandes: f1.m.collection('commandes').toutes, maintenant: DateTime(2026, 11, 16))), prefixe: 'COM');
       f2.m.collection('commandes').inserer(commande('2026-11-19', 'F3', 8, ref: referenceCommandeProvisoire(date: '2026-11-19', poste: f2.m.poste, commandes: f2.m.collection('commandes').toutes, maintenant: DateTime(2026, 11, 16))), prefixe: 'COM');
+      // La MÊME commande (même fournisseur, même jour, mêmes lignes) saisie aux deux postes coupés : identité commune par le contenu, UNE fiche.
+      for (final p in [f1, f2]) {
+        p.m.collection('commandes').inserer(commande('2026-11-20', 'F4', 5, ref: referenceCommandeProvisoire(date: '2026-11-20', poste: p.m.poste, commandes: p.m.collection('commandes').toutes, maintenant: DateTime(2026, 11, 16))), prefixe: 'COM');
+      }
       for (var i = 0; i < 3; i++) {
         await f1.tour();
         await f2.tour();
@@ -158,7 +162,7 @@ void main() {
       expect(dem(f2, s2).synthese().nombre, greaterThanOrEqualTo(1), reason: 'la décision est comptée « en attente de la mère »');
       await c.demarrerMere();
       await converger(
-          () => partout((m) => parDate(m, '2026-11-18').length == 1 && parDate(m, '2026-11-19').length == 1 && une(m, '2026-11-17')['statutCommande'] == 'validee'),
+          () => partout((m) => parDate(m, '2026-11-18').length == 1 && parDate(m, '2026-11-19').length == 1 && parDate(m, '2026-11-20').length == 1 && une(m, '2026-11-17')['statutCommande'] == 'validee'),
           'la mère relancée adopte les deux commandes et applique la décision', apres: 5);
       final refs = [for (final m in [c.mm]) for (final x in m.collection('commandes').toutes) '${x['reference']}'];
       expect(refs.toSet().length, refs.length, reason: 'aucune référence en double à la mère : $refs');
@@ -168,7 +172,10 @@ void main() {
       }
       expect(une(c.mm, '2026-11-17')['valideePar'], 'Mme DAF');
       expect(dem(f2, s2).synthese().nombre, 0);
-      expect(c.mm.collection('commandes').toutes, hasLength(5), reason: 'cinq commandes à la mère : aucun doublon');
+      expect(c.mm.collection('commandes').toutes, hasLength(6), reason: 'six commandes à la mère : la même commande saisie aux deux postes coupés n\'en fait qu\'UNE, aucun doublon');
+      for (final m in [c.mm, f1.m, f2.m]) {
+        expect(parDate(m, '2026-11-20'), hasLength(1), reason: 'identité commune par le contenu');
+      }
 
       // 6. JAMAIS VERS UN TÉLÉPHONE (RG-13) : ni par le journal, ni par un lot de tournée.
       final mobile = await collectionsRecuesParUnMobile(c.port);
