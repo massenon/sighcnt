@@ -11,6 +11,7 @@
 /// inventé : le repos et les honoraires viennent des régimes de la maquette (`rhbReglesPlanning`, NS 132).
 library;
 
+import '../droits/droit_geste.dart' show gesDroit;
 import 'rhb_regles.dart';
 
 typedef FichePlanning = Map<String, Object?>;
@@ -299,10 +300,12 @@ const Map<String, String> libellesCircuitsRh = {
   'daf': 'Directrice administrative seule',
   'surveillant_puis_daf': 'Surveillant puis directrice administrative',
 };
+/// LOT VAL : signer une étape est un geste réservé de la fiche RBAC (`valider_etape_surveillant`, `valider_etape_daf`) ; cette table n'est que le DÉFAUT d'origine du manifeste.
 const Map<String, List<String>> rolesEtapeRh = {
   'surveillant': ['surveillant', 'admin'],
   'daf': ['da', 'admin'],
 };
+const Map<String, String> gesteEtapeRh = {'surveillant': 'valider_etape_surveillant', 'daf': 'valider_etape_daf'};
 const Map<String, String> nomEtapeRh = {'surveillant': 'le surveillant', 'daf': 'la directrice administrative'};
 
 /// Les motifs d'absence codés (PRD, addendum du 07/11/2026).
@@ -377,10 +380,10 @@ String? prochaineEtapeRh(FichePlanning rec, String circuit) {
   }
   final etapes = circuitsRh[circuit]!;
   final etape = prochaineEtapeRh(rec, circuit) ?? etapes.last;
-  if (!rolesEtapeRh[etape]!.contains(role)) {
+  if (!gesDroit(role, gesteEtapeRh[etape]!, rolesEtapeRh[etape]!)) {
     return (
       refus: RefusRh('VALIDATION_RESERVEE', 'L’étape en attente est celle de ${nomEtapeRh[etape]} (circuit : ${libellesCircuitsRh[circuit]}).',
-          'Demander à ${nomEtapeRh[etape]} de trancher.', {'etape': etape}),
+          'Demander à ${nomEtapeRh[etape]} de trancher.', {'etape': etape, 'droit': gesteEtapeRh[etape]}),
       etape: null
     );
   }

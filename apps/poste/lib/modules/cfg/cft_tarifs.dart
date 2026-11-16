@@ -817,7 +817,7 @@ void _modaleProposition(BuildContext ctx, ContexteEcran c, Map<String, Object?>?
   final p = ligne == null ? null : h.parCode['${ligne['code']}'];
   final s = p == null ? null : h.instantane(p, _jour(c));
   final tarifs = _tarifs(c);
-  final peutPassee = tarRolesDatePassee.contains(c.role);
+  final peutPassee = tarPeutDatePassee(c.role);
   final peutValider = tarPeutDecider(c.role);
   final defs = <ChampDef>[
     if (ligne == null) ...[

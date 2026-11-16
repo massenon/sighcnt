@@ -812,7 +812,7 @@
       /* LE MODE DE CERTIFICATION (lot L3, Direction 09/11/2026) : boîtier physique (défaut) ou e-MECeF, réglé par l'administrateur ou la DA. */
       function carteMode() {
         var ad = PR.mecef.adaptateur();
-        var peut = ['admin', 'da'].indexOf((S.session() || {}).role) >= 0;
+        var peut = global.SIGH.nav.droitGeste((S.session() || {}).role, PR.mecef.GESTES.mode);
         var libelles = { boitier: 'Boîtier physique', emecef: 'e-MECeF' };
         var etatTxt = el('div', { 'data-mecef-mode-etat': '' });
         var modeTxt = el('span.font-semibold', { 'data-mecef-mode-courant': '' });

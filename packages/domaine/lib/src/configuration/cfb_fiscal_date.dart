@@ -12,6 +12,7 @@
 library;
 
 import '../comptabilite/cpc_exercice.dart' show cpcEtatExercice;
+import '../droits/droit_geste.dart' show gesDroit;
 import '../format/format_fr.dart' show dateFR, nombre;
 import '../format/js.dart' show arrondiJs, nombreOuZero;
 import '../impression/identite.dart';
@@ -39,6 +40,9 @@ class CfbRefus {
 /// Les rôles qui VALIDENT la configuration fiscale (`ROLES_VALIDATION` de parcours.js) : la Direction, la DAF, l'administrateur système.
 const List<String> cfbRolesValidation = ['direction', 'da', 'admin'];
 
+/// LOT VAL : valider est le geste réservé `valider_configuration_fiscale` de la fiche RBAC ; [cfbRolesValidation] n'est que le DÉFAUT d'origine du manifeste.
+const String cfbGesteValider = 'valider_configuration_fiscale';
+
 /// `FILEUL_LECTURE_SEULE` : un fileul ne modifie jamais la configuration de la clinique (famille R, publiée par la mère seule).
 CfbRefus? cfbControleFileul(bool fileul) => fileul
     ? const CfbRefus('FILEUL_LECTURE_SEULE', 'Cette configuration est tenue par la mère ; modifiez-la sur le poste mère.',
@@ -49,11 +53,11 @@ CfbRefus? cfbControleFileul(bool fileul) => fileul
 CfbRefus? cfbControleValidation({required String? role, bool fileul = false, String Function(String?)? libelleRole}) {
   final f = cfbControleFileul(fileul);
   if (f != null) return f;
-  if (role == null || !cfbRolesValidation.contains(role)) {
+  if (!gesDroit(role, cfbGesteValider, cfbRolesValidation)) {
     final lib = libelleRole != null ? libelleRole(role) : (role ?? 'aucun');
     return CfbRefus('VALIDATION_RESERVEE',
-        'La validation de la configuration fiscale est réservée à la Direction, à la DAF et à l’administrateur système. Profil : $lib.',
-        'Demander à la Direction ou à la DAF de valider depuis son poste.');
+        'Valider la configuration fiscale est un droit réservé de la fiche du rôle (« $cfbGesteValider ») : « $lib » ne l’a pas.',
+        'Demander à un rôle qui détient ce droit (la Direction, la DAF ou l’administrateur d’origine) de valider depuis son poste.');
   }
   return null;
 }

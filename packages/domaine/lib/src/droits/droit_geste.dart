@@ -66,3 +66,38 @@ class MatriceGestes {
   /// `N.rolesAvecGeste(geste)`.
   List<String> rolesAvec(String geste) => [for (final e in _parRole.entries) if (e.value[geste] ?? false) e.key];
 }
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// LOT VAL (Direction, 16/11/2026 : « pas de rôle ni de validation en dur dans le code ») : la lecture À CHAUD de la fiche RBAC par les moteurs du domaine.
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+bool Function(String role, String geste)? _lecteurGeste;
+Iterable<String> Function()? _rolesConnusGeste;
+
+/// Le poste branche la fiche RBAC À CHAUD (`matrice.droitGeste`, rôles connus de la matrice) ; `null` revient au DÉFAUT d'origine du manifeste (les listes de rôles des moteurs,
+/// qui ne sont plus que ce défaut, vérifié égal à `rbac.json` par un test). Sans branchement (banc de protocole, tests purs), les listes d'origine décident, comme avant.
+void gesInstaller({bool Function(String role, String geste)? lecteur, Iterable<String> Function()? roles}) {
+  _lecteurGeste = lecteur;
+  _rolesConnusGeste = roles;
+}
+
+/// Le rôle détient-il le geste réservé [geste] ? Lu de la fiche RBAC branchée, sinon [defaut] (la liste d'origine du manifeste).
+bool gesDroit(String? role, String geste, List<String> defaut) {
+  if (role == null || role.isEmpty) return false;
+  final l = _lecteurGeste;
+  return l != null ? l(role, geste) : defaut.contains(role);
+}
+
+/// Les rôles qui détiennent le geste (détenteurs d'origine d'abord, dans l'ordre de [defaut], pour que les motifs nomment le premier).
+List<String> gesRoles(String geste, List<String> defaut) {
+  final l = _lecteurGeste, r = _rolesConnusGeste;
+  if (l == null || r == null) return defaut;
+  final out = [for (final x in r()) if (l(x, geste)) x];
+  int rang(String x) {
+    final i = defaut.indexOf(x);
+    return i < 0 ? 99 : i;
+  }
+
+  out.sort((a, b) => rang(a).compareTo(rang(b)));
+  return out;
+}

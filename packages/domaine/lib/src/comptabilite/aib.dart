@@ -10,6 +10,7 @@
 // (désactivé par défaut : le moteur liste, n'écrit rien) ; Q7 qui supporte les 5 % est un réglage (défaut « clinique », non arrêté : le texte officiel manque, aucun
 // effet comptable n'en découle). Symboles préfixés `aib` / `Aib`.
 
+import '../droits/droit_geste.dart' show gesDroit, gesRoles;
 import '../parametres/definitions.dart' show definitionDeParametre;
 import '../parametres/parametres.dart' show Parametre;
 
@@ -17,6 +18,9 @@ typedef AibFiche = Map<String, Object?>;
 
 /// Les rôles qui écrivent le barème et ses réglages (comme `ROLES_ECRITURE_AIB`) : la Direction lit, ne les écrit pas.
 const List<String> aibRolesEcriture = ['comptable', 'admin', 'da'];
+
+/// LOT VAL : écrire le barème est le geste réservé `ecrire_bareme_aib` de la fiche RBAC ; [aibRolesEcriture] n'est que le DÉFAUT d'origine du manifeste.
+const String aibGesteEcrire = 'ecrire_bareme_aib';
 
 /// Les fiches que les fonctions lisent : une collection chacune, les fiches archivées (`statut == 'archive'`) sont ignorées.
 class AibDonnees {
@@ -372,9 +376,10 @@ String? aibVersionFigee(AibFiche avant, AibFiche apres) {
 
 /// Qui peut écrire : le rôle (libellé fourni pour le motif), et le poste (un fileul lit, la mère écrit). Rend le refus nommé, ou null.
 AibFiche? aibMotifEcriture({required String role, required String libelleRole, bool fileul = false}) {
-  if (!aibRolesEcriture.contains(role)) {
-    return aibRefus('AIB_ECRITURE_RESERVEE', 'Le barème de l’AIB se tient par le comptable, la Directrice Administrative ou l’administrateur. Profil : $libelleRole.',
-        'Demander la modification au comptable ; la Direction consulte le barème sans l’écrire.');
+  if (!gesDroit(role, aibGesteEcrire, aibRolesEcriture)) {
+    return aibRefus('AIB_ECRITURE_RESERVEE', 'Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« $aibGesteEcrire ») : « $libelleRole » ne l’a pas.',
+        'Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.',
+        {'droit': aibGesteEcrire, 'roles': gesRoles(aibGesteEcrire, aibRolesEcriture)});
   }
   if (fileul) {
     return aibRefus('AIB_POSTE_FILEUL', 'Ce poste est un fileul : le barème de l’AIB est tenu par la mère et se lit ici sans s’y écrire.', 'Faire la modification depuis le poste mère.');

@@ -548,8 +548,13 @@ const Map<String, String> ecranParCollectionPair = {
 const Set<String> collectionsPairSansPontPoste = {'produits', 'admissions'};
 
 /// Ceux qui TRANCHENT un conflit ou VALIDENT un flux : une décision institutionnelle, pas une saisie. `mere` est l'appareil de la mère (ses décisions à son retour).
+///
+/// LOT VAL : ces deux listes ne sont plus que le DÉFAUT d'origine, utilisé quand aucune lecture de la fiche RBAC n'est branchée (banc de protocole). Au poste et dans la fiche, TRANCHER et VALIDER sont
+/// les gestes réservés [gesteTrancherPair] et [gesteValiderPair] (`rbac.json`, clé `gestes`), lus À CHAUD ; `mere` n'est pas un rôle mais l'appareil de la mère, il tranche toujours.
 const List<String> rolesQuiTranchentPair = ['da', 'direction', 'admin', 'mere'];
 const List<String> rolesQuiValidentPair = ['da', 'admin'];
+const String gesteTrancherPair = 'trancher_pair';
+const String gesteValiderPair = 'valider_pair';
 
 /// Les droits de la règle de fusion, DÉDUITS de la matrice RBAC (source unique, engendrée par la maquette) au lieu de la table du banc : écrire = éditer l'écran
 /// de la collection ; archiver ou restaurer = annuler ; trancher et valider = rôles institutionnels. Tout ce qui n'est pas listé est refusé.
@@ -557,6 +562,7 @@ const List<String> rolesQuiValidentPair = ['da', 'admin'];
 DroitsOperation droitsDepuisMatrice({
   required bool Function(String role, String ecran) peutEditer,
   required bool Function(String role, String ecran) peutAnnuler,
+  bool Function(String role, String geste)? peutGeste,
   Map<String, String> ecrans = ecranParCollectionPair,
 }) =>
     (op) {
@@ -565,10 +571,11 @@ DroitsOperation droitsDepuisMatrice({
       if (role == null || ecran == null) return false;
       switch (op.type) {
         case 'trancher':
-          return rolesQuiTranchentPair.contains(role);
+          if (role == 'mere') return true;
+          return peutGeste != null ? peutGeste(role, gesteTrancherPair) : rolesQuiTranchentPair.contains(role);
         case 'valider':
         case 'rejeter':
-          return rolesQuiValidentPair.contains(role);
+          return peutGeste != null ? peutGeste(role, gesteValiderPair) : rolesQuiValidentPair.contains(role);
         case 'archiver':
         case 'restaurer':
           return peutAnnuler(role, ecran);

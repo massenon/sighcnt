@@ -6,6 +6,7 @@
 /// Les fonctions de montants et d'acheteur sont rejouées sur `mecef_montants.json` ; celles-ci sont éprouvées par `mecef_normalisation_test.dart`.
 library;
 
+import '../droits/droit_geste.dart' show gesDroit;
 import 'etats.dart';
 import 'montants.dart';
 
@@ -114,6 +115,14 @@ String numeroMecefLibre(int tire, Set<String> pris) {
   return 'MECEF$n';
 }
 
+/// LOT VAL : retransmettre, retransmettre sans limite d'essais et régler le mode sont des gestes réservés de la fiche RBAC ; les listes ne sont que le DÉFAUT d'origine du manifeste.
+const String mecefGesteRetransmettre = 'retransmettre_mecef';
+const String mecefGesteSansLimite = 'retransmettre_mecef_sans_limite';
+const String mecefGesteMode = 'regler_mode_mecef';
+const List<String> mecefRolesRetransmettre = ['caissier', 'da', 'admin'];
+const List<String> mecefRolesSansLimite = ['da', 'admin'];
+const List<String> mecefRolesMode = ['admin', 'da'];
+
 /// Qui peut retransmettre une pièce (PRD section 7, Q7) : le caissier UNE fois, puis la Directrice Administrative et l'administrateur ; jamais une
 /// vente normalisée ; une vente « à vérifier » se reprend, elle ne se retransmet pas. Null quand c'est permis.
 RefusMecef? refusRetransmission(Map<String, Object?> fac, String role) {
@@ -132,17 +141,17 @@ RefusMecef? refusRetransmission(Map<String, Object?> fac, String role) {
         'Utiliser « Reprendre sans doubler ».');
   }
   final deja = _num(fac['retransmissions']).toInt();
-  if (role == 'caissier' && deja >= 1) {
+  if (!gesDroit(role, mecefGesteRetransmettre, mecefRolesRetransmettre)) {
+    return RefusMecef(
+        'RETRANSMISSION_INTERDITE',
+        'Retransmettre au MECeF est un droit réservé de la fiche du rôle (« $mecefGesteRetransmettre ») : « $role » ne l’a pas.',
+        'Demander à un rôle qui détient ce droit (la caisse, une fois, ou la Directrice Administrative d’origine).');
+  }
+  if (!gesDroit(role, mecefGesteSansLimite, mecefRolesSansLimite) && deja >= 1) {
     return RefusMecef(
         'RETRANSMISSION_RESERVEE',
-        'Le caissier ne retransmet qu’une fois : la facture $num_ l’a déjà été.',
-        'Demander la retransmission à la Directrice Administrative.');
-  }
-  if (!const ['caissier', 'da', 'admin'].contains(role)) {
-    return const RefusMecef(
-        'RETRANSMISSION_INTERDITE',
-        'La retransmission est réservée au caissier (une fois) et à la Directrice Administrative.',
-        'Demander à la caisse ou à la DA.');
+        'Sans le droit « $mecefGesteSansLimite », une vente ne se retransmet qu’une fois : la facture $num_ l’a déjà été.',
+        'Demander la retransmission à un rôle qui détient ce droit (la Directrice Administrative d’origine).');
   }
   return null;
 }

@@ -11,6 +11,10 @@
  * Les identifiants de rôle sont LUS de `packages/rbac/data/rbac.json` (jamais recopiés ici). Chaque site existant est inscrit dans `garde-roles-en-dur.liste.json` (fichier, texte normalisé,
  * nombre) : la liste ne peut que DÉCROÎTRE. Un site nouveau (ou un site de plus avec le même texte) fait échouer la garde ; un site disparu aussi (il faut alors abaisser la liste, pour que
  * le plafond suive la migration). On migre les sites à la pièce, par risque : clôture d'abord (liste vide pour M12 clôture), puis le reste.
+ * LOT VAL (16/11/2026) : la garde voit aussi le DOMAINE (`packages/domaine/lib`), le moteur de synchronisation (`packages/sync_dart/lib`), le POSTE et la MÈRE (`apps/poste/lib`), le PHP de la
+ * maquette (`prototype_html/api/*.php`) et le relais (`apps/web/app`), avec les mêmes deux formes (tableau ou ensemble littéral de rôles, comparaison d'un rôle à un identifiant) ET une troisième :
+ *   (c) un NOM DE PERSONNE écrit à la place de l'acteur ou du signataire (TAKI, BASSONGUI, KASSA, MAMAN, DIEYABIDI, KINNOU) : l'acteur est l'agent de la session, jamais un nom (RG-12).
+ * Faux positif corrigé : `p['stock']` (accès à une clé) n'est pas un tableau de rôles ; seul un `[` qui n'est pas précédé d'un identifiant, d'un `]` ou d'une `)` ouvre un tableau.
  * Sortie : code 0 si la liste est exacte, 1 avec le détail.
  * ========================================================================== */
 'use strict';
@@ -24,25 +28,56 @@ function fichiers(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? fichiers(path.join(dir, e.name)) : /\.js$/.test(e.name) ? [path.join(dir, e.name)] : []);
 }
 const EXCLUS = (f, racine) => path.dirname(f) === racine && (path.basename(f) === 'nav.js' || /^data[-.\w]*\.js$/.test(path.basename(f)));
+const DEPOT = path.resolve(__dirname, '..', '..');
+/** Les racines AJOUTÉES par le lot VAL : [dossier, extension, récursif]. */
+const AUTRES = [
+  [path.join(DEPOT, 'packages', 'domaine', 'lib'), /\.dart$/, true],
+  [path.join(DEPOT, 'packages', 'sync_dart', 'lib'), /\.dart$/, true],
+  [path.join(DEPOT, 'apps', 'poste', 'lib'), /\.dart$/, true],
+  [path.join(DEPOT, 'prototype_html', 'api'), /\.php$/, false],
+  [path.join(DEPOT, 'apps', 'web', 'app'), /\.php$/, true],
+];
+const NON_CODE = /(^|\/)(jetons[\w]*\.dart|[\w]*\.g\.dart|[\w]*\.local\.php|[\w.]*exemple\.php|banc\.php)$/;
+function fichiersExt(dir, re, rec) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (rec ? fichiersExt(path.join(dir, e.name), re, rec) : []) : re.test(e.name) && !NON_CODE.test(e.name) ? [path.join(dir, e.name)] : []);
+}
+const NOMS = /\b(TAKI|BASSONGUI|KASSA|MAMAN|DIEYABIDI|KINNOU)\b/g;
+function blanchir(brut) {
+  /* Les commentaires ne sont pas du code : leur texte est blanchi (les sauts de ligne restent). */
+  return brut.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, ' ')).replace(/(^|[^:\\'"`])\/\/[^\n]*/g, (c, a) => a + ' '.repeat(c.length - a.length));
+}
 function sites(racine) {
   const alt = roles().map((r) => r.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-  const tableau = new RegExp("\\[\\s*'(?:" + alt + ")'(?:\\s*,\\s*'(?:" + alt + ")')*\\s*\\]", 'g');
-  const compare = new RegExp("(?:\\brole\\b|roleCourant\\(\\)|\\.role|\\bsession\\.role)\\s*[!=]==?\\s*'(?:" + alt + ")'", 'g');
+  const el = "'(?:" + alt + ")'";
+  const tableau = new RegExp("(?<![\\w\\]\\)'\"])(?:\\[\\s*" + el + "(?:\\s*,\\s*" + el + ")*\\s*,?\\s*\\]|\\{\\s*" + el + "(?:\\s*,\\s*" + el + ")*\\s*,?\\s*\\})", 'g');
+  const compare = new RegExp("(?:\\brole\\b|roleCourant\\(\\)|\\.role|\\bsession\\.role|\\$role|\\['role'\\])\\s*[!=]==?\\s*" + el, 'g');
   const out = {};
+  const aInscrire = (rel, texte, src, index) => {
+    const ligne = src.slice(0, index).split('\n').length;
+    ((out[rel] = out[rel] || {})[texte] = out[rel][texte] || { n: 0, lignes: [] });
+    out[rel][texte].n++; out[rel][texte].lignes.push(ligne);
+  };
+  if (racine === RACINE) {
+    for (const [dir, re, rec] of AUTRES) {
+      for (const f of fichiersExt(dir, re, rec)) {
+        const src = blanchir(fs.readFileSync(f, 'utf8')), rel = path.relative(DEPOT, f).replace(/\\/g, '/');
+        for (const r of [tableau, compare, NOMS]) {
+          let m; r.lastIndex = 0;
+          while ((m = r.exec(src))) aInscrire(rel, (r === NOMS ? 'nom ' : '') + m[0].replace(/\s+/g, ' '), src, m.index);
+        }
+      }
+    }
+  }
   for (const f of fichiers(racine)) {
     if (EXCLUS(f, racine)) continue;
     const brut = fs.readFileSync(f, 'utf8');
     /* Les commentaires ne sont pas du code : leur texte est blanchi (les sauts de ligne restent). */
     const src = brut.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, ' ')).replace(/(^|[^:\\'"`])\/\/[^\n]*/g, (c, a) => a + ' '.repeat(c.length - a.length));
     const rel = path.relative(path.dirname(racine), f).replace(/\\/g, '/');
-    for (const re of [tableau, compare]) {
+    for (const re of [tableau, compare, NOMS]) {
       let m; re.lastIndex = 0;
-      while ((m = re.exec(src))) {
-        const texte = m[0].replace(/\s+/g, ' ');
-        const ligne = src.slice(0, m.index).split('\n').length;
-        ((out[rel] = out[rel] || {})[texte] = out[rel][texte] || { n: 0, lignes: [] });
-        out[rel][texte].n++; out[rel][texte].lignes.push(ligne);
-      }
+      while ((m = re.exec(src))) aInscrire(rel, (re === NOMS ? 'nom ' : '') + m[0].replace(/\s+/g, ' '), src, m.index);
     }
   }
   return out;
