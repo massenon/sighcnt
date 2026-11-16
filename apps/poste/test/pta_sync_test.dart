@@ -57,7 +57,7 @@ void main() {
       f1.m.collection('planAnnuel').inserer(action('Audit qualité'));
       bool partout(bool Function(Magasin) p) => [c.mm, f1.m, f2.m].every(p);
       await c.converger(() => partout((m) => actions(m, 'Audit qualité').length == 1), 'l\'action de F1 arrive à la mère et à F2', apres: 4);
-      final id = actions(f1.m, 'Audit qualité').single['id'];
+      actions(f1.m, 'Audit qualité').single; // exactement une action chez F1
       f2.m.collection('planAnnuel').mettreAJour(actions(f2.m, 'Audit qualité').single['id'], {'tauxAvancement': 40, 'budgetRealise': 250000});
       await c.converger(() => partout((m) => actions(m, 'Audit qualité').single['tauxAvancement'] == 40), 'le suivi de F2 arrive partout (champ à champ)', apres: 4);
       // 2. MÈRE COUPÉE : F1 et F2 écrivent la MÊME action et adoptent le MÊME exercice.

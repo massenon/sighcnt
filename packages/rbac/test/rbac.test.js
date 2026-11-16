@@ -208,7 +208,8 @@ test('lot VAL : chaque validation, écriture ou arbitrage qui était une LISTE D
     const g = rbac.gestes.jeux.find((x) => x.id === id);
     assert.ok(g, id + ' déclaré');
     assert.deepEqual(g.rolesDefaut, liste, id + ' : défaut = liste d\'hier, dans l\'ordre');
-    assert.equal(g.ecran, null, id + ' n\'ouvre aucun écran');
+    /* `ecran` n'est que l'emplacement du droit dans la fiche RBAC, jamais un écran ouvert : le mode MECeF (lot MECEF-M) et l'arbitrage des besoins (lot CLO-3) en nomment un, les autres aucun. */
+    if (!['regler_mode_mecef', 'arbitrer_besoins'].includes(id)) assert.equal(g.ecran, null, id + ' n\'ouvre aucun écran');
     const detenus = Object.keys(rbac.gestes.parRole).filter((r) => rbac.gestes.parRole[r][id] === 1).sort();
     assert.deepEqual(detenus, [...liste].sort(), id + ' : détenteurs de la matrice engendrée');
     for (const r of rbac.roles.filter((x) => x.archive)) assert.equal(rbac.gestes.parRole[r.id][id], 0, id + ' / ' + r.id);
