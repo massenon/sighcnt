@@ -19,12 +19,14 @@ import '../fichiers/ocr.dart' show ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrC
 import '../sauvegarde/sauvegarde_horssite.dart';
 import '../tableaux/sortie_tableau.dart' show tabCleLimiteLignes, tabLimiteDefaut;
 import '../caisse/prix_manquant.dart' show cleEncaissementPartielSansPrix;
+import '../sms/sms_definitions.dart';
 import 'parametres.dart';
 import 'parametres_clinique.dart' show pcDefinitions;
 
 const String _decisions = 'Décision de la Direction du 09/11/2026 (DECISIONS-A-VALIDER, section D)';
 
-const List<DefinitionParametre> definitionsParametres = [
+final List<DefinitionParametre> definitionsParametres = [
+  ...definitionsSms,
   DefinitionParametre(
     cle: 'mecef.mode',
     famille: 'mecef',
@@ -464,6 +466,7 @@ const Map<String, String> libellesFamillesParametres = {
   'affichage': 'Affichage',
   'ocr': 'Lecture des scans (OCR)',
   'horssite': 'Sauvegarde hors site',
+  'sms': 'Envois automatiques de SMS',
   'exercice': 'Clôture annuelle',
   'caisse': 'Caisse',
   'clinique': 'Paramètres de clinique',

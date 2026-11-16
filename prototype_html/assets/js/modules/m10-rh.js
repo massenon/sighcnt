@@ -406,6 +406,12 @@
         { name: 'prenom', label: 'Prénom(s)', required: true },
         { name: 'sexe', label: 'Sexe', type: 'select', required: true, options: [{ value: 'M', label: 'Masculin' }, { value: 'F', label: 'Féminin' }] },
         { name: 'telephone', label: 'Téléphone', type: 'tel' },
+        { name: 'dateNaissance', label: 'Date de naissance', type: 'date', help: 'Sert aux vœux d’anniversaire par SMS, seulement si l’agent y consent.' },
+        {
+          /* Accord de l’agent pour recevoir les vœux d’anniversaire de la clinique par SMS (lot SMS-R). DÉCOCHÉ PAR DÉFAUT (Direction, 16/11/2026) : contrairement au patient, rien ne part sans un oui. */
+          name: 'consentementSms', label: 'Accepte de recevoir les vœux d’anniversaire par SMS', type: 'checkbox', col: 'full', value: false,
+          help: 'Décoché par défaut. L’agent peut le retirer à tout moment ; la date et l’auteur du changement sont journalisés.',
+        },
         { name: 'situation', label: 'Situation matrimoniale', type: 'select', options: ['Célibataire', 'Marié(e)', 'Divorcé(e)', 'Veuf(ve)'] },
         { type: 'section', label: 'Affectation' },
         { name: 'fonction', label: 'Fonction', type: 'select', required: true, options: optionsFonctions() },
@@ -417,7 +423,7 @@
         { name: 'salaireBase', label: 'Salaire de base (FCFA)', type: 'money', required: true, min: 0 },
         { name: 'cnss', label: 'Numéro CNSS' },
       ],
-      transform: function (v) { v.nomComplet = v.nom + ' ' + v.prenom; return v; },
+      transform: function (v, rec) { v.nomComplet = v.nom + ' ' + v.prenom; return global.SIGH.parcours.tracerConsentementSmsPersonnel(v, rec); },
       onCreate: function () { return { dateEmbauche: C.iso(AUJ), salaireBase: 60000, categorie: 'E1-1', sexe: 'F' }; },
       filters: [
         { name: 'fonction', label: 'Fonction', options: optionsFonctions() },
