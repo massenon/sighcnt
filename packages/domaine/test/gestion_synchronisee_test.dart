@@ -47,10 +47,23 @@ void main() {
       expect(collectionsGestionJamaisMobile, contains('planningsPersonnalises'));
     });
 
+    test('lot PTA : le plan annuel et son adoption ont une identité par le contenu (exercice, libellé, version ; exercice) ; une révision est une AUTRE identité', () {
+      final a = identiteSyncGestion('planAnnuel', {'exercice': 2026, 'action': 'Audit qualité', 'version': 1});
+      expect(a, startsWith('PTA-2026-'));
+      expect(identiteSyncGestion('planAnnuel', {'exercice': 2026, 'action': '  audit   QUALITÉ ', 'version': 1}), a, reason: 'libellé normalisé');
+      expect(identiteSyncGestion('planAnnuel', {'exercice': 2026, 'action': 'Audit qualité', 'version': 2}), isNot(a), reason: 'la version 2 ne fusionne pas avec la version qu\'elle remplace');
+      expect(identiteSyncGestion('planAnnuel', {'exercice': 2027, 'action': 'Audit qualité', 'version': 1}), isNot(a));
+      expect(identiteSyncGestion('planAnnuel', {'exercice': 2026, 'action': ''}), isNull);
+      expect(identiteSyncGestion('adoptionsPlan', {'exercice': 2026}), 'ADP-2026');
+      expect(identiteSyncGestion('adoptionsPlan', {}), isNull);
+      expect(collectionsGestionJamaisMobile, containsAll({'planAnnuel', 'adoptionsPlan', 'referentielsPlan', 'reglagesPlan'}), reason: 'RG-13 : rien du plan vers un téléphone');
+      expect(paCollectionsConfiguration, {'referentielsPlan', 'reglagesPlan'});
+    });
+
     test('une autre collection n\'a pas d\'identité par le contenu', () {
       expect(identiteSyncGestion('patients', {'code': 'CNT/1/26'}), isNull);
-      expect(collectionsGestionSynchronisees, {'budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises'});
-      expect(collectionsGestionJamaisMobile, containsAll(collectionsGestionSynchronisees), reason: 'RG-13 : aucune des quatre vers un téléphone');
+      expect(collectionsGestionSynchronisees, {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan', 'planningsPersonnalises'}, reason: 'le lot PTA y ajoute le plan annuel et son adoption, le lot PLAN-INDIV le planning personnalisé');
+      expect(collectionsGestionJamaisMobile, containsAll(collectionsGestionSynchronisees), reason: 'RG-13 : aucune de ces collections vers un téléphone');
     });
   });
 

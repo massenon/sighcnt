@@ -60,10 +60,12 @@ const FAMILLES = {
   budgets: 'A', immobilisations: 'A', couverturesAssurance: 'A',
   /* Lot PLAN-INDIV : le planning personnalisé d'un agent (version datée figée, identité commune par le contenu), jamais vers un téléphone (RG-13). */
   planningsPersonnalises: 'A',
+  /* Lot PTA : le plan annuel de travail et son adoption (A, identité par le contenu, jamais vers un téléphone). */
+  planAnnuel: 'A', adoptionsPlan: 'A',
 };
 const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers', 'lecturesOcr']);
-/* Lot SYNC-CFG : les trois collections de gestion (identité commune par le contenu, jamais vers un téléphone). */
-const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises']);
+/* Lot SYNC-CFG : les collections de gestion (identité commune par le contenu, jamais vers un téléphone). */
+const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises', 'planAnnuel', 'adoptionsPlan']);
 const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 
 const PARAMETRES = require('./parametres');

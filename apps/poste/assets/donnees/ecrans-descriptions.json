@@ -727,7 +727,7 @@
   },
   "m13-plan-annuel": {
    "titre": "Plan annuel de travail",
-   "description": "Programmation annuelle des activités de la clinique, par axe et par trimestre."
+   "description": "Programmation annuelle des activités de la clinique, par exercice, par axe et par trimestre, avec suivi chiffré."
   },
   "m13-repertoire-ambulances": {
    "titre": "Répertoire des ambulances",

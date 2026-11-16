@@ -27,7 +27,7 @@ import 'transcription_mobile.dart' show PieceSync;
 /// (qui n'en lit rien), et un fileul les reçoit sans pouvoir les écrire (garde « réglé sur la mère »). La liste blanche du téléphone est tenue par la mère
 /// (`Pont.diffuser`), pas ici.
 Set<String> collectionsConfiguration() =>
-    {...cfbEssentielles, 'utilisateurs', valCollectionValidations, parCollectionParametres, idCollectionOptions, ...tarCollectionsReferentiel}.difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'});
+    {...cfbEssentielles, 'utilisateurs', valCollectionValidations, parCollectionParametres, idCollectionOptions, ...tarCollectionsReferentiel, ...paCollectionsConfiguration}.difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'});
 
 /// Les collections qu'un fileul continue d'ÉCRIRE lui-même : un agent s'y connecte, change son mot de passe, voit son compteur d'échecs monter. Elles ne sont
 /// pas protégées par la garde « réglé sur la mère ».

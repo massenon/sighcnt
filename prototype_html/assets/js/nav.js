@@ -238,6 +238,10 @@
       rolesDefaut: ['admin', 'da'] },
     { id: 'regler_imprimante_caisse', libelle: 'Régler l’imprimante de caisse (modèle, liaison, nom)', module: 'M8', ecran: 'mecef-config',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot PTA (16/11/2026) : ADOPTER le plan annuel de travail d'un exercice (date, motif, journal RG-12). Directive de la Direction : « Adoption par la Direction ». Défaut PROPOSÉ, à valider :
+       la Direction et la Directrice Administrative. Après l'adoption, le contenu du plan ne se modifie plus que par version datée ; le suivi (état, pourcentage, réalisé) reste libre. */
+    { id: 'adopter_plan_annuel', libelle: 'Adopter le plan annuel de travail d’un exercice (le contenu ne change plus ensuite que par version datée)', module: 'M13', ecran: 'm13-plan-annuel',
+      rolesDefaut: ['direction', 'da'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

@@ -2046,6 +2046,9 @@
       aide: 'Une créance de ce nombre de jours ou moins est dans la première tranche. Entier de 1 à 365, plus petit que la fin de la deuxième tranche.' },
     { cle: 'creances.trancheLongueJours', libelle: 'Balance âgée : fin de la deuxième tranche (jours)', unite: 'jours', defaut: 90, min: 2, max: 730, module: 'M9',
       aide: 'Au-delà de ce nombre de jours, la créance est dans la dernière tranche (relance impérative). Entier de 2 à 730, plus grand que la fin de la première tranche.' },
+    /* Lot PTA (16/11/2026) : la tolérance avant l'alerte de retard d'une action du plan annuel. Défaut 0 : l'alerte part le lendemain de la fin du trimestre. Bornes : proposition à valider. */
+    { cle: 'plan.graceRetardJours', libelle: 'Plan annuel : jours de tolérance après la fin du trimestre avant l’alerte de retard', unite: 'jours', defaut: 0, min: 0, max: 90, module: 'M13',
+      aide: 'Une action non réalisée alerte quand son trimestre de fin est passé de plus de ce nombre de jours. Entier de 0 à 90 (0 : dès le lendemain).' },
   ];
   function semenceParametresClinique() {
     return PARAMETRES_CLINIQUE.map(function (d, i) {
@@ -2089,6 +2092,99 @@
     var d = dateIso(date);
     var j = Math.round((Date.parse(String(l.datePeremption).slice(0, 10) + 'T00:00:00Z') - Date.parse(d + 'T00:00:00Z')) / 86400000);
     return j < 0 ? 'perime' : (j <= delaiPeremptionALaDate(d) ? 'alerte' : 'actif');
+  }
+
+  /* ==========================================================================
+   * LE PLAN ANNUEL DE TRAVAIL (lot PTA, 16/11/2026 ; Direction : « rien ne doit rester en dur »)
+   * --------------------------------------------------------------------------
+   * Les axes et les états d'avancement sont des RÉFÉRENTIELS EN BASE (`referentielsPlan`, défauts semés). Un état porte une NATURE (`planifiee`, `en_cours`, `realisee`) : c'est
+   * ce que les règles lisent (« une action réalisée n'alerte pas »), jamais un libellé. Les règles pures (trimestres de l'exercice, bornes du pourcentage, indicateur, totaux,
+   * retard) vivent ici ; le moteur qui écrit et refuse (adoption, version datée, reconduction) est dans `parcours.js` (`SIGH.planAnnuel`). Vecteurs : `build/vecteurs-plan-annuel.js`.
+   * ======================================================================== */
+  var PLAN_ETATS_SEMENCE = [
+    { code: 'planifiee', libelle: 'Planifiée', nature: 'planifiee', ton: 'warning' },
+    { code: 'en_cours', libelle: 'En cours', nature: 'en_cours', ton: 'info' },
+    { code: 'realisee', libelle: 'Réalisée', nature: 'realisee', ton: 'success' },
+  ];
+  var PLAN_AXES_SEMENCE = [
+    ['digitalisation', 'Digitalisation'], ['formation', 'Formation'], ['logistique', 'Logistique'], ['partenariats', 'Partenariats'], ['sante_publique', 'Santé publique'],
+    ['investissement', 'Investissement'], ['qualite', 'Qualité'], ['ressources_humaines', 'Ressources humaines'], ['finance', 'Finance'],
+  ];
+  function semenceReferentielsPlan() {
+    var n = 0, out = [];
+    PLAN_AXES_SEMENCE.forEach(function (a, i) {
+      out.push({ id: 'RFP-' + C.pad(++n, 3), statut: 'actif', type: 'axe', code: a[0], libelle: a[1], ordre: i + 1, creeLe: '2026-11-16', creePar: 'Semence du socle' });
+    });
+    PLAN_ETATS_SEMENCE.forEach(function (e, i) {
+      out.push({ id: 'RFP-' + C.pad(++n, 3), statut: 'actif', type: 'etat', code: e.code, libelle: e.libelle, nature: e.nature, ton: e.ton, ordre: i + 1, creeLe: '2026-11-16', creePar: 'Semence du socle' });
+    });
+    return out;
+  }
+  /** Les fiches d'un référentiel du plan (`axe` ou `etat`), triées par ordre ; la semence si le magasin n'est pas prêt ou n'en porte aucune. */
+  function planReferentiel(type) {
+    var rows = magasinPret() ? lireCollection('referentielsPlan').filter(function (r) { return r.type === type && r.statut !== 'archive'; }) : [];
+    if (!rows.length) rows = semenceReferentielsPlan().filter(function (r) { return r.type === type; });
+    return rows.slice().sort(function (a, b) { return (Number(a.ordre) || 0) - (Number(b.ordre) || 0) || String(a.code).localeCompare(String(b.code)); });
+  }
+  function planEtat(code) { return planReferentiel('etat').filter(function (e) { return e.code === code; })[0] || null; }
+  function planAxe(code) { return planReferentiel('axe').filter(function (e) { return e.code === code; })[0] || null; }
+  /** La NATURE d'un état d'avancement (`planifiee`, `en_cours`, `realisee`) ; `null` si l'état est inconnu (jamais « réalisée » par défaut). */
+  function planNature(codeEtat) { var e = planEtat(codeEtat); return e ? e.nature : null; }
+  /** Le dernier jour du trimestre `q` (1 à 4) d'un exercice qui commence le `debutIso` (AAAA-MM-JJ) : trois mois par trimestre, le premier jour de l'exercice faisant foi. `null` si illisible. */
+  function planFinTrimestre(debutIso, q) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(debutIso || ''));
+    q = Number(q);
+    if (!m || !(q >= 1 && q <= 4)) return null;
+    var fin = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1 + 3 * q, Number(m[3])) - 86400000);
+    return fin.toISOString().slice(0, 10);
+  }
+  /** Le pourcentage d'avancement : un NOMBRE de 0 à 100 ; `{ ok, valeur }` (valeur `null` si non renseigné, jamais 0 par défaut) ou `{ ok: false, code }`. */
+  function planPourcentage(v) {
+    if (v === undefined || v === null || v === '') return { ok: true, valeur: null };
+    var n = Number(v);
+    if (!isFinite(n) || n < 0 || n > 100) return { ok: false, code: 'POURCENTAGE_HORS_BORNES' };
+    return { ok: true, valeur: n };
+  }
+  /** Le nombre d'un champ budgétaire ou d'indicateur : `null` si non renseigné ; `undefined` si invalide (négatif ou non numérique). */
+  function planNombre(v) {
+    if (v === undefined || v === null || v === '') return null;
+    var n = Number(v);
+    return isFinite(n) && n >= 0 ? n : undefined;
+  }
+  /** L'atteinte d'un indicateur de résultat : valeur atteinte / cible, en pour cent (non borné : une cible dépassée se voit). « Non calculable » (cible absente ou nulle, valeur absente) n'est PAS zéro. */
+  function planAtteinteIndicateur(a) {
+    var cible = planNombre(a && a.cible), val = planNombre(a && a.valeurAtteinte);
+    if (cible === null || cible === undefined || cible === 0) return { calculable: false, motif: 'cible non définie' };
+    if (val === null || val === undefined) return { calculable: false, motif: 'valeur atteinte non renseignée' };
+    return { calculable: true, pct: Math.round(val / cible * 1000) / 10 };
+  }
+  /** Les totaux CALCULÉS d'une liste d'actions (jamais fournis) : budget prévu et réalisé sur les actions qui les portent, écart seulement si les deux sommes existent, pourcentage moyen des actions qui en portent un. */
+  function planTotaux(actions) {
+    var t = { nb: actions.length, prevu: null, realise: null, nbSansPrevu: 0, nbSansRealise: 0, ecart: null, tauxMoyen: null, nbSansTaux: 0, parNature: { planifiee: 0, en_cours: 0, realisee: 0, inconnue: 0 } };
+    var somTaux = 0, nTaux = 0;
+    actions.forEach(function (a) {
+      var p = planNombre(a.budgetPrevu), r = planNombre(a.budgetRealise);
+      if (p === null || p === undefined) t.nbSansPrevu++; else t.prevu = (t.prevu || 0) + p;
+      if (r === null || r === undefined) t.nbSansRealise++; else t.realise = (t.realise || 0) + r;
+      var tx = planPourcentage(a.tauxAvancement);
+      if (tx.ok && tx.valeur !== null) { somTaux += tx.valeur; nTaux++; } else t.nbSansTaux++;
+      var nat = planNature(a.avancement) || 'inconnue';
+      t.parNature[nat] = (t.parNature[nat] || 0) + 1;
+    });
+    if (t.prevu !== null && t.realise !== null) t.ecart = t.prevu - t.realise;
+    if (nTaux) t.tauxMoyen = Math.round(somTaux / nTaux * 10) / 10;
+    return t;
+  }
+  /** L'alerte de retard d'UNE action à une date : non réalisée, et le dernier jour de son trimestre de fin (plus la tolérance lue en base) est passé. Dérivée : elle retombe quand l'état devient réalisé ou que la fin est replanifiée. */
+  function planRetard(a, debutExercice, auj, graceJours) {
+    var nature = planNature(a && a.avancement);
+    if (!a || nature === null || nature === 'realisee') return { enRetard: false, motif: nature === 'realisee' ? 'realisee' : 'etat_inconnu' };
+    var fin = planFinTrimestre(debutExercice, a.trimestreFin);
+    if (!fin) return { enRetard: false, motif: 'trimestre_illisible' };
+    var limite = new Date(Date.parse(fin + 'T00:00:00Z') + (Number(graceJours) || 0) * 86400000).toISOString().slice(0, 10);
+    var jour = dateIso(auj);
+    if (jour <= limite) return { enRetard: false, motif: 'dans_les_delais', finTrimestre: fin, limite: limite };
+    return { enRetard: true, finTrimestre: fin, limite: limite, jours: Math.round((Date.parse(jour + 'T00:00:00Z') - Date.parse(fin + 'T00:00:00Z')) / 86400000) };
   }
 
   /* ==========================================================================
@@ -2567,6 +2663,8 @@
     NATURES_FACTURE: NATURES_FACTURE, CENTRES_COUTS: CENTRES_COUTS,
     PARAM_STOCK: PARAM_STOCK, FAMILLES_ARTICLES: FAMILLES_ARTICLES, GROUPES_ARTICLES: GROUPES_ARTICLES,
     PARAMETRES_CLINIQUE: PARAMETRES_CLINIQUE, semenceParametresClinique: semenceParametresClinique, definitionParametreClinique: definitionParametreClinique,
+    PLAN: { semenceReferentiels: semenceReferentielsPlan, referentiel: planReferentiel, etat: planEtat, axe: planAxe, nature: planNature, finTrimestre: planFinTrimestre, pourcentage: planPourcentage, nombre: planNombre,
+      atteinteIndicateur: planAtteinteIndicateur, totaux: planTotaux, retard: planRetard },
     versionsParametreClinique: versionsParametreClinique, parametreCliniqueALaDate: parametreCliniqueALaDate, delaiPeremptionALaDate: delaiPeremptionALaDate,
     tranchesCreancesALaDate: tranchesCreancesALaDate, trancheCreance: trancheCreance, libellesTranches: libellesTranches, statutLotALaDate: statutLotALaDate,
     familleDe: familleDe, groupeDe: groupeDe,

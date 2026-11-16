@@ -1,5 +1,5 @@
 /* =============================================================================
- * VECTEURS DE M13 — m13-courriers, m13-reunions, m13-evenements, m13-plan-annuel, m13-notes-service, m13-ambulance,
+ * VECTEURS DE M13 — m13-courriers, m13-reunions, m13-evenements, m13-notes-service, m13-ambulance,
  * m13-repertoire-ambulances, m13-maintenance
  * -----------------------------------------------------------------------------
  * Les huit écrans RÉELS sont montés dans Chrome sur un magasin dont on pose les fiches, à une HORLOGE FIGÉE (30/10/2026 10:00), puis LUS comme
@@ -313,50 +313,7 @@ function ecrireDartNotes(n) {
       return out;
     });
 
-    /* ------------------------------------------------------------------ PLAN ANNUEL */
-    sortie.planAnnuel = await m.page.evaluate(async () => {
-      const S = SIGH.store;
-      const col = S.collection('planAnnuel');
-      H.vider(col);
-      const a = (n, action, axe, d, f, av, resp) => ({ id: 'PAT' + String(n).padStart(3, '0'), statut: 'actif', reference: 'PA-2026-' + String(n).padStart(3, '0'), action, axe, trimestreDebut: d, trimestreFin: f, avancement: av, responsable: resp });
-      [a(1, 'Déploiement du SIGH-CNT', 'Digitalisation', 1, 4, 'En cours', 'TAKI Alimatou'), a(2, 'Inventaire général des stocks', 'Logistique', 1, 1, 'Réalisée', 'MAMAN Zoukanéri'),
-        a(3, 'Formation du personnel', 'Formation', 3, 4, 'Planifiée', 'TAKI Alimatou'), a(4, 'Clôture comptable de l’exercice', 'Finance', 4, 4, 'Planifiée', 'KASSA Augustin'),
-        a(5, 'Renouvellement des conventions', 'Partenariats', 1, 2, 'Réalisée', 'TAKI Alimatou'), a(6, 'Campagne de dépistage', 'Santé publique', 2, 3, 'En cours', 'TAKI Alimatou'),
-        a(7, 'Audit qualité', 'Qualité', 4, 4, 'Planifiée', 'TAKI Alimatou')].forEach((x) => col.all().push(x));
-      const out = { jeu: H.propre(col.all()) };
-      const racine = await H.monter('m13-plan-annuel');
-      out.ecran = H.lireEcran(racine);
-      // le diagramme : ordre des lignes et cellules actives par ligne (classe de la barre)
-      const gantt = racine.querySelector('table.min-w-\\[48rem\\]') || racine.querySelectorAll('table')[0];
-      out.gantt = [...gantt.querySelectorAll('tbody tr')].map((tr) => [...tr.children].map((td, i) => (i >= 2 && i <= 5 ? ((td.querySelector('div') || {}).className || '').replace(/^.*(bg-[a-z]+-\d+).*$/, '$1') : H.norm(td.innerText))));
-      out.filtres = [...racine.querySelectorAll('select')].map((s) => [s.getAttribute('aria-label'), [...s.options].map((o) => [o.value, H.norm(o.textContent)])]);
-      out.boutonsLigne = [...racine.querySelectorAll('tbody tr')].slice(-1)[0] ? null : null;
-      window.__etats.length = 0;
-      H.bouton(racine, 'Imprimer le plan').click(); await H.dormir(150);
-      out.etat = H.propre(window.__etats[0]);
-      // modification d'une ligne du tableau détaillé
-      const tables = [...racine.querySelectorAll('.card')].filter((c) => /Détail des actions/.test(c.innerText));
-      const detail = tables[tables.length - 1];
-      const ligne = [...detail.querySelectorAll('tbody tr')].find((tr) => tr.innerText.includes('PA-2026-006'));
-      out.boutonsLigne = [...ligne.querySelectorAll('button')].map((b) => b.getAttribute('aria-label') || b.title);
-      const bc = H.icone(ligne, 'Consulter'); if (bc) { bc.click(); await H.dormir(300); }
-      out.detail = H.tiroir(); H.fermerTout();
-      H.icone(ligne, 'Modifier').click(); await H.dormir(300);
-      out.modification = { modale: H.modale().slice(0, 140), champs: H.champs(), valeurs: {} };
-      ['action', 'responsable', 'echeance', 'avancement', 'tauxAvancement', 'observations'].forEach((n) => { out.modification.valeurs[n] = H.valeur(n); });
-      H.poser('action', 'Campagne de dépistage communautaire'); H.poser('echeance', '2026-12-15');
-      H.viderToasts(); H.cliquer('Enregistrer'); await H.dormir(300);
-      out.modification.enregistre = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.id === 'PAT006')) };
-      out.modification.apres = { kpis: H.kpis(racine) };
-      // avancement saisi : le champ « Avancement (%) » est numérique mais la colonne lit un texte
-      const ligne2 = [...[...racine.querySelectorAll('.card')].filter((c) => /Détail des actions/.test(c.innerText)).pop().querySelectorAll('tbody tr')].find((tr) => tr.innerText.includes('PA-2026-006'));
-      H.icone(ligne2, 'Modifier').click(); await H.dormir(300);
-      H.poser('tauxAvancement', '60'); H.poser('avancement', 'Réalisée');
-      H.viderToasts(); H.cliquer('Enregistrer'); await H.dormir(300);
-      out.avancementNumerique = { fiche: H.net(col.all().find((x) => x.id === 'PAT006')), kpis: H.kpis(racine), tableau: H.tableaux(racine).slice(-1)[0].lignes.filter((l) => l[0] === 'PA-2026-006') };
-      H.retirer(racine);
-      return out;
-    });
+    /* Le PLAN ANNUEL a ses propres vecteurs depuis le lot PTA (`build/vecteurs-plan-annuel.js`). */
 
     /* ------------------------------------------------------------------ AMBULANCE (interventions) */
     sortie.ambulance = await m.page.evaluate(async () => {

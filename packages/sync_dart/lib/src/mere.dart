@@ -16,6 +16,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         RefusMobile,
         cfbEssentielles,
         collectionsFiscalesJamaisMobile,
+        paCollectionsConfiguration,
         collectionsGestionJamaisMobile,
         collectionsIdentiteJamaisMobile,
         collectionsGestionSynchronisees,
@@ -105,12 +106,15 @@ const familleDeBase = <String, String>{
   'reponsesEnquetes': 'B', 'jetonsEnquete': 'A',
   // Lot PLAN-INDIV : le planning personnalisé d'un agent (une version datée figée par fiche, identité commune par le contenu). Jamais vers un téléphone (RG-13).
   'planningsPersonnalises': 'A',
+  // Lot PTA : le plan annuel de travail et son adoption (famille A, identité par le contenu, jamais vers un téléphone). Les référentiels du plan et le réglage des signataires sont de la
+  // configuration de la mère : ils voyagent par le canal de configuration (`cfbEssentielles`), non par cette table.
+  'planAnnuel': 'A', 'adoptionsPlan': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
 /// Les collections de CONFIGURATION que la mère diffuse aux POSTES : les essentielles du paramétrage plus les comptes. Les noms viennent du domaine (la même
 /// liste que le vidage des jeux de test conserve), jamais recopiés ici. Le poste en choisit l'usage ; la mère ne fait que les accepter et les journaliser.
-final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs'}
+final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs', ...paCollectionsConfiguration}
     .difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'})
     .difference(familleDeBase.keys.toSet());
 

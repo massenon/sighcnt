@@ -17,6 +17,8 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   /* configuration fiscale validée et datée (06/11/2026) : identité par versions, obligations et paramètres ORTB, historique */
   'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'rbac', 'appels', 'reunions', 'contreReferences', 'documentsPatient', 'fichesReference', 'pieces', 'fileAttente', 'soins', 'administrations', 'admissions', 'checklistsBloc', 'cpa', 'crOperatoires', 'observations', 'rapportsMedicaux', 'releves', 'scoresGlasgow', 'surveillancesTransfusion', 'accouchements', 'cpon', 'crMaternite', 'deces', 'dossiersObstetricaux', 'grossesses', 'naissances', 'partogrammes', 'planificationFamiliale', 'ptme', 'registreSONU', 'soinsCuratifsMaternite', 'suiviMaternite', 'chambres', 'lits', 'rendezvous', 'visites', 'antecedents', 'documents', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications',
   /* activités fermées : les fiches de la maquette (la banque de sang), puis les fermetures PROPRES AU POSTE ci-dessous */
+  /* lot PTA : le plan annuel (vide à l'export : sa démonstration est semée par son écran), ses référentiels et le réglage des signataires semés au socle */
+  'planAnnuel', 'adoptionsPlan', 'referentielsPlan', 'reglagesPlan',
   'modulesActifs'];
 /* FERMETURES PROPRES AU POSTE (Direction, 11/11/2026) : deux écrans restent fermés (calendrier fiscal et barème de l'AIB) ; le lot SMS-R (16/11/2026) a porté les deux écrans SMS (MODP02 et MODP04 retirés, réouverture des postes déjà installés par `reouvrirFermeturesLevees`). À l'origine, quatre écrans que la maquette porte et que le poste ne porte pas encore. Ils sont fermés par la collection
    `modulesActifs` (activité fermée par écran, pour tous les rôles, administrateur compris), jamais par un nom de rôle. La maquette NE LES FERME PAS : ces fiches
@@ -57,6 +59,10 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
        l'écran comme l'agent, sinon `observations` s'exporte vide. Avant le peuplement des parcours : le jeu sobre l'amorce aussi. */
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m3-hospitalisation.js') });
     await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m3-observation'].render(r); r.remove(); } catch (e) { console.error(e); } });
+    /* Le plan annuel de travail est semé PAR SON ÉCRAN (douze actions de l'exercice du jour, responsables référencés au personnel ou à un poste) : on monte l'écran comme l'agent, sinon
+       `planAnnuel` s'exporte vide et le poste n'a pas la démonstration que la maquette montre (parité des écrans). Lot PTA. */
+    await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m13-administration.js') }).catch(() => {});
+    await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m13-plan-annuel'].render(r); r.remove(); } catch (e) { console.error(e); } });
     /* LE JEU DE DÉMONSTRATION COMPLET : le peuplement des parcours (demandes d'analyses et d'imagerie, ordonnances, tâches, transferts…) est déclenché par
        la page au démarrage dans la maquette ; la page d'extraction ne le fait pas, d'où des collections vides à l'export. */
     if (!SOBRE) await m.page.evaluate(() => { try { SIGH.peuplerParcours(); } catch (e) { console.error(e); } });

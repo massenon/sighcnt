@@ -331,61 +331,8 @@ void main() {
   });
 
   // -------------------------------------------------------------------------------------------------------------------------------------------
-  group('m13-plan-annuel', () {
-    final p = obj(v['planAnnuel']);
+  // m13-plan-annuel : l'écran est porté au lot PTA (plan par exercice, suivi chiffré, adoption) ; ses tests sont `plan_annuel_poste_test.dart`, ses vecteurs `plan_annuel.json`.
 
-    testWidgets('KPI et diagramme : une barre par trimestre couvert, du ton de l’état d’avancement', (t) async {
-      final m = poste({'planAnnuel': liste(p['jeu'])});
-      await ouvrir(t, m, 'm13-plan-annuel');
-      kpisIdentiques(t, obj(p['ecran'])['kpis']);
-      final couleurs = {'bg-success-400': JetonsShell.success400, 'bg-info-400': JetonsShell.info400, 'bg-warning-400': JetonsShell.warning400, 'bg-slate-100': JetonsShell.slate100};
-      final tri = trierPar(liste(p['jeu']), (r) => r['trimestreDebut']);
-      final gantt = (p['gantt'] as List).cast<List>();
-      expect(tri.length, gantt.length);
-      for (var i = 0; i < tri.length; i++) {
-        for (var q = 1; q <= 4; q++) {
-          final w = t.widget<Container>(find.byKey(Key('adm:barre:${tri[i]['reference']}:T$q')));
-          expect((w.decoration as BoxDecoration).color, couleurs[gantt[i][1 + q]], reason: '${tri[i]['reference']} T$q');
-        }
-      }
-      await t.pump(const Duration(seconds: 10));
-    });
-
-    testWidgets('modifier une action garde son ÉTAT (E533) ; changer l’état recalcule les indicateurs sans recharger', (t) async {
-      final m = poste({'planAnnuel': liste(p['jeu'])});
-      await ouvrir(t, m, 'm13-plan-annuel');
-      await chercher(t, 'PA-2026-006');
-      await cliquer(t, find.byTooltip('Modifier').first);
-      poser(t, {'action': 'Campagne de dépistage communautaire', 'echeance': '2026-12-15'});
-      await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
-      await t.pump(const Duration(milliseconds: 400));
-      final col = m.collection('planAnnuel');
-      var f = col.toutes.firstWhere((x) => x['id'] == 'PAT006');
-      fichesEgales(f, obj(obj(obj(p['modification'])['enregistre'])['fiche']), ignores: {'tauxAvancement'});
-      expect(f['avancement'], 'En cours');
-      await cliquer(t, find.byTooltip('Modifier').first);
-      poser(t, {'avancement': 'Réalisée', 'tauxAvancement': '60'});
-      await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
-      await t.pump(const Duration(milliseconds: 400));
-      f = col.toutes.firstWhere((x) => x['id'] == 'PAT006');
-      fichesEgales(f, obj(obj(p['avancementNumerique'])['fiche']));
-      // la maquette laisse ses indicateurs figés ; le poste les recalcule (3 réalisées, 1 en cours)
-      expect(_s(t.widget<KpiSigh>(find.byWidgetPredicate((w) => w is KpiSigh && w.libelle == 'Réalisées')).valeur), '3');
-      expect(_s(t.widget<KpiSigh>(find.byWidgetPredicate((w) => w is KpiSigh && w.libelle == 'En cours')).valeur), '1');
-      await t.pump(const Duration(seconds: 10));
-    });
-
-    testWidgets('« Imprimer le plan » ouvre la pièce « Plan annuel de travail — Exercice 2026 »', (t) async {
-      final m = poste({'planAnnuel': liste(p['jeu'])});
-      await ouvrir(t, m, 'm13-plan-annuel');
-      await cliquer(t, find.widgetWithText(BoutonSigh, 'Imprimer le plan'));
-      expect(find.text('Exercice 2026'), findsWidgets);
-      expect(find.textContaining('Actions programmées'), findsWidgets);
-      await t.pump(const Duration(seconds: 10));
-    });
-  });
-
-  // -------------------------------------------------------------------------------------------------------------------------------------------
   group('m13-notes-service', () {
     final n = obj(v['notes']);
     testWidgets('KPI, critères de la NS 131 (− 6 % / − 10 %…) et primes de la NS 132 (mode, fonctions)', (t) async {

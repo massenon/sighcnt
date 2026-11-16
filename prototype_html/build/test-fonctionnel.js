@@ -28173,9 +28173,9 @@ async function viderMessages(page) {
       return { lus, cellules, boutons: document.querySelectorAll('#page-content [data-regler-parametre]').length, semence: S.collection('parametresClinique').active().filter((v) => !v.dateEffet).length, geste: !!window.SIGH.nav.geste('regler_parametres_clinique'),
         detenteurs: window.SIGH.nav.rolesAvecGeste('regler_parametres_clinique').slice().sort() };
     });
-    verifier('Les trois paramètres de clinique sont SEMÉS en base (90, 30, 90), l’écran « Règles métier versionnées » les montre avec « Régler » ; le geste réservé est au manifeste, détenu d’origine par l’administrateur et la Directrice Administrative',
-      etat0.semence === 3 && etat0.lus['stock.delaiPeremptionJours'] === 90 && etat0.lus['creances.trancheCourteJours'] === 30 && etat0.lus['creances.trancheLongueJours'] === 90
-      && etat0.cellules.length === 3 && etat0.cellules.some((c) => c[0] === 'stock.delaiPeremptionJours' && /^90 jours$/.test(c[1])) && etat0.boutons === 3 && etat0.geste
+    verifier('Les quatre paramètres de clinique sont SEMÉS en base (90, 30, 90 et, lot PTA, la tolérance de l’alerte du plan annuel à 0), l’écran « Règles métier versionnées » les montre avec « Régler » ; le geste réservé est au manifeste, détenu d’origine par l’administrateur et la Directrice Administrative',
+      etat0.semence === 4 && etat0.lus['plan.graceRetardJours'] === 0 && etat0.lus['stock.delaiPeremptionJours'] === 90 && etat0.lus['creances.trancheCourteJours'] === 30 && etat0.lus['creances.trancheLongueJours'] === 90
+      && etat0.cellules.length === 4 && etat0.cellules.some((c) => c[0] === 'stock.delaiPeremptionJours' && /^90 jours$/.test(c[1])) && etat0.boutons === 4 && etat0.geste
       && JSON.stringify(etat0.detenteurs) === JSON.stringify(['admin', 'da']), JSON.stringify(etat0));
 
     /* un lot qui périme dans 100 jours : « valide » sous le préavis de 90 jours */
@@ -28274,7 +28274,7 @@ async function viderMessages(page) {
     const fileul = await page.evaluate(() => { const S = window.SIGH.store, avant = S.reglage('posteFileul', false); S.setReglage('posteFileul', true);
       const r = window.SIGH.parametresClinique.definir({ cle: 'stock.delaiPeremptionJours', valeur: 30, motif: 'sonde' }); S.setReglage('posteFileul', avant); return r.code; });
     verifier('Sans le geste réservé (gestionnaire de stock, Direction qui lit l’écran) : « Régler » est ABSENT et le moteur refuse PARAMETRE_CLINIQUE_RESERVE ; la Directrice Administrative règle ; un FILEUL est refusé (FILEUL_LECTURE_SEULE : réglage posé à la mère)',
-      sansGeste.peut === false && sansGeste.refus === 'PARAMETRE_CLINIQUE_RESERVE' && da.boutons === 3 && da.peut && dir.cellules === 3 && dir.boutons === 0 && dir.refus === 'PARAMETRE_CLINIQUE_RESERVE' && fileul === 'FILEUL_LECTURE_SEULE', JSON.stringify({ sansGeste, da, dir, fileul }));
+      sansGeste.peut === false && sansGeste.refus === 'PARAMETRE_CLINIQUE_RESERVE' && da.boutons === 4 && da.peut && dir.cellules === 4 && dir.boutons === 0 && dir.refus === 'PARAMETRE_CLINIQUE_RESERVE' && fileul === 'FILEUL_LECTURE_SEULE', JSON.stringify({ sansGeste, da, dir, fileul }));
 
     /* restauration : les versions de la sonde et le lot sont archivés (RG-14), la semence fait de nouveau foi */
     const fin = await page.evaluate((id) => { const S = window.SIGH.store, C = window.SIGH.core, col = S.collection('parametresClinique');
@@ -29218,8 +29218,7 @@ async function viderMessages(page) {
   });
   /* LOT SAT FIN */
 
-  /* =========================================================================
-   * LOT PLAN-INDIV (16/11/2026, Direction section AQ points 9 et 10) : Vagues 260 à 262
+  /* ==================================================================   * LOT PLAN-INDIV (16/11/2026, Direction section AQ points 9 et 10) : Vagues 260 à 262
    * Vague 260 : le régime individuel en DEUX MODES (déroge, remplace), au geste réservé de la fiche RBAC.
    * Vague 261 : le PLANNING PERSONNALISÉ de la fiche du personnel (définition contrôlée, application à une période, immuabilité, RG-11).
    * Vague 262 : les VALEURS D'ATTENTE du personnel (marquage par champ, levée par la modification du champ seul, « Confirmer » signé), plus aucune valeur pré-remplie.
@@ -29567,6 +29566,269 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT PLAN-INDIV FIN */
+=======
+  /* LOT PTA DEBUT */
+  await etape(async () => {
+    scenario('Vague 280 : lot PTA, le plan annuel est PAR EXERCICE (sélecteur lu de la comptabilité, exercice du jour par défaut, références PA-<année>-NNN par la fabrique unique), aucune année ni signataire écrit dans l’écran ; une action se crée par la modale');
+    erreursJS = [];
+    const ADM280 = { role: 'admin', nom: 'ADMIN280', nomComplet: 'ADMIN280', fonction: 'admin', identifiant: 's280.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM280);
+    await ouvrir('m13-plan-annuel.html');
+    const VER280 = await page.evaluate(() => (window.SIGH.store.raw() || {})._version || null);
+    const src = await page.evaluate(async () => (await (await fetch('/assets/js/modules/m13-administration.js')).text()));
+    const debut = src.indexOf("global.SIGH.screen('m13-plan-annuel'"), fin = src.indexOf('NOTES DE SERVICE', debut);
+    const zone = src.slice(debut, fin);
+    verifier('Aucune année, aucun nom de signataire ni de responsable n’est écrit dans le code de l’écran du plan (l’exercice se LIT, les signataires et responsables se lisent en base)',
+      debut > 0 && fin > debut && !/20\d\d/.test(zone.replace(/\/\*[\s\S]*?\*\//g, '')) && !/TAKI|BASSONGUI|KASSA|MAMAN/.test(zone.replace(/\/\*[\s\S]*?\*\//g, '')) && /aujourdhui|getFullYear/.test(zone), JSON.stringify({ debut, fin, annees: (zone.replace(/\/\*[\s\S]*?\*\//g, '').match(/20\d\d/g) || []).slice(0, 3) }));
+    const e0 = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core, X = window.SIGH.exercice;
+      const sel = document.querySelector('#plan-exercice');
+      return { version: S.raw()._version, options: sel ? [...sel.options].map((o) => o.value) : null, choisi: sel ? sel.value : null, annee: C.aujourdhui().getFullYear(), exercices: X.liste().map((x) => x.annee).sort(),
+        titre: [...document.querySelectorAll('#page-content .card-title, #page-content h3')].map((h) => h.textContent.trim()).filter((t) => /^Plan annuel de travail/.test(t)),
+        axes: window.SIGH.data.PLAN.referentiel('axe').length, etats: window.SIGH.data.PLAN.referentiel('etat').map((e) => e.nature) };
+    });
+    verifier('Le sélecteur propose les exercices de la comptabilité, l’exercice DU JOUR est choisi, le titre le porte ; axes et états viennent de la base (VERSION 92)',
+      e0.version >= 92 && JSON.stringify(e0.options.map(Number).sort()) === JSON.stringify(e0.exercices) && Number(e0.choisi) === e0.annee && e0.titre[0] === 'Plan annuel de travail ' + e0.annee
+      && e0.axes === 9 && JSON.stringify(e0.etats) === JSON.stringify(['planifiee', 'en_cours', 'realisee']), JSON.stringify(e0));
+    /* création PAR LA MODALE de l'écran */
+    const creer = async (action, extra) => page.evaluate(async (a, ex) => {
+      const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+      [...document.querySelectorAll('#page-content button')].find((b) => /Nouvelle action|Ajouter après adoption/.test(b.textContent)).click(); await dormir(300);
+      const poser = (id, v) => { const e = document.getElementById('f_' + id); e.value = v; e.dispatchEvent(new Event('input')); e.dispatchEvent(new Event('change')); };
+      const po = window.SIGH.store.collection('postes').active()[0];
+      poser('action', a); poser('axe', 'qualite'); poser('responsable', 'poste:' + po.id); poser('trimestreDebut', '1'); poser('trimestreFin', '2');
+      Object.keys(ex || {}).forEach((k) => poser(k, ex[k]));
+      [...document.querySelectorAll('[role=dialog] button, .modal-root button')].filter((b) => b.textContent.trim() === 'Créer').pop().click(); await dormir(500);
+      return window.SIGH.store.collection('planAnnuel').active().filter((x) => x.action === a).map((x) => x.reference);
+    }, action, extra || null);
+    const rang0 = await page.evaluate(() => Math.max(0, ...window.SIGH.store.collection('planAnnuel').all().map((x) => parseInt(String(x.reference || '').slice(-3), 10) || 0)));
+    const r1 = await creer('Essai 280 A'); const r2 = await creer('Essai 280 B');
+    await attendreEcritures();
+    const anneeJ = e0.annee, pad3 = (n) => String(n).padStart(3, '0');
+    verifier('Deux actions créées par la modale reçoivent PA-<exercice>-NNN puis le rang suivant (compteur lu sur les fiches existantes : les douze actions de démonstration portent 001 à 012 ; jamais une année écrite)', r1[0] === 'PA-' + anneeJ + '-' + pad3(rang0 + 1) && r2[0] === 'PA-' + anneeJ + '-' + pad3(rang0 + 2), JSON.stringify([rang0, r1, r2]));
+    /* l'exercice précédent a sa propre série */
+    const prec = e0.exercices.filter((a) => a < anneeJ).pop();
+    const r3 = await page.evaluate(async (p) => {
+      const sel = document.querySelector('#plan-exercice'); sel.value = String(p); sel.dispatchEvent(new Event('change')); await new Promise((r) => setTimeout(r, 400));
+      return { titre: [...document.querySelectorAll('#page-content .card-title, #page-content h3')].map((h) => h.textContent.trim()).filter((t) => /^Plan annuel de travail/.test(t))[0], lignes: document.querySelectorAll('#page-content table tbody tr').length };
+    }, prec);
+    const r4 = await creer('Essai 280 C');
+    verifier('Changer d’exercice relit le plan de CET exercice (titre, lignes) et sa série repart à 001', r3.titre === 'Plan annuel de travail ' + prec && r4[0] === 'PA-' + prec + '-001', JSON.stringify({ r3, r4 }));
+    const contrat = await page.evaluate(() => { const D = window.SIGH.data, PA = window.SIGH.planAnnuel; const out = {};
+      out.refAnnuelle = window.SIGH.core.referenceAnnuelle('PA-', '2031-03-05', 3, [{ reference: 'PA-2031-007' }, { reference: 'PA-2030-099' }]);
+      out.exercice = PA.controler({ exercice: 1999, action: 'Essai', axe: 'qualite', avancement: 'en_cours', trimestreDebut: 1, trimestreFin: 1, responsableType: 'poste', responsableRef: window.SIGH.store.collection('postes').active()[0].id }).code;
+      out.fin = [D.PLAN.finTrimestre('2026-01-01', 1), D.PLAN.finTrimestre('2026-01-01', 4), D.PLAN.finTrimestre('2024-11-01', 1)];
+      return out; });
+    verifier('La fabrique de référence lit l’année de la date (PA-2031-008), un exercice hors comptabilité est refusé nommé (EXERCICE_INCONNU), la fin de trimestre se calcule depuis le premier jour de l’exercice',
+      contrat.refAnnuelle === 'PA-2031-008' && contrat.exercice === 'EXERCICE_INCONNU' && JSON.stringify(contrat.fin) === JSON.stringify(['2026-03-31', '2026-12-31', '2025-01-31']), JSON.stringify(contrat));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 281 : lot PTA, le responsable est une RÉFÉRENCE (personnel ou poste), jamais un texte libre (le moteur et la garde refusent) ; les signataires de l’impression sont LUS au paramétrage (fonction par référence à un poste, titulaire à la date), réglés par une version datée');
+    erreursJS = [];
+    const ADM281 = { role: 'admin', nom: 'ADMIN281', nomComplet: 'ADMIN281', fonction: 'admin', identifiant: 's281.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM281);
+    await ouvrir('m13-plan-annuel.html');
+    const d = await page.evaluate(() => {
+      const PA = window.SIGH.planAnnuel, S = window.SIGH.store;
+      const po = S.collection('postes').active().filter((p) => p.role === 'comptable')[0], ag = S.collection('personnel').active()[0];
+      const base = { exercice: window.SIGH.core.aujourdhui().getFullYear(), action: 'Essai 281', axe: 'qualite', trimestreDebut: 1, trimestreFin: 2, avancement: 'en_cours' };
+      const libre = PA.ajouter(Object.assign({}, base, { responsable: 'KASSA Augustin' }));
+      const inconnu = PA.ajouter(Object.assign({}, base, { responsable: 'poste:PST-INCONNU' }));
+      const garde = S.collection('planAnnuel').insert(Object.assign({}, base, { reference: 'PA-X', responsable: 'TEXTE LIBRE', responsableType: 'poste', responsableRef: po.id }));
+      const ok1 = PA.ajouter(Object.assign({}, base, { action: 'Par poste 281', responsable: 'poste:' + po.id }));
+      const ok2 = PA.ajouter(Object.assign({}, base, { action: 'Par agent 281', responsable: 'agent:' + ag.id }));
+      return { libre: libre.code, inconnu: inconnu.code, garde: !!garde, ok1: ok1.ok, ok2: ok2.ok, l1: PA.responsable(S.collection('planAnnuel').get(ok1.id)).libelle, l2: PA.responsable(S.collection('planAnnuel').get(ok2.id)).libelle, poste: po.poste, agent: ag.nomComplet };
+    });
+    verifier('Un responsable en texte libre est refusé (RESPONSABLE_TEXTE_LIBRE), un responsable inconnu aussi, et la GARDE de la collection refuse l’écriture directe ; un poste ou un agent référencé passe et se lit',
+      d.libre === 'RESPONSABLE_TEXTE_LIBRE' && d.inconnu === 'RESPONSABLE_INCONNU' && d.garde === false && d.ok1 && d.ok2 && d.l1.indexOf(d.poste) === 0 && d.l2.indexOf(d.agent) === 0, JSON.stringify(d));
+    const imp = async () => page.evaluate(async () => {
+      window.__etats = []; const orig = window.SIGH.print.etat;
+      window.SIGH.print.etat = function (o) { window.__etats.push({ titre: o.titre, signatures: o.signatures }); };
+      [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Imprimer le plan').click(); await new Promise((r) => setTimeout(r, 300));
+      window.SIGH.print.etat = orig; return window.__etats[0];
+    });
+    const s0 = await imp();
+    const att = await page.evaluate(() => window.SIGH.planAnnuel.signataires(null).signataires.map((s) => ({ fonction: s.fonction, nom: s.nom })));
+    verifier('L’impression porte pour signataires les fonctions et titulaires LUS à l’organigramme (réglage semé : références à deux postes), jamais un nom écrit', att.length === 2 && JSON.stringify(s0.signatures.map((x) => ({ fonction: x.role, nom: x.nom }))) === JSON.stringify(att) && att.every((a) => a.fonction && a.nom), JSON.stringify({ s0, att }));
+    const apres = await page.evaluate(async () => {
+      const S = window.SIGH.store, PA = window.SIGH.planAnnuel;
+      const p = S.collection('postes').get(PA.signataires(null).signataires[0].posteId);
+      S.collection('postes').update(p.id, { titulaire: 'NOUVEAU TITULAIRE 281' });
+      return PA.signataires(null).signataires[0].nom;
+    });
+    await attendreEcritures();
+    const s1 = await imp();
+    verifier('Le titulaire est lu au poste À LA DATE de l’impression : un titulaire renommé change la signature imprimée sans toucher au réglage', apres === 'NOUVEAU TITULAIRE 281' && s1.signatures[0].nom === 'NOUVEAU TITULAIRE 281', JSON.stringify({ apres, s1 }));
+    const v = await page.evaluate(() => {
+      const S = window.SIGH.store, PA = window.SIGH.planAnnuel, postes = S.collection('postes').active();
+      const demain = window.SIGH.core.iso(window.SIGH.core.addDays(window.SIGH.core.aujourdhui(), 1));
+      const sans = PA.definirSignataires([], demain, 'Motif'); const inconnu = PA.definirSignataires(['XX'], demain, 'Motif'); const sansMotif = PA.definirSignataires([postes[2].id], demain, '');
+      const avant = PA.signataires(null).signataires.map((s) => s.posteId);
+      const ok = PA.definirSignataires([postes[2].id], demain, 'Changement de signataire');
+      const veille = PA.signataires(null).signataires.map((s) => s.posteId);
+      const lendemain = PA.signataires(demain).signataires.map((s) => s.posteId);
+      const fiches = S.collection('reglagesPlan').active().length;
+      const modif = S.collection('reglagesPlan').update(S.collection('reglagesPlan').active()[0].id, { motif: 'réécrit' });
+      return { sans: sans.code, inconnu: inconnu.code, sansMotif: sansMotif.code, ok: ok.ok, avant, veille, lendemain, attendu: postes[2].id, fiches };
+    });
+    verifier('Régler les signataires pose une VERSION datée (jamais une réécriture) : aujourd’hui l’ancien réglage, demain le nouveau ; refus nommés (aucun signataire, poste inconnu, motif)',
+      v.sans === 'SIGNATAIRES_NOMBRE' && v.inconnu === 'SIGNATAIRE_INCONNU' && v.sansMotif === 'PARAMETRE_MOTIF_OBLIGATOIRE' && v.ok && JSON.stringify(v.veille) === JSON.stringify(v.avant) && JSON.stringify(v.lendemain) === JSON.stringify([v.attendu]) && v.fiches === 2, JSON.stringify(v));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 282 : lot PTA, le suivi est chiffré : pourcentage borné de 0 à 100 (zéro accepté, 150 et -1 refusés), budget prévu et réalisé, indicateur avec cible ; « non calculable » n’est jamais zéro ; les totaux du bilan imprimé sont CALCULÉS');
+    erreursJS = [];
+    const ADM282 = { role: 'admin', nom: 'ADMIN282', nomComplet: 'ADMIN282', fonction: 'admin', identifiant: 's282.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM282);
+    await ouvrir('m13-plan-annuel.html');
+    const d = await page.evaluate(() => {
+      const PA = window.SIGH.planAnnuel, S = window.SIGH.store, D = window.SIGH.data;
+      const po = S.collection('postes').active()[0];
+      const annee = window.SIGH.core.aujourdhui().getFullYear();
+      S.collection('planAnnuel').active().forEach((a) => S.collection('planAnnuel').archive(a.id, 'banc 282'));
+      const mk = (action, extra) => PA.ajouter(Object.assign({ exercice: annee, action, axe: 'qualite', trimestreDebut: 3, trimestreFin: 4, avancement: 'en_cours', responsable: 'poste:' + po.id }, extra || {}));
+      const refus = { p150: mk('P150', { tauxAvancement: 150 }).code, pneg: mk('PNEG', { tauxAvancement: -1 }).code, budgetNeg: mk('BNEG', { budgetPrevu: -5 }).code, cibleTexte: mk('Cible texte', { cible: 'x' }).code };
+      const a = mk('Sans chiffre'), b = mk('Zéro', { tauxAvancement: 0, budgetPrevu: 0, budgetRealise: 0 }), c = mk('Chiffrée', { tauxAvancement: 50, budgetPrevu: 400000, budgetRealise: 300000, indicateur: 'Enfants vaccinés', cible: 200, valeurAtteinte: 150 });
+      const sans = D.PLAN.totaux([S.collection('planAnnuel').get(a.id)]);
+      const tous = D.PLAN.totaux(PA.actions(annee));
+      const ind = [D.PLAN.atteinteIndicateur(S.collection('planAnnuel').get(a.id)), D.PLAN.atteinteIndicateur(S.collection('planAnnuel').get(c.id))];
+      return { refus, zeroOk: b.ok, sans: { prevu: sans.prevu, realise: sans.realise, taux: sans.tauxMoyen, ecart: sans.ecart }, tous: { prevu: tous.prevu, realise: tous.realise, taux: tous.tauxMoyen, ecart: tous.ecart, nbSansTaux: tous.nbSansTaux }, ind };
+    });
+    verifier('Le pourcentage hors bornes, le budget négatif et la cible non numérique sont refusés nommés ; zéro est accepté', d.refus.p150 === 'POURCENTAGE_HORS_BORNES' && d.refus.pneg === 'POURCENTAGE_HORS_BORNES' && d.refus.budgetNeg === 'MONTANT_INVALIDE' && d.refus.cibleTexte === 'MONTANT_INVALIDE' && d.zeroOk === true, JSON.stringify(d));
+    verifier('Une action sans chiffre est « non calculable » (prévu, réalisé, taux nuls : jamais zéro) ; le total de trois actions est calculé (400 000 prévu, 300 000 réalisé, écart 100 000, taux moyen 25 %, une action sans taux)',
+      d.sans.prevu === null && d.sans.realise === null && d.sans.taux === null && d.sans.ecart === null && d.tous.prevu === 400000 && d.tous.realise === 300000 && d.tous.ecart === 100000 && d.tous.taux === 25 && d.tous.nbSansTaux === 1, JSON.stringify(d));
+    verifier('L’indicateur sans cible ni valeur est non calculable ; 150 atteints sur 200 de cible font 75 %', d.ind[0].calculable === false && d.ind[1].calculable === true && d.ind[1].pct === 75, JSON.stringify(d.ind));
+    await ouvrir('m13-plan-annuel.html');
+    const bil = await page.evaluate(async () => {
+      window.__etats = []; const orig = window.SIGH.print.etat;
+      window.SIGH.print.etat = function (o) {
+        const c = o.contenu, t = c && c.querySelector ? c.querySelector('table') : null;
+        window.__etats.push({ titre: o.titre, pied: t ? [...t.querySelectorAll('tfoot tr')].map((tr) => [...tr.children].map((td) => td.innerText.replace(/\s+/g, ' ').trim())) : null, texte: c && c.innerText ? c.innerText.replace(/\s+/g, ' ').trim() : '' });
+      };
+      [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Imprimer le bilan').click(); await new Promise((r) => setTimeout(r, 300));
+      window.SIGH.print.etat = orig; return window.__etats[0];
+    });
+    verifier('Le bilan imprimé porte un pied TOTAL calculé (400 000 prévu, 300 000 réalisé) et dit « non calculable » pour l’avancement moyen manquant au lieu de zéro',
+      bil && bil.titre === 'Bilan du plan annuel de travail' && bil.pied && bil.pied[0].some((x) => /400\s?000/.test(x)) && bil.pied[0].some((x) => /300\s?000/.test(x)) && /Avancement moyen : 25/.test(bil.texte), JSON.stringify(bil));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 283 : lot PTA, l’ADOPTION par la Direction est un geste réservé de la fiche RBAC (commande ABSENTE sans lui, moteur qui refuse), datée, motivée, journalisée ; le contenu adopté est FIGÉ, le suivi libre, une modification passe par une version datée');
+    erreursJS = [];
+    const DIR283 = { role: 'direction', nom: 'DIR283', nomComplet: 'DIR283', fonction: 'direction', identifiant: 's283.dir', secteur: 'DIR' };
+    const AGA283 = { role: 'agentadmin', nom: 'AGA283', nomComplet: 'AGA283', fonction: 'agentadmin', identifiant: 's283.aga', secteur: 'ADM' };
+    await poserSessionServeur(AGA283);
+    await ouvrir('m13-plan-annuel.html');
+    const sans = await page.evaluate(() => {
+      const PA = window.SIGH.planAnnuel, N = window.SIGH.nav;
+      return { bouton: [...document.querySelectorAll('#page-content button')].some((b) => /Adopter le plan/.test(b.textContent)), droit: N.droitGeste('agentadmin', 'adopter_plan_annuel'), refus: PA.adopter(window.SIGH.core.aujourdhui().getFullYear(), 'Délibération').code, detenteurs: N.rolesAvecGeste('adopter_plan_annuel').slice().sort() };
+    });
+    verifier('Sans le geste réservé, « Adopter le plan » est ABSENT et le moteur refuse en nommant (ADOPTION_RESERVEE) ; le défaut proposé est la Direction et la Directrice Administrative', sans.bouton === false && sans.droit === false && sans.refus === 'ADOPTION_RESERVEE' && JSON.stringify(sans.detenteurs) === JSON.stringify(['da', 'direction']), JSON.stringify(sans));
+    await poserSessionServeur(DIR283);
+    await ouvrir('m13-plan-annuel.html');
+    const avant = await page.evaluate(() => {
+      const PA = window.SIGH.planAnnuel, S = window.SIGH.store, annee = window.SIGH.core.aujourdhui().getFullYear();
+      const po = S.collection('postes').active()[0];
+      S.collection('planAnnuel').active().forEach((a) => S.collection('planAnnuel').archive(a.id, 'banc 283'));
+      const a = PA.ajouter({ exercice: annee, action: 'Action 283', axe: 'qualite', trimestreDebut: 1, trimestreFin: 3, avancement: 'en_cours', responsable: 'poste:' + po.id, budgetPrevu: 100000 });
+      return { annee, id: a.id, motif: PA.adopter(annee, '').code, bouton: true };
+    });
+    await ouvrir('m13-plan-annuel.html');
+    const clic = await page.evaluate(async () => {
+      const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => /Adopter le plan/.test(x.textContent));
+      if (!b) return { bouton: false };
+      b.click(); await dormir(300);
+      const z = document.querySelector('[role=dialog], .modal-root'); const ta = z.querySelector('textarea, input[type=text]');
+      ta.value = 'Délibération du conseil'; ta.dispatchEvent(new Event('input'));
+      [...z.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Adopter').click(); await dormir(600);
+      const ad = window.SIGH.planAnnuel.adoption(new Date().getFullYear());
+      return { bouton: true, adoption: ad ? { motif: ad.motif, par: ad.adoptePar, date: ad.dateAdoption, nb: ad.nbActions } : null, badge: document.body.innerText.indexOf('Adopté le') >= 0 };
+    });
+    await attendreEcritures();
+    verifier('La Direction adopte par la commande de l’écran : date du jour, motif, auteur, nombre d’actions consignés, badge « Adopté le… » ; un motif vide est refusé nommé', avant.motif === 'MOTIF_OBLIGATOIRE' && clic.bouton && clic.adoption && clic.adoption.motif === 'Délibération du conseil' && clic.adoption.nb === 1 && clic.badge, JSON.stringify({ avant, clic }));
+    const f = await page.evaluate(() => {
+      const PA = window.SIGH.planAnnuel, S = window.SIGH.store, col = S.collection('planAnnuel'), annee = window.SIGH.core.aujourdhui().getFullYear();
+      const a = col.active().filter((x) => x.action === 'Action 283')[0];
+      const modContenu = col.update(a.id, { action: 'Réécrit' }) ? 'ECRIT' : 'REFUSE';
+      const modBudget = col.update(a.id, { budgetPrevu: 1 }) ? 'ECRIT' : 'REFUSE';
+      const archive = col.archive(a.id, 'x') ? 'ECRIT' : 'REFUSE';
+      const suivi = col.update(a.id, { tauxAvancement: 70, budgetRealise: 5000 }) ? 'ECRIT' : 'REFUSE';
+      const directe = col.insert({ exercice: annee, action: 'Directe', axe: 'qualite', trimestreDebut: 1, trimestreFin: 1, avancement: 'en_cours', responsableType: a.responsableType, responsableRef: a.responsableRef, reference: 'PA-X', version: 1 }) ? 'ECRIT' : 'REFUSE';
+      const sansMotif = PA.reviser(a.id, { trimestreFin: 4 }, '').code;
+      const hors = PA.reviser(a.id, { tauxAvancement: 1 }, 'Motif').code;
+      const rv = PA.reviser(a.id, { trimestreFin: 4 }, 'Report de l’échéance');
+      const actives = col.active().filter((x) => x.reference === a.reference);
+      const seconde = PA.adopter(annee, 'Encore').code;
+      const ad = S.collection('adoptionsPlan').active()[0];
+      const modAdoption = S.collection('adoptionsPlan').update(ad.id, { motif: 'x' }) ? 'ECRIT' : 'REFUSE';
+      return { modContenu, modBudget, archive, suivi, directe, sansMotif, hors, rv: rv.ok ? { v: rv.version, ref: rv.reference } : rv.code, actives: actives.length, version: actives[0] && actives[0].version, fin: actives[0] && actives[0].trimestreFin, ancienne: col.get(a.id).statut, seconde, modAdoption };
+    });
+    verifier('Plan adopté : le contenu (libellé, budget prévu), l’archivage et l’ajout direct sont REFUSÉS par la garde de la collection, le suivi reste libre, une adoption ne se réécrit pas ni ne se refait', f.modContenu === 'REFUSE' && f.modBudget === 'REFUSE' && f.archive === 'REFUSE' && f.directe === 'REFUSE' && f.suivi === 'ECRIT' && f.modAdoption === 'REFUSE' && f.seconde === 'PLAN_DEJA_ADOPTE', JSON.stringify(f));
+    verifier('Réviser une action adoptée crée la VERSION 2 datée (même référence, fin T4), l’ancienne est archivée (RG-14) ; motif exigé, le suivi n’est pas une révision', f.sansMotif === 'MOTIF_OBLIGATOIRE' && f.hors === 'CHAMP_HORS_REVISION' && f.rv && f.rv.v === 2 && f.actives === 1 && f.version === 2 && f.fin === 4 && f.ancienne === 'archive', JSON.stringify(f));
+    const j = await page.evaluate(() => window.SIGH.store.collection('audit') ? 1 : 0);
+    const jr = await page.evaluate(() => { const S = window.SIGH.store; return (S.raw().journal || S.raw().audit || []).filter((e) => /Plan annuel/.test(String(e.action || ''))).map((e) => e.action); });
+    verifier('L’adoption et la révision sont au journal d’audit (RG-12)', jr.some((a) => /adoption/.test(a)) && jr.some((a) => /révisée/.test(a)), JSON.stringify(jr));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 284 : lot PTA, l’alerte de RETARD (une par action, dérivée, aucune donnée de santé) part vers les détenteurs du geste d’adoption, retombe quand l’action est réalisée ou replanifiée ; la tolérance est un paramètre de clinique en base ; « Reconduire » copie sans réécrire la source');
+    erreursJS = [];
+    const ADM284 = { role: 'admin', nom: 'ADMIN284', nomComplet: 'ADMIN284', fonction: 'admin', identifiant: 's284.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM284);
+    await ouvrir('m13-plan-annuel.html');
+    const d = await page.evaluate(() => {
+      const PA = window.SIGH.planAnnuel, S = window.SIGH.store, D = window.SIGH.data, NT = window.SIGH.notifications, col = S.collection('planAnnuel');
+      const po = S.collection('postes').active()[0], annee = window.SIGH.core.aujourdhui().getFullYear();
+      S.collection('adoptionsPlan').all().splice(0);
+      col.active().forEach((a) => col.archive(a.id, 'banc 284'));
+      const mk = (action, d, f, av) => PA.ajouter({ exercice: annee, action, axe: 'qualite', trimestreDebut: d, trimestreFin: f, avancement: av, responsable: 'poste:' + po.id });
+      const t1 = mk('Fin T1 284', 1, 1, 'en_cours'), t2 = mk('Fin T2 284', 1, 2, 'planifiee'), t4 = mk('Fin T4 284', 1, 4, 'en_cours'), fait = mk('Faite 284', 1, 1, 'realisee');
+      const lire = () => NT.collecter({ tousPostes: true, detaille: true }).filter((n) => n.source === 'plan_retard');
+      const l0 = lire();
+      const cles0 = l0.map((n) => n.cle).sort();
+      const exact = [t1.id, t2.id].map((i) => 'plan:' + i).sort();
+      const retomber = {};
+      col.update(t1.id, { avancement: 'realisee' }); retomber.realisee = lire().map((n) => n.cle).sort();
+      col.update(t2.id, { trimestreFin: 4 }); retomber.replanifiee = lire().length;
+      col.update(t2.id, { trimestreFin: 2 }); retomber.revenue = lire().length;
+      const aucune = JSON.stringify(l0.map((n) => [n.titre, n.detail])).match(/patient|diagnostic|ordonnance|résultat/i);
+      const destinataires = l0[0] ? l0[0].postes : null;
+      const grace0 = D.parametreCliniqueALaDate('plan.graceRetardJours', window.SIGH.core.iso(window.SIGH.core.aujourdhui())).valeur;
+      const defs = window.SIGH.parametresClinique.definitions().map((x) => x.cle);
+      return { cles0, exact, retomber, aucune: !!aucune, destinataires, detenteurs: window.SIGH.nav.rolesAvecGeste('adopter_plan_annuel').slice().sort(), grace0, defs, t4: t4.id };
+    });
+    verifier('UNE alerte par action en retard (fin T1 et fin T2 à la date du banc), pas pour la fin T4 ni pour l’action réalisée ; aucune donnée de santé dans le titre ni le détail', JSON.stringify(d.cles0) === JSON.stringify(d.exact) && d.aucune === false, JSON.stringify(d));
+    verifier('L’alerte retombe d’elle-même quand l’action est réalisée, ou replanifiée (fin T4), et revient si l’on remet la fin à T2 ; elle part vers les détenteurs du geste d’adoption', d.retomber.realisee.length === 1 && d.retomber.replanifiee === 0 && d.retomber.revenue === 1 && JSON.stringify((d.destinataires || []).slice().sort()) === JSON.stringify(d.detenteurs), JSON.stringify(d));
+    verifier('La tolérance avant l’alerte est un PARAMÈTRE DE CLINIQUE en base (défaut 0, clé plan.graceRetardJours)', d.grace0 === 0 && d.defs.indexOf('plan.graceRetardJours') >= 0, JSON.stringify({ g: d.grace0, defs: d.defs }));
+    const g = await page.evaluate(() => {
+      const PC = window.SIGH.parametresClinique, NT = window.SIGH.notifications, PA = window.SIGH.planAnnuel;
+      const hors = PC.controler('plan.graceRetardJours', 91), neg = PC.controler('plan.graceRetardJours', -1), ok = PC.controler('plan.graceRetardJours', 0);
+      const r = PC.definir({ cle: 'plan.graceRetardJours', valeur: 400, motif: 'Essai' });
+      const bornes = { hors: hors && hors.code, neg: neg && neg.code, ok: ok === null, definirHors: r.code };
+      const r2 = PC.definir({ cle: 'plan.graceRetardJours', valeur: 365 === 0 ? 0 : 60, motif: 'Tolérance de 60 jours' });
+      const retardApres = PA.alertes().length;
+      return { bornes, r2: r2.ok, retardApres };
+    });
+    verifier('La tolérance est bornée (0 à 90, 91 et -1 refusés) ; régler à 60 jours (geste réservé, motif, version datée) repousse l’alerte : plus aucune action en retard à la date du banc', g.bornes.hors === 'PARAMETRE_HORS_BORNES' && g.bornes.neg === 'PARAMETRE_HORS_BORNES' && g.bornes.ok && g.bornes.definirHors === 'PARAMETRE_HORS_BORNES' && g.r2 === true && g.retardApres === 0, JSON.stringify(g));
+    const rc = await page.evaluate(() => {
+      const PA = window.SIGH.planAnnuel, S = window.SIGH.store, col = S.collection('planAnnuel'), X = window.SIGH.exercice.liste().map((x) => x.annee).sort();
+      const annee = window.SIGH.core.aujourdhui().getFullYear(), prec = X.filter((a) => a < annee).pop();
+      const po = S.collection('postes').active()[0];
+      const mk = (action, av) => PA.ajouter({ exercice: prec, action, axe: 'qualite', trimestreDebut: 1, trimestreFin: 2, avancement: av, responsable: 'poste:' + po.id, tauxAvancement: 30, budgetRealise: 10 });
+      mk('Source A 284', 'en_cours'); mk('Source B 284', 'realisee'); mk('Source C 284', 'planifiee');
+      col.active().filter((a) => a.exercice === annee).forEach((a) => col.archive(a.id, 'banc 284'));
+      const avant = col.active().filter((a) => a.exercice === prec).length;
+      const r = PA.reconduire(prec, annee), copies = col.active().filter((a) => a.exercice === annee);
+      const r2 = PA.reconduire(prec, annee);
+      return { prec, annee, avant, apres: col.active().filter((a) => a.exercice === prec).length, copiees: r.copiees.length, refs: r.copiees, suiviZero: copies.every((c) => c.avancement === 'planifiee' && c.tauxAvancement === undefined && c.budgetRealise === undefined), source: copies.every((c) => !!c.reconduiteDe && !!c.reconduiteLe), seconde: r2.copiees.length, meme: PA.reconduire(annee, annee).code };
+    });
+    verifier('« Reconduire » copie les actions NON réalisées de l’exercice précédent (références de l’exercice cible, suivi remis à zéro, copie datée), laisse la source intacte, ne duplique pas une seconde fois, refuse le même exercice',
+      rc.copiees === 2 && rc.refs.every((r) => r.indexOf('PA-' + rc.annee + '-') === 0) && rc.suiviZero && rc.source && rc.avant === rc.apres && rc.seconde === 0 && rc.meme === 'RECONDUCTION_MEME_EXERCICE', JSON.stringify(rc));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT PTA FIN */
 
 
 

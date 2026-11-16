@@ -419,6 +419,27 @@
       },
     },
     {
+      code: 'plan_retard', categorie: 'metier', domaine: 'Plan annuel',
+      /* LOT PTA (16/11/2026) : une action du plan annuel non réalisée dont le trimestre de fin est passé (plus la tolérance lue en base : `plan.graceRetardJours`). UNE alerte PAR ACTION,
+         DÉRIVÉE : elle retombe d'elle-même quand l'action est réalisée ou replanifiée. Elle part vers les rôles qui détiennent le geste d'adoption du plan (fiche RBAC, jamais un nom de
+         rôle). Aucune donnée de santé : la référence, le libellé de l'action et le trimestre. */
+      lire: function () {
+        var PA = global.SIGH.planAnnuel, N = global.SIGH.nav;
+        if (!PA || !PA.alertes) return [];
+        var roles = N && N.rolesAvecGeste ? N.rolesAvecGeste(PA.GESTE) : [];
+        return PA.alertes().map(function (x) {
+          return {
+            cle: 'plan:' + x.action.id,
+            priorite: 'important',
+            titre: 'Action en retard : ' + x.action.reference + ' ' + x.action.action,
+            detail: 'Prévue au plus tard fin T' + x.action.trimestreFin + ' (' + C.dateFR(x.retard.finTrimestre) + '), ' + C.num(x.retard.jours) + ' jour(s) de retard. Réaliser l’action ou la replanifier.',
+            lien: 'm13-plan-annuel',
+            postes: roles,
+          };
+        });
+      },
+    },
+    {
       code: 'poste', categorie: 'metier', domaine: 'Poste',
       /* Les notifications de POSTE, écrites par le moteur transactionnel
          (`PR.notifier`). Elles s'adressent à un poste et non à une personne :
@@ -562,6 +583,7 @@
     produits_a_valoriser: ['produit(s) à valoriser', 'Proposer le premier prix d’achat de chaque article (« Tarifs et prix », onglet Produits) : la Directrice Administrative décide.'],
     prix_a_valider: ['lot(s) de changements de prix à valider', 'Décider chaque changement (Oui ou Non) à « Tarifs et prix », onglet Alertes.'],
     a_valider_ecritures: ['pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'],
+    plan_retard: ['action(s) du plan annuel en retard', 'Réaliser chaque action ou la replanifier : l’alerte retombe d’elle-même.'],
     poste: ['notification(s) de poste', 'À consulter dans les écrans concernés.'],
   };
 

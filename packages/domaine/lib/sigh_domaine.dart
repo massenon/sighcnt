@@ -82,6 +82,7 @@ export 'src/patients/pat_fiche.dart';
 export 'src/maternite/mat_regles.dart';
 export 'src/administration/adm_regles.dart';
 export 'src/numerotation/reference_annuelle.dart';
+export 'src/administration/plan_annuel.dart';
 // Fichiers numérisés (lot D5) : empreinte, format sur les octets, taille réglée, zones, noms, doublons, extracteur de texte PDF local, transfert par morceaux avec reprise.
 export 'src/fichiers/sha256.dart';
 export 'src/fichiers/fichiers_donnees.dart';

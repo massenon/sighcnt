@@ -2633,6 +2633,25 @@ ALTER TABLE "m12"."reglages_cloture" ADD COLUMN IF NOT EXISTS "libelle" text; --
 ALTER TABLE "m12"."reglages_cloture" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m12"."reglages_cloture" IS 'Collection « reglagesCloture » — M12 Comptabilité SYSCOHADA';
 CREATE INDEX IF NOT EXISTS "ix_reglages_cloture_statut" ON "m12"."reglages_cloture" ("statut");
+CREATE TABLE IF NOT EXISTS "m13"."adoptions_plan" (
+  "statut" text,
+  "exercice" integer,
+  "date_adoption" date,
+  "motif" text,
+  "adopte_par" text,
+  "nb_actions" integer,
+  "id" text PRIMARY KEY,
+  "extra" jsonb
+);
+ALTER TABLE "m13"."adoptions_plan" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."adoptions_plan" ADD COLUMN IF NOT EXISTS "exercice" integer; -- @montee
+ALTER TABLE "m13"."adoptions_plan" ADD COLUMN IF NOT EXISTS "date_adoption" date; -- @montee
+ALTER TABLE "m13"."adoptions_plan" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m13"."adoptions_plan" ADD COLUMN IF NOT EXISTS "adopte_par" text; -- @montee
+ALTER TABLE "m13"."adoptions_plan" ADD COLUMN IF NOT EXISTS "nb_actions" integer; -- @montee
+ALTER TABLE "m13"."adoptions_plan" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."adoptions_plan" IS 'Collection « adoptionsPlan » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_adoptions_plan_statut" ON "m13"."adoptions_plan" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."ambulance" (
   "id" text PRIMARY KEY,
   "etat" text,
@@ -3073,29 +3092,94 @@ CREATE INDEX IF NOT EXISTS "ix_messages_sms_date" ON "m13"."messages_sms" ("date
 CREATE INDEX IF NOT EXISTS "ix_messages_sms_statut" ON "m13"."messages_sms" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_messages_sms_patient_id" ON "m13"."messages_sms" ("patient_id");
 CREATE TABLE IF NOT EXISTS "m13"."plan_annuel" (
-  "id" text PRIMARY KEY,
-  "axe" text,
-  "action" text,
   "statut" text,
+  "exercice" integer,
   "reference" text,
-  "avancement" text,
-  "responsable" text,
-  "trimestre_fin" integer,
+  "version" integer,
+  "action" text,
+  "axe" text,
   "trimestre_debut" integer,
+  "trimestre_fin" integer,
+  "avancement" text,
+  "responsable_type" text,
+  "responsable_ref" text,
+  "id" text PRIMARY KEY,
+  "observations" text,
+  "valeur_atteinte" integer,
+  "cible" integer,
+  "budget_id" text,
+  "budget_prevu" integer,
+  "budget_realise" integer,
+  "taux_avancement" integer,
+  "indicateur" text,
+  "version_de" text,
+  "date_effet" date,
+  "motif_version" text,
+  "ajoute_apres_adoption" boolean,
+  "reconduite_de" text,
+  "reconduite_le" date,
+  "reconduite_depuis" text,
+  "responsable" text,
   "extra" jsonb
 );
-ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "axe" text; -- @montee
-ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "action" text; -- @montee
 ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "exercice" integer; -- @montee
 ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
-ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "avancement" text; -- @montee
-ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "responsable" text; -- @montee
-ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "trimestre_fin" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "action" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "axe" text; -- @montee
 ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "trimestre_debut" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "trimestre_fin" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "avancement" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "responsable_type" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "responsable_ref" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "observations" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "valeur_atteinte" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "cible" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "budget_id" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "budget_prevu" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "budget_realise" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "taux_avancement" integer; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "indicateur" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "version_de" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "motif_version" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "ajoute_apres_adoption" boolean; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "reconduite_de" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "reconduite_le" date; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "reconduite_depuis" text; -- @montee
+ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "responsable" text; -- @montee
 ALTER TABLE "m13"."plan_annuel" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m13"."plan_annuel" IS 'Collection « planAnnuel » — M13 Administration & ambulance';
 CREATE INDEX IF NOT EXISTS "ix_plan_annuel_statut" ON "m13"."plan_annuel" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_plan_annuel_reference" ON "m13"."plan_annuel" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_plan_annuel_budget_id" ON "m13"."plan_annuel" ("budget_id");
+CREATE TABLE IF NOT EXISTS "m13"."reglages_plan" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "motif" text,
+  "cree_le" date,
+  "cree_par" text,
+  "extra" jsonb
+);
+ALTER TABLE "m13"."reglages_plan" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."reglages_plan" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m13"."reglages_plan" ADD COLUMN IF NOT EXISTS "cree_le" date; -- @montee
+ALTER TABLE "m13"."reglages_plan" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m13"."reglages_plan" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."reglages_plan" IS 'Collection « reglagesPlan » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_reglages_plan_statut" ON "m13"."reglages_plan" ("statut");
+CREATE TABLE IF NOT EXISTS "m13"."reglages_plan_signataires" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "poste_id" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m13"."reglages_plan" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+ALTER TABLE "m13"."reglages_plan_signataires" ADD COLUMN IF NOT EXISTS "poste_id" text; -- @montee
+ALTER TABLE "m13"."reglages_plan_signataires" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."reglages_plan_signataires" IS 'Lignes « signataires » de « reglagesPlan »';
 CREATE TABLE IF NOT EXISTS "m13"."reponses_enquetes" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -7155,6 +7239,34 @@ COMMENT ON TABLE "socle"."appels" IS 'Collection « appels » — Socle commun (
 CREATE INDEX IF NOT EXISTS "ix_appels_statut" ON "socle"."appels" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_appels_date_heure" ON "socle"."appels" ("date_heure");
 CREATE INDEX IF NOT EXISTS "ix_appels_reference" ON "socle"."appels" ("reference");
+CREATE TABLE IF NOT EXISTS "socle"."referentiels_plan" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "type" text,
+  "code" text,
+  "libelle" text,
+  "ordre" integer,
+  "cree_le" date,
+  "cree_par" text,
+  "nature" text,
+  "ton" text,
+  "extra" jsonb
+);
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "ordre" integer; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "cree_le" date; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "nature" text; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "ton" text; -- @montee
+ALTER TABLE "socle"."referentiels_plan" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "socle"."referentiels_plan" IS 'Collection « referentielsPlan » — Socle commun (référentiels lus par plusieurs modules)';
+CREATE INDEX IF NOT EXISTS "ix_referentiels_plan_statut" ON "socle"."referentiels_plan" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_referentiels_plan_type" ON "socle"."referentiels_plan" ("type");
+CREATE INDEX IF NOT EXISTS "ix_referentiels_plan_code" ON "socle"."referentiels_plan" ("code");
+CREATE INDEX IF NOT EXISTS "ix_referentiels_plan_nature" ON "socle"."referentiels_plan" ("nature");
 CREATE TABLE IF NOT EXISTS "socle"."taches" (
   "id" text PRIMARY KEY,
   "date" timestamptz,
