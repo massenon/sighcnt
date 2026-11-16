@@ -1,0 +1,1432 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-sat.js : l’écran adm-satisfaction (carte Analyse) et adm-enquetes (versions datées, point de collecte, partage en ligne) de la maquette, horloge fixée au 16/08/2026.",
+ "points": [
+  {
+   "code": "accueil",
+   "libelle": "Accueil"
+  },
+  {
+   "code": "consultation",
+   "libelle": "Consultation"
+  },
+  {
+   "code": "laboratoire",
+   "libelle": "Laboratoire"
+  },
+  {
+   "code": "pharmacie",
+   "libelle": "Pharmacie"
+  },
+  {
+   "code": "maternite",
+   "libelle": "Maternité"
+  },
+  {
+   "code": "hospitalisation",
+   "libelle": "Hospitalisation"
+  },
+  {
+   "code": "sortie",
+   "libelle": "Sortie"
+  }
+ ],
+ "analyse": {
+  "entrees": {
+   "enquete": {
+    "id": "ENQ0001",
+    "questions": [
+     {
+      "code": "Q_ACCUEIL",
+      "libelle": "Qualité de l’accueil",
+      "type": "note"
+     },
+     {
+      "code": "Q_SOINS",
+      "libelle": "Qualité des soins reçus",
+      "type": "note"
+     },
+     {
+      "code": "Q_RECO",
+      "libelle": "Recommanderiez-vous la clinique ?",
+      "type": "choix",
+      "options": [
+       "Oui, sans hésiter",
+       "Plutôt oui",
+       "Plutôt non",
+       "Non"
+      ]
+     },
+     {
+      "code": "Q_LIBRE",
+      "libelle": "Ce que nous pourrions améliorer",
+      "type": "texte"
+     },
+     {
+      "code": "Q_ATTENTE",
+      "libelle": "Temps d’attente ressenti",
+      "type": "note"
+     }
+    ],
+    "versions": [
+     {
+      "version": "V1",
+      "effetLe": "2026-08-01",
+      "questions": [
+       {
+        "code": "Q_ACCUEIL",
+        "libelle": "Qualité de l’accueil",
+        "type": "note"
+       },
+       {
+        "code": "Q_SOINS",
+        "libelle": "Qualité des soins reçus",
+        "type": "note"
+       },
+       {
+        "code": "Q_RECO",
+        "libelle": "Recommanderiez-vous la clinique ?",
+        "type": "choix",
+        "options": [
+         "Oui, sans hésiter",
+         "Plutôt oui",
+         "Plutôt non",
+         "Non"
+        ]
+       },
+       {
+        "code": "Q_LIBRE",
+        "libelle": "Ce que nous pourrions améliorer",
+        "type": "texte"
+       }
+      ]
+     },
+     {
+      "version": "V2",
+      "effetLe": "2026-08-10",
+      "questions": [
+       {
+        "code": "Q_ACCUEIL",
+        "libelle": "Qualité de l’accueil",
+        "type": "note"
+       },
+       {
+        "code": "Q_SOINS",
+        "libelle": "Qualité des soins reçus",
+        "type": "note"
+       },
+       {
+        "code": "Q_RECO",
+        "libelle": "Recommanderiez-vous la clinique ?",
+        "type": "choix",
+        "options": [
+         "Oui, sans hésiter",
+         "Plutôt oui",
+         "Plutôt non",
+         "Non"
+        ]
+       },
+       {
+        "code": "Q_LIBRE",
+        "libelle": "Ce que nous pourrions améliorer",
+        "type": "texte"
+       },
+       {
+        "code": "Q_ATTENTE",
+        "libelle": "Temps d’attente ressenti",
+        "type": "note"
+       }
+      ]
+     }
+    ]
+   },
+   "reponses": [
+    {
+     "enqueteId": "ENQ0001",
+     "date": "2026-07-30",
+     "version": "V1",
+     "point": "accueil",
+     "canal": "Lien public",
+     "reponses": {
+      "Q_ACCUEIL": 5,
+      "Q_SOINS": 4,
+      "Q_RECO": "Oui, sans hésiter"
+     }
+    },
+    {
+     "enqueteId": "ENQ0001",
+     "date": "2026-08-02",
+     "version": "V1",
+     "point": "accueil",
+     "canal": "Lien public",
+     "reponses": {
+      "Q_ACCUEIL": 3,
+      "Q_SOINS": 2,
+      "Q_RECO": "Plutôt non",
+      "Q_LIBRE": "Attente longue"
+     }
+    },
+    {
+     "enqueteId": "ENQ0001",
+     "date": "2026-08-05",
+     "version": "V1",
+     "point": "laboratoire",
+     "canal": "Au guichet",
+     "reponses": {
+      "Q_ACCUEIL": 4,
+      "Q_SOINS": 5,
+      "Q_RECO": "Plutôt oui"
+     }
+    },
+    {
+     "enqueteId": "ENQ0001",
+     "date": "2026-08-10",
+     "version": "V2",
+     "point": "laboratoire",
+     "canal": "Lien public",
+     "reponses": {
+      "Q_ACCUEIL": 5,
+      "Q_SOINS": 5,
+      "Q_ATTENTE": 2,
+      "Q_RECO": "Oui, sans hésiter"
+     }
+    },
+    {
+     "enqueteId": "ENQ0001",
+     "date": "2026-08-12",
+     "version": "V2",
+     "point": "maternite",
+     "canal": "Lien public",
+     "reponses": {
+      "Q_ACCUEIL": 4,
+      "Q_ATTENTE": 4,
+      "Q_RECO": "Non"
+     }
+    },
+    {
+     "enqueteId": "ENQ0001",
+     "date": "2026-08-15",
+     "version": "V2",
+     "point": "maternite",
+     "canal": "Lien public",
+     "reponses": {
+      "Q_ACCUEIL": 1,
+      "Q_SOINS": 3,
+      "Q_ATTENTE": "",
+      "Q_RECO": ""
+     }
+    },
+    {
+     "enqueteId": "ENQ0001",
+     "date": "2026-08-16",
+     "version": "V2",
+     "point": "sortie",
+     "canal": "À la sortie",
+     "reponses": {
+      "Q_ACCUEIL": "abc",
+      "Q_SOINS": 0,
+      "Q_ATTENTE": 6
+     }
+    }
+   ],
+   "points": [
+    {
+     "code": "accueil",
+     "libelle": "Accueil"
+    },
+    {
+     "code": "consultation",
+     "libelle": "Consultation"
+    },
+    {
+     "code": "laboratoire",
+     "libelle": "Laboratoire"
+    },
+    {
+     "code": "pharmacie",
+     "libelle": "Pharmacie"
+    },
+    {
+     "code": "maternite",
+     "libelle": "Maternité"
+    },
+    {
+     "code": "hospitalisation",
+     "libelle": "Hospitalisation"
+    },
+    {
+     "code": "sortie",
+     "libelle": "Sortie"
+    }
+   ]
+  },
+  "cas": [
+   {
+    "nom": "sans filtre",
+    "filtres": {},
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "7",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "61.5 %",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "60.0 %",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "6",
+        "3.7",
+        "66.7 %"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "5",
+        "3.8",
+        "60.0 %"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "2",
+        "3.0",
+        "50.0 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Mois",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "2026-07",
+        "1",
+        "100.0 %"
+       ],
+       [
+        "",
+        "2026-08",
+        "6",
+        "54.5 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Point de collecte",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Accueil",
+        "2",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Laboratoire",
+        "2",
+        "80.0 %"
+       ],
+       [
+        "",
+        "Maternité",
+        "2",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Sortie",
+        "1",
+        "Non calculable"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   },
+   {
+    "nom": "un point",
+    "filtres": {
+     "point": "accueil"
+    },
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "2",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "50.0 %",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "50.0 %",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "2",
+        "4.0",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "2",
+        "3.0",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "0",
+        "Non calculable",
+        "Non calculable"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Mois",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "2026-07",
+        "1",
+        "100.0 %"
+       ],
+       [
+        "",
+        "2026-08",
+        "1",
+        "0.0 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Point de collecte",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Accueil",
+        "2",
+        "50.0 %"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   },
+   {
+    "nom": "une période",
+    "filtres": {
+     "du": "2026-08-02",
+     "au": "2026-08-12"
+    },
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "4",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "66.7 %",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "50.0 %",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "4",
+        "4.0",
+        "75.0 %"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "3",
+        "4.0",
+        "66.7 %"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "2",
+        "3.0",
+        "50.0 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Mois",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "2026-08",
+        "4",
+        "66.7 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Point de collecte",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Accueil",
+        "1",
+        "0.0 %"
+       ],
+       [
+        "",
+        "Laboratoire",
+        "2",
+        "80.0 %"
+       ],
+       [
+        "",
+        "Maternité",
+        "1",
+        "100.0 %"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   },
+   {
+    "nom": "une version",
+    "filtres": {
+     "version": "V2"
+    },
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "4",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "57.1 %",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "50.0 %",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "3",
+        "3.3",
+        "66.7 %"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "2",
+        "4.0",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "2",
+        "3.0",
+        "50.0 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Mois",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "2026-08",
+        "4",
+        "57.1 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Point de collecte",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Laboratoire",
+        "1",
+        "66.7 %"
+       ],
+       [
+        "",
+        "Maternité",
+        "2",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Sortie",
+        "1",
+        "Non calculable"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   },
+   {
+    "nom": "un canal",
+    "filtres": {
+     "canal": "Lien public"
+    },
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "5",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "54.5 %",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "50.0 %",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "5",
+        "3.6",
+        "60.0 %"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "4",
+        "3.5",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "2",
+        "3.0",
+        "50.0 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Mois",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "2026-07",
+        "1",
+        "100.0 %"
+       ],
+       [
+        "",
+        "2026-08",
+        "4",
+        "44.4 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Point de collecte",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Accueil",
+        "2",
+        "50.0 %"
+       ],
+       [
+        "",
+        "Laboratoire",
+        "1",
+        "66.7 %"
+       ],
+       [
+        "",
+        "Maternité",
+        "2",
+        "50.0 %"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   },
+   {
+    "nom": "filtres combinés",
+    "filtres": {
+     "point": "laboratoire",
+     "version": "V2",
+     "canal": "Lien public"
+    },
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "1",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "66.7 %",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "100.0 %",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "1",
+        "5.0",
+        "100.0 %"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "1",
+        "5.0",
+        "100.0 %"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "1",
+        "2.0",
+        "0.0 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Mois",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "2026-08",
+        "1",
+        "66.7 %"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Point de collecte",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Laboratoire",
+        "1",
+        "66.7 %"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   },
+   {
+    "nom": "aucune réponse ne correspond",
+    "filtres": {
+     "point": "pharmacie"
+    },
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "0",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "Non calculable",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "Non calculable",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "0",
+        "Non calculable",
+        "Non calculable"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "0",
+        "Non calculable",
+        "Non calculable"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "0",
+        "Non calculable",
+        "Non calculable"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   },
+   {
+    "nom": "notes toutes invalides",
+    "filtres": {
+     "point": "sortie"
+    },
+    "kpis": [
+     {
+      "label": "Réponses (filtre)",
+      "valeur": "1",
+      "indice": ""
+     },
+     {
+      "label": "Taux de satisfaction",
+      "valeur": "Non calculable",
+      "indice": "Notes 4 ou 5 sur 5"
+     },
+     {
+      "label": "Taux de recommandation",
+      "valeur": "Non calculable",
+      "indice": ""
+     },
+     {
+      "label": "Taux de réponse",
+      "valeur": "Non calculable",
+      "indice": "Passages à l\\u2019accueil non comptés"
+     }
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "",
+       "Question",
+       "Notes",
+       "Moyenne",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Qualité de l’accueil",
+        "0",
+        "Non calculable",
+        "Non calculable"
+       ],
+       [
+        "",
+        "Qualité des soins reçus",
+        "0",
+        "Non calculable",
+        "Non calculable"
+       ],
+       [
+        "",
+        "Temps d’attente ressenti",
+        "0",
+        "Non calculable",
+        "Non calculable"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Mois",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "2026-08",
+        "1",
+        "Non calculable"
+       ]
+      ]
+     },
+     {
+      "entetes": [
+       "",
+       "Point de collecte",
+       "Réponses",
+       "Satisfaction"
+      ],
+      "lignes": [
+       [
+        "",
+        "Sortie",
+        "1",
+        "Non calculable"
+       ]
+      ]
+     }
+    ],
+    "options": {
+     "points": [
+      "",
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ],
+     "versions": [
+      "",
+      "V1",
+      "V2"
+     ]
+    }
+   }
+  ]
+ },
+ "versions": {
+  "avant": {
+   "versions": [
+    {
+     "version": "V1",
+     "effetLe": "2026-08-01",
+     "questions": [
+      {
+       "code": "Q_ACCUEIL",
+       "libelle": "Qualité de l’accueil",
+       "type": "note"
+      },
+      {
+       "code": "Q_ATTENTE",
+       "libelle": "Temps d’attente ressenti",
+       "type": "note"
+      },
+      {
+       "code": "Q_PROPRETE",
+       "libelle": "Propreté des locaux",
+       "type": "note"
+      },
+      {
+       "code": "Q_SOINS",
+       "libelle": "Qualité des soins reçus",
+       "type": "note"
+      },
+      {
+       "code": "Q_RECO",
+       "libelle": "Recommanderiez-vous la clinique ?",
+       "type": "choix",
+       "options": [
+        "Oui, sans hésiter",
+        "Plutôt oui",
+        "Plutôt non",
+        "Non"
+       ]
+      },
+      {
+       "code": "Q_LIBRE",
+       "libelle": "Ce que nous pourrions améliorer",
+       "type": "texte"
+      }
+     ]
+    }
+   ],
+   "questions": [
+    {
+     "code": "Q_ACCUEIL",
+     "libelle": "Qualité de l’accueil",
+     "type": "note"
+    },
+    {
+     "code": "Q_ATTENTE",
+     "libelle": "Temps d’attente ressenti",
+     "type": "note"
+    },
+    {
+     "code": "Q_PROPRETE",
+     "libelle": "Propreté des locaux",
+     "type": "note"
+    },
+    {
+     "code": "Q_SOINS",
+     "libelle": "Qualité des soins reçus",
+     "type": "note"
+    },
+    {
+     "code": "Q_RECO",
+     "libelle": "Recommanderiez-vous la clinique ?",
+     "type": "choix",
+     "options": [
+      "Oui, sans hésiter",
+      "Plutôt oui",
+      "Plutôt non",
+      "Non"
+     ]
+    },
+    {
+     "code": "Q_LIBRE",
+     "libelle": "Ce que nous pourrions améliorer",
+     "type": "texte"
+    }
+   ]
+  },
+  "sansChangement": {
+   "versions": [
+    "V1"
+   ]
+  },
+  "apresModification": {
+   "versions": [
+    {
+     "version": "V1",
+     "effetLe": "2026-08-01",
+     "codes": [
+      "Q_ACCUEIL",
+      "Q_ATTENTE",
+      "Q_PROPRETE",
+      "Q_SOINS",
+      "Q_RECO",
+      "Q_LIBRE"
+     ]
+    },
+    {
+     "version": "V2",
+     "effetLe": "2026-08-16",
+     "codes": [
+      "Q_ATTENTE",
+      "Q_PROPRETE",
+      "Q_SOINS",
+      "Q_RECO",
+      "Q_LIBRE"
+     ]
+    }
+   ],
+   "questionsCourantes": [
+    "Q_ATTENTE",
+    "Q_PROPRETE",
+    "Q_SOINS",
+    "Q_RECO",
+    "Q_LIBRE"
+   ],
+   "toasts": [
+    "Modèle enregistré."
+   ]
+  },
+  "reponseNee": {
+   "version": "V2",
+   "point": null,
+   "canal": "Au guichet"
+  },
+  "anciennesReponses": [
+   "V1"
+  ],
+  "unitaires": []
+ },
+ "partageEnLigne": {
+  "form": {
+   "libelles": [
+    "Recueil *",
+    "Où le tiers répond-il ? *",
+    "Point de collecte *",
+    "Le lien expire le *",
+    "Note interne"
+   ],
+   "champs": [
+    {
+     "nom": "anonyme",
+     "balise": "select",
+     "options": [
+      "oui",
+      "non"
+     ]
+    },
+    {
+     "nom": "usage",
+     "balise": "select",
+     "options": [
+      "salle",
+      "tablette",
+      "reseau",
+      "en_ligne"
+     ]
+    },
+    {
+     "nom": "point",
+     "balise": "select",
+     "options": [
+      "accueil",
+      "consultation",
+      "laboratoire",
+      "pharmacie",
+      "maternite",
+      "hospitalisation",
+      "sortie"
+     ]
+    },
+    {
+     "nom": "expireLe",
+     "balise": "input",
+     "options": null
+    },
+    {
+     "nom": "note",
+     "balise": "input",
+     "options": null
+    }
+   ]
+  },
+  "jeton": {
+   "statut": "actif",
+   "jeton": "…",
+   "enqueteId": "ENQ0001",
+   "enqueteTitre": "Satisfaction des patients",
+   "anonyme": true,
+   "usage": "en_ligne",
+   "point": "laboratoire",
+   "enLigne": true,
+   "version": "V1",
+   "creeLe": "2026-08-16",
+   "expireLe": "2026-09-15",
+   "revoqueLe": null,
+   "note": "Affiche du laboratoire",
+   "ouvertPar": "BASSONGUI Chabi Séko"
+  },
+  "formatJeton": true,
+  "lienGabarit": "https://sighcnt.nassieratoo.com/s/<jeton>",
+  "qrPresent": true,
+  "table": {
+   "entetes": [
+    "",
+    "Enquête",
+    "Jeton",
+    "Recueil",
+    "Point de collecte",
+    "Partage",
+    "Expire le",
+    "Réponses",
+    "État",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "",
+     "Satisfaction des patients",
+     "<8 premiers>…",
+     "Anonyme",
+     "Laboratoire",
+     "En ligne",
+     "15/09/2026",
+     "0",
+     "Ouvert",
+     ""
+    ]
+   ]
+  }
+ }
+}

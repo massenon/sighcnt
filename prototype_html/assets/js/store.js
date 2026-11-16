@@ -155,13 +155,15 @@
      peut porter `prixManquant` (nature, code, libellé, cause, motif, geste) avec prix, montant et parts NULS ; une facture `enAttentePrix` a des totaux nuls (non calculable) ; une
      ligne valorisée porte `valoriseLe` et `valorisation` ; le réglage de clinique `caisseEncaissementPartielSansPrix` (versions datées, défaut semé « non ») vit dans `_reglages`.
      Sans incrément, un poste garderait le moteur qui refuse la prescription entière.
+     92 (16/11/2026, lot SAT, ADR-0009) : la SATISFACTION EN LIGNE. L'enquête porte des `versions` datées du questionnaire ; la réponse porte sa `version` et son `point` de collecte ; la collection
+     `pointsCollecte` (les sept points de la décision S2) est semée par l'écran des enquêtes ; le lien de partage porte `enLigne` et `point`. Sans incrément, un poste garderait des enquêtes sans version.
      91 (16/11/2026, après fusion avec TARIF-FIX-2 qui a posé 90) : les PARAMÈTRES DE CLINIQUE datés (lot PARAM-CLINIQUE, décisions 10 et 14 de la Direction du 15/11/2026). La collection `parametresClinique` (préavis de
      péremption, 90 jours semés ; tranches de la balance âgée, 30 et 90 jours semés : une fiche par version, jamais réécrite) est semée au socle ; le geste réservé
      `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
      Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
      `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
   */
-  var VERSION = 91;
+  var VERSION = 92;
   var db = null;
   var listeners = {};
 
@@ -4216,7 +4218,7 @@
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
     'examensImagerie', 'variablesImagerie', 'pathologies',
     /* Modèles (badges, messages, questionnaires) et emplacements de rangement */
-    'modelesBadge', 'modelesMessage', 'enquetes', 'emplacements',
+    'modelesBadge', 'modelesMessage', 'enquetes', 'pointsCollecte', 'emplacements',
     /* LE JOURNAL D'AUDIT SE GARDE : il trace les tarifs arrêtés, les droits fermés, la
        grille des primes — tout ce que le vidage CONSERVE. Effacer la trace de ce qu'on
        garde contredirait RG-12 ; le vidage s'inscrit EN TÊTE du journal conservé. */
@@ -4574,6 +4576,7 @@
     validationsReferentiels: 'CFG|Validations de référentiels',
     reponsesEnquetes: 'M13|Réponses d’enquête',
     jetonsEnquete: 'M13|Liens de partage des enquêtes',
+    pointsCollecte: 'M13|Points de collecte de la satisfaction',
     badges: 'M10|Badges du personnel', modelesBadge: 'M10|Modèles de badge',
     clichesImagerie: 'M2|Clichés d’échographie',
     examensImagerie: 'CFG|Catalogue des examens d’imagerie',
