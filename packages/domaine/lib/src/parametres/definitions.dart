@@ -14,6 +14,7 @@
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
 import '../comptabilite/cpc_circuit.dart';
+import '../validation/demande_validation.dart' show valCleDelaiAlerteHeures, valDelaiAlerteDefautHeures;
 import '../fichiers/ocr.dart' show ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrCleDelai, ocrLangueDefaut, ocrDelaiDefautMs;
 import '../sauvegarde/sauvegarde_horssite.dart';
 import 'parametres.dart';
@@ -403,6 +404,19 @@ const List<DefinitionParametre> definitionsParametres = [
     source: 'Texte de spécification de la Direction du 11/11/2026 : état inconnu au-delà de 24 heures',
     branche: true,
     appliquePar: 'Lot CLO-2 C5 (postes appairés)',
+  ),
+  // Lot CONT (14/11/2026) : une décision de validation prise sur un fileul attend la mère (qui n'est que l'applicateur mécanique). Passé ce délai, le validateur et l'administrateur sont ALERTÉS
+  // (jamais bloqués, jamais validation d'office). Réglage de clinique posé à la mère, jamais vers un téléphone (famille `securite`, fermée au téléphone). Défaut semé : proposition à valider.
+  DefinitionParametre(
+    cle: valCleDelaiAlerteHeures,
+    famille: 'securite',
+    type: TypeParametre.entier,
+    defaut: valDelaiAlerteDefautHeures,
+    libelle: 'Délai d\'alerte d\'une décision en attente de la mère (heures)',
+    aide: 'Entier d\'au moins 1. Au-delà, une alerte (jamais un blocage, jamais une validation d\'office) est adressée au profil qui valide et à l\'administrateur. Proposition à valider : 24 heures.',
+    source: 'Proposition à valider (lot CONT, DECISIONS-A-VALIDER section AG) : aucun document ne fixe ce délai',
+    branche: true,
+    appliquePar: 'Lot CONT (continuité des validations)',
   ),
 ];
 

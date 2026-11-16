@@ -30,7 +30,8 @@ class BarreSuperieure extends StatelessWidget {
       this.surProfil,
       this.installation,
       this.surInstallation,
-      this.selecteurExercice});
+      this.selecteurExercice,
+      this.decisions});
   final ConfigPoste config;
   final SourceEtatSync etatSync;
   final String nomRole;
@@ -52,6 +53,9 @@ class BarreSuperieure extends StatelessWidget {
 
   /// Le sélecteur d'exercice, posé SEULEMENT sur les écrans qui ont une notion d'année (règle `cpcAExercice`).
   final Widget? selecteurExercice;
+
+  /// Lot CONT : la pastille « N décisions en attente de la mère » (absente quand rien n'attend).
+  final Widget? decisions;
 
   /// L'état réel du plein écran (suit F11 et la sortie par le système) ; absent = fenêtre.
   final ValueListenable<bool>? pleinEcran;
@@ -151,6 +155,7 @@ class BarreSuperieure extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 6),
                       child: _Outil(cle: 'barre-installation', icone: LucideIcons.listChecks, info: 'Configurations à faire avant l’utilisation', surTap: surInstallation))
                   : const SizedBox.shrink()),
+        if (decisions != null) decisions!,
         PastilleSync(source: etatSync),
         const SizedBox(width: 6),
         _Cloche(centre: centre, repli: nombreAlertes, surTap: surNotifications),

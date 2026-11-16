@@ -22,6 +22,7 @@ import '../modules/auth/acc_session.dart';
 import 'acces_rapides.dart';
 import 'activite_fermee.dart';
 import '../donnees/magasin.dart';
+import 'pastille_decisions.dart';
 import '../kit/toast.dart';
 import '../modules/cfg/cfb_notifications.dart' show CfbAudio;
 import 'centre_notifications.dart';
@@ -664,6 +665,7 @@ class _CoquePosteState extends State<CoquePoste> {
   Widget _barre(String nomRole, VoidCallback? surAccueil) => BarreSuperieure(
       config: widget.config,
       etatSync: widget.etatSync,
+      decisions: widget.magasin == null ? null : PastilleDecisions(magasin: widget.magasin!, maintenant: _maintenant),
       nomRole: nomRole,
       nomAgent: _nomAffiche(),
       surAccueil: surAccueil,

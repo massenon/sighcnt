@@ -44,6 +44,8 @@ const FAMILLES = {
   versionsTarif: 'R', propositionsTarif: 'A',
   /* Lot IMP-C : la demande d'import d'un fileul (A : le fileul dépose, la mère complète du verdict ; jamais vers un téléphone). */
   demandesImport: 'A',
+  /* Lot CONT : la décision de validation d'un fileul (A : le fileul dépose, la mère applique mécaniquement et complète du verdict ; jamais vers un téléphone). */
+  demandesValidation: 'A',
   /* Lot IMP-E : le stock que le pont du poste synchronise comme la mère Dart (`sync_dart/lib/src/mere.dart`) : les lots et les mouvements sont des fiches descriptives (A, une identité par fiche,
      jamais dédoublée), les variations de stock sont des fiches AJOUTÉES (une par variation, jamais modifiées : `fiche_existe` à la seconde création du même identifiant). */
   lots: 'A', mouvements: 'A', deltasCompteurs: 'A',

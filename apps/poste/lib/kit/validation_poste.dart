@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/service_installation.dart';
+import '../donnees/demandes_validation_poste.dart';
 import '../donnees/magasin.dart';
 import '../modules/m14/commun_m14.dart' show rolesDe;
 import '../shell/contexte_ecran.dart';
@@ -53,18 +54,33 @@ class ValidationPoste {
   /// Le poste est-il un fileul rattaché à une mère ? La configuration y est en lecture seule.
   bool get fileul => ServiceInstallation.de(m).rattache;
 
-  /// `K.peutValider(famille)` : le rôle de la SESSION est un des rôles de la famille, et le poste tient sa configuration.
-  bool peutValider(String famille) {
-    final f = valFamille(famille);
-    return f != null && !(fileul && valVoyageDeLaMere(f)) && valPeutValider(famille, c.role);
-  }
+  /// `K.peutValider(famille)` : le rôle de la SESSION est un des rôles de la famille. LOT CONT : le poste n'a PLUS à tenir la configuration pour décider. Un fileul SIGNE sa décision et la dépose
+  /// (`decider`), la mère l'applique mécaniquement : le profil qui valide n'a jamais à se rendre sur le poste de la mère.
+  bool peutValider(String famille) => valFamille(famille) != null && valPeutValider(famille, c.role);
+
+  /// Les décisions déposées à la mère (fileul) et leur état, lues de la collection `demandesValidation`.
+  DemandesValidationPoste get demandesPoste => DemandesValidationPoste(m, libelles: libelles, horloge: () => c.aujourdhui, etiquette: c.role);
+
+  /// La décision de CE poste qui attend encore la mère pour cet élément, ou `null`.
+  Fiche? enAttenteDeLaMere(String famille, Object? id) => demandesPoste.enAttenteDe(famille, id);
 
   EtatValidation? etat(String famille, Object? id) => valEtatValidation(famille, '$id', lire, libelles);
 
   /// `K.badgeValidation` : l'état LU (jamais stocké). `null` si l'élément est inconnu de la famille.
   Widget? badge(String famille, Object? id) {
+    // LOT CONT : sur un fileul, le badge suit aussi la collection des décisions (dépôt, puis verdict de la mère) : il se repeint sans que l'écran ait à l'écouter.
+    if (fileul && _badge(famille, id) != null) {
+      return ListenableBuilder(listenable: m.collection(valCollectionDemandes), builder: (_, __) => _badge(famille, id) ?? const SizedBox.shrink());
+    }
+    return _badge(famille, id);
+  }
+
+  Widget? _badge(String famille, Object? id) {
     final e = etat(famille, id);
     if (e == null) return null;
+    if (e.enAttente && enAttenteDeLaMere(famille, id) != null) {
+      return BadgeSigh('Décision déposée, en attente de la mère', key: Key('val:badge:$famille:$id'), ton: TonSigh.attention);
+    }
     if (e.enAttente) return BadgeSigh('À valider', key: Key('val:badge:$famille:$id'), ton: TonSigh.attention);
     final morceaux = [
       if (e.valideRole != null) e.valideRole!,
@@ -83,6 +99,7 @@ class ValidationPoste {
   String texteBadge(String famille, Object? id) {
     final e = etat(famille, id);
     if (e == null) return '';
+    if (e.enAttente && enAttenteDeLaMere(famille, id) != null) return 'Décision déposée, en attente de la mère';
     if (e.enAttente) return 'À valider';
     return e.valideLe == null ? 'Validé' : 'Validé (${[if (e.valideRole != null) e.valideRole!, _dateCourte(e.valideLe!)].join(', ')})';
   }
@@ -93,21 +110,19 @@ class ValidationPoste {
     final r = valValiderReferentiel(famille, '$id',
         role: c.role, acteur: acteur(c).nom, maintenant: c.aujourdhui, lire: lire, libelles: libelles, fileul: fileul, motif: motif);
     if (!r.ok) return r;
-    try {
-      final col = m.collection(r.collection!);
-      if (r.creation != null) {
-        // La maquette pose la fiche de validation sans ligne « Création » : le geste est UNE ligne « Validation ».
-        col.ajouterSansJournal(r.creation!);
-      } else {
-        final cible = r.collection == valCollectionValidations ? 'VRF-${r.id}' : '${r.id}';
-        col.mettreAJour(cible, r.patch, journaliser: false);
-      }
-    } on EcritureRefusee catch (e) {
-      return VerdictValidation.refus(RefusValidation('ECRITURE_REFUSEE', e.motif, null));
+    final refus = DemandesValidationPoste.ecrireVerdict(m, r);
+    return refus == null ? r : VerdictValidation.refus(refus);
+  }
+
+  /// LOT CONT : LA DÉCISION, quel que soit le poste. Sur la mère (ou un poste autonome) elle s'applique tout de suite ; sur un fileul elle est SIGNÉE et déposée (la mère l'applique
+  /// mécaniquement), sans rien bloquer. Rend le verdict direct ([DecisionPosee.verdict]), ou le dépôt, ou le refus nommé.
+  DecisionPosee decider(String famille, Object? id, {String? motif}) {
+    if (!fileul) {
+      final v = valider(famille, id, motif: motif);
+      return v.ok ? DecisionPosee.directe(v) : DecisionPosee.refus(v.refus!);
     }
-    final j = r.journal!;
-    m.journaliser(j.action, j.module, j.entite, j.reference, j.avant, j.apres);
-    return r;
+    final d = demandesPoste.deposer(famille, id, role: c.role, acteur: acteur(c).nom, motif: motif);
+    return d.ok ? DecisionPosee.deposee(d.fiche!) : DecisionPosee.refus(d.refus!);
   }
 
   /// `K.remettreAValider` : à appeler sur TOUT chemin qui modifie un élément. Rend le verdict ; ne fait rien si l'élément est déjà « à valider » ou inconnu.
@@ -251,7 +266,7 @@ class ValidationPoste {
     if (cible == null) return null;
     if (!peutValider(v.famille)) return null;
     final e = etat(v.famille, cible);
-    if (e == null || !e.enAttente) return null;
+    if (e == null || !e.enAttente || enAttenteDeLaMere(v.famille, cible) != null) return null;
     return Tooltip(
         message: 'Valider « ${e.libelle} » sans modifier ses valeurs',
         child: BoutonSigh(
@@ -260,15 +275,13 @@ class ValidationPoste {
             icone: LucideIcons.shieldCheck,
             variante: VarianteBouton.secondaire,
             onPressed: () {
-              final r = valider(v.famille, cible);
+              final r = decider(v.famille, cible);
               if (!r.ok) {
                 ToastsSigh.afficher(ctx, r.refus!.motif, type: TypeToast.erreur, detail: r.refus!.geste);
                 return;
               }
               fermer();
-              final quand = DateTime.tryParse(r.valideLe!);
-              ToastsSigh.afficher(ctx, '« ${e.libelle} » validé.',
-                  type: TypeToast.succes, detail: 'Le ${quand == null ? r.valideLe : dateHeure(quand.toLocal())} par ${r.validePar}.');
+              _dire(ctx, e.libelle, r);
               apres?.call();
             }));
   }
@@ -300,12 +313,38 @@ class ValidationPoste {
     ]);
   }
 
+  /// Le toast d'une décision posée : « validé » quand elle s'applique tout de suite, « enregistrée, en attente de la mère » quand elle est déposée (le travail continue, rien ne se bloque).
+  void _dire(BuildContext ctx, String libelle, DecisionPosee r) {
+    if (r.deposee) {
+      final d = r.demande!;
+      final quand = DateTime.tryParse('${d['demandeLe']}');
+      ToastsSigh.afficher(ctx, '« $libelle » : décision enregistrée.',
+          type: TypeToast.succes,
+          detail: 'Signée le ${quand == null ? d['demandeLe'] : dateHeure(quand.toLocal())} par ${d['demandePar']}. La mère l\'applique dès qu\'elle est joignable ; vous pouvez continuer à travailler.');
+      return;
+    }
+    final v = r.verdict!;
+    final quand = DateTime.tryParse(v.valideLe!);
+    ToastsSigh.afficher(ctx, '« $libelle » validé.', type: TypeToast.succes, detail: 'Le ${quand == null ? v.valideLe : dateHeure(quand.toLocal())} par ${v.validePar}.');
+  }
+
   /// `K.boutonValider` : ABSENT hors des rôles de la famille et pour un élément déjà validé (ou inconnu). [apres] se déclenche après une validation réussie.
   Widget? bouton(BuildContext ctx, String famille, Object? id,
       {VoidCallback? apres, String libelle = 'Valider', TailleBouton taille = TailleBouton.sm, VarianteBouton variante = VarianteBouton.primaire}) {
+    // LOT CONT : sur un fileul, la commande suit la collection des décisions : déposée, elle devient ABSENTE (jamais deux décisions), sans que l'écran ait à l'écouter.
+    if (fileul && _bouton(ctx, famille, id, apres: apres, libelle: libelle, taille: taille, variante: variante) != null) {
+      return ListenableBuilder(
+          listenable: m.collection(valCollectionDemandes),
+          builder: (cc, __) => _bouton(cc, famille, id, apres: apres, libelle: libelle, taille: taille, variante: variante) ?? const SizedBox.shrink());
+    }
+    return _bouton(ctx, famille, id, apres: apres, libelle: libelle, taille: taille, variante: variante);
+  }
+
+  Widget? _bouton(BuildContext ctx, String famille, Object? id,
+      {VoidCallback? apres, String libelle = 'Valider', TailleBouton taille = TailleBouton.sm, VarianteBouton variante = VarianteBouton.primaire}) {
     if (!peutValider(famille)) return null;
     final e = etat(famille, id);
-    if (e == null || !e.enAttente) return null;
+    if (e == null || !e.enAttente || enAttenteDeLaMere(famille, id) != null) return null;
     return Tooltip(
         message: 'Valider « ${e.libelle} »',
         child: BoutonSigh(
@@ -321,17 +360,36 @@ class ValidationPoste {
                       'ne modifie aucune valeur, et toute modification ultérieure le remettra à valider.',
                   libelleOk: 'Valider');
               if (!ok || !ctx.mounted) return;
-              final r = valider(famille, id);
+              final r = decider(famille, id);
               if (!r.ok) {
                 ToastsSigh.afficher(ctx, r.refus!.motif, type: TypeToast.erreur, detail: r.refus!.geste);
                 return;
               }
-              final quand = DateTime.tryParse(r.valideLe!);
-              ToastsSigh.afficher(ctx, '« ${e.libelle} » validé.',
-                  type: TypeToast.succes, detail: 'Le ${quand == null ? r.valideLe : dateHeure(quand.toLocal())} par ${r.validePar}.');
+              _dire(ctx, e.libelle, r);
               apres?.call();
             }));
   }
+}
+
+/// Ce que la décision rend : appliquée tout de suite (mère, poste autonome), DÉPOSÉE à la mère (fileul), ou refusée en nommant.
+class DecisionPosee {
+  const DecisionPosee.directe(VerdictValidation v)
+      : verdict = v,
+        demande = null,
+        refus = null;
+  const DecisionPosee.deposee(Fiche d)
+      : verdict = null,
+        demande = d,
+        refus = null;
+  const DecisionPosee.refus(RefusValidation r)
+      : verdict = null,
+        demande = null,
+        refus = r;
+  final VerdictValidation? verdict;
+  final Fiche? demande;
+  final RefusValidation? refus;
+  bool get ok => refus == null;
+  bool get deposee => demande != null;
 }
 
 /// `validation: { famille, cible?, siChange?, label? }` du `K.crud` de la maquette : l'élément de la ligne se valide par le geste unitaire du moteur de

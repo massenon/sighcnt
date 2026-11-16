@@ -16,6 +16,7 @@ import 'donnees/sauvegarde_fichiers_poste.dart';
 import 'donnees/organigramme_poste.dart';
 import 'sync/service_demandes_import.dart';
 import 'sync/service_propositions_tarif.dart';
+import 'sync/service_demandes_validation.dart';
 import 'sync/service_fichiers.dart';
 import 'sync/service_verdicts_import.dart';
 import 'donnees/tarifs_poste.dart';
@@ -243,6 +244,7 @@ Future<void> main() async {
     PontActivite? pontMere, pontFileul;
     ServiceDemandesImport? demandesImport;
     ServicePropositionsTarif? propositionsTarif;
+    ServiceDemandesValidation? demandesValidation;
     void demarrerPontMere() {
       final transport = TransportMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin);
       // La mère prend ses numéros de dossier dans le même carnet que les fileuls (RG-01).
@@ -256,6 +258,8 @@ Future<void> main() async {
       demandesImport ??= ServiceDemandesImport(magasin)..demarrer();
       // Lot TFIN : la mère applique les DEMANDES DE PRIX (proposition, Oui ou Non, retrait) que les fileuls lui déposent, sous le rôle et le nom de leur auteur, et nomme ses refus.
       propositionsTarif ??= ServicePropositionsTarif(magasin)..demarrer();
+      // Lot CONT : la mère applique MÉCANIQUEMENT les DÉCISIONS de validation signées par les profils des fileuls (elle ne décide jamais, personne n'a à se tenir à son poste).
+      demandesValidation ??= ServiceDemandesValidation(magasin)..demarrer();
     }
     PontActivite creerPontFileul() => PontActivite(
         magasin,

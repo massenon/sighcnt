@@ -45,6 +45,10 @@ const Set<String> collectionsActivite = {
   // VÉRIFIÉE, la MÈRE rejoue l'analyse sous le rôle de l'auteur, applique ou refuse en nommant, et écrit le verdict sur la même fiche, qui revient au fileul par ce chemin. Les lignes du fichier
   // sont effacées de la fiche dès le verdict. Jamais vers un téléphone (RG-13).
   'demandesImport',
+  // Lot CONT : les DÉCISIONS DE VALIDATION d'un fileul (une fiche par décision : famille, cible, auteur, rôle, date de SIGNATURE, motif). Le fileul la dépose, la MÈRE l'applique MÉCANIQUEMENT (mêmes
+  // contrôles sous le rôle de l'auteur) et écrit le verdict (`etat`, `resultatCode`, `resultatMotif`) sur la même fiche, qui revient au fileul par ce chemin. Mère coupée : la décision reste au
+  // journal local du fileul, rejouée à la reconnexion (jamais doublée). Jamais vers un téléphone (RG-13).
+  'demandesValidation',
   // Lot D5 (EF-SYNC-18) : les MÉTADONNÉES des fichiers numérisés. La fiche d'un courrier ou d'un document du patient porte `fichier` (empreinte, nom, nom normalisé, type, taille, pages) ;
   // le registre `fichiers` est une fiche par empreinte (AJOUT SEUL, identité commune : deux postes qui déposent le même fichier ne font qu'une fiche). Le BINAIRE ne passe jamais par
   // ici : il voyage à part, par morceaux avec reprise (`service_fichiers.dart`). Jamais vers un téléphone (RG-13).

@@ -421,6 +421,8 @@ class Magasin {
     'propositionsTarif': 'CFG',
     // Lot IMP-C : les DEMANDES d'import d'un fileul à la mère (fiche descriptive : le fileul dépose, la mère complète du verdict).
     'demandesImport': 'IMP',
+    // Lot CONT : les DÉCISIONS de validation d'un fileul (signées), que la mère applique mécaniquement.
+    'demandesValidation': 'CFG',
     'visitesHospi': 'M3',
     'appels': 'M2',
     'reunions': 'M13',

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/donnees_navigation.dart';
+import '../core/service_parametres.dart';
 import '../donnees/magasin.dart';
 import 'recherche_globale.dart' show ecranOuvertAuRole;
 
@@ -264,6 +265,32 @@ final List<_Source> _sources = [
       ...par('ecritures', 'numeroEnDoublon', 'dbl-ecr', 'Écriture au numéro en double', 'Une pièce comptable ne se renumérote pas : le comptable tranche.', 'm12-ecritures', (f) => ou(f['numero'], f['id'])),
       ...par('admissions', 'litEnConflit', 'dbl-lit', 'Lit en conflit', 'Deux admissions actives sur le même lit : transférer l’un des patients.', 'm3-admissions', (f) => ou(f['lit'], f['id']), 'critique'),
       ...par('produits', 'stockNegatifDetecte', 'dbl-stk', 'Stock négatif détecté', 'Deux postes ont sorti le dernier exemplaire hors ligne (RG-03) : régulariser par un inventaire.', 'm6-stock-detail', (f) => ou(f['designation'], f['id']), 'critique'),
+    ];
+  }),
+  // LOT CONT (exigence de la Direction du 14/11/2026) : une décision de validation signée sur un fileul qui attend la mère au-delà du délai RÉGLABLE EN BASE est une ALERTE adressée au profil de
+  // la famille et à l'administrateur, JAMAIS un blocage, jamais une validation d'office. Elle est calculée ICI, sur chaque poste, depuis la collection `demandesValidation` qui voyage par le
+  // pont : le circuit de notification ne dépend pas de la mère (si elle est coupée, c'est précisément là que l'alerte sert). Rien de médical : le titre nomme la famille du registre.
+  _Source('decisions_en_attente', 'metier', 'Validations', (m, auj) {
+    int? delai;
+    try {
+      final v = serviceParametres(m, auteur: () => 'Poste', horloge: () => auj).valeur(valCleDelaiAlerteHeures, parametreDateIso(auj));
+      delai = v is num ? v.toInt() : valDelaiAlerteDefautHeures;
+    } catch (_) {
+      delai = valDelaiAlerteDefautHeures;
+    }
+    return [
+      for (final d in valDemandesEnRetard(m.collection(valCollectionDemandes).toutes, auj, delai))
+        () {
+          final f = valFamille('${d['famille']}');
+          final age = valAgeDemande(d, auj);
+          return _Ligne(
+              'decision-attente:${d['id']}',
+              'important',
+              'Décision en attente de la mère${age == null ? '' : ' depuis ${valDureeLisible(age)}'} : ${f?.libelle ?? d['famille']}',
+              'Signée par ${d['demandePar']}. La mère l\'applique dès qu\'elle est joignable : le travail continue, rien n\'est bloqué ni validé d\'office. Vérifier que le poste de la mère est allumé et relié.',
+              f?.ecran,
+              [...?f?.roles, 'admin']);
+        }()
     ];
   }),
   // ADR-0006 (D2) : un champ écrit en même temps par deux postes reste MARQUÉ jusqu'à ce que la personne habilitée tranche ; le moteur pair recopie ces

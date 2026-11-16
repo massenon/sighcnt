@@ -96,6 +96,8 @@ export 'src/qualite/qual_validations.dart';
 export 'src/qualite/qual_ged.dart';
 // Moteur de validation commun des référentiels (Direction, 07/11/2026) : registre des 14 familles, compte lu, geste unitaire, remise à valider.
 export 'src/validation/validation.dart';
+// Lot CONT : la décision de validation d'un fileul est une demande signée que la mère applique mécaniquement.
+export 'src/validation/demande_validation.dart';
 export 'src/assurances/ass_regles.dart';
 export 'src/assurances/ass_garanties.dart';
 export 'src/securite/securite.dart';

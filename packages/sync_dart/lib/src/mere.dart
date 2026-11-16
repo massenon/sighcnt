@@ -73,6 +73,9 @@ const familleDeBase = <String, String>{
   'versionsTarif': 'R', 'propositionsTarif': 'A',
   // Lot IMP-C : la demande d'import d'un fileul (A : le fileul dépose, la mère complète du verdict, champ à champ dans les deux sens).
   'demandesImport': 'A',
+  // Lot CONT : la DÉCISION de validation d'un référentiel prise sur un fileul (signée : qui, quand, motif). Le fileul la dépose, la mère l'applique MÉCANIQUEMENT (mêmes contrôles sous le rôle
+  // de l'auteur) et complète du verdict sur la même fiche, champ à champ dans les deux sens. Jamais vers un téléphone (RG-13).
+  'demandesValidation': 'A',
   // Lot D5 : les METADONNÉES des fichiers numérisés voyagent par le journal comme toute fiche (le binaire voyage à part, par empreinte, `fichiers_mere.dart`). Le courrier et le
   // document du patient portent `fichier` ; le registre `fichiers` est une fiche par empreinte, AJOUT SEUL (famille B).
   'courriers': 'A', 'documentsPatient': 'A', 'fichiers': 'B',
@@ -98,6 +101,9 @@ const Set<String> collectionsPrixJamaisMobile = {'tarifs', 'versionsTarif', 'pro
 
 /// Les DEMANDES D'IMPORT d'un fileul portent les lignes d'un fichier (patients, personnel, prix, soldes) puis un verdict nommé : jamais vers un téléphone (lot IMP-C, RG-13).
 const Set<String> collectionsImportJamaisMobile = {'demandesImport'};
+
+/// Les DÉCISIONS DE VALIDATION d'un fileul (qui a décidé, de quoi, avec quel motif, verdict de la mère) ne vont JAMAIS vers un téléphone (lot CONT, RG-13).
+const Set<String> collectionsValidationJamaisMobile = {'demandesValidation'};
 
 /// Les FICHIERS NUMÉRISÉS ne vont JAMAIS vers un téléphone (lot D5, RG-13) : ni le binaire (les routes `/fichiers/*` refusent tout appareil mobile), ni les fiches qui le portent
 /// (courriers, documents du patient, y compris les pièces de zone 1 : pièce d'identité, carte d'assurance), ni le registre par empreinte et son texte indexé. Aucun écran du
@@ -650,7 +656,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsFichiersJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})
