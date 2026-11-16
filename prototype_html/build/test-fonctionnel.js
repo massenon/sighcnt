@@ -272,7 +272,8 @@ async function viderMessages(page) {
   const restaurer = (role, avant) => page.evaluate((x) => {
     const S = window.SIGH.store, col = S.collection('rbac'), N = window.SIGH.nav;
     const f = col.all().filter((y) => y.role === x.role && y.statut !== 'archive')[0];
-    if (x.avant === 'SANS_FICHE') { if (f) col.archive(f.id, 'Sonde LOT VAL : restauration'); }
+    /* Une fiche créée par la sonde se RETIRE du magasin (l'archiver la laisserait peser : `surcharges()` lit `all()`). */
+    if (x.avant === 'SANS_FICHE') { if (f) { const db = S.raw(); db.rbac = (db.rbac || []).filter((y) => y.id !== f.id); S.save(); } }
     else { const g = JSON.parse(x.avant); const rec = (S.raw().rbac || []).filter((y) => y.id === f.id)[0]; if (g === null) { delete rec.droitsGestes; S.save(); } else col.update(f.id, { droitsGestes: g }); }
     N.invaliderRbac();
     const f2 = col.all().filter((y) => y.role === x.role && y.statut !== 'archive')[0];
@@ -28305,7 +28306,7 @@ async function viderMessages(page) {
     /* Les défauts des formulaires : lus de la source (aucune personne nommée à la place de l'acteur), et la garde. */
     const src = (f) => fs.readFileSync(path.join(ROOT, 'assets/js/' + f), 'utf8');
     const motifs = [
-      ['modules/m7-achats.js', /(valideePar|controleur\d|magasinier)\s*[:=]\s*[^,;\n]*'(TAKI|MAMAN|DIEYABIDI|KASSA)/],
+      ['modules/m7-achats.js', /(valideePar\s*[:=]\s*'(TAKI|KASSA)|controleur\d[^\n]*value:\s*'|nomComplet \|\| '(MAMAN|TAKI))/],
       ['modules/m8-facturation.js', /(recuPar|autorisePar)'?[^\n]*value:\s*'(TAKI|KASSA)/],
       ['modules/m12-comptabilite.js', /valideePar \|\| '(KASSA|TAKI)/],
       ['modules/m10-rh.js', /valideePar \|\| '(TAKI|KASSA)/],
@@ -28406,7 +28407,8 @@ async function viderMessages(page) {
     });
     verifier('Gestes « regler_mode_mecef » et « retransmettre_mecef_sans_limite » retirés à la Directrice Administrative : changer le mode est refusé (MODE_RESERVE qui cite le droit) ; une vente déjà retransmise une fois n’est plus retransmise par elle (RETRANSMISSION_RESERVEE qui cite le droit « sans limite ») ; sans vente retransmissible dans le jeu, seul le mode est jugé',
       m302.mode.code === 'MODE_RESERVE' && /regler_mode_mecef/.test(m302.mode.motif) && (!m302.facture || (m302.retr.code === 'RETRANSMISSION_RESERVEE' && /retransmettre_mecef_sans_limite/.test(m302.retr.motif))), JSON.stringify(m302));
-    const apMode = await restaurer('da', avMode), apLim = await restaurer('da', avLim);
+    /* En ORDRE INVERSE : deux retraits sur la même fiche se défont du dernier au premier (la fiche créée par le premier ne s'archive qu'à la fin). */
+    const apLim = await restaurer('da', avLim), apMode = await restaurer('da', avMode);
     const r302 = await page.evaluate(() => { const N = window.SIGH.nav; return { mode: N.droitGeste('da', 'regler_mode_mecef'), lim: N.droitGeste('da', 'retransmettre_mecef_sans_limite'), conf: N.droitGeste('da', 'valider_configuration_fiscale'), aib: N.droitGeste('comptable', 'ecrire_bareme_aib') }; });
     verifier('Fiches restaurées à l’identique (comptable, Directrice Administrative) : tous les droits sont revenus', ap302 === av302 && apCf === avCf && apMode === avMode && apLim === avLim && r302.mode && r302.lim && r302.conf && r302.aib, JSON.stringify({ av302, ap302, avCf, apCf, avMode, apMode, avLim, apLim, r302 }));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
@@ -28438,7 +28440,8 @@ async function viderMessages(page) {
     });
     verifier('Gestes retirés (étape « surveillant » à l’administrateur, date antérieure à la Direction, arbitrage à l’administrateur) : le moteur RH refuse (VALIDATION_RESERVEE avec le champ « droit »), la Direction ne pose plus de date antérieure, l’arbitrage est retiré ; l’autre détenteur de la date antérieure garde son droit',
       b303.droitEtape === false && b303.arb === false && (!b303.cible || (b303.refus.ok === false && b303.refus.code === 'VALIDATION_RESERVEE' && /^valider_etape_/.test(b303.refus.droit || ''))) && b303.passe.droit === false && b303.passe.peut === false && JSON.stringify(b303.passe.roles) === JSON.stringify(['da']), JSON.stringify(b303));
-    const apEt = await restaurer('admin', avEt), apPa = await restaurer('direction', avPa), apAr = await restaurer('admin', avAr);
+    /* En ORDRE INVERSE (deux retraits sur la fiche de l'administrateur). */
+    const apAr = await restaurer('admin', avAr), apPa = await restaurer('direction', avPa), apEt = await restaurer('admin', avEt);
     const c303 = await page.evaluate(() => { const N = window.SIGH.nav; return { e: N.droitGeste('admin', 'valider_etape_surveillant'), p: N.droitGeste('direction', 'tarifer_date_passee'), a: N.droitGeste('admin', 'arbitrer_besoins') }; });
     verifier('Fiches restaurées à l’identique : les trois droits sont revenus', apEt === avEt && apPa === avPa && apAr === avAr && c303.e && c303.p && c303.a, JSON.stringify({ avEt, apEt, avPa, apPa, avAr, apAr, c303 }));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
