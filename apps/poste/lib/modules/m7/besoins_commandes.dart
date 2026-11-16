@@ -3,7 +3,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../core/service_installation.dart';
+import '../../donnees/demandes_validation_poste.dart';
 import '../../donnees/magasin.dart';
+import '../../kit/validation_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -55,6 +58,13 @@ PieceA4 pieceCommande(Fiche cm,
 
 /// Le droit de valider une commande de stock gros (RG-04) : geste réservé de la fiche RBAC (d'origine la Directrice Administrative seule), jamais un nom de rôle.
 bool _peutValider(ContexteEcran c) => c.donnees?.matrice.droitGeste(c.role, gesteValiderCommandeStock) ?? false;
+
+/// LOT CMD : un fileul RATTACHÉ à une mère ne pose pas la validation lui-même : il SIGNE la décision et la dépose (`demandesValidation`, famille `commande_stock`), la mère l'applique après avoir relu le droit
+/// sous le rôle de l'auteur. Sur la mère ou un poste autonome, le geste s'applique tout de suite.
+bool _fileul(ContexteEcran c) => ServiceInstallation.de(c.magasin).rattache;
+
+/// La décision déposée pour cette commande qui attend encore la mère, ou `null`.
+Fiche? _attenteDeLaMere(ContexteEcran c, Fiche cm) => _fileul(c) ? valDemandeEnAttenteDe(c.magasin.collection(valCollectionDemandes).toutes, valFamilleCommandeStock, cibleCommande(cm)) : null;
 
 /// Les libellés des rôles qui détiennent le droit (liste DÉRIVÉE du droit, comme `libellesValidentCommandeStock` de la maquette).
 String _valideurs(ContexteEcran c) {
@@ -190,8 +200,10 @@ class EcranCommandes extends StatelessWidget with EcranMaquette {
                   ColonneTableau(
                       cle: 'valideePar',
                       libelle: 'Validée par (RG-04)',
-                      texte: (x) => '${x['valideePar'] ?? 'En attente'}',
-                      rendu: (_, x) => x['valideePar'] != null
+                      texte: (x) => '${x['valideePar'] ?? (_attenteDeLaMere(c, x) != null ? 'Décision déposée, en attente de la mère' : 'En attente')}',
+                      rendu: (_, x) => _attenteDeLaMere(c, x) != null
+                          ? const Text('Décision déposée, en attente de la mère', style: TextStyle(color: JetonsShell.slate400, fontSize: 12))
+                          : x['valideePar'] != null
                           ? Text('${x['valideePar']}',
                               style: const TextStyle(fontSize: 14))
                           : const Text('En attente',
@@ -205,7 +217,7 @@ class EcranCommandes extends StatelessWidget with EcranMaquette {
                       libelle: 'Consulter',
                       onPressed: () => _consulter(context, x)),
                   // LA VALIDATION RG-04 EST UN GESTE RÉSERVÉ (`valider_commande_stock`) : ABSENTE sans le droit, le moteur refuse aussi.
-                  if (x['statutCommande'] == 'attente_validation' && _peutValider(c))
+                  if (x['statutCommande'] == 'attente_validation' && _peutValider(c) && _attenteDeLaMere(c, x) == null)
                     BoutonIcone(
                         icone: LucideIcons.shieldCheck,
                         libelle: 'Valider la commande',
@@ -240,6 +252,17 @@ Future<void> _valider(BuildContext ecran, Fiche cm) async {
           'En application de la règle RG-04, cette validation autorise la transmission au fournisseur ${cm['fournisseurNom']} pour un montant de ${money(cm['montant'])}. L’opération est journalisée.',
       libelleOk: 'Valider la commande');
   if (!ok || !ecran.mounted) return;
+  if (_fileul(c)) {
+    // Fileul rattaché : décision SIGNÉE et déposée à la mère (jamais d'écriture directe de la validation : la mère la REFUSERAIT au rejeu).
+    final d = DemandesValidationPoste(c.magasin, libelles: ValidationPoste(c).libelles, horloge: () => c.aujourdhui, etiquette: c.magasin.poste.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toUpperCase(), matrice: c.donnees?.matrice)
+        .deposerCommande(cm, role: c.role, acteur: acteur(c).nom);
+    if (!d.ok) {
+      dire(ecran, d.refus!.motif, type: TypeToast.erreur);
+      return;
+    }
+    dire(ecran, 'Décision signée et déposée à la mère : elle valide la commande ${cm['reference']} dès qu’elle est joignable. Le travail courant n’est pas bloqué.', type: TypeToast.succes);
+    return;
+  }
   final Fiche patch;
   try {
     patch = validationCommande(
@@ -301,7 +324,7 @@ void _consulter(BuildContext ecran, Fiche cm) {
             ], lignes: lignesDeBonAchat(cm))),
       ]),
       pied: (fermer) => [
-            if (cm['statutCommande'] == 'attente_validation' && _peutValider(c))
+            if (cm['statutCommande'] == 'attente_validation' && _peutValider(c) && _attenteDeLaMere(c, cm) == null)
               BoutonSigh(
                   libelle: 'Valider la commande',
                   icone: LucideIcons.shieldCheck,
@@ -406,6 +429,10 @@ class _EtatModaleCommande extends State<_ModaleCommande> {
     } on RefusAchat catch (e) {
       dire(widget.ecran, e.motif, type: TypeToast.erreur);
       return;
+    }
+    // LOT CMD : sur un fileul rattaché, une commande NEUVE porte une référence PROVISOIRE par poste (`BC-AAAA-P<poste>-nnnn`) ; la mère attribue le rang définitif à l'adoption.
+    if (widget.record == null && _fileul(c)) {
+      res['reference'] = referenceCommandeProvisoire(date: res['date'], poste: c.magasin.poste, commandes: col.toutes, maintenant: c.aujourdhui);
     }
     final VoidCallback annuler;
     final String message;

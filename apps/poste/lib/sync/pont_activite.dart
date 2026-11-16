@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show champDepartCompteurs, champEnAttenteMere, champSerieDemande, collectionsGestionSynchronisees, ficheLocaleAuPoste, identiteSyncGestion;
+import 'package:sigh_domaine/sigh_domaine.dart' show champDepartCompteurs, champEnAttenteMere, champSerieDemande, collectionsAchatsSynchronisees, collectionsGestionSynchronisees, ficheLocaleAuPoste, identiteSyncCommande, identiteSyncGestion;
 
 import '../donnees/magasin.dart';
 import 'fusion_activite.dart';
@@ -78,6 +78,9 @@ const Set<String> collectionsActivite = {
   // aux postes pour l'analyse. Jamais vers un téléphone (RG-13).
   'reponsesEnquetes',
   'jetonsEnquete',
+  // LOT CMD (Direction, AQ point 1) : la COMMANDE DE STOCK GROS voyage. Famille A à la mère, identité COMMUNE par le contenu (`identiteSyncCommande`), référence provisoire par poste que la mère
+  // remplace par le rang définitif à l'adoption, validation seulement par décision signée (`demandesValidation`, famille `commande_stock`). Jamais vers un téléphone (RG-13).
+  ...collectionsAchatsSynchronisees,
 };
 
 /// Les référentiels d'ACTIVITÉ que la mère seule écrit (famille R de la mère) : un fileul les reçoit, il ne les envoie pas.
@@ -287,9 +290,11 @@ class PontActivite {
         final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c) || c == 'fichiers' || c == 'lecturesOcr' || c == 'exercices';
         // LOT SYNC-CFG : budget, bien, couverture créés sur un poste prennent une identité COMMUNE tirée de leur contenu (jamais préfixée du poste) : le même budget saisi à deux postes,
         // le même fichier importé deux fois mère coupée, ne font qu'une fiche partout.
-        final parContenu = identiteCommune || !collectionsGestionSynchronisees.contains(c)
+        final parContenu = identiteCommune
             ? null
-            : identiteSyncGestion(c, f, patientSync: '${magasin.collection('patients').parId(f['patientId'])?['idSync'] ?? ''}');
+            : collectionsGestionSynchronisees.contains(c)
+                ? identiteSyncGestion(c, f, patientSync: '${magasin.collection('patients').parId(f['patientId'])?['idSync'] ?? ''}')
+                : (collectionsAchatsSynchronisees.contains(c) ? identiteSyncCommande(f) : null);
         f['idSync'] = identiteCommune ? '${f['id']}' : (parContenu ?? '$etiquette-${f['id']}');
       }
     }

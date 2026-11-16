@@ -109,7 +109,7 @@ void main() {
   test('la référence PA-<année de la date>-NNN : compteur par année lu sur les fiches existantes', () {
     for (final c in lm(mq['references'])) {
       if (c['ref'] == null) continue;
-      expect(paReferenceAnnuelle('${c['prefixe']}', '${c['date']}', c['largeur'] as int, lm(c['fiches'])), c['ref'], reason: '${c['date']}');
+      expect(referenceAnnuelle('${c['prefixe']}', '${c['date']}', c['largeur'] as int, lm(c['fiches']), maintenant: DateTime(2026, 10, 30, 10)), c['ref'], reason: '${c['date']}');
     }
   });
 

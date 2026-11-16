@@ -54,7 +54,7 @@ class ServiceDemandesValidation {
     try {
       final nav = await _donnees();
       final matrice = nav.aChaud(magasin).matrice;
-      final n = DemandesValidationPoste(magasin, libelles: DemandesValidationPoste.libellesDesRoles(matrice), horloge: _horloge, etiquette: 'M').appliquer();
+      final n = DemandesValidationPoste(magasin, libelles: DemandesValidationPoste.libellesDesRoles(matrice), horloge: _horloge, etiquette: 'M', matrice: matrice).appliquer();
       traitees += n;
       derniereErreur = null;
       return n;

@@ -130,21 +130,7 @@ TotauxPlan paTotaux(List<FichePlan> actions, String? Function(String code) natur
   return (enRetard: true, motif: null, finTrimestre: fin, limite: limite, jours: jours);
 }
 
-/// `C.referenceAnnuelle(prefixe, date, largeur, fiches)` : préfixe + année de la DATE de la pièce + rang suivant lu sur les fiches existantes (compteur par année). [date] : AAAA-MM-JJ.
-String paReferenceAnnuelle(String prefixe, String date, int largeur, List<FichePlan> fiches) {
-  final m = RegExp(r'^(\d{4})-\d{2}-\d{2}').firstMatch(date);
-  final annee = m != null ? int.parse(m[1]!) : DateTime.now().year;
-  final p = '$prefixe$annee-';
-  var max = 0;
-  for (final f in fiches) {
-    final r = '${f['reference'] ?? ''}';
-    if (r.startsWith(p)) {
-      final d = RegExp(r'^\d+').firstMatch(r.substring(p.length));
-      max = max > (d == null ? 0 : int.parse(d[0]!)) ? max : (d == null ? 0 : int.parse(d[0]!));
-    }
-  }
-  return '$p${(max + 1).toString().padLeft(largeur, '0')}';
-}
+/// La référence `PA-<année de la date>-NNN` est celle de la FABRIQUE UNIQUE des numéros annuels (`referenceAnnuelle`, `numerotation/reference_annuelle.dart`, lot MIL) : plus aucune copie ici.
 
 /// Ce que le contrôle d'une fiche lit en base : les exercices de la comptabilité, les codes des référentiels, les agents, les postes et les lignes de budget.
 class ContextePlan {

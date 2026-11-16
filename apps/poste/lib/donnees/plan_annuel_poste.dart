@@ -131,7 +131,7 @@ String? gardePlanAnnuelPoste(Magasin m, String op, Fiche f) {
     v['motifVersion'] = motif!.trim();
   }
   final x = exercicePlan(m, v['exercice']);
-  v['reference'] = paReferenceAnnuelle('PA-', '${x?['debut'] ?? '${v['exercice']}-01-01'}', 3, m.collection('planAnnuel').toutes);
+  v['reference'] = referenceAnnuelle('PA-', '${x?['debut'] ?? '${v['exercice']}-01-01'}', 3, m.collection('planAnnuel').toutes, maintenant: m.horloge());
   v['version'] = 1;
   v['statut'] = 'actif';
   try {
@@ -216,7 +216,7 @@ RefusPlan? adopterPlan(Magasin m, {required Object? annee, required String? moti
   final jour = parametreDateIso(m.horloge());
   final refs = <String>[];
   for (final f in plan.copiees) {
-    final ref = paReferenceAnnuelle('PA-', '${x?['debut'] ?? '$exo-01-01'}', 3, m.collection('planAnnuel').toutes);
+    final ref = referenceAnnuelle('PA-', '${x?['debut'] ?? '$exo-01-01'}', 3, m.collection('planAnnuel').toutes, maintenant: m.horloge());
     final fiche = {...f, 'statut': 'actif', 'exercice': exo, 'reference': ref, 'reconduiteLe': jour};
     m.collection('planAnnuel').inserer(fiche, prefixe: 'PAT');
     m.journaliser('Plan annuel : action reconduite', 'M13', 'PlanAnnuelTravail', ref, {'exercice': source, 'reference': f['reconduiteDepuis']}, {'exercice': exo, 'reference': ref});

@@ -62,10 +62,18 @@ const FAMILLES = {
   planningsPersonnalises: 'A',
   /* Lot PTA : le plan annuel de travail et son adoption (A, identité par le contenu, jamais vers un téléphone). */
   planAnnuel: 'A', adoptionsPlan: 'A',
+  /* Lot CMD (AQ point 1) : la commande de stock gros voyage (A : champ à champ), identité commune par le contenu posée par le poste (`identiteSyncCommande` du domaine), référence provisoire par poste
+     que la mère remplace par le rang définitif à l'adoption (`referenceCommandeDefinitive`), validation jamais écrite directement par un autre poste. Jamais vers un téléphone (RG-13). */
+  commandes: 'A',
 };
 const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers', 'lecturesOcr']);
 /* Lot SYNC-CFG : les collections de gestion (identité commune par le contenu, jamais vers un téléphone). */
 const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises', 'planAnnuel', 'adoptionsPlan']);
+/* Lot CMD : la commande de stock gros (jamais vers un téléphone ; mêmes règles que `commande_synchronisee.dart`, dont celle-ci est la copie de référence). */
+const ACHATS = new Set(['commandes']);
+const RE_PROV = /^BC-(\d{4})-P([A-Za-z0-9]+)-(\d+)$/; const RE_DEF = /^BC-(\d{4})-(\d+)$/;
+const STATUTS_VALIDES = ['validee', 'transmise', 'livree', 'soldee'];
+const validee = (c) => !!c && STATUTS_VALIDES.includes(c.statutCommande) && !!c.valideePar;
 const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 
 const PARAMETRES = require('./parametres');
@@ -184,18 +192,42 @@ function traiter(op, app) {
     return { id: op.id, statut: 'acceptee', seq };
   }
 
+  /* Lot CMD : une validation de commande écrite directement par un autre poste est REFUSÉE au rejeu (seule la mère en écrit une, en appliquant une décision signée). */
+  if (op.collection === 'commandes' && app.role !== 'mere' && (op.type === 'creer' || op.type === 'modifier')) {
+    const avant = f ? f.data : null; const apres = Object.assign({}, avant || {}, op.champs || {});
+    const ref = apres.reference || '';
+    if (validee(avant)) {
+      if (String(avant.valideePar) !== String(apres.valideePar || '') || String(avant.dateValidation || '') !== String(apres.dateValidation || '')) return refus('COMMANDE_VALIDATION_FIGEE', `La validation de la commande ${ref} (${avant.valideePar}) ne se réécrit pas.`, 'Laisser la validation telle que la mère l\'a posée');
+    } else if (STATUTS_VALIDES.includes(apres.statutCommande) || apres.valideePar) {
+      return refus('COMMANDE_VALIDATION_DIRECTE', `Commande ${ref} : une validation écrite directement sur la fiche par un autre poste est REFUSÉE au rejeu (RG-04).`, 'Passer par le geste « Valider une commande de stock gros » (décision signée déposée à la mère)');
+    }
+  }
+
   /* A, C et R : fusion par champ */
   if (op.type === 'creer') {
     /* Lot SYNC-CFG : identité commune par le contenu (budget, bien, couverture) : la seconde création de la même fiche est une FUSION champ à champ (mêmes valeurs : sans effet ;
        valeur différente d'un champ déjà écrit : conflit nommé), jamais un refus bruyant à « traiter ». */
-    if (f && GESTION.has(op.collection)) {
-      const differents = Object.fromEntries(Object.entries(op.champs || {}).filter(([k, v]) => JSON.stringify(f.data[k]) !== JSON.stringify(v)));
+    if (f && (GESTION.has(op.collection) || ACHATS.has(op.collection))) {
+      /* Lot CMD : la référence d'une commande déjà adoptée ne se réécrit jamais. */
+      const differents = Object.fromEntries(Object.entries(op.champs || {}).filter(([k, v]) => !(op.collection === 'commandes' && k === 'reference' && f.data.reference) && JSON.stringify(f.data[k]) !== JSON.stringify(v)));
       if (!Object.keys(differents).length) return { id: op.id, statut: 'acceptee', seq: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), rejeu: true };
       return traiter(Object.assign({}, op, { type: 'modifier', champs: differents, vu: {} }), app);
     }
     if (f) return refus('fiche_existe', 'Cette fiche existe déjà.', 'Aucun');
     const champs = Object.assign({}, op.champs);
-    let numero;
+    let numero; let champNumero;
+    /* Lot CMD : rang DÉFINITIF d'une commande créée sur un fileul (référence provisoire `BC-AAAA-P<poste>-nnnn`). */
+    if (op.collection === 'commandes') {
+      const pm = RE_PROV.exec(String(champs.reference || ''));
+      if (pm) {
+        let max = 0;
+        for (const r of db.prepare("SELECT data FROM fiches WHERE collection='commandes'").all()) {
+          const d = RE_DEF.exec(String(JSON.parse(r.data).reference || ''));
+          if (d && d[1] === pm[1] && +d[2] > max) max = +d[2];
+        }
+        champs.reference = `BC-${pm[1]}-${String(max + 1).padStart(4, '0')}`; numero = champs.reference; champNumero = 'reference';
+      }
+    }
     if (op.collection === 'patients') {
       const m = /^CNT\/(\d+)\/26$/.exec(String(champs.code || ''));
       if (!champs.code || String(champs.code).startsWith('PROV-')) {
@@ -222,7 +254,7 @@ function traiter(op, app) {
     const seq = journaliser(op, champs, app.uuid);
     ecrire(op.collection, op.fiche, { data: champs, fieldseq: Object.fromEntries(Object.keys(champs).map((k) => [k, seq])), archive: false });
     if (doublon) db.prepare('INSERT INTO conflits(collection,fiche,champ,a,b,appareil) VALUES(?,?,?,?,?,?)').run(op.collection, op.fiche, 'doublon_possible', JSON.stringify(doublon), JSON.stringify(op.fiche), app.uuid);
-    return Object.assign({ id: op.id, statut: 'acceptee', seq }, numero ? { numero } : {}, doublon ? { doublon_possible: doublon } : {});
+    return Object.assign({ id: op.id, statut: 'acceptee', seq }, numero ? { numero } : {}, champNumero ? { champNumero } : {}, doublon ? { doublon_possible: doublon } : {});
   }
   if (!f) return refus('fiche_inconnue', 'Fiche inconnue : ' + op.fiche, 'Rafraîchir le poste');
   if (op.type === 'archiver' || op.type === 'restaurer') {
@@ -393,7 +425,7 @@ const routes = {
     if (+q.epoch !== +meta('epoch')) throw new Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', { epoch_mere: +meta('epoch') });
     const depuis = +q.depuis || 0; const limite = Math.min(+q.limite || 500, 500);
     /* Lot SYNC-CFG : un mobile qui tire directement de la mère ne reçoit ni budget, ni immobilisation, ni couverture d'assurance (RG-13), comme la mère Dart. */
-    const exclues = app.role === 'mobile' ? [...GESTION] : [];
+    const exclues = app.role === 'mobile' ? [...GESTION, ...ACHATS] : [];
     const ops = db.prepare(`SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?${exclues.length ? ` AND collection NOT IN (${exclues.map(() => '?').join(',')})` : ''} ORDER BY seq LIMIT ?`).all(depuis, ...exclues, limite)
       .map((o) => Object.assign({}, o, { champs: JSON.parse(o.champs) }));
     db.prepare('UPDATE appareils SET dernier_seq=MAX(dernier_seq,?) WHERE uuid=?').run(depuis, app.uuid);
@@ -445,6 +477,8 @@ const routes = {
     if (interdite) throw new Err(422, 'fichiers_interdits_au_mobile', `la collection « ${interdite.collection} » ne va jamais vers un téléphone (RG-13) : les fichiers numérisés se consultent depuis un poste`);
     /* Lot SYNC-CFG : ni budget, ni immobilisation, ni couverture d'assurance dans un lot de tournée (RG-13). */
     const gestion = lot.find((f) => GESTION.has(f.collection));
+    const achats = lot.find((f) => ACHATS.has(f.collection));
+    if (achats) throw new Err(422, 'achats_interdits_au_mobile', `la collection « ${achats.collection} » ne va jamais vers un téléphone (RG-13) : les achats se consultent depuis un poste`);
     if (gestion) throw new Err(422, 'gestion_interdite_au_mobile', `la collection « ${gestion.collection} » ne va jamais vers un téléphone (RG-13) : la comptabilité et l'assurance se consultent depuis un poste`);
     /* E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
        jamais à une infirmière ni à une réception. Ce n'est pas une donnée patient : il ne sort pas du périmètre de la tournée. */
@@ -591,7 +625,7 @@ function diffuser() {
     if (!ops.length) continue;
     /* L0 : un mobile ne reçoit de la configuration que les paramètres de la LISTE BLANCHE (déclarés `mobile`, non sensibles, famille non réservée : RG-13) ; le reste de
        `parametres`, comme toute autre collection hors de sa portée, ne part pas. */
-    const mine = ops.filter((o) => FICHIERS_JAMAIS_MOBILE.has(o.collection) || GESTION.has(o.collection) ? false : (o.collection === 'parametres' ? PARAMETRES.autoriseMobile(JSON.parse(o.champs)) : db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche)))
+    const mine = ops.filter((o) => FICHIERS_JAMAIS_MOBILE.has(o.collection) || GESTION.has(o.collection) || ACHATS.has(o.collection) ? false : (o.collection === 'parametres' ? PARAMETRES.autoriseMobile(JSON.parse(o.champs)) : db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche)))
       .map((o) => Object.assign({}, o, { seq: Number(o.seq), champs: JSON.parse(o.champs) }));
     setMeta('sortie_seq:' + a.uuid, Number(ops[ops.length - 1].seq));
     if (mine.length) publier(a.uuid, { type: 'ops', ops: mine });
