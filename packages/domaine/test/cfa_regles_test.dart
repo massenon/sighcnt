@@ -314,7 +314,7 @@ void main() {
       expect(cfaComposerCertificat('{inconnu}', {}), '……………');
     });
     test('numérotation, indicateurs, ce mois (le numéro du mois seulement)', () {
-      expect(cfaNumeroCertificat(0), obj(liste(obj(c['delivrance'])['fiche']).single)['numero']);
+      expect(cfaNumeroCertificat(const [], DateTime(2026, 8, 16)), obj(liste(obj(c['delivrance'])['fiche']).single)['numero']);
       kpis(cfaKpisCertificats(delivres: 1, types: cfaTypesCertificat.length, ceMois: 0, praticiens: 1), c['kpisApres']);
       expect(cfaDelivresCeMois([{'date': '2025-10-01'}, {'date': '2026-10-31'}, {'date': '2026-08-16'}], DateTime(2026, 10, 30)), 2);
     });

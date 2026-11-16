@@ -1,6 +1,7 @@
 import '../format/format_fr.dart';
 import '../format/recherche.dart' show trierPar;
 import '../impression/identite.dart';
+import '../numerotation/reference_annuelle.dart';
 
 /// RÈGLES DE CFG — dix écrans de configuration : organisation, identité, référentiel tarifaire, catalogue à deux prix, en-têtes, types de pièces, rappels,
 /// certificats, natures de facture, catalogue de l'imagerie. Portées de `prototype_html/assets/js/modules/configuration.js` et rejouées sur les vecteurs
@@ -561,8 +562,9 @@ const cfaChampsCertificat = <String, CfaChampCertificat>{
   'activite': CfaChampCertificat('Activité concernée', plein: true),
 };
 
-/// Numéro d'un certificat : « CERT-2026-NNNN » — l'année est ÉCRITE EN DUR par la maquette (écart E842), le rang compte les fiches (archivées comprises).
-String cfaNumeroCertificat(int nbToutes) => 'CERT-2026-${(nbToutes + 1).toString().padLeft(4, '0')}';
+/// Numéro d'un certificat : « CERT-AAAA-NNNN » de la fabrique unique (lot MIL : l'année du jour, jamais écrite en dur ; compteur par année lu sur les fiches, archivées comprises).
+String cfaNumeroCertificat(Iterable<CfaFiche> toutes, DateTime maintenant) =>
+    referenceAnnuelle('CERT-', maintenant, 4, toutes, maintenant: maintenant, champ: 'numero');
 
 /// « Délivrés ce mois » : la maquette ne compare que le NUMÉRO DU MOIS (écart E843 : le mois d'octobre d'une autre année compte aussi).
 int cfaDelivresCeMois(Iterable<CfaFiche> rows, DateTime auj) =>

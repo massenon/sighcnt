@@ -61,7 +61,7 @@ void main() {
     test('indicateurs', () {
       final k = patKpisRepertoire(actifs, const [], maintenant);
       final v = (r['kpis'] as List).map((e) => (e as List)[1]).toList();
-      expect([k.actifs, k.crees2026, k.assures, k.expirees].map((e) => '$e').toList(), v);
+      expect([k.actifs, k.creesExercice, k.assures, k.expirees].map((e) => '$e').toList(), v);
       expect(nn('${k.partAssures} du répertoire'), ((r['kpis'] as List)[2] as List)[2]);
     });
     test('filtres de couverture', () {

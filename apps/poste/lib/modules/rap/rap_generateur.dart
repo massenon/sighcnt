@@ -81,7 +81,7 @@ class _VueGenerateurState extends State<_VueGenerateur> {
       'titre': 'Rapport d’activité',
       'sousTitre': 'Période : ${moisAnnee(c.aujourdhui)}',
       'periode': 'Mensuelle',
-      'dateDebut': '2026-08-01',
+      'dateDebut': iso(DateTime(c.aujourdhui.year, c.aujourdhui.month, 1)),
       'dateFin': iso(c.aujourdhui),
     });
   }

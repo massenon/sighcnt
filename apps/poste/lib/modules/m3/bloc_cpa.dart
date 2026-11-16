@@ -89,7 +89,7 @@ class EcranCpa extends StatefulWidget with EcranMaquette {
   static Fiche construire(ContexteEcran c, Map<String, Object?> v, Fiche? existante) =>
       blocConstruirePatientCode(v,
           patient: patientParCodeBloc(c.magasin, v['patientCode']),
-          prefixeReference: existante == null ? 'CPA-2026-' : null,
+          prefixeReference: existante == null ? 'CPA-${anneeDePiece(v['date'], c.aujourdhui)}-' : null,
           toutes: c.magasin.collection('cpa').toutes);
 
   static void imprimer(BuildContext ctx, Fiche r) => imprimerM1(ctx,

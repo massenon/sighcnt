@@ -121,17 +121,18 @@ const cfbCalendrierFiscal = <CfbObligation>[
 ];
 const cfbCcibTotal = 300000;
 
-/// Numérotation des documents (littéral de l'écran) : type, préfixe, format, séquence.
-const cfbNumerotation = <(String, String, String, String)>[
-  ('Facture normalisée', 'FN-2026-', 'FN-AAAA-NNNNN', 'Strictement séquentielle'),
-  ('Facture pro-forma', 'PRO-2026-', 'PRO-AAAA-NNNNN', 'Indépendante'),
-  ('Avoir', 'AV-2026-', 'AV-AAAA-NNNN', 'Strictement séquentielle'),
-  ('Dossier patient', 'CNT', 'CNT/[n°]/[AA]', 'Par année civile (RG-01)'),
-  ('Bon de commande', 'BC-2026-', 'BC-AAAA-NNNN', 'Par exercice'),
-  ('Bon d’expression de besoins', 'BEB-2026-', 'BEB-AAAA-NNNN', 'Par exercice'),
-  ('Bulletin de paie', 'BP-', 'BP-NNNNN', 'Par période de paie'),
-  ('Écriture comptable', '[JOURNAL]-2026-', 'JJJ-AAAA-NNNNN', 'Par journal'),
-];
+/// Numérotation des documents (écran) : type, préfixe, format, séquence. Lot MIL : l'année affichée est celle de [annee] (l'exercice du jour) ; un numéro
+/// prend celle de la date de SA pièce (`referenceAnnuelle`).
+List<(String, String, String, String)> cfbNumerotation(int annee) => [
+      ('Facture normalisée', 'FN-$annee-', 'FN-AAAA-NNNNN', 'Strictement séquentielle'),
+      ('Facture pro-forma', 'PRO-$annee-', 'PRO-AAAA-NNNNN', 'Indépendante'),
+      ('Avoir', 'AV-$annee-', 'AV-AAAA-NNNN', 'Strictement séquentielle'),
+      ('Dossier patient', 'CNT', 'CNT/[n°]/[AA]', 'Par année civile (RG-01)'),
+      ('Bon de commande', 'BC-$annee-', 'BC-AAAA-NNNN', 'Par exercice'),
+      ('Bon d’expression de besoins', 'BEB-$annee-', 'BEB-AAAA-NNNN', 'Par exercice'),
+      ('Bulletin de paie', 'BP-', 'BP-NNNNN', 'Par période de paie'),
+      ('Écriture comptable', '[JOURNAL]-$annee-', 'JJJ-AAAA-NNNNN', 'Par journal'),
+    ];
 /// Obligations déclaratives (littéral de l'écran) : déclaration, périodicité, échéance, écran producteur.
 const cfbObligationsDeclaratives = <(String, String, String, String)>[
   ('Cotisations CNSS', 'Mensuelle', '15 du mois suivant', 'm11-cotisations'),

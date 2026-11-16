@@ -231,7 +231,7 @@ void main() {
     });
 
     test('la comparaison 2025 / 2026 se lit sur les factures du jeu', () {
-      final c = cpcComparaison(x, jeu('factures').where((e) => e['statut'] != 'archive'));
+      final c = cpcComparaison(x, jeu('factures').where((e) => e['statut'] != 'archive'), exercice: 2026);
       final att = ((b['comparaison'] as Map)['lignes'] as List);
       for (var i = 0; i < 12; i++) {
         final l = cellules(att[i]);

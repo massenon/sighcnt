@@ -35,7 +35,7 @@ class EcranDashboardPaie extends StatelessWidget with EcranMaquette {
         ];
         // `Array.prototype.sort` est stable : les ex æquo gardent l'ordre d'apparition.
         final tries = trierPar(classement, (l) => l.valeur, descendant: true);
-        final labels = paiMoisGlissants(12);
+        final labels = paiMoisGlissants(c.aujourdhui, 12);
         // `C.sum(personnel(), 'salaireBase')` : le personnel ACTIF, indépendamment du calcul.
         final masse = paiEvolutionMasse(c.magasin.collection('personnel').actives.fold<num>(0, (a, p) => a + nombreOuZero(p['salaireBase'])));
 

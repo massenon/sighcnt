@@ -240,7 +240,7 @@ void main() {
       final m = magasinComplet();
       await ouvrirM14(t, m, 'm12-baseline-2025');
       await toucherM14(t, find.text('Comparaison 2025 / 2026'));
-      final c = cpcComparaison(cpcExercice2025, m.collection('factures').actives);
+      final c = cpcComparaison(cpcExercice2025, m.collection('factures').actives, exercice: 2026);
       expect(find.textContaining('L’exercice 2026 est alimenté par le jeu de démonstration'), findsOneWidget);
       expect(find.text(money(c.first.ca2026, avecDevise: false)), findsWidgets);
       expect(find.text('${c.first.evolution} %'), findsWidgets);

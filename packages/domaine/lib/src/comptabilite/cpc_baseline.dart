@@ -127,8 +127,9 @@ const Map<String, CpcProposition> cpcComptesProposes = {
 
 CpcProposition? cpcPropositionCompte(String? libelle) => cpcComptesProposes[(libelle ?? '').trim().toUpperCase()];
 
-/// La comparaison mensuelle 2025 (réel) / 2026 (jeu du poste) : le chiffre d'affaires 2026 est la somme des `montantTTC` des factures actives du mois.
-/// L'année 2026 est CELLE DE LA MAQUETTE (écrite en dur) : porté fidèlement (écart E803).
+/// La comparaison mensuelle 2025 (réel) / EXERCICE (jeu du poste) : le chiffre d'affaires de l'exercice est la somme des `montantTTC` des factures actives du mois.
+/// Lot MIL (16/11/2026) : l'exercice comparé est celui du jour, passé par l'appelant (l'année 2026 écrite en dur de l'écart E803 est levée). Le champ garde son
+/// nom `ca2026` (identifiant technique des vecteurs) ; il porte le chiffre de [exercice].
 class CpcComparaisonMois {
   const CpcComparaisonMois(this.mois, this.ca2025, this.ca2026, this.ecart, this.evolution);
   final String mois;
@@ -136,12 +137,12 @@ class CpcComparaisonMois {
   final int evolution;
 }
 
-List<CpcComparaisonMois> cpcComparaison(CpcExercice2025 e, Iterable<Map<String, Object?>> facturesActives) => [
+List<CpcComparaisonMois> cpcComparaison(CpcExercice2025 e, Iterable<Map<String, Object?>> facturesActives, {required int exercice}) => [
       for (var i = 0; i < e.mois.length; i++)
         () {
           final ca2026 = facturesActives.where((f) {
             final d = DateTime.tryParse('${f['date']}');
-            return d != null && d.year == 2026 && d.month == i + 1;
+            return d != null && d.year == exercice && d.month == i + 1;
           }).fold(0.0, (a, f) => a + _n(f['montantTTC']));
           final ca2025 = e.chiffreAffaires[i];
           return CpcComparaisonMois('${e.mois[i][0].toUpperCase()}${e.mois[i].substring(1)}', ca2025, ca2026, ca2026 - ca2025,

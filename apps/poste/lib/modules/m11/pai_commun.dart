@@ -17,9 +17,10 @@ export '../m9/commun.dart' show pieceM9, signDaf, monoTexte, tiret, ecoute, deux
 /// Briques communes aux neuf écrans de M11 (paie & primes). Les règles chiffrées vivent dans `packages/domaine/lib/src/paie/pai_moteur.dart` — ce
 /// fichier ne porte que de la mise en page et le branchement du moteur sur le magasin.
 
-/// L'exercice des écrans de calcul : « 2026 » est ÉCRIT EN DUR dans la maquette (`calculerTous(2026, mois)`, libellés « Octobre 2026 ») ; porté tel quel,
-/// signalé (écart E686).
-const int paiAnnee = 2026;
+/// L'exercice des écrans de calcul (lot MIL, 16/11/2026) : plus aucune année écrite en dur (l'ancien écart E686 est levé). C'est l'EXERCICE DU JOUR, lu à
+/// l'horloge [paiHorloge] (le test en pose une fixe) ; le sélecteur d'exercice de la maquette (passer à un exercice passé) n'est pas encore porté au poste.
+DateTime Function() paiHorloge = DateTime.now;
+int get paiAnnee => paiHorloge().year;
 
 const signComptable = Signature('Le Comptable', nom: 'KASSA Augustin');
 
