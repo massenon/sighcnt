@@ -607,3 +607,21 @@ Ce qui CHANGE par rapport au 09/11 est en gras. Le reste confirme une décision 
 30. **Plan annuel de travail (PTA)** : « rien ne doit rester en dur » ; lot PTA (exercice choisi, responsable lié au personnel, signataires paramétrés, budget, indicateur et cible, adoption par la Direction, alerte de retard, synchronisation, impression du plan et du bilan).
 31. **Inventaire de ce qui est en dur** : tout ce qui est paramétrable devient réglage ou droit ; lots dans l'ordre MIL (année des numéros et agrégats), VAL (validations et acteurs), TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT.
 32. **La liasse fiscale 2025 et ses chiffres de référence**, aujourd'hui transcrits dans le code, sont des données déposées et non des réglages : **ils passent en base, sous forme d'import daté**, dans le lot des listes de référence (REF). Accord de la Direction du 16/11/2026.
+
+## BA. Lot VAL (16/11/2026, maquette, domaine, poste, garde) : acteurs et validations écrits en dur, ce qui reste à trancher par la Direction
+
+Directive de la Direction (point 31 de la section AQ) : « pas de rôle ni de validation en dur dans le code », RG-12 « aucune action anonyme ». Écarts E2980 à E2988. `VERSION` de la maquette inchangée (aucune forme de donnée ne change : les gestes sont déclarés au manifeste et lus de la fiche RBAC).
+
+**Fait** : l'acteur d'une validation, d'un engagement, d'une autorisation, d'une réception est l'agent de la session ; 27 gestes réservés remplacent des listes de rôles (15 familles de validation, la vue complète du centre, la configuration fiscale, le barème de l'AIB, le mode MECeF, la retransmission MECeF et sa version sans limite, trancher et valider un flux de pont, deux étapes du circuit RH, l'arbitrage des besoins, la date d'effet antérieure d'un tarif) ; le défaut semé de chacun est la liste d'aujourd'hui, mot pour mot ; le moteur refuse aussi et le refus cite le droit.
+
+**Propositions à valider** (rien n'a été tranché à la place de la Direction) :
+
+1. **Défaut des gestes = la liste d'hier** : aucun changement de comportement à l'installation ; la Direction règle ensuite par la fiche RBAC de chaque rôle. Un rôle créé en exploitation part de zéro (aucun geste réservé n'est ouvert par défaut).
+2. **Retransmission MECeF** : la règle « le caissier une seule fois, puis la Directrice Administrative » devient deux droits, `retransmettre_mecef` (caissier, da, admin) et `retransmettre_mecef_sans_limite` (da, admin). Un rôle sans le second ne retransmet qu'une fois par vente. À confirmer : le nombre d'essais (un) est une constante de la règle ; elle devrait devenir un réglage daté si la Direction veut la changer.
+3. **Vue complète du centre des validations** : deux droits voisins coexistent, `voir_toutes_les_validations` (les files de tous les postes, sept rôles d'origine) et `voir_toutes_les_familles_validation` (les familles de référentiels, trois rôles d'origine). Proposition : les fusionner en un seul quand la Direction aura dit qui voit quoi (la différence d'hier est un artefact de deux lots successifs).
+4. **Signataires des états imprimés** : une centaine de blocs de signature nomment encore une personne (« TAKI Alimatou », « KASSA Augustin », « MAMAN Zoukanéri »...). Proposition : le signataire est l'agent qui TIENT la fonction (lu du personnel et de l'organigramme), sinon une ligne laissée à signer ; jamais un nom écrit. Lot NOMS.
+5. **Contrôleur 2 d'une réception de livraison** : plus de défaut nommé, la case se remplit à la main (deux contrôleurs, RG-03 : aucune réception sans justificatif).
+6. **Étapes du circuit RH** : les deux étapes (surveillant, directrice administrative) sont deux droits ; le circuit lui-même (seul, ou l'un puis l'autre) reste le réglage `circuit.validation` déjà en base.
+7. **Appareil de la mère** : `mere` n'est pas un rôle de la matrice mais l'appareil ; il tranche toujours un conflit de synchronisation (décisions à son retour). À confirmer.
+
+**Ce qui reste en dur, mesuré** (garde élargie, liste blanche décroissante) : maquette, 58 sites de rôle et 194 noms ; domaine, 84 et 28 ; poste et mère, 36 et 89 ; PHP de la maquette, 28 et 7. Les lots prévus au point 31 de la section AQ (TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT) les prennent à la pièce, un module à la fois.

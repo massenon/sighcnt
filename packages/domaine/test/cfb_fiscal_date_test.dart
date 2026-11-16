@@ -382,7 +382,7 @@ void main() {
     test('la réception ne valide pas (VALIDATION_RESERVEE, le profil est nommé) ; ni le comptable ; un fileul jamais', () {
       final r = cfbValiderIdentite(const [], role: 'reception', acteur: 'X', maintenant: maintenant, aujourdhui: aujourdhui, libelleRole: (r) => 'Réception');
       expect(r.refus!.code, vv['reception']);
-      expect(r.refus!.motif, contains('Profil : Réception'));
+      expect(r.refus!.motif, contains('« Réception » ne l’a pas'));
       for (final role in ['comptable', 'aide_comptable', 'medecin', 'caissier', null]) {
         expect(cfbValiderObligations(obligations, role: role, acteur: 'X', maintenant: maintenant).refus?.code, 'VALIDATION_RESERVEE', reason: '$role');
       }

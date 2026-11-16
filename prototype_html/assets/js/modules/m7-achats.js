@@ -796,7 +796,7 @@
           if (!ok) return;
           var res = col.update(c.id, { statutCommande: 'validee', valideePar: S.currentUser(), dateValidation: C.iso(C.aujourdhui()) });
           table.refresh();
-          U.toast('Commande validée par la Directrice Administrative.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+          U.toast('Commande validée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
         });
       }
 

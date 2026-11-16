@@ -192,3 +192,25 @@ test('lot EXP : le geste « exporter ou imprimer les lignes d\'un tableau » est
   for (const r of actifs) assert.equal(rbac.gestes.parRole[r].exporter_donnees, 1, r);
   for (const r of rbac.roles.filter((x) => x.archive)) assert.equal(rbac.gestes.parRole[r.id].exporter_donnees, 0, r.id);
 });
+
+test('lot VAL : chaque validation, écriture ou arbitrage qui était une LISTE DE RÔLES du code est un geste réservé de la fiche, au défaut semé égal à la liste d\'hier (aucun changement de comportement), sans écran ; les rôles archivés n\'en détiennent aucun', () => {
+  const hier = {
+    valider_famille_enquetes: ['direction', 'da', 'admin'], valider_famille_labo_variables: ['laborantin'], valider_famille_pathologies: ['dm', 'medecin'],
+    valider_famille_imagerie: ['echographiste', 'dm'], valider_famille_checklists_bloc: ['chirurgien', 'anesthesiste'], valider_famille_actes: ['direction', 'da', 'admin'],
+    valider_famille_analyses: ['direction', 'da', 'admin'], valider_famille_valorisation_sage: ['direction', 'da', 'admin'], valider_famille_objectifs_pilotage: ['direction', 'da', 'admin'],
+    valider_famille_repartition_charges: ['comptable', 'direction', 'da', 'admin'], valider_famille_modeles_badge: ['direction', 'da', 'admin'], valider_famille_jeux_import: ['direction', 'da', 'admin'],
+    valider_famille_modeles_messages: ['direction', 'da', 'admin'], valider_famille_bareme_aib: ['direction', 'da', 'admin', 'comptable'], valider_famille_bareme_its: ['direction', 'da', 'admin'],
+    voir_toutes_les_familles_validation: ['direction', 'da', 'admin'], valider_configuration_fiscale: ['direction', 'da', 'admin'], ecrire_bareme_aib: ['comptable', 'admin', 'da'],
+    retransmettre_mecef: ['caissier', 'da', 'admin'], retransmettre_mecef_sans_limite: ['da', 'admin'], regler_mode_mecef: ['admin', 'da'], trancher_pair: ['da', 'direction', 'admin'],
+    valider_pair: ['da', 'admin'], valider_etape_surveillant: ['surveillant', 'admin'], valider_etape_daf: ['da', 'admin'], arbitrer_besoins: ['da', 'direction', 'admin'], tarifer_date_passee: ['da', 'direction'],
+  };
+  for (const [id, liste] of Object.entries(hier)) {
+    const g = rbac.gestes.jeux.find((x) => x.id === id);
+    assert.ok(g, id + ' déclaré');
+    assert.deepEqual(g.rolesDefaut, liste, id + ' : défaut = liste d\'hier, dans l\'ordre');
+    assert.equal(g.ecran, null, id + ' n\'ouvre aucun écran');
+    const detenus = Object.keys(rbac.gestes.parRole).filter((r) => rbac.gestes.parRole[r][id] === 1).sort();
+    assert.deepEqual(detenus, [...liste].sort(), id + ' : détenteurs de la matrice engendrée');
+    for (const r of rbac.roles.filter((x) => x.archive)) assert.equal(rbac.gestes.parRole[r.id][id], 0, id + ' / ' + r.id);
+  }
+});
