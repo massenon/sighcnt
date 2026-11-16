@@ -1,0 +1,6856 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mecef-m.js : gestes MECeF, imprimante de caisse, état de la caisse (maquette). Ne pas éditer.",
+ "gestes": {
+  "regler_mode_mecef": {
+   "rolesDefaut": [
+    "admin",
+    "da"
+   ],
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  "regler_imprimante_caisse": {
+   "rolesDefaut": [
+    "admin",
+    "da"
+   ],
+   "roles": [
+    "admin",
+    "da"
+   ]
+  }
+ },
+ "mode": {
+  "refus": {
+   "ok": false,
+   "code": "MODE_RESERVE",
+   "motif": "Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
+   "geste": "Demander le changement à un rôle qui détient le droit « Régler le mode de facturation normalisée » (Administrateur système, Directrice de l’Administration et des Finances (DAF))."
+  },
+  "inconnu": {
+   "ok": false,
+   "code": "MODE_INCONNU",
+   "motif": "Le mode « inconnu » n’existe pas.",
+   "geste": "Choisir boîtier physique ou e-MECeF."
+  },
+  "ok": true,
+  "apres": "emecef"
+ },
+ "imprimante": {
+  "defaut": {
+   "source": "defaut",
+   "dateEffet": null,
+   "motif": null,
+   "modele": "Xprinter XP-Q800",
+   "type": "thermique",
+   "largeurMm": 80,
+   "liaison": "a_verifier",
+   "nom": "Imprimante de caisse",
+   "liaisonLibelle": "À vérifier à l’arrière de l’appareil"
+  },
+  "ok0": {
+   "liaison": "usb",
+   "nom": "Caisse 1",
+   "dateEffet": "2026-11-15",
+   "motif": "Branchement vérifié à l’arrière"
+  },
+  "refus": {
+   "reserve": {
+    "ok": false,
+    "code": "IMPRIMANTE_RESERVE",
+    "motif": "Régler l’imprimante de caisse est un droit réservé de la fiche du rôle : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
+    "geste": "Demander le réglage à un rôle qui détient le droit « Régler l’imprimante de caisse » (Administrateur système, Directrice de l’Administration et des Finances (DAF))."
+   },
+   "fileul": {
+    "ok": false,
+    "code": "FILEUL_LECTURE_SEULE",
+    "motif": "Cette configuration est tenue par la mère ; modifiez-la sur le poste mère.",
+    "geste": "Ouvrir le même écran sur le poste mère : la modification arrivera ici par la synchronisation."
+   },
+   "motif": {
+    "ok": false,
+    "code": "IMPRIMANTE_MOTIF_OBLIGATOIRE",
+    "motif": "Un motif est obligatoire pour régler l’imprimante de caisse.",
+    "geste": "Saisir le motif du réglage."
+   },
+   "datePassee": {
+    "ok": false,
+    "code": "IMPRIMANTE_DATE_PASSEE",
+    "motif": "La date d’effet 01/10/2026 est passée : un réglage ne s’insère pas dans le passé (des tickets sont déjà imprimés).",
+    "geste": "Choisir aujourd’hui ou une date à venir."
+   },
+   "nom": {
+    "ok": false,
+    "code": "IMPRIMANTE_NOM_REQUIS",
+    "motif": "Le nom de l’imprimante est obligatoire.",
+    "geste": "Saisir le nom sous lequel le poste connaît l’imprimante."
+   },
+   "liaison": {
+    "ok": false,
+    "code": "IMPRIMANTE_LIAISON_INCONNUE",
+    "motif": "La liaison « bluetooth » n’est pas l’une des liaisons proposées (USB, Ethernet (réseau)).",
+    "geste": "Choisir USB ou Ethernet, après avoir vérifié à l’arrière de l’appareil."
+   },
+   "liaisonAVerifier": {
+    "ok": false,
+    "code": "IMPRIMANTE_LIAISON_INCONNUE",
+    "motif": "La liaison « a_verifier » n’est pas l’une des liaisons proposées (USB, Ethernet (réseau)).",
+    "geste": "Choisir USB ou Ethernet, après avoir vérifié à l’arrière de l’appareil."
+   }
+  },
+  "aucuneVersionApresRefus": 0,
+  "r1ok": true,
+  "r2ok": true,
+  "lectures": [
+   {
+    "date": "2026-10-30",
+    "source": "defaut",
+    "nom": "Imprimante de caisse",
+    "liaison": "a_verifier",
+    "modele": "Xprinter XP-Q800",
+    "dateEffet": null
+   },
+   {
+    "date": "2026-11-14",
+    "source": "defaut",
+    "nom": "Imprimante de caisse",
+    "liaison": "a_verifier",
+    "modele": "Xprinter XP-Q800",
+    "dateEffet": null
+   },
+   {
+    "date": "2026-11-15",
+    "source": "version",
+    "nom": "Caisse 1",
+    "liaison": "usb",
+    "modele": "Xprinter XP-Q800",
+    "dateEffet": "2026-11-15"
+   },
+   {
+    "date": "2026-11-30",
+    "source": "version",
+    "nom": "Caisse 1",
+    "liaison": "usb",
+    "modele": "Xprinter XP-Q800",
+    "dateEffet": "2026-11-15"
+   },
+   {
+    "date": "2026-12-01",
+    "source": "version",
+    "nom": "Caisse 1 réseau",
+    "liaison": "ethernet",
+    "modele": "Xprinter XP-Q800",
+    "dateEffet": "2026-12-01"
+   },
+   {
+    "date": "2027-01-01",
+    "source": "version",
+    "nom": "Caisse 1 réseau",
+    "liaison": "ethernet",
+    "modele": "Xprinter XP-Q800",
+    "dateEffet": "2026-12-01"
+   }
+  ],
+  "journal": 2
+ },
+ "caisse": [
+  {
+   "nom": "base",
+   "entrees": {
+    "factures": [
+     {
+      "numero": "FN-2026-00007",
+      "proforma": false,
+      "montantPaye": 1780,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00046",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00102",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00134",
+      "proforma": false,
+      "montantPaye": 2400,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00164",
+      "proforma": false,
+      "montantPaye": 650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00205",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00048",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00092",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00138",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00042",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00128",
+      "proforma": false,
+      "montantPaye": 40,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00119",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00196",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00125",
+      "proforma": false,
+      "montantPaye": 1966,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00172",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00033",
+      "proforma": false,
+      "montantPaye": 124,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00167",
+      "proforma": false,
+      "montantPaye": 2921,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00221",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00070",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00133",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00160",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00053",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00010",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00032",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00135",
+      "proforma": false,
+      "montantPaye": 1900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00201",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00222",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00034",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00056",
+      "proforma": false,
+      "montantPaye": 42000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00127",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00157",
+      "proforma": false,
+      "montantPaye": 45000,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00101",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00094",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00181",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00162",
+      "proforma": false,
+      "montantPaye": 1770,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00180",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00030",
+      "proforma": false,
+      "montantPaye": 1650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00057",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00058",
+      "proforma": false,
+      "montantPaye": 6600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00085",
+      "proforma": false,
+      "montantPaye": 937,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00082",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00113",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00206",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00114",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00016",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00061",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00146",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00086",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00148",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00159",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00049",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00066",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00072",
+      "proforma": false,
+      "montantPaye": 3000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00123",
+      "proforma": false,
+      "montantPaye": 13000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00136",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00009",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00100",
+      "proforma": false,
+      "montantPaye": 22500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00209",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00071",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00192",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00069",
+      "proforma": false,
+      "montantPaye": 4350,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00151",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00225",
+      "proforma": false,
+      "montantPaye": 3249,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00179",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00188",
+      "proforma": false,
+      "montantPaye": 3583,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00011",
+      "proforma": false,
+      "montantPaye": 2168,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00131",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00074",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00052",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00078",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00229",
+      "proforma": false,
+      "montantPaye": 100,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00026",
+      "proforma": false,
+      "montantPaye": 2092,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00079",
+      "proforma": false,
+      "montantPaye": 15500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00150",
+      "proforma": false,
+      "montantPaye": 80000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00176",
+      "proforma": false,
+      "montantPaye": 21200,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00015",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00084",
+      "proforma": false,
+      "montantPaye": 30800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00142",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00017",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00103",
+      "proforma": false,
+      "montantPaye": 900,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00216",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00024",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00050",
+      "proforma": false,
+      "montantPaye": 29000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00169",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00197",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00014",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00055",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00060",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00104",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00204",
+      "proforma": false,
+      "montantPaye": 17100,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00117",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00002",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00041",
+      "proforma": false,
+      "montantPaye": 3500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00161",
+      "proforma": false,
+      "montantPaye": 4250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00018",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00054",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00153",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00168",
+      "proforma": false,
+      "montantPaye": 11200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00193",
+      "proforma": false,
+      "montantPaye": 600,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00096",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00208",
+      "proforma": false,
+      "montantPaye": 30,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00224",
+      "proforma": false,
+      "montantPaye": 4900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00004",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00022",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00112",
+      "proforma": false,
+      "montantPaye": 135,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00174",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00065",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00166",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00044",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00212",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00145",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00126",
+      "proforma": false,
+      "montantPaye": 3200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00214",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00083",
+      "proforma": false,
+      "montantPaye": 8600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00091",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00073",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00107",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00226",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00040",
+      "proforma": false,
+      "montantPaye": 323,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00047",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00090",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00165",
+      "proforma": false,
+      "montantPaye": 33000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00059",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00088",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00098",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00087",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00154",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00031",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00038",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00152",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00020",
+      "proforma": false,
+      "montantPaye": 28000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00080",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00200",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00189",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00213",
+      "proforma": false,
+      "montantPaye": 1800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00111",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00143",
+      "proforma": false,
+      "montantPaye": 2482,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00115",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00158",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00029",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00182",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00171",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00175",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00005",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00116",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00139",
+      "proforma": false,
+      "montantPaye": 4500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00218",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00228",
+      "proforma": false,
+      "montantPaye": 1765,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00062",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00076",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00093",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00118",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00013",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00019",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00110",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00124",
+      "proforma": false,
+      "montantPaye": 3270,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00173",
+      "proforma": false,
+      "montantPaye": 7684,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00106",
+      "proforma": false,
+      "montantPaye": 1343,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00008",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00035",
+      "proforma": false,
+      "montantPaye": 95000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00109",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00003",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00037",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00147",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00190",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00089",
+      "proforma": false,
+      "montantPaye": 2276,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00121",
+      "proforma": false,
+      "montantPaye": 11035,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00186",
+      "proforma": false,
+      "montantPaye": 1542,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00099",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00178",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00184",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00045",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00140",
+      "proforma": false,
+      "montantPaye": 160,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00149",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00122",
+      "proforma": false,
+      "montantPaye": 250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00051",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00067",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00068",
+      "proforma": false,
+      "montantPaye": 390,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00210",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00230",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00156",
+      "proforma": false,
+      "montantPaye": 3900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00211",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00120",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00198",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00064",
+      "proforma": false,
+      "montantPaye": 19500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00081",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00108",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00203",
+      "proforma": false,
+      "montantPaye": 849,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00039",
+      "proforma": false,
+      "montantPaye": 3397,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00219",
+      "proforma": false,
+      "montantPaye": 3650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00001",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00075",
+      "proforma": false,
+      "montantPaye": 2573,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00144",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00012",
+      "proforma": false,
+      "montantPaye": 170,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00194",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00220",
+      "proforma": false,
+      "montantPaye": 2944,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00027",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00141",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00215",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00217",
+      "proforma": false,
+      "montantPaye": 2100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00063",
+      "proforma": false,
+      "montantPaye": 488,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00105",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00183",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00023",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00130",
+      "proforma": false,
+      "montantPaye": 3145,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00191",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00195",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00202",
+      "proforma": false,
+      "montantPaye": 554,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00028",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00185",
+      "proforma": false,
+      "montantPaye": 5100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00025",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00043",
+      "proforma": false,
+      "montantPaye": 43000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00187",
+      "proforma": false,
+      "montantPaye": 1129,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00036",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00097",
+      "proforma": false,
+      "montantPaye": 5500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00137",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00132",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00095",
+      "proforma": false,
+      "montantPaye": 55800,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00227",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00129",
+      "proforma": false,
+      "montantPaye": 3300,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00177",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00170",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00199",
+      "proforma": false,
+      "montantPaye": 13500,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00021",
+      "proforma": false,
+      "montantPaye": 21000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00163",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00207",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00006",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00155",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00223",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00077",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     }
+    ],
+    "avoirs": []
+   },
+   "attendu": {
+    "ventes": {
+     "nombre": 23,
+     "parEtat": {
+      "refusee": 12,
+      "en_attente": 11
+     },
+     "incalculables": 0,
+     "montant": 354369
+    },
+    "avoirs": {
+     "nombre": 0,
+     "incalculables": 0,
+     "montant": 0
+    }
+   }
+  },
+  {
+   "nom": "sondes",
+   "entrees": {
+    "factures": [
+     {
+      "numero": "FN-2099-M5",
+      "proforma": true,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M4",
+      "proforma": false,
+      "montantPaye": 7000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2099-M3",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M2",
+      "proforma": false,
+      "montantPaye": 3000,
+      "statutPaiement": "soldee",
+      "statutMecef": "a_verifier"
+     },
+     {
+      "numero": "FN-2099-M1",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00007",
+      "proforma": false,
+      "montantPaye": 1780,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00046",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00102",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00134",
+      "proforma": false,
+      "montantPaye": 2400,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00164",
+      "proforma": false,
+      "montantPaye": 650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00205",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00048",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00092",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00138",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00042",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00128",
+      "proforma": false,
+      "montantPaye": 40,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00119",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00196",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00125",
+      "proforma": false,
+      "montantPaye": 1966,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00172",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00033",
+      "proforma": false,
+      "montantPaye": 124,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00167",
+      "proforma": false,
+      "montantPaye": 2921,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00221",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00070",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00133",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00160",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00053",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00010",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00032",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00135",
+      "proforma": false,
+      "montantPaye": 1900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00201",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00222",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00034",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00056",
+      "proforma": false,
+      "montantPaye": 42000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00127",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00157",
+      "proforma": false,
+      "montantPaye": 45000,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00101",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00094",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00181",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00162",
+      "proforma": false,
+      "montantPaye": 1770,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00180",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00030",
+      "proforma": false,
+      "montantPaye": 1650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00057",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00058",
+      "proforma": false,
+      "montantPaye": 6600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00085",
+      "proforma": false,
+      "montantPaye": 937,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00082",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00113",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00206",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00114",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00016",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00061",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00146",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00086",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00148",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00159",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00049",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00066",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00072",
+      "proforma": false,
+      "montantPaye": 3000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00123",
+      "proforma": false,
+      "montantPaye": 13000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00136",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00009",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00100",
+      "proforma": false,
+      "montantPaye": 22500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00209",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00071",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00192",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00069",
+      "proforma": false,
+      "montantPaye": 4350,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00151",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00225",
+      "proforma": false,
+      "montantPaye": 3249,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00179",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00188",
+      "proforma": false,
+      "montantPaye": 3583,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00011",
+      "proforma": false,
+      "montantPaye": 2168,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00131",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00074",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00052",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00078",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00229",
+      "proforma": false,
+      "montantPaye": 100,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00026",
+      "proforma": false,
+      "montantPaye": 2092,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00079",
+      "proforma": false,
+      "montantPaye": 15500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00150",
+      "proforma": false,
+      "montantPaye": 80000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00176",
+      "proforma": false,
+      "montantPaye": 21200,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00015",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00084",
+      "proforma": false,
+      "montantPaye": 30800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00142",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00017",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00103",
+      "proforma": false,
+      "montantPaye": 900,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00216",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00024",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00050",
+      "proforma": false,
+      "montantPaye": 29000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00169",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00197",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00014",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00055",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00060",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00104",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00204",
+      "proforma": false,
+      "montantPaye": 17100,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00117",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00002",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00041",
+      "proforma": false,
+      "montantPaye": 3500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00161",
+      "proforma": false,
+      "montantPaye": 4250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00018",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00054",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00153",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00168",
+      "proforma": false,
+      "montantPaye": 11200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00193",
+      "proforma": false,
+      "montantPaye": 600,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00096",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00208",
+      "proforma": false,
+      "montantPaye": 30,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00224",
+      "proforma": false,
+      "montantPaye": 4900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00004",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00022",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00112",
+      "proforma": false,
+      "montantPaye": 135,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00174",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00065",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00166",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00044",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00212",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00145",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00126",
+      "proforma": false,
+      "montantPaye": 3200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00214",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00083",
+      "proforma": false,
+      "montantPaye": 8600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00091",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00073",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00107",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00226",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00040",
+      "proforma": false,
+      "montantPaye": 323,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00047",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00090",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00165",
+      "proforma": false,
+      "montantPaye": 33000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00059",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00088",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00098",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00087",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00154",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00031",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00038",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00152",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00020",
+      "proforma": false,
+      "montantPaye": 28000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00080",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00200",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00189",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00213",
+      "proforma": false,
+      "montantPaye": 1800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00111",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00143",
+      "proforma": false,
+      "montantPaye": 2482,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00115",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00158",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00029",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00182",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00171",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00175",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00005",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00116",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00139",
+      "proforma": false,
+      "montantPaye": 4500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00218",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00228",
+      "proforma": false,
+      "montantPaye": 1765,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00062",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00076",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00093",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00118",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00013",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00019",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00110",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00124",
+      "proforma": false,
+      "montantPaye": 3270,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00173",
+      "proforma": false,
+      "montantPaye": 7684,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00106",
+      "proforma": false,
+      "montantPaye": 1343,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00008",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00035",
+      "proforma": false,
+      "montantPaye": 95000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00109",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00003",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00037",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00147",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00190",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00089",
+      "proforma": false,
+      "montantPaye": 2276,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00121",
+      "proforma": false,
+      "montantPaye": 11035,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00186",
+      "proforma": false,
+      "montantPaye": 1542,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00099",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00178",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00184",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00045",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00140",
+      "proforma": false,
+      "montantPaye": 160,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00149",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00122",
+      "proforma": false,
+      "montantPaye": 250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00051",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00067",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00068",
+      "proforma": false,
+      "montantPaye": 390,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00210",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00230",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00156",
+      "proforma": false,
+      "montantPaye": 3900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00211",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00120",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00198",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00064",
+      "proforma": false,
+      "montantPaye": 19500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00081",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00108",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00203",
+      "proforma": false,
+      "montantPaye": 849,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00039",
+      "proforma": false,
+      "montantPaye": 3397,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00219",
+      "proforma": false,
+      "montantPaye": 3650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00001",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00075",
+      "proforma": false,
+      "montantPaye": 2573,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00144",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00012",
+      "proforma": false,
+      "montantPaye": 170,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00194",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00220",
+      "proforma": false,
+      "montantPaye": 2944,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00027",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00141",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00215",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00217",
+      "proforma": false,
+      "montantPaye": 2100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00063",
+      "proforma": false,
+      "montantPaye": 488,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00105",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00183",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00023",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00130",
+      "proforma": false,
+      "montantPaye": 3145,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00191",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00195",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00202",
+      "proforma": false,
+      "montantPaye": 554,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00028",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00185",
+      "proforma": false,
+      "montantPaye": 5100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00025",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00043",
+      "proforma": false,
+      "montantPaye": 43000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00187",
+      "proforma": false,
+      "montantPaye": 1129,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00036",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00097",
+      "proforma": false,
+      "montantPaye": 5500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00137",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00132",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00095",
+      "proforma": false,
+      "montantPaye": 55800,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00227",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00129",
+      "proforma": false,
+      "montantPaye": 3300,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00177",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00170",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00199",
+      "proforma": false,
+      "montantPaye": 13500,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00021",
+      "proforma": false,
+      "montantPaye": 21000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00163",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00207",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00006",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00155",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00223",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00077",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2099-M2",
+      "montant": 1500,
+      "statutMecef": "valide"
+     },
+     {
+      "reference": "AV-2099-M1",
+      "montant": 2000,
+      "statutMecef": "en_attente"
+     }
+    ]
+   },
+   "attendu": {
+    "ventes": {
+     "nombre": 25,
+     "parEtat": {
+      "a_verifier": 1,
+      "en_attente": 12,
+      "refusee": 12
+     },
+     "incalculables": 0,
+     "montant": 362369
+    },
+    "avoirs": {
+     "nombre": 1,
+     "incalculables": 0,
+     "montant": 2000
+    }
+   }
+  },
+  {
+   "nom": "montant_inconnu_vente",
+   "entrees": {
+    "factures": [
+     {
+      "numero": "FN-2099-M6",
+      "proforma": false,
+      "montantPaye": null,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M5",
+      "proforma": true,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M4",
+      "proforma": false,
+      "montantPaye": 7000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2099-M3",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M2",
+      "proforma": false,
+      "montantPaye": 3000,
+      "statutPaiement": "soldee",
+      "statutMecef": "a_verifier"
+     },
+     {
+      "numero": "FN-2099-M1",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00007",
+      "proforma": false,
+      "montantPaye": 1780,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00046",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00102",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00134",
+      "proforma": false,
+      "montantPaye": 2400,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00164",
+      "proforma": false,
+      "montantPaye": 650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00205",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00048",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00092",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00138",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00042",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00128",
+      "proforma": false,
+      "montantPaye": 40,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00119",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00196",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00125",
+      "proforma": false,
+      "montantPaye": 1966,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00172",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00033",
+      "proforma": false,
+      "montantPaye": 124,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00167",
+      "proforma": false,
+      "montantPaye": 2921,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00221",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00070",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00133",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00160",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00053",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00010",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00032",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00135",
+      "proforma": false,
+      "montantPaye": 1900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00201",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00222",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00034",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00056",
+      "proforma": false,
+      "montantPaye": 42000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00127",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00157",
+      "proforma": false,
+      "montantPaye": 45000,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00101",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00094",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00181",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00162",
+      "proforma": false,
+      "montantPaye": 1770,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00180",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00030",
+      "proforma": false,
+      "montantPaye": 1650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00057",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00058",
+      "proforma": false,
+      "montantPaye": 6600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00085",
+      "proforma": false,
+      "montantPaye": 937,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00082",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00113",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00206",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00114",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00016",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00061",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00146",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00086",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00148",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00159",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00049",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00066",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00072",
+      "proforma": false,
+      "montantPaye": 3000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00123",
+      "proforma": false,
+      "montantPaye": 13000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00136",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00009",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00100",
+      "proforma": false,
+      "montantPaye": 22500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00209",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00071",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00192",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00069",
+      "proforma": false,
+      "montantPaye": 4350,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00151",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00225",
+      "proforma": false,
+      "montantPaye": 3249,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00179",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00188",
+      "proforma": false,
+      "montantPaye": 3583,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00011",
+      "proforma": false,
+      "montantPaye": 2168,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00131",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00074",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00052",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00078",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00229",
+      "proforma": false,
+      "montantPaye": 100,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00026",
+      "proforma": false,
+      "montantPaye": 2092,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00079",
+      "proforma": false,
+      "montantPaye": 15500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00150",
+      "proforma": false,
+      "montantPaye": 80000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00176",
+      "proforma": false,
+      "montantPaye": 21200,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00015",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00084",
+      "proforma": false,
+      "montantPaye": 30800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00142",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00017",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00103",
+      "proforma": false,
+      "montantPaye": 900,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00216",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00024",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00050",
+      "proforma": false,
+      "montantPaye": 29000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00169",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00197",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00014",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00055",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00060",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00104",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00204",
+      "proforma": false,
+      "montantPaye": 17100,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00117",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00002",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00041",
+      "proforma": false,
+      "montantPaye": 3500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00161",
+      "proforma": false,
+      "montantPaye": 4250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00018",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00054",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00153",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00168",
+      "proforma": false,
+      "montantPaye": 11200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00193",
+      "proforma": false,
+      "montantPaye": 600,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00096",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00208",
+      "proforma": false,
+      "montantPaye": 30,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00224",
+      "proforma": false,
+      "montantPaye": 4900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00004",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00022",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00112",
+      "proforma": false,
+      "montantPaye": 135,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00174",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00065",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00166",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00044",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00212",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00145",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00126",
+      "proforma": false,
+      "montantPaye": 3200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00214",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00083",
+      "proforma": false,
+      "montantPaye": 8600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00091",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00073",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00107",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00226",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00040",
+      "proforma": false,
+      "montantPaye": 323,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00047",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00090",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00165",
+      "proforma": false,
+      "montantPaye": 33000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00059",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00088",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00098",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00087",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00154",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00031",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00038",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00152",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00020",
+      "proforma": false,
+      "montantPaye": 28000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00080",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00200",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00189",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00213",
+      "proforma": false,
+      "montantPaye": 1800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00111",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00143",
+      "proforma": false,
+      "montantPaye": 2482,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00115",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00158",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00029",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00182",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00171",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00175",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00005",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00116",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00139",
+      "proforma": false,
+      "montantPaye": 4500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00218",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00228",
+      "proforma": false,
+      "montantPaye": 1765,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00062",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00076",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00093",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00118",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00013",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00019",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00110",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00124",
+      "proforma": false,
+      "montantPaye": 3270,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00173",
+      "proforma": false,
+      "montantPaye": 7684,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00106",
+      "proforma": false,
+      "montantPaye": 1343,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00008",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00035",
+      "proforma": false,
+      "montantPaye": 95000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00109",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00003",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00037",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00147",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00190",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00089",
+      "proforma": false,
+      "montantPaye": 2276,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00121",
+      "proforma": false,
+      "montantPaye": 11035,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00186",
+      "proforma": false,
+      "montantPaye": 1542,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00099",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00178",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00184",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00045",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00140",
+      "proforma": false,
+      "montantPaye": 160,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00149",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00122",
+      "proforma": false,
+      "montantPaye": 250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00051",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00067",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00068",
+      "proforma": false,
+      "montantPaye": 390,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00210",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00230",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00156",
+      "proforma": false,
+      "montantPaye": 3900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00211",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00120",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00198",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00064",
+      "proforma": false,
+      "montantPaye": 19500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00081",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00108",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00203",
+      "proforma": false,
+      "montantPaye": 849,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00039",
+      "proforma": false,
+      "montantPaye": 3397,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00219",
+      "proforma": false,
+      "montantPaye": 3650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00001",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00075",
+      "proforma": false,
+      "montantPaye": 2573,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00144",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00012",
+      "proforma": false,
+      "montantPaye": 170,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00194",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00220",
+      "proforma": false,
+      "montantPaye": 2944,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00027",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00141",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00215",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00217",
+      "proforma": false,
+      "montantPaye": 2100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00063",
+      "proforma": false,
+      "montantPaye": 488,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00105",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00183",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00023",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00130",
+      "proforma": false,
+      "montantPaye": 3145,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00191",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00195",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00202",
+      "proforma": false,
+      "montantPaye": 554,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00028",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00185",
+      "proforma": false,
+      "montantPaye": 5100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00025",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00043",
+      "proforma": false,
+      "montantPaye": 43000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00187",
+      "proforma": false,
+      "montantPaye": 1129,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00036",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00097",
+      "proforma": false,
+      "montantPaye": 5500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00137",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00132",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00095",
+      "proforma": false,
+      "montantPaye": 55800,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00227",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00129",
+      "proforma": false,
+      "montantPaye": 3300,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00177",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00170",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00199",
+      "proforma": false,
+      "montantPaye": 13500,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00021",
+      "proforma": false,
+      "montantPaye": 21000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00163",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00207",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00006",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00155",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00223",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00077",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2099-M2",
+      "montant": 1500,
+      "statutMecef": "valide"
+     },
+     {
+      "reference": "AV-2099-M1",
+      "montant": 2000,
+      "statutMecef": "en_attente"
+     }
+    ]
+   },
+   "attendu": {
+    "ventes": {
+     "nombre": 26,
+     "parEtat": {
+      "en_attente": 13,
+      "a_verifier": 1,
+      "refusee": 12
+     },
+     "incalculables": 1,
+     "montant": null
+    },
+    "avoirs": {
+     "nombre": 1,
+     "incalculables": 0,
+     "montant": 2000
+    }
+   }
+  },
+  {
+   "nom": "montant_inconnu_avoir",
+   "entrees": {
+    "factures": [
+     {
+      "numero": "FN-2099-M6",
+      "proforma": false,
+      "montantPaye": null,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M5",
+      "proforma": true,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M4",
+      "proforma": false,
+      "montantPaye": 7000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2099-M3",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2099-M2",
+      "proforma": false,
+      "montantPaye": 3000,
+      "statutPaiement": "soldee",
+      "statutMecef": "a_verifier"
+     },
+     {
+      "numero": "FN-2099-M1",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00007",
+      "proforma": false,
+      "montantPaye": 1780,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00046",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00102",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00134",
+      "proforma": false,
+      "montantPaye": 2400,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00164",
+      "proforma": false,
+      "montantPaye": 650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00205",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00048",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00092",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00138",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00042",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00128",
+      "proforma": false,
+      "montantPaye": 40,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00119",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00196",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00125",
+      "proforma": false,
+      "montantPaye": 1966,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00172",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00033",
+      "proforma": false,
+      "montantPaye": 124,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00167",
+      "proforma": false,
+      "montantPaye": 2921,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00221",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00070",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00133",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00160",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00053",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00010",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00032",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00135",
+      "proforma": false,
+      "montantPaye": 1900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00201",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00222",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00034",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00056",
+      "proforma": false,
+      "montantPaye": 42000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00127",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00157",
+      "proforma": false,
+      "montantPaye": 45000,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00101",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00094",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00181",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00162",
+      "proforma": false,
+      "montantPaye": 1770,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00180",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00030",
+      "proforma": false,
+      "montantPaye": 1650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00057",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00058",
+      "proforma": false,
+      "montantPaye": 6600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00085",
+      "proforma": false,
+      "montantPaye": 937,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00082",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00113",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00206",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00114",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00016",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00061",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00146",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00086",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00148",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00159",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00049",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00066",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00072",
+      "proforma": false,
+      "montantPaye": 3000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00123",
+      "proforma": false,
+      "montantPaye": 13000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00136",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00009",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00100",
+      "proforma": false,
+      "montantPaye": 22500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00209",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00071",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00192",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00069",
+      "proforma": false,
+      "montantPaye": 4350,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00151",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00225",
+      "proforma": false,
+      "montantPaye": 3249,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00179",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00188",
+      "proforma": false,
+      "montantPaye": 3583,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00011",
+      "proforma": false,
+      "montantPaye": 2168,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00131",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00074",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00052",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00078",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00229",
+      "proforma": false,
+      "montantPaye": 100,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00026",
+      "proforma": false,
+      "montantPaye": 2092,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00079",
+      "proforma": false,
+      "montantPaye": 15500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00150",
+      "proforma": false,
+      "montantPaye": 80000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00176",
+      "proforma": false,
+      "montantPaye": 21200,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00015",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00084",
+      "proforma": false,
+      "montantPaye": 30800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00142",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00017",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00103",
+      "proforma": false,
+      "montantPaye": 900,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00216",
+      "proforma": false,
+      "montantPaye": 1000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00024",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00050",
+      "proforma": false,
+      "montantPaye": 29000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00169",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00197",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00014",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00055",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00060",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00104",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00204",
+      "proforma": false,
+      "montantPaye": 17100,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00117",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00002",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00041",
+      "proforma": false,
+      "montantPaye": 3500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00161",
+      "proforma": false,
+      "montantPaye": 4250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00018",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00054",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00153",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00168",
+      "proforma": false,
+      "montantPaye": 11200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00193",
+      "proforma": false,
+      "montantPaye": 600,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00096",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00208",
+      "proforma": false,
+      "montantPaye": 30,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00224",
+      "proforma": false,
+      "montantPaye": 4900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00004",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00022",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00112",
+      "proforma": false,
+      "montantPaye": 135,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00174",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00065",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00166",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00044",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00212",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00145",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00126",
+      "proforma": false,
+      "montantPaye": 3200,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00214",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00083",
+      "proforma": false,
+      "montantPaye": 8600,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00091",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00073",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00107",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00226",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00040",
+      "proforma": false,
+      "montantPaye": 323,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00047",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00090",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00165",
+      "proforma": false,
+      "montantPaye": 33000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00059",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00088",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00098",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00087",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00154",
+      "proforma": false,
+      "montantPaye": 18000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00031",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00038",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00152",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00020",
+      "proforma": false,
+      "montantPaye": 28000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00080",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00200",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00189",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00213",
+      "proforma": false,
+      "montantPaye": 1800,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00111",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00143",
+      "proforma": false,
+      "montantPaye": 2482,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00115",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00158",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00029",
+      "proforma": false,
+      "montantPaye": 15000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00182",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00171",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00175",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00005",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00116",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00139",
+      "proforma": false,
+      "montantPaye": 4500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00218",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00228",
+      "proforma": false,
+      "montantPaye": 1765,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00062",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00076",
+      "proforma": false,
+      "montantPaye": 800,
+      "statutPaiement": "partielle",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00093",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00118",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00013",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00019",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00110",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00124",
+      "proforma": false,
+      "montantPaye": 3270,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00173",
+      "proforma": false,
+      "montantPaye": 7684,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00106",
+      "proforma": false,
+      "montantPaye": 1343,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00008",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00035",
+      "proforma": false,
+      "montantPaye": 95000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00109",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00003",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00037",
+      "proforma": false,
+      "montantPaye": 500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00147",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00190",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00089",
+      "proforma": false,
+      "montantPaye": 2276,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00121",
+      "proforma": false,
+      "montantPaye": 11035,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00186",
+      "proforma": false,
+      "montantPaye": 1542,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00099",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00178",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00184",
+      "proforma": false,
+      "montantPaye": 12000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00045",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00140",
+      "proforma": false,
+      "montantPaye": 160,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00149",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00122",
+      "proforma": false,
+      "montantPaye": 250,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00051",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00067",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00068",
+      "proforma": false,
+      "montantPaye": 390,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00210",
+      "proforma": false,
+      "montantPaye": 9000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00230",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00156",
+      "proforma": false,
+      "montantPaye": 3900,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00211",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00120",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "partielle",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00198",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00064",
+      "proforma": false,
+      "montantPaye": 19500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00081",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00108",
+      "proforma": false,
+      "montantPaye": 2000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00203",
+      "proforma": false,
+      "montantPaye": 849,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00039",
+      "proforma": false,
+      "montantPaye": 3397,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00219",
+      "proforma": false,
+      "montantPaye": 3650,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00001",
+      "proforma": false,
+      "montantPaye": 5000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00075",
+      "proforma": false,
+      "montantPaye": 2573,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00144",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00012",
+      "proforma": false,
+      "montantPaye": 170,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00194",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00220",
+      "proforma": false,
+      "montantPaye": 2944,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00027",
+      "proforma": false,
+      "montantPaye": 10000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00141",
+      "proforma": false,
+      "montantPaye": 6000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00215",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00217",
+      "proforma": false,
+      "montantPaye": 2100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00063",
+      "proforma": false,
+      "montantPaye": 488,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00105",
+      "proforma": false,
+      "montantPaye": 20000,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00183",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00023",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00130",
+      "proforma": false,
+      "montantPaye": 3145,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00191",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00195",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00202",
+      "proforma": false,
+      "montantPaye": 554,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00028",
+      "proforma": false,
+      "montantPaye": 25000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00185",
+      "proforma": false,
+      "montantPaye": 5100,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00025",
+      "proforma": false,
+      "montantPaye": 27000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00043",
+      "proforma": false,
+      "montantPaye": 43000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00187",
+      "proforma": false,
+      "montantPaye": 1129,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00036",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00097",
+      "proforma": false,
+      "montantPaye": 5500,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00137",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "impayee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00132",
+      "proforma": false,
+      "montantPaye": 22000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00095",
+      "proforma": false,
+      "montantPaye": 55800,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00227",
+      "proforma": false,
+      "montantPaye": 8000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00129",
+      "proforma": false,
+      "montantPaye": 3300,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00177",
+      "proforma": false,
+      "montantPaye": 35000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00170",
+      "proforma": false,
+      "montantPaye": 14000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00199",
+      "proforma": false,
+      "montantPaye": 13500,
+      "statutPaiement": "soldee",
+      "statutMecef": "rejete"
+     },
+     {
+      "numero": "FN-2026-00021",
+      "proforma": false,
+      "montantPaye": 21000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00163",
+      "proforma": false,
+      "montantPaye": 2850,
+      "statutPaiement": "soldee",
+      "statutMecef": "en_attente"
+     },
+     {
+      "numero": "FN-2026-00207",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00006",
+      "proforma": false,
+      "montantPaye": 12500,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00155",
+      "proforma": false,
+      "montantPaye": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00223",
+      "proforma": false,
+      "montantPaye": 30000,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide"
+     },
+     {
+      "numero": "FN-2026-00077",
+      "proforma": false,
+      "montantPaye": 1500,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2099-M3",
+      "montant": null,
+      "statutMecef": "en_attente"
+     },
+     {
+      "reference": "AV-2099-M2",
+      "montant": 1500,
+      "statutMecef": "valide"
+     },
+     {
+      "reference": "AV-2099-M1",
+      "montant": 2000,
+      "statutMecef": "en_attente"
+     }
+    ]
+   },
+   "attendu": {
+    "ventes": {
+     "nombre": 26,
+     "parEtat": {
+      "en_attente": 13,
+      "a_verifier": 1,
+      "refusee": 12
+     },
+     "incalculables": 1,
+     "montant": null
+    },
+    "avoirs": {
+     "nombre": 2,
+     "incalculables": 1,
+     "montant": null
+    }
+   }
+  }
+ ]
+}

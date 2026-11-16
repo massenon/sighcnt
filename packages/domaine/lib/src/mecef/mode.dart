@@ -81,33 +81,58 @@ abstract class AdaptateurMecef {
   Future<ReponseCertification> emettre(DemandeCertification demande);
 }
 
-/// L'adaptateur « non configuré » : il REFUSE en nommant (code, motif, geste) et ne fabrique rien. Le motif de l'e-MECeF est celui que la Direction a arrêté
-/// (« non configuré : dossier d'interface DGI requis ») ; celui du boîtier dit que son adaptateur n'est pas livré.
-class AdaptateurNonConfigure implements AdaptateurMecef {
-  const AdaptateurNonConfigure(this.mode);
-  @override
-  final String mode;
+/// LE PORT `Mecef` (lot MECEF-M) : le nom que le domaine donne au point d'extension de la certification. Deux réalisations VIDES existent, [MecefBoitierVide] et
+/// [MecefEmecefVide] : elles ne fabriquent rien et refusent nommément (code [mecefCodeNonConfigure]). Les adaptateurs réels (lot M3) les remplaceront un par un.
+typedef Mecef = AdaptateurMecef;
 
+/// Le mode « boîtier physique » tant que son adaptateur n'est pas livré : EN ATTENTE DES RÉPONSES DU FOURNISSEUR (modèle, interface et protocole non documentés).
+class MecefBoitierVide implements Mecef {
+  const MecefBoitierVide();
+  @override
+  String get mode => 'boitier';
   @override
   bool get configure => false;
-
   @override
-  RefusMecef get refus => mode == 'emecef'
-      ? const RefusMecef(
-          mecefCodeNonConfigure,
-          'e-MECeF non configuré : dossier d’interface DGI requis.',
-          'La vente reste en attente de certification. Choisir le mode « Boîtier physique », ou fournir le dossier d’interface de la DGI.')
-      : const RefusMecef(
-          mecefCodeNonConfigure,
-          'Boîtier non configuré : aucun adaptateur n’est branché à ce poste (modèle, interface et protocole du boîtier non documentés).',
-          'La vente reste en attente de certification. Elle se retransmettra quand l’adaptateur du boîtier sera livré (lot M3).');
-
+  RefusMecef get refus => const RefusMecef(
+      mecefCodeNonConfigure,
+      'Boîtier non configuré : en attente des réponses du fournisseur (aucun adaptateur n’est branché à ce poste ; modèle, interface et protocole du boîtier non documentés).',
+      'La vente reste en attente de certification. Elle se retransmettra quand l’adaptateur du boîtier sera livré (lot M3).');
   @override
   Future<ReponseCertification> emettre(DemandeCertification demande) async => ReponseCertification.refus(refus);
 }
 
-/// L'adaptateur du mode en vigueur. Tant qu'aucun adaptateur réel n'existe (lot M3), les deux modes rendent un [AdaptateurNonConfigure].
-AdaptateurMecef adaptateurPourMode(Object? valeurMode) => AdaptateurNonConfigure(mecefModeEnVigueur(valeurMode));
+/// Le mode « e-MECeF » tant que le dossier d'interface de la DGI manque : le motif que la Direction a arrêté (09/11/2026).
+class MecefEmecefVide implements Mecef {
+  const MecefEmecefVide();
+  @override
+  String get mode => 'emecef';
+  @override
+  bool get configure => false;
+  @override
+  RefusMecef get refus => const RefusMecef(
+      mecefCodeNonConfigure,
+      'e-MECeF non configuré : dossier d’interface DGI requis.',
+      'La vente reste en attente de certification. Choisir le mode « Boîtier physique », ou fournir le dossier d’interface de la DGI.');
+  @override
+  Future<ReponseCertification> emettre(DemandeCertification demande) async => ReponseCertification.refus(refus);
+}
+
+/// L'adaptateur « non configuré » du mode demandé : l'une des deux réalisations vides.
+class AdaptateurNonConfigure implements Mecef {
+  const AdaptateurNonConfigure(this.mode);
+  @override
+  final String mode;
+  Mecef get _vide => mode == 'emecef' ? const MecefEmecefVide() : const MecefBoitierVide();
+  @override
+  bool get configure => false;
+  @override
+  RefusMecef get refus => _vide.refus!;
+  @override
+  Future<ReponseCertification> emettre(DemandeCertification demande) => _vide.emettre(demande);
+}
+
+/// L'adaptateur du mode en vigueur. Tant qu'aucun adaptateur réel n'existe (lot M3), chaque mode rend sa réalisation vide.
+Mecef adaptateurPourMode(Object? valeurMode) => mecefModeEnVigueur(valeurMode) == 'emecef' ? const MecefEmecefVide() : const MecefBoitierVide();
 
 /// Les champs que le refus laisse sur la pièce : elle reste EN ATTENTE de certification (état stocké `en_attente`), sans numéro, avec le code et le motif du
 /// refus, et le mode sous lequel la tentative a eu lieu. Même contenu que la maquette (vecteurs `mecef_mode.json`).

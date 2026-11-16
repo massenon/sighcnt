@@ -228,6 +228,12 @@
        réglage réservé à l'administrateur et à la DAF a son DROIT PROPRE ; d'origine l'administrateur et la Directrice Administrative, PROPOSITION À VALIDER. Il ne donne aucun écran. */
     { id: 'regler_parametres_clinique', libelle: 'Régler les paramètres de clinique (préavis de péremption, tranches de la balance âgée)', module: 'CFG', ecran: 'cfg-regles',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot MECEF-M (16/11/2026) : le mode de facturation normalisée (boîtier ou e-MECeF) et l'imprimante de caisse se règlent par deux gestes RÉSERVÉS de la fiche RBAC, qui remplacent la
+       liste de rôles écrite dans le moteur et l'écran. D'origine l'administrateur et la Directrice Administrative (Direction, 09/11/2026 pour le mode ; l'imprimante suit, PROPOSITION À VALIDER). */
+    { id: 'regler_mode_mecef', libelle: 'Régler le mode de facturation normalisée (boîtier physique ou e-MECeF)', module: 'M8', ecran: 'mecef-config',
+      rolesDefaut: ['admin', 'da'] },
+    { id: 'regler_imprimante_caisse', libelle: 'Régler l’imprimante de caisse (modèle, liaison, nom)', module: 'M8', ecran: 'mecef-config',
+      rolesDefaut: ['admin', 'da'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

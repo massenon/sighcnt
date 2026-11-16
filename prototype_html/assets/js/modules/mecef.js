@@ -805,14 +805,15 @@
   global.SIGH.screen('mecef-config', {
     title: 'Configuration fiscale',
     description: 'Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes.',
-    regle: 'Cet écran <strong>affiche</strong> la configuration fiscale en vigueur (identité de la clinique, régime de TVA, taux d’AIB, préfixes). Elle est lue des référentiels du logiciel et <strong>ne se modifie pas ici</strong>, à une exception : le <strong>mode de certification</strong> (boîtier ou e-MECeF), réglé par l’administrateur ou la Directrice Administrative. L’identité se règle à « Identité & papier à en-tête », le régime de TVA est arrêté par la comptabilité. Rien n’est saisi facture par facture.',
+    regle: 'Cet écran <strong>affiche</strong> la configuration fiscale en vigueur (identité de la clinique, régime de TVA, taux d’AIB, préfixes). Elle est lue des référentiels du logiciel et <strong>ne se modifie pas ici</strong>, à une exception : le <strong>mode de certification</strong> (boîtier ou e-MECeF) et l’<strong>imprimante de caisse</strong>, réglés par deux droits réservés de la fiche du rôle (administrateur et Directrice Administrative d’origine). L’identité se règle à « Identité & papier à en-tête », le régime de TVA est arrêté par la comptabilité. Rien n’est saisi facture par facture.',
     render: function (root) {
       var host = el('div.grid.gap-4.lg\\:grid-cols-2');
 
       /* LE MODE DE CERTIFICATION (lot L3, Direction 09/11/2026) : boîtier physique (défaut) ou e-MECeF, réglé par l'administrateur ou la DA. */
       function carteMode() {
         var ad = PR.mecef.adaptateur();
-        var peut = ['admin', 'da'].indexOf((S.session() || {}).role) >= 0;
+        /* Lot MECEF-M : le droit est le GESTE réservé `regler_mode_mecef` de la fiche RBAC (plus de liste de rôles dans l'écran). */
+        var peut = PR.mecef.peutGeste(PR.mecef.GESTE_MODE);
         var libelles = { boitier: 'Boîtier physique', emecef: 'e-MECeF' };
         var etatTxt = el('div', { 'data-mecef-mode-etat': '' });
         var modeTxt = el('span.font-semibold', { 'data-mecef-mode-courant': '' });
@@ -824,7 +825,7 @@
             etatTxt.appendChild(K.note('<strong>e-MECeF : non configuré, dossier d’interface DGI requis.</strong> Aucun document remis ne décrit le protocole (adresse, authentification, format des messages) : rien n’est supposé. '
               + 'Une vente est encaissée, reste <strong>en attente de certification</strong> et ne reçoit <strong>aucun numéro</strong> ; elle se retransmet quand l’interface sera branchée.', { tone: 'warning', icon: 'plug-zap' }));
           } else {
-            etatTxt.appendChild(K.note('<strong>Boîtier physique.</strong> Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). '
+            etatTxt.appendChild(K.note('<strong>Boîtier physique : en attente des réponses du fournisseur.</strong> Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). '
               + 'Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.', { tone: 'info', icon: 'info' }));
             etatTxt.appendChild(el('p.mt-2.text-xs.text-slate-500', { text: 'Maquette : un appareil de démonstration tient lieu de boîtier ; ses numéros portent la mention « non fiscal ». Le poste de production n’a aucun adaptateur.' }));
           }
@@ -856,7 +857,7 @@
           el('p.text-sm', null, [ 'Mode en vigueur : ', modeTxt ]),
           etatTxt,
           peut ? el('div.flex.gap-2', null, [K.commande('Régler le mode', { variant: 'primary', icon: 'settings', onclick: ouvrirReglage })])
-            : K.note('Le mode se règle par l’administrateur ou la Directrice Administrative.', { tone: 'info', icon: 'lock' }),
+            : K.note('Le mode se règle par un rôle qui détient le droit « Régler le mode de facturation normalisée » : ' + PR.mecef.nomsRolesGeste(PR.mecef.GESTE_MODE) + '.', { tone: 'info', icon: 'lock' }),
         ]);
         return U.card('Mode de certification', corps);
       }
@@ -914,7 +915,78 @@
           }),
         ]),
       ])));
+      /* L'ÉTAT DE LA CAISSE (lot MECEF-M) : ce qui est encaissé sans être normalisé, les avoirs en attente À PART ; un montant qui ne se calcule pas se DIT. */
+      function carteEtatCaisse() {
+        var e = PR.mecef.etatCaisse();
+        function montant(m, nb) { return nb === 0 ? C.money(0) : (m === null ? 'Non calculable' : C.money(m)); }
+        var corps = el('div.space-y-3', { 'data-etat-caisse': '' }, [
+          U.descList([
+            ['Ventes encaissées non normalisées', el('span', { 'data-etat-ventes': '', text: String(e.ventes.nombre) })],
+            ['Montant encaissé non normalisé', el('span', { 'data-etat-ventes-montant': '', text: montant(e.ventes.montant, e.ventes.nombre) })],
+            ['Avoirs en attente de certification (à part)', el('span', { 'data-etat-avoirs': '', text: String(e.avoirs.nombre) })],
+            ['Montant des avoirs en attente', el('span', { 'data-etat-avoirs-montant': '', text: montant(e.avoirs.montant, e.avoirs.nombre) })],
+          ], 'grid-cols-1'),
+        ]);
+        if (e.ventes.montant === null || e.avoirs.montant === null) {
+          corps.appendChild(K.note('<strong>Non calculable</strong> : au moins une pièce n’a pas de montant connu. Le total n’est pas zéro, il n’est pas affirmé.', { tone: 'warning', icon: 'help-circle' }));
+        }
+        corps.appendChild(el('div.flex.gap-2', null, [K.btn('Voir la file', { icon: 'list', onclick: function () { global.SIGH.app.go('mecef-transmission'); } })]));
+        return U.card('État de la caisse', corps);
+      }
+
+      /* L'IMPRIMANTE DE CAISSE (lot MECEF-M) : réglage daté, par le geste réservé `regler_imprimante_caisse` ; commande ABSENTE sans le droit. */
+      function carteImprimante() {
+        var I = PR.mecef.imprimante;
+        var peut = PR.mecef.peutGeste(PR.mecef.GESTE_IMPRIMANTE);
+        var zone = el('div.space-y-3', { 'data-imprimante': '' });
+        function peindre() {
+          var v = I.aLaDate();
+          C.clear(zone);
+          zone.appendChild(U.descList([
+            ['Nom', el('span', { 'data-imprimante-nom': '', text: v.nom })],
+            ['Modèle', el('span', { 'data-imprimante-modele': '', text: v.modele })],
+            ['Type', 'Thermique, rouleau ' + v.largeurMm + ' mm'],
+            ['Liaison', el('span', { 'data-imprimante-liaison': '', text: v.liaisonLibelle })],
+            ['En vigueur', v.dateEffet ? 'depuis le ' + C.dateFR(v.dateEffet) : 'réglage semé par défaut'],
+          ], 'grid-cols-1'));
+          if (v.liaison === 'a_verifier') zone.appendChild(K.note('La liaison réelle n’est pas connue : <strong>à vérifier à l’arrière de l’appareil</strong> (USB ou Ethernet), puis à régler ici.', { tone: 'warning', icon: 'cable' }));
+          zone.appendChild(K.note('Cette imprimante sort les tickets de caisse (rouleau 80 mm). Elle ne remplace pas le boîtier de certification.', { tone: 'info', icon: 'printer' }));
+          if (peut) zone.appendChild(el('div.flex.gap-2', null, [K.commande('Régler l’imprimante', { variant: 'primary', icon: 'settings', onclick: ouvrir })]));
+          else zone.appendChild(K.note('L’imprimante se règle par un rôle qui détient le droit « Régler l’imprimante de caisse » : ' + PR.mecef.nomsRolesGeste(PR.mecef.GESTE_IMPRIMANTE) + '.', { tone: 'info', icon: 'lock' }));
+        }
+        function ouvrir() {
+          var v = I.aLaDate();
+          var nom = el('input.input', { id: 'f_impNom', type: 'text', value: v.nom, 'data-imprimante-champ': 'nom' });
+          var liaison = el('select.select', { id: 'f_impLiaison', 'data-imprimante-champ': 'liaison' }, [el('option', { value: '' }, 'À choisir')].concat(I.liaisons.filter(function (l) { return l.choisissable; }).map(function (l) { return el('option', { value: l.id }, l.libelle); })));
+          liaison.value = v.liaison === 'usb' || v.liaison === 'ethernet' ? v.liaison : '';
+          var date = el('input.input', { id: 'f_impDate', type: 'date', value: C.iso(C.aujourdhui()), 'data-imprimante-champ': 'dateEffet' });
+          var motif = el('input.input', { id: 'f_impMotif', type: 'text', 'data-imprimante-champ': 'motif' });
+          var m = U.modal({
+            title: 'Imprimante de caisse', subtitle: v.modele + ', thermique 80 mm', size: 'md',
+            body: el('div.space-y-3', null, [
+              el('div', null, [el('label.label', { for: 'f_impNom', text: 'Nom' }), nom]),
+              el('div', null, [el('label.label', { for: 'f_impLiaison', text: 'Liaison' }), liaison]),
+              el('div', null, [el('label.label', { for: 'f_impDate', text: 'Date d’effet' }), date]),
+              el('div', null, [el('label.label', { for: 'f_impMotif', text: 'Motif' }), motif]),
+            ]),
+            footer: [
+              K.btn('Annuler', { onclick: function () { m.close(); } }),
+              K.commande('Enregistrer l’imprimante', { variant: 'primary', icon: 'save', onclick: function () {
+                var r = I.definir({ nom: nom.value, liaison: liaison.value, dateEffet: date.value, motif: motif.value });
+                if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+                m.close();
+                U.toast('Imprimante enregistrée : ' + r.version.nom + ', ' + I.liaisons.filter(function (l) { return l.id === r.version.liaison; })[0].libelle + '.', { type: 'success' });
+                peindre();
+              } }),
+            ],
+          });
+        }
+        peindre();
+        return U.card('Imprimante de caisse', zone);
+      }
+
       host.insertBefore(el('div.lg\\:col-span-2', null, [carteMode()]), host.firstChild);
+      host.insertBefore(el('div.grid.gap-4.lg\\:col-span-2.lg\\:grid-cols-2', null, [carteEtatCaisse(), carteImprimante()]), host.children[1] || null);
       host.appendChild(carte);
 
       /* Aperçu de l'entête fiscale */

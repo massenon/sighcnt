@@ -30,9 +30,6 @@
    "['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']": 1,
    "['comptable', 'stock']": 1
   },
-  "js/modules/mecef.js": {
-   "['admin', 'da']": 1
-  },
   "js/modules/rapports.js": {
    "['stock']": 1,
    "['rh']": 1
@@ -65,8 +62,8 @@
    "['comptable', 'direction', 'da', 'admin']": 1,
    "['direction', 'da', 'admin', 'comptable']": 1,
    "['comptable', 'admin', 'da']": 1,
-   "['admin', 'da']": 7,
    "['caissier', 'da', 'admin']": 1,
+   "['admin', 'da']": 6,
    "['admin', 'da', 'surveillant']": 2,
    "['surveillant']": 1,
    "['surveillant', 'admin']": 1,

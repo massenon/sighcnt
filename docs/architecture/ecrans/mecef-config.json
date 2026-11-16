@@ -18,25 +18,28 @@
   "MECeF — Facture normalisée"
  ],
  "regle": [
-  "Boîtier physique. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.",
-  "Lecture seule. Ces valeurs sont celles des référentiels du logiciel : les modifier ici ne conserverait rien. L’identité légale se règle à « Identité & papier à en-tête ».",
-  "Le régime exonéré est celui relevé sur la facture de référence certifiée MECeF, où la TVA est portée à zéro et le net à payer vaut le hors-taxes augmenté du seul AIB. Ce choix doit être confirmé par le service comptable pour les prestations de la clinique."
+  "Boîtier physique : en attente des réponses du fournisseur. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.",
+  "La liaison réelle n’est pas connue : à vérifier à l’arrière de l’appareil (USB ou Ethernet), puis à régler ici.",
+  "Cette imprimante sort les tickets de caisse (rouleau 80 mm). Elle ne remplace pas le boîtier de certification."
  ],
  "onglets": [],
  "kpis": [],
  "cartes": [
   "Mode de certification",
+  "État de la caisse",
+  "Imprimante de caisse",
   "Paramètres fiscaux",
   "Mentions portées sur chaque facture",
   "Contrôles automatiques à l’émission"
  ],
  "tableaux": [],
  "commandes": [
-  "Enregistrer le mode",
+  "Régler le mode",
+  "Voir la file",
+  "Régler l’imprimante",
   "Tester la connexion au dispositif"
  ],
  "champs": [
-  "Mode de certification des factures",
   "Raison sociale *",
   "IFU *",
   "RCCM *",
