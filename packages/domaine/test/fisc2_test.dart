@@ -116,6 +116,27 @@ void main() {
     });
   });
 
+  group('la configuration fiscale ne va JAMAIS vers un téléphone (RG-13)', () {
+    test('les collections fiscales du poste sont toutes fermées au mobile', () {
+      expect(collectionsFiscalesJamaisMobile,
+          containsAll(['obligationsFiscales', 'historiqueObligations', 'echeancesFiscales', 'parametresFiscaux', 'situationsAib', 'baremeAib', 'reglagesAib', 'imputationsAib']));
+      expect(codeFiscalInterditAuMobile, 'fiscal_interdit_au_mobile');
+    });
+    test('une famille fiscale est fermée au mobile même si une définition le déclare', () {
+      for (final f in ['fiscal', 'bareme_aib', 'exercice', 'clinique', 'comptabilite']) {
+        expect(parFamillesJamaisMobile, contains(f), reason: f);
+        expect(Parametres.autoriseMobile({'mobile': true, 'sensible': false, 'famille': f}), isFalse, reason: 'famille « $f » déclarée mobile : refusée');
+      }
+    });
+    test('aucune définition du registre des familles fiscales ne déclare le téléphone', () {
+      for (final dfn in definitionsParametres) {
+        if (['fiscal', 'bareme_aib', 'exercice', 'clinique'].contains(dfn.famille)) {
+          expect(dfn.mobile, isFalse, reason: '${dfn.cle} ne va pas vers un téléphone');
+        }
+      }
+    });
+  });
+
   final d = AibDonnees(
     situations: liste(v['situations']),
     bareme: liste(v['bareme']),

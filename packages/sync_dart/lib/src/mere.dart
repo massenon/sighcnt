@@ -14,6 +14,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         Parametres,
         RefusMobile,
         cfbEssentielles,
+        collectionsFiscalesJamaisMobile,
         collectionsGestionJamaisMobile,
         collectionsGestionSynchronisees,
         cpcRefusRejeuBudget,
@@ -682,7 +683,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, ...collectionsFiscalesJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})
