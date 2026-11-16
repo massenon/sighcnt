@@ -232,4 +232,76 @@ void main() {
       } catch (_) {/* déjà arrêtée */}
     }
   }, timeout: const Timeout(Duration(seconds: 240)));
+
+  test('MESURE hors ligne prolongé : 300 décisions signées pendant trois jours de coupure, taille du journal local, délai de rejeu, ce que voit le fileul', () async {
+    const port = 19485, n = 300;
+    final d = Directory.systemTemp.createTempSync('cont-mesure');
+    addTearDown(() => d.deleteSync(recursive: true));
+    ConfigMere config() => ConfigMere(port: port, dbChemin: '${d.path}/mere.db', admin: 'secret-test', dossierSauvegardes: '${d.path}/sauvegardes', cleStockage: cleSqlite);
+    var mere = await Mere.creer(config());
+    await mere.demarrer();
+    final console = ClientMere(base: Uri.parse('http://127.0.0.1:$port'), secretAdmin: 'secret-test');
+    final moteur = MoteurFileul.creer(dbChemin: '${d.path}/f.db', mere: 'http://127.0.0.1:$port', nom: 'Laboratoire', cleStockage: cleSqlite);
+    final mm = Magasin({
+      'variablesLabo': [for (var i = 0; i < n; i++) {'id': 'V$i', 'statut': 'actif', 'libelle': 'Variable $i', 'aValider': true}],
+      'audit': const [],
+    });
+    final mf = Magasin({'audit': const []});
+    final pub = PublicateurConfiguration(mm, publierVersMereLocale(port: port, admin: 'secret-test'), delai: Duration.zero, collections: {...collectionsConfiguration()});
+    final appl = ApplicateurConfiguration(mf, moteur.liste);
+    final pontM = PontActivite(mm, TransportMereLocale(port: port, admin: 'secret-test'), etiquette: 'M');
+    final pontF = PontActivite(mf, TransportFileul(lire: moteur.liste, ecrireFiche: (c, f, {required existe, required champs}) => moteur.ecrire(c, f, existe: existe, champs: champs)), etiquette: 'F');
+    final service = ServiceDemandesValidation(mm, donnees: () async => donnees, horloge: () => DateTime.utc(2026, 11, 18));
+    var horloge = DateTime(2026, 11, 14, 8);
+    final dem = DemandesValidationPoste(mf, libelles: DemandesValidationPoste.libellesDesRoles(donnees.matrice), horloge: () => horloge, etiquette: 'F');
+    try {
+      await moteur.appairer(await console.codeAppareil('Laboratoire'));
+      moteur.demarrer();
+      final fin0 = DateTime.now().add(const Duration(seconds: 60));
+      while (mf.collection('variablesLabo').toutes.length != n) {
+        await pub.pousser();
+        await appl.tirer();
+        if (DateTime.now().isAfter(fin0)) fail('configuration');
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      }
+      await mere.arreter();
+      final taille0 = File('${d.path}/f.db').lengthSync();
+      for (var i = 0; i < n; i++) {
+        expect(dem.deposer('labo_variables', 'V$i', role: 'laborantin', acteur: 'Dr KINNOU').ok, isTrue);
+        horloge = horloge.add(const Duration(minutes: 14)); // 300 décisions étalées sur trois jours environ
+      }
+      await pontF.cycle();
+      final attente = (await moteur.instantane()).enAttente;
+      final taille1 = File('${d.path}/f.db').lengthSync();
+      final s = dem.synthese();
+      final octetsParDecision = jsonEncode(dem.demandes.first).length;
+      mere = await Mere.creer(config());
+      await mere.demarrer();
+      final t0 = DateTime.now();
+      final fin = DateTime.now().add(const Duration(seconds: 120));
+      while (!(dem.demandes.every((x) => x['etat'] == valEtatAppliquee) && mf.collection('variablesLabo').toutes.every((v) => v['aValider'] == false))) {
+        await pub.pousser();
+        await appl.tirer();
+        await pontF.cycle();
+        await pontM.cycle();
+        await service.traiter();
+        if (DateTime.now().isAfter(fin)) fail('rejeu non abouti en 120 s : ${dem.demandes.where((x) => x['etat'] == valEtatAppliquee).length}/$n');
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      final rejeu = DateTime.now().difference(t0);
+      expect(mm.collection(valCollectionDemandes).toutes, hasLength(n), reason: 'aucune décision doublée');
+      expect(mm.collection('audit').toutes.where((a) => a['action'] == 'Validation').length, n, reason: 'une ligne de journal par décision');
+      // ignore: avoid_print
+      print('MESURE CONT : $n décisions hors ligne ; file du moteur en attente $attente ; base locale du fileul ${taille0 ~/ 1024} Kio puis ${taille1 ~/ 1024} Kio ; '
+          '$octetsParDecision octets par décision ; pastille « ${s.libelle} » ; rejeu complet (aller, application, retour du verdict et de la configuration) en ${rejeu.inMilliseconds} ms');
+    } finally {
+      appl.arreter();
+      pontF.arreter();
+      pontM.arreter();
+      service.arreter();
+      try {
+        await mere.arreter();
+      } catch (_) {/* déjà arrêtée */}
+    }
+  }, timeout: const Timeout(Duration(seconds: 300)));
 }
