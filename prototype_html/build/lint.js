@@ -47,6 +47,12 @@ for (const f of files) {
   r.disparus.forEach((x) => { erreurs++; console.error(`\n✗ ${x.fichier} site disparu ${x.texte} : abaisser la liste (node build/garde-roles-en-dur.js --abaisser)`); });
 }
 
+/* LOT EXP : aucun tableau sans cases ni « Exporter » (composant commun, encarts, tableaux à la main équipés ou inscrits avec leur nature et leur motif). */
+{
+  const r = require('./garde-tableaux.js').analyser(path.join(ROOT, 'assets/js'));
+  r.fautes.forEach((x) => { erreurs++; console.error(`\n✗ garde des tableaux : ${x}`); });
+}
+
 console.log(`\nFichiers analysés : ${files.length}`);
 console.log(erreurs === 0 ? 'Syntaxe : CONFORME' : `Syntaxe : ${erreurs} fichier(s) en erreur`);
 process.exit(erreurs === 0 ? 0 : 1);

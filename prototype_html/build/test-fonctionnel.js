@@ -741,7 +741,7 @@ async function viderMessages(page) {
       await viderMessages(page);
       const r = await page.evaluate((lib) => {
         const t = document.querySelectorAll('#page-content table')[0];
-        const tr = t && [...t.querySelectorAll('tbody tr')].find((x) => x.cells[0].textContent.indexOf(lib) >= 0);
+        const tr = t && [...t.querySelectorAll('tbody tr')].find((x) => (x.querySelector('td:not([data-case-selection])') || x.cells[0]).textContent.indexOf(lib) >= 0);
         if (!tr) return 'ligne absente';
         const b = [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Exécuter');
         if (!b) return 'bouton absent';
@@ -7043,10 +7043,11 @@ async function viderMessages(page) {
     const mt = await page.evaluate(() => {
       const K = window.SIGH.kit;
       const chaines = K.miniTable(['Rubrique', 'Valeur'], [['Type', 'Eutocique'], ['Heure', '08h15']]);
-      const ths = [...chaines.querySelectorAll('th')].map((x) => x.textContent.trim());
-      const tds = [...chaines.querySelectorAll('td')].map((x) => x.textContent.trim());
+      /* lot EXP : la case de sélection (data-case-selection) n'est pas une cellule de données */
+      const ths = [...chaines.querySelectorAll('th:not([data-case-selection])')].map((x) => x.textContent.trim());
+      const tds = [...chaines.querySelectorAll('td:not([data-case-selection])')].map((x) => x.textContent.trim());
       const objets = K.miniTable([{ key: 'a', label: 'A' }], [{ a: 'x' }]);
-      const tdObj = objets.querySelector('td');
+      const tdObj = objets.querySelector('td:not([data-case-selection])');
       return { ths: ths.join('|'), tds: tds.join('|'), objet: tdObj ? tdObj.textContent.trim() : null };
     });
     verifier('miniTable en colonnes-chaînes rend ses en-têtes', mt.ths === 'Rubrique|Valeur', mt.ths);
@@ -14852,7 +14853,7 @@ async function viderMessages(page) {
     await pause(400);
     const service = await page.evaluate(() => {
       const types = ['Consultation', 'Contrôle', 'Urgence', 'Domicile'];
-      const lignes = [...document.querySelectorAll('#page-content table tbody tr')].map((tr) => (tr.cells[0] || {}).textContent.trim()).filter((t) => t && t !== 'TOTAL');
+      const lignes = [...document.querySelectorAll('#page-content table tbody tr')].map((tr) => (tr.querySelector('td:not([data-case-selection])') || tr.cells[0] || {}).textContent.trim()).filter((t) => t && t !== 'TOTAL');
       const services = new Set(window.SIGH.store.collection('personnel').active().map((a) => a.service));
       return { lignes, typesParmiLignes: lignes.filter((l) => types.indexOf(l) >= 0), inconnus: lignes.filter((l) => !services.has(l) && l !== 'Non renseigné') };
     });
@@ -15275,8 +15276,9 @@ async function viderMessages(page) {
       cases: document.querySelectorAll('#page-content thead input[type=checkbox]').length,
       unitaires: [...document.querySelectorAll('#page-content tbody button')].filter((b) => b.textContent.trim() === 'Valider').length,
     }));
-    verifier('Le workflow documentaire n’offre AUCUNE validation en masse (ni « Valider la sélection », ni case de sélection), seulement le geste unitaire',
-      !ged.masse && ged.cases === 0 && ged.unitaires > 0, JSON.stringify(ged));
+    /* lot EXP (16/11/2026) : les cases existent sur tout tableau, pour SORTIR des lignes ; aucune action de groupe ne valide. */
+    verifier('Le workflow documentaire n’offre AUCUNE validation en masse (ni « Valider la sélection », ni action de groupe qui valide), seulement le geste unitaire',
+      !ged.masse && ged.unitaires > 0, JSON.stringify(ged));
 
     /* --- restitution : fiches de sonde archivées (RG-14), fiches réelles et validations de pièces remises --------------------- */
     await sessionDe('admin');
@@ -21601,7 +21603,7 @@ async function viderMessages(page) {
     await poserSessionServeur(roleImp('stock'));
     await ouvrir('imp-transfert-lignes.html');
     const pageStock = await page.evaluate(() => ({ televerser: [...document.querySelectorAll('#page-content button')].some((b) => /Téléverser un fichier/.test(b.textContent)), restreint: /Jeu restreint/.test(document.getElementById('page-content').innerText),
-      modele: [...document.querySelectorAll('#page-content button')].some((b) => /Télécharger le modèle/.test(b.textContent)), colonnes: [...document.querySelectorAll('#page-content table tbody tr td:first-child')].map((t) => t.textContent.trim()) }));
+      modele: [...document.querySelectorAll('#page-content button')].some((b) => /Télécharger le modèle/.test(b.textContent)), colonnes: [...document.querySelectorAll('#page-content table tbody tr')].map((tr) => (tr.querySelector('td:not([data-case-selection])') || {}).textContent || '').map((t) => t.trim()) }));
     verifier('La page du jeu « bon de transfert » s’ouvre au gestionnaire de stock : modèle, téléversement, note « jeu restreint », colonnes lues de la déclaration',
       pageStock.televerser && pageStock.restreint && pageStock.modele && pageStock.colonnes.indexOf('Code article') >= 0 && pageStock.colonnes.indexOf('Service destinataire') >= 0, JSON.stringify(pageStock));
     await poserSessionServeur(roleImp('comptable'));
@@ -22239,9 +22241,9 @@ async function viderMessages(page) {
     const ouvrirHist = async (c) => { await page.evaluate((x) => { const b = document.querySelector('[data-historique-prix="' + x + '"]'); if (b) b.click(); }, c); await pause(600); };
     const lireModale = () => page.evaluate(() => {
       const m = document.querySelector('[data-historique-produit]'); if (!m) return null;
-      const lignes = [...m.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map((td) => td.innerText.replace(/\s+/g, ' ').trim()));
+      const lignes = [...m.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td:not([data-case-selection])')].map((td) => td.innerText.replace(/\s+/g, ' ').trim()));
       const dlg = m.closest('[role=dialog], .modal-root') || document.body;
-      return { produit: m.getAttribute('data-historique-produit'), titre: (dlg.querySelector('h2, h3, [data-modal-title]') || dlg).innerText.slice(0, 80), entetes: [...m.querySelectorAll('thead th')].map((x) => x.textContent.trim()), lignes: lignes, texte: m.innerText.replace(/\s+/g, ' ') };
+      return { produit: m.getAttribute('data-historique-produit'), titre: (dlg.querySelector('h2, h3, [data-modal-title]') || dlg).innerText.slice(0, 80), entetes: [...m.querySelectorAll('thead th:not([data-case-selection])')].map((x) => x.textContent.trim()), lignes: lignes, texte: m.innerText.replace(/\s+/g, ' ') };
     });
     await ouvrirHist(code);
     const m1 = await lireModale();
@@ -23124,7 +23126,7 @@ async function viderMessages(page) {
     await poserSessionServeur(roleImp('agentadmin'));
     await ouvrir('imp-courriers.html');
     const pc = await page.evaluate(() => ({ televerser: [...document.querySelectorAll('#page-content button')].some((b) => /Téléverser un fichier/.test(b.textContent)), restreint: /Jeu restreint/.test(document.getElementById('page-content').innerText),
-      modele: [...document.querySelectorAll('#page-content button')].some((b) => /Télécharger le modèle/.test(b.textContent)), colonnes: [...document.querySelectorAll('#page-content table tbody tr td:first-child')].map((t) => t.textContent.trim()) }));
+      modele: [...document.querySelectorAll('#page-content button')].some((b) => /Télécharger le modèle/.test(b.textContent)), colonnes: [...document.querySelectorAll('#page-content table tbody tr')].map((tr) => (tr.querySelector('td:not([data-case-selection])') || {}).textContent || '').map((t) => t.trim()) }));
     verifier('La page du jeu « courriers » s’ouvre à l’agent administratif : modèle, téléversement, note « jeu restreint », colonnes lues de la déclaration',
       pc.televerser && pc.restreint && pc.modele && pc.colonnes.indexOf('N° d’ordre') >= 0 && pc.colonnes.indexOf('Objet') >= 0 && pc.colonnes.indexOf('Document numérisé') < 0, JSON.stringify(pc));
     await ouvrir('imp-budgets.html');
@@ -25427,7 +25429,7 @@ async function viderMessages(page) {
       apres.majRefusee && apres.archRefusee && JSON.stringify(apres.apresEssai) === JSON.stringify(v1), JSON.stringify([apres.majRefusee, apres.archRefusee, apres.apresEssai]));
     await page.evaluate(() => document.querySelector('[data-historique-seuil="GB"]').click());
     await pause(400);
-    const hist = await page.evaluate(() => { const t = document.querySelector('[data-historique-seuils="GB"]'); return t ? [...t.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map((td) => td.textContent.trim()).join(' ')) : null; });
+    const hist = await page.evaluate(() => { const t = document.querySelector('[data-historique-seuils="GB"]'); return t ? [...t.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td:not([data-case-selection])')].map((td) => td.textContent.trim()).join(' ')) : null; });
     await A.cliquerModale('Fermer');
     verifier('L’historique liste les deux versions (la plus récente d’abord) avec leur validateur et leur motif : l’ancienne reste lisible',
       hist && hist.length === 2 && /^v2 Validé 2 G\/l 20\/08\/2026/.test(hist[0]) && /Version 2, seuil relevé/.test(hist[0]) && /^v1 Validé 1 G\/l 16\/08\/2026/.test(hist[1]) && /Version 1 du protocole/.test(hist[1]) && /GARBA Yahouza/.test(hist[1]), JSON.stringify(hist));
@@ -27222,6 +27224,200 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401|500|refusée/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CONT ETAPE 0 FIN */
+
+  /* LOT EXP DEBUT */
+  await etape(async () => {
+    scenario('Vague 190 : lot EXP, sortie des tableaux (cases par défaut, sélection gardée d’une page à l’autre, export .xlsx typé relu par SIGH.xlsx.lire, CSV gardé, tout exporter, impression des lignes cochées, colonnes masquées et rendus exclus, limite réglable refusée nommée sans troncature, journal RG-12, commande absente sans le droit et moteur qui refuse, encarts et tableaux à la main équipés)');
+    erreursJS = [];
+    const ADM = { role: 'admin', nom: 'ADMIN190', nomComplet: 'ADMIN190', fonction: 'admin', identifiant: 's190.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM);
+    await ouvrir('m8-factures.html');
+    /* L'interception des téléchargements : le nom ET les octets (lus par l'URL du blob avant sa révocation). */
+    const intercepter = () => page.evaluate(() => {
+      window.__sorties = [];
+      if (window.__sortieEspion) return;
+      window.__sortieEspion = true;
+      const orig = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function () {
+        if (this.download && /^blob:/.test(this.href)) {
+          const nom = this.download;
+          fetch(this.href).then((r) => r.arrayBuffer()).then((b) => { window.__sorties.push({ nom, octets: Array.from(new Uint8Array(b)) }); });
+          return;
+        }
+        return orig.apply(this, arguments);
+      };
+    });
+    await intercepter();
+    const etatDepart = await page.evaluate(() => {
+      const c = document.getElementById('page-content');
+      const t = c.querySelector('[data-tableau="factures"]');
+      return {
+        tout: !!(t && t.querySelector('thead input[type="checkbox"][aria-label="Tout sélectionner"]')),
+        cases: t ? t.querySelectorAll('tbody td[data-case-selection="ligne"] input[type="checkbox"]').length : 0,
+        exporter: !!(t && t.querySelector('button[data-commande="exporter"]')),
+        total: Number(((t && t.textContent.match(/sur (\d+) enregistrement/)) || [])[1] || 0),
+        audit0: window.SIGH.store.collection('audit').all().length,
+      };
+    });
+    verifier('Cases par défaut sur le tableau commun (« Tout sélectionner » et une case par ligne) et commande « Exporter » posée par le composant',
+      etatDepart.tout && etatDepart.cases > 0 && etatDepart.exporter && etatDepart.total > 15, JSON.stringify(etatDepart));
+
+    /* trois lignes cochées en page 1, une en page 2 : la sélection se garde d'une page à l'autre */
+    const cocher = (rang) => page.evaluate((r) => { const cs = [...document.querySelectorAll('[data-tableau="factures"] tbody td[data-case-selection="ligne"] input')]; cs[r].click(); }, rang);
+    const numeroDe = (rang) => page.evaluate((r) => { const tr = [...document.querySelectorAll('[data-tableau="factures"] tbody tr')][r]; return tr.cells[1].textContent.trim(); }, rang);
+    const numeros = [];
+    for (const r of [0, 1, 2]) { numeros.push(await numeroDe(r)); await cocher(r); await pause(150); }
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[data-tableau="factures"] button')].find((x) => x.textContent.trim() === '2'); b.click(); });
+    await pause(300);
+    numeros.push(await numeroDe(0)); await cocher(0); await pause(150);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[data-tableau="factures"] button')].find((x) => x.textContent.trim() === '1'); b.click(); });
+    await pause(300);
+    const sel = await page.evaluate(() => {
+      const t = document.querySelector('[data-tableau="factures"]');
+      const c = t.querySelector('[data-compte-selection]');
+      return { n: c.dataset.compteSelection, texte: c.textContent, coches: t.querySelectorAll('tbody td[data-case-selection="ligne"] input:checked').length,
+        exporterSel: !!t.querySelector('button[data-commande="exporter-selection"]'), imprimerSel: !!t.querySelector('button[data-commande="imprimer-selection"]') };
+    });
+    verifier('La sélection se GARDE d’une page à l’autre : 4 lignes cochées (3 en page 1, 1 en page 2), comptées et dites ; « Exporter la sélection » et « Imprimer la sélection » sont posés',
+      sel.n === '4' && /4 lignes sélectionnées/.test(sel.texte) && sel.coches === 3 && sel.exporterSel && sel.imprimerSel, JSON.stringify(sel));
+
+    /* export .xlsx des lignes cochées, relu par le lecteur du dépôt */
+    await page.evaluate(() => document.querySelector('[data-tableau="factures"] button[data-commande="exporter"]').click());
+    await pause(400);
+    const fen = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"] [data-sortie-tableau]');
+      const choix = d ? [...d.querySelectorAll('[data-perimetre]')].map((l) => ({ id: l.dataset.perimetre, coche: l.querySelector('input').checked, texte: l.textContent.trim() })) : [];
+      return { ok: !!d, choix, formats: [...document.querySelectorAll('[role="dialog"] button[data-format]')].map((b) => b.dataset.format), texte: d ? d.textContent : '' };
+    });
+    verifier('La fenêtre dit le périmètre (« Les 4 lignes cochées » choisi d’office, « Tout exporter » toutes pages) et les formats (.xlsx, CSV gardé, impression) ; la limite est dite',
+      fen.ok && fen.choix[0] && fen.choix[0].id === 'selection' && fen.choix[0].coche && /Les 4 lignes cochées/.test(fen.choix[0].texte) && fen.choix.some((c) => c.id === 'tout' && /Tout exporter/.test(c.texte))
+      && JSON.stringify(fen.formats) === JSON.stringify(['xlsx', 'csv', 'impression']) && /Limite par export/.test(fen.texte), JSON.stringify(fen));
+    await page.evaluate(() => document.querySelector('[role="dialog"] button[data-format="xlsx"]').click());
+    await page.waitForFunction(() => window.__sorties.length >= 1, { timeout: 15000 }).catch(() => null);
+    const xl = await page.evaluate((nums) => {
+      const s = window.__sorties[0]; if (!s) return { erreur: 'aucun fichier' };
+      const X = window.SIGH.xlsx, c = X.lire(new Uint8Array(s.octets)), f = c.feuilles[0];
+      const tete = f.lignes[0], iNum = tete.indexOf('N° facture'), iDate = tete.indexOf('Date'), iMont = tete.indexOf('Montant');
+      const fac = window.SIGH.store.collection('factures').all();
+      const corps = f.lignes.slice(1);
+      const attendus = corps.map((l) => fac.find((x) => String(l[iNum]).indexOf(x.numero) === 0));
+      return { nom: s.nom, feuille: f.nom, tete, lignes: corps.length,
+        numerosOk: corps.every((l) => nums.some((n) => n.indexOf(String(l[iNum]).split(' ')[0]) === 0)),
+        montantsNombres: corps.every((l) => typeof l[iMont] === 'number'), formatDate: corps.every((l, k) => f.formats[k + 1][iDate] === 14 && typeof l[iDate] === 'number'),
+        datesOk: corps.every((l, k) => attendus[k] && X.versDate(l[iDate]) === attendus[k].date),
+        somme: corps.reduce((t, l) => t + l[iMont], 0), sommeAttendue: attendus.reduce((t, x) => t + (x ? Number(x.montantTTC) : NaN), 0),
+        sansActions: tete.indexOf('Actions') < 0 };
+    }, numeros);
+    verifier('Le classeur .xlsx (nom et feuille datés) porte EXACTEMENT les 4 lignes cochées, l’en-tête des colonnes visibles, les montants en NOMBRES (somme = total des 4 factures) et les dates en DATES (format 14, série relue à la date de la facture)',
+      !xl.erreur && /^factures-\d{4}-\d{2}-\d{2}\.xlsx$/.test(xl.nom) && /\d{4}-\d{2}-\d{2}$/.test(xl.feuille) && xl.lignes === 4 && xl.numerosOk && xl.montantsNombres && xl.formatDate && xl.datesOk
+      && xl.somme === xl.sommeAttendue && xl.sansActions, JSON.stringify(xl));
+    const jx = await page.evaluate((a0) => {
+      const a = window.SIGH.store.collection('audit').all(), e = a.find((x) => x.entite === 'Tableau' && x.format === 'xlsx');
+      const fac = window.SIGH.store.collection('factures').all();
+      return { plus: a.length - a0, e: e ? { action: e.action, perimetre: e.perimetre, lignes: e.lignes, refs: e.references, total: e.referencesTotal, util: e.utilisateur, reference: e.reference } : null,
+        sansContenu: e ? !fac.some((f) => f.patient && JSON.stringify(e).indexOf(f.patient) >= 0) : false, refsConnues: e ? e.references.every((r) => fac.some((f) => f.id === r)) : false };
+    }, etatDepart.audit0);
+    verifier('Journal RG-12 : l’export est tracé (auteur, écran, format, périmètre « selection », 4 lignes, les 4 identifiants des fiches), jamais le contenu d’une cellule',
+      jx.e && jx.e.action === 'Export d’un tableau (.xlsx)' && jx.e.perimetre === 'selection' && jx.e.lignes === 4 && jx.e.refs.length === 4 && jx.e.total === 4 && jx.refsConnues && jx.sansContenu && !!jx.e.util && jx.e.reference === 'm8-factures', JSON.stringify(jx));
+
+    /* une colonne masquée par l'agent ne sort pas ; le CSV reste */
+    await page.evaluate(() => { [...document.querySelectorAll('[data-tableau="factures"] button')].find((b) => /Colonnes/.test(b.textContent)).click(); });
+    await pause(300);
+    await page.evaluate(() => { const l = [...document.querySelectorAll('[role="dialog"] label')].find((x) => x.textContent.trim() === 'Nature'); l.querySelector('input').click(); });
+    await page.evaluate(() => { [...document.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent.trim() === 'Fermer').click(); });
+    await pause(300);
+    await page.evaluate(() => { window.__sorties = []; document.querySelector('[data-tableau="factures"] button[data-commande="exporter-selection"]').click(); });
+    await pause(400);
+    await page.evaluate(() => document.querySelector('[role="dialog"] button[data-format="csv"]').click());
+    await page.waitForFunction(() => window.__sorties.length >= 1, { timeout: 15000 }).catch(() => null);
+    const csv = await page.evaluate(() => { const s = window.__sorties[0]; if (!s) return null; const t = new TextDecoder().decode(new Uint8Array(s.octets)); const l = t.replace(/^﻿/, '').split('\r\n'); return { nom: s.nom, tete: l[0], n: l.length - 1 }; });
+    verifier('La colonne masquée par l’agent (« Nature ») ne sort pas ; le CSV est gardé à côté du .xlsx (4 lignes cochées, en-tête sans la colonne masquée)',
+      csv && /^factures-\d{4}-\d{2}-\d{2}\.csv$/.test(csv.nom) && csv.n === 4 && !/Nature/.test(csv.tete) && /Montant/.test(csv.tete), JSON.stringify(csv));
+
+    /* tout exporter : toutes les lignes du tableau, toutes pages, en un seul fichier */
+    await page.evaluate(() => { window.__sorties = []; document.querySelector('[data-tableau="factures"] button[data-commande="exporter"]').click(); });
+    await pause(400);
+    await page.evaluate(() => { const r = document.querySelector('[role="dialog"] [data-perimetre="tout"] input'); r.click(); document.querySelector('[role="dialog"] button[data-format="xlsx"]').click(); });
+    await page.waitForFunction(() => window.__sorties.length >= 1, { timeout: 20000 }).catch(() => null);
+    const masse = await page.evaluate(() => { const s = window.__sorties[0]; if (!s) return null; const f = window.SIGH.xlsx.lire(new Uint8Array(s.octets)).feuilles[0]; return { n: f.lignes.length - 1 }; });
+    verifier('« Tout exporter » écrit TOUTES les lignes du tableau (toutes pages, pas seulement la page affichée) en un seul classeur',
+      masse && masse.n === etatDepart.total, JSON.stringify({ masse, total: etatDepart.total }));
+
+    /* la limite réglable : au-delà, refus NOMMÉ, aucun fichier, aucun journal ; jamais tronqué */
+    const lim = await page.evaluate(async () => {
+      const U = window.SIGH.ui, S = window.SIGH.store, avant = S.reglage('exportLimiteLignes', undefined);
+      const r0 = U.definirLimiteSortie(3, '');
+      const r1 = U.definirLimiteSortie(3, 'Sonde 190');
+      const a0 = S.collection('audit').all().filter((x) => x.entite === 'Tableau').length;
+      window.__sorties = [];
+      const ref = await U.sortirLignes({ format: 'xlsx', colonnes: [{ key: 'numero', label: 'N°' }], lignes: S.collection('factures').all().slice(0, 4), perimetre: 'selection', nom: 'sonde190' });
+      await new Promise((r) => setTimeout(r, 600));
+      const a1 = S.collection('audit').all().filter((x) => x.entite === 'Tableau').length;
+      const ok3 = await U.sortirLignes({ format: 'csv', colonnes: [{ key: 'numero', label: 'N°' }], lignes: S.collection('factures').all().slice(0, 3), perimetre: 'selection', nom: 'sonde190' });
+      S.setReglage('exportLimiteLignes', avant);
+      return { r0: r0.code, r1: r1.ok, ref: { ok: ref.ok, code: ref.code, motif: ref.motif, geste: ref.geste }, fichiers: window.__sorties.length, journal: a1 - a0, ok3: ok3.ok, limiteRendue: U.limiteSortie(), defaut: U.LIMITE_SORTIE_DEFAUT };
+    });
+    verifier('La limite de lignes est un RÉGLAGE en base (motif exigé) ; au-delà, refus nommé EXPORT_AU_DELA_DE_LA_LIMITE (le nombre, la limite, le geste), aucun fichier tronqué ni journal ; à la limite, l’export passe ; réglage restauré',
+      lim.r0 === 'MOTIF_REQUIS' && lim.r1 && lim.ref.ok === false && lim.ref.code === 'EXPORT_AU_DELA_DE_LA_LIMITE' && /4 lignes demandées/.test(lim.ref.motif) && /3 lignes/.test(lim.ref.motif) && /Affiner/.test(lim.ref.geste)
+      && lim.journal === 0 && lim.ok3 === true && lim.limiteRendue === lim.defaut, JSON.stringify(lim));
+
+    /* impression des lignes cochées : un seul tableau, les 4 lignes, pied normalisé */
+    await page.evaluate(() => document.querySelector('[data-tableau="factures"] button[data-commande="imprimer-selection"]').click());
+    await pause(700);
+    const imp = await page.evaluate(() => { const s = document.querySelector('.print-sheet'); if (!s) return null; const t = s.querySelector('table'); return { lignes: t ? t.querySelectorAll('tbody tr').length : 0, nature: t ? /Nature/.test(t.querySelector('thead').textContent) : null, cases: s.querySelectorAll('input[type="checkbox"]').length, pied: /Document généré par/.test(s.textContent), sous: /4 ligne/.test(s.textContent) }; });
+    await page.evaluate(() => { const b = [...document.querySelectorAll('.print-chrome button')].find((x) => /Fermer/.test(x.textContent)); if (b) b.click(); });
+    await pause(300);
+    verifier('« Imprimer la sélection » imprime UN tableau des 4 lignes cochées (sans la colonne masquée, sans case), en-tête officiel et pied normalisé',
+      imp && imp.lignes === 4 && imp.nature === false && imp.cases === 0 && imp.pied && imp.sous, JSON.stringify(imp));
+
+    /* une cellule rendue autrement que sa valeur sort sous le TEXTE montré (jamais la valeur brute) ; un nombre formaté sort en nombre */
+    const cel = await page.evaluate(() => {
+      const U = window.SIGH.ui, el = window.SIGH.core.el;
+      const masque = { key: 'telephone', label: 'Téléphone', render: () => el('span', { text: '•• •• 12 34' }) };
+      const mont = { key: 'montant', label: 'Montant', render: (r) => el('span', { text: window.SIGH.core.money(r.montant, false) }) };
+      const date = { key: 'date', label: 'Date', text: (r) => window.SIGH.core.dateFR(r.date) };
+      const r = { telephone: '+229 97 00 12 34', montant: 12500, date: '2026-08-14' };
+      return { masque: U.celluleSortie(masque, r), mont: U.celluleSortie(mont, r), date: U.celluleSortie(date, r) };
+    });
+    verifier('Une colonne MASQUÉE par son rendu sort sous le texte montré (jamais la valeur brute) ; un montant formaté sort en nombre, une date jj/mm/aaaa en date',
+      cel.masque === '•• •• 12 34' && cel.mont === 12500 && cel.date && cel.date.date === '2026-08-14', JSON.stringify(cel));
+
+    /* le droit : retiré à un rôle par la fiche RBAC, la commande est ABSENTE et le moteur refuse ; rendu, elle revient */
+    const fiche = async (val) => {
+      await poserSessionServeur(ADM);
+      await page.evaluate((v) => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'caissier')[0];
+        if (!window.__fiche190) window.__fiche190 = { existait: !!f, avant: f ? JSON.stringify(f.droitsGestes || {}) : '{}' };
+        const g = Object.assign({}, (f && f.droitsGestes) || {}); if (v === null) delete g.exporter_donnees; else g.exporter_donnees = v;
+        if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'caissier', statut: 'actif', droitsGestes: g }); window.SIGH.nav.invaliderRbac(); }, val);
+    };
+    const lireCaissier = async () => {
+      await poserSessionServeur({ role: 'caissier', nom: 'CAISSE190', nomComplet: 'CAISSE190', fonction: 'caissier', identifiant: 's190.caissier', secteur: 'CAI' });
+      await ouvrir('m8-factures.html');
+      return page.evaluate(async () => {
+        const t = document.querySelector('[data-tableau="factures"]');
+        const r = await window.SIGH.ui.sortirLignes({ format: 'csv', colonnes: [{ key: 'numero', label: 'N°' }], lignes: window.SIGH.store.collection('factures').all().slice(0, 1), nom: 'sonde190' });
+        return { tableau: !!t, exporter: !!(t && t.querySelector('button[data-commande="exporter"]')), cases: !!(t && t.querySelector('tbody input[type="checkbox"]')), refus: r.ok ? 'ok' : r.code, motif: r.motif || '' };
+      });
+    };
+    await fiche(false);
+    const sans = await lireCaissier();
+    await fiche(true);
+    const avec = await lireCaissier();
+    await poserSessionServeur(ADM);
+    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'caissier')[0]; const o = window.__fiche190;
+      if (f) { if (o.existait) col.update(f.id, { droitsGestes: JSON.parse(o.avant) }); else col.archive(f.id); } window.__fiche190 = null; window.SIGH.nav.invaliderRbac(); });
+    verifier('Sans le droit (fiche RBAC du caissier, exporter_donnees = false), « Exporter » est ABSENT du tableau et le moteur refuse EXPORT_NON_AUTORISE en nommant le profil ; accordé, la commande revient ; fiche restaurée',
+      sans.tableau && !sans.exporter && sans.refus === 'EXPORT_NON_AUTORISE' && /Caissier/i.test(sans.motif) && avec.exporter && avec.refus === 'ok', JSON.stringify({ sans, avec }));
+
+    /* encarts et tableaux à la main : équipés ; la garde de génération est exacte */
+    await ouvrir('dash-direction.html');
+    const enc = await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content [data-tableau-equipe="oui"]')]; return { barres: b.length, exporter: b.filter((x) => x.querySelector('button[data-commande="exporter"]')).length, cases: document.querySelectorAll('#page-content td[data-case-selection="ligne"]').length }; });
+    const garde = require('./garde-tableaux.js').analyser(path.join(ROOT, 'assets/js'));
+    verifier('Les encarts (K.miniTable) portent cases et « Exporter » ; la garde de génération énumère tous les tableaux hors composant (équipés ou inscrits avec leur nature et leur motif) et ne relève aucune faute',
+      enc.barres > 0 && enc.exporter === enc.barres && enc.cases > 0 && garde.fautes.length === 0 && garde.inventaire.equipe >= 9, JSON.stringify({ enc, garde: garde.fautes.slice(0, 3), inv: garde.inventaire }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT EXP FIN */
 
 
 

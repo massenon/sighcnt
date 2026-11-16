@@ -1020,6 +1020,8 @@
         });
 
         t.appendChild(tb);
+        /* Lot EXP : les résultats d'une demande se cochent et s'exportent (garde-tableaux : consultation). */
+        corps.appendChild(U.equiperTableau(t, { nom: 'resultats-demande', titre: 'Résultats de la demande' }));
         tableau.appendChild(t);
         corps.appendChild(tableau);
 
@@ -2198,7 +2200,7 @@
         t.appendChild(tb);
         var m = U.modal({
           title: 'Versions du seuil : ' + v.libelle, subtitle: v.examenLibelle, size: 'xl',
-          body: el('div.space-y-3', null, [K.note('Une version validée ne se réécrit jamais : une alerte déjà levée garde le seuil sous lequel elle l’a été.', { tone: 'info', icon: 'history' }), el('div.card', null, el('div.overflow-x-auto', null, t))]),
+          body: el('div.space-y-3', null, [K.note('Une version validée ne se réécrit jamais : une alerte déjà levée garde le seuil sous lequel elle l’a été.', { tone: 'info', icon: 'history' }), U.equiperTableau(t, { nom: 'historique-seuil', titre: 'Historique du seuil' }), el('div.card', null, el('div.overflow-x-auto', null, t))]),
           footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
         });
       }
@@ -3558,6 +3560,8 @@
       ]));
     });
     t.appendChild(tb);
+    /* Lot EXP : les valeurs d'une tendance se cochent et s'exportent (garde-tableaux : consultation). */
+    corps.appendChild(U.equiperTableau(t, { nom: 'tendance-valeurs', titre: 'Valeurs de la tendance' }));
     corps.appendChild(el('div.card', null, el('div.overflow-x-auto', null, t)));
     if (m.cachees.length) {
       corps.appendChild(K.note(C.num(m.cachees.length) + ' mesure(s) rendue(s) de cet examen sont hors de votre périmètre et ne figurent pas sur la courbe : ' + m.motif + '.',
@@ -3767,6 +3771,8 @@
             tb.appendChild(el('tr', null, cells));
           });
           t.appendChild(tb);
+          /* Lot EXP : le comparatif se coche et s'exporte (garde-tableaux : consultation). */
+          tableau.appendChild(U.equiperTableau(t, { nom: 'comparatif', titre: 'Comparatif des antériorités' }));
           tableau.appendChild(el('div.card', null, el('div.overflow-x-auto', null, t)));
           tableau.appendChild(K.note('Les colonnes se lisent de gauche à droite, de la plus ancienne à la mesure comparée. Les valeurs en '
             + 'gras sont hors des références <strong>de leur époque</strong> : chaque colonne se compare aux '

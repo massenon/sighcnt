@@ -182,3 +182,13 @@ test('lot C : le geste « corriger le texte lu » est donné D\'ORIGINE aux seul
   for (const r of rbac.roles.filter((x) => x.archive)) assert.equal(rbac.gestes.parRole[r.id].corriger_texte_ocr, 0, r.id);
   for (const r of ['admin', 'da', 'medecin', 'infirmier', 'reception', 'agentadmin']) assert.equal(rbac.gestes.parRole[r].corriger_texte_ocr, 1, r);
 });
+
+test('lot EXP : le geste « exporter ou imprimer les lignes d\'un tableau » est donné D\'ORIGINE à chaque rôle de la matrice (Direction 15/11/2026, AH 39 : défaut, les rôles qui lisent l\'écran) ; liste dérivée des rôles, aucun rôle archivé', () => {
+  const g = rbac.gestes.jeux.find((x) => x.id === 'exporter_donnees');
+  assert.ok(g, 'le geste est déclaré');
+  assert.equal(g.ecran, null); assert.equal(g.module, null);
+  const actifs = rbac.roles.filter((r) => !r.archive).map((r) => r.id).sort();
+  assert.deepEqual([...g.rolesDefaut].sort(), rbac.roles.map((r) => r.id).sort(), 'liste d\'origine = tous les rôles déclarés');
+  for (const r of actifs) assert.equal(rbac.gestes.parRole[r].exporter_donnees, 1, r);
+  for (const r of rbac.roles.filter((x) => x.archive)) assert.equal(rbac.gestes.parRole[r.id].exporter_donnees, 0, r.id);
+});

@@ -218,6 +218,12 @@
       rolesDefaut: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'] },
     { id: 'regler_circuit_cloture', libelle: 'Régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre)', module: 'M12', ecran: 'm12-cloture',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
+       « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
+       détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en
+       exploitation part de zéro, comme pour tout geste réservé. Le composant de tableau rend la commande ABSENTE sans le droit et le moteur de sortie refuse aussi. */
+    { id: 'exporter_donnees', libelle: 'Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)', module: null, ecran: null,
+      rolesDefaut: Object.keys(ROLES) },
   ];
   var GESTES_INDEX = {};
   GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });

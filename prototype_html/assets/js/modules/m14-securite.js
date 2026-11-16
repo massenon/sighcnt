@@ -558,6 +558,8 @@
           tb.appendChild(tr);
         });
         t.appendChild(tb);
+        /* Lot EXP : la matrice se coche et s'exporte (garde-tableaux : consultation). */
+        matrice.appendChild(U.equiperTableau(t, { nom: 'matrice-roles', titre: 'Matrice des rôles et des modules' }));
         matrice.appendChild(t);
 
         wrap.appendChild(K.note('Chaque case résume les trois droits du rôle sur le module : '

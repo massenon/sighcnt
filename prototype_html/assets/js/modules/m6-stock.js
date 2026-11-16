@@ -1239,7 +1239,9 @@
           el('td'),
           el('td.text-right.num', { text: C.money(totalValeur(lg), false) }),
         ])));
-        return el('div.overflow-x-auto.transfert-lignes', null, t2);
+        /* Lot EXP : les lignes d'un bon se cochent et s'exportent (garde-tableaux : consultation). */
+        var barreLg = U.equiperTableau(t2, { nom: 'lignes-bon', titre: 'Lignes du bon' });
+        return el('div', null, [barreLg, el('div.overflow-x-auto.transfert-lignes', null, t2)]);
       }
 
       function etat(t) {
