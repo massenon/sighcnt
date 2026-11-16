@@ -41,6 +41,12 @@ List<({String code, String libelle})> qualPointsDepuisParametre(Object? valeur) 
 
 String qualPointsVersParametre(Iterable<({String code, String libelle})> points) => points.map((p) => '${p.code}=${p.libelle}').join(';');
 
+/// Les réponses et les liens de la collecte en ligne ne vont JAMAIS vers un téléphone (RG-13) : un téléphone perdu n'emporte ni réponse, ni commentaire, ni lien de collecte.
+const Set<String> qualCollectionsJamaisMobile = {'reponsesEnquetes', 'jetonsEnquete'};
+
+/// Le code du refus d'un lot de tournée qui nomme l'une d'elles.
+const String qualCodeInterditAuMobile = 'satisfaction_interdite_au_mobile';
+
 /// Les limites de la collecte en ligne (ADR-0009) : mêmes valeurs que le relais.
 const int qualLiensMax = 200;
 const int qualTexteMax = 1000;

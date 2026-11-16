@@ -1,0 +1,26 @@
+{
+ "_doc": "ENGENDRÉ par apps/web/tests/navigateur/satisfaction.cjs : l’enveloppe réellement postée par la page publique dans Chrome. Clé de test du banc.",
+ "jeton": "jetonnavigateur0123456789",
+ "cle": "ymESaeFfptM1aFUtzo+P8K2oEs5MI8gypuihz1unky4=",
+ "enveloppe": {
+  "v": 1,
+  "id": "f47d3e69fadade0fe5b6e4db669f2bb7",
+  "epk": "jnwa1z+2kxqWSg1N+PQwkE0UOOfEeCnybxAX+oAXGD0=",
+  "iv": "QIYtbFoyG1gXdL2K",
+  "ct": "BrEKs5jq+hS+d5E5IhUwIAVUHf33thyEapYqYEyidpFQuVDHT2O4xdpzEWkaSVhjlgK8zG+VVm+JLfRP4oVUtyuJsPU/F6ezZa5Nd6KwKvTQMQBec6fMRlq1q0fePmoCe6kgF5w2xB6zu5dFUiA3J4WShLw06DvkzZcj/Hpf9h+FfjCjzJlK+6d+t0ZQT+dmEonhKFOo8hloEL5YBFuBtXnsVSXH17ykVZgOdLbXe+EUA+p4cqVSGOqPQGlL3tpUcYbDJV5hlDx7EU+i/NQVM/F7lYicHMAjiD5sWDCnudFak5TbD4kdIK4yeN9uXXqmx1298QocPZN2kXUvhuVp3EDqsfGewAE4EkI+MB3hUQXk8cTu7hADoh5JyQLuQV20DB52jIet0I0f2yRdSUv4YwiHGnPfqYKDQ+o24n9C/IHX9+nCSNfKfkiGdX5rPDKxDv2XtfLyeoDzWesc5aCGxOrtgyKXRzGeNNWZLH3vGZFwNXl+lk1NFXh1kUa5X8K8z1UgvNZrAfInp8ds26FGR84Bse/1JpWeprCBAWxSRl3qBirFUWsSGephEKf51GgrkgJB2Mlw6dteIjcyk3bx8xLD1KN507NPeqh9N+wPs7K1NmfD2oSrWoU7J8d/PHghRjTc+XvU6DOQ9XDTUGB5uMg6DKU9cQ9W1k5UOSA02Yt2fBU75T2xkCAlyRH/FSZUUJeV1o0IzwZyQyXagvxrmE0l03B/5uTzFvrcqWkOcoHSpsr+b8mkE/wM3B+TqeJYcBmmAtivM0zzUJDeJHHZ1FRi1Nst6AG4L131i0vrfX3XdIE1y96ppNvSpVJ8inYx4Siawhal0iroJjyaA4Kh/NYbr6FU/s8NaiW0fCbe1ZcGcuSotbZRN6ZeCnRexVlf+VKmBsZ84Lhk54NZfUUs3AzR/EDoDcOvVMEjt4B4eFOnvfb7gv9Njy22KRX19PT3Xn0TCi9+vSeGKAO852hf7pcCqzi0u0sLOAbHXSHyrEjC4KUN2SmvK4i8OQaE716dEpXVxsaJLO2U2QnFfO5J1gPcUyWjX4NNPvXw8fy/2d4scmjw9vcd4z24M0OKPkZ39vmUaI7gxCC/rYGkYHh5PI5Cbe7hDFBObplqPc7fhBElYqu0bJULubkYV+g2sIzAOayD3e236+NllWs9IRV1iXG0/HbhY6ljWfjDHlVgAzmS6eVT2D+PCrpLv+epbllvxUeQM7j+QPBGzkgCXQzLtK99aRBvt7T14V1SgKBA83taGvHzGkB29L5CA4GcrPTyS6IkJi+AKFM5OsI77YBhpj8vkit4HzCVyx/z2fo+v2ZSvZlbj+lnECF/LCy1SanZvcJ2TQ3EQ87c2jDb0giw260oNMf1nljWt35VnzuVkiA=",
+  "piege": ""
+ },
+ "clairAttendu": {
+  "enquete": "ENQ0001",
+  "version": "V1",
+  "point": "accueil",
+  "langue": "fr",
+  "reponses": {
+   "Q_A": 5,
+   "Q_R": "Oui",
+   "Q_T": "Très bon accueil, merci"
+  }
+ },
+ "cookies": [],
+ "titre": "Votre avis"
+}
