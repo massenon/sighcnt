@@ -486,3 +486,15 @@ La Direction a validé d'un bloc les 42 propositions de l'assistant de travail, 
 **F. Tableaux.** (38) Le CSV est gardé à côté du `.xlsx`. (39) Droit réservé réglable par rôle pour exporter, défaut : les rôles qui lisent l'écran. (40) Limite de lignes par export : aucune valeur proposée, à fixer sur la plus grande table réelle. (41) La sélection est conservée d'une page à l'autre jusqu'à ce que l'agent la vide. (42) Imprimer la sélection : un seul tableau par défaut, un état par ligne là où un document unitaire existe. **« En masse » = toutes les lignes d'un tableau en un seul fichier** (confirmé le 15/11/2026).
 
 **Conséquences pour les lots** : CONT (en cours) applique E ; TARIF-FIX applique 18 ; CLO-3 applique 3, 4 et 5 (réglages et droits propres, validateur RG-04 au module d'achats) ; trois lots nouveaux : SYNC-CFG (26), PARAM-CLINIQUE (10, 14), INVENT-NC (12) ; AST-1 applique 8, 9, 11, 16, 17 ; EXP applique F ; le point 32 attend une mesure sur l'hébergement réel.
+
+## AI. Lot CONT (16/11/2026, maquette, domaine, synchronisation, poste) : continuité de service des validations, ce qui reste à trancher par la Direction
+
+Les principes P1 à P5 et le refus de promouvoir un fileul en mère de secours sont décidés (section AH, points 36 et 37). Le lot les applique : `docs/architecture/CONTINUITE-validations-en-attente.md`, `docs/prd/PRD-CONTINUITE-validations-en-attente.md`, `ECARTS-MAQUETTE.md` E2663 à E2667. Hypothèses écrites plutôt qu'inventées :
+
+- **Délai d'alerte d'une décision qui attend la mère.** Paramètre de clinique en base, défaut semé **24 heures** (aucun document ne le fixe ; c'est la valeur déjà retenue pour « état inconnu » d'un poste). L'alerte va au profil de la famille et à l'administrateur, jamais un blocage. ☐ Accepter 24 h ☐ Autre valeur : ____ h ☐ Prévenir aussi la Directrice Administrative.
+- **La mère croit le rôle de la session du fileul.** Elle refait tous les contrôles sous le rôle et le nom inscrits sur la décision (comme pour les demandes de prix), mais ne vérifie pas que ce compte existe avec ce rôle dans les comptes de la clinique. ☐ Accepter ☐ Exiger ce contrôle (refus nommé si le compte ou le rôle ne correspond pas).
+- **Date de la validation = date de la signature.** Une décision signée lundi et appliquée mercredi (mère coupée) porte la date de lundi ; la date d'application est gardée sur la décision (`traiteLe`). ☐ Accepter ☐ Porter la date d'application.
+- **Commandes de stock gros (RG-04) : la validation ne se fait que sur le poste où la commande a été créée** (la collection `commandes` ne voyage pas). La Directrice Administrative doit donc venir sur le poste du gestionnaire. ☐ Synchroniser les commandes (lot à faire, avec le réglage du validateur, section AH point 4) ☐ Garder ainsi.
+- **La liste de qui décide un prix (administrateur, DAF, Direction) est une constante du domaine**, pas un réglage. ☐ En faire un réglage de clinique ☐ Garder ainsi (décision T11).
+- **La pastille compte les décisions de validation, les demandes de prix et les demandes d'import** de CE poste qui attendent la mère. ☐ Accepter ☐ N'y compter que les validations.
+

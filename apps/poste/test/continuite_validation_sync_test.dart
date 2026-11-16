@@ -32,14 +32,6 @@ Magasin poste() => Magasin({
       'audit': const [],
     });
 
-Future<void> _attendre(bool Function() condition, String quoi, {int secondes = 40}) async {
-  final fin = DateTime.now().add(Duration(seconds: secondes));
-  while (!condition()) {
-    if (DateTime.now().isAfter(fin)) fail('délai dépassé : $quoi');
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-  }
-}
-
 int lignesValidation(Magasin m, String cible) => m.collection('audit').toutes.where((a) => a['action'] == 'Validation' && '${a['reference']}' == cible).length;
 
 void main() {
