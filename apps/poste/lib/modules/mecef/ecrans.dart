@@ -1216,7 +1216,8 @@ class _EtatConfig extends State<EcranMecefConfig> {
   Widget _carteMode(ContexteEcran c) {
     final mag = c.magasin;
     final fileul = ServiceInstallation.de(mag).rattache;
-    final peut = c.donnees?.matrice.droitGeste(c.role, mecefGesteMode) ?? false;
+    final peut = !fileul && c.droit.editer && (c.donnees?.matrice.droitGeste(c.role, mecefGesteMode) ?? false);
+    final service = serviceParametres(mag, auteur: () => acteur(c).nom, horloge: () => c.aujourdhui);
     return ListenableBuilder(
         listenable: mag.collection(parCollectionParametres),
         builder: (ctx, _) {

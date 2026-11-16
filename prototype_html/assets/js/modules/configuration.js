@@ -26,7 +26,7 @@
   function CF() { return global.SIGH.configurationFiscale; }
   function peutValiderConfiguration() {
     var role = (S.session() || {}).role;
-    return CF().ROLES_VALIDATION.indexOf(role) >= 0 && K.droits('CFG').editer && !CF().posteFileul();
+    return CF().peutValiderConfiguration(role) && K.droits('CFG').editer && !CF().posteFileul();
   }
   /** Le bandeau d'état : à valider, validé le D par P, ou modifié depuis la validation (RG-12). */
   function bandeauEtatConfiguration(nom, libelle) {
@@ -5742,7 +5742,7 @@
                 if (!/^[a-z][a-z0-9_]*$/.test(String(v.code || ''))) return 'Le code ne contient que des minuscules, des chiffres et des tirets bas, et commence par une lettre.';
                 if (!rec && colS.all().some(function (x) { return x.code === v.code; })) return 'Le code « ' + v.code + ' » existe déjà (éventuellement archivé).';
                 var role = (S.session() || {}).role;
-                if (B.ROLES_ECRITURE.indexOf(role) < 0) return 'AIB_ECRITURE_RESERVEE : le barème se tient par le comptable, la DAF ou l’administrateur.';
+                if (!B.peutEcrire(role)) return 'AIB_ECRITURE_RESERVEE : écrire le barème est le droit « ' + B.GESTE_ECRIRE + ' » de la fiche du rôle.';
                 return null;
               },
               transform: function (v) { v.ordre = v.ordre ? Number(v.ordre) : colS.all().length + 1; if (!v.famille) v.famille = 'acheteur'; return v; },

@@ -17,6 +17,7 @@
 import 'dart:convert';
 
 import '../configuration/cfb_donnees.dart' show cfbEssentielles;
+import '../droits/droit_geste.dart';
 
 /// Lit TOUTES les fiches d'une collection (archivées comprises) : le moteur ignore lui-même les archivées.
 typedef LectureValidation = List<Map<String, Object?>> Function(String collection);
@@ -25,7 +26,23 @@ typedef LectureValidation = List<Map<String, Object?>> Function(String collectio
 const String valCollectionValidations = 'validationsReferentiels';
 
 /// Les profils qui voient TOUTES les familles au centre des validations ; les autres voient leur ressort.
+///
+/// LOT VAL : cette liste n'est plus que le DÉFAUT d'origine (aucune fiche RBAC branchée) ; au poste, voir toutes les familles est le geste réservé [valGesteVueComplete], et valider une famille le
+/// geste réservé `valider_famille_<id>` ([valGesteFamille]), lus À CHAUD par `gesInstaller`. Les listes `roles` des familles sont le défaut semé du manifeste (vérifié contre `rbac.json`).
 const List<String> valVueComplete = ['direction', 'da', 'admin'];
+const String valGesteVueComplete = 'voir_toutes_les_familles_validation';
+
+/// Le geste réservé qui valide la famille [familleId].
+String valGesteFamille(String familleId) => 'valider_famille_$familleId';
+
+/// Les rôles qui valident la famille (détenteurs d'origine d'abord) : la fiche RBAC branchée par `gesInstaller`, sinon la liste d'origine.
+List<String> valRolesDe(FamilleValidation f) => gesRoles(valGesteFamille(f.id), f.roles);
+
+/// Ce rôle valide-t-il cette famille ? Le droit est lu de la fiche (geste réservé), jamais d'un nom de rôle.
+bool valPeut(FamilleValidation f, String role) => gesDroit(role, valGesteFamille(f.id), f.roles);
+
+/// Ce rôle voit-il TOUTES les familles au centre des validations ?
+bool valVoitTout(String? role) => gesDroit(role, valGesteVueComplete, valVueComplete);
 
 /// Une cible d'une famille de forme « fiche » : un artefact du code qui ne peut pas porter son propre marquage.
 class CibleValidation {
@@ -373,7 +390,7 @@ String _premier(Map<String, Object?> rec, List<String> cles) {
 }
 
 /// Les libellés des rôles d'une famille, séparés par une virgule (`profilsFamille`).
-String valProfilsFamille(FamilleValidation f, Map<String, String> libelles) => f.roles.map((r) => valLibelleRole(r, libelles)).join(', ');
+String valProfilsFamille(FamilleValidation f, Map<String, String> libelles) => valRolesDe(f).map((r) => valLibelleRole(r, libelles)).join(', ');
 
 Map<String, Object?>? _ficheDeValidation(LectureValidation lire, String cible) {
   for (final x in lire(valCollectionValidations)) {
@@ -431,7 +448,7 @@ List<CompteFamille> valReferentielsAValider(LectureValidation lire, Map<String, 
   final peut = amorcable ?? (_) => true;
   return [
     for (final f in valFamilles)
-      if (role == null || role.isEmpty || f.roles.contains(role))
+      if (role == null || role.isEmpty || valPeut(f, role))
         () {
           final arts = valArtefactsDe(f, lire);
           final nonAmorce =
@@ -444,7 +461,7 @@ List<CompteFamille> valReferentielsAValider(LectureValidation lire, Map<String, 
               mode: f.mode,
               collections: f.mode == 'fiche' ? const [valCollectionValidations] : f.collections,
               champs: f.mode == 'fiche' ? const ['valideLe'] : f.champs,
-              roles: f.roles,
+              roles: valRolesDe(f),
               profil: valProfilsFamille(f, libelles),
               ecran: f.ecran,
               enAttente: nonAmorce ? null : attente.length,
@@ -458,7 +475,7 @@ List<CompteFamille> valReferentielsAValider(LectureValidation lire, Map<String, 
 /// Les familles qu'un profil VOIT au centre des validations : la Direction, la DAF et l'administrateur voient tout, les autres leur ressort.
 List<CompteFamille> valReferentielsVisiblesPar(String role, LectureValidation lire, Map<String, String> libelles,
         {bool Function(String collection)? amorcable}) =>
-    valReferentielsAValider(lire, libelles, role: valVueComplete.contains(role) ? null : role, amorcable: amorcable);
+    valReferentielsAValider(lire, libelles, role: valVoitTout(role) ? null : role, amorcable: amorcable);
 
 /// `etatValidation` : l'état LU d'un artefact, ou `null` (famille ou élément inconnu).
 EtatValidation? valEtatValidation(String familleId, String id, LectureValidation lire, Map<String, String> libelles) {
@@ -482,12 +499,12 @@ EtatValidation? valEtatValidation(String familleId, String id, LectureValidation
       valideLe: t(a.valideLe),
       validePar: t(rec['validePar']),
       valideRole: t(rec['valideRole']),
-      roles: f.roles,
+      roles: valRolesDe(f),
       profil: valProfilsFamille(f, libelles));
 }
 
 /// Le profil peut-il valider cette famille ? (`K.peutValider` : le rôle de la SESSION est un des rôles de la famille.)
-bool valPeutValider(String familleId, String role) => valFamille(familleId)?.roles.contains(role) ?? false;
+bool valPeutValider(String familleId, String role) => (() { final f = valFamille(familleId); return f != null && valPeut(f, role); })();
 
 // --- Gestes ---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -522,11 +539,11 @@ VerdictValidation valValiderReferentiel(
   }
   final gardeMere = _refusFileul(f, fileul);
   if (gardeMere != null) return VerdictValidation.refus(gardeMere);
-  if (!f.roles.contains(role)) {
+  if (!valPeut(f, role)) {
     return VerdictValidation.refus(RefusValidation(
         'VALIDATION_RESERVEE',
         'La validation de « ${f.libelle} » est réservée à : ${valProfilsFamille(f, libelles)}. Profil : ${valLibelleRole(role, libelles)}.',
-        'Demander à ${valLibelleRole(f.roles.first, libelles)} de valider depuis son poste.'));
+        'Demander à ${valRolesDe(f).isEmpty ? 'un rôle qui détient le droit' : valLibelleRole(valRolesDe(f).first, libelles)} de valider depuis son poste.'));
   }
   ArtefactValidation? cible;
   for (final a in valArtefactsDe(f, lire)) {
@@ -732,7 +749,7 @@ RefusValidation? valControlerEnregistrement(String familleId,
   }
   final gardeMere = _refusFileul(f, fileul);
   if (gardeMere != null) return gardeMere;
-  if (f.roles.contains(role) && (motif ?? '').trim().isEmpty) {
+  if (valPeut(f, role) && (motif ?? '').trim().isEmpty) {
     if (chiffres.isNotEmpty) {
       return RefusValidation(
           'MOTIF_OBLIGATOIRE',
@@ -786,7 +803,7 @@ VerdictEnregistrement valMarquageEnregistrement(
   bool? modifie,
 }) {
   final f = valFamille(familleId)!;
-  final validateur = f.roles.contains(role);
+  final validateur = valPeut(f, role);
   final enAttenteAvant = avant == null ? null : f.champs.any((c) => avant[c] == true);
   final changes = _champsModifies(avant, valeurs);
   final chiffres = valChiffresModifies(familleId, avant, valeurs);
@@ -881,7 +898,7 @@ VerdictSuivi valSuivreEnregistrement(
   }
   final gardeMere = _refusFileul(f, fileul);
   if (gardeMere != null) return VerdictSuivi(refus: gardeMere);
-  if (f.roles.contains(role)) {
+  if (valPeut(f, role)) {
     final e = valEtatValidation(familleId, cibleId, lire, libelles);
     if (e != null && e.enAttente) {
       final v = valValiderReferentiel(familleId, cibleId,

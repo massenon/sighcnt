@@ -19,7 +19,7 @@ void modaleChangerPrixAchat(BuildContext ctx, ContexteEcran c, Map<String, Objec
   final jour = tarIso(c.aujourdhui);
   final px = prixDuJour(c, produit);
   final med = produit['categorie'] == tarCategorieSansMarge;
-  final peutPassee = tarRolesDatePassee.contains(c.role), peutValider = tarPeutDecider(c.role);
+  final peutPassee = tarPeutDatePassee(c.role), peutValider = tarPeutDecider(c.role);
   final defs = <ChampDef>[
     const ChampDef(nom: 'prixAchat', libelle: 'Nouveau prix d’achat (FCFA)', type: TypeChamp.nombre, requis: true, aide: 'Un montant entier, strictement positif.'),
     if (!med)

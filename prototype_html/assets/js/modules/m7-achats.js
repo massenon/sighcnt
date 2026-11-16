@@ -130,7 +130,7 @@
       var session = S.session() || {};
       var moi = S.currentUser();
       var dr = K.droits('M7');
-      var estArbitre = ['da', 'direction', 'admin'].indexOf(session.role) !== -1;
+      var estArbitre = global.SIGH.nav.droitGeste(session.role, 'arbitrer_besoins');
       var estAchat = ['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']
         .indexOf(session.role) !== -1;
 
@@ -632,7 +632,7 @@
                 if (!record) v.reference = C.referenceAnnuelle('BEB-', v.date, 4, col.all());   /* E70 : série lue sur les bons existants, plus un compteur de page */
                 /* E74 : le formulaire ne porte pas le validateur ; sans cette garde, modifier un bon DÉJÀ validé écrasait le vrai validateur. */
                 if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar && !(record && record.valideePar)) {
-                  v.valideePar = 'TAKI Alimatou';
+                  v.valideePar = S.currentUser();
                 }
                 var res = record ? col.update(record.id, v) : col.insert(v);
                 m.close(); table.refresh();
@@ -794,9 +794,9 @@
           confirmLabel: 'Valider la commande',
         }).then(function (ok) {
           if (!ok) return;
-          var res = col.update(c.id, { statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: C.iso(C.aujourdhui()) });
+          var res = col.update(c.id, { statutCommande: 'validee', valideePar: S.currentUser(), dateValidation: C.iso(C.aujourdhui()) });
           table.refresh();
-          U.toast('Commande validée par la Directrice Administrative.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+          U.toast('Commande validée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
         });
       }
 
@@ -892,7 +892,7 @@
                 if (!record) v.reference = C.referenceAnnuelle('BC-', v.date, 4, col.all());   /* E70 */
                 /* E74 : idem — ne jamais remplacer le validateur ni la date de validation d'une commande déjà validée. */
                 if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar && !(record && record.valideePar)) {
-                  v.valideePar = 'TAKI Alimatou'; v.dateValidation = C.iso(AUJ);
+                  v.valideePar = S.currentUser(); v.dateValidation = C.iso(AUJ);
                 }
                 var res = record ? col.update(record.id, v) : col.insert(v);
                 m.close(); table.refresh();
@@ -1176,8 +1176,8 @@
         var f = U.form([
           { name: 'referenceBL', label: 'N° bordereau de livraison', required: true, placeholder: 'ex. 26LNA00026' },
           { name: 'date', label: 'Date de réception', type: 'date', required: true, value: C.iso(AUJ) },
-          { name: 'controleur1', label: 'Contrôleur 1', required: true, value: 'MAMAN Zoukanéri' },
-          { name: 'controleur2', label: 'Contrôleur 2', required: true, value: 'DIEYABIDI Aïssatou' },
+          { name: 'controleur1', label: 'Contrôleur 1', required: true, value: S.currentUser() },
+          { name: 'controleur2', label: 'Contrôleur 2', required: true, placeholder: 'Nom du second contrôleur' },
           { name: 'controleur3', label: 'Contrôleur 3 (facultatif)' },
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ], {});
@@ -1803,7 +1803,7 @@
                     chaineFroid: nature === 'reactifs' ? !!v.chaineFroid : null,
                     conclusion: v.conclusion,
                     reserves: v.reserves || '',
-                    magasinier: sess.nomComplet || 'MAMAN Zoukanéri',
+                    magasinier: sess.nomComplet || S.currentUser(),
                     representantFournisseur: v.representantFournisseur,
                   });
                   m.close(); afficher();

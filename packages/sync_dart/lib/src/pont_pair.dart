@@ -32,7 +32,7 @@ DroitsOperation chargerDroitsPair(String mode, String chemin) {
   if (f == null || !f.existsSync()) throw StateError('matrice RBAC introuvable (rbac.json) : indiquer --matrice=chemin ou lancer depuis le dépôt');
   try {
     final m = MatriceDroits.depuisJson((jsonDecode(f.readAsStringSync()) as Map).cast<String, Object?>());
-    return droitsDepuisMatrice(peutEditer: m.peutEditer, peutAnnuler: m.peutAnnuler);
+    return droitsDepuisMatrice(peutEditer: m.peutEditer, peutAnnuler: m.peutAnnuler, peutGeste: m.droitGeste);
   } catch (e) {
     throw StateError('matrice RBAC illisible (${f.path}) : $e');
   }

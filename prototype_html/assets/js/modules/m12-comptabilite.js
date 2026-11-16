@@ -3882,7 +3882,7 @@
               { k: 'Observation', v: e.observation || '—' },
             ]),
           ]),
-          signatures: [{ role: 'Le Comptable', nom: e.valideePar || 'KASSA Augustin' },
+          signatures: [{ role: 'Le Comptable', nom: e.valideePar || '' },
             { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
         });
       }

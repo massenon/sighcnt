@@ -15,6 +15,7 @@
 ///   · E77 porté fidèlement : « DAF » = 'TAKI Alimatou', écrit en dur (validateur, signatures) quel que soit l'agent connecté.
 library;
 
+import '../droits/droit_geste.dart' show gesDroit;
 import '../format/format_fr.dart';
 import 'nombres.dart';
 
@@ -94,7 +95,9 @@ const rolesAchat = {
   'aide_comptable'
 };
 
-bool estArbitre(String role) => rolesArbitres.contains(role);
+/// LOT VAL : arbitrer est le geste réservé `arbitrer_besoins` de la fiche RBAC ; [rolesArbitres] n'est que le DÉFAUT d'origine du manifeste.
+const String gesteArbitrerBesoins = 'arbitrer_besoins';
+bool estArbitre(String role) => gesDroit(role, gesteArbitrerBesoins, rolesArbitres.toList());
 bool estAchat(String role) => rolesAchat.contains(role);
 
 /// Le formulaire s'adapte à qui l'ouvre : seul celui qui tient le circuit (droit d'écrire ET poste d'achat) choisit l'étape. Un agent qui exprime un

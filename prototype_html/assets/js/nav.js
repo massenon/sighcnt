@@ -267,7 +267,41 @@
        PROPOSITION À VALIDER. Le droit n'ouvre aucun écran : l'onglet « Imputations » de « Barème de l'AIB » se lit avec l'écran. */
     { id: 'imputer_aib', libelle: 'Imputer l\u2019AIB opération par opération (appliquer ou non, taux, compte), onglet « Imputations »', module: null, ecran: null,
       rolesDefaut: ['comptable', 'da', 'admin'] },
-  ];
+    /* LOT VAL (Direction, 16/11/2026 : « pas de rôle ni de validation en dur dans le code »). Chaque famille de validation de référentiel, la validation de la configuration fiscale, l'écriture du
+       barème de l'AIB, la retransmission MECeF, le mode de facturation normalisée, trancher ou valider un flux de pont, les deux étapes du circuit de validation RH, arbitrer un besoin et la date
+       d'effet antérieure d'un tarif étaient des LISTES DE RÔLES écrites dans le moteur. Ce sont désormais des DROITS de la fiche RBAC par rôle, réglables par la Direction ; défaut semé = la liste
+       d'aujourd'hui, mot pour mot (aucun changement de comportement par défaut). Aucun de ces droits n'ouvre un écran. Le moteur refuse aussi et cite le droit. */
+  ].concat([
+    ['enquetes', 'Modèles d’enquête', 'M13', ['direction', 'da', 'admin']],
+    ['labo_variables', 'Variables et unités du laboratoire (bornes suppléées)', 'M5', ['laborantin']],
+    ['pathologies', 'Pathologies (tableau de morbidité)', 'M2', ['dm', 'medecin']],
+    ['imagerie', 'Catalogue de l’imagerie (examens et variables)', 'CFG', ['echographiste', 'dm']],
+    ['checklists_bloc', 'Check-listes du bloc, échelles ASA et Mallampati', 'M3', ['chirurgien', 'anesthesiste']],
+    ['actes', 'Tarifs des actes (valeurs d’attente)', 'CFG', ['direction', 'da', 'admin']],
+    ['analyses', 'Tarifs des analyses', 'CFG', ['direction', 'da', 'admin']],
+    ['valorisation_sage', 'Valorisation des références de l’inventaire initial', 'M6', ['direction', 'da', 'admin']],
+    ['objectifs_pilotage', 'Objectifs de pilotage', 'M12', ['direction', 'da', 'admin']],
+    ['repartition_charges', 'Répartition fixe et variable des charges', 'M12', ['comptable', 'direction', 'da', 'admin']],
+    ['modeles_badge', 'Modèles de badge', 'M10', ['direction', 'da', 'admin']],
+    ['jeux_import', 'Jeux d’import en proposition', 'IMP', ['direction', 'da', 'admin']],
+    ['modeles_messages', 'Modèles de messages', 'CFG', ['direction', 'da', 'admin']],
+    ['bareme_aib', 'Barème de l’AIB (taux par situation de l’acheteur)', 'CFG', ['direction', 'da', 'admin', 'comptable']],
+    ['bareme_its', 'Barème de l’ITS', 'M11', ['direction', 'da', 'admin']],
+  ].map(function (f) {
+    return { id: 'valider_famille_' + f[0], libelle: 'Valider la famille « ' + f[1] + ' » du centre des validations', module: null, ecran: null, rolesDefaut: f[3] };
+  })).concat([
+    { id: 'valider_configuration_fiscale', libelle: 'Valider l’identité légale et la configuration fiscale (première configuration, versions datées)', module: null, ecran: null, rolesDefaut: ['direction', 'da', 'admin'] },
+    { id: 'ecrire_bareme_aib', libelle: 'Écrire le barème de l’AIB (versions datées, taux par situation de l’acheteur)', module: null, ecran: null, rolesDefaut: ['comptable', 'admin', 'da'] },
+    { id: 'retransmettre_mecef', libelle: 'Retransmettre une vente refusée ou expirée au MECeF (une seule fois sans le droit « sans limite »)', module: null, ecran: null, rolesDefaut: ['caissier', 'da', 'admin'] },
+    { id: 'retransmettre_mecef_sans_limite', libelle: 'Retransmettre au MECeF sans limite d’essais (sinon : une seule retransmission par vente)', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
+    { id: 'trancher_pair', libelle: 'Trancher un conflit de synchronisation entre deux postes', module: null, ecran: null, rolesDefaut: ['da', 'direction', 'admin'] },
+    { id: 'valider_pair', libelle: 'Valider ou rejeter un flux déposé par un poste fileul', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
+    { id: 'valider_etape_surveillant', libelle: 'Signer l’étape « surveillant » du circuit de validation RH (pointages, congés, missions)', module: null, ecran: null, rolesDefaut: ['surveillant', 'admin'] },
+    { id: 'valider_etape_daf', libelle: 'Signer l’étape « Directrice Administrative » du circuit de validation RH', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
+    { id: 'voir_toutes_les_familles_validation', libelle: 'Voir toutes les familles de référentiels du centre des validations (sinon : celles que le rôle valide)', module: null, ecran: null, rolesDefaut: ['direction', 'da', 'admin'] },
+    { id: 'arbitrer_besoins', libelle: 'Arbitrer les besoins exprimés (écran « Besoins » du module Achats)', module: null, ecran: null, rolesDefaut: ['da', 'direction', 'admin'] },
+    { id: 'tarifer_date_passee', libelle: 'Poser une date d’effet antérieure à aujourd’hui sur un tarif (autorité motivée)', module: null, ecran: null, rolesDefaut: ['da', 'direction'] },
+  ]);
   var GESTES_INDEX = {};
   GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });
   var IMPORTS_INDEX = {};

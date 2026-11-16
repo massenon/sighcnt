@@ -1595,8 +1595,14 @@
    "sortie": {
     "ok": false,
     "code": "AIB_ECRITURE_RESERVEE",
-    "motif": "Le barème de l’AIB se tient par le comptable, la Directrice Administrative ou l’administrateur. Profil : Direction / Gérance.",
-    "geste": "Demander la modification au comptable ; la Direction consulte le barème sans l’écrire."
+    "motif": "Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« ecrire_bareme_aib ») : « Direction / Gérance » ne l’a pas.",
+    "geste": "Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.",
+    "droit": "ecrire_bareme_aib",
+    "roles": [
+     "comptable",
+     "admin",
+     "da"
+    ]
    },
    "versions": [
     {
@@ -1642,8 +1648,14 @@
    "sortie": {
     "ok": false,
     "code": "AIB_ECRITURE_RESERVEE",
-    "motif": "Le barème de l’AIB se tient par le comptable, la Directrice Administrative ou l’administrateur. Profil : Caissier — Dispensaire (Pharmacie).",
-    "geste": "Demander la modification au comptable ; la Direction consulte le barème sans l’écrire."
+    "motif": "Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« ecrire_bareme_aib ») : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
+    "geste": "Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.",
+    "droit": "ecrire_bareme_aib",
+    "roles": [
+     "comptable",
+     "admin",
+     "da"
+    ]
    },
    "versions": [
     {
@@ -2758,8 +2770,14 @@
    "sortie": {
     "ok": false,
     "code": "AIB_ECRITURE_RESERVEE",
-    "motif": "Le barème de l’AIB se tient par le comptable, la Directrice Administrative ou l’administrateur. Profil : Caissier — Dispensaire (Pharmacie).",
-    "geste": "Demander la modification au comptable ; la Direction consulte le barème sans l’écrire."
+    "motif": "Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« ecrire_bareme_aib ») : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
+    "geste": "Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.",
+    "droit": "ecrire_bareme_aib",
+    "roles": [
+     "comptable",
+     "admin",
+     "da"
+    ]
    },
    "ecritures": []
   },

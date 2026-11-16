@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, smsGesteRegler, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
+import 'package:sigh_domaine/sigh_domaine.dart' show gesInstaller, CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, smsGesteRegler, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
 import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
@@ -221,6 +221,8 @@ Future<void> main() async {
   reouvrirFermeturesLevees(magasin);
   // LOT TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC, lu À CHAUD (une fiche modifiée vaut aussitôt).
   tarInstallerDroitDecider((role) => navigation.aChaud(magasin).matrice.droitGeste(role, tarGesteDecider));
+  // LOT VAL : validations, barème AIB, retransmission MECeF, étapes RH, pont : des gestes réservés lus À CHAUD par les moteurs du domaine (`gesDroit`), plus de liste de rôles.
+  gesInstaller(lecteur: (role, geste) => navigation.aChaud(magasin).matrice.droitGeste(role, geste), roles: () => navigation.aChaud(magasin).matrice.matriceGestes.roles);
   SessionPoste? session;
   ServiceFichiers? serviceFichiers;
   // LA LECTURE OCR DES SCANS, PRÉPARÉE (lot OCR-prep) : AUCUN moteur n'est branché ni embarqué. Sans moteur, l'état de chaque scan dit « aucun moteur d'OCR installé sur ce poste » et rien ne se met en
@@ -373,14 +375,19 @@ Future<void> main() async {
     final cp = ConfigPairPoste.lire(dossierDonnees);
     if (cp != null) {
       // Les droits de l'échange viennent de la MATRICE RBAC engendrée (la même que celle de la navigation), plus de la table du banc.
-      final matrice = (await DonneesNavigation.chargerAssets()).matrice;
+      final navigationPair = await DonneesNavigation.chargerAssets();
+      final matrice = navigationPair.matrice;
       moteurPair = MoteurPair.creer(
           magasin: magasin,
           dbChemin: '$dossierDonnees/pair.db',
           relais: cp.relais,
           cleHex: cp.cleHex,
           nom: cp.nom,
-          droits: droitsDepuisMatrice(peutEditer: matrice.peutEditer, peutAnnuler: matrice.peutAnnuler));
+          droits: droitsDepuisMatrice(
+              peutEditer: matrice.peutEditer,
+              peutAnnuler: matrice.peutAnnuler,
+              // LOT VAL : trancher et valider sont des gestes réservés de la fiche RBAC, lus À CHAUD (une fiche modifiée vaut aussitôt).
+              peutGeste: (role, geste) => navigationPair.aChaud(magasin).matrice.droitGeste(role, geste)));
       if (!moteurPair.appaire && cp.code != null) {
         try {
           await moteurPair.appairer(cp.code!);

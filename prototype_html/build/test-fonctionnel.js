@@ -259,6 +259,33 @@ async function viderMessages(page) {
     return false;
   }
 
+  /* Aides communes : retirer (ou accorder) un geste à un rôle par SA FICHE, et la RESTAURER à l'identique. */
+  const fiche = (role, geste, valeur) => page.evaluate((x) => {
+    const S = window.SIGH.store, col = S.collection('rbac'), N = window.SIGH.nav;
+    const f = col.all().filter((y) => y.role === x.role && y.statut !== 'archive')[0];
+    const avant = f ? JSON.stringify(f.droitsGestes === undefined ? null : f.droitsGestes) : 'SANS_FICHE';
+    const g = Object.assign({}, (f && f.droitsGestes) || {}); g[x.geste] = x.valeur;
+    if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: x.role, statut: 'actif', droitsGestes: g });
+    N.invaliderRbac();
+    return avant;
+  }, { role, geste, valeur });
+  const restaurer = (role, avant) => page.evaluate((x) => {
+    const S = window.SIGH.store, col = S.collection('rbac'), N = window.SIGH.nav;
+    const f = col.all().filter((y) => y.role === x.role && y.statut !== 'archive')[0];
+    /* Une fiche créée par la sonde se RETIRE du magasin (l'archiver la laisserait peser : `surcharges()` lit `all()`). */
+    if (x.avant === 'SANS_FICHE') { if (f) { const db = S.raw(); db.rbac = (db.rbac || []).filter((y) => y.id !== f.id); S.save(); } }
+    else { const g = JSON.parse(x.avant); const rec = (S.raw().rbac || []).filter((y) => y.id === f.id)[0]; if (g === null) { delete rec.droitsGestes; S.save(); } else col.update(f.id, { droitsGestes: g }); }
+    N.invaliderRbac();
+    const f2 = col.all().filter((y) => y.role === x.role && y.statut !== 'archive')[0];
+    return f2 ? JSON.stringify(f2.droitsGestes === undefined ? null : f2.droitsGestes) : 'SANS_FICHE';
+  }, { role, avant });
+  const LEGACY_FAMILLES = {
+    enquetes: ['direction', 'da', 'admin'], labo_variables: ['laborantin'], pathologies: ['dm', 'medecin'], imagerie: ['echographiste', 'dm'], checklists_bloc: ['chirurgien', 'anesthesiste'],
+    actes: ['direction', 'da', 'admin'], analyses: ['direction', 'da', 'admin'], valorisation_sage: ['direction', 'da', 'admin'], objectifs_pilotage: ['direction', 'da', 'admin'],
+    repartition_charges: ['comptable', 'direction', 'da', 'admin'], modeles_badge: ['direction', 'da', 'admin'], jeux_import: ['direction', 'da', 'admin'], modeles_messages: ['direction', 'da', 'admin'],
+    bareme_aib: ['direction', 'da', 'admin', 'comptable'], bareme_its: ['direction', 'da', 'admin'] };
+
+
   async function ouvrir(rel) {
     await attendreEcritures();
     erreursJS = [];
@@ -29566,7 +29593,6 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT PLAN-INDIV FIN */
-=======
   /* LOT PTA DEBUT */
   await etape(async () => {
     scenario('Vague 280 : lot PTA, le plan annuel est PAR EXERCICE (sélecteur lu de la comptabilité, exercice du jour par défaut, références PA-<année>-NNN par la fabrique unique), aucune année ni signataire écrit dans l’écran ; une action se crée par la modale');
@@ -29829,6 +29855,174 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT PTA FIN */
+  /* LOT VAL DEBUT : acteurs et validations écrits en dur deviennent des gestes réservés de la fiche RBAC (Direction, 16/11/2026) */
+  await etape(async () => {
+    scenario('Vague 300 : lot VAL, l’acteur est TOUJOURS l’agent de la session (jamais un nom écrit : validation d’une commande, engagement reçu par, autorisé par, contrôleurs, magasinier, signataires de repli) ; la garde voit le domaine, le poste, le PHP de la maquette et les noms de personnes, liste décroissante');
+    erreursJS = [];
+    const AG = { role: 'da', nom: 'AGENT300 Probe', nomComplet: 'AGENT300 Probe', fonction: 'da', identifiant: 's300.da', secteur: 'DIR' };
+    await poserSessionServeur(AG);
+    await ouvrir('m7-commandes.html');
+    const a300 = await page.evaluate(() => ({ acteur: window.SIGH.store.currentUser() }));
+    verifier('L’acteur lu par les écrans est le nom de l’agent connecté (journal RG-12)', a300.acteur === 'AGENT300 Probe', JSON.stringify(a300));
+    /* Le moteur de la validation d'une commande (clic « Valider la commande ») pose valideePar : on rejoue le geste de l'écran sur une commande à valider. */
+    const v300 = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const S = window.SIGH.store, col = S.collection('commandes');
+      const c = col.all().filter((x) => x.statut !== 'archive' && x.statutCommande === 'brouillon')[0] || col.all().filter((x) => x.statut !== 'archive')[0];
+      if (!c) return { sans: true };
+      col.update(c.id, { statutCommande: 'brouillon', valideePar: null, dateValidation: null });
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.indexOf(c.reference) >= 0);
+      const bouton = ligne && [...ligne.querySelectorAll('button')].find((b) => /Valider/.test((b.getAttribute('title') || '') + (b.getAttribute('aria-label') || '') + b.textContent));
+      if (bouton) { bouton.click(); await pause(300); const ok = [...document.querySelectorAll('button')].find((b) => /^Valider la commande$/.test(b.textContent.trim())); if (ok) { ok.click(); await pause(500); } }
+      const apres = col.get(c.id);
+      return { id: c.id, clic: !!bouton, valideePar: apres.valideePar || null, statut: apres.statutCommande };
+    });
+    verifier('Valider une commande (RG-04) inscrit l’AGENT de la session comme valideur, jamais « TAKI Alimatou » (ou, si la ligne n’offre pas le bouton dans cet état, la commande reste sans valideur inventé)',
+      v300.sans || (v300.clic ? v300.valideePar === 'AGENT300 Probe' : v300.valideePar === null), JSON.stringify(v300));
+    /* Les défauts des formulaires : lus de la source (aucune personne nommée à la place de l'acteur), et la garde. */
+    const src = (f) => fs.readFileSync(path.join(ROOT, 'assets/js/' + f), 'utf8');
+    const motifs = [
+      ['modules/m7-achats.js', /(valideePar\s*[:=]\s*'(TAKI|KASSA)|controleur\d[^\n]*value:\s*'|nomComplet \|\| '(MAMAN|TAKI))/],
+      ['modules/m8-facturation.js', /(recuPar|autorisePar)'?[^\n]*value:\s*'(TAKI|KASSA)/],
+      ['modules/m12-comptabilite.js', /valideePar \|\| '(KASSA|TAKI)/],
+      ['modules/m10-rh.js', /valideePar \|\| '(TAKI|KASSA)/],
+    ];
+    const restes = motifs.filter(([f, re]) => re.test(src(f))).map(([f]) => f);
+    verifier('Aucun défaut d’acteur ne nomme une personne (valideePar, recuPar, autorisePar, contrôleurs, magasinier, signataire de repli) dans les écrans', restes.length === 0, restes.join(', '));
+    const garde = require('./garde-roles-en-dur.js');
+    const rg = garde.analyser(path.join(ROOT, 'assets/js'));
+    const parRacine = Object.keys(garde.sites(path.join(ROOT, 'assets/js'))).reduce((o, f) => { const k = f.startsWith('js/') ? 'js' : f.split('/').slice(0, 2).join('/'); o[k] = (o[k] || 0) + 1; return o; }, {});
+    verifier('La garde des rôles en dur voit désormais le domaine, le moteur de synchronisation, le poste (et la mère), le PHP de la maquette ; liste exacte, 0 nouveau, 0 disparu',
+      rg.nouveaux.length === 0 && rg.disparus.length === 0 && ['js', 'packages/domaine', 'packages/sync_dart', 'apps/poste', 'prototype_html/api'].filter((k) => parRacine[k]).length >= 4, JSON.stringify({ n: rg.nouveaux.length, d: rg.disparus.length, parRacine }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+    });
+  await etape(async () => {
+    scenario('Vague 301 : lot VAL, chaque famille de validation de référentiel est un geste réservé « valider_famille_<id> » de la fiche RBAC (défaut semé = la liste d’hier, mot pour mot, dans l’ordre) ; retiré à la Directrice Administrative, la famille disparaît de ses validations et le moteur refuse nommé (code, motif qui cite le droit, geste) ; la fiche est restaurée à l’identique');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'da', nom: 'DAF301', nomComplet: 'DAF301', fonction: 'da', identifiant: 's301.da', secteur: 'DIR' });
+    await ouvrir('adm-validations.html');
+    const a301 = await page.evaluate((legacy) => {
+      const N = window.SIGH.nav, PR = window.SIGH.parcours;
+      const defauts = {}; const ecarts = [];
+      Object.keys(legacy).forEach((f) => {
+        const g = N.geste('valider_famille_' + f); defauts[f] = g ? g.rolesDefaut.slice() : null;
+        const fam = PR.FAMILLES_A_VALIDER.filter((x) => x.id === f)[0];
+        if (!g || JSON.stringify(g.rolesDefaut) !== JSON.stringify(legacy[f])) ecarts.push(f + ':defaut');
+        if (!fam || JSON.stringify(fam.roles) !== JSON.stringify(legacy[f])) ecarts.push(f + ':roles=' + (fam ? JSON.stringify(fam.roles) : 'absente'));
+      });
+      const fam = PR.referentielsAValider({ role: 'da' }).filter((x) => x.famille === 'enquetes' || x.famille === 'modeles_badge' || x.famille === 'jeux_import');
+      const vue = window.SIGH.validations.VUE_COMPLETE.slice();
+      return { ecarts, nb: Object.keys(defauts).length, vue, visibles: fam.map((x) => x.famille), prix: N.rolesAvecGeste('decider_prix').slice().sort() };
+    }, LEGACY_FAMILLES);
+    verifier('Les 15 familles à fiche RBAC (la 16e, « prix », reste le geste « decider_prix ») ont pour défaut la liste d’hier, mot pour mot ; la vue complète (Direction, Directrice Administrative, administrateur) est le geste « voir_toutes_les_familles_validation »',
+      a301.ecarts.length === 0 && a301.nb === 15 && JSON.stringify(a301.vue) === JSON.stringify(['direction', 'da', 'admin']) && a301.visibles.length === 3, JSON.stringify(a301));
+    const avant301 = await fiche('da', 'valider_famille_enquetes', false);
+    const b301 = await page.evaluate(() => {
+      const PR = window.SIGH.parcours, V = window.SIGH.validations, N = window.SIGH.nav;
+      const cible = PR.referentielsAValider().filter((x) => x.famille === 'enquetes')[0];
+      const id = cible && cible.ids[0];
+      const r = id ? V.validerReferentiel('enquetes', id) : null;
+      const vue = PR.referentielsAValider({ role: 'da' }).map((x) => x.famille);
+      return { droit: N.droitGeste('da', 'valider_famille_enquetes'), adminGarde: N.droitGeste('admin', 'valider_famille_enquetes'), id, refus: r && { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste, droit: r.droit },
+        sansEnquetes: vue.indexOf('enquetes') < 0, autresFamilles: vue.indexOf('actes') >= 0 };
+    });
+    verifier('Geste « valider_famille_enquetes » retiré à la Directrice Administrative : la famille ne figure plus dans ses validations (les autres, oui), le moteur REFUSE (VALIDATION_RESERVEE, motif et champ « droit » qui citent le droit) ; l’administrateur le garde',
+      b301.droit === false && b301.adminGarde === true && b301.sansEnquetes && b301.autresFamilles && (!b301.id || (b301.refus && b301.refus.ok === false && b301.refus.code === 'VALIDATION_RESERVEE' && b301.refus.droit === 'valider_famille_enquetes' && /valider_famille_enquetes|Modèles d’enquête/.test(b301.refus.motif))), JSON.stringify(b301));
+    const apres301 = await restaurer('da', avant301);
+    const c301 = await page.evaluate(() => ({ droit: window.SIGH.nav.droitGeste('da', 'valider_famille_enquetes'), visible: window.SIGH.parcours.referentielsAValider({ role: 'da' }).some((x) => x.famille === 'enquetes') }));
+    verifier('La fiche restaurée à l’identique : la Directrice Administrative retrouve la famille', apres301 === avant301 && c301.droit === true && c301.visible, JSON.stringify({ avant301, apres301, c301 }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+    });
+  await etape(async () => {
+    scenario('Vague 302 : lot VAL, l’écriture du barème de l’AIB, la validation de la configuration fiscale, le mode de facturation normalisée et la retransmission MECeF (une fois, ou sans limite) sont des gestes réservés de la fiche RBAC (défaut semé = hier) ; retirés, le moteur refuse nommé qui cite le droit ; fiches restaurées à l’identique');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'comptable', nom: 'COMPTA302', nomComplet: 'COMPTA302', fonction: 'comptable', identifiant: 's302.cpt', secteur: 'ADM' });
+    await ouvrir('cfg-bareme-aib.html');
+    const a302 = await page.evaluate(() => {
+      const N = window.SIGH.nav, B = window.SIGH.baremeAib;
+      const d = (id) => { const g = N.geste(id); return g ? g.rolesDefaut.slice() : null; };
+      const r = B.nouvelleVersion({ situation: '__inconnue__', taux: 1, dateEffet: '2999-01-01', source: 'sonde', motif: 'sonde 302' });
+      return { aib: d('ecrire_bareme_aib'), conf: d('valider_configuration_fiscale'), mode: d('regler_mode_mecef'), retr: d('retransmettre_mecef'), illim: d('retransmettre_mecef_sans_limite'),
+        peutAvant: B.peutEcrire('comptable'), codeAvant: r.code };
+    });
+    verifier('Défauts semés = les listes d’hier : barème AIB (comptable, administrateur, Directrice Administrative), configuration fiscale (Direction, Directrice Administrative, administrateur), mode MECeF (administrateur, Directrice Administrative), retransmission (caissier, Directrice Administrative, administrateur), sans limite (Directrice Administrative, administrateur) ; le comptable écrit le barème (la situation inconnue est le seul refus)',
+      JSON.stringify(a302.aib) === JSON.stringify(['comptable', 'admin', 'da']) && JSON.stringify(a302.conf) === JSON.stringify(['direction', 'da', 'admin']) && JSON.stringify(a302.mode) === JSON.stringify(['admin', 'da'])
+      && JSON.stringify(a302.retr) === JSON.stringify(['caissier', 'da', 'admin']) && JSON.stringify(a302.illim) === JSON.stringify(['da', 'admin']) && a302.peutAvant === true && a302.codeAvant === 'AIB_SITUATION_INCONNUE', JSON.stringify(a302));
+    const av302 = await fiche('comptable', 'ecrire_bareme_aib', false);
+    const b302 = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, N = window.SIGH.nav;
+      const r = B.nouvelleVersion({ situation: '__inconnue__', taux: 1, dateEffet: '2999-01-01', source: 'sonde', motif: 'sonde 302' });
+      return { droit: N.droitGeste('comptable', 'ecrire_bareme_aib'), peut: B.peutEcrire('comptable'), code: r.code, droitCite: r.droit, motif: r.motif, roles: r.roles };
+    });
+    verifier('Geste « ecrire_bareme_aib » retiré au comptable : le moteur REFUSE (AIB_ECRITURE_RESERVEE, motif et champ « droit » qui citent le droit, détenteurs nommés)',
+      b302.droit === false && b302.peut === false && b302.code === 'AIB_ECRITURE_RESERVEE' && b302.droitCite === 'ecrire_bareme_aib' && /ecrire_bareme_aib/.test(b302.motif) && JSON.stringify(b302.roles) === JSON.stringify(['admin', 'da']), JSON.stringify(b302));
+    const ap302 = await restaurer('comptable', av302);
+    /* Configuration fiscale : la Directrice Administrative perd le droit de valider */
+    await poserSessionServeur({ role: 'da', nom: 'DAF302', nomComplet: 'DAF302', fonction: 'da', identifiant: 's302.da', secteur: 'DIR' });
+    await ouvrir('cfg-fiscalite.html');
+    const avCf = await fiche('da', 'valider_configuration_fiscale', false);
+    const cf302 = await page.evaluate(() => {
+      const PR = window.SIGH.parcours;
+      const r = PR.validerIdentite();
+      return { code: r.code, droit: r.droit, motif: r.motif, peut: window.SIGH.configurationFiscale.peutValiderConfiguration('da'), roles: window.SIGH.configurationFiscale.ROLES_VALIDATION.slice() };
+    });
+    verifier('Geste « valider_configuration_fiscale » retiré à la Directrice Administrative : validerIdentite REFUSE (VALIDATION_RESERVEE qui cite le droit), la commande n’est plus offerte, la Direction et l’administrateur gardent le droit',
+      cf302.code === 'VALIDATION_RESERVEE' && cf302.droit === 'valider_configuration_fiscale' && /valider_configuration_fiscale/.test(cf302.motif) && cf302.peut === false && JSON.stringify(cf302.roles) === JSON.stringify(['direction', 'admin']), JSON.stringify(cf302));
+    const apCf = await restaurer('da', avCf);
+    /* Mode MECeF et retransmission */
+    const avMode = await fiche('da', 'regler_mode_mecef', false);
+    const avLim = await fiche('da', 'retransmettre_mecef_sans_limite', false);
+    const m302 = await page.evaluate(() => {
+      const PR = window.SIGH.parcours, S = window.SIGH.store, M = PR.mecef;
+      const mode = M.definirMode('boitier');
+      const col = S.collection('factures');
+      const f = col.all().filter((x) => x.statut !== 'archive' && ['refusee', 'expiree', 'en_attente'].indexOf(M.etat(x)) >= 0)[0] || null;
+      let retr = null;
+      if (f) { col.update(f.id, { retransmissions: 1 }); const r = M.retransmettre(f.id); retr = { code: r.code || null, motif: r.motif || null }; col.update(f.id, { retransmissions: 0 }); }
+      return { mode: { code: mode.code, motif: mode.motif }, retr, facture: !!f };
+    });
+    verifier('Gestes « regler_mode_mecef » et « retransmettre_mecef_sans_limite » retirés à la Directrice Administrative : changer le mode est refusé (MODE_RESERVE qui cite le droit) ; une vente déjà retransmise une fois n’est plus retransmise par elle (RETRANSMISSION_RESERVEE qui cite le droit « sans limite ») ; sans vente retransmissible dans le jeu, seul le mode est jugé',
+      m302.mode.code === 'MODE_RESERVE' && /regler_mode_mecef/.test(m302.mode.motif) && (!m302.facture || (m302.retr.code === 'RETRANSMISSION_RESERVEE' && /retransmettre_mecef_sans_limite/.test(m302.retr.motif))), JSON.stringify(m302));
+    /* En ORDRE INVERSE : deux retraits sur la même fiche se défont du dernier au premier (la fiche créée par le premier ne s'archive qu'à la fin). */
+    const apLim = await restaurer('da', avLim), apMode = await restaurer('da', avMode);
+    const r302 = await page.evaluate(() => { const N = window.SIGH.nav; return { mode: N.droitGeste('da', 'regler_mode_mecef'), lim: N.droitGeste('da', 'retransmettre_mecef_sans_limite'), conf: N.droitGeste('da', 'valider_configuration_fiscale'), aib: N.droitGeste('comptable', 'ecrire_bareme_aib') }; });
+    verifier('Fiches restaurées à l’identique (comptable, Directrice Administrative) : tous les droits sont revenus', ap302 === av302 && apCf === avCf && apMode === avMode && apLim === avLim && r302.mode && r302.lim && r302.conf && r302.aib, JSON.stringify({ av302, ap302, avCf, apCf, avMode, apMode, avLim, apLim, r302 }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+    });
+  await etape(async () => {
+    scenario('Vague 303 : lot VAL, les deux étapes du circuit de validation RH, l’arbitrage des besoins et la date d’effet antérieure d’un tarif sont des gestes réservés de la fiche RBAC (défaut semé = hier) ; retirés, le moteur refuse nommé qui cite le droit ; trancher et valider un flux de pont sont des gestes (domaine) ; fiches restaurées');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADM303', nomComplet: 'ADM303', fonction: 'admin', identifiant: 's303.adm', secteur: 'ADM' });
+    await ouvrir('m10-conges.html');
+    const a303 = await page.evaluate(() => {
+      const N = window.SIGH.nav, d = (id) => { const g = N.geste(id); return g ? g.rolesDefaut.slice() : null; };
+      return { surv: d('valider_etape_surveillant'), daf: d('valider_etape_daf'), arb: d('arbitrer_besoins'), passe: d('tarifer_date_passee'), tr: d('trancher_pair'), va: d('valider_pair') };
+    });
+    verifier('Défauts semés = hier : étape surveillant (surveillant, administrateur), étape DAF (Directrice Administrative, administrateur), arbitrer les besoins (Directrice Administrative, Direction, administrateur), date antérieure d’un tarif (Directrice Administrative, Direction), trancher un flux de pont (Directrice Administrative, Direction, administrateur), valider un flux (Directrice Administrative, administrateur)',
+      JSON.stringify(a303.surv) === JSON.stringify(['surveillant', 'admin']) && JSON.stringify(a303.daf) === JSON.stringify(['da', 'admin']) && JSON.stringify(a303.arb) === JSON.stringify(['da', 'direction', 'admin'])
+      && JSON.stringify(a303.passe) === JSON.stringify(['da', 'direction']) && JSON.stringify(a303.tr) === JSON.stringify(['da', 'direction', 'admin']) && JSON.stringify(a303.va) === JSON.stringify(['da', 'admin']), JSON.stringify(a303));
+    const avEt = await fiche('admin', 'valider_etape_surveillant', false);
+    const avPa = await fiche('direction', 'tarifer_date_passee', false);
+    const avAr = await fiche('admin', 'arbitrer_besoins', false);
+    const b303 = await page.evaluate(() => {
+      const S = window.SIGH.store, PRH = window.SIGH.planningRh, PR = window.SIGH.parcours, N = window.SIGH.nav;
+      let cible = null;
+      ['presences', 'conges', 'missions'].forEach((nom) => { if (cible) return; S.collection(nom).active().forEach((r) => { if (!cible && PRH.etatValidation(nom, r) !== 'valide' && PRH.etatValidation(nom, r) !== 'refuse') cible = { nom, rec: r }; }); });
+      const r = cible ? PRH.peutTrancher(cible.nom, cible.rec) : null;
+      S.setSession(Object.assign({}, S.session(), { role: 'direction' }));
+      const passe = { droit: N.droitGeste('direction', 'tarifer_date_passee'), peut: PR.peutDatePasseeTarif(), roles: PR.ROLES_DATE_PASSEE.slice() };
+      S.setSession(Object.assign({}, S.session(), { role: 'admin' }));
+      return { droitEtape: N.droitGeste('admin', 'valider_etape_surveillant'), arb: N.droitGeste('admin', 'arbitrer_besoins'), cible: !!cible, refus: r && { ok: r.ok, code: r.code, droit: r.droit, etape: r.etape }, passe };
+    });
+    verifier('Gestes retirés (étape « surveillant » à l’administrateur, date antérieure à la Direction, arbitrage à l’administrateur) : le moteur RH refuse (VALIDATION_RESERVEE avec le champ « droit »), la Direction ne pose plus de date antérieure, l’arbitrage est retiré ; l’autre détenteur de la date antérieure garde son droit',
+      b303.droitEtape === false && b303.arb === false && (!b303.cible || (b303.refus.ok === false && b303.refus.code === 'VALIDATION_RESERVEE' && /^valider_etape_/.test(b303.refus.droit || ''))) && b303.passe.droit === false && b303.passe.peut === false && JSON.stringify(b303.passe.roles) === JSON.stringify(['da']), JSON.stringify(b303));
+    /* En ORDRE INVERSE (deux retraits sur la fiche de l'administrateur). */
+    const apAr = await restaurer('admin', avAr), apPa = await restaurer('direction', avPa), apEt = await restaurer('admin', avEt);
+    const c303 = await page.evaluate(() => { const N = window.SIGH.nav; return { e: N.droitGeste('admin', 'valider_etape_surveillant'), p: N.droitGeste('direction', 'tarifer_date_passee'), a: N.droitGeste('admin', 'arbitrer_besoins') }; });
+    verifier('Fiches restaurées à l’identique : les trois droits sont revenus', apEt === avEt && apPa === avPa && apAr === avAr && c303.e && c303.p && c303.a, JSON.stringify({ avEt, apEt, avPa, apPa, avAr, apAr, c303 }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT VAL FIN */
 
 
 

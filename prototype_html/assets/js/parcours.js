@@ -245,15 +245,26 @@
    * ======================================================================== */
   /* Lot TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC (manifeste `N.GESTES`), jamais une liste de rôles du moteur. */
   var GESTE_DECIDER_PRIX = 'decider_prix';
+  /* LOT VAL : un geste réservé de la fiche RBAC, jamais une liste de rôles du moteur. `aGeste(geste[, role])` : le rôle de la session par défaut ; `rolesGeste(geste)` : les détenteurs. */
+  function aGeste(geste, role) {
+    var N = global.SIGH.nav, r = role == null ? ((S.session && S.session()) || {}).role : role;
+    return !!(N && N.droitGeste && r && N.droitGeste(r, geste));
+  }
+  function rolesGeste(geste) {
+    var N = global.SIGH.nav, g = N && N.geste ? N.geste(geste) : null, ordre = (g && g.rolesDefaut) || [];
+    var out = N && N.rolesAvecGeste ? N.rolesAvecGeste(geste) : [];
+    /* Les détenteurs d'origine d'abord, dans l'ordre du manifeste (les motifs de refus nomment le premier) ; puis ceux qu'une fiche a ajoutés. */
+    return out.slice().sort(function (a, b) { var x = ordre.indexOf(a), y = ordre.indexOf(b); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); });
+  }
   function rolesDecidentPrix() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_DECIDER_PRIX) : []; }
   function libellesDecidentPrix() { var n = rolesDecidentPrix().map(function (r) { return libelleRole(r); }); return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle'); }
   /* T6 (Direction, 11/11/2026) : la date d'effet PASSÉE est une autorité de la Directrice Administrative et de la Direction, avec un motif. */
-  var ROLES_DATE_PASSEE = ['da', 'direction'];
+  var GESTE_DATE_PASSEE = 'tarifer_date_passee';
   function refusTarif(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
   function roleDeLaSession() { var s = S.session(); return s && s.role; }
   function peutDeciderTarif() { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleDeLaSession(), GESTE_DECIDER_PRIX)); }
-  function peutDatePasseeTarif() { return ROLES_DATE_PASSEE.indexOf(roleDeLaSession()) >= 0; }
-  function profilsDatePassee() { return ROLES_DATE_PASSEE.map(function (r) { return libelleRole(r); }).join(' et '); }
+  function peutDatePasseeTarif() { return aGeste(GESTE_DATE_PASSEE); }
+  function profilsDatePassee() { return rolesGeste(GESTE_DATE_PASSEE).map(function (r) { return libelleRole(r); }).join(' et ') || 'aucun rôle'; }
   function peutProposerTarif() {
     var N = global.SIGH.nav, r = roleDeLaSession();
     if (!N || !N.droitsEcran) return false;
@@ -4044,7 +4055,7 @@
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
     colActes: colActes, colAnalyses: colAnalyses, colCatalogueTarifs: colCatalogueTarifs,
     GESTE_DECIDER_PRIX: GESTE_DECIDER_PRIX, rolesDecidentPrix: rolesDecidentPrix, libellesDecidentPrix: libellesDecidentPrix, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
-    ROLES_DATE_PASSEE: ROLES_DATE_PASSEE, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
+    get ROLES_DATE_PASSEE() { return rolesGeste(GESTE_DATE_PASSEE); }, GESTE_DATE_PASSEE: GESTE_DATE_PASSEE, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
     deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
@@ -5012,7 +5023,7 @@
    * M12, M13, l'assistant d'installation) et il est EXPOSÉ pour être SONDÉ,
    * jamais recopié. Chaque refus se nomme : code, motif, geste.
    * ======================================================================== */
-  var ROLES_VALIDATION = ['direction', 'da', 'admin'];
+  var GESTE_VALIDER_CONFIGURATION = 'valider_configuration_fiscale';
   function colIdentite() { return S.collection('identiteLegale', { module: 'CFG', entite: 'identité légale', prefix: 'IDL' }); }
   function colObligations() { return S.collection('obligationsFiscales', { module: 'CFG', entite: 'obligation fiscale', prefix: 'OBL' }); }
   function colHistoriqueObligations() { return S.collection('historiqueObligations', { module: 'CFG', entite: 'version antérieure d’obligation fiscale', prefix: 'HOB' }); }
@@ -5062,9 +5073,9 @@
   function controleValidation() {
     var r = controleEcritureCfg(); if (r) return r;
     var role = roleCourant();
-    if (ROLES_VALIDATION.indexOf(role) < 0) {
-      return refusCfg('VALIDATION_RESERVEE', 'La validation de la configuration fiscale est réservée à la Direction, à la DAF et à l’administrateur système. Profil : ' + libelleRole(role) + '.',
-        'Demander à la Direction ou à la DAF de valider depuis son poste.');
+    if (!aGeste(GESTE_VALIDER_CONFIGURATION, role)) {
+      return refusCfg('VALIDATION_RESERVEE', 'Valider la configuration fiscale est un droit réservé de la fiche du rôle (« ' + GESTE_VALIDER_CONFIGURATION + ' ») : « ' + libelleRole(role) + ' » ne l’a pas.',
+        'Demander à un rôle qui détient ce droit (la Direction, la DAF ou l’administrateur d’origine) de valider depuis son poste.', { droit: GESTE_VALIDER_CONFIGURATION });
     }
     return null;
   }
@@ -5564,48 +5575,48 @@
    * une par cible (`VRF-<cible>`). Un artefact de forme 2 est « à valider »
    * tant qu'aucune fiche porteuse d'un `valideLe` ne le couvre.
    * ======================================================================== */
-  var VUE_COMPLETE_VALIDATIONS = ['direction', 'da', 'admin'];
+  var GESTE_VUE_COMPLETE = 'voir_toutes_les_familles_validation';
   var FAMILLES_A_VALIDER = [
     { id: 'enquetes', libelle: 'Modèles d’enquête', module: 'M13', collections: ['enquetes'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'adm-enquetes' },
+      get roles() { return rolesGeste('valider_famille_enquetes'); }, ecran: 'adm-enquetes' },
     { id: 'labo_variables', libelle: 'Variables et unités du laboratoire (bornes suppléées)', module: 'M5',
       collections: ['variablesLabo', 'unitesLabo'], champs: ['aValider'],
-      roles: ['laborantin'], ecran: 'm5-valeurs-reference', champsChiffres: ['min', 'max'] },
+      get roles() { return rolesGeste('valider_famille_labo_variables'); }, ecran: 'm5-valeurs-reference', champsChiffres: ['min', 'max'] },
     { id: 'pathologies', libelle: 'Pathologies (tableau de morbidité)', module: 'M2', collections: ['pathologies'], champs: ['aValider'],
-      roles: ['dm', 'medecin'], ecran: 'm2-pathologies' },
+      get roles() { return rolesGeste('valider_famille_pathologies'); }, ecran: 'm2-pathologies' },
     { id: 'imagerie', libelle: 'Catalogue de l’imagerie (examens et variables)', module: 'CFG',
       collections: ['examensImagerie', 'variablesImagerie'], champs: ['aValider'],
-      roles: ['echographiste', 'dm'], ecran: 'cfg-imagerie-catalogue' },
+      get roles() { return rolesGeste('valider_famille_imagerie'); }, ecran: 'cfg-imagerie-catalogue' },
     { id: 'checklists_bloc', libelle: 'Check-listes du bloc, échelles ASA et Mallampati', module: 'M3', mode: 'fiche',
       cibles: [{ id: 'checklist-bloc', libelle: 'Check-listes d’entrée et de sortie du bloc' }],
-      roles: ['chirurgien', 'anesthesiste'], ecran: 'm3-bloc-checklist' },
+      get roles() { return rolesGeste('valider_famille_checklists_bloc'); }, ecran: 'm3-bloc-checklist' },
     { id: 'actes', libelle: 'Tarifs des actes (valeurs d’attente)', module: 'CFG', collections: ['actes'], champs: ['tarifProvisoire'],
-      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
+      get roles() { return rolesGeste('valider_famille_actes'); }, ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
     { id: 'analyses', libelle: 'Tarifs des analyses', module: 'CFG', collections: ['analyses'], champs: ['tarifProvisoire', 'aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
+      get roles() { return rolesGeste('valider_famille_analyses'); }, ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
     /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : un compte LU sur `versionsTarif`, jamais écrit ; la décision se prend à « Tarifs et prix »,
        onglet Alertes, avec la comparaison. Mêmes profils que les familles des actes et des analyses. */
     { id: 'prix', libelle: 'Changements de prix en attente (Oui ou Non)', module: 'CFG', mode: 'prix', collections: ['versionsTarif'], champs: ['statut'],
       get roles() { return rolesDecidentPrix(); }, ecran: 'cfg-tarifs' },
     { id: 'valorisation_sage', libelle: 'Valorisation des références de l’inventaire initial', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'm6-produits', champsChiffres: ['prixRevient'] },
+      get roles() { return rolesGeste('valider_famille_valorisation_sage'); }, ecran: 'm6-produits', champsChiffres: ['prixRevient'] },
     { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'm12-tableau-decisionnel', champsChiffres: ['cible'] },
+      get roles() { return rolesGeste('valider_famille_objectifs_pilotage'); }, ecran: 'm12-tableau-decisionnel', champsChiffres: ['cible'] },
     { id: 'repartition_charges', libelle: 'Répartition fixe et variable des charges', module: 'M12', mode: 'fiche',
       cibles: [{ id: 'repartition-fixe-variable', libelle: 'Répartition proposée des comptes de charge' }],
-      roles: ['comptable', 'direction', 'da', 'admin'], ecran: 'm12-seuil-rentabilite' },
+      get roles() { return rolesGeste('valider_famille_repartition_charges'); }, ecran: 'm12-seuil-rentabilite' },
     { id: 'modeles_badge', libelle: 'Modèles de badge', module: 'M10', collections: ['modelesBadge'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'm10-badges-modeles' },
+      get roles() { return rolesGeste('valider_famille_modeles_badge'); }, ecran: 'm10-badges-modeles' },
     { id: 'jeux_import', libelle: 'Jeux d’import en proposition', module: 'IMP', mode: 'fiche',
       cibles: [{ id: 'imp-analyses', libelle: 'Importation du catalogue des analyses' }],
-      roles: ['direction', 'da', 'admin'], ecran: 'imp-analyses' },
+      get roles() { return rolesGeste('valider_famille_jeux_import'); }, ecran: 'imp-analyses' },
     { id: 'modeles_messages', libelle: 'Modèles de messages', module: 'CFG', collections: ['modelesMessage'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'cfg-notifications' },
+      get roles() { return rolesGeste('valider_famille_modeles_messages'); }, ecran: 'cfg-notifications' },
     { id: 'bareme_aib', libelle: 'Barème de l’AIB (taux par situation de l’acheteur)', module: 'CFG', collections: ['baremeAib', 'reglagesAib'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin', 'comptable'], ecran: 'cfg-bareme-aib', champsChiffres: ['taux'] },
+      get roles() { return rolesGeste('valider_famille_bareme_aib'); }, ecran: 'cfg-bareme-aib', champsChiffres: ['taux'] },
     { id: 'bareme_its', libelle: 'Barème de l’ITS', module: 'M11', mode: 'fiche',
       cibles: [{ id: 'bareme-its', libelle: 'Barème de l’impôt sur les traitements et salaires' }],
-      roles: ['direction', 'da', 'admin'], ecran: 'cfg-comptabilite' },
+      get roles() { return rolesGeste('valider_famille_bareme_its'); }, ecran: 'cfg-comptabilite' },
   ];
   FAMILLES_A_VALIDER.forEach(function (f) { f.mode = f.mode || 'fiche-marquee'; });
 
@@ -5667,7 +5678,7 @@
       };
     });
   }
-  function refusValidation(code, motif, geste) { return refusCfg(code, motif, geste); }
+  function refusValidation(code, motif, geste, extra) { return refusCfg(code, motif, geste, extra); }
   function validerReferentiel(familleId, id, opts) {
     opts = opts || {};
     var f = familleAValider(familleId);
@@ -5678,7 +5689,7 @@
     if (gardeMere) return gardeMere;
     if (f.roles.indexOf(role) < 0) {
       return refusValidation('VALIDATION_RESERVEE', 'La validation de « ' + f.libelle + ' » est réservée à : ' + profilsFamille(f) + '. Profil : ' + libelleRole(role) + '.',
-        'Demander à ' + libelleRole(f.roles[0]) + ' de valider depuis son poste.');
+        'Demander à ' + libelleRole(f.roles[0]) + ' de valider depuis son poste.', { droit: 'valider_famille_' + f.id });
     }
     var cible = artefactsDe(f).filter(function (a) { return a.id === id; })[0];
     if (!cible) return refusValidation('INTROUVABLE', 'Aucun élément « ' + id + ' » dans « ' + f.libelle + ' ».', 'Ouvrir l’écran de la famille et choisir l’élément à valider.');
@@ -5899,11 +5910,11 @@
   }
   /** Les familles qu'un profil VOIT au centre des validations : la Direction et la DAF voient tout, les autres leur ressort. */
   function referentielsVisiblesPar(role) {
-    return referentielsAValider(VUE_COMPLETE_VALIDATIONS.indexOf(role) >= 0 ? null : { role: role });
+    return referentielsAValider(aGeste(GESTE_VUE_COMPLETE, role) ? null : { role: role });
   }
 
   global.SIGH.configurationFiscale = {
-    ROLES_VALIDATION: ROLES_VALIDATION,
+    get ROLES_VALIDATION() { return rolesGeste(GESTE_VALIDER_CONFIGURATION); }, GESTE_VALIDER_CONFIGURATION: GESTE_VALIDER_CONFIGURATION, peutValiderConfiguration: function (role) { return aGeste(GESTE_VALIDER_CONFIGURATION, role); },
     identiteEnForce: identiteEnForce, identiteExigeVersion: identiteExigeVersion,
     enregistrerIdentite: enregistrerIdentite, nouvelleVersionIdentite: nouvelleVersionIdentite, validerIdentite: validerIdentite,
     obligationsEnVigueur: function (date) { return D.obligationsALaDate(date); },
@@ -5922,7 +5933,7 @@
   global.SIGH.parcours.validerObligations = validerObligations;
   global.SIGH.parcours.etatConfigurationFiscale = etatConfigurationFiscale;
   global.SIGH.validations = {
-    FAMILLES_A_VALIDER: FAMILLES_A_VALIDER, VUE_COMPLETE: VUE_COMPLETE_VALIDATIONS,
+    FAMILLES_A_VALIDER: FAMILLES_A_VALIDER, get VUE_COMPLETE() { return rolesGeste(GESTE_VUE_COMPLETE); }, GESTE_VUE_COMPLETE: GESTE_VUE_COMPLETE,
     referentielsAValider: referentielsAValider, referentielsVisiblesPar: referentielsVisiblesPar,
     validerReferentiel: validerReferentiel, remettreAValider: remettreAValider, etatValidation: etatValidation,
     controlerEnregistrement: controlerEnregistrement, marquageEnregistrement: marquageEnregistrement, suivreEnregistrement: suivreEnregistrement,
@@ -6706,7 +6717,7 @@
    * version existante, d'où qu'elle vienne. Un taux absent n'est jamais zéro : le moteur refuse en le nommant (`AIB_SANS_BAREME`).
    * Un IFU saisi est PRÉSUMÉ actif : la maquette ne peut pas interroger la DGI, et le dit.
    * ======================================================================== */
-  var ROLES_ECRITURE_AIB = ['comptable', 'admin', 'da'];
+  var GESTE_ECRIRE_AIB = 'ecrire_bareme_aib';
   var DECLENCHEURS_AIB = [
     { value: 'ifu_renseigne', label: 'Un IFU de 13 chiffres est saisi' },
     { value: 'ifu_absent', label: 'Aucun IFU saisi' },
@@ -6777,9 +6788,9 @@
   }
   function motifEcritureAib() {
     var role = roleCourant();
-    if (ROLES_ECRITURE_AIB.indexOf(role) < 0) {
-      return refusAib('AIB_ECRITURE_RESERVEE', 'Le barème de l’AIB se tient par le comptable, la Directrice Administrative ou l’administrateur. Profil : ' + libelleRole(role) + '.',
-        'Demander la modification au comptable ; la Direction consulte le barème sans l’écrire.');
+    if (!aGeste(GESTE_ECRIRE_AIB, role)) {
+      return refusAib('AIB_ECRITURE_RESERVEE', 'Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« ' + GESTE_ECRIRE_AIB + ' ») : « ' + libelleRole(role) + ' » ne l’a pas.',
+        'Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.', { droit: GESTE_ECRIRE_AIB, roles: rolesGeste(GESTE_ECRIRE_AIB) });
     }
     if (posteFileul()) {
       return refusAib('AIB_POSTE_FILEUL', 'Ce poste est un fileul : le barème de l’AIB est tenu par la mère et se lit ici sans s’y écrire.', 'Faire la modification depuis le poste mère.');
@@ -6879,7 +6890,7 @@
     return null;
   });
   global.SIGH.baremeAib = {
-    ROLES_ECRITURE: ROLES_ECRITURE_AIB, DECLENCHEURS: DECLENCHEURS_AIB,
+    get ROLES_ECRITURE() { return rolesGeste(GESTE_ECRIRE_AIB); }, GESTE_ECRIRE: GESTE_ECRIRE_AIB, peutEcrire: function (role) { return aGeste(GESTE_ECRIRE_AIB, role); }, DECLENCHEURS: DECLENCHEURS_AIB,
     aLaDate: tauxAibALaDate, pourAcheteur: tauxAibPourAcheteur, proposes: tauxAibProposes,
     nouvelleVersion: nouvelleVersionAib, retirerVersion: retirerVersionAib, aBrancher: aibABrancher,
     versionsDe: versionsAibDe, situations: situationsAibActives,
@@ -7387,6 +7398,7 @@
     return l.length ? l.join(', ') : 'aucun rôle ne le détient';
   }
   function modeMecef() { var m = S.reglage('mecefMode', 'boitier'); return MODES_MECEF.indexOf(m) >= 0 ? m : 'boitier'; }
+  var GESTE_RETRANSMETTRE_MECEF = 'retransmettre_mecef', GESTE_RETRANSMETTRE_SANS_LIMITE = 'retransmettre_mecef_sans_limite';
   function definirModeMecef(m) {
     if (MODES_MECEF.indexOf(m) < 0) return refusMecef('MODE_INCONNU', 'Le mode « ' + m + ' » n’existe pas.', 'Choisir boîtier physique ou e-MECeF.');
     if (!peutGeste(GESTE_MODE_MECEF)) {
@@ -7661,8 +7673,8 @@
     if (['refusee', 'expiree', 'en_attente'].indexOf(etat) < 0) return refusMecef('PAS_RETRANSMISSIBLE', 'La facture ' + fac.numero + ' est à vérifier : elle se reprend sans doubler, elle ne se retransmet pas.', 'Utiliser « Reprendre sans doubler ».');
     var role = roleCourant();
     var deja = fac.retransmissions || 0;
-    if (role === 'caissier' && deja >= 1) return refusMecef('RETRANSMISSION_RESERVEE', 'Le caissier ne retransmet qu’une fois : la facture ' + fac.numero + ' l’a déjà été.', 'Demander la retransmission à la Directrice Administrative.');
-    if (['caissier', 'da', 'admin'].indexOf(role) < 0) return refusMecef('RETRANSMISSION_INTERDITE', 'La retransmission est réservée au caissier (une fois) et à la Directrice Administrative.', 'Demander à la caisse ou à la DA.');
+    if (!aGeste(GESTE_RETRANSMETTRE_MECEF, role)) return refusMecef('RETRANSMISSION_INTERDITE', 'Retransmettre au MECeF est un droit réservé de la fiche du rôle (« ' + GESTE_RETRANSMETTRE_MECEF + ' ») : « ' + libelleRole(role) + ' » ne l’a pas.', 'Demander à un rôle qui détient ce droit (la caisse, une fois, ou la Directrice Administrative d’origine).');
+    if (!aGeste(GESTE_RETRANSMETTRE_SANS_LIMITE, role) && deja >= 1) return refusMecef('RETRANSMISSION_RESERVEE', 'Sans le droit « ' + GESTE_RETRANSMETTRE_SANS_LIMITE + ' », une vente ne se retransmet qu’une fois : la facture ' + fac.numero + ' l’a déjà été.', 'Demander la retransmission à un rôle qui détient ce droit (la Directrice Administrative d’origine).');
     /* Lot L3 : sans adaptateur configuré, la retransmission n'émet rien et ne consomme PAS l'unique essai du caissier. */
     if (etat !== 'en_attente' && adaptateurMecef().configure) col('factures').update(factureId, { retransmissions: deja + 1 });
     return normaliserVente(factureId, opts);
@@ -7678,6 +7690,7 @@
     imprimante: { aLaDate: imprimanteALaDate, definir: definirImprimante, versions: versionsImprimante, semee: IMPRIMANTE_SEMEE, liaisons: LIAISONS_IMPRIMANTE },
     etatCaisse: etatCaisse,
     MODES_PROPOSES: ['boitier', 'emecef'],
+    GESTES: { mode: GESTE_MODE_MECEF, retransmettre: GESTE_RETRANSMETTRE_MECEF, sansLimite: GESTE_RETRANSMETTRE_SANS_LIMITE },
     normaliser: normaliserVente, reprendre: reprendreMecef, retransmettre: retransmettreMecef,
     fauxBoitier: fauxBoitier, numeroSuivant: function () { return fauxBoitier.numeroSuivant(); },
   };
@@ -8110,7 +8123,7 @@
     { id: 'daf', libelle: 'Directrice administrative seule', etapes: ['daf'] },
     { id: 'surveillant_puis_daf', libelle: 'Surveillant puis directrice administrative', etapes: ['surveillant', 'daf'] },
   ];
-  var ROLES_ETAPE = { surveillant: ['surveillant', 'admin'], daf: ['da', 'admin'] };
+  var GESTE_ETAPE = { surveillant: 'valider_etape_surveillant', daf: 'valider_etape_daf' };
   var NOM_ETAPE = { surveillant: 'le surveillant', daf: 'la directrice administrative' };
   var PIECES_RH = {
     presences: { meta: { module: 'M10', entite: 'Presence' }, nom: 'pointage', agent: 'employeId' },
@@ -8162,9 +8175,9 @@
     if (etat === 'valide' || etat === 'refuse') return refusRh('DEJA_TRANCHEE', 'Cette pièce est déjà ' + (etat === 'valide' ? 'validée' : 'refusée') + ' : une décision ne se réécrit pas.', nom === 'presences' ? 'Pour corriger un pointage validé, le régulariser (motif, date et auteur consignés).' : 'Saisir une nouvelle demande.');
     var etapes = etapesDuCircuitRh();
     var etape = prochaineEtapeRh(rec) || etapes[etapes.length - 1];
-    if (ROLES_ETAPE[etape].indexOf(roleCourant()) < 0) {
+    if (!aGeste(GESTE_ETAPE[etape])) {
       return refusRh('VALIDATION_RESERVEE', 'L’étape en attente est celle de ' + NOM_ETAPE[etape] + ' (circuit : ' + CIRCUITS_PRESENCES.filter(function (x) { return x.id === circuitPresencesRh(); })[0].libelle + ').',
-        'Demander à ' + NOM_ETAPE[etape] + ' de trancher.', { etape: etape });
+        'Demander à ' + NOM_ETAPE[etape] + ' de trancher.', { etape: etape, droit: GESTE_ETAPE[etape] });
     }
     var moi = employeDeSession();
     if (moi && String(rec[def.agent]) === String(moi.id)) return refusRh('AUTO_VALIDATION', 'Personne ne valide sa propre pièce : ' + def.nom + ' de ' + moi.nomComplet + '.', 'Demander à un autre habilité de trancher.');

@@ -1898,7 +1898,7 @@
           },
           { name: 'dateEngagement', label: 'Date de règlement promise', type: 'date', required: true, value: C.iso(C.addDays(AUJ, 30)) },
           { name: 'tranches', label: 'Nombre de tranches', type: 'number', min: 1, max: 12, value: 1 },
-          { name: 'recuPar', label: 'Engagement reçu par', required: true, value: 'KASSA Augustin' },
+          { name: 'recuPar', label: 'Engagement reçu par', required: true, value: S.currentUser() },
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
         ], {});
 
@@ -2077,7 +2077,7 @@
           { name: 'date', label: 'Date', type: 'date', required: true, value: C.iso(AUJ) },
           { name: 'montant', label: 'Montant (FCFA)', type: 'money', required: true, min: 1 },
           { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full', help: 'Obligatoire — consigné au journal d’audit (RG-12).' },
-          { name: 'autorisePar', label: 'Autorisé par', required: true, value: 'TAKI Alimatou' },
+          { name: 'autorisePar', label: 'Autorisé par', required: true, value: S.currentUser() },
         ], {});
 
         var m = U.modal({

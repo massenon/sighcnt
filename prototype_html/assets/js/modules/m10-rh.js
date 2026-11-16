@@ -5800,7 +5800,7 @@
             ]),
           ]),
           signatures: [{ role: 'L’agent', nom: m.agent },
-            { role: 'La Directrice Administrative', nom: m.valideePar || 'TAKI Alimatou' }],
+            { role: 'La Directrice Administrative', nom: m.valideePar || '' }],
         });
       }
     },
