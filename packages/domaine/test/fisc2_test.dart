@@ -193,7 +193,7 @@ void main() {
         }
         etat = [...etat, f];
         final apres = [for (final x in etat) if (x['situation'] == obj(c['entree'])['situation'] && x['statut'] != 'archive') x]..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
-        final attendu = liste(c['apres']);
+        final attendu = liste(c['apres'])..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
         expect([for (final x in apres) [x['taux'], x['dateEffet'], x['dateFin']]], [for (final x in attendu) [x['taux'], x['dateEffet'], x['dateFin']]], reason: '${c['nom']} : le barème de la situation après');
       }
     });

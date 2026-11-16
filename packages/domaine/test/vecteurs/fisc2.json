@@ -1050,7 +1050,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z6q5cw8n",
+     "id": "IAIxmvux6z7n1aro5",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1068,9 +1068,9 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.674Z",
+     "signeeLe": "2026-10-30T12:00:00.707Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.674Z"
+     "_creeLe": "2026-10-30T12:00:00.707Z"
     }
    ],
    "sortie": {
@@ -1096,7 +1096,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z6q5cw8n",
+     "id": "IAIxmvux6z7n1aro5",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1114,9 +1114,9 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.674Z",
+     "signeeLe": "2026-10-30T12:00:00.707Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.674Z"
+     "_creeLe": "2026-10-30T12:00:00.707Z"
     }
    ],
    "sortie": {
@@ -1153,7 +1153,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z6q5cw8n",
+     "id": "IAIxmvux6z7n1aro5",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1171,12 +1171,12 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.674Z",
+     "signeeLe": "2026-10-30T12:00:00.707Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.674Z"
+     "_creeLe": "2026-10-30T12:00:00.707Z"
     },
     {
-     "id": "IAIxmvux6z6uz1b0g",
+     "id": "IAIxmvux6z7r3ns0y",
      "statut": "actif",
      "operation": "reglement_assureur",
      "reference": "REG-V-2",
@@ -1187,9 +1187,9 @@
      "motif": "Cet assureur n’applique pas l’AIB à ce règlement",
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.678Z",
+     "signeeLe": "2026-10-30T12:00:00.711Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.678Z"
+     "_creeLe": "2026-10-30T12:00:00.711Z"
     }
    ],
    "sortie": {
@@ -1232,7 +1232,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z6q5cw8n",
+     "id": "IAIxmvux6z7n1aro5",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1250,12 +1250,12 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.674Z",
+     "signeeLe": "2026-10-30T12:00:00.707Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.674Z"
+     "_creeLe": "2026-10-30T12:00:00.707Z"
     },
     {
-     "id": "IAIxmvux6z6uz1b0g",
+     "id": "IAIxmvux6z7r3ns0y",
      "statut": "actif",
      "operation": "reglement_assureur",
      "reference": "REG-V-2",
@@ -1266,12 +1266,12 @@
      "motif": "Cet assureur n’applique pas l’AIB à ce règlement",
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.678Z",
+     "signeeLe": "2026-10-30T12:00:00.711Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.678Z"
+     "_creeLe": "2026-10-30T12:00:00.711Z"
     },
     {
-     "id": "IAIxmvux6z6whccz2",
+     "id": "IAIxmvux6z7t7u5i6",
      "statut": "actif",
      "operation": "reglement_prescripteur",
      "reference": "HON-V-3",
@@ -1290,9 +1290,9 @@
      "motif": "Le prescripteur a négocié 4 %",
      "signeePar": "Acteur da",
      "signeeRole": "Directrice de l’Administration et des Finances (DAF)",
-     "signeeLe": "2026-10-30T12:00:00.680Z",
+     "signeeLe": "2026-10-30T12:00:00.713Z",
      "_creePar": "Acteur da",
-     "_creeLe": "2026-10-30T12:00:00.680Z"
+     "_creeLe": "2026-10-30T12:00:00.713Z"
     }
    ],
    "sortie": {
@@ -1614,7 +1614,7 @@
   ],
   "fiches": [
    {
-    "id": "PFIxmvux6z7l1jgrw",
+    "id": "PFIxmvux6z8738jsr",
     "statut": "actif",
     "type": "parametre",
     "code": "CCIB-MONTANT",
@@ -1623,15 +1623,15 @@
     "source": "Saisie à l’écran (cfg-comptabilite)",
     "aValider": false,
     "dateEffet": "2027-01-01",
-    "modifieLe": "2026-10-30T12:00:00.704Z",
+    "modifieLe": "2026-10-30T12:00:00.727Z",
     "modifiePar": "Admin Vecteur",
     "motif": "Vecteur : CCIB révisée",
     "montantTotal": 400000,
     "_creePar": "Admin Vecteur",
-    "_creeLe": "2026-10-30T12:00:00.705Z"
+    "_creeLe": "2026-10-30T12:00:00.727Z"
    },
    {
-    "id": "PFIxmvux6z7kyrd9j",
+    "id": "PFIxmvux6z87weo6d",
     "statut": "actif",
     "type": "parametre",
     "code": "DELAIS-ALERTE",
@@ -1639,13 +1639,13 @@
     "source": "Saisie à l’écran (cfg-comptabilite)",
     "aValider": false,
     "dateEffet": "2026-12-01",
-    "modifieLe": "2026-10-30T12:00:00.704Z",
+    "modifieLe": "2026-10-30T12:00:00.727Z",
     "modifiePar": "Admin Vecteur",
     "motif": "Vecteur : délais allongés",
     "delaiAPayer": 15,
     "delaiDeclaration": 45,
     "_creePar": "Admin Vecteur",
-    "_creeLe": "2026-10-30T12:00:00.704Z"
+    "_creeLe": "2026-10-30T12:00:00.727Z"
    },
    {
     "id": "PFI-DELAIS",
@@ -1729,6 +1729,530 @@
    }
   ]
  },
+ "versionsBareme": [
+  {
+   "nom": "rôle hors écriture (caissier)",
+   "role": "caissier",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_ECRITURE_RESERVEE",
+    "motif": "Le barème de l’AIB se tient par le comptable, la Directrice Administrative ou l’administrateur. Profil : Caissier — Dispensaire (Pharmacie).",
+    "geste": "Demander la modification au comptable ; la Direction consulte le barème sans l’écrire."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "poste fileul",
+   "role": "comptable",
+   "fileul": true,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_POSTE_FILEUL",
+    "motif": "Ce poste est un fileul : le barème de l’AIB est tenu par la mère et se lit ici sans s’y écrire.",
+    "geste": "Faire la modification depuis le poste mère."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "situation inconnue",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "nexiste_pas",
+    "taux": 6,
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SITUATION_INCONNUE",
+    "motif": "La situation « nexiste_pas » n’existe pas au barème de l’AIB.",
+    "geste": "Choisir une situation listée ou la créer d’abord."
+   },
+   "apres": []
+  },
+  {
+   "nom": "taux absent",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": "",
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE",
+    "motif": "Le taux («  ») doit être un pourcentage entier de 0 à 100 : la maquette calcule en montants entiers.",
+    "geste": "Saisir un entier, par exemple 5."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "taux décimal",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 2.5,
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE",
+    "motif": "Le taux (« 2.5 ») doit être un pourcentage entier de 0 à 100 : la maquette calcule en montants entiers.",
+    "geste": "Saisir un entier, par exemple 5."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "taux au dessus de 100",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 101,
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE",
+    "motif": "Le taux (« 101 ») doit être un pourcentage entier de 0 à 100 : la maquette calcule en montants entiers.",
+    "geste": "Saisir un entier, par exemple 5."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "date illisible",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "bientôt",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DATE_INVALIDE",
+    "motif": "La date d’effet est absente ou illisible.",
+    "geste": "Choisir la date à partir de laquelle le taux s’applique."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "source absente",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "2027-01-01",
+    "source": "  ",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SOURCE_ABSENTE",
+    "motif": "Aucune source n’est dite pour ce taux : on n’invente pas un taux, on cite son texte.",
+    "geste": "Indiquer le texte, la décision ou la déclaration d’où vient le taux."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "motif absent",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": ""
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_MOTIF_ABSENT",
+    "motif": "Le motif de cette version est obligatoire.",
+    "geste": "Dire pourquoi le taux change ou pourquoi la version est ajoutée."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "date déjà prise (01/01/2026)",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "2026-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DATE_EXISTANTE",
+    "motif": "Une version de cette situation commence déjà le 01/01/2026 : une version ne se réécrit pas.",
+    "geste": "Choisir une date d’effet postérieure, ou retirer l’autre version (archive)."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "date antérieure à la plus récente",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "2025-06-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DATE_ANTERIEURE",
+    "motif": "La version la plus récente de cette situation commence le 01/01/2026 : une version insérée avant elle masquerait l’historique.",
+    "geste": "Choisir une date d’effet postérieure au 01/01/2026."
+   },
+   "apres": [
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "version à venir (6 % au 01/01/2027) : ferme la précédente à la veille",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 6,
+    "dateEffet": "2027-01-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : taux relevé"
+   },
+   "sortie": {
+    "ok": true,
+    "version": 2,
+    "precedenteFermeeLe": "2026-12-31",
+    "enAttenteDeValidation": false,
+    "fiche": {
+     "situation": "personne_morale",
+     "taux": 6,
+     "dateEffet": "2027-01-01",
+     "dateFin": null,
+     "source": "Loi de finances 2027, article test",
+     "motif": "Vecteur : taux relevé",
+     "aValider": false
+    }
+   },
+   "apres": [
+    {
+     "id": "BAIxmvux6z8g45zca",
+     "situation": "personne_morale",
+     "taux": 6,
+     "dateEffet": "2027-01-01",
+     "dateFin": null,
+     "aValider": false
+    },
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": "2026-12-31",
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "une seconde version après elle (7 % au 01/07/2027)",
+   "role": "da",
+   "fileul": false,
+   "entree": {
+    "situation": "personne_morale",
+    "taux": 7,
+    "dateEffet": "2027-07-01",
+    "source": "Loi de finances 2027, article test",
+    "motif": "Vecteur : seconde version"
+   },
+   "sortie": {
+    "ok": true,
+    "version": 3,
+    "precedenteFermeeLe": "2027-06-30",
+    "enAttenteDeValidation": false,
+    "fiche": {
+     "situation": "personne_morale",
+     "taux": 7,
+     "dateEffet": "2027-07-01",
+     "dateFin": null,
+     "source": "Loi de finances 2027, article test",
+     "motif": "Vecteur : seconde version",
+     "aValider": false
+    }
+   },
+   "apres": [
+    {
+     "id": "BAIxmvux6z8h8b32c",
+     "situation": "personne_morale",
+     "taux": 7,
+     "dateEffet": "2027-07-01",
+     "dateFin": null,
+     "aValider": false
+    },
+    {
+     "id": "BAIxmvux6z8g45zca",
+     "situation": "personne_morale",
+     "taux": 6,
+     "dateEffet": "2027-01-01",
+     "dateFin": "2027-06-30",
+     "aValider": false
+    },
+    {
+     "id": "BAI006",
+     "situation": "personne_morale",
+     "taux": 5,
+     "dateEffet": "2026-01-01",
+     "dateFin": "2026-12-31",
+     "aValider": true
+    }
+   ]
+  },
+  {
+   "nom": "situation de l’acheteur (prestation de service, 4 % au 01/01/2027)",
+   "role": "admin",
+   "fileul": false,
+   "entree": {
+    "situation": "prestation_service",
+    "taux": 4,
+    "dateEffet": "2027-01-01",
+    "source": "Texte test",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": true,
+    "version": 2,
+    "precedenteFermeeLe": "2026-12-31",
+    "enAttenteDeValidation": false,
+    "fiche": {
+     "situation": "prestation_service",
+     "taux": 4,
+     "dateEffet": "2027-01-01",
+     "dateFin": null,
+     "source": "Texte test",
+     "motif": "Vecteur",
+     "aValider": false
+    }
+   },
+   "apres": [
+    {
+     "id": "BAIxmvux6z8jhfxj2",
+     "situation": "prestation_service",
+     "taux": 4,
+     "dateEffet": "2027-01-01",
+     "dateFin": null,
+     "aValider": false
+    },
+    {
+     "id": "BAI004",
+     "situation": "prestation_service",
+     "taux": 3,
+     "dateEffet": "2026-01-01",
+     "dateFin": "2026-12-31",
+     "aValider": true
+    }
+   ]
+  }
+ ],
+ "versionsBaremeDepart": [
+  {
+   "id": "BAI001",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_inactif_ou_absent",
+   "taux": 1,
+   "dateEffet": "2026-01-01",
+   "dateFin": "2026-09-06",
+   "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+   "motif": "Taux appliqué avant le communiqué de septembre 2026 : défaut historique de la maquette (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI002",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_inactif_ou_absent",
+   "taux": 5,
+   "dateEffet": "2026-09-07",
+   "dateFin": null,
+   "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+   "motif": "Généralisation du prélèvement de 5 % à l’émission des factures normalisées, à compter du 07/09/2026."
+  },
+  {
+   "id": "BAI003",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_actif",
+   "taux": 1,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+   "motif": "Défaut de la fenêtre MECeF quand l’acheteur a un IFU actif (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI004",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "prestation_service",
+   "taux": 3,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+   "motif": "Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI005",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "personne_physique",
+   "taux": 3,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+   "motif": "Retenue sur la facture d’un tiers personne physique (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI006",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "personne_morale",
+   "taux": 5,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+   "motif": "Retenue sur la facture d’un tiers personne morale (date d’effet d’attente : début de l’exercice 2026)."
+  }
+ ],
  "situationsParFamille": {
   "acheteur": [
    "ifu_actif",

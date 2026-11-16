@@ -153,6 +153,7 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       /* ---------- 5. une version nouvelle du barème de l'AIB : B.nouvelleVersion (le moteur réel), refus nommés puis versions enchaînées ---------- */
       const colB = S.collection('baremeAib');
       const avantB = colB.all().map((x) => x.id);
+      const departB = propre(colB.all());
       const versions = [];
       const nv = (nom, role, fileul, entree) => {
         const droit = true;
@@ -178,9 +179,9 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       nv('une seconde version après elle (7 % au 01/07/2027)', 'da', false, Object.assign({}, baseV, { taux: 7, dateEffet: '2027-07-01', motif: 'Vecteur : seconde version' }));
       nv('situation de l’acheteur (prestation de service, 4 % au 01/01/2027)', 'admin', false, { situation: 'prestation_service', taux: 4, dateEffet: '2027-01-01', source: 'Texte test', motif: 'Vecteur' });
       out.versionsBareme = versions;
-      out.versionsBaremeDepart = propre(colB.all().filter((x) => avantB.indexOf(x.id) >= 0));
+      out.versionsBaremeDepart = departB;
       colB.all().filter((x) => avantB.indexOf(x.id) < 0).forEach((x) => colB.archive(x.id, 'Vecteur : restauration'));
-      avantB.forEach((id) => { const cur = colB.get(id); const o = out.versionsBaremeDepart.filter((y) => y.id === id)[0]; if (cur && o && (cur.dateFin || null) !== (o.dateFin || null)) colB.update(id, { dateFin: o.dateFin || null }); });
+      avantB.forEach((id) => { const cur = colB.get(id); const o = departB.filter((y) => y.id === id)[0]; if (cur && o && (cur.dateFin || null) !== (o.dateFin || null)) colB.update(id, { dateFin: o.dateFin || null }); });
       out.situationsParFamille = { acheteur: B.situations().map((x) => x.code), retenue: B.situations('retenue_tiers').map((x) => x.code), tous: B.situations('tous').map((x) => x.code) };
       /* restitution : les imputations posées sont archivées */
       colI.all().forEach((x) => { if (x.statut !== 'archive') colI.archive(x.id, 'Vecteur : restauration'); });

@@ -52,6 +52,36 @@ void main() {
     });
   });
 
+  group('une version nouvelle du barème de l\'AIB au poste', () {
+    Map<String, Object?> saisie([Map<String, Object?> sup = const {}]) =>
+        {'situation': 'personne_morale', 'taux': 6, 'dateEffet': '2027-01-01', 'source': 'Texte de test', 'motif': 'Taux relevé', ...sup};
+
+    test('elle ferme la précédente à la veille, naît arrêtée pour un profil de la famille, et se lit à sa date', () {
+      final m = _magasinAib();
+      AibPoste.amorcer(m);
+      final a = _aib(m);
+      final r = a.nouvelleVersion(saisie());
+      expect(r['ok'], isTrue);
+      expect(r['precedenteFermeeLe'], '2026-12-31');
+      final fiche = m.collection('baremeAib').parId(r['id'])!;
+      expect(fiche['aValider'], false, reason: 'le comptable est de la famille de validation : la version naît arrêtée');
+      expect(fiche['valideRole'], isNotNull);
+      expect(a.proposer('personne_morale', '2026-12-31')['taux'], 5);
+      expect(a.proposer('personne_morale', '2027-01-01')['taux'], 6);
+      expect(m.collection('audit').toutes.where((x) => x['action'] == 'Barème AIB : nouvelle version').length, 1);
+    });
+
+    test('refus nommés : rôle hors écriture, poste fileul, source absente, date déjà prise', () {
+      final m = _magasinAib();
+      AibPoste.amorcer(m);
+      expect(_aib(m, role: 'caissier').nouvelleVersion(saisie())['code'], 'AIB_ECRITURE_RESERVEE');
+      expect(AibPoste(m, auteur: () => 'X', role: 'comptable', libelleRole: 'comptable', fileul: true, horloge: () => DateTime(2026, 11, 16)).nouvelleVersion(saisie())['code'], 'AIB_POSTE_FILEUL');
+      expect(_aib(m).nouvelleVersion(saisie({'source': ' '}))['code'], 'AIB_SOURCE_ABSENTE');
+      expect(_aib(m).nouvelleVersion(saisie({'dateEffet': '2026-01-01'}))['code'], 'AIB_DATE_EXISTANTE');
+      expect(m.collection('baremeAib').toutes.length, 6, reason: 'un refus n\'écrit rien');
+    });
+  });
+
   group('imputer l\'AIB opération par opération', () {
     Map<String, Object?> saisie([Map<String, Object?> sup = const {}]) =>
         {'operation': 'achat_fournisseur', 'reference': 'FF-P-1', 'tiers': 'Fournisseur', 'dateOperation': '2026-11-10', 'base': 100000, 'appliquer': true, 'situation': 'personne_morale', 'taux': 5, 'compte': '447000', ...sup};
