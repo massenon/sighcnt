@@ -6363,7 +6363,7 @@ async function viderMessages(page) {
       l.forEach((x) => { par[x.designation] = (par[x.designation] || 0) + (Number(x.quantite) || 0); });
       const top = Object.keys(par).sort((a, b2) => par[b2] - par[a])[0];
       const trouvee = [...document.querySelectorAll('tbody tr')]
-        .map((tr) => [...tr.children].map((td) => td.textContent.trim()))
+        .map((tr) => [...tr.children].filter((td) => !td.hasAttribute('data-case-selection')).map((td) => td.textContent.trim()))
         .find((c) => c.some((x) => x === top));
       return { article: top, attendu: par[top],
         affiche: trouvee ? Number(String(trouvee[0]).replace(/\D/g, '')) : null };
@@ -16668,7 +16668,7 @@ async function viderMessages(page) {
     await ouvrir('cfg-comptabilite.html'); await admin(); await ouvrir('cfg-comptabilite.html');
     const dom4 = await page.evaluate(() => {
       const m = document.querySelector('.version-a-venir[data-code="CNSS"]');
-      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => /^CNSS/.test((tr.querySelector('td') || {}).textContent || ''));
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => /^CNSS/.test((tr.querySelector('td:not([data-case-selection])') || {}).textContent || ''));
       return { mention: m ? m.textContent : null, date: m ? m.getAttribute('data-date-effet') : null, carte: !!document.getElementById('versions-a-venir'), ligne: ligne ? ligne.textContent : null,
         annuler: [...document.querySelectorAll('#page-content button')].filter((b) => /^Annuler la version à venir/.test(b.getAttribute('title') || '')).length };
     });
@@ -18319,7 +18319,8 @@ async function viderMessages(page) {
     verifier('Une garde posée par la CELLULE de la grille le lendemain d’une garde est refusée (même moteur) : rien d’écrit, motif lu à l’écran', refusGrille.posees === 0 && refusGrille.toast, JSON.stringify(refusGrille));
 
     /* --- 8. filtres : validation, type, état imprimé qui retrace les filtres ----------------------------------------------------------------------- */
-    const lignesRegistre = () => page.evaluate(() => [...document.querySelectorAll('#page-content tbody tr')].filter((tr) => !tr.closest('table[class*="60rem"]') && tr.querySelectorAll('td').length >= 9).length);
+    /* lot EXP : le registre se lit dans SON tableau (data-tableau="planning"), cases de sélection exclues ; le tableau des régimes a lui aussi neuf cellules avec sa case */
+    const lignesRegistre = () => page.evaluate(() => [...document.querySelectorAll('#page-content [data-tableau="planning"] tbody tr')].filter((tr) => !tr.closest('table[class*="60rem"]') && tr.querySelectorAll('td:not([data-case-selection])').length >= 9).length);
     const filtre = (id, v) => page.evaluate((a) => { const c = document.getElementById(a[0]); c.value = a[1]; c.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
     const tousVisibles = await lignesRegistre();
     await filtre('pl_f_validation', 'a_valider'); await pause(400);
@@ -19256,7 +19257,7 @@ async function viderMessages(page) {
     }, id, v);
     const modifierLigne = async (poste, champs) => {
       const ok = await page.evaluate((p) => {
-        const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === p);
+        const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td:not([data-case-selection])') && x.querySelector('td:not([data-case-selection])').textContent.trim() === p);
         if (!tr) return 'ligne absente';
         const b = [...tr.querySelectorAll('button')].find((x) => (x.getAttribute('title') || '') === 'Modifier');
         if (!b) return 'bouton absent'; b.click(); return 'ok';
@@ -20588,7 +20589,7 @@ async function viderMessages(page) {
     const onglet = (id) => page.evaluate(async (i) => { const t = [...document.querySelectorAll('#page-content [data-tab]')].find((x) => x.getAttribute('data-tab') === i || x.textContent.trim().toLowerCase().indexOf(i) === 0); if (t) t.click(); await new Promise((r) => setTimeout(r, 400)); return !!t; }, id);
     const chercher = (txt) => page.evaluate(async (t) => { const c = [...document.querySelectorAll('#page-content input')].find((i) => /search|text/.test(i.type) && /cherch/i.test((i.placeholder || '') + (i.getAttribute('aria-label') || ''))); if (!c) return false; c.value = t; c.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); return true; }, txt);
     const modale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop(); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
-    const boutonValider = (code) => page.evaluate(async (c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === c);
+    const boutonValider = (code) => page.evaluate(async (c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td:not([data-case-selection])') && x.querySelector('td:not([data-case-selection])').textContent.trim() === c);
       if (!tr) return 'ligne absente'; const b = [...tr.querySelectorAll('button')].find((x) => /^Valider « /.test(x.getAttribute('title') || '') || x.textContent.trim() === 'Valider'); if (!b) return { etat: tr.textContent.replace(/\s+/g, ' ').slice(-60) }; b.click(); await new Promise((r) => setTimeout(r, 500)); return true; }, code);
     const etatMarquage = (code, coll, fam) => page.evaluate((c, k, f) => {
       const S = window.SIGH.store, V = window.SIGH.validations, h = window.SIGH.data.TARIFS.lire(), p = h.parCode[c];
@@ -21267,14 +21268,14 @@ async function viderMessages(page) {
       await page.evaluate(async () => { [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click(); await new Promise((r) => setTimeout(r, 400)); });
     };
     const boutonLigne = (poste, titre) => page.evaluate((p, t) => {
-      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === p);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td:not([data-case-selection])') && x.querySelector('td:not([data-case-selection])').textContent.trim() === p);
       if (!tr) return 'ligne absente';
       const b = [...tr.querySelectorAll('button')].find((x) => (x.getAttribute('title') || '') === t);
       if (!b) return 'bouton absent';
       b.click(); return 'ok';
     }, poste, titre);
     const titresLigne = (poste) => page.evaluate((p) => {
-      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === p);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td:not([data-case-selection])') && x.querySelector('td:not([data-case-selection])').textContent.trim() === p);
       return tr ? [...tr.querySelectorAll('button')].map((x) => x.getAttribute('title') || '') : null;
     }, poste);
     const lireModale = () => page.evaluate(() => {
@@ -23443,7 +23444,7 @@ async function viderMessages(page) {
     await ouvrir('m9-conventions.html');
     await page.evaluate((nom) => { const i = document.querySelector('#page-content input[type="search"]'); i.value = nom; i.dispatchEvent(new Event('input', { bubbles: true })); }, F.s1.nom);
     await pause(500);
-    const ligne = await page.evaluate((nom) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(nom) >= 0); if (!tr) return false; tr.querySelector('td').click(); return true; }, F.s1.nom);
+    const ligne = await page.evaluate((nom) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(nom) >= 0); if (!tr) return false; tr.querySelector('td:not([data-case-selection])').click(); return true; }, F.s1.nom);
     await pause(700);
     const tiroir = await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Modifier la grille'); if (!b) return false; b.click(); return true; });
     await pause(700);
@@ -24359,7 +24360,7 @@ async function viderMessages(page) {
     const vue = await page.evaluate(() => { const S = window.SIGH.store, D = window.SIGH.data;
       const toutes = S.collection('documentsPatient').active(), z1 = toutes.filter((r) => D.DOCUMENTS.zoneDe(r.type) < 2).length;
       const lignes = [...document.querySelectorAll('#page-content tbody tr')];
-      const types = lignes.map((tr) => tr.children[3] ? tr.children[3].textContent.trim() : '');
+      const types = lignes.map((tr) => { const c = [...tr.children].filter((x) => !x.hasAttribute('data-case-selection')); return c[3] ? c[3].textContent.trim() : ''; });
       return { total: toutes.length, z1: z1, note: /pièces administratives/.test(document.querySelector('#page-content').textContent), types: types }; });
     verifier('L’accueil ne voit que les pièces ADMINISTRATIVES (identité, carte d’assurance) : la restriction s’annonce (« pièces administratives », nombre de pièces médicales non affichées) et aucune ligne médicale n’est au tableau',
       vue.note && vue.total > vue.z1 && vue.types.length > 0 && vue.types.every((t) => t === 'Pièce d’identité' || t === 'Carte d’assurance'), JSON.stringify({ total: vue.total, z1: vue.z1, types: vue.types.slice(0, 5) }));
@@ -24448,7 +24449,7 @@ async function viderMessages(page) {
     const choisi = await page.evaluate((id) => { const v = document.querySelector('[data-vue-produites]'); const nodes = [...v.querySelectorAll('*')].filter((n) => Object.getOwnPropertyDescriptor(n, 'value') && typeof n.options !== 'undefined' || (n.hasAttribute && n.hasAttribute('data-combo')));
       const c = nodes[0] || null; if (!c) return false; c.value = id; c.dispatchEvent(new Event('change', { bubbles: true })); return true; }, patients.p.id);
     await pause(900);
-    const unif = await page.evaluate(() => { const v = document.querySelector('[data-vue-produites]'); const lignes = [...v.querySelectorAll('tbody tr')].map((tr) => [...tr.children].map((c) => c.textContent.trim()));
+    const unif = await page.evaluate(() => { const v = document.querySelector('[data-vue-produites]'); const lignes = [...v.querySelectorAll('tbody tr')].map((tr) => [...tr.children].filter((c) => !c.hasAttribute('data-case-selection')).map((c) => c.textContent.trim()));
       return { texte: v.textContent, lignes: lignes, ouvrir: [...v.querySelectorAll('button')].filter((b) => /Ouvrir/.test(b.textContent)).length }; });
     const apres = await page.evaluate(() => { const r = window.SIGH.store.raw(); return { noms: Object.keys(r).filter((k) => Array.isArray(r[k])).sort(), docs: r.documentsPatient.length }; });
     verifier('La vue unifiée du dossier choisi liste ses scans (dont le compte rendu déposé) ET ses ordonnances produites, chacune avec un renvoi « Ouvrir » vers son écran',
