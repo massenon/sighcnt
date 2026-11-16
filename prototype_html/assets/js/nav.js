@@ -218,6 +218,12 @@
       rolesDefaut: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'] },
     { id: 'regler_circuit_cloture', libelle: 'Régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre)', module: 'M12', ecran: 'm12-cloture',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot TARIF-FIX-2 (Direction, 16/11/2026 : « pas de rôle ni validation en dur dans le code ») : DÉCIDER un changement de prix (Oui ou Non, prestation comme prix d'achat), valider
+       en un geste, et régler les réglages de prix de la clinique (validité d'une pro-forma, encaissement d'une pièce en attente de prix). C'était la liste `ROLES_VALIDATION_TARIFS`
+       écrite dans le moteur : c'est désormais un DROIT de la fiche RBAC par rôle, réglable par la Direction. Défaut semé = l'ancienne liste (aucun changement de comportement).
+       Le droit n'ouvre aucun écran (module et écran nuls : il vaut aussi au « Référentiel produits » pour un prix d'achat). */
+    { id: 'decider_prix', libelle: 'Décider un changement de prix (Oui ou Non), valider un prix en un geste, régler les réglages de prix de la clinique', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da', 'direction'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

@@ -320,7 +320,7 @@
       /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : UNE alerte par LOT (les propositions d'un même lot, par exemple la grille imprimée des
          analyses, ne sont qu'une alerte portant son compte ; une saisie à l'écran est un lot d'une ligne). La source LIT l'état des versions et ne décide d'aucun
          seuil ; elle cesse de produire l'alerte quand la dernière proposition du lot est décidée. Les destinataires sont les profils de la famille de décision
-         (`PR.ROLES_VALIDATION_TARIFS`), jamais une liste écrite ici. */
+         (`PR.rolesDecidentPrix()`, geste réservé `decider_prix` de la fiche RBAC), jamais une liste écrite ici. */
       lire: function () {
         var PR = global.SIGH.parcours;
         var lots = {}, ordre = [];
@@ -339,7 +339,7 @@
               ? 'Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.'
               : (g[0].proposePar ? 'Proposé par ' + g[0].proposePar + '. ' : '') + 'Le prix en vigueur ne change pas avant le Oui.',
             lien: 'cfg-tarifs', onglet: 'alertes',
-            postes: PR && PR.ROLES_VALIDATION_TARIFS ? PR.ROLES_VALIDATION_TARIFS.slice() : null,
+            postes: PR && PR.rolesDecidentPrix ? PR.rolesDecidentPrix() : null,
           };
         });
       },
@@ -349,7 +349,7 @@
       /* Les articles repris avec leur stock mais SANS prix d'achat (reprise du Grand Stock : le stock existe, RG-03) : ils ne se facturent pas tant qu'un premier prix n'est pas
          décidé. UNE alerte par article ; au-delà du seuil de regroupement, une ligne portant le compte. La source LIT la liste unique (`PR.produitsAValoriser`) et disparaît quand elle
          est vide ; le message ne porte AUCUNE donnée sensible (le code et la désignation de l'article, jamais une quantité ni une valeur). Les destinataires sont ceux de la
-         famille de décision des prix (`PR.ROLES_VALIDATION_TARIFS`), jamais une liste écrite ici ; le RBAC de l'écran visé filtre ensuite (`pourMoi`). */
+         famille de décision des prix (`PR.rolesDecidentPrix()`, geste `decider_prix`), jamais une liste écrite ici ; le RBAC de l'écran visé filtre ensuite (`pourMoi`). */
       lire: function () {
         var PR = global.SIGH.parcours;
         if (!PR || !PR.produitsAValoriser) return [];
@@ -361,7 +361,7 @@
             detail: x.designation + ' : ' + x.raison + '. L’article ne se facture pas. '
               + (x.enAttente ? 'Un premier prix est proposé : il attend le Oui ou le Non.' : 'Proposez son premier prix d’achat (Oui ou Non de la Directrice Administrative).'),
             lien: 'cfg-tarifs', onglet: 'produits',
-            postes: PR.ROLES_VALIDATION_TARIFS ? PR.ROLES_VALIDATION_TARIFS.slice() : null,
+            postes: PR.rolesDecidentPrix ? PR.rolesDecidentPrix() : null,
           };
         });
       },

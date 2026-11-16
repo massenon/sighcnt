@@ -11,6 +11,9 @@ import 'package:sigh_poste/sync/configuration_sync.dart';
 import 'package:sigh_poste/sync/moteur_fileul.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'm14_aide.dart' show donneesNav;
 
 /// LOT TARIF-FIX-2 (Direction, 16/11/2026, section AL point 2) : le médecin prescrit TOUJOURS ; seule la caisse attend le prix. Au poste : prescription acceptée,
@@ -43,6 +46,39 @@ ResultatPrescription prescrire(Magasin m, List<String> actes, {DateTime? date}) 
 
 void main() {
   setUp(() => horloge = DateTime(2026, 10, 30, 10));
+
+  test('DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC (Direction, 16/11/2026 : pas de rôle en dur) : défaut d’origine = les trois rôles d’hier ; retiré à la Directrice Administrative par sa fiche, la décision lui est REFUSÉE nommée et l’alerte « à valider » ne la vise plus ; la fiche restaurée, tout revient', () {
+    final rbac = (jsonDecode(File('assets/donnees/rbac.json').readAsStringSync()) as Map)['gestes'] as Map;
+    final decl = (rbac['jeux'] as List).cast<Map>().firstWhere((g) => g['id'] == tarGesteDecider);
+    expect(decl['rolesDefaut'], tarRolesValidation, reason: 'le défaut d’origine du domaine est celui du manifeste de la maquette');
+    final m = jeu();
+    tarInstallerDroitDecider((r) => donneesNav.aChaud(m).matrice.droitGeste(r, tarGesteDecider));
+    try {
+      expect([for (final r in ['admin', 'da', 'direction', 'caissier', 'stock']) tarPeutDecider(r)], [true, true, true, false, false], reason: 'aucun changement par défaut');
+      final da = poste(m, 'da', 'Yvette DAF');
+      final p = da.proposer(creation('TF2G', 2200, jourPlus(0)));
+      List<String> alertes(String role) => [
+            for (final n in CentreNotifications(magasin: m, donnees: () => donneesNav.aChaud(m), role: () => role, horloge: () => horloge).collecter(detaille: true))
+              if (n.source == 'prix_a_valider') n.cle
+          ];
+      expect(alertes('da'), isNotEmpty);
+      // La fiche RBAC de la Directrice Administrative retire le geste (`droitsGestes.decider_prix = false`).
+      final fiche = m.collection('rbac').toutes.firstWhere((f) => f['role'] == 'da');
+      final annule = m.collection('rbac').mettreAJour(fiche['id'], {
+        'droitsGestes': {...((fiche['droitsGestes'] as Map?) ?? const {}).cast<String, Object?>(), tarGesteDecider: false}
+      });
+      expect(tarPeutDecider('da'), isFalse);
+      expect(tarPeutDecider('admin'), isTrue, reason: 'les autres rôles gardent le droit');
+      final refus = poste(m, 'da', 'Yvette DAF').decider('${p.version!['id']}', 'oui').refus;
+      expect([refus?.code, refus?.motif], ['VALIDATION_RESERVEE', contains('« Décider un changement de prix » (fiche RBAC)')]);
+      expect(alertes('da'), isEmpty, reason: 'l’alerte des changements à valider suit le geste');
+      annule();
+      expect(tarPeutDecider('da'), isTrue, reason: 'fiche restaurée');
+      expect(poste(m, 'da', 'Yvette DAF').decider('${p.version!['id']}', 'oui').refus, isNull);
+    } finally {
+      tarInstallerDroitDecider(null);
+    }
+  });
 
   test('sur la mère : prescription ACCEPTÉE (ligne « prix à définir », total nul), encaissement REFUSÉ nommé, la pièce entière par défaut ; le Oui valorise à la date de la pièce et l’encaissement passe', () {
     final m = jeu();

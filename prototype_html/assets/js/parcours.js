@@ -243,17 +243,20 @@
    * Une proposition ne change RIEN : le prix en vigueur ne bouge qu'au Oui, à la date d'effet. Le Non exige son motif et reste lisible à l'historique.
    * Un refus se nomme : code, motif, geste.
    * ======================================================================== */
-  var ROLES_VALIDATION_TARIFS = ['admin', 'da', 'direction'];
+  /* Lot TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC (manifeste `N.GESTES`), jamais une liste de rôles du moteur. */
+  var GESTE_DECIDER_PRIX = 'decider_prix';
+  function rolesDecidentPrix() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_DECIDER_PRIX) : []; }
+  function libellesDecidentPrix() { var n = rolesDecidentPrix().map(function (r) { return libelleRole(r); }); return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle'); }
   /* T6 (Direction, 11/11/2026) : la date d'effet PASSÉE est une autorité de la Directrice Administrative et de la Direction, avec un motif. */
   var ROLES_DATE_PASSEE = ['da', 'direction'];
   function refusTarif(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
   function roleDeLaSession() { var s = S.session(); return s && s.role; }
-  function peutDeciderTarif() { return ROLES_VALIDATION_TARIFS.indexOf(roleDeLaSession()) >= 0; }
+  function peutDeciderTarif() { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleDeLaSession(), GESTE_DECIDER_PRIX)); }
   function peutDatePasseeTarif() { return ROLES_DATE_PASSEE.indexOf(roleDeLaSession()) >= 0; }
   function profilsDatePassee() { return ROLES_DATE_PASSEE.map(function (r) { return libelleRole(r); }).join(' et '); }
   function peutProposerTarif() {
     var N = global.SIGH.nav, r = roleDeLaSession();
-    if (!N || !N.droitsEcran) return ROLES_VALIDATION_TARIFS.indexOf(r) >= 0;
+    if (!N || !N.droitsEcran) return false;
     var d = N.droitsEcran(r, 'cfg-tarifs', 'CFG');
     return !!(d && d.editer);
   }
@@ -450,7 +453,7 @@
     }
     /* VALIDER EN UN GESTE (PRD 5.4, Q3) : la liste de rôles de la famille décide, jamais le simple droit d'éditer ; le moteur refuse en nommant, il ne dégrade pas
        silencieusement une demande de validation en proposition. */
-    if (o.valider === true && !peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Enregistrer le changement comme proposition : la décision revient à l’un de ces profils.');
+    if (o.valider === true && !peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.', 'Enregistrer le changement comme proposition : la décision revient à un rôle qui détient ce droit.');
     if (o.valider === true) { var gm = refusFileulValidation(familleAValider('prix')); if (gm) return gm; }
     var h = D.TARIFS.lire();
     if (!h) return refusTarif('REFERENTIEL_ABSENT', 'Le référentiel de prix n’est pas chargé.', 'Recharger la page.');
@@ -592,7 +595,7 @@
   /** Décide une proposition : Oui (elle devient la version en vigueur à sa date d'effet) ou Non (refusée, motif obligatoire). */
   function deciderTarif(versionId, decision, o) {
     o = o || {};
-    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.', 'Demander la décision à un rôle qui détient ce droit.');
     /* DAF = la mère (T11, 11/11/2026) : la décision est une écriture de configuration, tenue par la mère. Un fileul la refuse en nommant (même code que les validations de
        référentiels) ; la décision d'un fileul comme pièce de famille B appliquée par la mère est du lot du poste. */
     var gardeMere = refusFileulValidation(familleAValider('prix'));
@@ -665,7 +668,7 @@
       Chaque ligne passe par la décision ordinaire (contrôle d'usage, date, droit) : celles qui ne passent pas sont NOMMÉES avec leur refus, les autres sont acceptées. */
   function deciderTousTarifs(o) {
     o = o || {};
-    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.', 'Demander la décision à un rôle qui détient ce droit.');
     var gardeMereT = refusFileulValidation(familleAValider('prix'));
     if (gardeMereT) return gardeMereT;
     if (o.comparaisonAffichee !== true) return refusTarif('COMPARAISON_REQUISE', 'Un « Oui à tout » ne se donne qu’après l’affichage de la comparaison ligne à ligne (ancien prix, nouveau prix, variation).', 'Ouvrir la comparaison, la lire, puis confirmer.');
@@ -700,7 +703,7 @@
   }
   function definirValiditeProforma(o) {
     o = o || {};
-    if (!peutDeciderTarif()) return refusTarif('REGLAGE_RESERVE', 'La durée de validité d’une pro-forma se règle par la Direction, la Directrice Administrative ou l’administrateur.', 'Demander le réglage à l’un de ces profils.');
+    if (!peutDeciderTarif()) return refusTarif('REGLAGE_RESERVE', 'La durée de validité d’une pro-forma se règle par un rôle qui détient le droit « Décider un changement de prix » (fiche RBAC).', 'Demander le réglage à un rôle qui détient ce droit.');
     var j = Number(o.jours);
     if (o.jours === '' || o.jours === null || o.jours === undefined || !isFinite(j) || j !== Math.floor(j) || j < VALIDITE_PROFORMA_BORNES[0] || j > VALIDITE_PROFORMA_BORNES[1]) {
       return refusTarif('DUREE_INVALIDE', 'La durée de validité est un nombre entier de jours, de ' + VALIDITE_PROFORMA_BORNES[0] + ' à ' + VALIDITE_PROFORMA_BORNES[1] + '.', 'Saisir un nombre entier de jours.');
@@ -4040,7 +4043,7 @@
     carteValide: carteValide, categoriser: categoriser, libelleUnite: libelleUnite,
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
     colActes: colActes, colAnalyses: colAnalyses, colCatalogueTarifs: colCatalogueTarifs,
-    ROLES_VALIDATION_TARIFS: ROLES_VALIDATION_TARIFS, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
+    GESTE_DECIDER_PRIX: GESTE_DECIDER_PRIX, rolesDecidentPrix: rolesDecidentPrix, libellesDecidentPrix: libellesDecidentPrix, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
     ROLES_DATE_PASSEE: ROLES_DATE_PASSEE, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
     deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
@@ -5540,7 +5543,7 @@
     /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : un compte LU sur `versionsTarif`, jamais écrit ; la décision se prend à « Tarifs et prix »,
        onglet Alertes, avec la comparaison. Mêmes profils que les familles des actes et des analyses. */
     { id: 'prix', libelle: 'Changements de prix en attente (Oui ou Non)', module: 'CFG', mode: 'prix', collections: ['versionsTarif'], champs: ['statut'],
-      roles: ROLES_VALIDATION_TARIFS.slice(), ecran: 'cfg-tarifs' },
+      get roles() { return rolesDecidentPrix(); }, ecran: 'cfg-tarifs' },
     { id: 'valorisation_sage', libelle: 'Valorisation des références de l’inventaire initial', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'm6-produits', champsChiffres: ['prixRevient'] },
     { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],

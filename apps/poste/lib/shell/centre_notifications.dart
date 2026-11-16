@@ -126,13 +126,16 @@ num? _num(Object? x) => x is num ? x : (x is String ? num.tryParse(x) : null);
 String _entier(num x) => x == x.roundToDouble() ? '${x.toInt()}' : '$x';
 
 class _Ligne {
-  const _Ligne(this.cle, this.priorite, this.titre, this.detail, this.lien, this.postes, {this.ecranAEditer});
+  const _Ligne(this.cle, this.priorite, this.titre, this.detail, this.lien, this.postes, {this.ecranAEditer, this.geste});
   final String cle, priorite, titre, detail;
   final String? lien;
   final List<String>? postes;
 
   /// LOT TARIF-FIX-2 : l'alerte ne va qu'aux rôles qui peuvent MODIFIER cet écran, lu dans la fiche RBAC (jamais un nom de rôle).
   final String? ecranAEditer;
+
+  /// LOT TARIF-FIX-2 : l'alerte ne va qu'aux rôles qui détiennent ce geste réservé de la fiche RBAC.
+  final String? geste;
 }
 
 class _Source {
@@ -268,7 +271,9 @@ final List<_Source> _sources = [
                 ? 'Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.'
                 : '${_v(e.value.first['proposePar']) ? 'Proposé par ${e.value.first['proposePar']}. ' : ''}Le prix en vigueur ne change pas avant le Oui.',
             'cfg-tarifs',
-            const ['admin', 'da', 'direction']),
+            null,
+            // LOT TARIF-FIX-2 : les rôles qui DÉCIDENT un prix, lus dans la fiche RBAC (geste réservé `decider_prix`), jamais une liste écrite ici.
+            geste: tarGesteDecider),
     ];
   }),
   _Source('a_valider_ecritures', 'metier', 'À valider', (m, auj) {
@@ -448,6 +453,7 @@ class CentreNotifications extends ChangeNotifier {
   bool _pourMoi(_Ligne n, String r, DonneesNavigation nav) {
     if (n.postes != null && !n.postes!.contains(r)) return false;
     if (n.ecranAEditer != null && !nav.matrice.droit(r, n.ecranAEditer!).editer) return false;
+    if (n.geste != null && !nav.matrice.droitGeste(r, n.geste!)) return false;
     if (n.lien != null) {
       final e = nav.manifeste.ecran(n.lien!);
       if (e != null && !ecranOuvertAuRole(nav, r, e.id)) return false;

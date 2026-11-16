@@ -27982,6 +27982,65 @@ async function viderMessages(page) {
       b.p === true && b.d === true && b.pu === 2600 && b.jour === a.jourHier && b.statut === 'soldee' && !b.refus, JSON.stringify(b));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
+  await etape(async () => {
+    scenario('Vague 198 : lot TARIF-FIX-2, DÉCIDER un prix est le geste réservé « decider_prix » de la fiche RBAC (Direction, 16/11/2026 : pas de rôle ni validation en dur) : défaut d’origine = les trois rôles d’hier ; retiré à la Directrice Administrative par sa fiche, ses commandes de décision sont ABSENTES et le moteur refuse nommé ; la fiche est restaurée à l’identique');
+    erreursJS = [];
+    const DA = { role: 'da', nom: 'DAF198', nomComplet: 'DAF198', fonction: 'da', identifiant: 's198.da', secteur: 'DIR' };
+    await poserSessionServeur(DA);
+    await ouvrir('m8-paiements.html');
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav, PR = window.SIGH.parcours, C = window.SIGH.core;
+      const f = S.collection('rbac').all().filter((x) => x.role === 'da')[0];
+      const avant = f ? JSON.stringify(f.droitsGestes === undefined ? null : f.droitsGestes) : 'SANS_FICHE';
+      const code = 'TF198' + Date.now().toString(36).toUpperCase().slice(-5);
+      const p = PR.proposerTarif({ code, prixNonAssure: 2200, etatAssure: 'unique', dateEffet: C.iso(C.aujourdhui()), motif: 'Sonde 198', creation: { libelle: 'Acte sonde 198', famille: 'ACTE', secteur: 'Soins' } });
+      const declare = (N.GESTES || []).filter((g) => g.id === 'decider_prix')[0];
+      return { avant, ficheId: f ? f.id : null, code, versionId: p.ok ? p.version.id : null, defaut: declare ? declare.rolesDefaut.slice() : null,
+        porteurs: N.rolesAvecGeste('decider_prix'), peut: PR.peutDeciderTarif(), regler: !!document.querySelector('[data-reglage-encaissement-partiel] button') };
+    });
+    const lireAlertes198 = async () => {
+      await ouvrir('cfg-tarifs.html');
+      return page.evaluate(async () => {
+        const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+        const onglet = [...document.querySelectorAll('#page-content [role="tab"], #page-content button')].find((e) => /Alertes/.test(e.textContent));
+        if (onglet) onglet.click(); await pause(400);
+        const txt = document.getElementById('page-content').textContent.replace(/\s+/g, ' ');
+        const boutons = [...document.querySelectorAll('#page-content button')].map((x) => (x.textContent.trim() || x.getAttribute('title') || x.getAttribute('aria-label') || '').trim());
+        return { decider: boutons.filter((t) => /^Oui\b|Oui à tout|^Non\b|^Décider/.test(t)), note: /Décider revient aux rôles qui détiennent le droit « Décider un changement de prix »/.test(txt), peutLu: /Vous pouvez décider/.test(txt) };
+      });
+    };
+    const c0 = await lireAlertes198();
+    verifier('Le geste « decider_prix » est déclaré au manifeste avec le défaut d’origine de l’ancienne liste (administrateur, Directrice Administrative, Direction) : aucun changement de comportement ; la Directrice Administrative décide et voit « Régler l’encaissement partiel »',
+      JSON.stringify(a.defaut) === JSON.stringify(['admin', 'da', 'direction']) && ['admin', 'da', 'direction'].every((r) => a.porteurs.indexOf(r) >= 0) && a.porteurs.length === 3 && a.peut && a.regler && a.versionId && c0.decider.indexOf('Oui à tout') >= 0 && c0.peutLu, JSON.stringify({ a, c0 }));
+    /* La fiche RBAC de la Directrice Administrative retire le geste */
+    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'da')[0]; const g = Object.assign({}, (f && f.droitsGestes) || {}, { decider_prix: false }); if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'da', statut: 'actif', droitsGestes: g }); window.SIGH.nav.invaliderRbac(); });
+    await ouvrir('m8-paiements.html');
+    const b = await page.evaluate((x) => {
+      const PR = window.SIGH.parcours, N = window.SIGH.nav;
+      const r = PR.deciderTarif(x.versionId, 'oui');
+      const v = PR.definirValiditeProforma({ jours: 30, motif: 'Sonde 198' });
+      return { droit: N.droitGeste('da', 'decider_prix'), admin: N.droitGeste('admin', 'decider_prix'), peut: PR.peutDeciderTarif(), refus: { code: r.code, motif: r.motif, geste: r.geste }, validite: v.code || null,
+        regler: !!document.querySelector('[data-reglage-encaissement-partiel] button') };
+    }, a);
+    const c = await lireAlertes198();
+    verifier('Geste retiré à la Directrice Administrative par sa fiche : le moteur REFUSE la décision (VALIDATION_RESERVEE, motif qui nomme le droit « Décider un changement de prix » de la fiche RBAC) et le réglage de la pro-forma (REGLAGE_RESERVE) ; « Régler l’encaissement partiel » et les commandes Oui, Non, « Oui à tout » sont ABSENTES ; l’écran dit qui décide ; l’administrateur garde le droit',
+      b.droit === false && b.admin === true && b.peut === false && b.refus.code === 'VALIDATION_RESERVEE' && /« Décider un changement de prix » \(fiche RBAC\)/.test(b.refus.motif || '') && b.validite === 'REGLAGE_RESERVE' && b.regler === false
+        && c.decider.length === 0 && c.note && !c.peutLu, JSON.stringify({ b, c }));
+    /* RESTAURATION de la fiche à l'identique */
+    const d = await page.evaluate((x) => {
+      const S = window.SIGH.store, col = S.collection('rbac'), N = window.SIGH.nav, PR = window.SIGH.parcours;
+      const f = col.all().filter((y) => y.role === 'da')[0];
+      if (x.avant === 'SANS_FICHE') col.archive(f.id, 'Sonde 198 : restauration');
+      else { const g = JSON.parse(x.avant); const db = S.raw(); const rec = (db.rbac || []).filter((y) => y.id === f.id)[0]; if (g === null) { delete rec.droitsGestes; S.save(); } else col.update(f.id, { droitsGestes: g }); }
+      N.invaliderRbac();
+      const f2 = col.all().filter((y) => y.role === 'da' && y.statut !== 'archive')[0];
+      const apres = f2 ? JSON.stringify(f2.droitsGestes === undefined ? null : f2.droitsGestes) : 'SANS_FICHE';
+      const dec = PR.deciderTarif(x.versionId, 'oui');
+      return { apres, droit: N.droitGeste('da', 'decider_prix'), decide: dec.ok };
+    }, a);
+    verifier('La fiche restaurée à l’identique : la Directrice Administrative retrouve le geste et décide la proposition (Oui)', d.apres === a.avant && d.droit === true && d.decide === true, JSON.stringify({ avant: a.avant, d }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
   /* LOT TARIF-FIX-2 FIN */
 
 

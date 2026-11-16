@@ -173,8 +173,8 @@ ResultatTarif<PropositionTarif> tarProposerProduit(ContexteTarif cx, DemandeProd
             'Demander le changement au gestionnaire de stock, à la Directrice Administrative ou à l’administrateur.'));
   }
   if (o.valider && !cx.peutDecider) {
-    return non(const RefusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.',
-        'Enregistrer le changement comme proposition : la décision revient à l’un de ces profils.'));
+    return non(const RefusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.',
+        'Enregistrer le changement comme proposition : la décision revient à un rôle qui détient ce droit.'));
   }
   if (o.valider && cx.fileul) return non(tarRefusFileul());
   final h = cx.referentiel;

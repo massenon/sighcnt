@@ -27,7 +27,7 @@
    "unique": 276,
    "nc": 8
   },
-  "version": 88
+  "version": 90
  },
  "exemples": {
   "SO02": {
@@ -371,6 +371,7 @@
   "vues": {
    "prestations": {
     "entetes": [
+     "",
      "Code",
      "Libellé de facturation",
      "Famille",
@@ -388,6 +389,7 @@
    },
    "analyses": {
     "entetes": [
+     "",
      "Code",
      "Libellé de facturation",
      "Famille",
@@ -405,6 +407,7 @@
    },
    "imagerie": {
     "entetes": [
+     "",
      "Code",
      "Libellé de facturation",
      "Famille",
@@ -422,6 +425,7 @@
    },
    "produits": {
     "entetes": [
+     "",
      "Code",
      "Désignation",
      "Catégorie",
@@ -438,6 +442,7 @@
    },
    "alertes": {
     "entetes": [
+     "",
      "Code",
      "Prestation",
      "Non assuré en vigueur",
@@ -1050,8 +1055,8 @@
     "nom": "valider par un profil qui édite sans décider",
     "ok": false,
     "code": "VALIDATION_RESERVEE",
-    "motif": "Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.",
-    "geste": "Enregistrer le changement comme proposition : la décision revient à l’un de ces profils."
+    "motif": "Valider un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.",
+    "geste": "Enregistrer le changement comme proposition : la décision revient à un rôle qui détient ce droit."
    },
    {
     "nom": "proposer par un profil qui édite sans décider",
@@ -1099,7 +1104,7 @@
      "onglet": "alertes"
     },
     {
-     "cle": "notif:NOTxmsvr66ho7mvfc",
+     "cle": "notif:NOTxmsvr66k8xd9it",
      "titre": "Votre changement de prix MG04 a été accepté",
      "detail": "Il prend effet le 15/08/2026. Décidé par Vecteur Direction.",
      "priorite": "information",
@@ -1113,14 +1118,14 @@
   "retour": {
    "comptable": [],
    "apresDa": [
-    "notif:NOTxmsvr66hznwq80",
-    "notif:NOTxmsvr66ho7mvfc"
+    "notif:NOTxmsvr66kj17kz7",
+    "notif:NOTxmsvr66k8xd9it"
    ]
   },
   "centre": {
    "famille": {
     "libelle": "Changements de prix en attente (Oui ou Non)",
-    "profil": "Administrateur système, Directrice de l’Administration et des Finances (DAF), Direction / Gérance",
+    "profil": "Administrateur système, Direction / Gérance, Directrice de l’Administration et des Finances (DAF)",
     "ecran": "cfg-tarifs",
     "enAttente": 38
    },
