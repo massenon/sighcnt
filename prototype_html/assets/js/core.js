@@ -613,6 +613,20 @@
     });
     return prefixe + String(max + 1).padStart(largeur, '0');
   }
+  /** LOT MIL (16/11/2026) : l'ANNÉE d'un numéro est celle de la DATE DE LA PIÈCE (« 2027-03-05 » donne 2027), jamais une constante ; sans date lisible, l'horloge du jour. */
+  function anneeDePiece(date) {
+    var m = /^(\d{4})-\d{2}-\d{2}/.exec(String(date == null ? '' : date));
+    if (m) return Number(m[1]);
+    var d = date ? toDate(date) : aujourdhui();
+    return isNaN(d) ? aujourdhui().getFullYear() : d.getFullYear();
+  }
+  /** FABRIQUE UNIQUE des séries ANNUELLES (`BEB-2027-0001`) : préfixe + année de la pièce + rang suivant LU SUR LES FICHES EXISTANTES (compteur par année : 2027 repart à 0001,
+   *  2026 garde le sien). Un numéro émis ne se réécrit jamais : l'appelant ne l'invoque qu'à la création. `champ` : le champ qui porte le numéro (`reference` par défaut). */
+  function referenceAnnuelle(prefixe, date, largeur, fiches, champ) {
+    var cle = champ || 'reference';
+    var lues = champ ? fiches.map(function (f) { var o = {}; o.reference = f[cle]; return o; }) : fiches;
+    return referenceSuivante(prefixe + anneeDePiece(date) + '-', largeur, lues);
+  }
   function pick(rnd, arr) { return arr[Math.floor(rnd() * arr.length) % arr.length]; }
   function between(rnd, a, b) { return Math.floor(rnd() * (b - a + 1)) + a; }
 
@@ -664,7 +678,7 @@
     addDays: addDays, daysBetween: daysBetween, toDate: toDate,
     PERIODES: PERIODES, bornes: bornes, bornesLibres: bornesLibres,
     dansBornes: dansBornes, libellePeriode: libellePeriode,
-    codePatient: codePatient, nextRef: nextRef, referenceSuivante: referenceSuivante, uid: uid,
+    codePatient: codePatient, nextRef: nextRef, referenceSuivante: referenceSuivante, referenceAnnuelle: referenceAnnuelle, anneeDePiece: anneeDePiece, uid: uid,
     nombreEnLettres: nombreEnLettres, montantEnLettres: montantEnLettres,
     slug: slug, initials: initials, escapeHtml: escapeHtml, norm: norm, matches: matches,
     $: $, $$: $$, el: el, append: append, clear: clear, icon: icon, qr: qr,

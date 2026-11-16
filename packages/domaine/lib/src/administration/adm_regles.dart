@@ -263,54 +263,14 @@ List<AdmFiche> admAmorcerEvenements(DateTime maintenant, List<String> personnel)
 // Plan annuel de travail
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 
-const List<String> admAvancementsPlan = ['Réalisée', 'En cours', 'Planifiée'];
-
-String admTonAvancement(Object? a) => a == 'Réalisée' ? 'success' : (a == 'En cours' ? 'info' : 'warning');
-
 /// `C.sortBy(rows, 'trimestreDebut')`.
 List<AdmFiche> admTrierPlan(List<AdmFiche> rows) => trierPar(rows, (r) => r['trimestreDebut']);
 
 /// Le diagramme : le trimestre `q` (1 à 4) est-il couvert par l'action ?
 bool admTrimestreActif(AdmFiche r, int q) => q >= (r['trimestreDebut'] as num) && q <= (r['trimestreFin'] as num);
 
-List<AdmKpi> admKpisPlan(List<AdmFiche> rows) => [
-      AdmKpi('Actions programmées', nombre(rows.length), 'list-checks', 'navy'),
-      AdmKpi('Réalisées', nombre(_compter(rows, (r) => r['avancement'] == 'Réalisée')), 'check-circle-2', 'success'),
-      AdmKpi('En cours', nombre(_compter(rows, (r) => r['avancement'] == 'En cours')), 'loader', 'info'),
-      AdmKpi('Planifiées', nombre(_compter(rows, (r) => r['avancement'] == 'Planifiée')), 'calendar-clock', 'warning'),
-    ];
-
-/// Amorçage du plan (collection vide) : douze actions de l'exercice.
-List<AdmFiche> admAmorcerPlan() {
-  const actions = [
-    ('Déploiement du SIGH-CNT', 'Digitalisation', 1, 4, 'En cours'),
-    ('Numérisation des dossiers patients actifs', 'Digitalisation', 2, 4, 'En cours'),
-    ('Formation du personnel au nouveau logiciel', 'Formation', 3, 4, 'Planifiée'),
-    ('Inventaire général des stocks', 'Logistique', 1, 1, 'Réalisée'),
-    ('Renouvellement des conventions d’assurance', 'Partenariats', 1, 2, 'Réalisée'),
-    ('Campagne de dépistage communautaire', 'Santé publique', 2, 3, 'En cours'),
-    ('Acquisition d’un nouvel échographe', 'Investissement', 3, 3, 'Planifiée'),
-    ('Mise à niveau du réseau informatique', 'Investissement', 1, 2, 'Réalisée'),
-    ('Audit qualité et sécurité des patients', 'Qualité', 4, 4, 'Planifiée'),
-    ('Révision de la grille des primes', 'Ressources humaines', 3, 3, 'Planifiée'),
-    ('Clôture comptable de l’exercice', 'Finance', 4, 4, 'Planifiée'),
-    ('Rapprochement bancaire mensuel', 'Finance', 1, 4, 'En cours'),
-  ];
-  return [
-    for (final (i, a) in actions.indexed)
-      {
-        'id': 'PAT${(i + 1).toString().padLeft(3, '0')}',
-        'statut': 'actif',
-        'reference': 'PA-2026-${(i + 1).toString().padLeft(3, '0')}',
-        'action': a.$1,
-        'axe': a.$2,
-        'trimestreDebut': a.$3,
-        'trimestreFin': a.$4,
-        'avancement': a.$5,
-        'responsable': a.$2 == 'Finance' ? 'KASSA Augustin' : (a.$2 == 'Logistique' ? 'MAMAN Zoukanéri' : 'TAKI Alimatou'),
-      }
-  ];
-}
+// Lot PTA : les états d'avancement, leurs tons, les indicateurs et l'amorçage du plan ne sont plus ici (la liste `admAvancementsPlan` et les douze actions de 2026 étaient écrites en dur) ;
+// ils se lisent en base (référentiel `referentielsPlan`) et les règles sont dans `plan_annuel.dart`.
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // Notes de service

@@ -174,39 +174,6 @@ void main() {
     });
   });
 
-  group('plan annuel', () {
-    final p = obj(v['planAnnuel']);
-    final rows = actives(p['jeu']);
-    test('indicateurs', () => kpisEgaux(admKpisPlan(rows), obj(p['ecran'])['kpis']));
-    test('diagramme : ordre par trimestre de début, barres et ton par état', () {
-      final gantt = (p['gantt'] as List).cast<List>();
-      final tri = admTrierPlan(rows);
-      expect(tri.length, gantt.length);
-      for (var i = 0; i < tri.length; i++) {
-        expect('${tri[i]['action']}', gantt[i][0]);
-        for (var q = 1; q <= 4; q++) {
-          final attendu = admTrimestreActif(tri[i], q) ? 'bg-${admTonAvancement(tri[i]['avancement'])}-400' : 'bg-slate-100';
-          expect(attendu, gantt[i][1 + q], reason: '${tri[i]['action']} T$q');
-        }
-      }
-    });
-    test('amorçage = jeu exporté', () {
-      final jeu = jeuDossier('planAnnuel');
-      final a = admAmorcerPlan();
-      expect(a.length, jeu.length);
-      for (var i = 0; i < a.length; i++) {
-        for (final k in ['id', 'reference', 'action', 'axe', 'trimestreDebut', 'trimestreFin', 'avancement', 'responsable']) {
-          expect(a[i][k], jeu[i][k], reason: '${jeu[i]['reference']} $k');
-        }
-      }
-    });
-    test('modifier une action garde son ÉTAT (E533) : le pourcentage est un autre champ', () {
-      final f = obj(obj(p['modification'])['enregistre'])['fiche'] as M;
-      expect(f['avancement'], 'En cours');
-      expect(obj(p['avancementNumerique'])['fiche'], containsPair('tauxAvancement', 60));
-    });
-  });
-
   group('interventions d’ambulance', () {
     final a = obj(v['ambulance']);
     final rows = actives(a['jeu']);

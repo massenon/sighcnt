@@ -4,7 +4,6 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
-import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m4/mat_commun.dart';
@@ -13,7 +12,6 @@ import 'adm_commun.dart';
 /// Les quatre écrans de M13 construits à la main (`U.dataTable` + `K.creer` + `K.actionsLigne` dans la maquette) : événements & notifications, plan annuel
 /// de travail, notes de service, répertoire des ambulances.
 
-const _signDa = Signature('La Directrice Administrative', nom: 'TAKI Alimatou');
 
 const TextStyle _petit = TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12);
 
@@ -197,164 +195,7 @@ class _EcranEvenementsState extends State<EcranEvenements> {
   }
 }
 
-// ---------------------------------------------------------------------------------------------------------------------------------------------
-// m13-plan-annuel
-// ---------------------------------------------------------------------------------------------------------------------------------------------
-
-class EcranPlanAnnuel extends StatefulWidget with EcranMaquette {
-  const EcranPlanAnnuel({super.key});
-  @override
-  String get titre => 'Plan annuel de travail';
-  @override
-  String get description => 'Programmation annuelle des activités de la clinique, par axe et par trimestre.';
-
-  @override
-  State<EcranPlanAnnuel> createState() => _EcranPlanAnnuelState();
-}
-
-class _EcranPlanAnnuelState extends State<EcranPlanAnnuel> {
-  bool _amorce = false;
-
-  TonSigh _ton(Object? a) => matTon(admTonAvancement(a));
-
-  void _imprimer(BuildContext ctx, ContexteEcran c, List<Fiche> rows) => matImprimer(ctx,
-      titre: 'Plan annuel de travail',
-      sousTitre: 'Exercice 2026',
-      cartouche: [
-        ('Exercice', '2026'),
-        ('Actions programmées', nombre(rows.length)),
-        ('Réalisées', nombre(rows.where((r) => r['avancement'] == 'Réalisée').length)),
-        ('Date d’édition', dateFR(c.aujourdhui)),
-      ],
-      blocs: [
-        BlocTableau(TableauEtat(colonnes: [
-          ColonneEtat(libelle: 'N°', valeur: (r) => r['reference']),
-          ColonneEtat(libelle: 'Action', valeur: (r) => r['action']),
-          ColonneEtat(libelle: 'Axe', valeur: (r) => r['axe']),
-          ColonneEtat(libelle: 'Période', valeur: (r) => 'T${matTexteNombre(r['trimestreDebut'])} à T${matTexteNombre(r['trimestreFin'])}'),
-          ColonneEtat(libelle: 'Responsable', valeur: (r) => r['responsable']),
-          ColonneEtat(libelle: 'Avancement', valeur: (r) => r['avancement']),
-        ], lignes: admTrierPlan(rows))),
-      ],
-      signatures: const [_signDa, Signature('Le Directeur Médical', nom: 'BASSONGUI Chabi Séko')]);
-
-  Widget _gantt(List<Fiche> rows) {
-    const entete = TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w600);
-    Widget h(String t, {bool centre = false}) => Padding(padding: const EdgeInsets.fromLTRB(16, 10, 16, 10), child: Align(alignment: centre ? Alignment.center : Alignment.centerLeft, child: Text(t, style: entete)));
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 768),
-        child: SizedBox(
-          width: 768,
-          child: Table(
-            columnWidths: const {0: FlexColumnWidth(3.2), 1: FlexColumnWidth(1.6), 2: FlexColumnWidth(0.9), 3: FlexColumnWidth(0.9), 4: FlexColumnWidth(0.9), 5: FlexColumnWidth(0.9), 6: FlexColumnWidth(1.3)},
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            border: const TableBorder(horizontalInside: BorderSide(color: JetonsShell.slate100)),
-            children: [
-              TableRow(decoration: const BoxDecoration(color: JetonsShell.slate50), children: [
-                h('Action'), h('Axe'), h('T1', centre: true), h('T2', centre: true), h('T3', centre: true), h('T4', centre: true), h('Avancement'),
-              ]),
-              for (final r in admTrierPlan(rows))
-                TableRow(children: [
-                  Padding(padding: const EdgeInsets.all(12), child: Text('${r['action'] ?? ''}', style: const TextStyle(color: JetonsShell.slate800, fontSize: 14, height: 20 / 14))),
-                  Padding(padding: const EdgeInsets.all(12), child: Align(alignment: Alignment.centerLeft, child: BadgeSigh('${r['axe'] ?? ''}', ton: TonSigh.navy))),
-                  for (var q = 1; q <= 4; q++)
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                        child: Container(
-                            key: Key('adm:barre:${r['reference']}:T$q'),
-                            height: 12,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(9999),
-                                color: admTrimestreActif(r, q)
-                                    ? switch (admTonAvancement(r['avancement'])) {
-                                        'success' => JetonsShell.success400,
-                                        'info' => JetonsShell.info400,
-                                        _ => JetonsShell.warning400,
-                                      }
-                                    : JetonsShell.slate100))),
-                  Padding(padding: const EdgeInsets.all(12), child: Align(alignment: Alignment.centerLeft, child: BadgeSigh('${r['avancement'] ?? ''}', ton: _ton(r['avancement'])))),
-                ]),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = ContexteEcran.of(context);
-    final col = c.magasin.collection('planAnnuel');
-    if (!_amorce) {
-      _amorce = true;
-      if (col.toutes.isEmpty) {
-        for (final f in admAmorcerPlan().reversed) {
-          col.inserer(f);
-        }
-      }
-    }
-    return ListenableBuilder(
-        listenable: col,
-        builder: (context, _) {
-          final rows = col.actives;
-          return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            admLectureSeule(c),
-            admKpis(admKpisPlan(rows)),
-            const SizedBox(height: 16),
-            CarteSigh(
-                titre: 'Plan annuel de travail 2026',
-                sansRemplissage: true,
-                actions: [BoutonSigh(libelle: 'Imprimer le plan', icone: LucideIcons.printer, taille: TailleBouton.sm, variante: VarianteBouton.secondaire, onPressed: () => _imprimer(context, c, rows))],
-                child: _gantt(rows)),
-            const SizedBox(height: 16),
-            TableauSigh(
-              titre: 'Détail des actions',
-              lignes: rows,
-              taillePage: 15,
-              nomExport: 'plan-annuel',
-              filtres: [
-                FiltreTableau(nom: 'axe', libelle: 'Axe', options: admOptions(({for (final r in rows) '${r['axe']}'}.toList()..sort()))),
-                FiltreTableau(nom: 'avancement', libelle: 'Avancement', options: admOptions(admAvancementsPlan)),
-              ],
-              actionsLigne: (ctx, f) => admActionsLigne(ctx, c, col, f, modifier: (x) => _modifier(ctx, c, col, x)),
-              colonnes: [
-                ColonneTableau(cle: 'reference', libelle: 'N°', sansCoupure: true, rendu: (_, r) => matRef(r['reference'])),
-                const ColonneTableau(cle: 'action', libelle: 'Action'),
-                ColonneTableau(cle: 'axe', libelle: 'Axe', rendu: (_, r) => BadgeSigh('${r['axe'] ?? ''}', ton: TonSigh.navy)),
-                ColonneTableau(
-                    cle: 'trimestreDebut',
-                    libelle: 'Période',
-                    droite: true,
-                    texte: (r) => 'T${matTexteNombre(r['trimestreDebut'])} – T${matTexteNombre(r['trimestreFin'])}'),
-                const ColonneTableau(cle: 'responsable', libelle: 'Responsable'),
-                ColonneTableau(cle: 'avancement', libelle: 'Avancement', rendu: (_, r) => BadgeSigh('${r['avancement'] ?? ''}', ton: _ton(r['avancement']))),
-              ],
-            ),
-          ]);
-        });
-  }
-
-  void _modifier(BuildContext ctx, ContexteEcran c, CollectionMagasin col, Fiche existante) => admSaisir(ctx,
-      col: col,
-      existante: existante,
-      titreCreation: 'Nouvelle action',
-      entite: 'Action',
-      // E533 : l'ÉTAT (Réalisée / En cours / Planifiée) et le POURCENTAGE sont deux champs — le pourcentage écrasait l'état.
-      champs: [
-        const ChampDef(nom: 'action', libelle: 'Action', requis: true, col: ColChamp.plein),
-        const ChampDef(nom: 'responsable', libelle: 'Responsable'),
-        const ChampDef(nom: 'echeance', libelle: 'Échéance', type: TypeChamp.date),
-        ChampDef(nom: 'avancement', libelle: 'État d’avancement', type: TypeChamp.select, requis: true, options: admOptions(admAvancementsPlan)),
-        const ChampDef(nom: 'tauxAvancement', libelle: 'Avancement (%)', type: TypeChamp.nombre),
-        const ChampDef(nom: 'observations', libelle: 'Observations', type: TypeChamp.textarea, lignes: 2, col: ColChamp.plein),
-      ],
-      fiche: (v, e) {
-        v['tauxAvancement'] = admNombre(v['tauxAvancement']);
-        return v;
-      });
-}
+// m13-plan-annuel : voir `plan_annuel_vues.dart` (lot PTA).
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // m13-notes-service

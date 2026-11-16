@@ -5971,6 +5971,238 @@
   };
 
   /* ==========================================================================
+   * LE PLAN ANNUEL DE TRAVAIL, PAR EXERCICE (lot PTA, 16/11/2026 ; Direction : « rien ne doit rester en dur »)
+   * --------------------------------------------------------------------------
+   * Un plan PAR EXERCICE (les exercices sont ceux de la comptabilité), des actions numérotées `PA-<année>-NNN` par la fabrique `C.referenceAnnuelle`. Le responsable est une RÉFÉRENCE
+   * (un agent du personnel ou un poste de l'organigramme), jamais un texte libre ; les signataires de l'impression se lisent dans `reglagesPlan` (fonction par référence à un poste, titulaire
+   * lu au poste). L'ADOPTION par la Direction est un geste réservé de la fiche RBAC (`adopter_plan_annuel`), datée, motivée, journalisée (RG-12) ; une fois adopté, le CONTENU du plan
+   * (action, axe, trimestres, responsable, budget prévu, indicateur, cible) ne se modifie plus que par VERSION DATÉE (nouvelle fiche, l'ancienne archivée, RG-14) ; le SUIVI (état, pourcentage,
+   * budget réalisé, valeur atteinte, observations) reste libre. La garde de la collection refuse aussi : masquer un bouton ne protège rien. « Reconduire » copie les actions non réalisées
+   * dans l'exercice suivant (copie datée, l'exercice source n'est jamais réécrit).
+   * ======================================================================== */
+  var GESTE_ADOPTER_PLAN = 'adopter_plan_annuel';
+  var PLAN_CHAMPS_CONTENU = ['action', 'axe', 'trimestreDebut', 'trimestreFin', 'responsableType', 'responsableRef', 'budgetPrevu', 'budgetId', 'indicateur', 'cible'];
+  var PLAN_CHAMPS_SUIVI = ['avancement', 'tauxAvancement', 'budgetRealise', 'valeurAtteinte', 'observations'];
+  var _planInterne = false;
+  function colPlan() { return S.collection('planAnnuel', { module: 'M13', entite: 'PlanAnnuelTravail', prefix: 'PAT' }); }
+  function colAdoptionsPlan() { return S.collection('adoptionsPlan', { module: 'M13', entite: 'Adoption du plan annuel', prefix: 'ADP' }); }
+  function colReglagesPlan() { return S.collection('reglagesPlan', { module: 'M13', entite: 'Réglage du plan annuel', prefix: 'RPL' }); }
+  function exercicesPlan() { return (global.SIGH.exercice ? global.SIGH.exercice.liste() : []).slice().sort(function (a, b) { return a.annee - b.annee; }); }
+  function exercicePlan(annee) { return exercicesPlan().filter(function (x) { return x.annee === Number(annee); })[0] || null; }
+  function actionsPlan(annee) { return colPlan().active().filter(function (a) { return Number(a.exercice) === Number(annee); }); }
+  function adoptionPlan(annee) { return colAdoptionsPlan().active().filter(function (a) { return Number(a.exercice) === Number(annee); })[0] || null; }
+  function peutAdopterPlan(role) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_ADOPTER_PLAN)); }
+  /** Le responsable d'une action : `agent:<id>` (personnel) ou `poste:<id>` (organigramme). Rend le libellé LU (jamais stocké) ; `null` si la référence ne se résout plus. */
+  function responsablePlan(a) {
+    if (!a) return null;
+    if (a.responsableType === 'agent') { var p = S.collection('personnel').get(a.responsableRef); return p && p.statut !== 'archive' ? { libelle: p.nomComplet + (p.poste ? ' (' + p.poste + ')' : ''), nature: 'agent' } : null; }
+    if (a.responsableType === 'poste') { var f = S.collection('postes').get(a.responsableRef); return f && f.statut !== 'archive' ? { libelle: f.poste + (f.titulaire ? ' : ' + f.titulaire : ' (poste vacant)'), nature: 'poste' } : null; }
+    return null;
+  }
+  function optionsResponsablesPlan() {
+    var agents = S.collection('personnel').active().slice().sort(function (a, b) { return String(a.nomComplet).localeCompare(String(b.nomComplet)); })
+      .map(function (p) { return { value: 'agent:' + p.id, label: 'Agent : ' + p.nomComplet + (p.poste ? ' (' + p.poste + ')' : '') }; });
+    var postes = S.collection('postes').active().slice().sort(function (a, b) { return String(a.poste).localeCompare(String(b.poste)); })
+      .map(function (f) { return { value: 'poste:' + f.id, label: 'Fonction : ' + f.poste }; });
+    return postes.concat(agents);
+  }
+  /** Le contrôle d'une fiche d'action (pur, sans écriture) : `null` si recevable, sinon le refus nommé { code, motif, geste }. */
+  function controlerActionPlan(f) {
+    f = f || {};
+    if (!f.action || String(f.action).trim().length < 3) return refusCfg('ACTION_VIDE', 'Le libellé de l’action est obligatoire.', 'Saisir ce que l’action programme.');
+    if (!exercicePlan(f.exercice)) return refusCfg('EXERCICE_INCONNU', 'L’exercice « ' + f.exercice + ' » n’est pas un exercice de la comptabilité.', 'Choisir un exercice de la liste.');
+    if (!D.PLAN.axe(f.axe)) return refusCfg('AXE_INCONNU', 'L’axe « ' + f.axe + ' » n’est pas dans le référentiel des axes.', 'Choisir un axe du référentiel.');
+    if (!D.PLAN.etat(f.avancement)) return refusCfg('ETAT_INCONNU', 'L’état d’avancement « ' + f.avancement + ' » n’est pas dans le référentiel des états.', 'Choisir un état du référentiel.');
+    var d = Number(f.trimestreDebut), e = Number(f.trimestreFin);
+    if (!(d >= 1 && d <= 4 && e >= 1 && e <= 4 && d <= e)) return refusCfg('TRIMESTRES_INCOHERENTS', 'La période doit aller d’un trimestre de début à un trimestre de fin, de T1 à T4, la fin non avant le début.', 'Corriger les trimestres.');
+    if (f.responsable && !f.responsableRef) return refusCfg('RESPONSABLE_TEXTE_LIBRE', 'Le responsable n’est pas un texte libre : il se choisit parmi le personnel ou les postes de l’organigramme.', 'Choisir le responsable dans la liste.');
+    if (!responsablePlan(f)) return refusCfg('RESPONSABLE_INCONNU', 'Le responsable désigné n’existe pas (ou n’est plus actif) au personnel ni à l’organigramme.', 'Choisir un agent ou un poste de la liste.');
+    var tx = D.PLAN.pourcentage(f.tauxAvancement);
+    if (!tx.ok) return refusCfg('POURCENTAGE_HORS_BORNES', 'Le pourcentage d’avancement est un nombre de 0 à 100 (reçu « ' + f.tauxAvancement + ' »).', 'Saisir un nombre de 0 à 100, ou laisser vide (non renseigné).', { min: 0, max: 100 });
+    var champs = ['budgetPrevu', 'budgetRealise', 'cible', 'valeurAtteinte'];
+    for (var i = 0; i < champs.length; i++) {
+      if (D.PLAN.nombre(f[champs[i]]) === undefined) return refusCfg('MONTANT_INVALIDE', 'Le champ « ' + champs[i] + ' » est un nombre positif ou nul (reçu « ' + f[champs[i]] + ' »).', 'Saisir un nombre, ou laisser vide (non renseigné).');
+    }
+    if (f.budgetId) {
+      var b = S.collection('budgets').get(f.budgetId);
+      if (!b || b.statut === 'archive') return refusCfg('BUDGET_INCONNU', 'La ligne de budget rattachée n’existe pas.', 'Choisir une ligne du module Budgets, ou « non rattaché ».');
+    }
+    return null;
+  }
+  function planFige(annee) { return !!adoptionPlan(annee); }
+  S.garder('planAnnuel', function (op, rec) {
+    if (_planInterne || !rec) return null;
+    if (op === 'archiver') {
+      return planFige(rec.exercice) ? 'PLAN_ADOPTE_FIGE : le plan de l’exercice ' + rec.exercice + ' est adopté : une action ne s’archive pas, elle se révise par version datée (commande « Réviser »).' : null;
+    }
+    var refus = controlerActionPlan(rec);
+    if (refus) return refus.code + ' : ' + refus.motif;
+    if (!planFige(rec.exercice)) return null;
+    if (op === 'inserer') return rec.ajouteApresAdoption || rec.versionDe ? null : 'PLAN_ADOPTE_FIGE : le plan de l’exercice ' + rec.exercice + ' est adopté : une action s’y ajoute par la commande « Ajouter après adoption » (version datée).';
+    if (op === 'modifier') {
+      var avant = colPlan().get(rec.id);
+      if (!avant) return null;
+      var touche = PLAN_CHAMPS_CONTENU.filter(function (k) { return String(avant[k] == null ? '' : avant[k]) !== String(rec[k] == null ? '' : rec[k]); });
+      if (touche.length) return 'PLAN_ADOPTE_FIGE : le plan de l’exercice ' + rec.exercice + ' est adopté ; ' + touche.join(', ') + ' ne se réécrit pas. Réviser l’action crée une version datée.';
+    }
+    return null;
+  });
+  S.garder('adoptionsPlan', function (op, rec) {
+    if (op === 'modifier') return 'ADOPTION_FIGEE : une adoption ne se réécrit pas ; le contenu du plan évolue par version datée.';
+    if (op === 'archiver') return 'ADOPTION_FIGEE : une adoption ne s’annule pas (RG-14) ; réviser les actions par version datée.';
+    return null;
+  });
+  /** Le numéro d'une action : `PA-<année de l'exercice>-NNN`, rang suivant lu sur les fiches existantes (fabrique unique). */
+  function referencePlan(annee) {
+    var x = exercicePlan(annee);
+    return C.referenceAnnuelle('PA-', x ? x.debut : String(annee) + '-01-01', 3, colPlan().all());
+  }
+  function nettoyerPlan(v) {
+    var out = {};
+    Object.keys(v).forEach(function (k) { if (v[k] !== null && v[k] !== undefined && v[k] !== '') out[k] = v[k]; });
+    return out;
+  }
+  /** Ajouter une action. `v` : exercice, action, axe, trimestreDebut/Fin, avancement, responsable (« agent:<id> » ou « poste:<id> »), budget, indicateur. Rend { ok, id, reference } ou le refus nommé. */
+  function ajouterActionPlan(v) {
+    v = Object.assign({}, v || {});
+    if (typeof v.responsable === 'string' && /^(agent|poste):/.test(v.responsable)) {
+      var i = v.responsable.indexOf(':'); v.responsableType = v.responsable.slice(0, i); v.responsableRef = v.responsable.slice(i + 1); delete v.responsable;
+    }
+    v.exercice = Number(v.exercice); v.trimestreDebut = Number(v.trimestreDebut); v.trimestreFin = Number(v.trimestreFin);
+    var refus = controlerActionPlan(v);
+    if (refus) return refus;
+    var adopte = planFige(v.exercice);
+    if (adopte) {
+      if (!v.motif || String(v.motif).trim().length < 3) return refusCfg('MOTIF_OBLIGATOIRE', 'Le plan est adopté : ajouter une action demande un motif.', 'Saisir le motif de l’ajout.');
+      v.ajouteApresAdoption = true; v.dateEffet = aujIso(); v.motifVersion = String(v.motif).trim();
+    }
+    delete v.motif;
+    v.reference = referencePlan(v.exercice); v.version = 1;
+    var res = colPlan().insert(nettoyerPlan(v));
+    if (!res) return refusCfg('PLAN_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de l’action.', 'Relire le journal : la garde a nommé la cause.');
+    return { ok: true, id: res.record.id, reference: res.record.reference, undo: res.undo };
+  }
+  /** Réviser une action d'un plan ADOPTÉ : nouvelle fiche (version + 1, date d'effet du jour, motif), l'ancienne archivée avec le motif. `patch` : champs du contenu seulement. */
+  function reviserActionPlan(id, patch, motif) {
+    var a = colPlan().get(id);
+    if (!a || a.statut === 'archive') return refusCfg('ACTION_INCONNUE', 'Action introuvable ou déjà remplacée par une version plus récente.', 'Rafraîchir l’écran.');
+    if (!planFige(a.exercice)) return refusCfg('PLAN_NON_ADOPTE', 'Le plan de l’exercice ' + a.exercice + ' n’est pas adopté : l’action se modifie directement.', 'Utiliser « Modifier ».');
+    if (!motif || String(motif).trim().length < 3) return refusCfg('MOTIF_OBLIGATOIRE', 'Une révision demande un motif.', 'Saisir le motif de la révision.');
+    var hors = Object.keys(patch || {}).filter(function (k) { return PLAN_CHAMPS_CONTENU.indexOf(k) < 0; });
+    if (hors.length) return refusCfg('CHAMP_HORS_REVISION', 'Seul le contenu du plan se révise par version (' + hors.join(', ') + ' est du suivi).', 'Modifier le suivi directement.');
+    var p = Object.assign({}, patch);
+    if (typeof p.responsable === 'string' && /^(agent|poste):/.test(p.responsable)) { var i = p.responsable.indexOf(':'); p.responsableType = p.responsable.slice(0, i); p.responsableRef = p.responsable.slice(i + 1); delete p.responsable; }
+    var neuve = Object.assign({}, a, p);
+    ['id', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage'].forEach(function (k) { delete neuve[k]; });
+    neuve.statut = 'actif'; neuve.version = (Number(a.version) || 1) + 1; neuve.versionDe = a.id; neuve.dateEffet = aujIso(); neuve.motifVersion = String(motif).trim();
+    var refus = controlerActionPlan(neuve);
+    if (refus) return refus;
+    var res;
+    _planInterne = true;
+    try {
+      res = colPlan().insert(nettoyerPlan(neuve), { journal: { action: 'Plan annuel : action révisée (version datée)', module: 'M13', entite: 'PlanAnnuelTravail', avant: { id: a.id, version: a.version || 1 },
+        apres: { reference: neuve.reference, version: neuve.version, dateEffet: neuve.dateEffet, motif: neuve.motifVersion } } });
+      if (res) colPlan().archive(a.id, 'Remplacée par la version ' + neuve.version + ' : ' + neuve.motifVersion);
+    } finally { _planInterne = false; }
+    if (!res) return refusCfg('PLAN_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Relire le journal.');
+    return { ok: true, id: res.record.id, reference: neuve.reference, version: neuve.version };
+  }
+  /** Adopter le plan d'un exercice (geste réservé). */
+  function adopterPlan(annee, motif) {
+    annee = Number(annee);
+    if (!peutAdopterPlan()) {
+      return refusCfg('ADOPTION_RESERVEE', 'Adopter le plan annuel est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+        'Demander à un rôle qui détient le droit « Adopter le plan annuel de travail » (matrice des droits).', { roles: global.SIGH.nav.rolesAvecGeste(GESTE_ADOPTER_PLAN) });
+    }
+    if (!exercicePlan(annee)) return refusCfg('EXERCICE_INCONNU', 'L’exercice « ' + annee + ' » n’est pas un exercice de la comptabilité.', 'Choisir un exercice de la liste.');
+    if (adoptionPlan(annee)) return refusCfg('PLAN_DEJA_ADOPTE', 'Le plan de l’exercice ' + annee + ' est déjà adopté (le ' + C.dateFR(adoptionPlan(annee).dateAdoption) + ').', 'Réviser une action par version datée.');
+    var n = actionsPlan(annee).length;
+    if (!n) return refusCfg('PLAN_VIDE', 'Le plan de l’exercice ' + annee + ' ne porte aucune action : il n’y a rien à adopter.', 'Programmer au moins une action.');
+    if (!motif || String(motif).trim().length < 3) return refusCfg('MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour adopter le plan.', 'Saisir le motif de l’adoption (délibération, décision).');
+    var res = colAdoptionsPlan().insert({ exercice: annee, dateAdoption: aujIso(), motif: String(motif).trim(), adoptePar: acteur(), nbActions: n },
+      { journal: { action: 'Plan annuel : adoption par la Direction', module: 'M13', entite: 'adoptionsPlan', avant: null, apres: { exercice: annee, dateAdoption: aujIso(), motif: String(motif).trim(), nbActions: n } } });
+    if (!res) return refusCfg('PLAN_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de l’adoption.', 'Relire le journal.');
+    return { ok: true, id: res.record.id, exercice: annee, nbActions: n };
+  }
+  /** Reconduire les actions NON RÉALISÉES de `source` dans `cible` : copie datée (suivi remis à zéro, `reconduiteDe`), la source n'est jamais réécrite ; une action déjà reconduite n'est pas dupliquée. */
+  function reconduirePlan(source, cible) {
+    source = Number(source); cible = Number(cible);
+    if (!exercicePlan(source) || !exercicePlan(cible)) return refusCfg('EXERCICE_INCONNU', 'La source et la cible doivent être des exercices de la comptabilité.', 'Choisir deux exercices de la liste.');
+    if (source === cible) return refusCfg('RECONDUCTION_MEME_EXERCICE', 'La source et la cible sont le même exercice.', 'Choisir un exercice cible différent.');
+    if (planFige(cible)) return refusCfg('PLAN_ADOPTE_FIGE', 'Le plan de l’exercice ' + cible + ' est adopté : on n’y reconduit pas en bloc.', 'Ajouter chaque action après adoption (version datée).');
+    var etatPlanifie = D.PLAN.referentiel('etat').filter(function (e) { return e.nature === 'planifiee'; })[0];
+    if (!etatPlanifie) return refusCfg('ETAT_INCONNU', 'Aucun état de nature « planifiée » dans le référentiel des états.', 'Ajouter l’état au référentiel.');
+    var deja = {}; actionsPlan(cible).forEach(function (a) { if (a.reconduiteDe) deja[a.reconduiteDe] = true; });
+    var copiees = [], ignorees = [];
+    actionsPlan(source).forEach(function (a) {
+      if (D.PLAN.nature(a.avancement) === 'realisee') return;
+      if (deja[a.id]) { ignorees.push(a.reference); return; }
+      var n = { exercice: cible, action: a.action, axe: a.axe, trimestreDebut: a.trimestreDebut, trimestreFin: a.trimestreFin, avancement: etatPlanifie.code, responsableType: a.responsableType,
+        responsableRef: a.responsableRef, reference: referencePlan(cible), version: 1, reconduiteDe: a.id, reconduiteLe: aujIso(), reconduiteDepuis: a.reference };
+      ['budgetPrevu', 'budgetId', 'indicateur', 'cible'].forEach(function (k) { if (a[k] !== undefined && a[k] !== null && a[k] !== '') n[k] = a[k]; });
+      if (responsablePlan(n) == null) { ignorees.push(a.reference + ' (responsable introuvable)'); return; }
+      var res = colPlan().insert(n, { journal: { action: 'Plan annuel : action reconduite', module: 'M13', entite: 'PlanAnnuelTravail', avant: { exercice: source, reference: a.reference }, apres: { exercice: cible, reference: n.reference } } });
+      if (res) copiees.push(n.reference);
+    });
+    return { ok: true, source: source, cible: cible, copiees: copiees, ignorees: ignorees };
+  }
+  /** Le réglage des signataires en vigueur à une date (la plus grande date d'effet qui ne la dépasse pas) et les signataires LUS à l'organigramme : fonction (poste) et titulaire. */
+  function signatairesPlan(date) {
+    var d = isoJour(date || aujIso()), v = null;
+    colReglagesPlan().active().slice().sort(function (a, b) { return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')) || String(a.creeLe || '').localeCompare(String(b.creeLe || '')); })
+      .forEach(function (r) { if (!r.dateEffet || String(r.dateEffet).slice(0, 10) <= d) v = r; });
+    if (!v) return { version: null, signataires: [] };
+    var postes = S.collection('postes');
+    return { version: v, signataires: (v.signataires || []).map(function (s) {
+      var p = postes.get(s.posteId);
+      return { posteId: s.posteId, fonction: p ? p.poste : null, nom: p && p.titulaire ? p.titulaire : null };
+    }) };
+  }
+  /** Régler les signataires (geste réservé « régler les paramètres de clinique ») : nouvelle version datée, jamais une réécriture. `posteIds` : postes de l'organigramme, un à quatre. */
+  function definirSignatairesPlan(posteIds, dateEffet, motif) {
+    if (!global.SIGH.parametresClinique.peutRegler()) {
+      return refusCfg('PARAMETRE_CLINIQUE_RESERVE', 'Régler les signataires du plan est réservé au droit « Régler les paramètres de clinique » : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.', 'Demander à un rôle qui détient ce droit.');
+    }
+    var fileul = controleEcritureCfg(); if (fileul) return fileul;
+    if (!motif || String(motif).trim().length < 3) return refusCfg('PARAMETRE_MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour changer les signataires.', 'Saisir le motif.');
+    if (!posteIds || !posteIds.length || posteIds.length > 4) return refusCfg('SIGNATAIRES_NOMBRE', 'Un à quatre signataires.', 'Choisir de un à quatre postes.');
+    var inconnus = posteIds.filter(function (id) { var p = S.collection('postes').get(id); return !p || p.statut === 'archive'; });
+    if (inconnus.length) return refusCfg('SIGNATAIRE_INCONNU', 'Un signataire n’est pas un poste de l’organigramme (' + inconnus.join(', ') + ').', 'Choisir des postes de la liste.');
+    var date = dateEffet ? isoJour(dateEffet) : aujIso();
+    var existantes = colReglagesPlan().active().filter(function (r) { return r.dateEffet; });
+    var derniere = existantes.slice().sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); }).pop();
+    if (derniere && date < String(derniere.dateEffet).slice(0, 10)) return refusCfg('DATE_EFFET_ANTERIEURE', 'La date d’effet précède celle de la dernière version : une version ne s’insère pas dans le passé.', 'Choisir une date égale ou postérieure.');
+    var avant = signatairesPlan(date);
+    var res = colReglagesPlan().insert({ dateEffet: date, signataires: posteIds.map(function (id) { return { posteId: id }; }), motif: String(motif).trim(), creeLe: new Date().toISOString(), creePar: acteur() },
+      { journal: { action: 'Plan annuel : signataires de l’impression, nouvelle version', module: 'M13', entite: 'reglagesPlan', avant: { postes: avant.signataires.map(function (s) { return s.posteId; }) }, apres: { postes: posteIds, dateEffet: date, motif: String(motif).trim() } } });
+    return res ? { ok: true, id: res.record.id, dateEffet: date } : refusCfg('PLAN_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Relire le journal.');
+  }
+  /** Les alertes de retard à une date : UNE par action (sa fiche active), dérivées, jamais écrites : elles retombent d'elles-mêmes (réalisée, replanifiée). */
+  function alertesRetardPlan(auj) {
+    var jour = isoJour(auj || aujIso()), out = [];
+    colPlan().active().forEach(function (a) {
+      var x = exercicePlan(a.exercice); if (!x) return;
+      var grace = D.parametreCliniqueALaDate('plan.graceRetardJours', jour).valeur;
+      var r = D.PLAN.retard(a, x.debut, jour, grace);
+      if (r.enRetard) out.push({ action: a, retard: r });
+    });
+    return out;
+  }
+  /** Le bilan d'un exercice : actions actives, totaux calculés, atteinte de chaque indicateur, retards. */
+  function bilanPlan(annee) {
+    var acts = actionsPlan(annee), x = exercicePlan(annee), jour = aujIso();
+    var grace = D.parametreCliniqueALaDate('plan.graceRetardJours', jour).valeur;
+    return { exercice: Number(annee), actions: acts, totaux: D.PLAN.totaux(acts), adoption: adoptionPlan(annee),
+      lignes: acts.map(function (a) { return { action: a, atteinte: D.PLAN.atteinteIndicateur(a), retard: x ? D.PLAN.retard(a, x.debut, jour, grace) : null }; }) };
+  }
+  global.SIGH.planAnnuel = {
+    GESTE: GESTE_ADOPTER_PLAN, CHAMPS_CONTENU: PLAN_CHAMPS_CONTENU, CHAMPS_SUIVI: PLAN_CHAMPS_SUIVI,
+    exercices: exercicesPlan, exercice: exercicePlan, actions: actionsPlan, adoption: adoptionPlan, peutAdopter: peutAdopterPlan, responsable: responsablePlan, optionsResponsables: optionsResponsablesPlan,
+    controler: controlerActionPlan, ajouter: ajouterActionPlan, reviser: reviserActionPlan, adopter: adopterPlan, reconduire: reconduirePlan, signataires: signatairesPlan, definirSignataires: definirSignatairesPlan,
+    alertes: alertesRetardPlan, bilan: bilanPlan, reference: referencePlan, figee: planFige,
+  };
+
+  /* ==========================================================================
    * PASSERELLE SMS : LA FABRIQUE UNIQUE D’ENVOI (étape S2, 08/11/2026)
    * --------------------------------------------------------------------------
    * Tout déclencheur (rappel de rendez-vous, anniversaire, plus tard fêtes, relances, résultat disponible) passe par PR.envoyerSms, et par rien

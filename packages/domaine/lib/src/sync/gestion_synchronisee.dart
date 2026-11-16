@@ -20,11 +20,17 @@ import 'dart:convert';
 import '../fichiers/sha256.dart';
 
 /// Les trois collections de gestion que le pont du poste synchronise depuis ce lot (famille A à la mère).
-const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance'};
+///
+/// LOT PTA (16/11/2026) : le PLAN ANNUEL DE TRAVAIL (`planAnnuel`) et son ADOPTION par la Direction (`adoptionsPlan`) rejoignent ces collections, pour la même raison : famille A (une action se
+/// SUIT champ à champ, état, pourcentage, réalisé, par un responsable sur son poste ; l'adoption est une fiche ajoutée une fois), identité par le contenu, jamais vers un téléphone.
+///  - action : exercice, libellé normalisé, version (une révision après adoption est une AUTRE identité : elle ne fusionne pas avec la version qu'elle remplace) ;
+///  - adoption : l'exercice (une adoption par exercice : la seconde, écrite sur un autre poste, fusionne ; une date ou un motif différents sont un conflit nommé, jamais écrasés).
+/// Les référentiels du plan (`referentielsPlan`) et le réglage des signataires (`reglagesPlan`) sont de la CONFIGURATION de la mère : ils voyagent par le canal de configuration, pas ici.
+const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan'};
 
 /// Elles ne vont JAMAIS vers un téléphone (RG-13) : la comptabilité et l'assurance d'un patient ne sont lues par aucun écran du mobile ; un téléphone perdu n'emporte ni budget, ni
 /// patrimoine, ni police d'assurance.
-const Set<String> collectionsGestionJamaisMobile = collectionsGestionSynchronisees;
+const Set<String> collectionsGestionJamaisMobile = {...collectionsGestionSynchronisees, 'referentielsPlan', 'reglagesPlan'};
 
 /// Le code du refus d'un lot de tournée qui nomme l'une d'elles.
 const String codeGestionInterditeAuMobile = 'gestion_interdite_au_mobile';
@@ -49,6 +55,12 @@ String? identiteSyncGestion(String collection, Map<String, Object?> f, {String? 
     case 'immobilisations':
       if ('${f['designation'] ?? ''}'.isEmpty || '${f['dateAcquisition'] ?? ''}'.isEmpty) return null;
       return 'IMM-${_empreinte([f['designation'], _jour(f['dateAcquisition']), f['valeurAcquisition']])}';
+    case 'planAnnuel':
+      if ('${f['exercice'] ?? ''}'.isEmpty || '${f['action'] ?? ''}'.trim().isEmpty) return null;
+      return 'PTA-${f['exercice']}-${_empreinte([f['action']])}-v${f['version'] ?? 1}';
+    case 'adoptionsPlan':
+      if ('${f['exercice'] ?? ''}'.isEmpty) return null;
+      return 'ADP-${f['exercice']}';
     case 'couverturesAssurance':
       final p = (patientSync == null || patientSync.isEmpty) ? '${f['patientId'] ?? ''}' : patientSync;
       if (p.isEmpty) return null;

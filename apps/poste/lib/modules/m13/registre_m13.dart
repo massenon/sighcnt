@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/config_poste.dart';
 import 'adm_registres.dart';
 import 'adm_vues.dart';
+import 'plan_annuel_vues.dart';
 import 'qual_enquetes.dart';
 import 'qual_publique.dart';
 import 'qual_satisfaction.dart';

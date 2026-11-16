@@ -9,6 +9,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
 
 import 'circuit_cloture_poste.dart';
 import 'persistance.dart';
+import 'plan_annuel_poste.dart' show gardePlanAnnuelPoste;
 
 typedef Fiche = Map<String, Object?>;
 
@@ -433,6 +434,9 @@ class Magasin {
     'fileOcr': 'M13',
     'evenementsEtablissement': 'M13',
     'planAnnuel': 'M13',
+    'adoptionsPlan': 'M13',
+    'referentielsPlan': 'M13',
+    'reglagesPlan': 'M13',
     'ambulance': 'M13',
     'ambulances': 'M13',
     'materiel': 'M13',
@@ -598,6 +602,11 @@ class Magasin {
         // LE BUDGET D'UN EXERCICE CLOS EST EN LECTURE SEULE (lot IMP-B2 de la maquette, porté au lot 8b) : tenu AU MOTEUR, d'où que l'écriture vienne (écran « Budgets », importation) ;
         // masquer un bouton ne protège rien. La garde relit les exercices À CHAQUE écriture.
         if (nom == 'budgets') c.garder((op, f) => cpcGardeBudgets(collection('exercices').toutes, f['exercice']));
+        // Lot PTA : le plan annuel (contrôle d'une action, plan adopté figé) et l'adoption (jamais réécrite) sont tenus AU MOTEUR : masquer un bouton ne protège rien.
+        if (nom == 'planAnnuel') c.garder((op, f) => gardePlanAnnuelPoste(this, op, f));
+        if (nom == 'adoptionsPlan') {
+          c.garder((op, f) => op == 'inserer' ? null : 'ADOPTION_FIGEE : une adoption ne se réécrit pas ni ne s’annule (RG-14) ; le contenu du plan évolue par version datée.');
+        }
         // L'archive d'une clôture est IMMUABLE et le registre des clôtures est une piste d'audit (arbitrage du 05/11/2026).
         if (nom == 'archivesExercice') c.garder((op, f) => cpcGardeArchives(collection('archivesExercice').toutes, op, f['reference']));
         if (nom == 'clotures') c.garder((op, f) => cpcGardeClotures(op));
@@ -746,6 +755,9 @@ class Magasin {
     'courriers',
     'evenementsEtablissement',
     'planAnnuel',
+    'adoptionsPlan',
+    'referentielsPlan',
+    'reglagesPlan',
     'ambulance',
     'ambulances',
     'materiel',

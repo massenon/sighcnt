@@ -160,8 +160,12 @@
      `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
      Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
      `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
+     92 (16/11/2026) : LE PLAN ANNUEL DE TRAVAIL PAR EXERCICE (lot PTA). `planAnnuel` change de forme (exercice, état et axe en CODES des référentiels, responsable par référence au personnel ou
+     à un poste, budget prévu et réalisé, indicateur, cible, valeur atteinte, pourcentage borné, version datée) ; trois collections neuves : `referentielsPlan` (axes et états, défauts
+     semés), `reglagesPlan` (signataires de l'impression : fonction par référence à un poste, versions datées) et `adoptionsPlan` (adoption par la Direction, une par exercice) ; le geste
+     réservé `adopter_plan_annuel` entre au manifeste, la clé `plan.graceRetardJours` aux paramètres de clinique. Sans incrément, un poste garderait l'ancien plan écrit en dur.
   */
-  var VERSION = 91;
+  var VERSION = 92;
   var db = null;
   var listeners = {};
 
@@ -1909,6 +1913,15 @@
       /* LES PARAMÈTRES DE CLINIQUE (16/11/2026, lot PARAM-CLINIQUE) : le préavis de péremption (RG-05) et les tranches de la balance âgée, une fiche par version datée,
          jamais réécrite. Trois fiches de semence (une par clé, mesurées : moins d'un kilo-octet). Lus par le stock, les créances, les alertes et les tableaux de bord, donc au socle. */
       parametresClinique: D.semenceParametresClinique(),
+
+      /* LE PLAN ANNUEL (16/11/2026, lot PTA) : axes et états d'avancement (référentiels en base, lus par l'écran, l'alerte de retard et le poste) et réglage des signataires de l'impression
+         (une fiche par version datée : la FONCTION se désigne par une référence à un poste de l'organigramme, le titulaire se lit au poste, jamais un nom écrit ici). Quinze fiches, mesurées. */
+      /* L'organigramme est lu par le plan annuel (responsable par fonction, signataires de l'impression) en plus de son écran : il s'amorce donc au SOCLE (seize fiches), comme tout
+         référentiel lu par plusieurs écrans ; l'écran « Organisation & organigramme » ne ressème que s'il le trouve vide. */
+      postes: D.postesDeLaSemence(),
+      referentielsPlan: D.PLAN.semenceReferentiels(),
+      reglagesPlan: [{ id: 'RPL-001', statut: 'actif', dateEffet: null, signataires: [{ posteId: 'PST002' }, { posteId: 'PST001' }], motif: 'Défaut semé : la Directrice Administrative et le Directeur Médical, comme l’impression d’avant',
+        creeLe: '2026-11-16', creePar: 'Semence du socle' }],
 
       /* ====================================================================
        * COMPTES DE TRÉSORERIE — d'où l'argent sort
@@ -4211,7 +4224,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'regimesIndividuels', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux', 'parametresClinique',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux', 'parametresClinique', 'referentielsPlan', 'reglagesPlan',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -4523,6 +4536,7 @@
     reglagesAib: 'CFG|Réglages de l’AIB',
     reglagesCloture: 'M12|Réglages de la clôture annuelle',
     parametresClinique: 'CFG|Paramètres de clinique (préavis de péremption, tranches de la balance âgée)',
+    referentielsPlan: 'M13|Plan annuel : axes et états d’avancement', reglagesPlan: 'M13|Plan annuel : signataires de l’impression', adoptionsPlan: 'M13|Plan annuel : adoptions par la Direction',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
     avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',

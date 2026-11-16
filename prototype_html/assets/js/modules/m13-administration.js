@@ -473,130 +473,335 @@
    * ======================================================================== */
   global.SIGH.screen('m13-plan-annuel', {
     title: 'Plan annuel de travail',
-    description: 'Programmation annuelle des activités de la clinique, par axe et par trimestre.',
+    description: 'Programmation annuelle des activités de la clinique, par exercice, par axe et par trimestre, avec suivi chiffré.',
     render: function (root) {
-      var col = S.collection('planAnnuel', { module: 'M13', entite: 'PlanAnnuelTravail' });
+      var PA = global.SIGH.planAnnuel;
+      var col = S.collection('planAnnuel', { module: 'M13', entite: 'PlanAnnuelTravail', prefix: 'PAT' });
+      var exos = PA.exercices();
+      var anneeJour = AUJ.getFullYear();
+      var annee = exos.some(function (x) { return x.annee === anneeJour; }) ? anneeJour : (exos.length ? exos[exos.length - 1].annee : anneeJour);
+
+      /* L'amorçage de DÉMONSTRATION : douze actions de l'exercice DU JOUR (jamais une année écrite), le responsable est une RÉFÉRENCE (l'agent qui tient le poste, sinon le poste),
+         l'état est celui que le calendrier rend plausible (aucune action déjà en retard à la semence). Sans source de la Direction : à remplacer par le vrai plan. */
       if (!col.all().length && S.amorcable('planAnnuel')) {
+        var posteDeRole = function (role) { return S.collection('postes').active().filter(function (p) { return p.role === role; })[0] || null; };
+        var cleNom = function (n) { return String(n || '').replace(/\s+[ée]pse\s+.*$/i, '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); };
+        var refDe = function (role) {
+          var p = posteDeRole(role) || S.collection('postes').active()[0];
+          if (!p) return null;
+          var ag = S.collection('personnel').active().filter(function (a) { return p.titulaire && cleNom(a.nomComplet) === cleNom(p.titulaire); })[0];
+          return ag ? { responsableType: 'agent', responsableRef: ag.id } : { responsableType: 'poste', responsableRef: p.id };
+        };
+        var trCourant = Math.floor(AUJ.getMonth() / 3) + 1;
         var ACTIONS = [
-          ['Déploiement du SIGH-CNT', 'Digitalisation', 1, 4, 'En cours'],
-          ['Numérisation des dossiers patients actifs', 'Digitalisation', 2, 4, 'En cours'],
-          ['Formation du personnel au nouveau logiciel', 'Formation', 3, 4, 'Planifiée'],
-          ['Inventaire général des stocks', 'Logistique', 1, 1, 'Réalisée'],
-          ['Renouvellement des conventions d’assurance', 'Partenariats', 1, 2, 'Réalisée'],
-          ['Campagne de dépistage communautaire', 'Santé publique', 2, 3, 'En cours'],
-          ['Acquisition d’un nouvel échographe', 'Investissement', 3, 3, 'Planifiée'],
-          ['Mise à niveau du réseau informatique', 'Investissement', 1, 2, 'Réalisée'],
-          ['Audit qualité et sécurité des patients', 'Qualité', 4, 4, 'Planifiée'],
-          ['Révision de la grille des primes', 'Ressources humaines', 3, 3, 'Planifiée'],
-          ['Clôture comptable de l’exercice', 'Finance', 4, 4, 'Planifiée'],
-          ['Rapprochement bancaire mensuel', 'Finance', 1, 4, 'En cours'],
+          ['Déploiement du SIGH-CNT', 'digitalisation', 1, 4, 'en_cours', 'da'],
+          ['Numérisation des dossiers patients actifs', 'digitalisation', 2, 4, 'en_cours', 'da'],
+          ['Formation du personnel au nouveau logiciel', 'formation', 3, 4, 'planifiee', 'da'],
+          ['Inventaire général des stocks', 'logistique', 1, 1, 'realisee', 'stock'],
+          ['Renouvellement des conventions d’assurance', 'partenariats', 1, 2, 'realisee', 'da'],
+          ['Campagne de dépistage communautaire', 'sante_publique', 2, 3, 'en_cours', 'da'],
+          ['Acquisition d’un nouvel échographe', 'investissement', 3, 3, 'planifiee', 'da'],
+          ['Mise à niveau du réseau informatique', 'investissement', 1, 2, 'realisee', 'da'],
+          ['Audit qualité et sécurité des patients', 'qualite', 4, 4, 'planifiee', 'da'],
+          ['Révision de la grille des primes', 'ressources_humaines', 3, 3, 'planifiee', 'da'],
+          ['Clôture comptable de l’exercice', 'finance', 4, 4, 'planifiee', 'comptable'],
+          ['Rapprochement bancaire mensuel', 'finance', 1, 4, 'en_cours', 'comptable'],
         ];
         ACTIONS.forEach(function (a, i) {
-          col.all().push({
-            id: 'PAT' + C.pad(i + 1, 3), statut: 'actif',
-            reference: 'PA-2026-' + C.pad(i + 1, 3),
-            action: a[0], axe: a[1], trimestreDebut: a[2], trimestreFin: a[3],
-            avancement: a[4],
-            responsable: a[1] === 'Finance' ? 'KASSA Augustin' : (a[1] === 'Logistique' ? 'MAMAN Zoukanéri' : 'TAKI Alimatou'),
-          });
+          var r = refDe(a[5]); if (!r) return;
+          var etat = a[3] < trCourant ? 'realisee' : a[4];
+          col.all().push(Object.assign({
+            id: 'PAT' + C.pad(i + 1, 3), statut: 'actif', exercice: anneeJour,
+            reference: C.referenceAnnuelle('PA-', anneeJour + '-01-01', 3, col.all()), version: 1,
+            action: a[0], axe: a[1], trimestreDebut: a[2], trimestreFin: a[3], avancement: etat,
+          }, r));
         });
         S.save();
       }
 
-      var rows = col.active();
       var host = el('div.space-y-4');
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Actions programmées', value: C.num(rows.length), icon: 'list-checks', tone: 'navy' },
-        { label: 'Réalisées', value: C.num(rows.filter(function (r) { return r.avancement === 'Réalisée'; }).length), icon: 'check-circle-2', tone: 'success' },
-        { label: 'En cours', value: C.num(rows.filter(function (r) { return r.avancement === 'En cours'; }).length), icon: 'loader', tone: 'info' },
-        { label: 'Planifiées', value: C.num(rows.filter(function (r) { return r.avancement === 'Planifiée'; }).length), icon: 'calendar-clock', tone: 'warning' },
-      ]));
-
-      /* Diagramme de Gantt simplifié par trimestre */
-      var gantt = el('div.overflow-x-auto');
-      var t = el('table.tbl.min-w-\\[48rem\\]');
-      t.appendChild(el('thead', null, el('tr', null, [
-        el('th', { text: 'Action' }), el('th', { text: 'Axe' }),
-        el('th.text-center', { text: 'T1' }), el('th.text-center', { text: 'T2' }),
-        el('th.text-center', { text: 'T3' }), el('th.text-center', { text: 'T4' }),
-        el('th', { text: 'Avancement' }),
-      ])));
-      var tb = el('tbody');
-      C.sortBy(rows, 'trimestreDebut').forEach(function (r) {
-        var tr = el('tr');
-        tr.appendChild(el('td.text-sm.text-slate-800', { text: r.action }));
-        tr.appendChild(el('td', null, U.badge(r.axe, 'navy')));
-        for (var q = 1; q <= 4; q++) {
-          var actif = q >= r.trimestreDebut && q <= r.trimestreFin;
-          var tone = r.avancement === 'Réalisée' ? 'success' : (r.avancement === 'En cours' ? 'info' : 'warning');
-          tr.appendChild(el('td.px-1', null,
-            el('div.h-3.rounded-full', { class: actif ? 'bg-' + tone + '-400' : 'bg-slate-100' })));
-        }
-        tr.appendChild(el('td', null, U.badge(r.avancement,
-          r.avancement === 'Réalisée' ? 'success' : (r.avancement === 'En cours' ? 'info' : 'warning'))));
-        tb.appendChild(tr);
-      });
-      t.appendChild(tb);
-      /* Lot EXP : le plan se coche et s'exporte (garde-tableaux : consultation). */
-      gantt.appendChild(U.equiperTableau(t, { nom: 'plan-annuel', titre: 'Plan annuel de travail' }));
-      gantt.appendChild(t);
-
-      host.appendChild(U.card('Plan annuel de travail 2026', gantt, [
-        K.btn('Imprimer le plan', {
-          size: 'sm', icon: 'printer',
-          onclick: function () {
-            P.etat({
-              titre: 'Plan annuel de travail',
-              sousTitre: 'Exercice 2026',
-              cartouche: [['Exercice', '2026'], ['Actions programmées', C.num(rows.length)],
-                ['Réalisées', C.num(rows.filter(function (r) { return r.avancement === 'Réalisée'; }).length)],
-                ['Date d’édition', C.dateFR(AUJ)]],
-              contenu: P.tableau([
-                { label: 'N°', key: 'reference' },
-                { label: 'Action', key: 'action' },
-                { label: 'Axe', key: 'axe' },
-                { label: 'Période', value: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; } },
-                { label: 'Responsable', key: 'responsable' },
-                { label: 'Avancement', key: 'avancement' },
-              ], C.sortBy(rows, 'trimestreDebut')),
-              signatures: [{ role: 'La Directrice Administrative', nom: 'TAKI Alimatou' },
-                { role: 'Le Directeur Médical', nom: 'BASSONGUI Chabi Séko' }],
-            });
-          },
-        }),
-      ]));
-
-      host.appendChild(U.dataTable({
-        title: 'Détail des actions', rows: rows, exportName: 'plan-annuel', pageSize: 15,
-        rowActions: K.actionsLigne(col, [
-          { name: 'action', label: 'Action', required: true, col: 'full' },
-          { name: 'responsable', label: 'Responsable' },
-          { name: 'echeance', label: 'Échéance', type: 'date' },
-          /* E533 : le champ « Avancement (%) » portait le nom de l'ÉTAT (Réalisée / En cours / Planifiée) : modifier une action écrasait l'état par un nombre ou par rien. */
-          { name: 'avancement', label: 'État d’avancement', type: 'select', required: true, options: ['Réalisée', 'En cours', 'Planifiée'] },
-          { name: 'tauxAvancement', label: 'Avancement (%)', type: 'number', min: 0, max: 100 },
-          { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
-        ]),
-        filters: [
-          { name: 'axe', label: 'Axe', options: Object.keys(C.groupBy(rows, 'axe')).sort() },
-          { name: 'avancement', label: 'Avancement', options: ['Réalisée', 'En cours', 'Planifiée'] },
-        ],
-        columns: [
-          { key: 'reference', label: 'N°', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.reference }); } },
-          { key: 'action', label: 'Action' },
-          { key: 'axe', label: 'Axe', render: function (r) { return U.badge(r.axe, 'navy'); } },
-          { key: 'trimestreDebut', label: 'Période', align: 'right', render: function (r) { return 'T' + r.trimestreDebut + ' – T' + r.trimestreFin; } },
-          { key: 'responsable', label: 'Responsable' },
-          {
-            key: 'avancement', label: 'Avancement',
-            render: function (r) {
-              return U.badge(r.avancement, r.avancement === 'Réalisée' ? 'success' : (r.avancement === 'En cours' ? 'info' : 'warning'));
-            },
-          },
-        ],
-      }));
       root.appendChild(host);
+
+      function nomEtat(code) { var e = D.PLAN.etat(code); return e ? e.libelle : 'État inconnu'; }
+      function tonEtat(code) { var e = D.PLAN.etat(code); return e ? e.ton : 'neutral'; }
+      function nomAxe(code) { var a = D.PLAN.axe(code); return a ? a.libelle : 'Axe inconnu'; }
+      function nomResp(a) { var r = PA.responsable(a); return r ? r.libelle : 'Responsable introuvable'; }
+      function fcfa(v) { return v == null ? 'Non renseigné' : C.money(v, false); }
+      function pct(v) { return v == null ? 'Non renseigné' : C.num(v) + ' %'; }
+
+      /* Les champs d'une action. `portee` : 'tout' (création, plan non adopté), 'suivi' (plan adopté : le contenu est figé), 'contenu' (révision). */
+      function champs(portee) {
+        var liste = [];
+        var enContenu = portee !== 'suivi', enSuivi = portee !== 'contenu';
+        if (enContenu) {
+          liste.push({ name: 'action', label: 'Action', required: true, col: 'full' });
+          liste.push({ name: 'axe', label: 'Axe', type: 'select', required: true, options: D.PLAN.referentiel('axe').map(function (x) { return { value: x.code, label: x.libelle }; }) });
+          liste.push({ name: 'responsable', label: 'Responsable (personnel ou fonction)', type: 'select', required: true, search: true, options: PA.optionsResponsables() });
+          liste.push({ name: 'trimestreDebut', label: 'Trimestre de début', type: 'select', required: true, options: [1, 2, 3, 4].map(function (q) { return { value: q, label: 'T' + q }; }) });
+          liste.push({ name: 'trimestreFin', label: 'Trimestre de fin', type: 'select', required: true, options: [1, 2, 3, 4].map(function (q) { return { value: q, label: 'T' + q }; }) });
+          liste.push({ name: 'budgetPrevu', label: 'Budget prévu (FCFA)', type: 'number', min: 0, step: 1 });
+          liste.push({ name: 'budgetId', label: 'Ligne du module Budgets', type: 'select', options: S.collection('budgets').active().filter(function (b) { return Number(b.exercice) === Number(annee); })
+            .map(function (b) { return { value: b.id, label: b.reference + ' : ' + b.centre }; }), placeholder: 'Non rattaché' });
+          liste.push({ name: 'indicateur', label: 'Indicateur de résultat', col: 'half' });
+          liste.push({ name: 'cible', label: 'Cible de l’indicateur', type: 'number', min: 0 });
+        }
+        if (enSuivi) {
+          liste.push({ name: 'avancement', label: 'État d’avancement', type: 'select', required: true, options: D.PLAN.referentiel('etat').map(function (x) { return { value: x.code, label: x.libelle }; }) });
+          liste.push({ name: 'tauxAvancement', label: 'Avancement (%)', type: 'number', min: 0, max: 100, help: 'De 0 à 100 ; laissé vide : non renseigné (ce n’est pas zéro).' });
+          liste.push({ name: 'budgetRealise', label: 'Budget réalisé (FCFA)', type: 'number', min: 0, step: 1 });
+          liste.push({ name: 'valeurAtteinte', label: 'Valeur atteinte de l’indicateur', type: 'number', min: 0 });
+          liste.push({ name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' });
+        }
+        return liste;
+      }
+      function valeursDe(r) {
+        var v = Object.assign({}, r);
+        if (r.responsableType && r.responsableRef) v.responsable = r.responsableType + ':' + r.responsableRef;
+        return v;
+      }
+      function refus(res) {
+        U.toast(res.code ? 'Refusé : ' + res.code : 'Refusé', { type: 'error', detail: res.motif + (res.geste ? ' ' + res.geste : '') });
+      }
+      function modale(titre, sousTitre, liste, valeurs, libelleBouton, surValider) {
+        var f = U.form(liste, valeurs || {});
+        var m = U.modal({
+          title: titre, subtitle: sousTitre, size: 'lg', body: f,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn(libelleBouton, { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              if (surValider(v) !== false) m.close();
+            } }),
+          ],
+        });
+        return m;
+      }
+      function demandeMotif(titre, message, libelleBouton) {
+        return U.confirm({ title: titre, message: message, confirmLabel: libelleBouton, requireMotif: true });
+      }
+
+      function peindre() {
+        host.innerHTML = '';
+        var bilan = PA.bilan(annee);
+        var rows = bilan.actions, T = bilan.totaux, adoption = bilan.adoption;
+        var enRetard = bilan.lignes.filter(function (l) { return l.retard && l.retard.enRetard; });
+        var ligneDe = {}; bilan.lignes.forEach(function (l) { ligneDe[l.action.id] = l; });
+        var figee = !!adoption;
+
+        /* L'exercice, l'adoption, les gestes du plan. */
+        var barre = el('div.flex.flex-wrap.items-center.gap-3');
+        var sel = el('select.select.w-auto', { id: 'plan-exercice', 'aria-label': 'Exercice du plan' });
+        exos.forEach(function (x) {
+          var o = el('option', { value: String(x.annee) }, 'Exercice ' + x.annee);
+          if (x.annee === annee) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.addEventListener('change', function () { annee = Number(sel.value); peindre(); });
+        barre.appendChild(sel);
+        barre.appendChild(figee
+          ? U.badge('Adopté le ' + C.dateFR(adoption.dateAdoption) + ' par ' + adoption.adoptePar, 'success')
+          : U.badge('Plan non adopté', 'warning'));
+        if (figee) barre.appendChild(el('span.text-xs.text-slate-500', { text: 'Motif : ' + adoption.motif + '. Le contenu ne change plus que par version datée.' }));
+        host.appendChild(barre);
+
+        host.appendChild(U.kpiGrid([
+          { label: 'Actions programmées', value: C.num(T.nb), icon: 'list-checks', tone: 'navy' },
+          { label: 'Réalisées', value: C.num(T.parNature.realisee), icon: 'check-circle-2', tone: 'success' },
+          { label: 'En cours', value: C.num(T.parNature.en_cours), icon: 'loader', tone: 'info' },
+          { label: 'Planifiées', value: C.num(T.parNature.planifiee), icon: 'calendar-clock', tone: 'warning' },
+          { label: 'En retard', value: C.num(enRetard.length), icon: 'alarm-clock', tone: enRetard.length ? 'danger' : 'neutral' },
+          { label: 'Avancement moyen', value: T.tauxMoyen == null ? 'Non calculable' : C.num(T.tauxMoyen) + ' %', icon: 'gauge', tone: 'navy',
+            hint: T.nbSansTaux ? T.nbSansTaux + ' action(s) sans pourcentage' : null },
+          { label: 'Budget prévu', value: T.prevu == null ? 'Non renseigné' : C.money(T.prevu, false), icon: 'wallet', tone: 'navy', hint: T.nbSansPrevu ? T.nbSansPrevu + ' action(s) sans budget' : null },
+          { label: 'Budget réalisé', value: T.realise == null ? 'Non renseigné' : C.money(T.realise, false), icon: 'receipt', tone: 'info', hint: T.nbSansRealise ? T.nbSansRealise + ' action(s) sans réalisé' : null },
+        ]));
+
+        /* Diagramme de Gantt simplifié par trimestre. */
+        var gantt = el('div.overflow-x-auto');
+        var t = el('table.tbl.min-w-\\[48rem\\]');
+        t.appendChild(el('thead', null, el('tr', null, [
+          el('th', { text: 'Action' }), el('th', { text: 'Axe' }),
+          el('th.text-center', { text: 'T1' }), el('th.text-center', { text: 'T2' }),
+          el('th.text-center', { text: 'T3' }), el('th.text-center', { text: 'T4' }),
+          el('th', { text: 'Avancement' }),
+        ])));
+        var tb = el('tbody');
+        C.sortBy(rows, 'trimestreDebut').forEach(function (r) {
+          var tr = el('tr', { dataset: { action: r.reference } });
+          tr.appendChild(el('td.text-sm.text-slate-800', { text: r.action }));
+          tr.appendChild(el('td', null, U.badge(nomAxe(r.axe), 'navy')));
+          for (var q = 1; q <= 4; q++) {
+            var actif = q >= r.trimestreDebut && q <= r.trimestreFin;
+            tr.appendChild(el('td.px-1', null, el('div.h-3.rounded-full', { class: actif ? 'bg-' + tonEtat(r.avancement) + '-400' : 'bg-slate-100' })));
+          }
+          tr.appendChild(el('td', null, U.badge(nomEtat(r.avancement), tonEtat(r.avancement))));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        /* Lot EXP : le plan se coche et s'exporte (garde-tableaux : consultation). */
+        gantt.appendChild(U.equiperTableau(t, { nom: 'plan-annuel', titre: 'Plan annuel de travail ' + annee }));
+        gantt.appendChild(t);
+        if (!rows.length) gantt.appendChild(el('p.p-4.text-sm.text-slate-500', { text: 'Aucune action programmée pour l’exercice ' + annee + '.' }));
+
+        var actionsCarte = [];
+        if (!figee) actionsCarte.push(K.commande('Nouvelle action', { size: 'sm', icon: 'plus', variant: 'primary', moduleCode: 'M13', onclick: function () { ouvrirCreation(); } }));
+        else actionsCarte.push(K.commande('Ajouter après adoption', { size: 'sm', icon: 'plus', moduleCode: 'M13', onclick: function () { ouvrirCreation(true); } }));
+        if (!figee && PA.peutAdopter()) actionsCarte.push(K.btn('Adopter le plan', { size: 'sm', icon: 'badge-check', variant: 'primary', onclick: function () {
+          demandeMotif('Adopter le plan ' + annee + ' ?', 'L’adoption est datée et journalisée. Ensuite le contenu du plan ne change plus que par version datée.', 'Adopter').then(function (rep) {
+            if (!rep) return;
+            var res = PA.adopter(annee, rep.motif);
+            if (!res.ok) { refus(res); return; }
+            U.toast('Plan ' + annee + ' adopté.', { type: 'success' }); peindre();
+          });
+        } }));
+        var precedents = exos.filter(function (x) { return x.annee < annee; });
+        if (!figee && precedents.length) actionsCarte.push(K.commande('Reconduire les actions non réalisées', { size: 'sm', icon: 'copy-plus', moduleCode: 'M13', onclick: function () {
+          var f = U.form([{ name: 'source', label: 'Exercice source', type: 'select', required: true, options: precedents.slice().reverse().map(function (x) { return { value: x.annee, label: 'Exercice ' + x.annee }; }) }], {});
+          var m = U.modal({ title: 'Reconduire dans l’exercice ' + annee, subtitle: 'Copie datée des actions non réalisées ; l’exercice source n’est jamais réécrit.', size: 'md', body: f,
+            footer: [K.btn('Annuler', { onclick: function () { m.close(); } }), K.btn('Reconduire', { variant: 'primary', icon: 'copy-plus', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var res = PA.reconduire(v.source, annee);
+              if (!res.ok) { refus(res); return; }
+              m.close(); U.toast(res.copiees.length + ' action(s) reconduite(s)' + (res.ignorees.length ? ', ' + res.ignorees.length + ' déjà reconduite(s) ou ignorée(s).' : '.'), { type: 'success' }); peindre();
+            } })] });
+        } }));
+        actionsCarte.push(K.btn('Imprimer le plan', { size: 'sm', icon: 'printer', onclick: function () { imprimerPlan(bilan); } }));
+        actionsCarte.push(K.btn('Imprimer le bilan', { size: 'sm', icon: 'file-bar-chart', onclick: function () { imprimerBilan(bilan); } }));
+        if (global.SIGH.parametresClinique.peutRegler()) actionsCarte.push(K.btn('Signataires de l’impression', { size: 'sm', icon: 'signature', onclick: function () { ouvrirSignataires(); } }));
+        host.appendChild(U.card('Plan annuel de travail ' + annee, gantt, actionsCarte.filter(Boolean)));
+
+        host.appendChild(U.dataTable({
+          title: 'Détail des actions', rows: rows, exportName: 'plan-annuel', pageSize: 15,
+          rowActions: function (r) {
+            var actes = [];
+            var ic = function (n, titre, fn, o) { return K.commandeIcone(n, titre, fn, o || { moduleCode: 'M13' }); };
+            actes.push(ic('pencil', figee ? 'Suivre l’action' : 'Modifier', function () {
+              modale(figee ? 'Suivi de l’action' : 'Modifier l’action', r.reference, champs(figee ? 'suivi' : 'tout'), valeursDe(r), 'Enregistrer', function (v) {
+                if (v.responsable) { var i = v.responsable.indexOf(':'); v.responsableType = v.responsable.slice(0, i); v.responsableRef = v.responsable.slice(i + 1); delete v.responsable; }
+                var patch = {};
+                Object.keys(v).forEach(function (k) { if (v[k] !== '' && v[k] !== null && v[k] !== undefined) patch[k] = v[k]; });
+                ['trimestreDebut', 'trimestreFin'].forEach(function (k) { if (patch[k] !== undefined) patch[k] = Number(patch[k]); });
+                var res = col.update(r.id, patch);
+                if (!res) return false;
+                U.toast('Modifications enregistrées.', { type: 'success', undo: function () { res.undo(); peindre(); } }); peindre();
+              });
+            }));
+            if (figee) actes.push(ic('git-branch-plus', 'Réviser (version datée)', function () {
+              modale('Réviser l’action', r.reference + ' : version ' + ((r.version || 1) + 1), champs('contenu').concat([{ name: 'motif', label: 'Motif de la révision', required: true, col: 'full' }]), valeursDe(r), 'Créer la version', function (v) {
+                var motif = v.motif; delete v.motif;
+                if (v.trimestreDebut) v.trimestreDebut = Number(v.trimestreDebut);
+                if (v.trimestreFin) v.trimestreFin = Number(v.trimestreFin);
+                var res = PA.reviser(r.id, v, motif);
+                if (!res.ok) { refus(res); return false; }
+                U.toast('Version ' + res.version + ' créée.', { type: 'success' }); peindre();
+              });
+            }));
+            if (!figee) actes.push(ic('archive', 'Archiver', function () {
+              demandeMotif('Archiver cette action ?', 'Archivage logique (RG-14) : la donnée reste consultable et l’opération est annulable.', 'Archiver').then(function (rep) {
+                if (!rep) return;
+                var res = col.archive(r.id, rep.motif);
+                if (res) { U.toast('Action archivée.', { type: 'success', undo: function () { res.undo(); peindre(); } }); peindre(); }
+              });
+            }, { moduleCode: 'M13', droit: 'annuler', variant: 'ghost' }));
+            return actes.filter(Boolean);
+          },
+          filters: [
+            { name: 'axe', label: 'Axe', options: D.PLAN.referentiel('axe').map(function (x) { return { value: x.code, label: x.libelle }; }) },
+            { name: 'avancement', label: 'Avancement', options: D.PLAN.referentiel('etat').map(function (x) { return { value: x.code, label: x.libelle }; }) },
+          ],
+          columns: [
+            { key: 'reference', label: 'N°', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.reference + ((r.version || 1) > 1 ? ' v' + r.version : '') }); } },
+            { key: 'action', label: 'Action' },
+            { key: 'axe', label: 'Axe', text: function (r) { return nomAxe(r.axe); }, render: function (r) { return U.badge(nomAxe(r.axe), 'navy'); } },
+            { key: 'trimestreDebut', label: 'Période', align: 'right', text: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; }, render: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; } },
+            { key: 'responsableRef', label: 'Responsable', text: nomResp, render: function (r) { return nomResp(r); } },
+            { key: 'avancement', label: 'Avancement', text: function (r) { return nomEtat(r.avancement); },
+              render: function (r) {
+                var l = ligneDe[r.id], w = el('div.flex.flex-wrap.items-center.gap-1');
+                w.appendChild(U.badge(nomEtat(r.avancement), tonEtat(r.avancement)));
+                if (l && l.retard && l.retard.enRetard) w.appendChild(U.badge('En retard', 'danger'));
+                return w;
+              } },
+            { key: 'tauxAvancement', label: 'Taux', align: 'right', text: function (r) { return pct(D.PLAN.pourcentage(r.tauxAvancement).valeur); }, render: function (r) { return pct(D.PLAN.pourcentage(r.tauxAvancement).valeur); } },
+            { key: 'budgetPrevu', label: 'Budget prévu', align: 'right', text: function (r) { return fcfa(D.PLAN.nombre(r.budgetPrevu)); }, render: function (r) { return fcfa(D.PLAN.nombre(r.budgetPrevu)); } },
+            { key: 'budgetRealise', label: 'Budget réalisé', align: 'right', text: function (r) { return fcfa(D.PLAN.nombre(r.budgetRealise)); }, render: function (r) { return fcfa(D.PLAN.nombre(r.budgetRealise)); } },
+            { key: 'budgetId', label: 'Ligne Budgets', text: function (r) { var b = r.budgetId ? S.collection('budgets').get(r.budgetId) : null; return b ? b.reference : 'Non rattaché'; },
+              render: function (r) { var b = r.budgetId ? S.collection('budgets').get(r.budgetId) : null; return b ? b.reference : el('span.text-slate-400', { text: 'Non rattaché' }); } },
+            { key: 'indicateur', label: 'Indicateur', text: function (r) { var a = ligneDe[r.id] && ligneDe[r.id].atteinte; return (r.indicateur || 'Aucun') + (a ? (a.calculable ? ' : ' + C.num(a.pct) + ' % de la cible' : ' : non calculable (' + a.motif + ')') : ''); },
+              render: function (r) { var a = ligneDe[r.id] && ligneDe[r.id].atteinte; return r.indicateur ? (r.indicateur + (a && a.calculable ? ' : ' + C.num(a.pct) + ' %' : ' : non calculable')) : el('span.text-slate-400', { text: 'Aucun' }); } },
+          ],
+        }));
+        U.icons(host);
+      }
+
+      function ouvrirCreation(apresAdoption) {
+        var liste = champs('tout').concat(apresAdoption ? [{ name: 'motif', label: 'Motif de l’ajout (plan adopté)', required: true, col: 'full' }] : []);
+        modale(apresAdoption ? 'Ajouter une action après adoption' : 'Nouvelle action', 'Exercice ' + annee + '. Les champs marqués d’un astérisque sont obligatoires.', liste,
+          { avancement: (D.PLAN.referentiel('etat').filter(function (e) { return e.nature === 'planifiee'; })[0] || {}).code }, 'Créer', function (v) {
+            v.exercice = annee;
+            var res = PA.ajouter(v);
+            if (!res.ok) { refus(res); return false; }
+            U.toast('Action ' + res.reference + ' créée.', { type: 'success', undo: function () { res.undo(); peindre(); } }); peindre();
+          });
+      }
+      function ouvrirSignataires() {
+        var cur = PA.signataires(null).signataires;
+        var postes = S.collection('postes').active().map(function (p) { return { value: p.id, label: p.poste + (p.titulaire ? ' : ' + p.titulaire : '') }; });
+        modale('Signataires de l’impression', 'Une fonction de l’organigramme ; le titulaire se lit au poste à la date de l’impression.', [
+          { name: 'p1', label: 'Premier signataire (fonction)', type: 'select', required: true, search: true, options: postes },
+          { name: 'p2', label: 'Second signataire (fonction)', type: 'select', search: true, options: postes },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true },
+          { name: 'motif', label: 'Motif', required: true, col: 'full' },
+        ], { p1: cur[0] && cur[0].posteId, p2: cur[1] && cur[1].posteId, dateEffet: C.iso(AUJ) }, 'Enregistrer', function (v) {
+          var ids = [v.p1, v.p2].filter(Boolean);
+          var res = PA.definirSignataires(ids, v.dateEffet, v.motif);
+          if (!res.ok) { refus(res); return false; }
+          U.toast('Signataires réglés à compter du ' + C.dateFR(res.dateEffet) + '.', { type: 'success' });
+        });
+      }
+      function signaturesImpression() {
+        return PA.signataires(null).signataires.map(function (s) { return { role: s.fonction || 'Fonction introuvable', nom: s.nom || 'Poste vacant' }; });
+      }
+      function numeriqueOuNull(f) { return function (r) { var n = D.PLAN.nombre(r[f]); return n == null ? null : n; }; }
+      function colonneMontant(label, champ, T) {
+        var lignesAvec = 0;
+        return { label: label, align: 'right', value: function (r) { return fcfa(D.PLAN.nombre(r[champ])); }, somme: numeriqueOuNull(champ),
+          formatTotal: function (v) { return (T[champ === 'budgetPrevu' ? 'prevu' : 'realise'] == null) ? 'Non calculable' : C.money(v, false); } };
+      }
+      function imprimerPlan(bilan) {
+        var T = bilan.totaux, rows = C.sortBy(bilan.actions, 'trimestreDebut');
+        P.etat({
+          titre: 'Plan annuel de travail', sousTitre: 'Exercice ' + bilan.exercice + (bilan.adoption ? ', adopté le ' + C.dateFR(bilan.adoption.dateAdoption) : ', non adopté'),
+          cartouche: [['Exercice', String(bilan.exercice)], ['Actions programmées', C.num(T.nb)], ['Réalisées', C.num(T.parNature.realisee)], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: P.tableau([
+            { label: 'N°', key: 'reference' }, { label: 'Action', key: 'action' }, { label: 'Axe', value: function (r) { return nomAxe(r.axe); } },
+            { label: 'Période', value: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; } },
+            { label: 'Responsable', value: nomResp }, { label: 'Avancement', value: function (r) { return nomEtat(r.avancement); } },
+          ], rows),
+          signatures: signaturesImpression(),
+        });
+      }
+      function imprimerBilan(bilan) {
+        var T = bilan.totaux, rows = C.sortBy(bilan.actions, 'trimestreDebut');
+        var contenu = el('div.space-y-3');
+        contenu.appendChild(P.tableau([
+          { label: 'N°', key: 'reference' }, { label: 'Action', key: 'action' },
+          { label: 'État', value: function (r) { return nomEtat(r.avancement); } },
+          { label: 'Taux', align: 'right', value: function (r) { return pct(D.PLAN.pourcentage(r.tauxAvancement).valeur); } },
+          colonneMontant('Budget prévu', 'budgetPrevu', T), colonneMontant('Budget réalisé', 'budgetRealise', T),
+          { label: 'Indicateur', value: function (r) { var a = D.PLAN.atteinteIndicateur(r); return r.indicateur ? (r.indicateur + ' : ' + (a.calculable ? C.num(a.pct) + ' % de la cible' : 'non calculable')) : 'Aucun'; } },
+        ], rows, { total: true, totalLabel: 'TOTAL (calculé)' }));
+        contenu.appendChild(el('p.text-\\[10px\\].text-slate-600', { text: 'Avancement moyen : ' + (T.tauxMoyen == null ? 'non calculable' : C.num(T.tauxMoyen) + ' %')
+          + (T.nbSansTaux ? ' (' + T.nbSansTaux + ' action(s) sans pourcentage, non comptée(s) comme zéro)' : '') + '. Écart budgétaire : ' + (T.ecart == null ? 'non calculable' : C.money(T.ecart, false))
+          + (T.nbSansPrevu ? ' ; ' + T.nbSansPrevu + ' action(s) sans budget prévu' : '') + '.' }));
+        P.etat({
+          titre: 'Bilan du plan annuel de travail', sousTitre: 'Exercice ' + bilan.exercice + ' : réalisé contre prévu',
+          cartouche: [['Exercice', String(bilan.exercice)], ['Actions', C.num(T.nb)], ['Réalisées', C.num(T.parNature.realisee)], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: contenu, signatures: signaturesImpression(),
+        });
+      }
+      peindre();
       return null;
     },
   });

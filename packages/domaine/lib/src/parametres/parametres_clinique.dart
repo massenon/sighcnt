@@ -21,6 +21,9 @@ const String pcCleDelaiPeremption = 'stock.delaiPeremptionJours';
 const String pcCleTrancheCourte = 'creances.trancheCourteJours';
 const String pcCleTrancheLongue = 'creances.trancheLongueJours';
 
+/// Lot PTA : la tolérance (jours) après la fin du trimestre d'une action du plan annuel avant l'alerte de retard (défaut 0, bornes à valider).
+const String pcCleGraceRetardPlan = 'plan.graceRetardJours';
+
 const String _source = 'Valeur d’avant (constante du code), semée telle quelle : décisions 10 et 14 de la Direction du 15/11/2026 (DECISIONS-A-VALIDER, section AH)';
 
 /// Ce qu'une clé déclare de plus qu'une définition L0 : ses bornes (entier de [min] à [max]) et son unité.
@@ -35,6 +38,7 @@ const List<BornesParametreClinique> pcBornes = [
   BornesParametreClinique(pcCleDelaiPeremption, 1, 730),
   BornesParametreClinique(pcCleTrancheCourte, 1, 365),
   BornesParametreClinique(pcCleTrancheLongue, 2, 730),
+  BornesParametreClinique(pcCleGraceRetardPlan, 0, 90),
 ];
 
 BornesParametreClinique? pcBornesDe(String cle) {
@@ -79,6 +83,17 @@ const List<DefinitionParametre> pcDefinitions = [
     source: _source,
     branche: true,
     appliquePar: 'Lot PARAM-CLINIQUE',
+  ),
+  DefinitionParametre(
+    cle: pcCleGraceRetardPlan,
+    famille: pcFamille,
+    type: TypeParametre.entier,
+    defaut: 0,
+    libelle: 'Plan annuel : jours de tolérance après la fin du trimestre avant l’alerte de retard',
+    aide: 'Une action non réalisée alerte quand son trimestre de fin est passé de plus de ce nombre de jours. Entier de 0 à 90 (0 : dès le lendemain).',
+    source: 'Lot PTA (16/11/2026) : défaut 0, bornes à valider par la Direction',
+    branche: true,
+    appliquePar: 'Lot PTA',
   ),
 ];
 

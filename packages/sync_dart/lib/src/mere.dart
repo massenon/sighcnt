@@ -87,6 +87,9 @@ const familleDeBase = <String, String>{
   // Lot SYNC-CFG (décision 26) : budgets, immobilisations et couvertures d'assurance, écrits à n'importe quel poste. Famille A (champ à champ) : une couverture se CLÔT sur sa propre
   // fiche quand la suivante prend effet, un budget se corrige, un bien se cède ; l'identité est commune par le contenu (`identiteSyncGestion`). Jamais vers un téléphone (RG-13).
   'budgets': 'A', 'immobilisations': 'A', 'couverturesAssurance': 'A',
+  // Lot PTA : le plan annuel de travail et son adoption (famille A, identité par le contenu, jamais vers un téléphone). Les référentiels du plan et le réglage des signataires sont de la
+  // configuration de la mère : ils voyagent par le canal de configuration (`cfbEssentielles`), non par cette table.
+  'planAnnuel': 'A', 'adoptionsPlan': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 

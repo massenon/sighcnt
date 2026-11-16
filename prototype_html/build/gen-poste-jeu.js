@@ -17,6 +17,8 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   /* configuration fiscale validée et datée (06/11/2026) : identité par versions, obligations et paramètres ORTB, historique */
   'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'rbac', 'appels', 'reunions', 'contreReferences', 'documentsPatient', 'fichesReference', 'pieces', 'fileAttente', 'soins', 'administrations', 'admissions', 'checklistsBloc', 'cpa', 'crOperatoires', 'observations', 'rapportsMedicaux', 'releves', 'scoresGlasgow', 'surveillancesTransfusion', 'accouchements', 'cpon', 'crMaternite', 'deces', 'dossiersObstetricaux', 'grossesses', 'naissances', 'partogrammes', 'planificationFamiliale', 'ptme', 'registreSONU', 'soinsCuratifsMaternite', 'suiviMaternite', 'chambres', 'lits', 'rendezvous', 'visites', 'antecedents', 'documents', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications',
   /* activités fermées : les fiches de la maquette (la banque de sang), puis les fermetures PROPRES AU POSTE ci-dessous */
+  /* lot PTA : le plan annuel (vide à l'export : sa démonstration est semée par son écran), ses référentiels et le réglage des signataires semés au socle */
+  'planAnnuel', 'adoptionsPlan', 'referentielsPlan', 'reglagesPlan',
   'modulesActifs'];
 /* FERMETURES PROPRES AU POSTE (Direction, 11/11/2026) : quatre écrans que la maquette porte et que le poste ne porte pas encore. Ils sont fermés par la collection
    `modulesActifs` (activité fermée par écran, pour tous les rôles, administrateur compris), jamais par un nom de rôle. La maquette NE LES FERME PAS : ces fiches
