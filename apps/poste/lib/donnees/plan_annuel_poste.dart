@@ -157,7 +157,7 @@ String? gardePlanAnnuelPoste(Magasin m, String op, Fiche f) {
     if (n != null) p[k] = n.toInt();
   }
   final neuve = {...a, ...p};
-  for (final k in const ['id', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage']) {
+  for (final k in const ['id', 'idSync', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage']) {
     neuve.remove(k);
   }
   neuve['statut'] = 'actif';

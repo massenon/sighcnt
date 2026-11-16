@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
+import 'package:sigh_poste/donnees/plan_annuel_poste.dart';
 
 import 'aide_grand_stock.dart';
 
@@ -39,8 +40,8 @@ void main() {
       final f2 = await c.fileul('F2', 'da', 'DA DEUX');
       for (final m in [c.mm, f1.m, f2.m]) {
         m.collection('exercices').inserer(exercice(2026));
-        m.collection('postes').inserer({'id': 'PS1', 'statut': 'actif', 'poste': 'Directrice Administrative', 'titulaire': 'TITULAIRE', 'role': 'da'});
       }
+      c.mm.collection('postes').inserer({'id': 'PS1', 'statut': 'actif', 'poste': 'Directrice Administrative', 'titulaire': 'TITULAIRE', 'role': 'da'});
       // la CONFIGURATION du plan est posée à la mère : référentiels et signataires arrivent aux fileuls
       for (final r in [
         {'id': 'RFP-001', 'statut': 'actif', 'type': 'axe', 'code': 'qualite', 'libelle': 'Qualité', 'ordre': 1},
@@ -51,13 +52,13 @@ void main() {
       }
       c.mm.collection('reglagesPlan').inserer({'id': 'RPL-001', 'statut': 'actif', 'dateEffet': null, 'signataires': [{'posteId': 'PS1'}]});
       await c.tour();
-      await c.converger(() => f1.m.collection('referentielsPlan').toutes.length == 3 && f2.m.collection('reglagesPlan').toutes.length == 1, 'les référentiels et le réglage du plan arrivent aux fileuls', apres: 4);
+      await c.converger(() => f1.m.collection('referentielsPlan').toutes.length == 3 && f1.m.collection('postes').parId('PS1') != null && f2.m.collection('postes').parId('PS1') != null && f2.m.collection('reglagesPlan').toutes.length == 1, 'les référentiels et le réglage du plan arrivent aux fileuls', apres: 4);
       // 1. ÉCRIT CHEZ F1 : la mère et F2 le reçoivent, puis le suivi (champ à champ).
       f1.m.collection('planAnnuel').inserer(action('Audit qualité'));
       bool partout(bool Function(Magasin) p) => [c.mm, f1.m, f2.m].every(p);
       await c.converger(() => partout((m) => actions(m, 'Audit qualité').length == 1), 'l\'action de F1 arrive à la mère et à F2', apres: 4);
       final id = actions(f1.m, 'Audit qualité').single['id'];
-      f2.m.collection('planAnnuel').mettreAJour(id, {'tauxAvancement': 40, 'budgetRealise': 250000});
+      f2.m.collection('planAnnuel').mettreAJour(actions(f2.m, 'Audit qualité').single['id'], {'tauxAvancement': 40, 'budgetRealise': 250000});
       await c.converger(() => partout((m) => actions(m, 'Audit qualité').single['tauxAvancement'] == 40), 'le suivi de F2 arrive partout (champ à champ)', apres: 4);
       // 2. MÈRE COUPÉE : F1 et F2 écrivent la MÊME action et adoptent le MÊME exercice.
       await c.mere.arreter();
@@ -78,9 +79,12 @@ void main() {
         expect(m.collection('adoptionsPlan').toutes.where((a) => a['exercice'] == 2026).length, 1, reason: 'une adoption par exercice : UNE fiche');
       }
       // 3. UNE RÉVISION après adoption est une AUTRE version (autre identité) : elle arrive, l'ancienne archivée aussi.
-      f1.m.collection('planAnnuel').inserer({...action('Formation du personnel', version: 2, ref: 'PA-2026-002'), 'versionDe': id, 'dateEffet': '2026-11-01'});
-      f1.m.collection('planAnnuel').archiver(actions(f1.m, 'Formation').single['id']);
-      await c.converger(() => partout((m) => actions(m, 'Formation du personnel').length == 1 && actions(m, 'Formation').single['statut'] == 'archive'), 'la version 2 et l\'archivage de la 1 arrivent partout', apres: 4);
+      final rv = reviserActionPlan(f1.m, actions(f1.m, 'Formation').single['id'], {'trimestreFin': 3}, 'Report au troisième trimestre');
+      expect(rv.refus, isNull, reason: '${rv.refus}');
+      await c.converger(() => partout((m) => actions(m, 'Formation').where((a) => a['version'] == 2).length == 1), 'la version 2 arrive partout', apres: 4);
+      await c.converger(() => true, 'tours de plus', apres: 6);
+      String etat(Magasin m) => actions(m, 'Formation').map((a) => '${a['id']}:v${a['version']}:${a['statut']}').join(',');
+      expect([etat(c.mm), etat(f1.m), etat(f2.m)].map((e) => e.split(',').where((x) => x.endsWith(':archive')).length), [1, 1, 1], reason: 'mère ${etat(c.mm)} | F1 ${etat(f1.m)} | F2 ${etat(f2.m)}');
       // 4. REJEU : des tours de plus n'ajoutent rien ; aucun refus « fiche_existe ».
       final avant = {for (final col in ['planAnnuel', 'adoptionsPlan']) col: c.mm.collection(col).toutes.length};
       await c.converger(() => true, 'rejeu', apres: 5);
