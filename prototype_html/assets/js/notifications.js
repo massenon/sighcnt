@@ -313,7 +313,8 @@
               titre: 'Bon de besoins à valider' + (b.reference ? ' : ' + b.reference : ''),
               detail: (b.service || 'Service') + (b.motif ? ' : ' + b.motif : '') + '. La validation est un geste de la DAF.',
               lien: 'm7-besoins',
-              postes: ['da', 'direction'],
+              /* ceux qui arbitrent : geste réservé `arbitrer_besoins` de la fiche RBAC (lot CLO-3), jamais une liste écrite ici */
+              postes: global.SIGH.nav && global.SIGH.nav.rolesAvecGeste ? global.SIGH.nav.rolesAvecGeste('arbitrer_besoins') : null,
             };
           });
       },

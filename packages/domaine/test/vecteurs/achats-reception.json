@@ -83,7 +83,7 @@
    {
     "nom": "conforme : tout est reçu",
     "commande": {
-     "id": "COMxmvux790vmz036",
+     "id": "COMxmvux79nuteixv",
      "statut": "actif",
      "reference": "BC-2096-0120",
      "date": "2096-03-01",
@@ -113,7 +113,7 @@
      "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvux790vmz036",
+     "id": "COMxmvux79nuteixv",
      "statut": "actif",
      "reference": "BC-2096-0120",
      "date": "2096-03-01",
@@ -196,7 +196,7 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvux795j98sjx",
+     "id": "LIVxmvux79t0dfhn1",
      "statut": "actif",
      "reference": "26LNA00099",
      "commandeRef": "BC-2096-0120",
@@ -235,7 +235,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvux795mlyvto",
+      "id": "MOUxmvux79t4ioi3y",
       "statut": "actif",
       "reference": "M000402",
       "date": "2026-10-30",
@@ -249,7 +249,7 @@
       "utilisateur": "MAMAN Zoukanéri"
      },
      {
-      "id": "MOUxmvux795leadb2",
+      "id": "MOUxmvux79t3lmkat",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -312,7 +312,7 @@
    {
     "nom": "manquant sur une ligne, surplus sur l'autre, rien sur la troisième",
     "commande": {
-     "id": "COMxmvux79ay7omj4",
+     "id": "COMxmvux79yg1j8x2",
      "statut": "actif",
      "reference": "BC-2096-0121",
      "date": "2096-03-01",
@@ -350,7 +350,7 @@
      "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvux79ay7omj4",
+     "id": "COMxmvux79yg1j8x2",
      "statut": "actif",
      "reference": "BC-2096-0121",
      "date": "2096-03-01",
@@ -459,7 +459,7 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvux79fpgoljv",
+     "id": "LIVxmvux7a3br9c60",
      "statut": "actif",
      "reference": "26LNA00100",
      "commandeRef": "BC-2096-0121",
@@ -509,7 +509,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvux79fq46aws",
+      "id": "MOUxmvux7a3c9h230",
       "statut": "actif",
       "reference": "M000402",
       "date": "2026-10-30",
@@ -523,7 +523,7 @@
       "utilisateur": "MAMAN Zoukanéri"
      },
      {
-      "id": "MOUxmvux79fp9p3pn",
+      "id": "MOUxmvux7a3cbc7fl",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -592,7 +592,7 @@
    {
     "nom": "prix de commande différent du CUMP : le CUMP bouge",
     "commande": {
-     "id": "COMxmvux79l1kkxpd",
+     "id": "COMxmvux7a8medqa4",
      "statut": "actif",
      "reference": "BC-2096-0122",
      "date": "2096-03-01",
@@ -614,7 +614,7 @@
      "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvux79l1kkxpd",
+     "id": "COMxmvux7a8medqa4",
      "statut": "actif",
      "reference": "BC-2096-0122",
      "date": "2096-03-01",
@@ -675,7 +675,7 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvux79psw6sgf",
+     "id": "LIVxmvux7ad9018ko",
      "statut": "actif",
      "reference": "26LNA00101",
      "commandeRef": "BC-2096-0122",
@@ -704,7 +704,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvux79ps4hy5e",
+      "id": "MOUxmvux7adaumlo6",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -761,7 +761,7 @@
    {
     "nom": "article inconnu du référentiel : le bon est écrit, le stock ne bouge pas",
     "commande": {
-     "id": "COMxmvux79v3oh8go",
+     "id": "COMxmvux7aiy76ng7",
      "statut": "actif",
      "reference": "BC-2096-0123",
      "date": "2096-03-01",
@@ -791,7 +791,7 @@
      "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvux79v3oh8go",
+     "id": "COMxmvux7aiy76ng7",
      "statut": "actif",
      "reference": "BC-2096-0123",
      "date": "2096-03-01",
@@ -862,7 +862,7 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvux79zrnutqs",
+     "id": "LIVxmvux7anosf9gu",
      "statut": "actif",
      "reference": "26LNA00102",
      "commandeRef": "BC-2096-0123",
@@ -901,7 +901,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvux79zrq92r5",
+      "id": "MOUxmvux7anogj3um",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -958,7 +958,7 @@
    {
     "nom": "commande « transmise » : réceptionnable aussi",
     "commande": {
-     "id": "COMxmvux7a50ch6gn",
+     "id": "COMxmvux7asz6t7jf",
      "statut": "actif",
      "reference": "BC-2096-0124",
      "date": "2096-03-01",
@@ -980,7 +980,7 @@
      "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvux7a50ch6gn",
+     "id": "COMxmvux7asz6t7jf",
      "statut": "actif",
      "reference": "BC-2096-0124",
      "date": "2096-03-01",
@@ -1041,7 +1041,7 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvux7a9q7c7ld",
+     "id": "LIVxmvux7b1j63a9x",
      "statut": "actif",
      "reference": "26LNA00103",
      "commandeRef": "BC-2096-0124",
@@ -1070,7 +1070,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvux7a9rfh92c",
+      "id": "MOUxmvux7b1jvehzb",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -1127,7 +1127,7 @@
    {
     "nom": "SANS numéro de bordereau : refusée, rien n'est écrit",
     "commande": {
-     "id": "COMxmvux7af2io0rf",
+     "id": "COMxmvux7b6uj0ne2",
      "statut": "actif",
      "reference": "BC-2096-0125",
      "date": "2096-03-01",
@@ -1149,7 +1149,7 @@
      "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvux7af2io0rf",
+     "id": "COMxmvux7b6uj0ne2",
      "statut": "actif",
      "reference": "BC-2096-0125",
      "date": "2096-03-01",
@@ -2430,7 +2430,7 @@
   ],
   "commandes": [
    {
-    "id": "COMxmvux7af2io0rf",
+    "id": "COMxmvux7b6uj0ne2",
     "statut": "actif",
     "reference": "BC-2096-0125",
     "date": "2096-03-01",
@@ -2452,7 +2452,7 @@
     "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvux7a50ch6gn",
+    "id": "COMxmvux7asz6t7jf",
     "statut": "actif",
     "reference": "BC-2096-0124",
     "date": "2096-03-01",
@@ -2474,7 +2474,7 @@
     "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvux79v3oh8go",
+    "id": "COMxmvux7aiy76ng7",
     "statut": "actif",
     "reference": "BC-2096-0123",
     "date": "2096-03-01",
@@ -2504,7 +2504,7 @@
     "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvux79l1kkxpd",
+    "id": "COMxmvux7a8medqa4",
     "statut": "actif",
     "reference": "BC-2096-0122",
     "date": "2096-03-01",
@@ -2526,7 +2526,7 @@
     "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvux79ay7omj4",
+    "id": "COMxmvux79yg1j8x2",
     "statut": "actif",
     "reference": "BC-2096-0121",
     "date": "2096-03-01",
@@ -2564,7 +2564,7 @@
     "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvux790vmz036",
+    "id": "COMxmvux79nuteixv",
     "statut": "actif",
     "reference": "BC-2096-0120",
     "date": "2096-03-01",
@@ -2594,7 +2594,7 @@
     "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvux78gzu79l6",
+    "id": "COMxmvux793blwt1u",
     "statut": "actif",
     "reference": "BC-2095-0119",
     "date": "2099-06-01",
@@ -2616,7 +2616,7 @@
     "observations": ""
    },
    {
-    "id": "COMxmvux7890ldo6x",
+    "id": "COMxmvux78ux4l4fy",
     "statut": "actif",
     "reference": "BC-2095-0118",
     "date": "2099-06-01",
@@ -2640,7 +2640,7 @@
     "observations": ""
    },
    {
-    "id": "COMxmvux781bolsd6",
+    "id": "COMxmvux78ml6ecu1",
     "statut": "actif",
     "reference": "BC-2095-0117",
     "date": "2099-06-01",
@@ -2661,7 +2661,7 @@
     "statutCommande": "brouillon"
    },
    {
-    "id": "COMxmvux7777tlsbu",
+    "id": "COMxmvux77pax58dn",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "MEDIPLUS",
@@ -2683,7 +2683,7 @@
     "reference": "BC-2026-0017"
    },
    {
-    "id": "COMxmvux76xnjg0um",
+    "id": "COMxmvux77fovwb95",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "CAME",
@@ -2713,7 +2713,7 @@
     "reference": "BC-2026-0016"
    },
    {
-    "id": "COMxmvux76muoht9d",
+    "id": "COMxmvux774wh99ft",
     "statut": "actif",
     "reference": "BC-2098-0116",
     "date": "2098-02-01",
@@ -2734,7 +2734,7 @@
     "statutCommande": "attente_validation"
    },
    {
-    "id": "COMxmvux76kibq1jn",
+    "id": "COMxmvux772jor8m4",
     "statut": "actif",
     "reference": "BC-2098-0115",
     "date": "2098-02-01",
@@ -2755,7 +2755,7 @@
     "statutCommande": "attente_validation"
    },
    {
-    "id": "COMxmvux76i4h23qt",
+    "id": "COMxmvux77063tewk",
     "statut": "actif",
     "reference": "BC-2098-0114",
     "date": "2098-02-01",
@@ -2776,7 +2776,7 @@
     "statutCommande": "attente_validation"
    },
    {
-    "id": "COMxmvux76frq3hne",
+    "id": "COMxmvux76xih3vsd",
     "statut": "actif",
     "reference": "BC-2098-0113",
     "date": "2098-02-01",
@@ -2797,7 +2797,7 @@
     "statutCommande": "attente_validation"
    },
    {
-    "id": "COMxmvux768rc74f3",
+    "id": "COMxmvux76q7gkwyw",
     "statut": "actif",
     "reference": "BC-2098-0112",
     "date": "2098-02-01",
@@ -3393,7 +3393,7 @@
    {
     "nom": "contrôleurs inchangés : la liste est conservée",
     "avant": {
-     "id": "LIVxmvux7cinoozej",
+     "id": "LIVxmvux7dc365arl",
      "statut": "actif",
      "reference": "26LNA-M1",
      "commandeRef": "BC-M",
@@ -3418,7 +3418,7 @@
     },
     "champs": {},
     "apres": {
-     "id": "LIVxmvux7cinoozej",
+     "id": "LIVxmvux7dc365arl",
      "statut": "actif",
      "reference": "26LNA-M1",
      "commandeRef": "BC-M",
@@ -3444,7 +3444,7 @@
    {
     "nom": "contrôleurs réécrits, avec espaces et virgule vide",
     "avant": {
-     "id": "LIVxmvux7cq7im4pf",
+     "id": "LIVxmvux7dkes92he",
      "statut": "actif",
      "reference": "26LNA-M2",
      "commandeRef": "BC-M",
@@ -3473,7 +3473,7 @@
      "montant": "2500"
     },
     "apres": {
-     "id": "LIVxmvux7cq7im4pf",
+     "id": "LIVxmvux7dkes92he",
      "statut": "actif",
      "reference": "26LNA-M2",
      "commandeRef": "BC-M",
@@ -3518,7 +3518,7 @@
      "controlePar": "MAMAN Zoukanéri"
     },
     "bl": {
-     "id": "LIVxmvux7c0q3aj6z",
+     "id": "LIVxmvux7ctttc9r1",
      "statut": "actif",
      "commandeRef": "BC-2026-0001",
      "fournisseur": "NATIFOURN",
@@ -3561,7 +3561,7 @@
      "controlePar": ""
     },
     "bl": {
-     "id": "LIVxmvux7c864ipy1",
+     "id": "LIVxmvux7d1cr6spl",
      "statut": "actif",
      "commandeRef": "BC-2026-0002",
      "fournisseur": "CAME",
@@ -3669,7 +3669,7 @@
    ],
    "livraisons": [
     {
-     "id": "LIVxmvux7cxo28wmr",
+     "id": "LIVxmvux7dtm3tmkt",
      "statut": "actif",
      "reference": "26LNA-X3",
      "commandeRef": "BC-X3",
@@ -3696,7 +3696,7 @@
      "montant": 3250
     },
     {
-     "id": "LIVxmvux7cxopck10",
+     "id": "LIVxmvux7dtm1x2vq",
      "statut": "actif",
      "reference": "26LNA-X2",
      "commandeRef": "BC-X2",
@@ -3722,7 +3722,7 @@
      "montant": 60000
     },
     {
-     "id": "LIVxmvux7cxoci3zi",
+     "id": "LIVxmvux7dtmi8q1g",
      "statut": "actif",
      "reference": "26LNA-X1",
      "commandeRef": "BC-X1",
@@ -3769,7 +3769,7 @@
      "montant": 1400
     },
     {
-     "id": "LIVxmvux7cq7im4pf",
+     "id": "LIVxmvux7dkes92he",
      "statut": "actif",
      "reference": "26LNA-M2",
      "commandeRef": "BC-M",
@@ -3786,7 +3786,7 @@
      "montant": 2500
     },
     {
-     "id": "LIVxmvux7cinoozej",
+     "id": "LIVxmvux7dc365arl",
      "statut": "actif",
      "reference": "26LNA-M1",
      "commandeRef": "BC-M",
@@ -3802,7 +3802,7 @@
      "montant": 1000
     },
     {
-     "id": "LIVxmvux7c864ipy1",
+     "id": "LIVxmvux7d1cr6spl",
      "statut": "actif",
      "commandeRef": "BC-2026-0002",
      "fournisseur": "CAME",
@@ -3815,7 +3815,7 @@
      "lignes": []
     },
     {
-     "id": "LIVxmvux7c0q3aj6z",
+     "id": "LIVxmvux7ctttc9r1",
      "statut": "actif",
      "commandeRef": "BC-2026-0001",
      "fournisseur": "NATIFOURN",

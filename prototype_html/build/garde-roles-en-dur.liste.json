@@ -1,12 +1,6 @@
 {
  "_doc": "ENGENDRÉE par build/garde-roles-en-dur.js --initialiser puis --abaisser : liste blanche DÉCROISSANTE des rôles écrits en dur (PRD M12 clôture annuelle, EF-DRO-2). Ne s'écrit que vers le bas.",
  "sites": {
-  "js/modules/fichiers-ocr.js": {
-   "['admin', 'da']": 1
-  },
-  "js/modules/fichiers.js": {
-   "['admin', 'da']": 1
-  },
   "js/modules/m1-patients.js": {
    "session.role === 'echographiste'": 1,
    "session.role !== 'echographiste'": 1
@@ -26,12 +20,7 @@
    ".role === 'echographiste'": 1
   },
   "js/modules/m7-achats.js": {
-   "['da', 'direction', 'admin']": 1,
-   "['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']": 1,
-   "['comptable', 'stock']": 1
-  },
-  "js/modules/mecef.js": {
-   "['admin', 'da']": 1
+   "['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']": 1
   },
   "js/modules/rapports.js": {
    "['stock']": 1,
@@ -52,12 +41,10 @@
    "['caissier', 'comptable', 'da', 'assistant_comptable']": 1,
    "['comptable', 'da', 'assistant_comptable', 'direction']": 2,
    "['da', 'comptable', 'direction', 'assistant_comptable', 'aide_comptable']": 1,
-   "['da', 'direction']": 1,
    "['comptable', 'da', 'aide_comptable']": 1
   },
   "js/parcours.js": {
-   "['da', 'direction']": 1,
-   "['direction', 'da', 'admin']": 11,
+   "['direction', 'da', 'admin']": 10,
    "['laborantin']": 1,
    "['dm', 'medecin']": 1,
    "['echographiste', 'dm']": 1,

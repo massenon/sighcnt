@@ -120,6 +120,44 @@ void main() {
     });
   });
 
+  group('le compte signataire (lot CLO-3 point 6)', () {
+    final signeLe = DateTime.utc(2026, 11, 14, 8, 30);
+    Map<String, Object?> demande(String par, String role) => {'etat': valEtatDeposee, 'demandePar': par, 'demandeRole': role, 'demandeLe': valInstant(signeLe), 'famille': 'labo_variables', 'cible': 'X'};
+    Map<String, Object?> compte(String nom, String role, {String? cree, String? archive}) =>
+        {'nom': nom, 'role': role, 'statut': archive == null ? 'actif' : 'archive', if (cree != null) '_creeLe': cree, if (archive != null) '_archiveLe': archive};
+
+    test('refus nommés : compte inconnu, autre rôle, créé après la signature, archivé avant', () {
+      expect(valControleSignataire(demande('A', 'laborantin'), [compte('B', 'laborantin')], signeLe)!.code, 'SIGNATAIRE_INCONNU');
+      expect(valControleSignataire(demande('A', 'laborantin'), const [], signeLe)!.code, 'SIGNATAIRE_INCONNU');
+      expect(valControleSignataire(demande('A', 'da'), [compte('A', 'laborantin')], signeLe)!.code, 'SIGNATAIRE_AUTRE_ROLE');
+      expect(valControleSignataire(demande('A', 'laborantin'), [compte('A', 'laborantin', cree: '2026-11-15T00:00:00Z')], signeLe)!.code, 'SIGNATAIRE_CREE_APRES_SIGNATURE');
+      expect(valControleSignataire(demande('A', 'laborantin'), [compte('A', 'laborantin', archive: '2026-11-01T00:00:00Z')], signeLe)!.code, 'SIGNATAIRE_ARCHIVE');
+    });
+
+    test('recevable : le compte existe avec ce rôle (par nom ou nom complet), créé avant, archivé après ou jamais', () {
+      expect(valControleSignataire(demande('A', 'laborantin'), [compte('A', 'laborantin', cree: '2026-01-01T00:00:00Z')], signeLe), isNull);
+      expect(valControleSignataire(demande('Alice', 'laborantin'), [{'nomComplet': 'Alice', 'nom': 'x', 'role': 'laborantin', 'statut': 'actif'}], signeLe), isNull);
+      expect(valControleSignataire(demande('A', 'laborantin'), [compte('A', 'laborantin', archive: '2026-12-01T00:00:00Z')], signeLe), isNull);
+    });
+
+    test('la mère refuse la demande dont le signataire n\'a pas de compte, sans rien valider ; sans registre fourni, le contrôle n\'est pas tenu', () {
+      final lire = lecture({
+        'variablesLabo': [
+          {'id': 'X-variablesLabo', 'statut': 'actif', 'libelle': 'Hb', 'aValider': true}
+        ]
+      });
+      final libelles = {'laborantin': 'Biologiste médical'};
+      final dep = valDeposerValidation('labo_variables', 'X-variablesLabo', role: 'laborantin', acteur: 'Dr KINNOU', maintenant: signeLe, lire: lire, libelles: libelles, motif: 'm').fiche!;
+      final refusee = valAppliquerDemande(dep, maintenant: signeLe.add(const Duration(hours: 1)), lire: lire, libelles: libelles, comptes: const [])!;
+      expect(refusee.verdict.ok, isFalse);
+      expect(refusee.champsDemande['etat'], valEtatRefusee);
+      expect(refusee.champsDemande['resultatCode'], 'SIGNATAIRE_INCONNU');
+      final acceptee = valAppliquerDemande(dep, maintenant: signeLe.add(const Duration(hours: 1)), lire: lire, libelles: libelles, comptes: [compte('Dr KINNOU', 'laborantin')])!;
+      expect(acceptee.verdict.ok, isTrue);
+      expect(valAppliquerDemande(dep, maintenant: signeLe, lire: lire, libelles: libelles)!.verdict.ok, isTrue, reason: 'aucun registre de comptes fourni : outil ou banc de protocole');
+    });
+  });
+
   group('l\'indicateur et l\'alerte', () {
     List<M> demandes() => [
           {'id': 'DV2', 'statut': 'actif', 'etat': valEtatDeposee, 'famille': 'actes', 'cible': 'a', 'demandePar': 'B', 'demandeLe': valInstant(signe.add(const Duration(hours: 5)))},
@@ -139,7 +177,9 @@ void main() {
 
     test('l\'alerte suit le délai LU de la base : au-delà, jamais en deçà ; délai absent ou nul : aucune alerte inventée', () {
       final t = signe.add(const Duration(hours: 25));
-      expect([for (final d in valDemandesEnRetard(demandes(), t, valDelaiAlerteDefautHeures)) d['id']], ['DV1']);
+      expect(valDelaiAlerteDefautHeures, 4);
+      // Défaut semé 4 heures (Direction, 16/11/2026) : six heures après la signature de DV1, DV1 est en retard et DV2 (signée cinq heures plus tard) ne l'est pas.
+      expect([for (final d in valDemandesEnRetard(demandes(), signe.add(const Duration(hours: 6)), valDelaiAlerteDefautHeures)) d['id']], ['DV1']);
       expect([for (final d in valDemandesEnRetard(demandes(), t, 30)) d['id']], isEmpty);
       expect([for (final d in valDemandesEnRetard(demandes(), t, 1)) d['id']], ['DV1', 'DV2']);
       expect(valDemandesEnRetard(demandes(), t, null), isEmpty);
@@ -162,9 +202,9 @@ void main() {
       expect(s.plusAncienne, const Duration(hours: 3), reason: 'la demande de prix est la plus ancienne datée à l\'heure ; l\'import daté du seul jour ne donne pas d\'âge');
     });
 
-    test('le délai d\'alerte est un paramètre déclaré, semé à 24, fermé au téléphone', () {
+    test('le délai d\'alerte est un paramètre déclaré, semé à 4 heures (Direction, 16/11/2026), fermé au téléphone', () {
       final d = definitionDeParametre(valCleDelaiAlerteHeures)!;
-      expect([d.defaut, d.type, d.mobile], [24, TypeParametre.entier, false]);
+      expect([d.defaut, d.type, d.mobile], [4, TypeParametre.entier, false]);
       expect(parFamillesJamaisMobile, contains(d.famille));
     });
   });

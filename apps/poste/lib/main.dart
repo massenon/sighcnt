@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
+import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, gesInstaller, droitsDepuisMatrice, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
 import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
@@ -209,6 +209,10 @@ Future<void> main() async {
   final navigation = await DonneesNavigation.chargerAssets();
   // LOT TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC, lu À CHAUD (une fiche modifiée vaut aussitôt).
   tarInstallerDroitDecider((role) => navigation.aChaud(magasin).matrice.droitGeste(role, tarGesteDecider));
+  // LOT CLO-3 (Direction, 16/11/2026) : TOUT geste réservé migré (réglages, validation fiscale, date passée) est lu À CHAUD en UN point du domaine (`gesDroit`), jamais une liste de rôles.
+  gesInstaller(
+      lecture: (role, geste) => navigation.aChaud(magasin).matrice.droitGeste(role, geste),
+      roles: (geste) => navigation.aChaud(magasin).matrice.matriceGestes.rolesAvec(geste));
   SessionPoste? session;
   ServiceFichiers? serviceFichiers;
   // LA LECTURE OCR DES SCANS, PRÉPARÉE (lot OCR-prep) : AUCUN moteur n'est branché ni embarqué. Sans moteur, l'état de chaque scan dit « aucun moteur d'OCR installé sur ce poste » et rien ne se met en

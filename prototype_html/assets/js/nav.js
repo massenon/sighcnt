@@ -233,6 +233,20 @@
        rôle. Le moteur revérifie (refus nommé qui cite le droit) ; la commande est ABSENTE sans le droit ; le validateur enregistré est l'agent de la session. */
     { id: 'valider_commande_stock', libelle: 'Valider une commande de stock gros (RG-04) avant sa transmission au fournisseur', module: 'M7', ecran: 'm7-commandes',
       rolesDefaut: ['da'] },
+    /* Lot CLO-3 point 3 (Direction, 16/11/2026, section AH point 4) : qui ARBITRE un bon de besoins et qui TRAITE un besoin accordé (engagement budgétaire, achat ou distribution) sont des droits
+       de la fiche RBAC, jamais des noms de rôles écrits dans l'écran, le moteur ou la tâche de notification. Défauts semés = les listes d'aujourd'hui (aucun changement de comportement). */
+    { id: 'arbitrer_besoins', libelle: 'Arbitrer un bon de besoins (valider, rejeter avec motif, demander un complément)', module: 'M7', ecran: 'm7-besoins',
+      rolesDefaut: ['da', 'direction', 'admin'] },
+    { id: 'traiter_besoins_accordes', libelle: 'Traiter un besoin accordé (engagement budgétaire et décaissement, achat ou distribution) : reçoit la tâche « besoin accordé »', module: 'M7', ecran: 'm7-besoins',
+      rolesDefaut: ['comptable', 'stock'] },
+    /* Lot CLO-3 point 4 (Direction, 16/11/2026, section AH point 5 et AQ point 17) : UN DROIT PROPRE PAR RÉGLAGE, jamais une liste de rôles écrite dans le moteur ou l'écran. Les trois réglages
+       réservés « administrateur et Directrice Administrative » (taille maximale des fichiers, lecture des scans OCR, mode de certification MECeF), la validation de la configuration fiscale
+       (ex `ROLES_VALIDATION`) et l'autorité de dater un prix dans le passé (ex `ROLES_DATE_PASSEE`). Défauts semés = les listes d'avant le lot ; aucun de ces droits n'ouvre d'écran. */
+    { id: 'regler_fichiers', libelle: 'Régler la taille maximale des fichiers déposés', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
+    { id: 'regler_lecture_scans', libelle: 'Régler la lecture des scans par machine (OCR) de la clinique', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
+    { id: 'regler_mode_mecef', libelle: 'Régler le mode de certification MECeF (boîtier physique ou e-MECeF)', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
+    { id: 'valider_configuration_fiscale', libelle: 'Valider la configuration fiscale (obligations, taux, entêtes, rubriques)', module: null, ecran: null, rolesDefaut: ['direction', 'da', 'admin'] },
+    { id: 'dater_prix_passe', libelle: 'Dater un changement de prix dans le passé (date d\u2019effet antérieure à aujourd\u2019hui, avec un motif)', module: null, ecran: null, rolesDefaut: ['da', 'direction'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

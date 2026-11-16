@@ -50,6 +50,8 @@ void main() {
   final besoins = lire('achats-besoins');
   final cmd = lire('achats-commandes');
   final rec = lire('achats-reception');
+  // Les droits de la fiche (geste réservé), lus de rbac.json : jamais une liste de rôles du moteur.
+  final matriceGestes = MatriceDroits.depuisJson((jsonDecode(File('../rbac/data/rbac.json').readAsStringSync()) as Map).cast<String, Object?>());
 
   group('besoins : les quatre vues d\'une collection', () {
     final vues = (besoins['vues']! as Map).cast<String, Object?>();
@@ -63,7 +65,7 @@ void main() {
     for (final c in liste(vues['cas'])) {
       final role = '${c['role']}', moi = '${c['nom']}';
       test('$role (agent $moi)', () {
-        final offertes = vuesOffertes(role: role, droitVoir: true);
+        final offertes = vuesOffertes(role: role, droitVoir: true, arbitre: matriceGestes.droitGeste(role, gesteArbitrerBesoins));
         final onglets = liste(c['onglets']);
         expect([for (final o in onglets) o['libelle']],
             [for (final v in offertes) libelles[v]]);
@@ -97,13 +99,16 @@ void main() {
       });
     }
     test('un profil qui n\'achète ni n\'arbitre ne voit que ses demandes', () {
-      expect(vuesOffertes(role: 'medecin', droitVoir: true), ['miennes']);
-      expect(vuesOffertes(role: 'comptable', droitVoir: true),
+      bool arb(String r) => matriceGestes.droitGeste(r, gesteArbitrerBesoins);
+      expect(vuesOffertes(role: 'medecin', droitVoir: true, arbitre: arb('medecin')), ['miennes']);
+      expect(vuesOffertes(role: 'comptable', droitVoir: true, arbitre: arb('comptable')),
           ['miennes', 'achats', 'tous']);
-      expect(vuesOffertes(role: 'da', droitVoir: true),
+      expect(vuesOffertes(role: 'da', droitVoir: true, arbitre: arb('da')),
           ['miennes', 'arbitrage', 'achats', 'tous']);
-      expect(vuesOffertes(role: 'comptable', droitVoir: false),
+      expect(vuesOffertes(role: 'comptable', droitVoir: false, arbitre: arb('comptable')),
           ['miennes', 'achats']);
+      // Le droit est celui de la FICHE : qui n'arbitrait pas d'origine ne voit pas l'onglet, qui l'a reçoit la vue.
+      expect(vuesOffertes(role: 'medecin', droitVoir: true, arbitre: true), ['miennes', 'arbitrage']);
     });
   });
 
@@ -131,7 +136,8 @@ void main() {
             quoi: quoi,
             motif: '${a['motif']}',
             utilisateur: 'TAKI Alimatou',
-            maintenant: '2026-10-30T10:00:00.000Z');
+            maintenant: '2026-10-30T10:00:00.000Z',
+            postesTraitants: matriceGestes.matriceGestes.rolesAvec(gesteTraiterBesoinsAccordes));
         final obtenu = {...avant, ...r.patch}..remove('arbitreLe');
         memes(obtenu, apres, 'bon');
         expect(r.message, toast['message']);
@@ -143,7 +149,7 @@ void main() {
           memes(mienne, n, 'notification ${n['poste']}');
         }
         if (quoi == Arbitrage.valider) {
-          // La validation informe DEUX postes — le comptable ET le gestionnaire de stock.
+          // La validation informe les postes qui détiennent le geste « traiter un besoin accordé » (d'origine le comptable ET le gestionnaire de stock).
           expect({for (final n in r.notifications) n['poste']}, {'comptable', 'stock'});
         } else {
           expect(r.notifications, isEmpty);
@@ -300,6 +306,26 @@ void main() {
         expect(liste(v['toasts']).first['message'], 'Commande validée par ${patch['valideePar']}.');
       });
     }
+    test('la garde RG-04 du magasin : un statut validé ne naît que du geste, une validation posée est figée, la poursuite du circuit passe', () {
+      final attente = {'id': 'C1', 'reference': 'BC-1', 'statutCommande': 'attente_validation'};
+      final validee = {'id': 'C2', 'reference': 'BC-2', 'statutCommande': 'validee', 'valideePar': 'A', 'dateValidation': '2026-11-16'};
+      String? g(String op, Map<String, Object?> apres, Map<String, Object?>? avant) => gardeCommandeRg04(op, apres, avant);
+      // écritures directes refusées, nommées
+      for (final st in ['validee', 'transmise', 'livree', 'soldee']) {
+        expect(g('modifier', {...attente, 'statutCommande': st}, attente), contains('COMMANDE_NON_VALIDEE'), reason: st);
+      }
+      expect(g('modifier', {...attente, 'valideePar': 'X'}, attente), contains('COMMANDE_NON_VALIDEE'));
+      expect(g('inserer', {'statutCommande': 'transmise'}, null), contains('COMMANDE_NON_VALIDEE'));
+      // le geste : de « en attente » vers « validée » avec son validateur
+      expect(g('modifier', {...attente, 'statutCommande': 'validee', 'valideePar': 'A', 'dateValidation': '2026-11-16'}, attente), isNull);
+      // figée, mais le circuit se poursuit
+      expect(g('modifier', {...validee, 'valideePar': 'B'}, validee), contains('VALIDATION_COMMANDE_FIGEE'));
+      expect(g('modifier', {...validee, 'dateValidation': '2026-01-01'}, validee), contains('VALIDATION_COMMANDE_FIGEE'));
+      expect(g('modifier', {...validee, 'statutCommande': 'transmise'}, validee), isNull);
+      // un brouillon, une modification de lignes : libres
+      expect(g('modifier', {...attente, 'montant': 5}, attente), isNull);
+      expect(g('archiver', validee, validee), isNull);
+    });
     test('le refus de validation dit le droit, et une validation posée ne se réécrit pas', () {
       String refus() {
         try {

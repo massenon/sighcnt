@@ -10,6 +10,7 @@ library;
 
 import 'dart:typed_data';
 
+import '../droits/gestes_a_chaud.dart';
 import '../droits/matrice.dart' show Droit;
 import '../format/diacritiques.dart';
 import '../format/js.dart' show arrondiJs, toFixedJs;
@@ -183,7 +184,9 @@ bool fichierTailleMaxReglee(Map<String, Object?>? reglage) {
 /// Les profils qui règlent la taille maximale : l'administrateur et la Directrice Administrative.
 const List<String> fichierRolesReglage = ['admin', 'da'];
 
-bool fichierPeutRegler(String role) => fichierRolesReglage.contains(role);
+/// Lot CLO-3 : le réglage est le geste réservé [fichierGesteRegler] de la fiche RBAC ; [fichierRolesReglage] n'est que son défaut d'origine (manifeste `N.GESTES`).
+const String fichierGesteRegler = 'regler_fichiers';
+bool fichierPeutRegler(String role) => gesDroit(role, fichierGesteRegler, fichierRolesReglage);
 
 /// Règle la taille maximale (en octets). Réservé à l'administrateur et à la DAF, motivé, borné. Rend la nouvelle valeur ou le refus nommé ; l'écriture et le journal
 /// sont à l'appelant (le magasin).

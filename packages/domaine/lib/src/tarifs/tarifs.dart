@@ -12,6 +12,7 @@
 // Doctrine : fonctions PURES. Aucune date « du jour » n'est lue sur l'horloge (la date d'une pièce ou le jour du geste est toujours fournie) ; l'appelant écrit, journalise
 // (RG-12) et notifie. Un refus se NOMME (code, motif, geste). « Absent » n'est pas zéro : une prestation sans version valide à la date ne se facture pas.
 
+import '../droits/gestes_a_chaud.dart';
 import '../referentiels/regles.dart' show joursEntre;
 
 part 'tarifs_produits.dart';
@@ -26,9 +27,10 @@ const List<String> tarCollectionsReferentiel = [tarCollectionTarifs, tarCollecti
 
 /// Qui DÉCIDE un changement de prix (jamais le droit d'éditer l'écran) : le geste réservé [tarGesteDecider] de la fiche RBAC (lot TARIF-FIX-2, Direction du 16/11/2026 : « pas de
 /// rôle ni validation en dur dans le code »). [tarRolesValidation] n'est que le DÉFAUT D'ORIGINE du manifeste (`N.GESTES`, `rolesDefaut`), vérifié égal à `rbac.json` par un test du
-/// poste ; il ne vaut que tant qu'aucune matrice n'est installée ([tarInstallerDroitDecider]). Qui peut dater dans le passé (T6, 11/11/2026) reste une liste (lot CLO-3).
+/// poste ; il ne vaut que tant qu'aucune matrice n'est installée ([tarInstallerDroitDecider]). Qui peut dater dans le passé (T6, 11/11/2026) est le geste réservé [tarGesteDatePassee] (lot CLO-3, ex liste), lu en un point par `gesDroit`.
 const String tarGesteDecider = 'decider_prix';
 const List<String> tarRolesValidation = ['admin', 'da', 'direction'];
+const String tarGesteDatePassee = 'dater_prix_passe';
 const List<String> tarRolesDatePassee = ['da', 'direction'];
 
 /// La durée de validité d'une pro-forma : défaut proposé et bornes (T5, 11/11/2026 : « à valider », réglable en base).
@@ -819,7 +821,7 @@ class ContexteTarif {
   final PiecesTarif pieces;
 
   bool get peutDecider => tarPeutDecider(role);
-  bool get peutDatePassee => tarRolesDatePassee.contains(role);
+  bool get peutDatePassee => gesDroit(role, tarGesteDatePassee, tarRolesDatePassee);
 }
 
 bool Function(String role)? _droitDecider;
@@ -830,7 +832,7 @@ void tarInstallerDroitDecider(bool Function(String role)? lecture) => _droitDeci
 /// Le rôle détient-il le geste réservé « Décider un changement de prix » ? Lu dans la fiche RBAC installée, sinon le défaut d'origine du manifeste.
 bool tarPeutDecider(String role) => _droitDecider != null ? _droitDecider!(role) : tarRolesValidation.contains(role);
 
-String tarProfilsDatePassee(Map<String, String> libelles) => tarRolesDatePassee.map((r) => _libelleRole(r, libelles)).join(' et ');
+String tarProfilsDatePassee(Map<String, String> libelles) => gesRoles(tarGesteDatePassee, tarRolesDatePassee).map((r) => _libelleRole(r, libelles)).join(' et ');
 
 /// Le refus d'un fileul : même code que `ApplicateurConfiguration` et le centre des validations (famille R, la mère seule écrit).
 RefusTarif tarRefusFileul() => const RefusTarif('CONFIGURATION_DE_LA_MERE', 'Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.',

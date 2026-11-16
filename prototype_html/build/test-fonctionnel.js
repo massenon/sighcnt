@@ -13182,8 +13182,12 @@ async function viderMessages(page) {
     const a = await compter();
     verifier('Sur un registre comptable, le sélecteur est dans la BARRE SUPÉRIEURE et non plus dans l’en-tête de la page', a.dansBarre && !a.dansPage, JSON.stringify(a));
     const defaut = await page.evaluate(() => ({ choisi: window.SIGH.exercice.choisi(), parDefaut: window.SIGH.exercice.parDefaut(),
-      ouverts: window.SIGH.exercice.liste().filter((x) => x.etat === 'ouvert').map((x) => x.annee) }));
-    verifier('Sans choix, l’exercice par défaut est l’exercice OUVERT le plus récent', defaut.choisi === Math.max.apply(null, defaut.ouverts) && defaut.parDefaut === defaut.choisi, JSON.stringify(defaut));
+      ouverts: window.SIGH.exercice.liste().filter((x) => x.etat === 'ouvert').map((x) => x.annee), duJour: window.SIGH.core.aujourdhui().getFullYear(),
+      existe: window.SIGH.exercice.liste().some((x) => x.annee === window.SIGH.core.aujourdhui().getFullYear()) }));
+    /* Lot CLO-3 point 5 (Direction, 15/11/2026, section AH point 5) : l'assertion figeait l'ancien défaut (« l'exercice OUVERT le plus récent ») ; le défaut est désormais l'exercice qui
+       CONTIENT la date du jour (l'exercice suivant reste choisissable), l'ancien repli (ouvert le plus récent) ne valant que si l'exercice du jour n'existe pas. */
+    verifier('Sans choix, l’exercice par défaut est celui qui CONTIENT la date du jour (lot CLO-3, remplace « l’exercice ouvert le plus récent »), à défaut l’ouvert le plus récent', defaut.parDefaut === defaut.choisi
+      && defaut.choisi === (defaut.existe ? defaut.duJour : Math.max.apply(null, defaut.ouverts)), JSON.stringify(defaut));
     verifier('Les boutons « exercice précédent » et « suivant » existent quand l’exercice voisin existe', a.prec, JSON.stringify(a));
 
     const absent = await page.evaluate(async () => {
@@ -20333,7 +20337,7 @@ async function viderMessages(page) {
       const na = (code, d) => PR.tarifALaDate(code, d || null, false).montant;
       const en = (role) => S.setSession({ role: role, nom: 'SONDE117 ' + role, nomComplet: 'SONDE117 ' + role, fonction: role, identifiant: 's117.' + role, secteur: 'DIR' });
       const prop = (o) => PR.proposerTarif(Object.assign({ etatAssure: 'unique', motif: 'Sonde 117' }, o));
-      const s = { roles: PR.ROLES_DATE_PASSEE };
+      const s = { roles: PR.rolesDatePassee() };
       en('da');
       s.sansCase = prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1) });
       const avecCase = prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1), datePassee: true });
@@ -28358,6 +28362,103 @@ async function viderMessages(page) {
     await attendreEcritures();
     const fin210 = await page.evaluate(() => ({ det: window.SIGH.nav.rolesAvecGeste('valider_commande_stock').slice().sort(), restes: window.SIGH.store.collection('commandes').active().filter((c) => /^BC-S210-/.test(c.reference)).length }));
     verifier('État restauré : le droit est retiré du comptable (da seul), aucune commande de la sonde active (archivées, RG-14)', JSON.stringify(fin210.det) === JSON.stringify(['da']) && fin210.restes === 0, JSON.stringify(fin210));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 211 : lot CLO-3 points 3 et 4, un DROIT PROPRE par geste au lieu d’une liste de rôles : arbitrer les besoins et traiter les besoins accordés (la tâche vise les détenteurs, jamais des rôles écrits), régler les fichiers, la lecture des scans et le mode MECeF, valider la configuration fiscale, dater un prix dans le passé ; défauts semés = les listes d’avant, la fiche RBAC accorde et retire dans les deux sens');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN211', nomComplet: 'ADMIN211', fonction: 'direction', identifiant: 's211.admin', secteur: 'DIR' });
+    await ouvrir('m7-besoins.html');
+    const defauts = await page.evaluate(() => {
+      const N = window.SIGH.nav, R = (g) => N.rolesAvecGeste(g).slice().sort();
+      const o = {}; ['arbitrer_besoins', 'traiter_besoins_accordes', 'regler_fichiers', 'regler_lecture_scans', 'regler_mode_mecef', 'valider_configuration_fiscale', 'dater_prix_passe'].forEach((g) => { o[g] = { declare: !!N.geste(g), roles: R(g) }; });
+      return o;
+    });
+    const att = { arbitrer_besoins: ['admin', 'da', 'direction'], traiter_besoins_accordes: ['comptable', 'stock'], regler_fichiers: ['admin', 'da'], regler_lecture_scans: ['admin', 'da'], regler_mode_mecef: ['admin', 'da'],
+      valider_configuration_fiscale: ['admin', 'da', 'direction'], dater_prix_passe: ['da', 'direction'] };
+    verifier('Les sept gestes sont au manifeste et leurs défauts SEMÉS sont les listes d’avant le lot (aucun changement de comportement)',
+      Object.keys(att).every((g) => defauts[g].declare && JSON.stringify(defauts[g].roles) === JSON.stringify(att[g])), JSON.stringify(defauts));
+    /* arbitrer : un bon à arbitrer ; le médecin n'a pas l'onglet, la fiche le lui accorde (puis retire) ; la tâche « besoin accordé » vise les détenteurs de traiter_besoins_accordes */
+    const bon = await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('besoins', { module: 'M7', entite: 'BonExpressionBesoins' });
+      const p = S.collection('produits').active()[0];
+      const r = col.insert({ reference: 'BEB-S211-1', date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), service: 'Accueil', demandeur: 'Sonde 211', etape: 'validation_da', motif: 'Sonde 211', montantEstime: 1000,
+        lignes: [{ produitId: p.id, produit: p.designation, unite: p.unite, quantiteDemandee: 2, quantiteAccordee: null }] });
+      return r.record.id;
+    });
+    await attendreEcritures();
+    const onglets = async (role) => {
+      await poserSessionServeur({ role, nom: role.toUpperCase() + '211', nomComplet: role.toUpperCase() + '211', fonction: role, identifiant: 's211.' + role, secteur: 'DIR' });
+      await ouvrir('m7-besoins.html');
+      return page.evaluate(() => [...document.querySelectorAll('#page-content [role=tab]')].map((t) => t.textContent.replace(/\s+/g, ' ').trim()));
+    };
+    const avantMed = await onglets('medecin');
+    const avantDa = await onglets('da');
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN211', nomComplet: 'ADMIN211', fonction: 'direction', identifiant: 's211.admin', secteur: 'DIR' });
+    await page.evaluate(() => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'medecin')[0];
+      const g = Object.assign({}, (f && f.droitsGestes) || {}, { arbitrer_besoins: true, traiter_besoins_accordes: true });
+      if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'medecin', droitsGestes: g, libelleOrigine: 'Médecin' }); N.invaliderRbac(); });
+    const apresMed = await onglets('medecin');
+    const res = await page.evaluate((id) => {
+      const S = window.SIGH.store, N = window.SIGH.nav;
+      const avant = S.collection('notifications').all().length;
+      /* le geste d'arbitrage de l'écran : on rejoue ce qu'il fait (informerAchat lit rolesAvecGeste) via la même source */
+      return { detenteurs: N.rolesAvecGeste('traiter_besoins_accordes').slice().sort(), arbitres: N.rolesAvecGeste('arbitrer_besoins').slice().sort(), nNotifs: avant };
+    }, bon);
+    verifier('Arbitrer les besoins : le médecin n’a PAS l’onglet « Arbitrage » d’origine, la fiche RBAC le lui accorde (l’onglet paraît) ; la liste des détenteurs de « traiter un besoin accordé » (cible de la tâche) suit la fiche (comptable, médecin, stock)',
+      !avantMed.some((t) => /Arbitrage/.test(t)) && avantDa.some((t) => /Arbitrage/.test(t)) && apresMed.some((t) => /Arbitrage/.test(t))
+      && JSON.stringify(res.detenteurs) === JSON.stringify(['comptable', 'medecin', 'stock']) && res.arbitres.indexOf('medecin') >= 0, JSON.stringify({ avantMed, avantDa, apresMed, res }));
+    /* la tâche : valider un besoin depuis l'écran crée une notification PAR détenteur */
+    await poserSessionServeur({ role: 'da', nom: 'DA211', nomComplet: 'DA211', fonction: 'da', identifiant: 's211.da2', secteur: 'DIR' });
+    await ouvrir('m7-besoins.html');
+    const ongletArb = await page.evaluate(async (ref) => {
+      const t = [...document.querySelectorAll('#page-content [role=tab]')].find((x) => /Arbitrage/.test(x.textContent)); if (t) t.click();
+      await new Promise((r) => setTimeout(r, 300));
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(ref) >= 0);
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => /Valider le besoin/.test(x.getAttribute('title') || x.getAttribute('aria-label') || ''));
+      if (b) b.click();
+      await new Promise((r) => setTimeout(r, 300));
+      const ok = [...document.querySelectorAll('.modal button, [role=dialog] button')].find((x) => /Valider et informer/.test(x.textContent));
+      if (ok) ok.click();
+      await new Promise((r) => setTimeout(r, 400));
+      const S = window.SIGH.store;
+      return { ligne: !!tr, bouton: !!b, postes: S.collection('notifications').all().filter((n) => n.type === 'besoin_accorde' && n.reference === ref).map((n) => n.poste).sort() };
+    }, 'BEB-S211-1');
+    verifier('La validation du besoin informe EXACTEMENT les détenteurs du geste « traiter un besoin accordé » (comptable, médecin, stock), la liste n’est écrite nulle part dans l’écran',
+      ongletArb.ligne && ongletArb.bouton && JSON.stringify(ongletArb.postes) === JSON.stringify(['comptable', 'medecin', 'stock']), JSON.stringify(ongletArb));
+    /* réglages : un droit propre par réglage, retiré à l'administrateur, accordé au comptable */
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN211', nomComplet: 'ADMIN211', fonction: 'direction', identifiant: 's211.admin', secteur: 'DIR' });
+    const reg = await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav, PR = window.SIGH.parcours, col = S.collection('rbac');
+      const poser = (role, g) => { const f = col.all().filter((x) => x.role === role)[0]; const gg = Object.assign({}, (f && f.droitsGestes) || {}, g); if (f) col.update(f.id, { droitsGestes: gg }); else col.insert({ role, droitsGestes: gg, libelleOrigine: role }); N.invaliderRbac(); };
+      const lire = () => ({ adminFichiers: N.droitGeste('admin', 'regler_fichiers'), adminScans: N.droitGeste('admin', 'regler_lecture_scans'), adminMecef: N.droitGeste('admin', 'regler_mode_mecef'),
+        adminFiscal: N.droitGeste('admin', 'valider_configuration_fiscale'), comptaFichiers: N.droitGeste('comptable', 'regler_fichiers'), comptaPasse: N.droitGeste('comptable', 'dater_prix_passe') });
+      const avant = lire();
+      poser('admin', { regler_fichiers: false, regler_mode_mecef: false, valider_configuration_fiscale: false });
+      poser('comptable', { regler_fichiers: true, dater_prix_passe: true });
+      const apres = lire();
+      /* le moteur suit la fiche : l'administrateur ne valide plus la configuration fiscale (refus nommé), la liste des profils du refus dit qui la détient */
+      const refusFiscal = PR.configurationFiscale ? null : null;
+      const CF = window.SIGH.configurationFiscale;
+      const ctl = CF.validerObligations ? CF.validerObligations() : null;
+      const profilsPasse = PR.profilsDatePassee();
+      poser('admin', { regler_fichiers: true, regler_mode_mecef: true, valider_configuration_fiscale: true });
+      poser('comptable', { regler_fichiers: false, dater_prix_passe: false });
+      return { avant, apres, refus: ctl && (ctl.code || (ctl.ok === false ? 'refus' : null)), profilsPasse, fin: lire() };
+    });
+    verifier('Un droit PROPRE par réglage : d’origine administrateur et DAF (fichiers, scans, MECeF), Direction, DAF et administrateur (configuration fiscale) ; la fiche RBAC retire à l’administrateur et accorde au comptable, DANS LES DEUX SENS, et le moteur suit (validation fiscale refusée à l’administrateur, profils de la date passée dérivés du droit) ; état restauré',
+      reg.avant.adminFichiers && reg.avant.adminScans && reg.avant.adminMecef && reg.avant.adminFiscal && !reg.avant.comptaFichiers && !reg.avant.comptaPasse
+      && !reg.apres.adminFichiers && reg.apres.adminScans && !reg.apres.adminMecef && !reg.apres.adminFiscal && reg.apres.comptaFichiers && reg.apres.comptaPasse
+      && reg.refus === 'VALIDATION_RESERVEE' && /Comptable/.test(reg.profilsPasse) && reg.fin.adminFichiers && reg.fin.adminMecef && reg.fin.adminFiscal && !reg.fin.comptaFichiers && !reg.fin.comptaPasse, JSON.stringify(reg));
+    /* restauration : le droit du médecin retiré, le bon archivé */
+    await page.evaluate((id) => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'medecin')[0];
+      if (f) { const g = Object.assign({}, f.droitsGestes || {}); delete g.arbitrer_besoins; delete g.traiter_besoins_accordes; col.update(f.id, { droitsGestes: g }); }
+      N.invaliderRbac();
+      S.collection('besoins').active().filter((b) => /^BEB-S211-/.test(b.reference)).forEach((b) => S.collection('besoins').archive(b.id, 'restauration de la sonde 211'));
+      S.collection('notifications').active().filter((n) => n.type === 'besoin_accorde' && /^BEB-S211-/.test(n.reference || '')).forEach((n) => S.collection('notifications').archive(n.id, 'restauration de la sonde 211')); }, bon);
+    await attendreEcritures();
+    const fin211 = await page.evaluate(() => ({ det: window.SIGH.nav.rolesAvecGeste('traiter_besoins_accordes').slice().sort(), arb: window.SIGH.nav.rolesAvecGeste('arbitrer_besoins').slice().sort() }));
+    verifier('État restauré : détenteurs d’origine (comptable et stock ; admin, da et direction)', JSON.stringify(fin211.det) === JSON.stringify(['comptable', 'stock']) && JSON.stringify(fin211.arb) === JSON.stringify(['admin', 'da', 'direction']), JSON.stringify(fin211));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CLO-3 FIN */

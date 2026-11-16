@@ -186,7 +186,7 @@ void main() {
       expect({for (final x in notifs) x['poste']}, {'comptable', 'stock'});
       expect(notifs.every((x) => x['type'] == 'besoin_accorde' && x['reference'] == 'BEB-TEST-1'), isTrue);
       expect(notifs.every((x) => x['lue'] == false), isTrue);
-      expect(find.textContaining('le comptable et le gestionnaire de stock sont informés'),
+      expect(find.textContaining('les postes qui traitent les besoins accordés sont informés'),
           findsOneWidget);
     });
 

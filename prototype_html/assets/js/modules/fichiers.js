@@ -102,8 +102,8 @@
     var r = S.reglage('documentsBornes', null);
     return !!(r && Number(r.tailleMax) > 0);
   }
-  var ROLES_REGLAGE = ['admin', 'da'];
-  function peutRegler() { var s = S.session() || {}; return ROLES_REGLAGE.indexOf(s.role) >= 0; }
+  /* Lot CLO-3 : le réglage est le geste réservé `regler_fichiers` de la fiche RBAC (défaut : administrateur et Directrice Administrative), jamais une liste de rôles écrite ici. */
+  function peutRegler() { var s = S.session() || {}, N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(s.role, 'regler_fichiers')); }
   /** Pose la taille maximale (en octets). Réservé à l'administrateur et à la Directrice Administrative, motivé, borné, journalisé. */
   function definirTailleMax(octets, motif) {
     if (!peutRegler()) return refus('REGLAGE_RESERVE', 'la taille maximale des fichiers se règle par l’administrateur ou la Directrice Administrative', 'Demander le réglage à l’un d’eux.');

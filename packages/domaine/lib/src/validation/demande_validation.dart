@@ -19,11 +19,11 @@ import 'validation.dart';
 const String valCollectionDemandes = 'demandesValidation';
 
 /// Le délai, en HEURES, au-delà duquel une décision toujours « en attente de la mère » déclenche une alerte (jamais un blocage). Réglage de clinique lu de la base ;
-/// défaut semé 24 (proposition à valider, `DECISIONS-A-VALIDER.md` section AG).
+/// défaut semé 4 (Direction, 16/11/2026, lot CLO-3 ; c'était 24, proposition de la section AG).
 const String valCleDelaiAlerteHeures = 'securite.delaiAlerteDecisionEnAttenteHeures';
 
-/// Le défaut SEMÉ de [valCleDelaiAlerteHeures] (la valeur lue en vigueur vient de la base).
-const int valDelaiAlerteDefautHeures = 24;
+/// Le défaut SEMÉ de [valCleDelaiAlerteHeures] (la valeur lue en vigueur vient de la base). 4 heures : Direction, 16/11/2026 (lot CLO-3, section AR), qui REMPLACE la proposition de 24 heures.
+const int valDelaiAlerteDefautHeures = 4;
 
 const String valEtatDeposee = 'deposee', valEtatAppliquee = 'appliquee', valEtatRefusee = 'refusee';
 
@@ -110,6 +110,39 @@ class ApplicationDemandeValidation {
   final Map<String, Object?> champsDemande;
 }
 
+/// Le contrôle du compte signataire d'une décision déposée par un fileul (lot CLO-3 point 6) : le compte nommé par la demande ([demandePar], par `nom` ou `nomComplet`) EXISTE à la mère,
+/// porte le rôle SIGNÉ ([demandeRole]) et n'a été ni créé après la signature ni archivé avant elle. Refus nommés : `SIGNATAIRE_INCONNU`, `SIGNATAIRE_AUTRE_ROLE`,
+/// `SIGNATAIRE_CREE_APRES_SIGNATURE`, `SIGNATAIRE_ARCHIVE`. `null` : le compte est recevable. LIMITE DITE : le compte ne garde pas l'historique de ses changements de rôle ; c'est le
+/// rôle porté par le compte à la mère au moment de l'application qui est comparé (un changement de rôle entre la signature et l'application n'est pas détecté).
+RefusValidation? valControleSignataire(Map<String, Object?> demande, Iterable<Map<String, Object?>> comptes, DateTime signeLe) {
+  final nom = '${demande['demandePar']}', role = '${demande['demandeRole']}';
+  final memes = [
+    for (final c in comptes)
+      if ('${c['nom']}' == nom || '${c['nomComplet'] ?? ''}' == nom) c
+  ];
+  if (memes.isEmpty) {
+    return RefusValidation('SIGNATAIRE_INCONNU', 'La décision est signée par « $nom » : aucun compte de ce nom n\u2019existe à la mère.', 'Faire créer le compte à la mère, puis redéposer la décision.');
+  }
+  final avecRole = [for (final c in memes) if ('${c['role']}' == role) c];
+  if (avecRole.isEmpty) {
+    return RefusValidation('SIGNATAIRE_AUTRE_ROLE', 'Le compte de « $nom » ne porte pas le rôle « $role » signé sur la décision.', 'Redéposer la décision sous le rôle que le compte porte réellement.');
+  }
+  DateTime? lu(Object? v) => v == null ? null : DateTime.tryParse('$v');
+  final recevables = [
+    for (final c in avecRole)
+      if (!((lu(c['_creeLe']) ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true)).toUtc().isAfter(signeLe.toUtc())) &&
+          !(c['statut'] == 'archive' && (lu(c['_archiveLe'])?.toUtc().isBefore(signeLe.toUtc()) ?? false)))
+        c
+  ];
+  if (recevables.isEmpty) {
+    final cree = avecRole.any((c) => (lu(c['_creeLe'])?.toUtc().isAfter(signeLe.toUtc()) ?? false));
+    return cree
+        ? RefusValidation('SIGNATAIRE_CREE_APRES_SIGNATURE', 'Le compte de « $nom » a été créé après la signature de la décision : elle ne peut pas lui être attribuée.', 'Redéposer la décision depuis le compte.')
+        : RefusValidation('SIGNATAIRE_ARCHIVE', 'Le compte de « $nom » était archivé à la date de la signature.', 'Faire rétablir le compte, puis redéposer la décision.');
+  }
+  return null;
+}
+
 /// La MÈRE applique une demande « déposée » : mêmes contrôles que le geste direct, sous le rôle et le nom de l'AUTEUR, à la date de sa SIGNATURE. `null` si la demande n'est pas
 /// « déposée » (idempotence : un rejeu, une demande déjà appliquée ou refusée, ne se retraite jamais). Ne modifie rien.
 ApplicationDemandeValidation? valAppliquerDemande(
@@ -117,9 +150,22 @@ ApplicationDemandeValidation? valAppliquerDemande(
   required DateTime maintenant,
   required LectureValidation lire,
   required Map<String, String> libelles,
+  Iterable<Map<String, Object?>>? comptes,
 }) {
   if (demande['etat'] != valEtatDeposee) return null;
   final signeLe = DateTime.tryParse('${demande['demandeLe']}') ?? maintenant;
+  // Lot CLO-3 point 6 : la mère ne fait pas confiance à un nom et un rôle écrits sur la demande : le COMPTE signataire doit exister, porter ce rôle, et n'avoir été ni créé après la
+  // signature ni archivé avant. [comptes] null : aucun registre de comptes connu (outil, banc du protocole), le contrôle n'est pas tenu ; fourni (même vide) : il est tenu.
+  final refusSignataire = comptes == null ? null : valControleSignataire(demande, comptes, signeLe);
+  if (refusSignataire != null) {
+    return ApplicationDemandeValidation(verdict: VerdictValidation.refus(refusSignataire), champsDemande: {
+      'etat': valEtatRefusee,
+      'traiteLe': valInstant(maintenant),
+      'resultatCode': refusSignataire.code,
+      'resultatMotif': refusSignataire.motif,
+      'resultatGeste': refusSignataire.geste,
+    });
+  }
   final v = valValiderReferentiel('${demande['famille']}', '${demande['cible']}',
       role: '${demande['demandeRole']}',
       acteur: '${demande['demandePar']}',

@@ -607,3 +607,25 @@ Ce qui CHANGE par rapport au 09/11 est en gras. Le reste confirme une décision 
 30. **Plan annuel de travail (PTA)** : « rien ne doit rester en dur » ; lot PTA (exercice choisi, responsable lié au personnel, signataires paramétrés, budget, indicateur et cible, adoption par la Direction, alerte de retard, synchronisation, impression du plan et du bilan).
 31. **Inventaire de ce qui est en dur** : tout ce qui est paramétrable devient réglage ou droit ; lots dans l'ordre MIL (année des numéros et agrégats), VAL (validations et acteurs), TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT.
 32. **La liasse fiscale 2025 et ses chiffres de référence**, aujourd'hui transcrits dans le code, sont des données déposées et non des réglages : **ils passent en base, sous forme d'import daté**, dans le lot des listes de référence (REF). Accord de la Direction du 16/11/2026.
+
+## AR. Lot CLO-3 (16/11/2026, maquette, domaine, poste) : commande de stock gros en geste réservé, droits propres, exercice du jour, continuité ; ce qui reste à trancher ou à faire
+
+Faits (réponses de la Direction des 15 et 16/11/2026, sections AH points 3, 4, 5, AL point 4 et AQ points 1, 5, 17) :
+
+1. **RG-04 : valider une commande de stock gros est le geste réservé `valider_commande_stock`.** Défaut semé : la Directrice Administrative SEULE (l'administrateur et la Direction ne l'ont plus), extensible par la fiche RBAC. La commande est absente sans le droit ; le moteur refuse en citant le droit ; le validateur enregistré est l'agent de la session ; « Validée », « Transmise », « Livrée » ou « Soldée » sont refusés au formulaire tant que le geste n'a pas validé la commande (écarts E72 et E74 de la maquette d'origine levés).
+2. **Besoins** : `arbitrer_besoins` (défaut direction, DAF, administrateur) et `traiter_besoins_accordes` (défaut comptable, gestionnaire de stock). Un détail change : l'alerte « Bon de besoins à valider » va aussi à l'administrateur, qui arbitre d'origine.
+3. **Un droit propre par réglage** : `regler_fichiers`, `regler_lecture_scans`, `regler_mode_mecef` (défaut administrateur et DAF), `valider_configuration_fiscale` (défaut Direction, DAF, administrateur), `dater_prix_passe` (défaut DAF et Direction). Le domaine les lit en un point (`gesDroit`), jamais une liste.
+4. **Exercice proposé par défaut** : celui qui contient la date du jour ; le suivant reste choisissable (la proposition « le plus récent ouvert » est remplacée).
+5. **Continuité** : délai d'alerte d'une décision qui attend la mère = 4 heures (défaut semé) ; la mère vérifie que le compte signataire existe avec ce rôle, sinon refus nommé.
+
+Hypothèses à confirmer (aucun document ne les fixe) :
+
+6. **Le droit de valider une commande de stock gros n'ouvre aucun écran** : le rôle qui le détient doit aussi lire « Bons de commande » (écran `m7-commandes`). Si la Direction veut qu'il suffise de détenir le droit, dire oui : la matrice l'accordera à l'écran avec lui.
+7. **Les rôles qui voient la vue « achats » des besoins** (`rolesAchat` : comptable, gestionnaire de stock, DAF, Direction, administrateur, assistant comptable) restent une liste d'écran, pas un geste : à convertir au lot de la matrice des écrans si la Direction le veut.
+8. **Historique de rôle d'un compte** : un compte ne garde pas les dates de ses changements de rôle ; la mère compare le rôle du compte au moment de l'application. Pour que « à la date de signature » soit exact même après un changement de rôle, il faut un historique de rôle (petit lot, à demander).
+9. **Messages des réglages** (taille des fichiers, lecture des scans) : ils disent encore « par l'administrateur ou la Directrice Administrative », qui est le défaut ; ils diront le droit et ses détenteurs au prochain lot qui touche ces écrans.
+
+Non fait dans ce lot (à demander ou à relancer) :
+
+10. **La commande voyage à la synchronisation (AQ point 1, partie synchronisation)** : la référence `BC-2026-nnnn` est tirée par poste ; deux fileuls tireraient la même. Question : la référence d'une commande créée sur un fileul reste-t-elle provisoire jusqu'à l'adoption par la mère (qui donne le numéro définitif, comme pour les dossiers patients), ou chaque poste a-t-il sa série (par exemple `BC-2026-F1-0001`) ? Tant que ce n'est pas tranché, la commande ne voyage pas et la validation se prend sur le poste où la commande est créée.
+11. **Pharmacien réglable (AL point 1)** : les tâches de la chaîne, les postes de notification et la retransmission MECeF citent encore `caissier` et `pharmacien` (liste blanche de `garde-roles-en-dur`). Lot à relancer.

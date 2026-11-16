@@ -29,6 +29,10 @@ Magasin poste() => Magasin({
       ],
       'unitesLabo': <M>[],
       'patients': <M>[],
+      // Lot CLO-3 point 6 : la mère exige le COMPTE signataire avec ce rôle (ici, le compte du biologiste qui signe).
+      'utilisateurs': [
+        {'id': 'U-KINNOU', 'statut': 'actif', 'nom': 'Dr KINNOU', 'nomComplet': 'Dr KINNOU', 'role': 'laborantin'}
+      ],
       'audit': const [],
     });
 

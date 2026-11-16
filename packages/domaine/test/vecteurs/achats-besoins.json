@@ -81,7 +81,7 @@
   "_doc": "Les quatre vues de m7-besoins par profil : onglets visibles (avec leur compte), KPI, ruban du circuit, première page de chaque onglet (tri date décroissant) et commandes de la première ligne.",
   "bons": [
    {
-    "id": "BESxmvux6z5xsokq2",
+    "id": "BESxmvux6zc78v33z",
     "statut": "actif",
     "reference": "BEB-2099-0005",
     "date": "2099-01-05",
@@ -103,7 +103,7 @@
     "montantEstime": 6500
    },
    {
-    "id": "BESxmvux6z5xy1596",
+    "id": "BESxmvux6zc74z3sd",
     "statut": "actif",
     "reference": "BEB-2099-0004",
     "date": "2099-01-04",
@@ -125,7 +125,7 @@
     "montantEstime": 250
    },
    {
-    "id": "BESxmvux6z5xvbyxt",
+    "id": "BESxmvux6zc7aydoj",
     "statut": "actif",
     "reference": "BEB-2099-0003",
     "date": "2099-01-03",
@@ -147,7 +147,7 @@
     "montantEstime": 500
    },
    {
-    "id": "BESxmvux6z5xe2snw",
+    "id": "BESxmvux6zc7vhrke",
     "statut": "actif",
     "reference": "BEB-2099-0002",
     "date": "2099-01-02",
@@ -169,7 +169,7 @@
     "montantEstime": 4000
    },
    {
-    "id": "BESxmvux6z5w2qg11",
+    "id": "BESxmvux6zc6p3vc8",
     "statut": "actif",
     "reference": "BEB-2099-0001",
     "date": "2099-01-01",
@@ -2242,7 +2242,7 @@
      "Observation (facultative)"
     ],
     "avant": {
-     "id": "BESxmvux71db0hfyi",
+     "id": "BESxmvux71oxcgy3s",
      "statut": "actif",
      "reference": "BEB-2098-0101",
      "date": "2098-01-01",
@@ -2273,7 +2273,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvux71db0hfyi",
+     "id": "BESxmvux71oxcgy3s",
      "statut": "actif",
      "reference": "BEB-2098-0101",
      "date": "2098-01-01",
@@ -2309,17 +2309,17 @@
     "notifications": [
      {
       "type": "besoin_accorde",
-      "poste": "stock",
+      "poste": "comptable",
       "libelle": "Besoin accordé — BEB-2098-0101",
-      "detail": "Maternité — 2 article(s), 11 500 · achat à lancer ou distribution à planifier",
+      "detail": "Maternité — 2 article(s), 11 500 · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier",
       "priorite": "important",
       "reference": "BEB-2098-0101"
      },
      {
       "type": "besoin_accorde",
-      "poste": "comptable",
+      "poste": "stock",
       "libelle": "Besoin accordé — BEB-2098-0101",
-      "detail": "Maternité — 2 article(s), 11 500 · engagement budgétaire et décaissement à préparer",
+      "detail": "Maternité — 2 article(s), 11 500 · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier",
       "priorite": "important",
       "reference": "BEB-2098-0101"
      }
@@ -2327,7 +2327,7 @@
     "resteOuverte": false,
     "toasts": [
      {
-      "message": "Besoin BEB-2098-0101 accordé — le comptable et le gestionnaire de stock sont informés.",
+      "message": "Besoin BEB-2098-0101 accordé : les postes qui traitent les besoins accordés sont informés.",
       "type": "success",
       "detail": null
      }
@@ -2343,7 +2343,7 @@
      "Observation (facultative)"
     ],
     "avant": {
-     "id": "BESxmvux71m3f1b47",
+     "id": "BESxmvux71yxk461u",
      "statut": "actif",
      "reference": "BEB-2098-0102",
      "date": "2098-01-01",
@@ -2374,7 +2374,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvux71m3f1b47",
+     "id": "BESxmvux71yxk461u",
      "statut": "actif",
      "reference": "BEB-2098-0102",
      "date": "2098-01-01",
@@ -2410,17 +2410,17 @@
     "notifications": [
      {
       "type": "besoin_accorde",
-      "poste": "stock",
+      "poste": "comptable",
       "libelle": "Besoin accordé — BEB-2098-0102",
-      "detail": "Maternité — 2 article(s), 11 500 · Budget disponible · achat à lancer ou distribution à planifier",
+      "detail": "Maternité — 2 article(s), 11 500 · Budget disponible · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier",
       "priorite": "important",
       "reference": "BEB-2098-0102"
      },
      {
       "type": "besoin_accorde",
-      "poste": "comptable",
+      "poste": "stock",
       "libelle": "Besoin accordé — BEB-2098-0102",
-      "detail": "Maternité — 2 article(s), 11 500 · Budget disponible · engagement budgétaire et décaissement à préparer",
+      "detail": "Maternité — 2 article(s), 11 500 · Budget disponible · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier",
       "priorite": "important",
       "reference": "BEB-2098-0102"
      }
@@ -2428,7 +2428,7 @@
     "resteOuverte": false,
     "toasts": [
      {
-      "message": "Besoin BEB-2098-0102 accordé — le comptable et le gestionnaire de stock sont informés.",
+      "message": "Besoin BEB-2098-0102 accordé : les postes qui traitent les besoins accordés sont informés.",
       "type": "success",
       "detail": null
      }
@@ -2444,7 +2444,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvux71v1opx5s",
+     "id": "BESxmvux7280cnknv",
      "statut": "actif",
      "reference": "BEB-2098-0103",
      "date": "2098-01-01",
@@ -2475,7 +2475,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvux71v1opx5s",
+     "id": "BESxmvux7280cnknv",
      "statut": "actif",
      "reference": "BEB-2098-0103",
      "date": "2098-01-01",
@@ -2528,7 +2528,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvux7243ugels",
+     "id": "BESxmvux72gsreygs",
      "statut": "actif",
      "reference": "BEB-2098-0104",
      "date": "2098-01-01",
@@ -2559,7 +2559,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvux7243ugels",
+     "id": "BESxmvux72gsreygs",
      "statut": "actif",
      "reference": "BEB-2098-0104",
      "date": "2098-01-01",
@@ -2609,7 +2609,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvux72d7205cx",
+     "id": "BESxmvux72qh8ludg",
      "statut": "actif",
      "reference": "BEB-2098-0105",
      "date": "2098-01-01",
@@ -2640,7 +2640,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvux72d7205cx",
+     "id": "BESxmvux72qh8ludg",
      "statut": "actif",
      "reference": "BEB-2098-0105",
      "date": "2098-01-01",
@@ -2693,7 +2693,7 @@
      "Motif — obligatoire *"
     ],
     "avant": {
-     "id": "BESxmvux72m4eqtat",
+     "id": "BESxmvux7305cdyb3",
      "statut": "actif",
      "reference": "BEB-2098-0106",
      "date": "2098-01-01",
@@ -2724,7 +2724,7 @@
      "montantEstime": 11500
     },
     "apres": {
-     "id": "BESxmvux72m4eqtat",
+     "id": "BESxmvux7305cdyb3",
      "statut": "actif",
      "reference": "BEB-2098-0106",
      "date": "2098-01-01",
@@ -2770,7 +2770,7 @@
    {
     "quoi": "versCommande",
     "avant": {
-     "id": "BESxmvux72v10057l",
+     "id": "BESxmvux73asvn0yx",
      "statut": "actif",
      "reference": "BEB-2097-0107",
      "date": "2097-01-01",
@@ -2793,7 +2793,7 @@
      "preparePar": "MAMAN Zoukanéri"
     },
     "apres": {
-     "id": "BESxmvux72v10057l",
+     "id": "BESxmvux73asvn0yx",
      "statut": "actif",
      "reference": "BEB-2097-0107",
      "date": "2097-01-01",
@@ -2819,12 +2819,12 @@
      "m7-commandes"
     ],
     "toasts": [],
-    "message": "Transformer en bon de commande ?Le besoin BEB-2097-0107 passe en préparation et l’écran des commandes s’ouvre. RG-04 : la commande devra être validée par la Directrice Administrative avant transmission au fournisseur.AnnulerOuvrir les commandes"
+    "message": "Transformer en bon de commande ?Le besoin BEB-2097-0107 passe en préparation et l’écran des commandes s’ouvre. RG-04 : la commande devra être validée (Directrice de l’Administration et des Finances (DAF)) avant transmission au fournisseur.AnnulerOuvrir les commandes"
    },
    {
     "quoi": "distribuer",
     "avant": {
-     "id": "BESxmvux7340yhl3t",
+     "id": "BESxmvux73jwminsa",
      "statut": "actif",
      "reference": "BEB-2097-0108",
      "date": "2097-01-01",
@@ -2847,7 +2847,7 @@
      "distribuePar": "MAMAN Zoukanéri"
     },
     "apres": {
-     "id": "BESxmvux7340yhl3t",
+     "id": "BESxmvux73jwminsa",
      "statut": "actif",
      "reference": "BEB-2097-0108",
      "date": "2097-01-01",
@@ -2933,7 +2933,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvux73joxuhtr",
+     "id": "BESxmvux73zfrtvhg",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Laboratoire",
@@ -3008,7 +3008,7 @@
     "optionsEtape": null,
     "lignesAffichees": 2,
     "bon": {
-     "id": "BESxmvux73u1w9ic2",
+     "id": "BESxmvux749z1igvp",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Hospitalisation",
@@ -3096,7 +3096,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvux743cdxfd0",
+     "id": "BESxmvux74jg7m71p",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Administration",
@@ -3176,7 +3176,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvux74cmxgco4",
+     "id": "BESxmvux74swq7kwm",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Maternité",
@@ -3257,7 +3257,7 @@
     ],
     "lignesAffichees": 1,
     "bon": {
-     "id": "BESxmvux74lou2a3z",
+     "id": "BESxmvux752bfciv6",
      "statut": "actif",
      "date": "2026-10-30",
      "service": "Maternité",
@@ -3463,7 +3463,7 @@
   {
    "nom": "étape portée à « Validation DA » : le validateur est posé (E73)",
    "avant": {
-    "id": "BESxmvux75f6ikdxv",
+    "id": "BESxmvux75wdk6idu",
     "statut": "actif",
     "reference": "BEB-2095-0109",
     "date": "2099-12-31",
@@ -3498,7 +3498,7 @@
     "etape": "validation_da"
    },
    "apres": {
-    "id": "BESxmvux75f6ikdxv",
+    "id": "BESxmvux75wdk6idu",
     "statut": "actif",
     "reference": "BEB-2095-0109",
     "date": "2099-12-31",
@@ -3533,7 +3533,7 @@
   {
    "nom": "étape portée à « Validation DA », validateur déjà connu : conservé",
    "avant": {
-    "id": "BESxmvux75p0saz5k",
+    "id": "BESxmvux766jl1273",
     "statut": "actif",
     "reference": "BEB-2095-0110",
     "date": "2099-12-31",
@@ -3569,7 +3569,7 @@
     "etape": "validation_da"
    },
    "apres": {
-    "id": "BESxmvux75p0saz5k",
+    "id": "BESxmvux766jl1273",
     "statut": "actif",
     "reference": "BEB-2095-0110",
     "date": "2099-12-31",
@@ -3604,7 +3604,7 @@
   {
    "nom": "étape ramenée à « Brouillon » : rien de posé",
    "avant": {
-    "id": "BESxmvux75yxm4spp",
+    "id": "BESxmvux76gjo8dwu",
     "statut": "actif",
     "reference": "BEB-2095-0111",
     "date": "2099-12-31",
@@ -3640,7 +3640,7 @@
     "motif": "Revu"
    },
    "apres": {
-    "id": "BESxmvux75yxm4spp",
+    "id": "BESxmvux76gjo8dwu",
     "statut": "actif",
     "reference": "BEB-2095-0111",
     "date": "2099-12-31",

@@ -13342,6 +13342,85 @@
     "defautSiEcritSur": null
    },
    {
+    "id": "arbitrer_besoins",
+    "libelle": "Arbitrer un bon de besoins (valider, rejeter avec motif, demander un complément)",
+    "module": "M7",
+    "ecran": "m7-besoins",
+    "rolesDefaut": [
+     "da",
+     "direction",
+     "admin"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "traiter_besoins_accordes",
+    "libelle": "Traiter un besoin accordé (engagement budgétaire et décaissement, achat ou distribution) : reçoit la tâche « besoin accordé »",
+    "module": "M7",
+    "ecran": "m7-besoins",
+    "rolesDefaut": [
+     "comptable",
+     "stock"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "regler_fichiers",
+    "libelle": "Régler la taille maximale des fichiers déposés",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "regler_lecture_scans",
+    "libelle": "Régler la lecture des scans par machine (OCR) de la clinique",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "regler_mode_mecef",
+    "libelle": "Régler le mode de certification MECeF (boîtier physique ou e-MECeF)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "valider_configuration_fiscale",
+    "libelle": "Valider la configuration fiscale (obligations, taux, entêtes, rubriques)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "direction",
+     "da",
+     "admin"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "dater_prix_passe",
+    "libelle": "Dater un changement de prix dans le passé (date d’effet antérieure à aujourd’hui, avec un motif)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "da",
+     "direction"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
     "id": "exporter_donnees",
     "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
     "module": null,
@@ -13382,6 +13461,13 @@
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 1,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 1,
+    "regler_lecture_scans": 1,
+    "regler_mode_mecef": 1,
+    "valider_configuration_fiscale": 1,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "direction": {
@@ -13392,6 +13478,13 @@
     "decider_prix": 1,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 1,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 1,
+    "dater_prix_passe": 1,
     "exporter_donnees": 1
    },
    "dm": {
@@ -13402,6 +13495,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "da": {
@@ -13412,6 +13512,13 @@
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
     "valider_commande_stock": 1,
+    "arbitrer_besoins": 1,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 1,
+    "regler_lecture_scans": 1,
+    "regler_mode_mecef": 1,
+    "valider_configuration_fiscale": 1,
+    "dater_prix_passe": 1,
     "exporter_donnees": 1
    },
    "medecin": {
@@ -13422,6 +13529,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "infirmier": {
@@ -13432,6 +13546,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "pharmacien": {
@@ -13442,6 +13563,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 0
    },
    "laborantin": {
@@ -13452,6 +13580,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "stock": {
@@ -13462,6 +13597,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 1,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "caissier": {
@@ -13472,6 +13614,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "comptable": {
@@ -13482,6 +13631,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 1,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "rh": {
@@ -13492,6 +13648,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 0
    },
    "reception": {
@@ -13502,6 +13665,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "agentadmin": {
@@ -13512,6 +13682,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "ambulancier": {
@@ -13522,6 +13699,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "aide_soignant": {
@@ -13532,6 +13716,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "echographiste": {
@@ -13542,6 +13733,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "surveillant": {
@@ -13552,6 +13750,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "assistant_comptable": {
@@ -13562,6 +13767,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "chirurgien": {
@@ -13572,6 +13784,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "anesthesiste": {
@@ -13582,6 +13801,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    },
    "aide_comptable": {
@@ -13592,6 +13818,13 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "valider_commande_stock": 0,
+    "arbitrer_besoins": 0,
+    "traiter_besoins_accordes": 0,
+    "regler_fichiers": 0,
+    "regler_lecture_scans": 0,
+    "regler_mode_mecef": 0,
+    "valider_configuration_fiscale": 0,
+    "dater_prix_passe": 0,
     "exporter_donnees": 1
    }
   }

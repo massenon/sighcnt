@@ -87,7 +87,7 @@
     "Modifier"
    ],
    "avant": {
-    "id": "COMxmvux768rc74f3",
+    "id": "COMxmvux76q7gkwyw",
     "statut": "actif",
     "reference": "BC-2098-0112",
     "date": "2098-02-01",
@@ -108,7 +108,7 @@
     "statutCommande": "attente_validation"
    },
    "apres": {
-    "id": "COMxmvux768rc74f3",
+    "id": "COMxmvux76q7gkwyw",
     "statut": "actif",
     "reference": "BC-2098-0112",
     "date": "2098-02-01",
@@ -165,7 +165,7 @@
     "Modifier"
    ],
    "avant": {
-    "id": "COMxmvux76frq3hne",
+    "id": "COMxmvux76xih3vsd",
     "statut": "actif",
     "reference": "BC-2098-0113",
     "date": "2098-02-01",
@@ -214,7 +214,7 @@
     "Imprimer"
    ],
    "avant": {
-    "id": "COMxmvux76i4h23qt",
+    "id": "COMxmvux77063tewk",
     "statut": "actif",
     "reference": "BC-2098-0114",
     "date": "2098-02-01",
@@ -263,7 +263,7 @@
     "Imprimer"
    ],
    "avant": {
-    "id": "COMxmvux76kibq1jn",
+    "id": "COMxmvux772jor8m4",
     "statut": "actif",
     "reference": "BC-2098-0115",
     "date": "2098-02-01",
@@ -313,7 +313,7 @@
     "Modifier"
    ],
    "avant": {
-    "id": "COMxmvux76muoht9d",
+    "id": "COMxmvux774wh99ft",
     "statut": "actif",
     "reference": "BC-2098-0116",
     "date": "2098-02-01",
@@ -385,7 +385,7 @@
     }
    ],
    "commande": {
-    "id": "COMxmvux76xnjg0um",
+    "id": "COMxmvux77fovwb95",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "CAME",
@@ -445,7 +445,7 @@
     }
    ],
    "commande": {
-    "id": "COMxmvux7777tlsbu",
+    "id": "COMxmvux77pax58dn",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "MEDIPLUS",
@@ -753,7 +753,7 @@
   {
    "nom": "brouillon → « Validée » : la DAF est portée validatrice (E72)",
    "avant": {
-    "id": "COMxmvux781bolsd6",
+    "id": "COMxmvux78ml6ecu1",
     "statut": "actif",
     "reference": "BC-2095-0117",
     "date": "2099-06-01",
@@ -781,7 +781,7 @@
    },
    "statut": "validee",
    "apres": {
-    "id": "COMxmvux781bolsd6",
+    "id": "COMxmvux78ml6ecu1",
     "statut": "actif",
     "reference": "BC-2095-0117",
     "date": "2099-06-01",
@@ -812,7 +812,7 @@
   {
    "nom": "déjà validée par quelqu'un d'autre → « Transmise » : le validateur reste",
    "avant": {
-    "id": "COMxmvux7890ldo6x",
+    "id": "COMxmvux78ux4l4fy",
     "statut": "actif",
     "reference": "BC-2095-0118",
     "date": "2099-06-01",
@@ -842,7 +842,7 @@
    },
    "statut": "transmise",
    "apres": {
-    "id": "COMxmvux7890ldo6x",
+    "id": "COMxmvux78ux4l4fy",
     "statut": "actif",
     "reference": "BC-2095-0118",
     "date": "2099-06-01",
@@ -876,7 +876,7 @@
   {
    "nom": "brouillon → en attente : aucun validateur",
    "avant": {
-    "id": "COMxmvux78gzu79l6",
+    "id": "COMxmvux793blwt1u",
     "statut": "actif",
     "reference": "BC-2095-0119",
     "date": "2099-06-01",
@@ -904,7 +904,7 @@
    },
    "statut": "attente_validation",
    "apres": {
-    "id": "COMxmvux78gzu79l6",
+    "id": "COMxmvux793blwt1u",
     "statut": "actif",
     "reference": "BC-2095-0119",
     "date": "2099-06-01",
@@ -955,7 +955,7 @@
  ],
  "commandes": [
   {
-   "id": "COMxmvux78gzu79l6",
+   "id": "COMxmvux793blwt1u",
    "statut": "actif",
    "reference": "BC-2095-0119",
    "date": "2099-06-01",
@@ -977,7 +977,7 @@
    "observations": ""
   },
   {
-   "id": "COMxmvux7890ldo6x",
+   "id": "COMxmvux78ux4l4fy",
    "statut": "actif",
    "reference": "BC-2095-0118",
    "date": "2099-06-01",
@@ -1001,7 +1001,7 @@
    "observations": ""
   },
   {
-   "id": "COMxmvux781bolsd6",
+   "id": "COMxmvux78ml6ecu1",
    "statut": "actif",
    "reference": "BC-2095-0117",
    "date": "2099-06-01",
@@ -1022,7 +1022,7 @@
    "statutCommande": "brouillon"
   },
   {
-   "id": "COMxmvux7777tlsbu",
+   "id": "COMxmvux77pax58dn",
    "statut": "actif",
    "date": "2026-10-30",
    "fournisseur": "MEDIPLUS",
@@ -1044,7 +1044,7 @@
    "reference": "BC-2026-0017"
   },
   {
-   "id": "COMxmvux76xnjg0um",
+   "id": "COMxmvux77fovwb95",
    "statut": "actif",
    "date": "2026-10-30",
    "fournisseur": "CAME",
@@ -1074,7 +1074,7 @@
    "reference": "BC-2026-0016"
   },
   {
-   "id": "COMxmvux76muoht9d",
+   "id": "COMxmvux774wh99ft",
    "statut": "actif",
    "reference": "BC-2098-0116",
    "date": "2098-02-01",
@@ -1095,7 +1095,7 @@
    "statutCommande": "attente_validation"
   },
   {
-   "id": "COMxmvux76kibq1jn",
+   "id": "COMxmvux772jor8m4",
    "statut": "actif",
    "reference": "BC-2098-0115",
    "date": "2098-02-01",
@@ -1116,7 +1116,7 @@
    "statutCommande": "attente_validation"
   },
   {
-   "id": "COMxmvux76i4h23qt",
+   "id": "COMxmvux77063tewk",
    "statut": "actif",
    "reference": "BC-2098-0114",
    "date": "2098-02-01",
@@ -1137,7 +1137,7 @@
    "statutCommande": "attente_validation"
   },
   {
-   "id": "COMxmvux76frq3hne",
+   "id": "COMxmvux76xih3vsd",
    "statut": "actif",
    "reference": "BC-2098-0113",
    "date": "2098-02-01",
@@ -1158,7 +1158,7 @@
    "statutCommande": "attente_validation"
   },
   {
-   "id": "COMxmvux768rc74f3",
+   "id": "COMxmvux76q7gkwyw",
    "statut": "actif",
    "reference": "BC-2098-0112",
    "date": "2098-02-01",

@@ -387,7 +387,8 @@ void main() {
         expect(cfbValiderObligations(obligations, role: role, acteur: 'X', maintenant: maintenant).refus?.code, 'VALIDATION_RESERVEE', reason: '$role');
       }
       expect(cfbValiderObligations(obligations, role: 'da', acteur: 'X', maintenant: maintenant, fileul: true).refus!.code, 'FILEUL_LECTURE_SEULE');
-      expect(cfbRolesValidation, (v['roles'] as List).cast<String>());
+      // Lot CLO-3 : la liste vient du geste réservé de la fiche (ordre de la matrice), le défaut d'origine du domaine lui est égal (ensemble).
+      expect([...cfbRolesValidation]..sort(), [...(v['roles'] as List).cast<String>()]..sort());
       for (final role in cfbRolesValidation) {
         expect(cfbValiderObligations(obligations, role: role, acteur: 'X', maintenant: maintenant).ok, isTrue, reason: role);
       }

@@ -248,12 +248,14 @@
   function rolesDecidentPrix() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_DECIDER_PRIX) : []; }
   function libellesDecidentPrix() { var n = rolesDecidentPrix().map(function (r) { return libelleRole(r); }); return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle'); }
   /* T6 (Direction, 11/11/2026) : la date d'effet PASSÉE est une autorité de la Directrice Administrative et de la Direction, avec un motif. */
-  var ROLES_DATE_PASSEE = ['da', 'direction'];
+  /* Lot CLO-3 point 4 : l'autorité de dater dans le passé est le geste réservé `dater_prix_passe` de la fiche RBAC (défaut : la Directrice Administrative et la Direction), jamais une liste de rôles. */
+  var GESTE_DATER_PRIX_PASSE = 'dater_prix_passe';
+  function rolesDatePassee() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_DATER_PRIX_PASSE) : []; }
   function refusTarif(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
   function roleDeLaSession() { var s = S.session(); return s && s.role; }
   function peutDeciderTarif() { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleDeLaSession(), GESTE_DECIDER_PRIX)); }
-  function peutDatePasseeTarif() { return ROLES_DATE_PASSEE.indexOf(roleDeLaSession()) >= 0; }
-  function profilsDatePassee() { return ROLES_DATE_PASSEE.map(function (r) { return libelleRole(r); }).join(' et '); }
+  function peutDatePasseeTarif() { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleDeLaSession(), GESTE_DATER_PRIX_PASSE)); }
+  function profilsDatePassee() { return rolesDatePassee().map(function (r) { return libelleRole(r); }).join(' et ') || 'aucun rôle'; }
   function peutProposerTarif() {
     var N = global.SIGH.nav, r = roleDeLaSession();
     if (!N || !N.droitsEcran) return false;
@@ -4044,7 +4046,7 @@
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
     colActes: colActes, colAnalyses: colAnalyses, colCatalogueTarifs: colCatalogueTarifs,
     GESTE_DECIDER_PRIX: GESTE_DECIDER_PRIX, rolesDecidentPrix: rolesDecidentPrix, libellesDecidentPrix: libellesDecidentPrix, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
-    ROLES_DATE_PASSEE: ROLES_DATE_PASSEE, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
+    GESTE_DATER_PRIX_PASSE: GESTE_DATER_PRIX_PASSE, rolesDatePassee: rolesDatePassee, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
     deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
@@ -4145,11 +4147,14 @@
 
   /* LE CHOIX DE L'EXERCICE VIT DANS LA SESSION DE L'UTILISATEUR, en un seul endroit : cette fonction. Tous les écrans la lisent, aucun ne garde de copie.
      Il ne fait que CHOISIR CE QUE L'ON LIT : il n'écrit rien, ne donne aucun droit, et une pièce s'enregistre toujours dans l'exercice de SA date.
-     Par défaut : l'exercice ouvert le plus récent, sinon le plus récent tout court. */
+     Par défaut (lot CLO-3, Direction du 15/11/2026, section AH point 5) : l'exercice qui CONTIENT la date du jour ; à défaut (il n'existe pas encore), l'exercice ouvert le plus récent,
+     sinon le plus récent tout court. L'exercice suivant reste choisissable ; le choix mémorisé de la session l'emporte toujours. */
   function exerciceParDefaut() {
-    var liste = exercices();
+    var liste = exercices(), auj = anneeCourante();
+    var duJour = liste.filter(function (x) { return x.annee === auj; })[0];
+    if (duJour) return duJour.annee;
     var ouverts = liste.filter(function (x) { return x.etat === 'ouvert'; });
-    return (ouverts[0] || liste[0] || { annee: anneeCourante() }).annee;
+    return (ouverts[0] || liste[0] || { annee: auj }).annee;
   }
   function exerciceChoisi() {
     var v = null;
@@ -5012,7 +5017,10 @@
    * M12, M13, l'assistant d'installation) et il est EXPOSÉ pour être SONDÉ,
    * jamais recopié. Chaque refus se nomme : code, motif, geste.
    * ======================================================================== */
-  var ROLES_VALIDATION = ['direction', 'da', 'admin'];
+  /* Lot CLO-3 point 4 : valider la configuration fiscale est le geste réservé `valider_configuration_fiscale` de la fiche RBAC (défaut : la Direction, la DAF et l'administrateur), jamais une liste de rôles. */
+  var GESTE_VALIDER_CONFIGURATION_FISCALE = 'valider_configuration_fiscale';
+  function peutValiderConfigurationFiscale(role) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(role, GESTE_VALIDER_CONFIGURATION_FISCALE)); }
+  function rolesValidationFiscale() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_VALIDER_CONFIGURATION_FISCALE) : []; }
   function colIdentite() { return S.collection('identiteLegale', { module: 'CFG', entite: 'identité légale', prefix: 'IDL' }); }
   function colObligations() { return S.collection('obligationsFiscales', { module: 'CFG', entite: 'obligation fiscale', prefix: 'OBL' }); }
   function colHistoriqueObligations() { return S.collection('historiqueObligations', { module: 'CFG', entite: 'version antérieure d’obligation fiscale', prefix: 'HOB' }); }
@@ -5062,7 +5070,7 @@
   function controleValidation() {
     var r = controleEcritureCfg(); if (r) return r;
     var role = roleCourant();
-    if (ROLES_VALIDATION.indexOf(role) < 0) {
+    if (!peutValiderConfigurationFiscale(role)) {
       return refusCfg('VALIDATION_RESERVEE', 'La validation de la configuration fiscale est réservée à la Direction, à la DAF et à l’administrateur système. Profil : ' + libelleRole(role) + '.',
         'Demander à la Direction ou à la DAF de valider depuis son poste.');
     }
@@ -5846,7 +5854,7 @@
   }
 
   global.SIGH.configurationFiscale = {
-    ROLES_VALIDATION: ROLES_VALIDATION,
+    GESTE_VALIDER: GESTE_VALIDER_CONFIGURATION_FISCALE, peutValiderConfiguration: peutValiderConfigurationFiscale, rolesValidation: rolesValidationFiscale,
     identiteEnForce: identiteEnForce, identiteExigeVersion: identiteExigeVersion,
     enregistrerIdentite: enregistrerIdentite, nouvelleVersionIdentite: nouvelleVersionIdentite, validerIdentite: validerIdentite,
     obligationsEnVigueur: function (date) { return D.obligationsALaDate(date); },

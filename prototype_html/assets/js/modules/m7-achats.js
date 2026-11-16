@@ -130,7 +130,8 @@
       var session = S.session() || {};
       var moi = S.currentUser();
       var dr = K.droits('M7');
-      var estArbitre = ['da', 'direction', 'admin'].indexOf(session.role) !== -1;
+      /* Qui arbitre : geste réservé `arbitrer_besoins` de la fiche RBAC (lot CLO-3), jamais une liste de rôles écrite ici. */
+      var estArbitre = !!(global.SIGH.nav && global.SIGH.nav.droitGeste(session.role, 'arbitrer_besoins'));
       var estAchat = ['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']
         .indexOf(session.role) !== -1;
 
@@ -352,7 +353,7 @@
                 if (quoi === 'valider') informerAchat(b, v.motif);
                 m.close();
                 U.toast(quoi === 'valider'
-                  ? 'Besoin ' + b.reference + ' accordé — le comptable et le gestionnaire de stock sont informés.'
+                  ? 'Besoin ' + b.reference + ' accordé : les postes qui traitent les besoins accordés sont informés.'
                   : 'Besoin ' + b.reference + ' — ' + etatBesoin(etape).label.toLowerCase() + '.',
                 { type: quoi === 'valider' ? 'success' : 'warning', duration: 8000 });
                 rafraichir();
@@ -367,16 +368,16 @@
         if (!PR || !PR.notifier) return;
         var detail = b.service + ' — ' + C.num((b.lignes || []).length) + ' article(s), '
           + C.money(b.montantEstime, false) + (motif ? ' · ' + motif : '');
-        ['comptable', 'stock'].forEach(function (poste) {
+        /* Les postes qui TRAITENT un besoin accordé sont ceux qui détiennent le geste réservé `traiter_besoins_accordes` (lot CLO-3) : liste DÉRIVÉE du droit, jamais écrite ici. */
+        var postes = global.SIGH.nav && global.SIGH.nav.rolesAvecGeste ? global.SIGH.nav.rolesAvecGeste('traiter_besoins_accordes') : [];
+        postes.forEach(function (poste) {
           try {
             /* `libelle` et non `titre`, `reference` et non `lien` : c'est
                l'API du moteur, lue et non supposée. */
             PR.notifier({
               type: 'besoin_accorde', poste: poste,
               libelle: 'Besoin accordé — ' + b.reference,
-              detail: detail + (poste === 'comptable'
-                ? ' · engagement budgétaire et décaissement à préparer'
-                : ' · achat à lancer ou distribution à planifier'),
+              detail: detail + ' · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier',
               reference: b.reference,
               priorite: 'important',
             });
@@ -392,7 +393,7 @@
           title: 'Transformer en bon de commande ?',
           message: 'Le besoin <strong>' + b.reference + '</strong> passe en <strong>préparation</strong> '
             + 'et l’écran des commandes s’ouvre. <strong>RG-04</strong> : la commande devra être '
-            + 'validée par la Directrice Administrative avant transmission au fournisseur.',
+            + 'validée (' + PR.libellesValidentCommandeStock() + ') avant transmission au fournisseur.',
           confirmLabel: 'Ouvrir les commandes',
         }).then(function (ok) {
           if (!ok) return;

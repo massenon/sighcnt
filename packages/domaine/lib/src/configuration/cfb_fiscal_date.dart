@@ -12,6 +12,7 @@
 library;
 
 import '../comptabilite/cpc_exercice.dart' show cpcEtatExercice;
+import '../droits/gestes_a_chaud.dart';
 import '../format/format_fr.dart' show dateFR, nombre;
 import '../format/js.dart' show arrondiJs, nombreOuZero;
 import '../impression/identite.dart';
@@ -36,8 +37,12 @@ class CfbRefus {
   String toString() => '$code : $motif';
 }
 
-/// Les rôles qui VALIDENT la configuration fiscale (`ROLES_VALIDATION` de parcours.js) : la Direction, la DAF, l'administrateur système.
+/// Valider la configuration fiscale est le geste réservé [cfbGesteValidation] de la fiche RBAC (lot CLO-3, ex `ROLES_VALIDATION`) ; [cfbRolesValidation] n'est que son défaut d'origine
+/// (la Direction, la DAF, l'administrateur système), lu en un point par `gesDroit`.
+const String cfbGesteValidation = 'valider_configuration_fiscale';
 const List<String> cfbRolesValidation = ['direction', 'da', 'admin'];
+
+bool cfbPeutValider(String? role) => role != null && gesDroit(role, cfbGesteValidation, cfbRolesValidation);
 
 /// `FILEUL_LECTURE_SEULE` : un fileul ne modifie jamais la configuration de la clinique (famille R, publiée par la mère seule).
 CfbRefus? cfbControleFileul(bool fileul) => fileul
@@ -49,7 +54,7 @@ CfbRefus? cfbControleFileul(bool fileul) => fileul
 CfbRefus? cfbControleValidation({required String? role, bool fileul = false, String Function(String?)? libelleRole}) {
   final f = cfbControleFileul(fileul);
   if (f != null) return f;
-  if (role == null || !cfbRolesValidation.contains(role)) {
+  if (!cfbPeutValider(role)) {
     final lib = libelleRole != null ? libelleRole(role) : (role ?? 'aucun');
     return CfbRefus('VALIDATION_RESERVEE',
         'La validation de la configuration fiscale est réservée à la Direction, à la DAF et à l’administrateur système. Profil : $lib.',

@@ -36,7 +36,6 @@
   var ESSAIS_MAX = 3;
   var BRUT_MAX = 20000;
   var MOTS_MAX = 4000;
-  var ROLES_REGLAGE = ['admin', 'da'];
   var LANGUE_DEFAUT = 'fra';
 
   /** Les codes de refus nommés (le même vocabulaire au domaine Dart). */
@@ -93,7 +92,8 @@
     return { actif: r.actif === true, moteur: r.moteur || null, langue: r.langue || LANGUE_DEFAUT, delaiMs: r.delaiMs > 0 ? r.delaiMs : DELAI_DEFAUT_MS,
       regleLe: r.regleLe || null, reglePar: r.reglePar || null, regle: !!(S.reglage('ocr', null)) };
   }
-  function peutRegler() { var s = S.session() || {}; return ROLES_REGLAGE.indexOf(s.role) >= 0; }
+  /* Lot CLO-3 : geste réservé `regler_lecture_scans` de la fiche RBAC (défaut : administrateur et Directrice Administrative), jamais une liste de rôles écrite ici. */
+  function peutRegler() { var s = S.session() || {}, N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(s.role, 'regler_lecture_scans')); }
   function moteurActif() {
     var r = reglage();
     return r.moteur && moteurs[r.moteur] ? moteurs[r.moteur] : null;

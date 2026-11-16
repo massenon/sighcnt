@@ -54,7 +54,8 @@ class DemandesValidationPoste {
     var n = 0;
     final col = m.collection(valCollectionDemandes);
     for (final d in valDemandesEnAttente(col.toutes)) {
-      final a = valAppliquerDemande(d, maintenant: _horloge(), lire: lire, libelles: libelles);
+      // Lot CLO-3 point 6 : le compte signataire doit exister à la mère avec ce rôle à la date de la signature (refus nommé sinon).
+      final a = valAppliquerDemande(d, maintenant: _horloge(), lire: lire, libelles: libelles, comptes: m.collection('utilisateurs').toutes);
       if (a == null) continue;
       var champs = a.champsDemande;
       if (a.verdict.ok) {
