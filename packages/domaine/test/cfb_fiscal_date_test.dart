@@ -42,10 +42,13 @@ void main() {
   // --------------------------------------------------------------------------------------------------------------------------------------------
   group('identité légale à la date (versions)', () {
     final vi = obj(v['identiteALaDate']);
-    final versions = <M>[cfbSemenceIdentite()];
+    final versions = <M>[...cfbSemencesIdentite()];
 
-    test('la semence est la version 1, depuis l’ouverture, non validée : les champs sont ceux de C.BRAND_ORIGINE', () {
+    test('la semence est la version 1, depuis l’ouverture, close au 15/11/2026, non validée (RCCM d’origine) ; la version 2 porte le RCCM à jour depuis le 16/11/2026', () {
       memes(versions.first, vi['semence'], 'semence', ignorer: {'id', 'creeLe', 'creePar'});
+      expect(versions[1]['rccm'], IdentiteClinique.rccm);
+      expect(versions[1]['debut'], '2026-11-16');
+      expect(versions[0]['rccm'], IdentiteClinique.rccmVersion1);
       expect(cfbIdentiteSemence().keys.toList(), champsIdentiteLegale);
       expect(cfbIdentiteALaDate(versions, aujourdhui)!['version'], 1);
       expect(cfbIdentiteALaDate(const [], aujourdhui), isNull);
@@ -63,11 +66,12 @@ void main() {
       expect(r.patchPrecedente!['fin'], '2026-08-31');
       // le magasin écrit : la nouvelle fiche, et le patch de l'ancienne
       versions[0] = {...versions[0], ...r.patchPrecedente!};
-      versions.add({...r.fiche!, 'id': 'IDL002'});
+      versions.add({...r.fiche!, 'id': 'IDL003'});
       final attVersions = liste(vi['versions']);
-      final tri = [...versions]..sort((a, b) => (b['version'] as int).compareTo(a['version'] as int));
+      expect(versions.length, attVersions.length);
       for (var i = 0; i < attVersions.length; i++) {
-        memes(tri[i], attVersions[i], 'versions[$i]', sousEnsemble: true);
+        final f = versions.firstWhere((x) => x['version'] == attVersions[i]['version']);
+        memes(f, attVersions[i], 'versions[$i]', sousEnsemble: true);
       }
       expect(r.fiche!['ifu'], IdentiteClinique.ifu, reason: 'un champ non saisi est copié de la version couvrante');
       expect(r.fiche!['nom'], IdentiteClinique.nom);
@@ -94,12 +98,14 @@ void main() {
     test('le rouleau porte l’identité EN FORCE À LA DATE DE LA PIÈCE : hier l’ancien RCCM, après la date d’effet le nouveau', () {
       EntreeTicket entree(DateTime quand) => EntreeTicket(operateur: 'CAISSE', numero: 'FN-2026-00001', date: quand, partPatient: 1000, total: 1000);
       final hier = lignesTicket(entree(DateTime(2026, 8, 15, 9)), identite: cfbIdentiteImprimee(versions, DateTime(2026, 8, 15))).map((l) => l.brut).toList();
-      final apres = lignesTicket(entree(DateTime(2026, 12, 31, 9)), identite: cfbIdentiteImprimee(versions, DateTime(2026, 12, 31))).map((l) => l.brut).toList();
-      expect(hier, contains('RCCM RB/NAT/2016-B-268'));
+      final apres = lignesTicket(entree(DateTime(2026, 10, 15, 9)), identite: cfbIdentiteImprimee(versions, DateTime(2026, 10, 15))).map((l) => l.brut).toList();
+      final fin = lignesTicket(entree(DateTime(2026, 12, 31, 9)), identite: cfbIdentiteImprimee(versions, DateTime(2026, 12, 31))).map((l) => l.brut).toList();
+      expect(fin, contains('RCCM ${IdentiteClinique.rccm}'), reason: 'depuis le 16/11/2026 la version 2 reprend la main');
+      expect(hier, contains('RCCM ${IdentiteClinique.rccmVersion1}'));
       expect(apres, contains('RCCM RB/NAT/2026-B-999'));
       expect(apres, contains('BP : 999 NATITINGOU (Rép. du Bénin)'));
       expect(apres.first, 'CLINIQUE NASSIERA TOO', reason: 'le nom court se dérive du nom de la version');
-      expect(lignesTicket(entree(DateTime(2026, 8, 15, 9))).map((l) => l.brut), hier, reason: 'sans identité passée : la semence, soit la version 1');
+      expect(lignesTicket(entree(DateTime(2026, 8, 15, 9))).map((l) => l.brut), contains('RCCM ${IdentiteClinique.rccm}'), reason: 'sans identité passée : la semence, le défaut semé à jour');
     });
 
     test('refus nommés : motif requis dès la version 2, exercice clos, IFU à 13 chiffres, une version par date d’effet', () {

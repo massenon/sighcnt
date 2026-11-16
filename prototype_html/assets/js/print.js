@@ -601,6 +601,8 @@
     var m = o.modele || {};
     var zones = m.zones || {};
     var portrait = m.orientation === 'portrait';
+    /* Le badge lit l'identité À LA DATE (lot IDENT), jamais la constante de la semence. */
+    var I = identitePour(C.iso(C.aujourdhui()));
     var L = portrait ? CR80.hauteur : CR80.largeur;
     var H = portrait ? CR80.largeur : CR80.hauteur;
 
@@ -612,7 +614,7 @@
     if (face === 'verso') {
       var dos = el('div.flex.h-full.flex-col.px-3.py-2');
       dos.appendChild(el('p.text-\\[7px\\].font-bold.uppercase.tracking-wide.text-navy-900',
-        { text: B.nom }));
+        { text: I.nom }));
       dos.appendChild(el('div.mt-1.border-t.border-slate-200'));
       var mentions = el('div.mt-1.flex-1.space-y-0\\.5');
       (m.mentionsVerso || []).forEach(function (t) {
@@ -631,7 +633,7 @@
           }),
         ]),
       ]));
-      dos.appendChild(el('p.mt-1.text-center.text-\\[6px\\].italic.text-navy-800', { text: B.slogan }));
+      dos.appendChild(el('p.mt-1.text-center.text-\\[6px\\].italic.text-navy-800', { text: I.slogan }));
       carte.appendChild(dos);
       return carte;
     }
@@ -645,7 +647,7 @@
     }));
     bandeau.appendChild(el('div.min-w-0.flex-1', null, [
       el('p.truncate.text-\\[8px\\].font-bold.uppercase.leading-tight.text-white', { text: 'Clinique Nassiera Too' }),
-      el('p.truncate.text-\\[6px\\].italic.leading-tight.text-navy-100', { text: B.slogan }),
+      el('p.truncate.text-\\[6px\\].italic.leading-tight.text-navy-100', { text: I.slogan }),
     ]));
     carte.appendChild(bandeau);
 

@@ -287,7 +287,7 @@
         el('div.grid.h-16.w-16.shrink-0.place-items-center.border.border-slate-400.text-\\[8px\\].text-slate-400', { text: 'QR MECeF' }),
         el('div', null, [
           el('p.text-\\[9px\\].font-semibold', { text: 'Identifiant fiscal MECeF : ' + f.numeroMecef }),
-          el('p.text-\\[9px\\]', { text: 'IFU : ' + C.BRAND.ifu + ' — RCCM : ' + C.BRAND.rccm }),
+          el('p.text-\\[9px\\]', { text: 'IFU : ' + C.identiteALaDate(f.date).ifu + ' — RCCM : ' + C.identiteALaDate(f.date).rccm }),
           el('p.text-\\[9px\\]', { text: 'Statut de transmission : ' + (f.statutMecef === 'valide' ? 'validée par l’administration fiscale' : ((PR.mecef.fiche(PR.mecef.etat(f)) || {}).libelle || f.statutMecef)) }),
         ]),
       ]));
@@ -311,8 +311,8 @@
         ['Nature', f.type],
         ['Assurance', f.assureur ? f.assureur + (f.souscripteur ? ' — ' + f.souscripteur : '') : 'Aucune'],
         ['N° de police', f.numeroPolice || '—'],
-        /* Les pièces de caisse portent l'autre RCCM (relevé sur les factures réelles). */
-        ['RCCM', C.BRAND.rccm],
+        /* Le RCCM du CORPS est celui de la DATE de la pièce, comme l'en-tête (lot IDENT). */
+        ['RCCM', C.identiteALaDate(f.date).rccm],
       ],
       contenu: contenu,
       /* Pas de signature patient sur une pièce de caisse : c'est la caisse
@@ -1754,7 +1754,7 @@
             ['Date', C.dateFR(AUJ)], ['Mode de règlement', modeLabel(v ? v.modePaiement : f.modePaiement)],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
             ['Référence transaction', (v && v.reference) || f.referenceTransaction || '—'],
-            ['RCCM', C.BRAND.rccm]],
+            ['RCCM', C.identiteALaDate((f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ)).rccm]],
           contenu: el('div.space-y-3', null, [
             payees.length ? el('div', null, [
               el('p.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Prestations réglées' }),
@@ -2428,7 +2428,7 @@
           cartouche: [['Facture', f.numero], ['Patient', f.patient], ['Dossier', f.patientCode],
             ['Date', C.dateFR(AUJ)], ['Mode de règlement', (f.modePaiement || '—')],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
-            ['RCCM', C.BRAND.rccm]],
+            ['RCCM', C.identiteALaDate((f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ)).rccm]],
           contenu: el('div.space-y-3', null, [
             payees.length ? el('div', null, [
               el('p.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Prestations réglées' }),

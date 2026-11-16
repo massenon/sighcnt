@@ -633,3 +633,14 @@ Le lot applique les réponses AQ points 2, 3, 6, 8, 11 et 23. Ce qui suit est ce
 10. **Aucune collection fiscale ne va vers un téléphone** : obligations et historique, échéances, paramètres du calendrier fiscal, barèmes, réglages et imputations de l'AIB (liste prudentielle `collectionsFiscalesJamaisMobile` du domaine).
 11. **Les barèmes 1 %, 5 % et 3 % de la situation de l'acheteur** ne servent plus à la caisse (le patient ne porte aucun AIB) : ils restent le barème d'une opération où la clinique est le VENDEUR d'une facture normalisée à un acheteur professionnel, cas que la clinique n'a pas aujourd'hui. À dire s'il faut les retirer ou les garder.
 
+## AT. Lot IDENT (16/11/2026, maquette, domaine, poste, synchronisation, relais) : RCCM à jour en version datée, informations de la clinique propagées, plus aucune constante d'identité
+
+Réponse de la Direction appliquée : AQ point 15. Rien ici ne remplace une décision ; ce qui suit est PROPOSITION À VALIDER.
+
+1. **Date d'effet du RCCM « NAT/2021/M02-020 » : 16/11/2026** (jour de la décision). Proposition à valider : si le numéro est en usage plus tôt, la Direction pose une version datée antérieure (la version 1 se clôt la veille) ; aucune pièce émise n'est réécrite.
+2. **Droit de poser l'identité** : l'écriture de « Paramètres fiscaux » ou de « Identité et papier à en-tête » de la fiche RBAC (aujourd'hui administrateur, Direction, DAF). Proposition à valider : un seul droit pour les deux écrans.
+3. **Poste fileul** : la modification est signée et déposée, la mère la revérifie et la propage ; le fileul ne la voit qu'une fois appliquée (« Modification déposée à la mère »). Proposition à valider : la validation de l'identité (Direction, DAF, administrateur) reste un geste distinct, déjà porté par le lot CONT pour les autres familles ; l'identité n'y est pas ajoutée.
+4. **Options d'impression** (logo de part et d'autre, filigrane) : réglage de CLINIQUE qui voyage avec l'identité ; une valeur locale d'avant le lot n'est pas reprise.
+5. **Rien vers un téléphone** : identité, options et demandes ne partent pas aux mobiles (RG-13) ; décision prise par défaut, à confirmer si un écran du téléphone devait un jour imprimer l'en-tête.
+6. **Autres réglages locaux** (`reglages` : canaux et paramètres de notification, etc.) ne voyagent toujours pas entre postes : constat du lot, à trancher (lot propre).
+7. **Postes déjà installés** : la version 2 de l'identité est à poser par la Direction sur un poste existant (pas de migration automatique).

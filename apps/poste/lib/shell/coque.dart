@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import '../impression/identite_poste.dart';
 
 import '../core/config_poste.dart';
 import '../core/donnees_navigation.dart';
@@ -114,6 +115,9 @@ class _CoquePosteState extends State<CoquePoste> {
   bool _rechercheOuverte = false;
 
   DateTime _maintenant() => (widget.horloge ?? _session?.horloge ?? DateTime.now)();
+
+  /// L'identité légale À LA DATE du jour, lue au magasin du poste (lot IDENT) : le pied légal ne lit plus une constante.
+  IdentiteImprimee _identiteDuJour() => identiteImprimeeDe(widget.magasin ?? _magasinVide, _maintenant());
 
   CentreNotifications get _centre {
     final m = widget.magasin ?? _magasinVide;
@@ -526,7 +530,7 @@ class _CoquePosteState extends State<CoquePoste> {
                 child: Builder(
                     builder: (c) => Column(children: [
                           Expanded(child: porte(c, widget.config)),
-                          const PiedLegal(fond: JetonsShell.slate100),
+                          PiedLegal(fond: JetonsShell.slate100, identite: _identiteDuJour()),
                         ])))));
   }
 
@@ -611,7 +615,7 @@ class _CoquePosteState extends State<CoquePoste> {
         const Expanded(
             child: Center(
                 child: Text('Aucun module n’est ouvert à votre profil.'))),
-        const PiedLegal(),
+        PiedLegal(identite: _identiteDuJour()),
       ]));
     }
     final demande = widget.ecranInitial;
@@ -650,7 +654,7 @@ class _CoquePosteState extends State<CoquePoste> {
             child: KeyedSubtree(
                 key: ValueKey('$courant|${widget.config.mode.name}${_aExercice(courant) ? '|exo${ChoixExercice.valeur.value}' : ''}'),
                 child: _page(courant, ruban, libelleMode))),
-        const PiedLegal(),
+        PiedLegal(identite: _identiteDuJour()),
       ]),
     );
   }

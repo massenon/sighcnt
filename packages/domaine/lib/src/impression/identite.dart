@@ -1,7 +1,7 @@
 /// Identité légale imprimée : UN SEUL en-tête sur toutes les pièces (arbitrage du 31/08/2026).
 ///
 /// Depuis le 06/11/2026 (Direction), l'identité est une DONNÉE DE RÉFÉRENCE DATÉE : la collection `identiteLegale` porte une fiche par
-/// version (`debut` null = depuis l'ouverture, `fin` null = en force). [IdentiteClinique] est la SEMENCE (la version 1, `C.BRAND_ORIGINE` de
+/// version (`debut` null = depuis l'ouverture, `fin` null = en force). [IdentiteClinique] est la SEMENCE (le défaut semé, `C.BRAND_ORIGINE` de
 /// `core.js`) ; une pièce s'imprime avec [IdentiteImprimee], la version en force À LA DATE DE LA PIÈCE (`cfbIdentiteALaDate`), repli sur la
 /// semence quand le magasin n'en porte aucune. Une facture d'hier garde le RCCM d'hier, même si une nouvelle version prend effet demain.
 class IdentiteClinique {
@@ -18,7 +18,10 @@ class IdentiteClinique {
   static const telephoneRdv = '60 33 92 92';
   static const email = 'cliniquenassiera@gmail.com';
   static const ifu = '3201642748214';
-  static const rccm = 'RB/NAT/2016-B-268';
+  /// RCCM À JOUR (Direction, 16/11/2026, lot IDENT) : défaut semé. L'ancien numéro est la version 1 DATÉE de `identiteLegale`, close au 15/11/2026.
+  static const rccm = 'NAT/2021/M02-020';
+  /// Le RCCM de la VERSION 1 datée de l'identité (close au 15/11/2026, jamais réécrite) : la donnée d'une version, pas un défaut.
+  static const rccmVersion1 = 'RB/NAT/2016-B-268';
   /// Le pied de page légal de tous les écrans (texte arrêté par la Direction le 01/11/2026) : lu de l'identité unique, jamais réécrit ailleurs. Les
   /// séparateurs sont une identité légale imprimée, pas de la ponctuation rédigée.
   static const mentionLegale = '$nom — IFU $ifu — RCCM $rccm.';
@@ -166,6 +169,9 @@ class IdentiteImprimee {
     final m = RegExp(r'^(.*?)\s+(SARL|SA|SAS|SUARL|SARLU)\.?$', caseSensitive: false).firstMatch(nom.trim());
     return m == null ? nom.trim() : m.group(1)!;
   }
+
+  /// Le pied d'une planche ou d'un état : dénomination, RCCM, IFU de la version (la maquette écrit `I.nom — I.rccm — IFU I.ifu`).
+  String get mentionPied => '$nom — $rccm — IFU $ifu';
 
   /// Le pied légal de la version : même forme que [IdentiteClinique.mentionLegale].
   String get mentionLegale => '$nom — IFU $ifu — RCCM $rccm.';

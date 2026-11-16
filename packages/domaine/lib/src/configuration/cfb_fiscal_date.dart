@@ -102,13 +102,13 @@ CfaFiche cfbChampsIdentite(CfaFiche? fiche) {
   };
 }
 
-/// La fiche SEMÉE de l'identité (version 1, depuis l'ouverture du dossier, non validée) : ce que `store.seed()` écrit.
+/// La fiche SEMÉE de l'identité, VERSION 1 (depuis l'ouverture du dossier, close au 15/11/2026, jamais réécrite, non validée) : RCCM d'origine. Lot IDENT (16/11/2026).
 CfaFiche cfbSemenceIdentite({String id = 'IDL001'}) => {
       'id': id,
       'statut': 'actif',
       'version': 1,
       'debut': null,
-      'fin': null,
+      'fin': '2026-11-15',
       'creeLe': '2026-08-31',
       'creePar': 'core.js (semence)',
       'motif': null,
@@ -116,7 +116,27 @@ CfaFiche cfbSemenceIdentite({String id = 'IDL001'}) => {
       'validePar': null,
       'source': 'core.js, arbitrage du 31/08/2026',
       ...cfbIdentiteSemence(),
+      'rccm': IdentiteClinique.rccmVersion1,
     };
+
+/// La fiche SEMÉE de l'identité, VERSION 2 : le RCCM à jour (défaut semé [IdentiteClinique.rccm]), en force depuis le 16/11/2026 (date à confirmer par la Direction).
+CfaFiche cfbSemenceIdentiteV2({String id = 'IDL002'}) => {
+      'id': id,
+      'statut': 'actif',
+      'version': 2,
+      'debut': '2026-11-16',
+      'fin': null,
+      'creeLe': '2026-11-16',
+      'creePar': 'core.js (semence)',
+      'motif': 'RCCM à jour NAT/2021/M02-020 (Direction, 16/11/2026, date d’effet à confirmer)',
+      'valideLe': null,
+      'validePar': null,
+      'source': 'core.js, décision de la Direction du 16/11/2026 (DECISIONS-A-VALIDER, section AQ point 15)',
+      ...cfbIdentiteSemence(),
+    };
+
+/// Les deux versions semées de l'identité, comme `store.seed()` les écrit.
+List<CfaFiche> cfbSemencesIdentite() => [cfbSemenceIdentite(), cfbSemenceIdentiteV2()];
 
 /// `S.identiteALaDate(date)` : la version dont `debut <= date` (ou `debut` nul, « depuis l'ouverture du dossier ») et (`fin` nul ou
 /// `date <= fin`), la plus haute d'abord ; une date antérieure à toute version rend la version 1 ; aucune version active : `null`.
@@ -185,6 +205,9 @@ bool cfbIdentiteExigeVersion(Iterable<CfaFiche> versions) => versions.any((v) =>
 class CfbEcritureIdentite {
   const CfbEcritureIdentite._({this.refus, this.mode, this.version, this.id, this.fiche, this.precedenteId, this.patchPrecedente, this.enForceAujourdhui = false});
   const CfbEcritureIdentite.refusee(CfbRefus refus) : this._(refus: refus);
+
+  /// Lot IDENT : sur un FILEUL, la version n'est pas écrite, elle est DÉPOSÉE à la mère (`demandesIdentite`), qui la revérifie et l'ajoute. `mode` vaut `deposee`.
+  const CfbEcritureIdentite.deposee() : this._(mode: 'deposee');
   final CfbRefus? refus;
   bool get ok => refus == null;
 

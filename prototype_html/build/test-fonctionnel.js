@@ -13764,7 +13764,7 @@ async function viderMessages(page) {
     });
     const e0 = sauve.etat;
     verifier('Les trois collections sont semées au socle (identité v1 non validée, 21 fiches d’obligations : les 20 du calendrier, dont le versement CNSS, et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69 ou plus',
-      e0.identite.length === 1 && e0.identite[0].version === 1 && !e0.identite[0].valideLe && e0.obligations.length === 21   /* valeur changée voulue (lot A3b) : 20 fiches devient 21, le versement CNSS en plus */
+      e0.identite.length === 2 /* lot IDENT : deux versions semées, la 1 close au 15/11/2026, la 2 depuis le 16/11/2026 */ && e0.identite[0].version === 1 && !e0.identite[0].valideLe && !e0.identite[1].valideLe && e0.obligations.length === 21   /* valeur changée voulue (lot A3b) : 20 fiches devient 21, le versement CNSS en plus */
       && e0.obligations.some((o) => o.code === 'ORTB-PARAMETRES' && o.type === 'parametres') && e0.historique.length === 0
       && e0.essentielles && e0.libelles === 'CFG/CFG' && e0.version >= 69,
       JSON.stringify({ identite: e0.identite.length, obligations: e0.obligations.length, historique: e0.historique.length, essentielles: e0.essentielles, libelles: e0.libelles, version: e0.version }));
@@ -13872,7 +13872,7 @@ async function viderMessages(page) {
         v1fin: v1.fin, veille: C.iso(C.addDays(futur, -1)), futur: futur };
     });
     verifier('Une version 2 à date d’effet future se crée (le motif est obligatoire : MOTIF_REQUIS sans lui) ; la v1 reçoit fin = veille de la date d’effet',
-      v3.ok && v3.version === 2 && v3.sansMotif === 'MOTIF_REQUIS' && v3.v1fin === v3.veille, JSON.stringify(v3));
+      v3.ok && v3.version === 3 /* lot IDENT : la 2 est la version semée du 16/11/2026 */ && v3.sansMotif === 'MOTIF_REQUIS' && v3.v1fin === v3.veille, JSON.stringify(v3));
     verifier('C.BRAND.rccm reste l’ancien ; identiteALaDate rend l’ancien RCCM hier et le nouveau après la date d’effet (IFU inchangé)',
       v3.brand === 'RB/NAT/2016-B-268' && v3.hier === 'RB/NAT/2016-B-268' && v3.apres === 'RB/NAT/2026-B-999' && v3.ifuApres === '3201642748214', JSON.stringify(v3));
     verifier('Un état daté d’hier imprime l’ancien RCCM, un état daté après la date d’effet imprime le nouveau', v3.enteteHier && v3.enteteApres, JSON.stringify(v3));
@@ -14008,11 +14008,13 @@ async function viderMessages(page) {
       const S = window.SIGH.store, C = window.SIGH.core, CF = window.SIGH.configurationFiscale, PR = window.SIGH.parcours;
       S.collection('bulletins').archive(sauve.bulId, 'Sonde 81 : restauration');
       const colI = S.collection('identiteLegale');
-      colI.active().filter((v) => v.version > 1).forEach((v) => colI.archive(v.id, 'Sonde 81 : restauration'));
-      const v1 = sauve.etat.identite.filter((v) => v.version === 1)[0];
-      const patch = {};
-      C.CHAMPS_IDENTITE.forEach((k) => { if (v1[k] !== undefined) patch[k] = v1[k]; });
-      colI.update(v1.id, Object.assign(patch, { fin: null, valideLe: null, validePar: null, modifieLe: null, modifiePar: null }));
+      colI.active().filter((v) => v.version > 2).forEach((v) => colI.archive(v.id, 'Sonde 81 : restauration'));
+      /* lot IDENT : les DEUX versions semées sont rétablies à l'identique (bornes comprises), non validées. */
+      sauve.etat.identite.filter((v) => v.version <= 2).forEach((v1) => {
+        const patch = {};
+        C.CHAMPS_IDENTITE.forEach((k) => { if (v1[k] !== undefined) patch[k] = v1[k]; });
+        colI.update(v1.id, Object.assign(patch, { debut: v1.debut === undefined ? null : v1.debut, fin: v1.fin === undefined ? null : v1.fin, valideLe: null, validePar: null, modifieLe: null, modifiePar: null }));
+      });
       const colO = S.collection('obligationsFiscales');
       sauve.etat.obligations.forEach((o) => {
         const cur = colO.get(o.id); if (!cur) return;
@@ -14043,7 +14045,7 @@ async function viderMessages(page) {
     await attendreEcritures();
     verifier('Le scénario restaure l’état : identité v1 d’origine non validée, obligations et ORTB d’origine (CCIB-2 le 10, seuil 60 000), historique vide, CCIB-2 payée, session rendue',
       fin.slogan === 'Votre santé, notre raison de vivre' && fin.rccm === 'RB/NAT/2016-B-268' && fin.tel === 2 && fin.etatI === 'a_valider' && fin.etatO === 'a_valider'
-      && fin.versions === 1 && fin.ccib2 && fin.ccib2Actives === 2 && fin.itsActives === 24 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === sauve.etat.session.role,
+      && fin.versions === 2 && fin.ccib2 && fin.ccib2Actives === 2 && fin.itsActives === 24 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === sauve.etat.session.role,
       JSON.stringify(fin));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   });
@@ -28350,6 +28352,79 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT INVENT-NC FIN */
+  /* LOT IDENT DEBUT */
+  await etape(async () => {
+    scenario('Vague 230 : lot IDENT, le RCCM à jour NAT/2021/M02-020 est une VERSION DATÉE de l’identité légale (la version 1 close au 15/11/2026 n’est jamais réécrite), le défaut semé est à jour, une pièce garde l’identité de SA date');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADM230', nomComplet: 'ADM230', fonction: 'direction', identifiant: 'a230.admin', secteur: 'ADM' });
+    await ouvrir('cfg-fiscalite.html');
+    const r = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const v = S.collection('identiteLegale').active().slice().sort((a, b) => a.version - b.version);
+      const a = (d) => C.identiteALaDate(d).rccm;
+      return { versions: v.map((x) => ({ version: x.version, debut: x.debut || null, fin: x.fin || null, rccm: x.rccm, ifu: x.ifu })),
+        dates: [a('2020-01-01'), a('2026-08-16'), a('2026-11-15'), a('2026-11-16'), a('2027-03-01')],
+        semence: C.BRAND_ORIGINE.rccm, ifu: C.identiteALaDate('2026-11-16').ifu, version: S.VERSION || null };
+    });
+    const ancien = 'RB/NAT/2016-B-268', neuf = 'NAT/2021/M02-020';
+    verifier('Deux versions semées : la 1 (RCCM d’origine, depuis l’ouverture, close au 15/11/2026) et la 2 (RCCM à jour, depuis le 16/11/2026) ; l’IFU 3201642748214 ne change pas',
+      r.versions.length === 2 && r.versions[0].rccm === ancien && r.versions[0].debut === null && r.versions[0].fin === '2026-11-15'
+      && r.versions[1].rccm === neuf && r.versions[1].debut === '2026-11-16' && r.versions[1].fin === null && r.versions.every((x) => x.ifu === '3201642748214'), JSON.stringify(r));
+    verifier('L’identité se lit À LA DATE : avant le 16/11/2026 l’ancien numéro, depuis le 16/11/2026 le nouveau ; le défaut semé (`C.BRAND_ORIGINE`) est le numéro à jour',
+      JSON.stringify(r.dates) === JSON.stringify([ancien, ancien, ancien, neuf, neuf]) && r.semence === neuf, JSON.stringify(r));
+    const w = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const v1 = S.collection('identiteLegale').all().filter((x) => x.version === 1)[0];
+      let refus = null;
+      try { S.collection('identiteLegale').update(v1.id, { fin: '2026-11-15' }); } catch (e) { refus = String(e && e.message); }
+      return { rccm: S.collection('identiteLegale').get(v1.id).rccm, refus };
+    });
+    verifier('La version 1 reste telle qu’elle a été semée (RCCM d’origine) : une pièce émise avant le 16/11/2026 garde son numéro', w.rccm === ancien, JSON.stringify(w));
+    /* Une pièce se lit à SA date : le corps des pièces (cartouche) lit la même identité que l’en-tête. */
+    const sources = await page.evaluate(async () => {
+      const lire = async (f) => (await fetch((document.documentElement.getAttribute('data-root') || '') + 'assets/js/' + f)).text();
+      const out = {};
+      for (const f of ['modules/m8-facturation.js', 'modules/m9-assurances.js', 'modules/mecef.js', 'modules/auth.js', 'modules/support.js', 'modules/rapports.js', 'print.js', 'core.js', 'modules/configuration.js']) {
+        const t = await lire(f);
+        out[f] = { brandRccm: (t.match(/C\.BRAND\.rccm/g) || []).length, ancien: (t.match(/RB\/NAT\/2016-B-268/g) || []).length };
+      }
+      out['store.js'] = { ancien: ((await lire('store.js')).match(/RB\/NAT\/2016-B-268/g) || []).length };
+      return out;
+    });
+    const fautes = Object.keys(sources).filter((f) => (sources[f].brandRccm || 0) > 0 || (f !== 'store.js' && sources[f].ancien > 0));
+    verifier('Plus aucune constante d’identité : le corps des factures, reçus, fiche MECeF, facture mère, le badge, l’aide, les pages d’accès et la configuration MECeF lisent l’identité à la date ; l’ancien numéro n’existe que dans la version 1 de store.js',
+      fautes.length === 0 && sources['store.js'].ancien === 1, JSON.stringify({ fautes, sources }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 231 : lot IDENT, les pages lisent l’identité de la DATE du jour (aide, configuration MECeF, pied légal, badge) : l’horloge passe au 20/11/2026, le nouveau RCCM s’affiche sans recharger');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADM231', nomComplet: 'ADM231', fonction: 'direction', identifiant: 'a231.admin', secteur: 'ADM' });
+    await ouvrir('aide-apropos.html');
+    const avant = await page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '));
+    await page.evaluate(() => {
+      const Vrai = Date; const fixe = new Vrai(2026, 10, 20, 12, 0, 0).getTime();
+      class Faux extends Vrai { constructor(...a) { if (a.length === 0) super(fixe); else super(...a); } static now() { return fixe; } }
+      window.Date = Faux; window.SIGH.core.aujourdhui = () => new Faux();
+      window.SIGH.app.go('mecef-config');
+    });
+    await page.waitForFunction(() => /Mentions portées sur chaque facture/.test((document.getElementById('page-content') || document.body).textContent), { timeout: 30000 }).catch(() => null);
+    const mec = await page.evaluate(() => {
+      const champ = [...document.querySelectorAll('#page-content input')].filter((i) => /M02-020|2016-B-268/.test(i.value))[0];
+      const texte = (document.getElementById('page-content') || document.body).textContent;
+      return { valeur: champ ? champ.value : null, apercu: /NAT\/2021\/M02-020/.test(texte) && !/2016-B-268/.test(texte), mention: window.SIGH.core.mentionLegale() };
+    });
+    verifier('À l’horloge du jeu (16/08/2026) l’aide affiche l’ancien numéro ; au 20/11/2026 la configuration MECeF propose le numéro à jour et la mention légale du pied le porte',
+      /RB\/NAT\/2016-B-268/.test(avant) && mec.valeur === 'NAT/2021/M02-020' && mec.apercu && /RCCM NAT\/2021\/M02-020\./.test(mec.mention), JSON.stringify({ avant: (avant.match(/RCCM.{0,30}/) || [''])[0], mec }));
+    const badge = await page.evaluate(() => {
+      const P = window.SIGH.print;
+      const el = P.carteBadge({ modele: { zones: {}, orientation: 'paysage', mentionsVerso: [] }, badge: { numero: 'B231', expireLe: null }, agent: { nom: 'Sonde', prenom: 'Un' } }, 'verso');
+      return el.textContent;
+    });
+    verifier('Le badge CR80 lit la dénomination de l’identité à la date (et ne porte ni IFU ni RCCM)', /CLINIQUE NASSIERA TOO SARL/.test(badge) && !/RCCM|IFU/.test(badge), badge.slice(0, 160));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT IDENT FIN */
 
   /* LOT TARIF-FIX-2 DEBUT (Vagues 195 à 197) : prescrire toujours, bloquer seulement l'encaissement d'une ligne sans prix (Direction, 16/11/2026, section AL point 2) */
   await etape(async () => {

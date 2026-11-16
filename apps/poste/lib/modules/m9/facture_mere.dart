@@ -268,6 +268,7 @@ class _EtatFactureMere extends State<EcranFactureMere> {
     afficherApercu(
         ctx,
         pieceM9(c,
+            date: DateTime.tryParse('${r?['dateEmission'] ?? ''}'),
             titre: 'FACTURE MÈRE — ${nomC.toUpperCase()}',
             sousTitre: r != null ? '${r['numero']}' : 'Aperçu — pièce non émise',
             cartouche: [
@@ -285,7 +286,7 @@ class _EtatFactureMere extends State<EcranFactureMere> {
               ('Souscripteurs consolidés', nombre(lignes.length)),
               ('Pièces filles', nombre(r != null ? n(r['nbFactures']) : rap.nbFactures)),
               ('Émise le', r != null ? dateDe(r['dateEmission']) : '— aperçu —'),
-              ('RCCM', identiteImprimeeDe(c.magasin, c.aujourdhui).rccm),
+              ('RCCM', identiteImprimeeDe(c.magasin, DateTime.tryParse('${r?['dateEmission'] ?? ''}') ?? c.aujourdhui).rccm),
             ],
             blocs: [
               const BlocTexte('CONSOLIDATION PAR SOUSCRIPTEUR', gras: true),

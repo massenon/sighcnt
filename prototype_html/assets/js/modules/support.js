@@ -12,6 +12,8 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store,
       N = global.SIGH.nav, K = global.SIGH.kit;
   var el = C.el;
+  /** L'identité légale À LA DATE du jour (lot IDENT) : jamais une constante. */
+  function idt() { return C.identiteALaDate(C.iso(C.aujourdhui())); }
   var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* --- Coordonnées de l'éditeur ------------------------------------------- */
@@ -413,7 +415,7 @@
       var presentation = el('div.grid.gap-4.lg\\:grid-cols-3');
       var texte = el('div.space-y-3.lg\\:col-span-2');
       texte.appendChild(el('p.text-sm.leading-relaxed.text-slate-600', {
-        text: 'Le SIGH-CNT est le Système Intégré de Gestion Hospitalière de la ' + C.BRAND.nom + '. '
+        text: 'Le SIGH-CNT est le Système Intégré de Gestion Hospitalière de la ' + idt().nom + '. '
           + 'Il réunit en une seule application des activités jusqu’ici réparties entre plusieurs logiciels cloisonnés '
           + 'et de nombreux registres papier : dossier patient, consultations, hospitalisation, laboratoire, '
           + 'pharmacie, achats, facturation, assurances, ressources humaines, paie et comptabilité.',
@@ -431,9 +433,9 @@
       var carte = el('div.space-y-2');
       [['Version', EDITEUR.version],
        ['Éditeur', EDITEUR.auteur],
-       ['Établissement', C.BRAND.nom],
-       ['IFU', C.BRAND.ifu],
-       ['RCCM', C.BRAND.rccm]].forEach(function (l) {
+       ['Établissement', idt().nom],
+       ['IFU', idt().ifu],
+       ['RCCM', idt().rccm]].forEach(function (l) {
         carte.appendChild(el('div.flex.items-baseline.justify-between.gap-3.border-b.border-slate-100.pb-1\\.5', null, [
           el('span.shrink-0.text-xs.text-slate-500', { text: l[0] }),
           el('span.text-right.text-xs.font-medium.text-slate-800', { text: l[1] }),

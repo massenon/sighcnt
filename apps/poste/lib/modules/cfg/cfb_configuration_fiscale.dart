@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../core/service_installation.dart';
+import '../../donnees/demandes_identite_poste.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -39,7 +40,11 @@ class ConfigurationFiscalePoste {
   /// (ce n'est pas le geste d'un agent). À appeler AVANT le premier rendu, jamais pendant.
   static void amorcer(Magasin m) {
     final v = m.collection('identiteLegale');
-    if (v.toutes.isEmpty) v.ajouterSansJournal(cfbSemenceIdentite());
+    if (v.toutes.isEmpty) {
+      for (final f in cfbSemencesIdentite()) {
+        v.ajouterSansJournal(f);
+      }
+    }
     final o = m.collection('obligationsFiscales');
     if (o.toutes.isEmpty) {
       for (final f in cfbSemenceObligations()) {
@@ -68,6 +73,8 @@ class ConfigurationFiscalePoste {
   /// « Enregistrer » avant la première validation : corrige la version en force. Rend le refus, ou `null`. `VERSION_REQUISE` : l'appelant ouvre la
   /// modale de portée.
   CfbEcritureIdentite enregistrerIdentite(Map<String, Object?> champs) {
+    final droit = controleDroitIdentite();
+    if (droit != null) return CfbEcritureIdentite.refusee(droit);
     final r = cfbEnregistrerIdentite(versions.toutes, champs, acteur: acteurNomme, maintenant: maintenant, aujourdhui: maintenant, fileul: fileul);
     if (r.ok) versions.mettreAJour(r.id, r.fiche!);
     return r;
@@ -75,12 +82,41 @@ class ConfigurationFiscalePoste {
 
   /// Après une validation : une version NOUVELLE, datée et motivée ; la version couvrante se ferme la veille de la date d'effet et RESTE.
   CfbEcritureIdentite nouvelleVersionIdentite(Map<String, Object?> champs, {required Object dateEffet, required String motif, required String origine}) {
+    if (fileul) {
+      // Lot IDENT : un fileul habilité SIGNE et DÉPOSE la version (`demandesIdentite`) ; la mère revérifie le droit sous le rôle de l'auteur, l'ajoute et la propage.
+      final p = demandesIdentite.poser(fileul: true, role: c.role, acteur: acteurNomme, champs: champs, dateEffet: dateEffet, motif: motif);
+      return p.refus != null ? CfbEcritureIdentite.refusee(p.refus!) : const CfbEcritureIdentite.deposee();
+    }
+    final droit = controleDroitIdentite();
+    if (droit != null) return CfbEcritureIdentite.refusee(droit);
     final r = cfbNouvelleVersionIdentite(versions.toutes, champs,
         dateEffet: dateEffet, motif: motif, acteur: acteurNomme, maintenant: maintenant, aujourdhui: maintenant, exercices: exercices, fileul: fileul, origine: origine);
     if (!r.ok) return r;
     if (r.precedenteId != null) versions.mettreAJour(r.precedenteId, r.patchPrecedente!);
     versions.inserer(r.fiche!, prefixe: 'IDL');
     return r;
+  }
+
+  // --- Droit d'écrire l'identité et options d'impression (lot IDENT) ---------------------------------------------------------------------------------
+
+  /// Le droit est celui de la FICHE RBAC (écriture de « Paramètres fiscaux » ou « Identité et papier à en-tête »), jamais un nom de rôle. Sans matrice chargée, le droit de l'écran courant.
+  bool get peutPoserIdentite => c.donnees?.matrice == null ? c.droit.editer : idDroitEcriture(c.donnees!.matrice, c.role);
+
+  /// Le moteur refuse sans le droit, même si la commande a été masquée.
+  CfbRefus? controleDroitIdentite() => idControleDroit(droit: peutPoserIdentite, libelleRole: c.donnees?.matrice.libelle(c.role) ?? c.role);
+
+  DemandesIdentitePoste get demandesIdentite => DemandesIdentitePoste(m, matrice: c.donnees?.matrice, horloge: () => maintenant, etiquette: 'F');
+
+  /// La valeur d'une option d'impression : lue de la collection `optionsImpression` (qui VOYAGE avec l'identité), sinon le défaut semé.
+  Object? optionImpression(String cle) => idOption(m.collection(idCollectionOptions).toutes, cle);
+
+  /// Pose les options d'impression : écrites ici sur la mère, DÉPOSÉES à la mère depuis un fileul. Rend le refus nommé ou le mode.
+  ({CfbRefus? refus, String? mode}) poserOptionsImpression(Map<String, Object?> options) {
+    // Rien n'est écrit ni déposé quand rien ne change.
+    final changees = {for (final e in options.entries) if ('${optionImpression(e.key)}' != '${e.value}') e.key: e.value};
+    if (changees.isEmpty) return (refus: null, mode: 'inchangee');
+    final r = demandesIdentite.poser(fileul: fileul, role: c.role, acteur: acteurNomme, optionsImpression: changees);
+    return (refus: r.refus, mode: r.mode);
   }
 
   CfbValidation validerIdentite() {
@@ -388,19 +424,28 @@ Future<void> cfbModalePortee(
 /// de portée et crée une version. Le refus du magasin (garde « réglé sur la mère ») est NOMMÉ, jamais avalé.
 Future<void> cfbEnregistrerIdentiteDepuis(BuildContext ctx, ConfigurationFiscalePoste cf, String ecran, Map<String, Object?> champs, {VoidCallback? apres}) async {
   try {
-    if (cf.identiteExigeVersion) {
+    if (cf.identiteExigeVersion || cf.fileul) {
       final enForce = cf.identiteEnForce();
       await cfbModalePortee(ctx,
           cf: cf,
           sousTitre: 'Identité légale (version ${enForce?['version'] ?? 1} en force)',
-          explication: 'L’identité légale a déjà été validée : la modification crée une NOUVELLE VERSION, datée. Les pièces émises avant la date d’effet gardent '
-              'l’en-tête sous lequel elles ont été imprimées ; la nouvelle version devra être revalidée.',
+          explication: cf.identiteExigeVersion
+              ? 'L’identité légale a déjà été validée : la modification crée une NOUVELLE VERSION, datée. Les pièces émises avant la date d’effet gardent '
+                  'l’en-tête sous lequel elles ont été imprimées ; la nouvelle version devra être revalidée.'
+              : 'Ce poste est un fileul : la modification est SIGNÉE puis DÉPOSÉE à la mère, qui la vérifie, ajoute une NOUVELLE VERSION datée et la propage à tous les postes. '
+                  'Les pièces émises avant la date d’effet gardent leur en-tête.',
           minimum: enForce?['debut'],
           placeholderMotif: 'Changement de RCCM, nouvelle adresse, nouveau numéro…',
           libelleAppliquer: 'Créer la version',
           appliquer: (dateEffet, motif) {
             final r = cf.nouvelleVersionIdentite(champs, dateEffet: dateEffet, motif: motif, origine: ecran);
             if (!r.ok) return r.refus;
+            if (r.mode == 'deposee') {
+              ToastsSigh.afficher(ctx, 'Modification déposée à la mère.',
+                  type: TypeToast.succes, detail: 'Signée à votre nom : la mère la vérifie, ajoute la version datée et la propage. Elle apparaît ici dès qu’elle est appliquée.');
+              apres?.call();
+              return null;
+            }
             ToastsSigh.afficher(ctx, 'Version ${r.version} de l’identité légale créée.',
                 type: TypeToast.succes,
                 detail: '${r.enForceAujourdhui ? 'En force dès aujourd’hui.' : 'Prend effet le ${dateFR(DateTime.parse(isoJour(dateEffet)))}.'} '

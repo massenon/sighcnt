@@ -16,9 +16,11 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         cfbEssentielles,
         collectionsFiscalesJamaisMobile,
         collectionsGestionJamaisMobile,
+        collectionsIdentiteJamaisMobile,
         collectionsGestionSynchronisees,
         cpcRefusRejeuBudget,
         cpcRefusRejeuPiece,
+        idCollectionOptions,
         mobMotifFonctionNonHabilitee,
         mobPeutPrescrire,
         mobRefusAffectation,
@@ -50,6 +52,9 @@ final familles = <String, String>{
   // ligne, la première fiche refusée (`collection_inconnue`) arrêtait la publication (`pousser` s'interrompt à la première erreur) et rien de ce qui suit, prix compris,
   // n'atteignait les fileuls (lot T6).
   valCollectionValidations: 'R',
+  // Lot IDENT : les OPTIONS D'IMPRESSION de la clinique (logo de part et d'autre, filigrane) voyagent comme l'identité (la mère seule écrit, les postes reçoivent). Avant ce lot elles vivaient
+  // dans `reglages`, que la mère ne diffuse pas : posées sur un poste, elles y restaient.
+  idCollectionOptions: 'R',
 };
 const familleDeBase = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
@@ -80,6 +85,9 @@ const familleDeBase = <String, String>{
   // Lot CONT : la DÉCISION de validation d'un référentiel prise sur un fileul (signée : qui, quand, motif). Le fileul la dépose, la mère l'applique MÉCANIQUEMENT (mêmes contrôles sous le rôle
   // de l'auteur) et complète du verdict sur la même fiche, champ à champ dans les deux sens. Jamais vers un téléphone (RG-13).
   'demandesValidation': 'A',
+  // Lot IDENT : la DEMANDE d'identité d'un fileul habilité (version datée de l'identité légale et/ou options d'impression, signée). Le fileul la dépose, la mère revérifie le droit de la fiche RBAC
+  // sous le rôle de l'auteur, ajoute la version et complète du verdict sur la même fiche, champ à champ dans les deux sens. Jamais vers un téléphone (RG-13).
+  'demandesIdentite': 'A',
   // Lot D5 : les METADONNÉES des fichiers numérisés voyagent par le journal comme toute fiche (le binaire voyage à part, par empreinte, `fichiers_mere.dart`). Le courrier et le
   // document du patient portent `fichier` ; le registre `fichiers` est une fiche par empreinte, AJOUT SEUL (famille B).
   'courriers': 'A', 'documentsPatient': 'A', 'fichiers': 'B',
@@ -683,7 +691,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, ...collectionsFiscalesJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, ...collectionsFiscalesJamaisMobile, collectionsIdentiteJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})

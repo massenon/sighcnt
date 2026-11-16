@@ -8,7 +8,9 @@
 (function (global) {
   'use strict';
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, N = global.SIGH.nav, K = global.SIGH.kit;
-  var el = C.el, B = C.BRAND;
+  var el = C.el;
+  /** L'identité légale À LA DATE du jour (lot IDENT) : jamais une constante, jamais la semence quand le magasin répond. */
+  function idt() { return C.identiteALaDate(C.iso(C.aujourdhui())); }
 
   function base() { return document.documentElement.getAttribute('data-root') || ''; }
   /* L’extension des pages vient du MANIFESTE (`N.EXT`) : elle y vit à un
@@ -19,8 +21,8 @@
   function pastilleLogo(fond, taille, tonRepli) {
     return el('span.grid.shrink-0.place-items-center.overflow-hidden.rounded-xl.' + fond, null,
       el('img.object-contain.' + taille, {
-        src: base() + B.logo, alt: B.sigle,
-        onerror: function () { this.replaceWith(el('span.text-base.font-bold.' + tonRepli, { text: B.sigle })); },
+        src: base() + idt().logo, alt: idt().sigle,
+        onerror: function () { this.replaceWith(el('span.text-base.font-bold.' + tonRepli, { text: idt().sigle })); },
       }));
   }
 
@@ -78,12 +80,12 @@
 
     /* Le slogan de la clinique (Direction, 24/08/2026), mis en exergue. */
     mid.appendChild(el('p.mt-7.border-l-2.border-white\\/40.pl-4.text-base.font-medium.italic.text-white', {
-      text: '« ' + B.slogan + ' »',
+      text: '« ' + idt().slogan + ' »',
     }));
     aside.appendChild(mid);
 
     aside.appendChild(el('p.text-xs.text-navy-300', {
-      text: B.nom + ' — IFU ' + B.ifu + ' — RCCM ' + B.rccm,
+      text: idt().nom + ' — IFU ' + idt().ifu + ' — RCCM ' + idt().rccm,
     }));
 
     /* --- Carte de saisie, détachée sur le fond ---------------------------- */
@@ -95,7 +97,7 @@
     brandSm.appendChild(pastilleLogo('h-11.w-11.bg-navy-950', 'h-8.w-8', 'text-white'));
     brandSm.appendChild(el('div', null, [
       el('p.text-sm.font-semibold.text-slate-900', { text: 'CLINIQUE NASSIERA TOO' }),
-      el('p.text-xs.italic.text-slate-500', { text: B.slogan }),
+      el('p.text-xs.italic.text-slate-500', { text: idt().slogan }),
     ]));
     card.appendChild(brandSm);
 
@@ -113,7 +115,7 @@
     /* Sous lg le panneau institutionnel disparaît ; la mention légale, elle,
        doit rester lisible — c'est la carte d'identité de l'établissement. */
     colonne.appendChild(el('p.mt-5.text-center.text-xs.text-navy-200.lg\\:hidden', {
-      text: B.nom + ' — IFU ' + B.ifu,
+      text: idt().nom + ' — IFU ' + idt().ifu,
     }));
     main.appendChild(colonne);
 
@@ -599,7 +601,7 @@
         /* Le lien du plan du site suit le réglage en base (désactivé par défaut) : jamais un lien vers une page fermée. */
         if (N.ouvertParReglage('plan-du-site')) actions.appendChild(el('a.btn.btn-secondary', { href: url('plan-du-site') }, [C.icon('map', 'h-4 w-4'), 'Plan du site']));
         wrap.appendChild(actions);
-        wrap.appendChild(el('p.mt-10.text-xs.text-slate-400', { text: B.nom + ' — SIGH-CNT' }));
+        wrap.appendChild(el('p.mt-10.text-xs.text-slate-400', { text: idt().nom + ' — SIGH-CNT' }));
         root.appendChild(wrap);
         return null;
       },

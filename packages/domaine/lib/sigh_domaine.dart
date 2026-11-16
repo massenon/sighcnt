@@ -97,6 +97,7 @@ export 'src/configuration/cfb_regles.dart';
 // Configuration fiscale validée et datée (06/11/2026) : identité par versions, obligations et ORTB datés, échéances, validation réservée.
 export 'src/configuration/cfb_fiscal_date.dart';
 export 'src/configuration/cfb_parametres_fiscaux.dart';
+export 'src/configuration/demande_identite.dart';
 export 'src/referentiels/versions_datees.dart';
 export 'src/qualite/qual_enquetes.dart';
 export 'src/qualite/qual_validations.dart';

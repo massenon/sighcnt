@@ -7,6 +7,7 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/plan_du_site_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
+import '../../impression/identite_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../sync/config_smtp.dart';
 import '../../sync/file_courriels.dart';
@@ -85,9 +86,9 @@ class EcranAide extends StatelessWidget with EcranMaquette {
             for (final l in [
               ('Version', '${accEditeur['version']}'),
               ('Éditeur', '${accEditeur['auteur']}'),
-              ('Établissement', IdentiteClinique.nom),
-              ('IFU', IdentiteClinique.ifu),
-              ('RCCM', IdentiteClinique.rccm),
+              ('Établissement', identiteImprimeeDe(c.magasin, c.aujourdhui).nom),
+              ('IFU', identiteImprimeeDe(c.magasin, c.aujourdhui).ifu),
+              ('RCCM', identiteImprimeeDe(c.magasin, c.aujourdhui).rccm),
             ])
               Container(
                   padding: const EdgeInsets.only(bottom: 6, top: 6),

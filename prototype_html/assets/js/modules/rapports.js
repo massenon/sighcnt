@@ -11,6 +11,8 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
+  /** L'identité légale À LA DATE du jour (lot IDENT) : jamais une constante. */
+  function idt() { return C.identiteALaDate(C.iso(C.aujourdhui())); }
   var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* Rattachement de chaque état à l'écran qui sait le produire. */
@@ -94,14 +96,14 @@
       var apercu = el('div.grid.gap-4.lg\\:grid-cols-3');
       var mentions = el('div.lg\\:col-span-2');
       mentions.appendChild(U.card('Mentions portées sur tous les états', U.descList([
-        ['Dénomination', C.BRAND.nom],
-        ['Adresse postale', C.BRAND.bp],
-        ['Téléphones', C.BRAND.telephones.join('  /  ')],
-        ['Adresse électronique', C.BRAND.email],
-        ['Autorisation d’ouverture', C.BRAND.autorisation],
-        ['IFU', el('span.font-mono.font-semibold', { text: C.BRAND.ifu })],
-        ['RCCM', el('span.font-mono.font-semibold', { text: C.BRAND.rccm })],
-        ['Devise', C.BRAND.devise],
+        ['Dénomination', idt().nom],
+        ['Adresse postale', idt().bp],
+        ['Téléphones', idt().telephones.join('  /  ')],
+        ['Adresse électronique', idt().email],
+        ['Autorisation d’ouverture', idt().autorisation],
+        ['IFU', el('span.font-mono.font-semibold', { text: idt().ifu })],
+        ['RCCM', el('span.font-mono.font-semibold', { text: idt().rccm })],
+        ['Devise', idt().devise],
       ], 'grid-cols-1 sm:grid-cols-2'), [K.lien('cfg-branding', 'Modifier l’identité', { size: 'sm', icon: 'settings' })]));
       apercu.appendChild(mentions);
 

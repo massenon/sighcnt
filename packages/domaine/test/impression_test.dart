@@ -54,7 +54,8 @@ void main() {
       .cast<Map<String, dynamic>>();
   for (final c in cas) {
     test('ticket : ${c['nom']}', () {
-      final dart = lignesTicket(entree(c['entree'] as Map<String, dynamic>))
+      // Les cas sont tirés de la maquette à l'horloge du jeu (août 2026) : l'identité en force est la version 1 datée.
+      final dart = lignesTicket(entree(c['entree'] as Map<String, dynamic>), identite: IdentiteImprimee.depuisFiche({'rccm': IdentiteClinique.rccmVersion1}))
           .map((l) => l.brut)
           .toList();
       expect(dart, (c['lignes'] as List).cast<String>());

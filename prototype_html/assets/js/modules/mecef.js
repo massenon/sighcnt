@@ -279,8 +279,8 @@
               ['TVA (' + TAUX_TVA + ' %)', C.money(tva)],
               ['Montant TTC', C.money(f.montantTTC)],
               ['Statut de transmission', statutBadge(f.statutMecef)],
-              ['IFU émetteur', C.BRAND.ifu],
-              ['RCCM', C.BRAND.rccm],
+              ['IFU émetteur', C.identiteALaDate(f.date).ifu],
+              ['RCCM', C.identiteALaDate(f.date).rccm],
             ]),
             f.statutMecef === 'rejete'
               ? K.note('<strong>Facture refusée</strong>' + (f.codeRetour ? ' (' + f.codeRetour + ')' : '') + (f.motifRefusMecef ? ' : ' + f.motifRefusMecef : '') + '. Une correction puis une retransmission sont nécessaires avant archivage définitif.', { tone: 'danger', icon: 'file-x' })
@@ -374,7 +374,7 @@
               el('p.mt-1.text-\\[9px\\]', { text: 'MECeF NIM : ' + f.numeroMecef }),
               el('p.text-\\[9px\\]', { text: 'MECeF Compteurs : ' + C.pad(graine % 9999, 4) + '/' + C.pad((graine % 9999) + 120, 5) }),
               el('p.text-\\[9px\\]', { text: 'MECeF Heure : ' + C.dateFR(f.date) + ' ' + C.heure(new Date()) }),
-              el('p.text-\\[9px\\]', { text: 'IFU émetteur : ' + C.BRAND.ifu + ' — RCCM : ' + C.BRAND.rccm }),
+              el('p.text-\\[9px\\]', { text: 'IFU émetteur : ' + C.identiteALaDate(f.date).ifu + ' — RCCM : ' + C.identiteALaDate(f.date).rccm }),
               f.mecefSimule ? el('p.text-\\[9px\\].font-semibold.text-warning-700', { text: 'Simulation de la maquette : ce numéro n’est pas un numéro fiscal.' }) : null,
             ].filter(Boolean)),
           ]));
@@ -862,13 +862,14 @@
         return U.card('Mode de certification', corps);
       }
 
+      var idJour = C.identiteALaDate(C.iso(C.aujourdhui()));
       var champsConfig = [
         { type: 'section', label: 'Identification légale de l’émetteur' },
-        { name: 'raisonSociale', label: 'Raison sociale', required: true, col: 'full', value: C.BRAND.nom },
-        { name: 'ifu', label: 'IFU', required: true, value: C.BRAND.ifu },
-        { name: 'rccm', label: 'RCCM', required: true, value: C.BRAND.rccm },
-        { name: 'autorisation', label: 'N° d’autorisation d’ouverture', col: 'full', value: C.BRAND.autorisation },
-        { name: 'adresse', label: 'Adresse', col: 'full', value: C.BRAND.bp },
+        { name: 'raisonSociale', label: 'Raison sociale', required: true, col: 'full', value: idJour.nom },
+        { name: 'ifu', label: 'IFU', required: true, value: idJour.ifu },
+        { name: 'rccm', label: 'RCCM', required: true, value: idJour.rccm },
+        { name: 'autorisation', label: 'N° d’autorisation d’ouverture', col: 'full', value: idJour.autorisation },
+        { name: 'adresse', label: 'Adresse', col: 'full', value: idJour.bp },
         { name: 'telephone', label: 'Téléphones', value: C.BRAND.telephones.join(' / ') },
         { name: 'email', label: 'Adresse électronique', value: C.BRAND.email },
 
@@ -925,8 +926,8 @@
         ['Adresse', C.BRAND.bp],
         ['Téléphones', C.BRAND.telephones.join(' / ')],
         ['Adresse électronique', C.BRAND.email],
-        ['IFU', el('span.font-mono.font-semibold', { text: C.BRAND.ifu })],
-        ['RCCM', el('span.font-mono.font-semibold', { text: C.BRAND.rccm })],
+        ['IFU', el('span.font-mono.font-semibold', { text: idJour.ifu })],
+        ['RCCM', el('span.font-mono.font-semibold', { text: idJour.rccm })],
         ['Autorisation d’ouverture', C.BRAND.autorisation],
         ['Devise', C.BRAND.devise],
         ['Régime de TVA', REGIME.label],
