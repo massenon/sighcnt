@@ -5,7 +5,7 @@
  "libelleManifeste": "Plan annuel de travail",
  "acces": "ouvert",
  "titre": "Plan annuel de travail",
- "description": "Programmation annuelle des activités de la clinique, par axe et par trimestre.",
+ "description": "Programmation annuelle des activités de la clinique, par exercice, par axe et par trimestre, avec suivi chiffré.",
  "fil": [
   "Accueil",
   "Administration",
@@ -23,7 +23,11 @@
   "Actions programmées",
   "Réalisées",
   "En cours",
-  "Planifiées"
+  "Planifiées",
+  "En retard",
+  "Avancement moyen",
+  "Budget prévu",
+  "Budget réalisé"
  ],
  "cartes": [
   "Plan annuel de travail 2026",
@@ -46,15 +50,24 @@
    "Période",
    "Responsable",
    "Avancement",
+   "Taux",
+   "Budget prévu",
+   "Budget réalisé",
+   "Ligne Budgets",
+   "Indicateur",
    "Actions"
   ]
  ],
  "commandes": [
+  "Nouvelle action",
+  "Reconduire les actions non réalisées",
   "Imprimer le plan",
-  "Colonnes",
-  "Exporter"
+  "Imprimer le bilan",
+  "Signataires de l’impression",
+  "Exporter",
+  "Colonnes"
  ],
  "champs": [],
  "nbTableaux": 2,
- "nbKpis": 4
+ "nbKpis": 8
 }
