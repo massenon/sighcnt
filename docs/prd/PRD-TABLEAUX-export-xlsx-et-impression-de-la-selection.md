@@ -1,6 +1,6 @@
 # PRD : tableaux, export Excel (.xlsx) et impression des lignes cochées
 
-Statut : **brouillon du 15/11/2026, précisé le 15/11/2026 par la Direction** : la demande porte sur (a) l'**exportation en masse**, (b) les **lignes cochées** et (c) l'**impression des lignes cochées** (section 3 bis). Source : question de la Direction du 15/11/2026 (« est-ce que les différents écrans ont le bouton Exporter en xlsx, et aussi l'option de sélection par case à cocher des lignes de tables pour imprimer ? »). Skills : `spec`, `sigh-maitre`, `sigh-flutter`.
+Statut : **appliqué par le lot EXP (16/11/2026, maquette, domaine, poste)** : mesure avant code `docs/architecture/TABLEAUX-couverture-export.md`, écarts E2690 à E2697, ce qui reste à trancher en section AK de `DECISIONS-A-VALIDER.md` (valeur de la limite, état par ligne non fait, exemptions des grilles de saisie et des documents). Brouillon du 15/11/2026, précisé le 15/11/2026 par la Direction : la demande porte sur (a) l'**exportation en masse**, (b) les **lignes cochées** et (c) l'**impression des lignes cochées** (section 3 bis). Source : question de la Direction du 15/11/2026 (« est-ce que les différents écrans ont le bouton Exporter en xlsx, et aussi l'option de sélection par case à cocher des lignes de tables pour imprimer ? »). Skills : `spec`, `sigh-maitre`, `sigh-flutter`.
 Règle de rédaction : pas de tiret cadratin comme ponctuation.
 
 ## 1. Ce qui existe aujourd'hui (mesuré dans le code le 15/11/2026, pas un audit écran par écran)

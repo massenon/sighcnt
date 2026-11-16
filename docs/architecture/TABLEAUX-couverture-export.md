@@ -68,7 +68,7 @@ Le PRD comptait 29 tableaux ; la mesure en trouve **31** hors `ui.js` (30 dans l
 | 30 | `print.js:135` | `P.tableau`, tableau des états imprimés | document | exempté (c'est la sortie de l'impression) |
 | 31 | `parcours.js:4482` | balance d'une archive légale (chaîne HTML écrite dans le fichier d'archive) | document | exempté |
 
-Bilan : **12 tableaux de consultation** à équiper (dont `K.miniTable`, qui en couvre 186), **15 grilles de saisie** et **6 documents** exemptés avec motif. Les exemptions sont une **proposition à valider** (section AK) : le PRD dit « tous les tableaux », mais une grille en cours de saisie n'a pas encore de lignes à sortir.
+Bilan : **9 tableaux de consultation** à équiper (dont `K.miniTable`, qui en couvre 186), **16 grilles de saisie** et **6 documents** exemptés avec motif. Les exemptions sont une **proposition à valider** (section AK) : le PRD dit « tous les tableaux », mais une grille en cours de saisie n'a pas encore de lignes à sortir.
 
 ### 1.4 Colonnes et lignes sensibles par profil
 
@@ -99,6 +99,15 @@ Conséquence pour l'étape 1 : la sortie prend EXACTEMENT les lignes que l'écra
 | `MiniTableauSigh` (`kit/tableau_de_bord.dart`) | **139** appels, ni case ni export |
 | `Table` construits à la main | **18** hors kit, mêmes natures qu'à la maquette (saisie : `roles.dart` ×4, `facturation.dart`, `besoins_commun.dart`, `besoins_receptions.dart`, `cfb_notifications.dart` ; grilles : `rhb_planning.dart`, `rhc_securite_entretien.dart` ; documents : `cpb_feuillets.dart`, `impression/feuilles.dart`, `mvt_transferts.dart` ×2 ; consultation : `adm_vues.dart`, `res_comparatif.dart`, `res_resultats.dart`, `mrc_commun.dart`) |
 
-## 3. Ce que l'étape 1 et l'étape 2 font de cette mesure
+## 3. Ce que l'étape 1 et l'étape 2 en ont fait (16/11/2026)
 
-Voir `docs/architecture/ECARTS-MAQUETTE.md` (E2690 et suivants) et la section AK de `DECISIONS-A-VALIDER.md` pour ce qui a été fait, mesuré et laissé.
+| | Maquette (EXP-1) | Poste (EXP-2) |
+|---|---|---|
+| Composant commun | `U.dataTable` : cases PAR DÉFAUT, clé de ligne sûre (`rowKey`, `id`, `code`, empreinte), sélection gardée d'une page et d'un filtre à l'autre (le compte dit « dont N hors du filtre actif »), « Cocher les N lignes filtrées », « Exporter la sélection », « Imprimer la sélection » | `TableauSigh` : le même (cases par défaut, clé sûre, sélection gardée, barre de sélection) |
+| Fenêtre « Exporter » | périmètre (lignes cochées, lignes filtrées, « Tout exporter » toutes pages) puis format (.xlsx, CSV gardé, PDF / impression) ; limite dite | la même (`afficherFenetreSortie`) |
+| Moteur | `U.sortirLignes` : refus nommés (droit, vide, colonnes, limite) AVANT tout travail, journal AVANT l'écriture, `.xlsx` par `SIGH.xlsx.ecrire` chargé au clic (nombres et dates typés, en-tête figé, largeurs, feuille et fichier datés) | `sortirLignesPoste` : règles du domaine (`sortie_tableau.dart`, vecteurs de l'écran réel), `.xlsx` par `ecrireClasseur` (archive), enregistrement par `file_selector` (injectable), aperçu A4 par `afficherApercu` |
+| Encarts | `K.miniTable` équipé (186 sites d'un coup) | `MiniTableauSigh` équipé (139 sites d'un coup) |
+| Tableaux à la main | 9 équipés (`U.equiperTableau`), 16 saisies et 7 documents inscrits avec motif à la garde | non traités (18 `Table` à la main : constat, section AK) |
+| Garde | `build/garde-tableaux.js` dans `npm run lint` | non (le kit est la seule voie ; les 18 `Table` restent à classer) |
+
+Écarts : `docs/architecture/ECARTS-MAQUETTE.md` E2690 à E2697 ; décisions à confirmer : `DECISIONS-A-VALIDER.md` section AK.
