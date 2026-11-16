@@ -19,6 +19,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         collectionsGestionJamaisMobile,
         collectionsIdentiteJamaisMobile,
         collectionsGestionSynchronisees,
+        qualCollectionsJamaisMobile,
         cpcRefusRejeuBudget,
         cpcRefusRejeuPiece,
         idCollectionOptions,
@@ -37,6 +38,7 @@ import 'pont.dart';
 import 'fichiers_mere.dart';
 import 'horssite_mere.dart';
 import 'sms_mere.dart';
+import 'satisfaction_mere.dart';
 import 'sauvegarde_horssite.dart' show ErreurSauvegarde;
 import 'pont_pair.dart';
 import 'stockage_fichiers.dart';
@@ -99,6 +101,8 @@ const familleDeBase = <String, String>{
   // Lot SYNC-CFG (décision 26) : budgets, immobilisations et couvertures d'assurance, écrits à n'importe quel poste. Famille A (champ à champ) : une couverture se CLÔT sur sa propre
   // fiche quand la suivante prend effet, un budget se corrige, un bien se cède ; l'identité est commune par le contenu (`identiteSyncGestion`). Jamais vers un téléphone (RG-13).
   'budgets': 'A', 'immobilisations': 'A', 'couverturesAssurance': 'A',
+  // Lot SAT (ADR-0009) : les réponses de satisfaction (ouvertes par la mère, ajout seul, identité `REPW-<id>` ou posée au guichet) et les liens de collecte (un lien se révoque : fiche descriptive). Jamais vers un téléphone.
+  'reponsesEnquetes': 'B', 'jetonsEnquete': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
@@ -272,6 +276,8 @@ class Mere {
 
   /// Lot SMS-R (ADR-0008) : les envois automatiques de SMS calculés à la mère et déposés au relais.
   late final SmsMere sms;
+  /// Lot SAT (ADR-0009) : la satisfaction en ligne (publie la clé publique et les liens anonymes, relève, ouvre, juge, écrit), désactivée par défaut.
+  late final SatisfactionMere satisfaction;
 
   static Future<Mere> creer(ConfigMere cfg) async {
     final base = await Depot.ouvrir(cfg.dbChemin, cfg.cleStockage);
@@ -311,6 +317,14 @@ class Mere {
         evenement: m.evenementAsync,
         stockage: m.stockageFichiers,
         cleStockage: cfg.cleStockage.isEmpty ? null : [for (var i = 0; i + 1 < cfg.cleStockage.length; i += 2) int.parse(cfg.cleStockage.substring(i, i + 2), radix: 16)]);
+    m.satisfaction = SatisfactionMere(
+        base: base,
+        verrou: m.verrou,
+        cle: () => base64.decode(m.pont.cleBase64),
+        relais: cfg.relais,
+        secretRelais: cfg.secretRelais,
+        evenement: m.evenementAsync,
+        ecrireReponse: (id, champs) => m.verrou.executer(() => base.tx(() => m.traiter({'id': 'sat-${uuid7()}', 'collection': 'reponsesEnquetes', 'fiche': id, 'type': 'creer', 'champs': champs, 'hlc': maintenantMs(), 'vu': const <String, Object?>{}}, Appareil('mere', 'mere')))));
     return m;
   }
 
@@ -706,7 +720,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, ...collectionsFiscalesJamaisMobile, collectionsIdentiteJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, ...collectionsFiscalesJamaisMobile, ...collectionsIdentiteJamaisMobile, ...qualCollectionsJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})
@@ -985,6 +999,7 @@ class Mere {
     pont.demarrer();
     horsSite.demarrer();
     sms.demarrer();
+    satisfaction.demarrer();
     // Sauvegarde quotidienne : toutes les 5 minutes on regarde si l'heure est venue et si la dernière a plus de 20 h.
     _sauvegardeur = Timer.periodic(const Duration(minutes: 5), (_) async {
       try {
@@ -1038,6 +1053,7 @@ class Mere {
   Future<void> arreter() async {
     horsSite.arreter();
     sms.arreter();
+    satisfaction.arreter();
     _sauvegardeur?.cancel();
     await _serveur?.close(force: true);
     await base.fermer();

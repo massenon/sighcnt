@@ -14,7 +14,8 @@
   "ocr",
   "horssite",
   "exercice",
-  "clinique"
+  "clinique",
+  "satisfaction"
  ],
  "cas": [
   {
@@ -2885,6 +2886,26 @@
    "champs": {
     "cle": "accueil.affichage",
     "famille": "clinique",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée satisfaction",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "satisfaction",
     "type": "booleen",
     "valeur": false,
     "defaut": false,

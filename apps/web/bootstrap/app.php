@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         then: function () {
             // Le relais (contrat de packages/sync/banc/relais.js) : API SANS session ni CSRF, jetons d'appareil.
             \Illuminate\Support\Facades\Route::middleware([])->group(base_path('routes/relais.php'));
+            // Lot SAT (ADR-0009) : la satisfaction en ligne (formulaire public sans cookie, dépôt d'enveloppes scellées, publication et relevé de la mère).
+            \Illuminate\Support\Facades\Route::middleware([])->group(base_path('routes/satisfaction.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

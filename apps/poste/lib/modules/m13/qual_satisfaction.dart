@@ -3,6 +3,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../donnees/magasin.dart';
+import '../../donnees/satisfaction_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'qual_commun.dart';
@@ -13,7 +15,7 @@ import 'qual_commun.dart';
 ///
 /// Les calculs (moyennes arrondies au dixième, notes nulles ou non numériques ignorées, recommandation reconnue par le code ou le libellé, huit derniers
 /// commentaires) sont ceux de `qualSatisfaction`, rejoués sur les vecteurs de la maquette.
-class EcranSatisfaction extends StatelessWidget with EcranMaquette {
+class EcranSatisfaction extends StatefulWidget with EcranMaquette {
   const EcranSatisfaction({super.key});
 
   @override
@@ -26,6 +28,14 @@ class EcranSatisfaction extends StatelessWidget with EcranMaquette {
   @override
   String get regle =>
       'Tout est calculé depuis les réponses recueillies — le recueil se fait à l’écran des enquêtes. Le questionnaire, proposé faute de document de cadrage, a été validé par la Direction le 01/09/2026 ; il reste modifiable à l’écran des enquêtes.';
+
+  @override
+  State<EcranSatisfaction> createState() => _EtatSatisfaction();
+}
+
+class _EtatSatisfaction extends State<EcranSatisfaction> {
+  // Lot SAT : les filtres de la carte « Analyse » (période, point de collecte, version du questionnaire, canal).
+  String _du = '', _au = '', _point = '', _version = '', _canal = '';
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +119,84 @@ class EcranSatisfaction extends StatelessWidget with EcranMaquette {
                                         color: JetonsShell.slate400, fontSize: 12, height: 16 / 12)),
                               ])),
                       ])),
+            _carteAnalyse(context, enq, reponses.actives),
             sourceQual('Réponses de l’enquête « ${enq['titre']} » — recalculé à chaque affichage.'),
           ]);
         });
+  }
+
+  /// La carte « Analyse » (lot SAT) : filtres et indicateurs recalculés des réponses. « Non calculable » n'est pas zéro ; le taux de réponse demande les passages comptés à l'accueil.
+  Widget _carteAnalyse(BuildContext context, Fiche enq, Iterable<Fiche> reponses) {
+    final c = ContexteEcran.of(context);
+    final points = pointsCollectePoste(c.magasin, c.aujourdhui);
+    final a = qualAnalyse(enq, reponses, du: _du, au: _au, point: _point, version: _version, canal: _canal, points: points);
+    final versions = qualVersionsDe(enq);
+    Widget liste(String cle, String libelle, String valeur, List<(String, String)> options, void Function(String) surChoix) => SizedBox(
+        width: 190,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          LibelleChamp(libelle),
+          DropdownButtonFormField<String>(
+              key: Key('qual:an:$cle'),
+              initialValue: valeur,
+              isExpanded: true,
+              decoration: decorationChamp(),
+              items: [for (final o in options) DropdownMenuItem(value: o.$1, child: Text(o.$2, overflow: TextOverflow.ellipsis))],
+              onChanged: (v) => setState(() => surChoix(v ?? ''))),
+        ]));
+    Widget date(String cle, String libelle, String valeur, void Function(String) surChoix) => SizedBox(
+        width: 170,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          LibelleChamp(libelle),
+          TextFormField(
+              key: Key('qual:an:$cle'),
+              initialValue: valeur,
+              decoration: decorationChamp().copyWith(hintText: 'AAAA-MM-JJ'),
+              onChanged: (v) {
+                if (v.isEmpty || RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(v)) setState(() => surChoix(v));
+              }),
+        ]));
+    return CarteSigh(
+        titre: 'Analyse',
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Wrap(spacing: 12, runSpacing: 12, children: [
+            date('du', 'Du', _du, (v) => _du = v),
+            date('au', 'Au', _au, (v) => _au = v),
+            liste('point', 'Point de collecte', _point, [('', 'Tous les points'), for (final p in points) (p.code, p.libelle)], (v) => _point = v),
+            liste('version', 'Version du questionnaire', _version, [('', 'Toutes les versions'), for (final v in versions) ('${v['version']}', '${v['version']} (depuis le ${dateJj(v['effetLe'])})')], (v) => _version = v),
+            liste('canal', 'Canal', _canal, [('', 'Tous les canaux'), for (final x in [...qualCanaux, qualCanalPublic]) (x, x)], (v) => _canal = v),
+          ]),
+          const SizedBox(height: 12),
+          KpiGrilleSigh(kpis: [
+            KpiSigh(libelle: 'Réponses (filtre)', valeur: nombre(a.reponses), icone: LucideIcons.messagesSquare, ton: TonSigh.navy),
+            KpiSigh(libelle: 'Taux de satisfaction', valeur: qualPctOuNC(a.satisfaction), icone: LucideIcons.smile, ton: TonSigh.succes, indice: 'Notes 4 ou 5 sur 5'),
+            KpiSigh(libelle: 'Taux de recommandation', valeur: qualPctOuNC(a.recommandation), icone: LucideIcons.thumbsUp, ton: TonSigh.info),
+            KpiSigh(libelle: 'Taux de réponse', valeur: qualPctOuNC(a.tauxReponse), icone: LucideIcons.percent, ton: TonSigh.neutre, indice: 'Passages à l’accueil non comptés'),
+          ]),
+          const SizedBox(height: 12),
+          MiniTableauSigh(colonnes: [
+            ColonneMini('Question', (l) => '${l['a']}'),
+            ColonneMini('Notes', (l) => '${l['b']}'),
+            ColonneMini('Moyenne', (l) => '${l['c']}'),
+            ColonneMini('Satisfaction', (l) => '${l['d']}'),
+          ], lignes: [
+            for (final q in a.parQuestion) {'a': q.libelle, 'b': nombre(q.n), 'c': q.moyenne == null ? 'Non calculable' : nombre(q.moyenne, 1), 'd': qualPctOuNC(q.satisfaction)}
+          ]),
+          const SizedBox(height: 12),
+          MiniTableauSigh(colonnes: [
+            ColonneMini('Mois', (l) => '${l['a']}'),
+            ColonneMini('Réponses', (l) => '${l['b']}'),
+            ColonneMini('Satisfaction', (l) => '${l['c']}'),
+          ], lignes: [
+            for (final x in a.parMois) {'a': x.mois, 'b': nombre(x.n), 'c': qualPctOuNC(x.satisfaction)}
+          ]),
+          const SizedBox(height: 12),
+          MiniTableauSigh(colonnes: [
+            ColonneMini('Point de collecte', (l) => '${l['a']}'),
+            ColonneMini('Réponses', (l) => '${l['b']}'),
+            ColonneMini('Satisfaction', (l) => '${l['c']}'),
+          ], lignes: [
+            for (final x in a.parPoint) {'a': x.libelle, 'b': nombre(x.n), 'c': qualPctOuNC(x.satisfaction)}
+          ]),
+        ]));
   }
 }

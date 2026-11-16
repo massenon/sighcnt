@@ -30,6 +30,17 @@ class BlocOrganigramme extends BlocPiece {
   final OrgMiseEnPage miseEnPage;
 }
 
+/// Un code QR (lot SAT : l'affiche A4 de la satisfaction en ligne), dessiné en vectoriel par l'aperçu ET par le PDF depuis la même matrice de modules (aucune requête réseau).
+/// [legende] se lit sous le code ; [matrice] est `modules[ligne][colonne]` (vrai : module noir), zone de silence non comprise.
+class BlocQr extends BlocPiece {
+  const BlocQr(this.matrice, {this.legende, this.cote = 220});
+  final List<List<bool>> matrice;
+  final String? legende;
+
+  /// Côté du carré imprimé, en points (A4 : 595 de large).
+  final double cote;
+}
+
 class BlocTexte extends BlocPiece {
   const BlocTexte(this.texte, {this.gras = false, this.italique = false});
   final String texte;

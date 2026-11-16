@@ -28878,6 +28878,185 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT MIL FIN */
+  /* LOT SAT DEBUT (Vagues 250 à 252, ADR-0009) : la satisfaction en ligne côté maquette : l'analyse recalculée, les versions datées du questionnaire, le partage « En ligne » par point de collecte. */
+  await etape(async () => {
+    scenario('Vague 250 : lot SAT, la carte « Analyse » de la satisfaction recalcule du magasin : taux de satisfaction (notes 4 ou 5), recommandation, taux de réponse « non calculable » (jamais zéro), chaque filtre (point, période, version, canal) égale un recompte indépendant du magasin, filtres combinés, aucun résultat nommé « Non calculable »');
+    {
+    erreursJS = [];
+    await poserSessionServeur({ role: 'direction', nom: 'DIR250', nomComplet: 'DIR250', fonction: 'direction', identifiant: 's250.dir', secteur: 'DIR' });
+    await ouvrir('adm-enquetes.html');
+    const prepa = await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('reponsesEnquetes', { module: 'M13' }), enq = S.collection('enquetes', { module: 'M13' }).active().filter((e) => e.reference === 'ENQ-SAT')[0];
+      const anciennes = col.active().map((r) => r.id);
+      anciennes.forEach((id) => col.archive(id, 'Sonde 250 : mise à l’écart'));
+      S.collection('enquetes', { module: 'M13' }).update(enq.id, { versions: [{ version: 'V1', effetLe: '2026-08-01', questions: enq.questions }, { version: 'V2', effetLe: '2026-08-10', questions: enq.questions }] });
+      const mk = (date, version, point, canal, reponses) => col.insert({ enqueteId: enq.id, date, version, point, canal, reponses, saisiPar: 'Sonde 250', statut: 'actif' }).record.id;
+      const ids = [
+        mk('2026-07-30', 'V1', 'accueil', 'Lien public', { Q_ACCUEIL: 5, Q_SOINS: 4, Q_RECO: 'Oui, sans hésiter' }),
+        mk('2026-08-02', 'V1', 'accueil', 'Lien public', { Q_ACCUEIL: 3, Q_SOINS: 2, Q_RECO: 'Plutôt non' }),
+        mk('2026-08-05', 'V1', 'laboratoire', 'Au guichet', { Q_ACCUEIL: 4, Q_SOINS: 5, Q_RECO: 'Plutôt oui' }),
+        mk('2026-08-10', 'V2', 'laboratoire', 'Lien public', { Q_ACCUEIL: 5, Q_SOINS: 5, Q_ATTENTE: 2, Q_RECO: 'Oui, sans hésiter' }),
+        mk('2026-08-12', 'V2', 'maternite', 'Lien public', { Q_ACCUEIL: 4, Q_ATTENTE: 4, Q_RECO: 'Non' }),
+        mk('2026-08-15', 'V2', 'maternite', 'Lien public', { Q_ACCUEIL: 1, Q_SOINS: 3, Q_ATTENTE: '', Q_RECO: '' }),
+        mk('2026-08-16', 'V2', 'sortie', 'À la sortie', { Q_ACCUEIL: 'abc', Q_SOINS: 0, Q_ATTENTE: 6 }),
+      ];
+      return { anciennes, ids, enq: enq.id, versionsAvant: enq.versions || null, questionsAvant: enq.questions };
+    });
+    await attendreEcritures();
+    await ouvrir('adm-satisfaction.html');
+    /* l'écran lit la carte « Analyse » ; le recompte est fait ICI, indépendamment, depuis le magasin */
+    const lire = (filtres) => page.evaluate(async (f) => {
+      const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim();
+      const carte = [...document.querySelectorAll('#page-content .card')].find((c) => norm((c.querySelector('.card-title') || {}).textContent).startsWith('Analyse'));
+      if (!carte) return { absent: true };
+      const ids = { du: 'an_du', au: 'an_au', point: 'an_point', version: 'an_version', canal: 'an_canal' };
+      for (const [k, v] of Object.entries(f)) { const e = carte.querySelector('#' + ids[k]); e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); await new Promise((r) => setTimeout(r, 30)); }
+      const kpis = Object.fromEntries([...carte.querySelectorAll('.kpi')].map((k) => [norm(k.querySelector('.kpi-label').textContent), norm(k.querySelector('.kpi-value').textContent)]));
+      const S = window.SIGH.store;
+      const reps = S.collection('reponsesEnquetes', { module: 'M13' }).active().filter((r) => r.saisiPar === 'Sonde 250' && (!f.point || r.point === f.point) && (!f.version || r.version === f.version) && (!f.canal || r.canal === f.canal) && (!f.du || r.date >= f.du) && (!f.au || r.date <= f.au));
+      const notes = [];
+      reps.forEach((r) => ['Q_ACCUEIL', 'Q_ATTENTE', 'Q_PROPRETE', 'Q_SOINS'].forEach((q) => { const v = r.reponses[q]; const n = (v === undefined || v === null || String(v).trim() === '') ? NaN : Number(v); if (isFinite(n) && n >= 1 && n <= 5) notes.push(n); }));
+      const rep = reps.filter((r) => String(r.reponses.Q_RECO || '').trim() !== '');
+      const pct = (a, b) => (b ? (Math.round(a / b * 1000) / 10) : null);
+      return { kpis, attendu: { n: reps.length, sat: pct(notes.filter((n) => n >= 4).length, notes.length), reco: pct(rep.filter((r) => /^(oui|plutôt oui)/i.test(r.reponses.Q_RECO)).length, rep.length) } };
+    }, filtres);
+    const nombreDe = (t) => { const m = String(t).replace(',', '.').match(/[\d.]+/); return m ? Number(m[0]) : null; };
+    const verifierCas = (nom, r, attenduFixe) => {
+      const sat = /Non calculable/.test(r.kpis['Taux de satisfaction']) ? null : nombreDe(r.kpis['Taux de satisfaction']);
+      const reco = /Non calculable/.test(r.kpis['Taux de recommandation']) ? null : nombreDe(r.kpis['Taux de recommandation']);
+      verifier('Analyse, ' + nom + ' : l’écran égale le recompte du magasin (réponses, satisfaction, recommandation)' + (attenduFixe ? ' et la valeur écrite à la main' : ''),
+        !r.absent && nombreDe(r.kpis['Réponses (filtre)']) === r.attendu.n && sat === r.attendu.sat && reco === r.attendu.reco && (!attenduFixe || JSON.stringify([r.attendu.n, r.attendu.sat, r.attendu.reco]) === JSON.stringify(attenduFixe)),
+        JSON.stringify(r));
+    };
+    const sans = await lire({});
+    verifierCas('sans filtre : 13 notes valides dont 8 de 4 ou 5 (61,5 %), 5 réponses à la recommandation dont 3 positives (60 %)', sans, [7, 61.5, 60]);
+    verifier('Le taux de réponse est « Non calculable » (passages non comptés), jamais zéro', /Non calculable/.test(sans.kpis['Taux de réponse']) && !/^0/.test(sans.kpis['Taux de réponse']), sans.kpis['Taux de réponse']);
+    for (const [nom, f] of [['un point (accueil)', { point: 'accueil' }], ['une période (02 au 12 août)', { du: '2026-08-02', au: '2026-08-12' }], ['une version (V2)', { version: 'V2' }], ['un canal (Lien public)', { canal: 'Lien public' }], ['filtres combinés (laboratoire, V2, Lien public)', { point: 'laboratoire', version: 'V2', canal: 'Lien public' }]]) {
+      await ouvrir('adm-satisfaction.html'); /* les filtres de la carte vivent le temps de la page : un cas, une page */
+      verifierCas(nom, await lire(f), null);
+    }
+    await ouvrir('adm-satisfaction.html');
+    const vide = await lire({ point: 'pharmacie' });
+    verifier('Aucune réponse ne correspond : zéro réponse, satisfaction et recommandation « Non calculable » (jamais zéro)', vide.kpis['Réponses (filtre)'] === '0' && /Non calculable/.test(vide.kpis['Taux de satisfaction']) && /Non calculable/.test(vide.kpis['Taux de recommandation']), JSON.stringify(vide.kpis));
+    await ouvrir('adm-satisfaction.html');
+    const invalides = await lire({ point: 'sortie' });
+    verifier('Des notes toutes invalides (texte, zéro, 6) ne comptent pas : « Non calculable », pas 0 %', invalides.kpis['Réponses (filtre)'] === '1' && /Non calculable/.test(invalides.kpis['Taux de satisfaction']), JSON.stringify(invalides.kpis));
+    /* RESTAURATION : les réponses de la sonde archivées, les anciennes restaurées, les versions retirées */
+    const fin = await page.evaluate((x) => {
+      const S = window.SIGH.store, col = S.collection('reponsesEnquetes', { module: 'M13' });
+      col.all().filter((r) => r.saisiPar === 'Sonde 250' && r.statut !== 'archive').forEach((r) => col.archive(r.id, 'Sonde 250 : restauration'));
+      x.anciennes.forEach((id) => { try { col.restore(id); } catch (e) { /* déjà actif */ } });
+      const e = S.collection('enquetes', { module: 'M13' });
+      e.update(x.enq, { versions: x.versionsAvant || [{ version: 'V1', effetLe: '2026-08-01', questions: x.questionsAvant }] });
+      return col.active().length;
+    }, prepa);
+    await attendreEcritures();
+    verifier('État restauré : les 26 réponses du jeu de démonstration sont de nouveau actives', fin === prepa.anciennes.length, String(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+    }
+
+    scenario('Vague 251 : lot SAT, modifier un questionnaire AJOUTE une version datée (jamais une réécriture), enregistrer sans changement n’en ajoute aucune, la réponse recueillie garde la version en vigueur et les anciennes gardent la leur');
+    {
+    erreursJS = [];
+    await poserSessionServeur({ role: 'direction', nom: 'DIR251', nomComplet: 'DIR251', fonction: 'direction', identifiant: 's251.dir', secteur: 'DIR' });
+    await ouvrir('adm-enquetes.html');
+    const avant = await page.evaluate(() => {
+      const S = window.SIGH.store, e = S.collection('enquetes', { module: 'M13' }).active().filter((x) => x.reference === 'ENQ-SAT')[0];
+      return { id: e.id, versions: e.versions || null, questions: e.questions, nRep: S.collection('reponsesEnquetes', { module: 'M13' }).active().length };
+    });
+    const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim();
+    const cliquer = (libelle) => page.evaluate((l) => { const bs = [...document.querySelectorAll('button')].filter((b) => b.textContent.replace(/\s+/g, ' ').trim() === l || b.getAttribute('aria-label') === l || b.title === l); const b = bs[bs.length - 1]; if (!b) return false; b.click(); return true; }, libelle);
+    const ligneSat = () => page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => t.textContent.includes('Satisfaction des patients')); tr.querySelector('button[aria-label="Modifier le modèle"], button[title="Modifier le modèle"]').click(); return true; });
+    await ligneSat(); await new Promise((r) => setTimeout(r, 150));
+    await cliquer('Enregistrer'); await new Promise((r) => setTimeout(r, 250)); await attendreEcritures();
+    const sans = await page.evaluate((id) => (window.SIGH.store.collection('enquetes', { module: 'M13' }).active().filter((x) => x.id === id)[0].versions || []).length, avant.id);
+    verifier('Enregistrer le modèle sans rien changer n’ajoute AUCUNE version', sans === (avant.versions ? avant.versions.length : sans), JSON.stringify({ sans, avant: avant.versions && avant.versions.length }));
+    await ouvrir('adm-enquetes.html');
+    await ligneSat(); await new Promise((r) => setTimeout(r, 150));
+    await page.evaluate(() => { document.querySelector('[role=dialog] button[aria-label="Retirer la question"], [role=dialog] button[title="Retirer la question"]').click(); });
+    await new Promise((r) => setTimeout(r, 100));
+    await cliquer('Enregistrer'); await new Promise((r) => setTimeout(r, 300)); await attendreEcritures();
+    const apres = await page.evaluate((id) => { const e = window.SIGH.store.collection('enquetes', { module: 'M13' }).active().filter((x) => x.id === id)[0]; return { versions: (e.versions || []).map((v) => ({ version: v.version, effetLe: v.effetLe, codes: v.questions.map((q) => q.code) })), courantes: e.questions.map((q) => q.code) }; }, avant.id);
+    const n0 = avant.versions ? avant.versions.length : 1;
+    verifier('Retirer une question AJOUTE la version suivante, datée d’aujourd’hui ; la précédente est intacte (jamais réécrite)',
+      apres.versions.length === n0 + 1 && apres.versions[apres.versions.length - 1].version === 'V' + (n0 + 1) && apres.versions[n0 - 1].codes.length === avant.questions.length && apres.versions[n0].codes.length === avant.questions.length - 1 && apres.courantes.length === avant.questions.length - 1, JSON.stringify(apres));
+    await ouvrir('adm-enquetes.html');
+    await page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => t.textContent.includes('Satisfaction des patients')); [...tr.querySelectorAll('button')].find((b) => b.getAttribute('aria-label') === 'Recueillir' || b.textContent.trim() === 'Recueillir').click(); });
+    await new Promise((r) => setTimeout(r, 150));
+    const res = await page.evaluate(async () => {
+      const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim();
+      const poser = (id, v) => { const e = document.getElementById('f_' + id); if (e) { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); } };
+      poser('_canal', 'Au guichet'); poser('Q_ATTENTE', '4'); poser('Q_PROPRETE', '4'); poser('Q_SOINS', '5'); poser('Q_RECO', 'Plutôt oui');
+      const b = [...document.querySelectorAll('button')].filter((x) => norm(x.textContent) === 'Enregistrer la réponse').pop(); b.click();
+      await new Promise((r) => setTimeout(r, 200));
+      const S = window.SIGH.store, col = S.collection('reponsesEnquetes', { module: 'M13' });
+      const neuve = col.active().filter((r) => r.saisiPar !== 'Jeu de démonstration')[0];
+      return { version: neuve && neuve.version, anciennes: [...new Set(col.active().filter((r) => r.saisiPar === 'Jeu de démonstration').map((r) => r.version))], id: neuve && neuve.id };
+    });
+    await attendreEcritures();
+    verifier('La réponse recueillie porte la version EN VIGUEUR (la dernière) ; celles du jeu de démonstration gardent V1', res.version === 'V' + (n0 + 1) && JSON.stringify(res.anciennes) === '["V1"]', JSON.stringify(res));
+    /* RESTAURATION */
+    const fin = await page.evaluate((x) => { const S = window.SIGH.store;
+      if (x.id) S.collection('reponsesEnquetes', { module: 'M13' }).archive(x.id, 'Sonde 251 : restauration');
+      S.collection('enquetes', { module: 'M13' }).update(x.eid, { questions: x.questions, versions: x.versions || [{ version: 'V1', effetLe: '2026-08-01', questions: x.questions }] });
+      return S.collection('enquetes', { module: 'M13' }).active().filter((e) => e.id === x.eid)[0].questions.length; }, { id: res.id, eid: avant.id, questions: avant.questions, versions: avant.versions });
+    await attendreEcritures();
+    verifier('État restauré : le questionnaire retrouve ses ' + avant.questions.length + ' questions, la réponse de la sonde est archivée', fin === avant.questions.length, String(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+    }
+
+    scenario('Vague 252 : lot SAT, le partage « En ligne » porte un point de collecte (sept points semés), une adresse publique <hôte>/s/<jeton> (jamais l’identifiant de l’enquête, ni ?jeton=), un code QR ; un lien révoqué se ferme sans rien effacer');
+    {
+    erreursJS = [];
+    await poserSessionServeur({ role: 'direction', nom: 'DIR252', nomComplet: 'DIR252', fonction: 'direction', identifiant: 's252.dir', secteur: 'DIR' });
+    await ouvrir('adm-enquetes.html');
+    const form = await page.evaluate(async () => {
+      const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim();
+      const S = window.SIGH.store;
+      const points = S.collection('pointsCollecte', { module: 'M13' }).active().map((p) => p.code);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => t.textContent.includes('Satisfaction des patients'));
+      [...tr.querySelectorAll('button')].find((b) => b.getAttribute('aria-label') === 'Partager à un tiers' || b.title === 'Partager à un tiers').click();
+      await new Promise((r) => setTimeout(r, 150));
+      const champs = [...document.querySelectorAll('[role=dialog] [id^=f_]')].map((e) => ({ nom: e.id.slice(2), options: e.tagName === 'SELECT' ? [...e.options].map((o) => o.value) : null }));
+      const poser = (id, v) => { const e = document.getElementById('f_' + id); e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); };
+      poser('anonyme', 'oui'); poser('usage', 'en_ligne'); poser('point', 'consultation'); poser('expireLe', '2026-12-31'); poser('note', 'Sonde 252');
+      [...document.querySelectorAll('button')].filter((b) => norm(b.textContent) === 'Ouvrir le lien').pop().click();
+      await new Promise((r) => setTimeout(r, 250));
+      const tiroir = document.querySelector('[role=dialog]');
+      const lien = tiroir.querySelector('input[readonly]').value;
+      const j = S.collection('jetonsEnquete', { module: 'M13' }).active().filter((x) => x.note === 'Sonde 252')[0];
+      return { points, champs, lien, jeton: j && { id: j.id, jeton: j.jeton, enLigne: j.enLigne, point: j.point, usage: j.usage, enqueteId: j.enqueteId, version: j.version }, qr: !!tiroir.querySelector('svg') };
+    });
+    await attendreEcritures();
+    verifier('Les sept points de collecte sont SEMÉS en base (accueil, consultation, laboratoire, pharmacie, maternité, hospitalisation, sortie) et proposés au partage', JSON.stringify(form.points) === JSON.stringify(['accueil', 'consultation', 'laboratoire', 'pharmacie', 'maternite', 'hospitalisation', 'sortie']) && JSON.stringify((form.champs.filter((c) => c.nom === 'point')[0] || {}).options) === JSON.stringify(form.points), JSON.stringify(form));
+    verifier('Le lien « En ligne » : jeton de 24 caractères, point de collecte et version portés, adresse https://sighcnt.nassieratoo.com/s/<jeton>, jamais l’identifiant de l’enquête, un QR dessiné',
+      !!form.jeton && /^[a-km-z2-9]{24}$/.test(form.jeton.jeton) && form.jeton.enLigne === true && form.jeton.point === 'consultation' && form.jeton.usage === 'en_ligne' && !!form.jeton.version
+        && form.lien === 'https://sighcnt.nassieratoo.com/s/' + form.jeton.jeton && form.lien.indexOf(form.jeton.enqueteId) < 0 && form.lien.indexOf('?') < 0 && form.qr, JSON.stringify(form));
+    await ouvrir('adm-enquetes.html');
+    const rev = await page.evaluate(async ([jid, jeton8]) => {
+      const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim();
+      const S = window.SIGH.store, nRep = S.collection('reponsesEnquetes', { module: 'M13' }).active().length;
+      [...document.querySelectorAll('[role=tab]')].filter((t) => /^Liens de partage/.test(norm(t.textContent)))[0].click();
+      let tr = null;
+      for (let i = 0; i < 40 && !tr; i++) { await new Promise((r) => setTimeout(r, 100)); tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => t.textContent.includes(jeton8)); }
+      if (!tr) return { absent: true, lignes: [...document.querySelectorAll('#page-content tbody tr')].map((t) => norm(t.textContent)).slice(0, 5) };
+      const lignes = [...document.querySelectorAll('#page-content thead th')].map((th) => norm(th.textContent));
+      [...tr.querySelectorAll('button')].find((b) => b.getAttribute('aria-label') === 'Révoquer le lien' || b.title === 'Révoquer le lien').click();
+      await new Promise((r) => setTimeout(r, 120));
+      [...document.querySelectorAll('button')].filter((b) => norm(b.textContent) === 'Révoquer').pop().click();
+      await new Promise((r) => setTimeout(r, 200));
+      const j = S.collection('jetonsEnquete', { module: 'M13' }).all().filter((x) => x.id === jid)[0];
+      return { entetes: lignes, revoqueLe: j.revoqueLe, nRepApres: S.collection('reponsesEnquetes', { module: 'M13' }).active().length, nRep };
+    }, [form.jeton.id, form.jeton.jeton.slice(0, 8)]);
+    await attendreEcritures();
+    verifier('Le tableau des liens porte « Point de collecte » et « Partage » ; révoquer ferme le lien et n’efface aucune réponse', !rev.absent && rev.entetes.indexOf('Point de collecte') >= 0 && rev.entetes.indexOf('Partage') >= 0 && !!rev.revoqueLe && rev.nRepApres === rev.nRep, JSON.stringify(rev) + ' jeton=' + form.jeton.jeton.slice(0, 8));
+    /* RESTAURATION : le lien de la sonde est retiré (archivé, RG-14) */
+    await page.evaluate((jid) => { window.SIGH.store.collection('jetonsEnquete', { module: 'M13' }).archive(jid, 'Sonde 252 : restauration'); }, form.jeton.id);
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+    }
+  });
+  /* LOT SAT FIN */
 
 
 

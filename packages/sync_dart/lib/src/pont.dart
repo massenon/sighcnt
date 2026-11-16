@@ -11,7 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show Parametres, codeFiscalInterditAuMobile, codeGestionInterditeAuMobile, collectionsFiscalesJamaisMobile, collectionsGestionJamaisMobile, collectionsIdentiteJamaisMobile, mobPeutPrescrire, parCollectionParametres, synchroAssainirFileuls, synchroFileulPublie;
+import 'package:sigh_domaine/sigh_domaine.dart' show Parametres, codeFiscalInterditAuMobile, codeGestionInterditeAuMobile, collectionsFiscalesJamaisMobile, collectionsGestionJamaisMobile, collectionsIdentiteJamaisMobile, qualCodeInterditAuMobile, qualCollectionsJamaisMobile, mobPeutPrescrire, parCollectionParametres, synchroAssainirFileuls, synchroFileulPublie;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -133,9 +133,14 @@ class Pont {
       // Lot FISC-2 : ni obligation, ni échéance, ni paramètre fiscal, ni barème de l'AIB, ni imputation dans un lot de tournée (RG-13).
       if (collectionsFiscalesJamaisMobile.contains(col)) {
         throw Err(422, codeFiscalInterditAuMobile, 'la collection « $col » ne va jamais vers un téléphone (RG-13) : la configuration fiscale se consulte depuis un poste');
+      }
       // Lot IDENT : ni l'identité de la clinique, ni ses options d'impression, ni les demandes d'un fileul dans un lot de tournée (RG-13).
       if (collectionsIdentiteJamaisMobile.contains(col)) {
         throw Err(422, 'identite_interdite_au_mobile', 'la collection « $col » ne va jamais vers un téléphone (RG-13) : l’identité de la clinique se règle depuis un poste');
+      }
+      // Lot SAT : ni réponse de satisfaction, ni lien de collecte dans un lot de tournée (RG-13).
+      if (qualCollectionsJamaisMobile.contains(col)) {
+        throw Err(422, qualCodeInterditAuMobile, 'la collection « $col » ne va jamais vers un téléphone (RG-13) : la satisfaction se lit depuis un poste');
       }
     }
     // E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
@@ -221,6 +226,8 @@ class Pont {
             if (collectionsFiscalesJamaisMobile.contains(o['collection'])) continue;
             // Lot IDENT : ni l'identité, ni les options d'impression, ni les demandes d'identité vers un téléphone (RG-13).
             if (collectionsIdentiteJamaisMobile.contains(o['collection'])) continue;
+            // Lot SAT : ni réponse de satisfaction ni lien de collecte vers un téléphone, même dans sa portée (RG-13).
+            if (qualCollectionsJamaisMobile.contains(o['collection'])) continue;
             final dans = await base.select('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?', [uuid, o['collection'], o['fiche']]);
             if (dans.isNotEmpty) siennes.add({...o, 'champs': champs});
           }

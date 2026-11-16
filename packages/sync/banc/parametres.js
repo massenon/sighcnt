@@ -17,7 +17,7 @@
 
 /* Familles que RG-13 ferme au téléphone (financier, RH, fiscal, sécurité, secrets). Seconde barrière : un paramètre ne va à un mobile que si sa définition le DÉCLARE (`mobile: true`)
    ET que sa famille n'est pas ici ET qu'il n'est pas `sensible`. Liste prudentielle à valider par la Direction (aucun document ne la fixe). */
-const FAMILLES_JAMAIS_MOBILE = ['paie', 'rh', 'fiscal', 'bareme_aib', 'comptabilite', 'mecef', 'securite', 'relais', 'courriel', 'sms', 'ocr', 'horssite', 'exercice', 'clinique'];
+const FAMILLES_JAMAIS_MOBILE = ['paie', 'rh', 'fiscal', 'bareme_aib', 'comptabilite', 'mecef', 'securite', 'relais', 'courriel', 'sms', 'ocr', 'horssite', 'exercice', 'clinique', 'satisfaction'];
 const TYPES = ['booleen', 'texte', 'choix', 'entier', 'nombre'];
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 

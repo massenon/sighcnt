@@ -1351,6 +1351,108 @@
      un t\u00e9l\u00e9phone \u2014 souvent la comparaison la plus instructive. */
   var CANAL_PUBLIC = 'Lien public';
 
+  /* ==========================================================================
+   * LOT SAT (ADR-0009) : SATISFACTION EN LIGNE. Questionnaire en VERSIONS DATEES (une reponse garde la version sous laquelle elle a ete donnee),
+   * POINT DE COLLECTE (un lien par point : accueil, consultation, ...), ANALYSE calculee (taux de satisfaction = notes 4 ou 5, recommandation, par
+   * question, par mois, par point ; le taux de reponse est NON CALCULABLE tant que les passages ne sont pas comptes). Memes regles au domaine Dart
+   * (`qual_en_ligne.dart`), rejouees sur les vecteurs tires de l'ecran reel (`build/vecteurs-qualite.js`, cas SAT).
+   * ======================================================================== */
+  var POINTS_COLLECTE_DEFAUT = [
+    { code: 'accueil', libelle: 'Accueil' }, { code: 'consultation', libelle: 'Consultation' }, { code: 'laboratoire', libelle: 'Laboratoire' },
+    { code: 'pharmacie', libelle: 'Pharmacie' }, { code: 'maternite', libelle: 'Maternité' }, { code: 'hospitalisation', libelle: 'Hospitalisation' },
+    { code: 'sortie', libelle: 'Sortie' },
+  ];
+  function colPoints() {
+    return S.collection('pointsCollecte', { module: 'M13', entite: 'point de collecte', prefix: 'PTC' });
+  }
+  function amorcerPoints() {
+    var col = colPoints();
+    if (col.all().length) return;
+    POINTS_COLLECTE_DEFAUT.forEach(function (p, i) { col.all().push({ id: 'PTC' + C.pad(i + 1, 4), statut: 'actif', code: p.code, libelle: p.libelle, source: 'Décision S2 du PRD satisfaction (07/11/2026)' }); });
+    S.save();
+  }
+  function libellePoint(code) {
+    var p = colPoints().active().filter(function (x) { return x.code === code; })[0];
+    return p ? p.libelle : (code || '—');
+  }
+  /** La version du questionnaire en vigueur a une date : la derniere dont l'effet est atteint ; a defaut, la premiere. Sans `versions`, V1 = `questions`. */
+  function versionsDe(enq) {
+    if (enq.versions && enq.versions.length) return enq.versions;
+    return [{ version: 'V1', effetLe: enq.creeLe || '2000-01-01', questions: enq.questions || [] }];
+  }
+  function versionALaDate(enq, date) {
+    var vs = versionsDe(enq).slice().sort(function (a, b) { return a.effetLe < b.effetLe ? -1 : a.effetLe > b.effetLe ? 1 : 0; });
+    var choisie = vs[0];
+    vs.forEach(function (v) { if (v.effetLe <= date) choisie = v; });
+    return choisie;
+  }
+  /** Modifier un questionnaire AJOUTE une version (jamais une reecriture) : `null` si rien ne change. */
+  function ajouterVersion(enq, questions, date) {
+    var vs = versionsDe(enq);
+    var derniere = versionALaDate(enq, '9999-12-31');
+    if (JSON.stringify(derniere.questions) === JSON.stringify(questions)) return null;
+    var n = vs.length + 1;
+    if (date < derniere.effetLe) return { refus: 'VERSION_ANTERIEURE', motif: 'Une version prend effet après la dernière (' + derniere.version + ' du ' + derniere.effetLe + ').', geste: 'Choisir une date d’effet plus récente.' };
+    return { versions: vs.concat([{ version: 'V' + n, effetLe: date, questions: questions }]) };
+  }
+  function arrondi1(x) { return Math.round(x * 10) / 10; }
+  function notesValides(reps, questions) {
+    var out = [];
+    reps.forEach(function (r) {
+      (questions || []).forEach(function (q) {
+        if (q.type !== 'note') return;
+        var v = (r.reponses || {})[q.code];
+        var n = v == null || String(v).trim() === '' ? NaN : Number(v);
+        if (isFinite(n) && n >= 1 && n <= 5) out.push({ q: q.code, n: n });
+      });
+    });
+    return out;
+  }
+  function tauxSatisfaction(notes) {
+    if (!notes.length) return null;
+    return arrondi1(notes.filter(function (x) { return x.n >= 4; }).length / notes.length * 100);
+  }
+  /** L'ANALYSE : filtres {du, au, point, version, canal} ; tout est recalcule des reponses. */
+  function analyseSatisfaction(enq, reponses, f) {
+    f = f || {};
+    var reps = reponses.filter(function (r) {
+      if (r.enqueteId !== enq.id) return false;
+      var jour = String(r.date || '').slice(0, 10);
+      if (f.du && jour < f.du) return false;
+      if (f.au && jour > f.au) return false;
+      if (f.point && r.point !== f.point) return false;
+      if (f.version && (r.version || 'V1') !== f.version) return false;
+      if (f.canal && r.canal !== f.canal) return false;
+      return true;
+    });
+    var toutes = {};
+    versionsDe(enq).forEach(function (v) { (v.questions || []).forEach(function (q) { if (!toutes[q.code]) toutes[q.code] = q; }); });
+    var qs = Object.keys(toutes).map(function (k) { return toutes[k]; });
+    var notes = notesValides(reps, qs);
+    var parQuestion = qs.filter(function (q) { return q.type === 'note'; }).map(function (q) {
+      var ns = notes.filter(function (x) { return x.q === q.code; });
+      return { code: q.code, libelle: q.libelle, n: ns.length, moyenne: ns.length ? arrondi1(ns.reduce(function (a, x) { return a + x.n; }, 0) / ns.length) : null, satisfaction: tauxSatisfaction(ns) };
+    });
+    var qReco = qs.filter(function (q) { return q.code === 'Q_RECO' || /recommand/i.test(q.libelle); })[0];
+    var reco = null;
+    if (qReco) {
+      var repondus = reps.filter(function (r) { var v = (r.reponses || {})[qReco.code]; return v != null && String(v).trim() !== ''; });
+      if (repondus.length) reco = arrondi1(repondus.filter(function (r) { return /^(oui|plutôt oui)/i.test(String(r.reponses[qReco.code])); }).length / repondus.length * 100);
+    }
+    var mois = {}, points = {};
+    reps.forEach(function (r) {
+      var m = String(r.date || '').slice(0, 7), p = r.point || '';
+      (mois[m] = mois[m] || []).push(r); (points[p] = points[p] || []).push(r);
+    });
+    var parMois = Object.keys(mois).sort().map(function (m) { var ns = notesValides(mois[m], qs); return { mois: m, n: mois[m].length, satisfaction: tauxSatisfaction(ns) }; });
+    var ordre = colPoints().active().map(function (x) { return x.code; });
+    var parPoint = Object.keys(points).sort(function (a, b) {
+      var ia = ordre.indexOf(a), ib = ordre.indexOf(b); ia = ia < 0 ? 99 : ia; ib = ib < 0 ? 99 : ib; return ia - ib || (a < b ? -1 : 1);
+    }).map(function (p) { var ns = notesValides(points[p], qs); return { point: p, libelle: p ? libellePoint(p) : 'Sans point', n: points[p].length, satisfaction: tauxSatisfaction(ns) }; });
+    return { reponses: reps.length, notes: notes.length, satisfaction: tauxSatisfaction(notes), recommandation: reco, tauxReponse: null, parQuestion: parQuestion, parMois: parMois, parPoint: parPoint };
+  }
+  function pctOuNC(v) { return v == null ? 'Non calculable' : C.pct(v); }
+
   function colEnquetes() {
     return S.collection('enquetes', { module: 'M13', entite: 'mod\u00e8le d\u2019enqu\u00eate', prefix: 'ENQ' });
   }
@@ -1362,6 +1464,7 @@
   }
 
   function amorcerEnquetes() {
+    amorcerPoints();
     var col = colEnquetes();
     if (col.all().length) return;
     var rnd = C.seeded(1009);
@@ -1383,10 +1486,13 @@
         { code: 'Q_LIBRE', libelle: 'Ce que nous pourrions am\u00e9liorer', type: 'texte' },
       ],
       creeLe: '2026-08-01',
+      versions: [{ version: 'V1', effetLe: '2026-08-01', questions: null }],
     });
+    (function () { var e = col.all()[col.all().length - 1]; e.versions[0].questions = e.questions.map(function (q) { return Object.assign({}, q); }); })();
     /* Jeu de d\u00e9monstration : des r\u00e9ponses pour que les \u00e9crans montrent
        leur usage \u2014 marqu\u00e9es comme telles par leur canal de saisie. */
     var rep = colReponses();
+    var rndPoint = C.seeded(2027); /* flux à part : le jeu déjà semé ne change pas */
     for (var k = 0; k < 26; k++) {
       var reponses = {
         Q_ACCUEIL: C.between(rnd, 3, 5), Q_ATTENTE: C.between(rnd, 2, 5),
@@ -1403,6 +1509,7 @@
         canal: C.pick(rnd, CANAUX_ENQUETE),
         reponses: reponses,
         saisiPar: 'Jeu de d\u00e9monstration',
+        version: 'V1', point: C.pick(rndPoint, POINTS_COLLECTE_DEFAUT).code,
       });
     }
     S.save();
@@ -1521,6 +1628,7 @@
     return colReponses().insert({
       enqueteId: enq.id, date: C.iso(new Date()),
       canal: o.canal || CANAUX_ENQUETE[0],
+      version: versionALaDate(enq, C.iso(new Date())).version, point: o.point || null,
       reponses: v,
       saisiPar: o.saisiPar || S.currentUser(),
       /* Le jeton est trac\u00e9 pour pouvoir COMPTER par lien et r\u00e9voquer ;
@@ -1567,7 +1675,9 @@
     return colJetons().all().filter(function (j) { return j.jeton === code; })[0] || null;
   }
   /** L'adresse de la page publique \u2014 construite depuis la page courante. */
-  function lienDuJeton(code) {
+  var HOTE_PUBLIC = 'https://sighcnt.nassieratoo.com';
+  function lienDuJeton(code, enLigne) {
+    if (enLigne) return HOTE_PUBLIC + '/s/' + encodeURIComponent(code);
     try {
       return new URL('enquete-publique' + N.EXT + '?jeton=' + encodeURIComponent(code), global.location.href).href;
     } catch (e) {
@@ -1708,6 +1818,8 @@
             { key: 'anonyme', label: 'Recueil', render: function (j) {
               return j.anonyme ? U.badge('Anonyme', 'info') : U.badge('Nominatif', 'warning');
             } },
+            { key: 'point', label: 'Point de collecte', value: function (j) { return j.point ? libellePoint(j.point) : '\u2014'; } },
+            { key: 'enLigne', label: 'Partage', value: function (j) { return j.enLigne ? 'En ligne' : 'Local'; } },
             { key: 'expireLe', label: 'Expire le', value: function (j) { return C.dateFR(j.expireLe); } },
             { key: 'reponses', label: 'Réponses', align: 'right', value: function (j) {
               return colReponses().active().filter(function (x) { return x.jetonId === j.id; }).length;
@@ -1743,11 +1855,15 @@
               { value: 'salle', label: 'Dans la clinique — QR affiché ou imprimé' },
               { value: 'tablette', label: 'Sur une tablette de la clinique (mode kiosque)' },
               { value: 'reseau', label: 'Sur le réseau local — lien communiqué' },
+              { value: 'en_ligne', label: 'En ligne : adresse publique ou code QR (le relais ne lit pas la réponse)' },
             ] },
+          { name: 'point', label: 'Point de collecte', type: 'select', required: true,
+            options: colPoints().active().map(function (x) { return { value: x.code, label: x.libelle }; }),
+            hint: 'Un lien par point : l\u2019analyse compare les services. Aucun nom, aucun num\u00e9ro de dossier n\u2019est demand\u00e9.' },
           { name: 'expireLe', label: 'Le lien expire le', type: 'date', required: true,
             hint: 'Un lien sans terme collecte des réponses des mois après la clôture.' },
           { name: 'note', label: 'Note interne', type: 'text', col: 'full' },
-        ], { anonyme: 'oui', usage: 'salle', expireLe: C.iso(C.addDays(new Date(), 30)) });
+        ], { anonyme: 'oui', usage: 'salle', point: 'accueil', expireLe: C.iso(C.addDays(new Date(), 30)) });
 
         var m2 = U.modal({
           title: 'Partager — ' + enq.titre,
@@ -1774,7 +1890,8 @@
                 var res = colJetons().insert({
                   jeton: global.SIGH.parcours.jetonEnquete(),
                   enqueteId: enq.id, enqueteTitre: enq.titre,
-                  anonyme: v2.anonyme === 'oui', usage: v2.usage,
+                  anonyme: v2.anonyme === 'oui', usage: v2.usage, point: v2.point || null, enLigne: v2.usage === 'en_ligne',
+                  version: versionALaDate(enq, C.iso(new Date())).version,
                   creeLe: C.iso(new Date()), expireLe: v2.expireLe,
                   revoqueLe: null, note: v2.note || null,
                   ouvertPar: S.currentUser(),
@@ -1788,7 +1905,7 @@
       }
 
       function montrerLien(j) {
-        var lien = lienDuJeton(j.jeton);
+        var lien = lienDuJeton(j.jeton, j.enLigne);
         var e = etatJeton(j);
         var champ = el('input.input.font-mono.text-xs', { type: 'text', value: lien, readonly: true,
           'aria-label': 'Adresse du formulaire' });
@@ -1888,6 +2005,13 @@
                     source: 'Cr\u00e9\u00e9 dans l\u2019application \u2014 \u00e0 valider',
                   })
                   : Object.assign({}, v2, { questions: qs });
+                if (creation) valeursM.versions = [{ version: 'V1', effetLe: valeursM.creeLe, questions: qs.map(function (q) { return Object.assign({}, q); }) }];
+                else {
+                  /* Lot SAT : modifier les questions AJOUTE une version datee d'aujourd'hui ; les reponses deja recueillies gardent la leur. */
+                  var av = ajouterVersion(r, qs, C.iso(new Date()));
+                  if (av && av.refus) { U.toast(av.motif, { type: 'error', detail: 'Code ' + av.refus + '. ' + av.geste }); return; }
+                  if (av) valeursM.versions = av.versions;
+                }
                 K.ecrireValidable(colEnquetes(), { famille: 'enquetes' }, creation ? null : r, valeursM).then(function (w) {
                   if (K.refusEcriture(w)) return;
                   m2.close(); afficher();
@@ -1915,6 +2039,53 @@
       }
     },
   });
+
+
+  /** La carte « Analyse » (lot SAT) : filtres (periode, point, version, canal) et indicateurs recalcules. */
+  function carteAnalyse(enq) {
+    var corps = el('div.space-y-3');
+    var filtres = { du: '', au: '', point: '', version: '', canal: '' };
+    var zone = el('div.space-y-3');
+    function champ(id, libelle, type, options) {
+      var c;
+      if (type === 'date') c = el('input.input', { type: 'date', id: id });
+      else {
+        c = el('select.input', { id: id });
+        options.forEach(function (o) { c.appendChild(el('option', { value: o.value, text: o.label })); });
+      }
+      return el('div', null, [el('label.label', { text: libelle, 'for': id }), c]);
+    }
+    var versions = versionsDe(enq).map(function (v) { return { value: v.version, label: v.version + ' (depuis le ' + C.dateFR(v.effetLe) + ')' }; });
+    var barre = el('div.grid.gap-3.sm:grid-cols-5', null, [
+      champ('an_du', 'Du', 'date'), champ('an_au', 'Au', 'date'),
+      champ('an_point', 'Point de collecte', 'select', [{ value: '', label: 'Tous les points' }].concat(colPoints().active().map(function (x) { return { value: x.code, label: x.libelle }; }))),
+      champ('an_version', 'Version du questionnaire', 'select', [{ value: '', label: 'Toutes les versions' }].concat(versions)),
+      champ('an_canal', 'Canal', 'select', [{ value: '', label: 'Tous les canaux' }].concat(CANAUX_ENQUETE.concat([CANAL_PUBLIC]).map(function (x) { return { value: x, label: x }; }))),
+    ]);
+    function peindre() {
+      var a = analyseSatisfaction(enq, colReponses().active(), filtres);
+      C.clear(zone);
+      zone.appendChild(U.kpiGrid([
+        { label: 'R\u00e9ponses (filtre)', value: C.num(a.reponses), icon: 'messages-square', tone: 'navy' },
+        { label: 'Taux de satisfaction', value: pctOuNC(a.satisfaction), icon: 'smile', tone: 'success', hint: 'Notes 4 ou 5 sur 5' },
+        { label: 'Taux de recommandation', value: pctOuNC(a.recommandation), icon: 'thumbs-up', tone: 'info' },
+        { label: 'Taux de r\u00e9ponse', value: pctOuNC(a.tauxReponse), icon: 'percent', tone: 'neutral', hint: 'Passages \u00e0 l\\u2019accueil non compt\u00e9s' },
+      ]));
+      zone.appendChild(K.miniTable(['Question', 'Notes', 'Moyenne', 'Satisfaction'], a.parQuestion.map(function (q) {
+        return [q.libelle, C.num(q.n), q.moyenne == null ? 'Non calculable' : C.num(q.moyenne, 1), pctOuNC(q.satisfaction)];
+      })));
+      zone.appendChild(K.miniTable(['Mois', 'R\u00e9ponses', 'Satisfaction'], a.parMois.map(function (m) { return [m.mois, C.num(m.n), pctOuNC(m.satisfaction)]; })));
+      zone.appendChild(K.miniTable(['Point de collecte', 'R\u00e9ponses', 'Satisfaction'], a.parPoint.map(function (p) { return [p.libelle, C.num(p.n), pctOuNC(p.satisfaction)]; })));
+      U.icons(zone);
+    }
+    corps.appendChild(barre); corps.appendChild(zone);
+    ['du', 'au', 'point', 'version', 'canal'].forEach(function (k) {
+      var e = barre.querySelector('#an_' + k);
+      e.addEventListener('change', function () { filtres[k] = e.value; peindre(); });
+    });
+    peindre();
+    return U.card('Analyse', corps);
+  }
 
   global.SIGH.screen('adm-satisfaction', {
     title: 'Satisfaction des patients',
@@ -1992,6 +2163,7 @@
             ]);
           }))
           : U.empty('Aucun commentaire libre recueilli.', { icon: 'message-square-text' })));
+      host.appendChild(carteAnalyse(enq));
       host.appendChild(K.source('R\u00e9ponses de l\u2019enqu\u00eate \u00ab ' + enq.titre + ' \u00bb \u2014 recalcul\u00e9 \u00e0 chaque affichage.'));
       U.icons(host);
       return null;
@@ -2366,7 +2538,7 @@
           return;
         }
         enregistrerReponse(enq, v, {
-          canal: CANAL_PUBLIC, jetonId: jeton.id,
+          canal: CANAL_PUBLIC, jetonId: jeton.id, point: jeton.point || null,
           /* ANONYME VEUT DIRE ANONYME : ni nom, ni adresse réseau, ni lien
              vers un dossier. Sinon le mot est un mensonge. */
           saisiPar: jeton.anonyme ? 'Réponse anonyme — lien partagé' : (nom || 'Répondant non nommé'),

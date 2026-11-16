@@ -168,8 +168,10 @@
      le 16/11/2026), et `demandesIdentite` (dépôts d'un fileul habilité, appliqués par la mère) entre au socle.
      94 (16/11/2026, lot SMS-R) : geste réservé `regler_passerelle_sms` (fiches RBAC semées : défaut administrateur et DAF) ; la fiche du personnel porte `dateNaissance`
      et `consentementSms` (décoché par défaut). Les fiches RBAC étant semées, la version monte.
+     95 (16/11/2026, lot SAT, ADR-0009) : la SATISFACTION EN LIGNE. L'enquête porte des `versions` datées du questionnaire ; la réponse porte sa `version` et son `point` de collecte ; la collection
+     `pointsCollecte` (les sept points de la décision S2) est semée par l'écran des enquêtes ; le lien de partage porte `enLigne` et `point`. Sans incrément, un poste garderait des enquêtes sans version.
   */
-  var VERSION = 94;
+  var VERSION = 95;
   var db = null;
   var listeners = {};
 
@@ -4233,7 +4235,7 @@
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
     'examensImagerie', 'variablesImagerie', 'pathologies',
     /* Modèles (badges, messages, questionnaires) et emplacements de rangement */
-    'modelesBadge', 'modelesMessage', 'enquetes', 'emplacements',
+    'modelesBadge', 'modelesMessage', 'enquetes', 'pointsCollecte', 'emplacements',
     /* LE JOURNAL D'AUDIT SE GARDE : il trace les tarifs arrêtés, les droits fermés, la
        grille des primes — tout ce que le vidage CONSERVE. Effacer la trace de ce qu'on
        garde contredirait RG-12 ; le vidage s'inscrit EN TÊTE du journal conservé. */
@@ -4592,6 +4594,7 @@
     validationsReferentiels: 'CFG|Validations de référentiels',
     reponsesEnquetes: 'M13|Réponses d’enquête',
     jetonsEnquete: 'M13|Liens de partage des enquêtes',
+    pointsCollecte: 'M13|Points de collecte de la satisfaction',
     badges: 'M10|Badges du personnel', modelesBadge: 'M10|Modèles de badge',
     clichesImagerie: 'M2|Clichés d’échographie',
     examensImagerie: 'CFG|Catalogue des examens d’imagerie',
