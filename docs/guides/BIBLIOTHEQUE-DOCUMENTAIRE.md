@@ -81,6 +81,8 @@ Chaque spécification suit le canevas : écrans → onglets → champs (type, ob
 | `SPRINT_COMPLETE__PROJECT_FLUTTER`, `SPRINT_COMPLETE_PROJECT_LARAVEL_LIVEWIRE` | PLAN §3 (phases) | `/plan`, `product-management:sprint-planning` | `docs/plans/` | à rédiger **après P0** (dépend de l'effectif et du banc) |
 | Bibliothèque de skills | PLAN §5 | `plugin-authoring`/`skill-creator` | `.claude/skills/` | à rédiger après P2 |
 
+Guide des commandes (cloner, installer, tester, mettre en production) : [`COMMANDES-CLONER-TESTER-DEPLOYER.md`](COMMANDES-CLONER-TESTER-DEPLOYER.md).
+
 ## Ordre de travail recommandé
 
 1. **P0** : décider ADR-0005 (Q1–Q5). Tout le reste en dépend.
