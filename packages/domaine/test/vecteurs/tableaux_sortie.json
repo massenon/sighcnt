@@ -1,0 +1,655 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-tableaux.js : sortie des tableaux (maquette pilotée sur l’écran Factures). Ne pas éditer.",
+ "ecranReel": {
+  "fichierXlsx": "factures-2026-10-30.xlsx",
+  "feuille": "factures 2026-10-30",
+  "fichierCsv": "factures-2026-10-30.csv",
+  "matrice": [
+   [
+    "N° facture",
+    "Date",
+    "Patient",
+    "Nature",
+    "Montant",
+    "Part assurance",
+    "Réglé",
+    "Reste dû",
+    "Règlement",
+    "MECeF"
+   ],
+   [
+    "FI-2026-00397",
+    {
+     "date": "2026-08-26"
+    },
+    "ADAM Rabiatou CNT/82/26",
+    "Imagerie",
+    35000,
+    0,
+    0,
+    35000,
+    "Impayée",
+    "En attente de transmission"
+   ],
+   [
+    "FE-2026-00370",
+    {
+     "date": "2026-08-26"
+    },
+    "KPATINDÉ Honorine CNT/1107/26",
+    "Analyses — patient externe",
+    12000,
+    "",
+    0,
+    12000,
+    "Impayée",
+    "En attente de transmission"
+   ],
+   [
+    "FI-2026-00405 MECEF2000091",
+    {
+     "date": "2026-08-25"
+    },
+    "BOUKARI Nourou CNT/86/26",
+    "Imagerie",
+    150000,
+    "",
+    150000,
+    0,
+    "Soldée",
+    "Normalisée"
+   ]
+  ],
+  "csv": "﻿\"N° facture\";\"Date\";\"Patient\";\"Nature\";\"Montant\";\"Part assurance\";\"Réglé\";\"Reste dû\";\"Règlement\";\"MECeF\"\r\n\"FI-2026-00397\";\"26/08/2026\";\"ADAM Rabiatou CNT/82/26\";\"Imagerie\";\"35000\";\"0\";\"0\";\"35000\";\"Impayée\";\"En attente de transmission\"\r\n\"FE-2026-00370\";\"26/08/2026\";\"KPATINDÉ Honorine CNT/1107/26\";\"Analyses — patient externe\";\"12000\";\"\";\"0\";\"12000\";\"Impayée\";\"En attente de transmission\"\r\n\"FI-2026-00405 MECEF2000091\";\"25/08/2026\";\"BOUKARI Nourou CNT/86/26\";\"Imagerie\";\"150000\";\"\";\"150000\";\"0\";\"Soldée\";\"Normalisée\"",
+  "journal": [
+   {
+    "action": "Export d’un tableau (.csv)",
+    "module": "M8",
+    "entite": "Tableau",
+    "reference": "m8-factures",
+    "format": "csv",
+    "perimetre": "selection",
+    "lignes": 3,
+    "references": [
+     "FACxmvux6z1ajtwrb",
+     "FACxmvux6z0hu458q",
+     "FACxmvux6z1hf21un"
+    ],
+    "referencesTotal": 3,
+    "role": "admin",
+    "ecran": "m8-factures",
+    "cible": "factures",
+    "succes": true
+   },
+   {
+    "action": "Export d’un tableau (.xlsx)",
+    "module": "M8",
+    "entite": "Tableau",
+    "reference": "m8-factures",
+    "format": "xlsx",
+    "perimetre": "selection",
+    "lignes": 3,
+    "references": [
+     "FACxmvux6z1ajtwrb",
+     "FACxmvux6z0hu458q",
+     "FACxmvux6z1hf21un"
+    ],
+    "referencesTotal": 3,
+    "role": "admin",
+    "ecran": "m8-factures",
+    "cible": "factures",
+    "succes": true
+   }
+  ]
+ },
+ "cellules": [
+  {
+   "brut": 12500,
+   "montre": "12 500",
+   "aucunTexte": false,
+   "cellule": 12500
+  },
+  {
+   "brut": 12500,
+   "montre": "12 500 FCFA",
+   "aucunTexte": false,
+   "cellule": 12500
+  },
+  {
+   "brut": -3000,
+   "montre": "-3 000",
+   "aucunTexte": false,
+   "cellule": -3000
+  },
+  {
+   "brut": 12500.4,
+   "montre": "12 500",
+   "aucunTexte": false,
+   "cellule": 12500.4
+  },
+  {
+   "brut": 12.5,
+   "montre": "12,5",
+   "aucunTexte": false,
+   "cellule": 12.5
+  },
+  {
+   "brut": 45,
+   "montre": "45 %",
+   "aucunTexte": false,
+   "cellule": 45
+  },
+  {
+   "brut": 0.45,
+   "montre": "45 %",
+   "aucunTexte": false,
+   "cellule": "45 %"
+  },
+  {
+   "brut": 12,
+   "montre": "Lit 12",
+   "aucunTexte": false,
+   "cellule": "Lit 12"
+  },
+  {
+   "brut": 0,
+   "montre": "",
+   "aucunTexte": false,
+   "cellule": ""
+  },
+  {
+   "brut": 0,
+   "montre": "—",
+   "aucunTexte": false,
+   "cellule": ""
+  },
+  {
+   "brut": 7,
+   "montre": null,
+   "aucunTexte": true,
+   "cellule": 7
+  },
+  {
+   "brut": "2026-08-14",
+   "montre": "14/08/2026",
+   "aucunTexte": false,
+   "cellule": {
+    "date": "2026-08-14"
+   }
+  },
+  {
+   "brut": "2026-08-14",
+   "montre": null,
+   "aucunTexte": true,
+   "cellule": {
+    "date": "2026-08-14"
+   }
+  },
+  {
+   "brut": "2026-08-14T09:30",
+   "montre": "14/08/2026 à 09h30",
+   "aucunTexte": false,
+   "cellule": {
+    "dateHeure": "2026-08-14T09:30"
+   }
+  },
+  {
+   "brut": "2026-08-14T09:30",
+   "montre": "14/08/2026",
+   "aucunTexte": false,
+   "cellule": {
+    "date": "2026-08-14"
+   }
+  },
+  {
+   "brut": "2026-08-14",
+   "montre": "août 2026",
+   "aucunTexte": false,
+   "cellule": "août 2026"
+  },
+  {
+   "brut": "+229 97 00 12 34",
+   "montre": "•• •• 12 34",
+   "aucunTexte": false,
+   "cellule": "•• •• 12 34"
+  },
+  {
+   "brut": "Consultation",
+   "montre": "Consultation",
+   "aucunTexte": false,
+   "cellule": "Consultation"
+  },
+  {
+   "brut": "en_attente",
+   "montre": "En attente",
+   "aucunTexte": false,
+   "cellule": "En attente"
+  },
+  {
+   "brut": true,
+   "montre": null,
+   "aucunTexte": true,
+   "cellule": "Oui"
+  },
+  {
+   "brut": false,
+   "montre": null,
+   "aucunTexte": true,
+   "cellule": "Non"
+  },
+  {
+   "brut": null,
+   "montre": null,
+   "aucunTexte": true,
+   "cellule": ""
+  },
+  {
+   "brut": "texte  sur   deux  lignes",
+   "montre": "texte  sur\n   deux  lignes",
+   "aucunTexte": false,
+   "cellule": "texte sur deux lignes"
+  },
+  {
+   "brut": 1500,
+   "montre": "1 500 FCFA",
+   "aucunTexte": false,
+   "cellule": 1500
+  },
+  {
+   "brut": 1500,
+   "montre": "1 500 mL",
+   "aucunTexte": false,
+   "cellule": "1 500 mL"
+  }
+ ],
+ "essais": [
+  {
+   "nom": "format inconnu",
+   "format": "pdf",
+   "lignes": 1,
+   "colonnes": 1,
+   "limiteReglee": null,
+   "limite": 2000,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": false,
+    "code": "FORMAT_INCONNU",
+    "motif": "le format « pdf » n’existe pas",
+    "geste": "Choisir Excel (.xlsx), CSV ou Impression."
+   }
+  },
+  {
+   "nom": "vide",
+   "format": "csv",
+   "lignes": 0,
+   "colonnes": 1,
+   "limiteReglee": null,
+   "limite": 2000,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": false,
+    "code": "EXPORT_VIDE",
+    "motif": "aucune ligne à sortir",
+    "geste": "Cocher des lignes, ou élargir la recherche et les filtres."
+   }
+  },
+  {
+   "nom": "sans colonne",
+   "format": "csv",
+   "lignes": 2,
+   "colonnes": 0,
+   "limiteReglee": null,
+   "limite": 2000,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": false,
+    "code": "EXPORT_SANS_COLONNE",
+    "motif": "aucune colonne affichée",
+    "geste": "Afficher au moins une colonne (bouton « Colonnes »)."
+   }
+  },
+  {
+   "nom": "à la limite",
+   "format": "csv",
+   "lignes": 3,
+   "colonnes": 1,
+   "limiteReglee": 3,
+   "limite": 3,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "au-delà de la limite",
+   "format": "csv",
+   "lignes": 4,
+   "colonnes": 1,
+   "limiteReglee": 3,
+   "limite": 3,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": false,
+    "code": "EXPORT_AU_DELA_DE_LA_LIMITE",
+    "motif": "4 lignes demandées, la limite réglée par la clinique est de 3 lignes par export : aucun fichier tronqué n’est écrit",
+    "geste": "Affiner la recherche ou les filtres, ou cocher moins de lignes ; la limite se relève dans la fenêtre d’export par un profil qui écrit dans la sécurité."
+   }
+  },
+  {
+   "nom": "au-delà de la limite, milliers",
+   "format": "xlsx",
+   "lignes": 2501,
+   "colonnes": 1,
+   "limiteReglee": 2500,
+   "limite": 2500,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": false,
+    "code": "EXPORT_AU_DELA_DE_LA_LIMITE",
+    "motif": "2 501 lignes demandées, la limite réglée par la clinique est de 2 500 lignes par export : aucun fichier tronqué n’est écrit",
+    "geste": "Affiner la recherche ou les filtres, ou cocher moins de lignes ; la limite se relève dans la fenêtre d’export par un profil qui écrit dans la sécurité."
+   }
+  },
+  {
+   "nom": "limite illisible, défaut",
+   "format": "csv",
+   "lignes": 2,
+   "colonnes": 1,
+   "limiteReglee": "beaucoup",
+   "limite": 2000,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "limite hors bornes, défaut",
+   "format": "csv",
+   "lignes": 2,
+   "colonnes": 1,
+   "limiteReglee": 0,
+   "limite": 2000,
+   "droit": true,
+   "role": "admin",
+   "libelleRole": "Administrateur système",
+   "resultat": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "sans le droit",
+   "format": "xlsx",
+   "lignes": 1,
+   "colonnes": 1,
+   "limiteReglee": null,
+   "limite": 2000,
+   "droit": false,
+   "role": "caissier",
+   "libelleRole": "Caissier — Dispensaire (Pharmacie)",
+   "resultat": {
+    "ok": false,
+    "code": "EXPORT_NON_AUTORISE",
+    "motif": "le profil « Caissier — Dispensaire (Pharmacie) » ne détient pas le droit d’exporter ou d’imprimer les lignes d’un tableau",
+    "geste": "Demander ce droit à l’administrateur : il se règle par rôle dans « Rôles & permissions », gestes réservés."
+   }
+  }
+ ],
+ "reglages": [
+  {
+   "lignes": 3,
+   "motif": "",
+   "resultat": {
+    "ok": false,
+    "code": "MOTIF_REQUIS",
+    "motif": "un réglage de limite se motive",
+    "geste": "Saisir le motif du réglage."
+   }
+  },
+  {
+   "lignes": 0,
+   "motif": "m",
+   "resultat": {
+    "ok": false,
+    "code": "LIMITE_INVALIDE",
+    "motif": "la limite est un nombre entier de lignes, de 1 à 100 000",
+    "geste": "Saisir un nombre entier de lignes."
+   }
+  },
+  {
+   "lignes": 100001,
+   "motif": "m",
+   "resultat": {
+    "ok": false,
+    "code": "LIMITE_INVALIDE",
+    "motif": "la limite est un nombre entier de lignes, de 1 à 100 000",
+    "geste": "Saisir un nombre entier de lignes."
+   }
+  },
+  {
+   "lignes": 2.5,
+   "motif": "m",
+   "resultat": {
+    "ok": false,
+    "code": "LIMITE_INVALIDE",
+    "motif": "la limite est un nombre entier de lignes, de 1 à 100 000",
+    "geste": "Saisir un nombre entier de lignes."
+   }
+  },
+  {
+   "lignes": "",
+   "motif": "m",
+   "resultat": {
+    "ok": false,
+    "code": "LIMITE_INVALIDE",
+    "motif": "la limite est un nombre entier de lignes, de 1 à 100 000",
+    "geste": "Saisir un nombre entier de lignes."
+   }
+  },
+  {
+   "lignes": "abc",
+   "motif": "m",
+   "resultat": {
+    "ok": false,
+    "code": "LIMITE_INVALIDE",
+    "motif": "la limite est un nombre entier de lignes, de 1 à 100 000",
+    "geste": "Saisir un nombre entier de lignes."
+   }
+  },
+  {
+   "lignes": 500,
+   "motif": "Sonde vecteurs",
+   "resultat": {
+    "ok": true,
+    "lignes": 500
+   }
+  }
+ ],
+ "totaux": [
+  {
+   "nom": "nombres",
+   "lignes": [
+    {
+     "id": "a",
+     "m": 1000,
+     "q": 2
+    },
+    {
+     "id": "b",
+     "m": 2500,
+     "q": 1
+    }
+   ],
+   "pied": [
+    "TOTAL",
+    "3 500",
+    "3"
+   ]
+  },
+  {
+   "nom": "texte dans la colonne",
+   "lignes": [
+    {
+     "id": "a",
+     "m": 1000,
+     "q": 2
+    },
+    {
+     "id": "b",
+     "m": "à voir",
+     "q": 1
+    }
+   ],
+   "pied": [
+    "TOTAL",
+    "non calculable",
+    "3"
+   ]
+  },
+  {
+   "nom": "cellule vide",
+   "lignes": [
+    {
+     "id": "a",
+     "m": 1000,
+     "q": 2
+    },
+    {
+     "id": "b",
+     "m": null,
+     "q": 3
+    }
+   ],
+   "pied": [
+    "TOTAL",
+    "1 000",
+    "5"
+   ]
+  }
+ ],
+ "series": [
+  {
+   "iso": "2026-08-14",
+   "serie": 46248
+  },
+  {
+   "iso": "2026-08-14T09:30",
+   "serie": 46248.39583333
+  },
+  {
+   "iso": "2026-08-14T09:30:15",
+   "serie": 46248.39600694
+  },
+  {
+   "iso": "2026-08-14 23:59",
+   "serie": 46248.99930556
+  },
+  {
+   "iso": "1900-03-01",
+   "serie": 61
+  },
+  {
+   "iso": "1900-02-28",
+   "serie": null
+  },
+  {
+   "iso": "pas une date",
+   "serie": null
+  },
+  {
+   "iso": "2026-13-45",
+   "serie": 46432
+  }
+ ],
+ "textes": [
+  {
+   "texte": "12 500",
+   "droite": true,
+   "cellule": 12500
+  },
+  {
+   "texte": "12 500 FCFA",
+   "droite": true,
+   "cellule": 12500
+  },
+  {
+   "texte": "12 500",
+   "droite": false,
+   "cellule": "12 500"
+  },
+  {
+   "texte": "14/08/2026",
+   "droite": false,
+   "cellule": {
+    "date": "2026-08-14"
+   }
+  },
+  {
+   "texte": "14/08/2026",
+   "droite": true,
+   "cellule": {
+    "date": "2026-08-14"
+   }
+  },
+  {
+   "texte": "45 %",
+   "droite": true,
+   "cellule": 45
+  },
+  {
+   "texte": "1.234,5",
+   "droite": true,
+   "cellule": "1.234,5"
+  },
+  {
+   "texte": "12,5",
+   "droite": true,
+   "cellule": 12.5
+  },
+  {
+   "texte": "—",
+   "droite": true,
+   "cellule": ""
+  },
+  {
+   "texte": "",
+   "droite": false,
+   "cellule": ""
+  },
+  {
+   "texte": "Lit 12",
+   "droite": true,
+   "cellule": "Lit 12"
+  },
+  {
+   "texte": "-3 000",
+   "droite": true,
+   "cellule": -3000
+  },
+  {
+   "texte": "  deux   espaces ",
+   "droite": false,
+   "cellule": "deux espaces"
+  },
+  {
+   "texte": "1 500 mL",
+   "droite": true,
+   "cellule": "1 500 mL"
+  }
+ ],
+ "limiteDefaut": 2000,
+ "geste": "exporter_donnees"
+}

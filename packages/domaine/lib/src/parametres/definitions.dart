@@ -17,6 +17,7 @@ import '../comptabilite/cpc_circuit.dart';
 import '../validation/demande_validation.dart' show valCleDelaiAlerteHeures, valDelaiAlerteDefautHeures;
 import '../fichiers/ocr.dart' show ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrCleDelai, ocrLangueDefaut, ocrDelaiDefautMs;
 import '../sauvegarde/sauvegarde_horssite.dart';
+import '../tableaux/sortie_tableau.dart' show tabCleLimiteLignes, tabLimiteDefaut;
 import 'parametres.dart';
 
 const String _decisions = 'Décision de la Direction du 09/11/2026 (DECISIONS-A-VALIDER, section D)';
@@ -417,6 +418,19 @@ const List<DefinitionParametre> definitionsParametres = [
     source: 'Proposition à valider (lot CONT, DECISIONS-A-VALIDER section AG) : aucun document ne fixe ce délai',
     branche: true,
     appliquePar: 'Lot CONT (continuité des validations)',
+  ),
+  // Lot EXP (16/11/2026) : la limite de lignes par export d'un tableau (classeur .xlsx, CSV, impression). Réglage de clinique posé à la mère, jamais vers un téléphone
+  // (famille `securite`) : au-delà, la sortie est refusée nommée, jamais tronquée. Défaut semé : valeur d'ATTENTE mesurée sur la plus grande table du jeu de démonstration.
+  DefinitionParametre(
+    cle: tabCleLimiteLignes,
+    famille: 'securite',
+    type: TypeParametre.entier,
+    defaut: tabLimiteDefaut,
+    libelle: 'Lignes au plus par export d\'un tableau',
+    aide: 'Entier de 1 à 100 000. Au-delà, l\'export ou l\'impression d\'un tableau est refusé en le disant (jamais un fichier tronqué) ; le geste : affiner le filtre ou cocher moins de lignes. Valeur d\'attente : 2 000.',
+    source: 'Proposition à valider (lot EXP, DECISIONS-A-VALIDER section AK) : la Direction n\'a fixé aucune valeur (section AH, point 40) ; 2 000 laisse sortir la plus grande table du jeu de démonstration (planning, 1 394 lignes)',
+    branche: true,
+    appliquePar: 'Lot EXP (sortie des tableaux)',
   ),
 ];
 
