@@ -22609,7 +22609,7 @@ async function viderMessages(page) {
       [g2, 'Sérum sonde 136 (sans prix de revient)', 'Médicaments', 'Flacon', 25, 'L136-B', '2030-12-31', '', 5, '', '']], 't136-gs.csv');
     const vg1 = await T.versions(g1), vg2 = await T.versions(g2), fg2 = await T.fiche(g2);
     verifier('Le Grand Stock pose aussi la version 1 de chaque article : le prix de revient (80) pour l’un, « manquant » pour l’autre (stock repris, article « à valoriser », non facturable) ; le stock repris n’est pas perdu',
-      lotG.ok && vg1.length === 1 && vg1[0].achat === 80 && vg1[0].origine === 'import' && vg1[0].lot === lotG.ref && vg2.length === 1 && vg2[0].achat === null && fg2.stock === 25 && (await T.prescrire(g2, 1, null, false)).ok === false, JSON.stringify({ lotG, vg1, vg2, fg2 }));
+      lotG.ok && vg1.length === 1 && vg1[0].achat === 80 && vg1[0].origine === 'import' && vg1[0].lot === lotG.ref && vg2.length === 1 && vg2[0].achat === null && fg2.stock === 25 && await (async () => { const r = await T.prescrire(g2, 1, null, false); return r.ok === true && r.pu === null && r.montant === null && r.total === null; })(), JSON.stringify({ lotG, vg1, vg2, fg2 }));
 
     /* --- 5. Atomicité : une création refusée par le moteur retire TOUT ce que le lot venait de poser, versions comprises ------------------------------------------------ */
     const avantAt = await page.evaluate(() => { const S = window.SIGH.store; return { t: S.collection('tarifs').all().length, v: S.collection('versionsTarif').all().length, p: S.collection('produits').all().length }; });
@@ -22788,7 +22788,9 @@ async function viderMessages(page) {
       lotG.ok && vg2.length === 1 && vg2[0].achat === null && fg2.stock === 25 && liste.length === 3 && liste.every((x) => x.raison === 'prix d’achat non renseigné' && x.enAttente === false) && !liste.some((x) => x.code === g1)
       && (await page.evaluate(() => window.SIGH.parcours.produitsAValoriser().length)) === baseListe + 3, JSON.stringify({ lotG, vg2, liste, baseListe }));
     const refusFact = await T.prescrire(g2, 1, null, false);
-    verifier('La facturation REFUSE toujours un article « à valoriser » en le nommant (jamais à zéro) : ni ordonnance ni facture', refusFact.ok === false && /Prix d’achat absent/.test(refusFact.erreur || '') && /Sérum sonde 138/.test(refusFact.erreur || ''), JSON.stringify(refusFact));
+    /* LOT TARIF-FIX-2 (Direction, 16/11/2026) : la prescription passe ; la ligne dit « prix à valoriser » (jamais 0) et c'est l'ENCAISSEMENT qui est refusé en la nommant. */
+    const caisseFact = refusFact.ok ? await page.evaluate((id) => { const r = window.SIGH.parcours.encaisser(id, {}); return r.refusNomme ? { code: r.refusNomme.code, motif: r.refusNomme.motif } : { passe: true }; }, refusFact.factureId) : null;
+    verifier('Un article « à valoriser » ne se facture jamais à zéro : la prescription passe (lot TARIF-FIX-2), sa ligne est « prix à valoriser » (prix et total nuls), et l’ENCAISSEMENT est refusé en nommant l’article', refusFact.ok === true && refusFact.pu === null && refusFact.total === null && caisseFact && caisseFact.code === 'ENCAISSEMENT_PRIX_MANQUANT' && /prix à valoriser/.test(caisseFact.motif) && /Sérum sonde 138/.test(caisseFact.motif), JSON.stringify({ refusFact, caisseFact }));
 
     /* --- La LISTE à l'écran : « Tarifs et prix », onglet Produits (bandeau avec le compte, filtre « À valoriser »), et « Référentiel produits » (indicateur, badge) ----------------------- */
     await poserSessionServeur(roleImp('da', 'DAF138'));
@@ -27821,7 +27823,7 @@ async function viderMessages(page) {
       const rp = PR.encaisser(f1.id, { lignes: [f1.lignes.filter((l) => !l.prixManquant)[0].id], mode: 'especes' });
       R.refus = [rl, rm, rp].map((x) => ({ code: x.refusNomme && x.refusNomme.code, motif: x.refusNomme && x.refusNomme.motif, geste: x.refusNomme && x.refusNomme.geste, regle: x.montantRegle }));
       R.inchange = JSON.stringify(S.collection('factures').get(f1.id)) === avant && S.collection('ecritures').all().length === e0;
-      R.f1 = f1.id; R.f1num = f1.numero; R.f2 = p2.facture.id;
+      R.f1 = f1.id; R.f1num = f1.numero; R.o1num = p1.ordonnance.numero; R.f2 = p2.facture.id;
       /* l'ALERTE : une par code, routée par la fiche RBAC, sans donnée de santé */
       const toutes = NT.collecter({ tousPostes: true, detaille: true }).filter((n) => n.source === 'prix_manquant' && n.cle === 'prix:tarif:' + cX);
       R.alerte = toutes.map((n) => ({ titre: n.titre, detail: n.detail, postes: n.postes, lien: n.lien }));
@@ -27848,17 +27850,24 @@ async function viderMessages(page) {
     /* La CAISSE : la commande « Encaisser » est ABSENTE (ni bouton grisé) et le motif est dit à sa place, dans la file et dans « Paiements » */
     await poserSessionServeur({ role: 'caissier', nom: 'CAISSE196', nomComplet: 'CAISSE196', fonction: 'caissier', identifiant: 's196.caisse', secteur: 'DIR' });
     await ouvrir('m8-caisse.html');
-    const file = await page.evaluate(async (num) => {
+    const file = await page.evaluate(async (num, num2) => {
       const pause = (ms) => new Promise((r) => setTimeout(r, ms));
       const q = [...document.querySelectorAll('#page-content input')].find((i) => /Recherch/i.test(i.getAttribute('placeholder') || ''));
       if (q) { q.value = num; q.dispatchEvent(new Event('input', { bubbles: true })); } await pause(500);
       const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(num) >= 0);
       if (!tr) return { trouve: false };
       return { trouve: true, encaisser: !!tr.querySelector('button[title="Encaisser"], button[aria-label="Encaisser"]'), boutons: [...tr.querySelectorAll('button')].map((b) => b.getAttribute('title') || b.getAttribute('aria-label') || b.textContent.trim()),
-        emp: (tr.querySelector('[data-empechement]') || {}).textContent || null, code: tr.querySelector('[data-empechement]') ? tr.querySelector('[data-empechement]').getAttribute('data-empechement') : null, montant: tr.textContent.indexOf('Non calculable') >= 0 };
-    }, a.f1num);
+        emp: (tr.querySelector('[data-empechement]') || {}).textContent || null, code: tr.querySelector('[data-empechement]') ? tr.querySelector('[data-empechement]').getAttribute('data-empechement') : null, montant: tr.textContent.indexOf('Non calculable') >= 0,
+        /* Le registre des pièces du jour : la pièce en attente dit « Non calculable » (jamais « soldée ») et n'a pas « Encaisser le reste ». */
+        registre: await (async () => {
+          const qs = [...document.querySelectorAll('#page-content input')].filter((i) => /Recherch/i.test(i.getAttribute('placeholder') || ''));
+          if (qs[1]) { qs[1].value = num2; qs[1].dispatchEvent(new Event('input', { bubbles: true })); await pause(500); }
+          const r = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(num2) >= 0);
+          return r ? { soldee: /soldée/.test(r.textContent), nonCalc: /Non calculable/.test(r.textContent), reste: [...r.querySelectorAll('button')].some((b) => /Encaisser le reste/.test(b.textContent)) } : null; })() };
+    }, a.o1num, a.f1num);
     verifier('File de caisse : la prescription en attente de prix est LISTÉE, montant « Non calculable », SANS commande « Encaisser » (ni bouton grisé), le motif « En attente de prix : « CODE » prix à définir » dit à sa place (code du refus porté)',
-      file.trouve && !file.encaisser && file.code === 'ENCAISSEMENT_PRIX_MANQUANT' && /En attente de prix/.test(file.emp || '') && (file.emp || '').indexOf(a.cX) >= 0 && file.montant, JSON.stringify(file));
+      file.trouve && !file.encaisser && file.code === 'ENCAISSEMENT_PRIX_MANQUANT' && /En attente de prix/.test(file.emp || '') && (file.emp || '').indexOf(a.cX) >= 0 && file.montant
+        && file.registre && !file.registre.soldee && file.registre.nonCalc && !file.registre.reste, JSON.stringify(file));
     await ouvrir('m8-paiements.html');
     const pai = await page.evaluate(async (num) => {
       const pause = (ms) => new Promise((r) => setTimeout(r, ms));

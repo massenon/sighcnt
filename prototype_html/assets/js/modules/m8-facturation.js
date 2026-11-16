@@ -2625,6 +2625,8 @@
                 render: function (r) { return C.money(r.montantPaye); } },
               { key: 'reliquat', label: 'Reste dû', align: 'right',
                 render: function (r) {
+                  /* LOT TARIF-FIX-2 : une pièce en attente de prix n'est pas « soldée » : son reste dû est non calculable. */
+                  if (r.enAttentePrix && r.statutPaiement !== 'soldee') return el('span.text-xs.font-medium.text-warning-700', { text: 'Non calculable' });
                   return r.reliquat > 0
                     ? el('span.font-semibold.text-amber-700', { text: C.money(r.reliquat) })
                     : U.badge('soldée', 'success');
