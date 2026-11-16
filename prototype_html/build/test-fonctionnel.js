@@ -663,7 +663,12 @@ async function viderMessages(page) {
     const dossier = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sigh-docs-'));
     const base = 'http://127.0.0.1:' + BANC.PORT_PHP;
     let F = null;
-    const fabrique = async () => F || (F = await require('./_documents-fixtures').fabriquer(browser, dossier));
+    /* LA FABRIQUE NE VOLE PAS LE PREMIER PLAN AU BANC (16/11/2026). Elle ouvre son propre onglet (`browser.newPage()`), qui devient l'onglet actif et reste ouvert
+       jusqu'à la fin de la suite : à partir du premier scénario qui l'appelle (Vague 152), la page du banc était `hidden` et sans focus. Chrome ne la peignait plus :
+       les attentes par `requestAnimationFrame` (attendrePeinture, attendreEcritures) ne sondaient plus qu'une fois puis expiraient (4,6 s par page, 30 s par attente
+       d'écritures, mesurés), et `page.click` de Puppeteer, qui attend un IntersectionObserver avant de cliquer, ne rendait jamais la main (Vague 200 : « Runtime.callFunctionOn
+       timed out » à 180 s, à chaque passage derrière la Vague 152 ou suivantes). On rend le premier plan à la page du banc dès que la fabrique est ouverte. */
+    const fabrique = async () => { if (!F) { F = await require('./_documents-fixtures').fabriquer(browser, dossier); await page.bringToFront(); } return F; };
     const sha = (f) => crypto.createHash('sha256').update(Buffer.isBuffer(f) ? f : fs.readFileSync(f)).digest('hex');
     const sfx = () => String(Date.now()).slice(-7);
     async function jeton(role) {
