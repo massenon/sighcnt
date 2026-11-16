@@ -607,3 +607,19 @@ Ce qui CHANGE par rapport au 09/11 est en gras. Le reste confirme une décision 
 30. **Plan annuel de travail (PTA)** : « rien ne doit rester en dur » ; lot PTA (exercice choisi, responsable lié au personnel, signataires paramétrés, budget, indicateur et cible, adoption par la Direction, alerte de retard, synchronisation, impression du plan et du bilan).
 31. **Inventaire de ce qui est en dur** : tout ce qui est paramétrable devient réglage ou droit ; lots dans l'ordre MIL (année des numéros et agrégats), VAL (validations et acteurs), TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT.
 32. **La liasse fiscale 2025 et ses chiffres de référence**, aujourd'hui transcrits dans le code, sont des données déposées et non des réglages : **ils passent en base, sous forme d'import daté**, dans le lot des listes de référence (REF). Accord de la Direction du 16/11/2026.
+
+## AU. Lot SMS-R (16/11/2026, relais, mère, domaine, maquette) : passerelle SMS tenue par le relais, ce qui reste à trancher
+
+Mise en œuvre des points 13, 26, 27 et 28 de la section AQ : `docs/architecture/adr/ADR-0008-passerelle-sms-par-le-relais.md`, `ECARTS-MAQUETTE.md` E2850 à E2861. Hypothèses écrites plutôt qu'inventées, à confirmer :
+
+1. **Activation des envois automatiques : désactivés par défaut** (comme la sauvegarde hors site). La Direction a validé les heures, pas l'activation. ☐ Désactivés par défaut ☐ Activés dès que la passerelle est prête.
+2. **Péremption d'un message planifié : 3 heures après son heure** (au-delà, le relais le refuse, `HEURE_DEPASSEE`) ; **tolérance de dépôt : 120 minutes** ; **horizon de calcul : 2 jours** ; **délai entre deux tentatives : 5 minutes**. Aucun document ne fixe ces valeurs ; elles sont en base, réglables.
+3. **Un rendez-vous pris APRÈS 18 h la veille ne reçoit pas de rappel** (heure passée au-delà de la tolérance). ☐ Accepté ☐ Envoyer au plus tôt dans la fenêtre autorisée.
+4. **Texte exact des modèles par défaut** (la Direction a validé « les modèles par défaut » sans que le texte figure au dépôt) : rappel « {{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}. » ; vœux « {{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien. » (personnel : « ... Merci pour votre engagement. »). `{{nom}}` = le PRÉNOM seul. ☐ Textes confirmés ☐ À réécrire.
+5. **Le numéro de rappel du texte est le numéro de rendez-vous de l'identité imprimée** (`telephoneRdv`) et le nom est `nomCourt` : la version datée de l'identité n'est pas lue (le poste mère lit la constante).
+6. **Liste des mots médicaux** : celle de la maquette, toujours « à valider par un médecin nommé ». Un modèle qui en contient est refusé à l'enregistrement.
+7. **29 février** : fêté le 28 février les années non bissextiles.
+8. **Le fuseau de la mère est celui du Bénin** (UTC+1, sans heure d'été) : les heures du réglage sont des heures locales de la mère.
+9. **Le relais détient numéros et textes entre le dépôt et l'envoi** (jusqu'à la veille 18 h pour un rappel déposé à l'avance) : à reconnaître au registre des accès (un superadmin lit la base, pas le panneau qui masque).
+10. **Pas encore fait** : écrans `cfg-sms` et `m13-sms-journal` du poste, geste réservé `regler_passerelle_sms` (défaut administrateur et DAF), consentement au dossier patient et à la fiche du personnel AU POSTE, réouverture de MODP02 et MODP04, `VERSION` 92 (E2861).
+11. **Couverture du Bénin, expéditeur alphanumérique, coût par message, codes d'erreur réels des deux fournisseurs** : jamais vérifiés avec un vrai compte (recette sur site, première semaine en plafond bas).

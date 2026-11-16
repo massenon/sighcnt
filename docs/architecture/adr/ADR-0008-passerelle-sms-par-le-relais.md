@@ -28,7 +28,7 @@ Pour envoyer un SMS, la passerelle d'un fournisseur (Twilio, Vonage) doit lire l
 
 ## Conséquences
 
-- Le relais détient des numéros et des textes **pendant la fenêtre entre le dépôt et l'envoi** (au plus : de la veille 18 h au lendemain pour un rappel). C'est la contrepartie acceptée. Une fuite de la base pendant cette fenêtre exposerait des numéros et des messages sans nom ni donnée de santé.
+- Le relais détient des numéros et des textes **pendant la fenêtre entre le dépôt et l'envoi** (au plus : de la veille 18 h au lendemain pour un rappel). C'est la contrepartie acceptée. Une fuite de la base pendant cette fenêtre exposerait des numéros et des messages (qui peuvent porter le prénom de la personne, variable `{{nom}}`) sans donnée de santé, sans code patient et sans rendez-vous autre que la date et l'heure d'un rappel.
 - La passerelle ne dépend plus de l'allumage de la mère à l'heure d'envoi, mais dépend du cron du relais (surveillé par `relais:surveiller`).
 - Un compte superadmin du relais peut lire les numéros des messages planifiés en base (pas au panneau, qui les masque). À reconnaître dans le registre des accès.
 - Non vérifié : couverture du Bénin, expéditeur alphanumérique, coût par message chez les deux fournisseurs (vérification de confort en recette, non bloquante) ; correspondance exacte des codes d'erreur de chaque fournisseur (relevée dans leurs bibliothèques, à confirmer avec un vrai compte).
