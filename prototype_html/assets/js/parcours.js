@@ -6709,6 +6709,10 @@
     var fr = function (d) { return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear(); };
     var r = o.reglage, maintenant = lire(o.maintenant);
     var envois = [], ecartes = [];
+    /* Lot SMS-R, rappel du MATIN MÊME (Direction, 16/11/2026) : un rendez-vous que la mère ne voit qu'APRÈS l'heure d'envoi de la veille (18 h) reçoit son rappel le matin du jour du rendez-vous, à l'heure
+       réglée (`rappelHeureMatin`, défaut 7 h, à valider), jamais à l'heure du rendez-vous ni après. `dejaDeposes` : les clés déjà déposées au relais (quel que soit leur état) : une veille déjà tentée n'est jamais doublée. */
+    var heureMatin = r.rappelHeureMatin == null ? 7 : r.rappelHeureMatin;
+    var deposes = {}; (o.dejaDeposes || []).forEach(function (k) { deposes[k] = true; });
     var decedes = {}; (o.deces || []).forEach(function (d) { decedes[d.patientId || ''] = true; });
     var patients = {}; (o.patients || []).forEach(function (x) { patients[x.id] = x; });
     var apresCalmes = function (t) {
@@ -6732,11 +6736,35 @@
       return new Date(annee, n.getMonth(), n.getDate());
     };
     var auj = new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate());
+    /* Le rendez-vous est encore à venir, l'heure d'envoi de la veille est PASSÉE et aucun rappel de la veille n'a jamais été déposé : c'est le cas du matin. */
+    var rappelDuMatin = function (c, quand) {
+      if (quand.getTime() <= maintenant.getTime()) return false;
+      var veille = new Date(quand.getFullYear(), quand.getMonth(), quand.getDate() - r.rappelJoursAvant, r.rappelHeure);
+      return apresCalmes(veille).getTime() <= maintenant.getTime() && !deposes['rappel_rdv:' + c.id + ':' + jourDe(quand)];
+    };
+    var jourRdvMin = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate());
+    var jourRdvMax = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() + r.horizonJours + r.rappelJoursAvant);
+    (o.consultations || []).forEach(function (c) {
+      var quand = lire(c.date); if (!quand) return;
+      var jr = new Date(quand.getFullYear(), quand.getMonth(), quand.getDate());
+      if (jr.getTime() < jourRdvMin.getTime() || jr.getTime() > jourRdvMax.getTime() || !rappelDuMatin(c, quand)) return;
+      var cle = 'rappel_rdv_matin:' + c.id + ':' + jourDe(quand);
+      if (c.statut !== 'planifiee' || c.nonPatient === true || !c.patientId) return;
+      var p = patients[c.patientId];
+      if (!p) { ecartes.push({ cle: cle, raison: 'PATIENT_INCONNU' }); return; }
+      if (p.consentementSms === false) { ecartes.push({ cle: cle, raison: 'CONSENTEMENT_RETIRE' }); return; }
+      var matin = apresCalmes(new Date(quand.getFullYear(), quand.getMonth(), quand.getDate(), heureMatin));
+      if (matin.getTime() >= quand.getTime()) { ecartes.push({ cle: cle, raison: 'MATIN_APRES_LE_RENDEZ_VOUS' }); return; }
+      /* Le texte du matin porte le PRÉNOM ({{nom}}) et, comme tout rappel, ni le médecin, ni le service, ni le motif (aucune variable pour eux). */
+      var texte = smsComposerAuto(r.modeleRappelMatin || r.modeleRappel, { nom: String(p.prenom || '').trim(), date: fr(quand), heure: p2(quand.getHours()) + 'h' + p2(quand.getMinutes()), clinique: o.clinique, telephone: o.telephone });
+      ajouter(cle, 'rappel_rdv', p.telephone, texte, matin);
+    });
     for (var k = 0; k <= r.horizonJours; k++) {
       var jourEnvoi = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() + k);
       var jourRdv = new Date(jourEnvoi.getFullYear(), jourEnvoi.getMonth(), jourEnvoi.getDate() + r.rappelJoursAvant);
       (o.consultations || []).forEach(function (c) {
         var quand = lire(c.date); if (!quand || jourDe(quand) !== jourDe(jourRdv)) return;
+        if (rappelDuMatin(c, quand)) return;   /* le matin du rendez-vous s'en charge (bloc ci-dessus) */
         var cle = 'rappel_rdv:' + c.id + ':' + jourDe(quand);
         if (c.statut !== 'planifiee' || c.nonPatient === true || !c.patientId) return;
         var p = patients[c.patientId];

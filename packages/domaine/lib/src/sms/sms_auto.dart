@@ -18,6 +18,9 @@ const String smsGesteRegler = 'regler_passerelle_sms';
 const String smsCleActif = 'sms.auto.actif';
 const String smsCleRappelHeure = 'sms.rappel.heure';
 const String smsCleRappelJoursAvant = 'sms.rappel.joursAvant';
+/// Rappel du MATIN MÊME (lot SMS-R, Direction du 16/11/2026) : l'heure, réglable en base (défaut 7 h, à valider), et son modèle (qui porte le prénom).
+const String smsCleRappelHeureMatin = 'sms.rappelRdv.heureMatin';
+const String smsCleModeleRappelMatin = 'sms.rappelRdv.modeleMatin';
 const String smsCleAnniversaireHeure = 'sms.anniversaire.heure';
 const String smsCleCalmeDebut = 'sms.calme.debut';
 const String smsCleCalmeFin = 'sms.calme.fin';
@@ -30,6 +33,7 @@ const String smsCleModeleAnniversairePersonnel = 'sms.modele.anniversairePersonn
 const bool smsActifDefaut = false;
 const int smsRappelHeureDefaut = 18;
 const int smsRappelJoursAvantDefaut = 1;
+const int smsRappelHeureMatinDefaut = 7;
 const int smsAnniversaireHeureDefaut = 9;
 const int smsCalmeDebutDefaut = 21;
 const int smsCalmeFinDefaut = 7;
@@ -38,6 +42,8 @@ const int smsToleranceMinutesDefaut = 120;
 
 /// Modèles par défaut, VALIDÉS par la Direction (16/11/2026) : sans mot médical, sans médecin ni service ni motif.
 const String smsModeleRappelDefaut = '{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.';
+/// Le rappel du matin, PROPOSITION à valider : il porte le prénom ({{nom}}), jamais le médecin, le service ni le motif.
+const String smsModeleRappelMatinDefaut = '{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.';
 const String smsModeleAnniversairePatientDefaut = '{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.';
 const String smsModeleAnniversairePersonnelDefaut = '{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement.';
 
@@ -126,18 +132,20 @@ class ReglageSmsAuto {
     this.actif = smsActifDefaut,
     this.rappelHeure = smsRappelHeureDefaut,
     this.rappelJoursAvant = smsRappelJoursAvantDefaut,
+    this.rappelHeureMatin = smsRappelHeureMatinDefaut,
     this.anniversaireHeure = smsAnniversaireHeureDefaut,
     this.calmeDebut = smsCalmeDebutDefaut,
     this.calmeFin = smsCalmeFinDefaut,
     this.horizonJours = smsHorizonJoursDefaut,
     this.toleranceMinutes = smsToleranceMinutesDefaut,
     this.modeleRappel = smsModeleRappelDefaut,
+    this.modeleRappelMatin = smsModeleRappelMatinDefaut,
     this.modeleAnniversairePatient = smsModeleAnniversairePatientDefaut,
     this.modeleAnniversairePersonnel = smsModeleAnniversairePersonnelDefaut,
   });
   final bool actif;
-  final int rappelHeure, rappelJoursAvant, anniversaireHeure, calmeDebut, calmeFin, horizonJours, toleranceMinutes;
-  final String modeleRappel, modeleAnniversairePatient, modeleAnniversairePersonnel;
+  final int rappelHeure, rappelHeureMatin, rappelJoursAvant, anniversaireHeure, calmeDebut, calmeFin, horizonJours, toleranceMinutes;
+  final String modeleRappel, modeleRappelMatin, modeleAnniversairePatient, modeleAnniversairePersonnel;
 }
 
 /// Un envoi calculé : une clé NATURELLE (qui reste à la mère : le relais ne reçoit que son HMAC), le type, le numéro E.164, le texte final, l'heure d'envoi (heure du Bénin).
@@ -198,6 +206,9 @@ DateTime? _anniversaireEn(DateTime naissance, int annee) {
 /// `clinique` et `telephone` viennent de l'identité imprimée (jamais écrits ici).
 ///
 ///  - RAPPEL : une consultation `planifiee` d'un patient connu, sans `nonPatient`, dont le jour est (jour d'envoi + joursAvant), part à `rappelHeure` le jour d'envoi.
+///  - RAPPEL DU MATIN (Direction, 16/11/2026) : un rendez-vous encore à venir dont l'heure d'envoi de la veille est PASSÉE et dont la clé de la veille n'a JAMAIS été déposée ([dejaDeposes]) part le
+///    matin du rendez-vous à `rappelHeureMatin` (7 h par défaut, après les heures calmes), jamais à l'heure du rendez-vous ni après (`MATIN_APRES_LE_RENDEZ_VOUS`), avec le modèle du matin (le prénom,
+///    jamais le médecin, le service ni le motif). Clé `rappel_rdv_matin:<id>:<jour>` ; même type `rappel_rdv` ; le plafond du jour reste celui du relais (200).
 ///  - ANNIVERSAIRE : un patient (consentement `consentementSms != false`, ACTIVÉ par défaut), un agent (consentement `== true`, DÉCOCHÉ par défaut), à `anniversaireHeure` le jour même ; un patient
 ///    décédé n'en reçoit pas.
 ///  - sans consentement ou sans numéro valide : écarté et NOMMÉ ; jamais d'envoi.
@@ -212,6 +223,7 @@ PlanSms smsPlanifier({
   required List<Map<String, Object?>> employes,
   required String clinique,
   required String telephone,
+  Set<String> dejaDeposes = const {},
 }) {
   final envois = <EnvoiSmsPlanifie>[];
   final ecartes = <SmsEcarte>[];
@@ -229,6 +241,40 @@ PlanSms smsPlanifier({
   }
 
   final aujourdhui = DateTime(maintenant.year, maintenant.month, maintenant.day);
+
+  // Le rendez-vous est encore à venir, l'heure d'envoi de la veille est PASSÉE et aucun rappel de la veille n'a jamais été déposé : c'est le cas du matin.
+  bool rappelDuMatin(Map<String, Object?> c, DateTime quand) {
+    if (!quand.isAfter(maintenant)) return false;
+    final veille = DateTime(quand.year, quand.month, quand.day - reglage.rappelJoursAvant, reglage.rappelHeure);
+    return !smsApresHeuresCalmes(veille, reglage.calmeDebut, reglage.calmeFin).isAfter(maintenant) && !dejaDeposes.contains('rappel_rdv:${c['id']}:${_jour(quand)}');
+  }
+
+  final jourRdvMax = DateTime(aujourdhui.year, aujourdhui.month, aujourdhui.day + reglage.horizonJours + reglage.rappelJoursAvant);
+  for (final c in consultations) {
+    final quand = _lireDate(c['date']);
+    if (quand == null) continue;
+    final jr = DateTime(quand.year, quand.month, quand.day);
+    if (jr.isBefore(aujourdhui) || jr.isAfter(jourRdvMax) || !rappelDuMatin(c, quand)) continue;
+    final cle = 'rappel_rdv_matin:${c['id']}:${_jour(quand)}';
+    if (c['statut'] != 'planifiee' || c['nonPatient'] == true || '${c['patientId'] ?? ''}'.isEmpty) continue;
+    final p = patientsParId['${c['patientId']}'];
+    if (p == null) {
+      ecartes.add(SmsEcarte(cle, 'PATIENT_INCONNU'));
+      continue;
+    }
+    if (p['consentementSms'] == false) {
+      ecartes.add(SmsEcarte(cle, 'CONSENTEMENT_RETIRE'));
+      continue;
+    }
+    final matin = smsApresHeuresCalmes(DateTime(quand.year, quand.month, quand.day, reglage.rappelHeureMatin), reglage.calmeDebut, reglage.calmeFin);
+    if (!matin.isBefore(quand)) {
+      ecartes.add(SmsEcarte(cle, 'MATIN_APRES_LE_RENDEZ_VOUS'));
+      continue;
+    }
+    final texte = smsComposer(reglage.modeleRappelMatin, {'nom': '${p['prenom'] ?? ''}'.trim(), 'date': _dateFr(quand), 'heure': '${_p2(quand.hour)}h${_p2(quand.minute)}', 'clinique': clinique, 'telephone': telephone});
+    ajouter(cle, 'rappel_rdv', p['telephone'], texte, matin);
+  }
+
   for (var k = 0; k <= reglage.horizonJours; k++) {
     final jourEnvoi = DateTime(aujourdhui.year, aujourdhui.month, aujourdhui.day + k);
 
@@ -237,6 +283,7 @@ PlanSms smsPlanifier({
     for (final c in consultations) {
       final quand = _lireDate(c['date']);
       if (quand == null || _jour(quand) != _jour(jourRdv)) continue;
+      if (rappelDuMatin(c, quand)) continue; // le matin du rendez-vous s'en charge (bloc ci-dessus)
       final cle = 'rappel_rdv:${c['id']}:${_jour(quand)}';
       if (c['statut'] != 'planifiee' || c['nonPatient'] == true || '${c['patientId'] ?? ''}'.isEmpty) continue;
       final p = patientsParId['${c['patientId']}'];
@@ -290,13 +337,13 @@ PlanSms smsPlanifier({
 
 /// Le contrôle du réglage de clinique : heures de 0 à 23, jours avant de 0 à 7, horizon de 1 à 14 jours, tolérance de 0 à 180 minutes (sous la péremption du relais), modèles valides.
 RefusSms? smsVerifierReglage(ReglageSmsAuto r) {
-  for (final (nom, h) in [('rappel', r.rappelHeure), ('anniversaire', r.anniversaireHeure), ('début des heures calmes', r.calmeDebut), ('fin des heures calmes', r.calmeFin)]) {
+  for (final (nom, h) in [('rappel', r.rappelHeure), ('rappel du matin', r.rappelHeureMatin), ('anniversaire', r.anniversaireHeure), ('début des heures calmes', r.calmeDebut), ('fin des heures calmes', r.calmeFin)]) {
     if (h < 0 || h > 23) return RefusSms('HEURE_HORS_BORNES', 'l\'heure du réglage « $nom » doit être de 0 à 23', 'Saisir une heure entière de 0 à 23.');
   }
   if (r.rappelJoursAvant < 0 || r.rappelJoursAvant > 7) return const RefusSms('JOURS_HORS_BORNES', 'le rappel part de 0 à 7 jours avant le rendez-vous', 'Saisir un nombre de jours de 0 à 7.');
   if (r.horizonJours < 1 || r.horizonJours > 14) return const RefusSms('HORIZON_HORS_BORNES', 'l\'horizon de calcul est de 1 à 14 jours', 'Saisir un nombre de jours de 1 à 14.');
   if (r.toleranceMinutes < 0 || r.toleranceMinutes > 180) return const RefusSms('TOLERANCE_HORS_BORNES', 'la tolérance est de 0 à 180 minutes (le relais ne reprend pas un message resté planifié plus de 3 heures)', 'Saisir de 0 à 180 minutes.');
-  for (final m in [r.modeleRappel, r.modeleAnniversairePatient, r.modeleAnniversairePersonnel]) {
+  for (final m in [r.modeleRappel, r.modeleRappelMatin, r.modeleAnniversairePatient, r.modeleAnniversairePersonnel]) {
     final x = smsVerifierModele(m);
     if (x != null) return x;
   }

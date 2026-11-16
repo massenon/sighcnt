@@ -112,6 +112,7 @@ class SmsMere {
     return ReglageSmsAuto(
       actif: v(smsCleActif) == true,
       rappelHeure: entier(smsCleRappelHeure, smsRappelHeureDefaut),
+      rappelHeureMatin: entier(smsCleRappelHeureMatin, smsRappelHeureMatinDefaut),
       rappelJoursAvant: entier(smsCleRappelJoursAvant, smsRappelJoursAvantDefaut),
       anniversaireHeure: entier(smsCleAnniversaireHeure, smsAnniversaireHeureDefaut),
       calmeDebut: entier(smsCleCalmeDebut, smsCalmeDebutDefaut),
@@ -119,6 +120,7 @@ class SmsMere {
       horizonJours: entier(smsCleHorizonJours, smsHorizonJoursDefaut),
       toleranceMinutes: entier(smsCleToleranceMinutes, smsToleranceMinutesDefaut),
       modeleRappel: texte(smsCleModeleRappel, smsModeleRappelDefaut),
+      modeleRappelMatin: texte(smsCleModeleRappelMatin, smsModeleRappelMatinDefaut),
       modeleAnniversairePatient: texte(smsCleModeleAnniversairePatient, smsModeleAnniversairePatientDefaut),
       modeleAnniversairePersonnel: texte(smsCleModeleAnniversairePersonnel, smsModeleAnniversairePersonnelDefaut),
     );
@@ -184,6 +186,8 @@ class SmsMere {
       final ctrl = smsVerifierReglage(r);
       if (ctrl != null) throw ErreurSms(ctrl.code, ctrl.motif, ctrl.geste);
       final maintenant = _horloge();
+      // Les clés déjà déposées au relais, quel que soit leur état : un rappel de la veille déjà tenté n'est jamais doublé par le rappel du matin (Direction, 16/11/2026).
+      final deposees = {for (final l in await verrou.executer(() => base.select('SELECT cle FROM sms_depots'))) '${l['cle']}'};
       final plan = smsPlanifier(
         maintenant: maintenant,
         reglage: r,
@@ -193,6 +197,7 @@ class SmsMere {
         employes: await _fiches('employes'),
         clinique: IdentiteClinique.nomCourt,
         telephone: IdentiteClinique.telephoneRdv,
+        dejaDeposes: deposees,
       );
       final ids = <String, EnvoiSmsPlanifie>{for (final e in plan.envois) identifiantOpaque(e.cle): e};
 

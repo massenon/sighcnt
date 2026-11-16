@@ -16,8 +16,9 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       const PR = SIGH.parcours;
       const propre = (x) => JSON.parse(JSON.stringify(x === undefined ? null : x));
       const defaut = {
-        rappelHeure: 18, rappelJoursAvant: 1, anniversaireHeure: 9, calmeDebut: 21, calmeFin: 7, horizonJours: 2, toleranceMinutes: 120,
+        rappelHeure: 18, rappelHeureMatin: 7, rappelJoursAvant: 1, anniversaireHeure: 9, calmeDebut: 21, calmeFin: 7, horizonJours: 2, toleranceMinutes: 120,
         modeleRappel: '{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.',
+        modeleRappelMatin: '{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.',
         modeleAnniversairePatient: '{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.',
         modeleAnniversairePersonnel: '{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement.',
       };
@@ -40,8 +41,8 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       planifier('numéro invalide', { patients: [pat('P1', { telephone: '12' })], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
       planifier('numéro avec indicatif', { patients: [pat('P1', { telephone: '+229 97 00 00 02' })], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
       planifier('rendez-vous hors horizon : rien', { patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-25T10:30')] });
-      planifier('dans la tolérance après 18 h', { maintenant: '2026-11-16T19:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
-      planifier('au-delà de la tolérance : heure passée', { maintenant: '2026-11-16T21:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
+      planifier('après 18 h, rendez-vous du lendemain jamais déposé : rappel du MATIN à 7 h (plus de rappel tardif le soir)', { maintenant: '2026-11-16T19:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
+      planifier('21 h 30, rendez-vous du lendemain jamais déposé : le matin à 7 h aussi', { maintenant: '2026-11-16T21:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
       planifier('rappel réglé dans les heures calmes : reporté à 7 h', { reglage: Object.assign({}, defaut, { rappelHeure: 22 }), patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
       planifier('anniversaire du patient demain à 9 h', { patients: [pat('P1', { dateNaissance: '1990-11-17' })] });
       planifier('anniversaire aujourd’hui déjà passé', { patients: [pat('P1', { dateNaissance: '1990-11-16' })] });
@@ -52,6 +53,19 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       planifier('mot médical dans le modèle : écarté à la composition', { reglage: Object.assign({}, defaut, { modeleAnniversairePatient: 'Bonne fête {{nom}}, votre test est positif.' }), patients: [pat('P1', { dateNaissance: '1990-11-17' })] });
       planifier('texte trop long : écarté', { reglage: Object.assign({}, defaut, { modeleAnniversairePatient: 'x'.repeat(330) }), patients: [pat('P1', { dateNaissance: '1990-11-17' })] });
       planifier('deux rendez-vous, ordre par heure puis clé', { patients: [pat('P1'), pat('P2', { prenom: 'Koffi', telephone: '0197000004' })], consultations: [rdv('C2', 'P2', '2026-11-17T08:00'), rdv('C1', 'P1', '2026-11-17T10:30')] });
+      /* Lot SMS-R, rappel du matin même (Direction, 16/11/2026) : un rendez-vous que la mère ne voit qu'après l'heure d'envoi de la veille part le matin du rendez-vous. */
+      const lendemain = { maintenant: '2026-11-16T19:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] };
+      planifier('veille déjà déposée au relais : le rappel de la veille reste le seul (jamais doublé par le matin)', Object.assign({}, lendemain, { dejaDeposes: ['rappel_rdv:C1:2026-11-17'] }));
+      planifier('rendez-vous le jour même, vu à 6 h 30 : rappel à 7 h', { maintenant: '2026-11-17T06:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
+      planifier('rendez-vous le jour même, vu à 9 h 30 : l\'heure du matin est passée de plus de la tolérance', { maintenant: '2026-11-17T09:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T15:00')] });
+      planifier('rendez-vous le jour même déjà passé : rien', { maintenant: '2026-11-17T11:00', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T10:30')] });
+      planifier('rendez-vous à 6 h 30, avant l\'heure du matin : jamais après le rendez-vous', { maintenant: '2026-11-16T19:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T06:30')] });
+      planifier('rendez-vous à 7 h pile : pas strictement avant, écarté', { maintenant: '2026-11-16T19:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-17T07:00')] });
+      planifier('heure du matin réglée à 8 h', Object.assign({}, lendemain, { reglage: Object.assign({}, defaut, { rappelHeureMatin: 8 }) }));
+      planifier('heure du matin réglée à 5 h : reportée à la fin des heures calmes (7 h)', Object.assign({}, lendemain, { reglage: Object.assign({}, defaut, { rappelHeureMatin: 5 }) }));
+      planifier('matin : consentement retiré, patient inconnu, annulé : écartés ou rien', { maintenant: '2026-11-16T19:30', patients: [pat('P1', { consentementSms: false })], consultations: [rdv('C1', 'P1', '2026-11-17T10:30'), rdv('C2', 'PX', '2026-11-17T10:30'), rdv('C3', 'P1', '2026-11-17T10:30', { statut: 'annulee' })] });
+      planifier('matin : le texte porte le prénom, jamais le médecin, le service ni le motif', Object.assign({}, lendemain, { consultations: [rdv('C1', 'P1', '2026-11-17T10:30', { service: 'Maternité', motif: 'grossesse' })] }));
+      planifier('après-demain : encore le rappel de la veille à 18 h, pas le matin', { maintenant: '2026-11-16T19:30', patients: [pat('P1')], consultations: [rdv('C1', 'P1', '2026-11-18T10:30')] });
       modele('modèle valide', defaut.modeleRappel);
       modele('variable médecin refusée', 'Rendez-vous avec {{medecin}} le {{date}}');
       modele('variable service refusée', 'Service {{service}}');

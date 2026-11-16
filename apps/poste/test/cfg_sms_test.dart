@@ -67,6 +67,8 @@ void main() {
       expect(find.textContaining(k), findsWidgets, reason: k);
     }
     expect(find.text('Défini dans le .env du relais'), findsNWidgets(3));
+    expect(find.text('Rappel du matin même'), findsOneWidget, reason: 'lot SMS-R, Direction du 16/11/2026 : l\'écran dit le rappel du matin');
+    expect(find.textContaining('à 7 h le jour du rendez-vous'), findsOneWidget, reason: 'défaut semé, lu en base');
     expect(enregistrer, findsOneWidget);
     expect(tester, findsOneWidget);
   });

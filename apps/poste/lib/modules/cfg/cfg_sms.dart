@@ -112,6 +112,7 @@ class _EtatPasserelleSms extends State<EcranPasserelleSms> {
               ('Fin des heures calmes (heure)', '${s.calmeFin} h'),
               ('État des envois automatiques', s.reglageRecu ? (s.actif ? 'ACTIFS' : 'Désactivés') : 'Réglage non encore reçu du poste mère'),
               ('Rappel de rendez-vous', 'la veille à ${s.rappelHeure} h'),
+              ('Rappel du matin même', 'à ${s.rappelHeureMatin} h le jour du rendez-vous, si celui-ci n’a été connu de la mère qu’après l’envoi de la veille ; jamais à l’heure du rendez-vous ni après'),
               ('Vœux d’anniversaire', 'à ${s.anniversaireHeure} h (patients, et personnel qui y consent)'),
               if (dernier != null) ('Dernier calcul', '${dernier['calcules']} calculé(s), ${dernier['planifies']} déposé(s), ${dernier['retires']} retiré(s), ${(dernier['ecartes'] as Map).values.fold<int>(0, (a, b) => a + (b as int))} écarté(s)'),
             ]),

@@ -10,6 +10,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -17,6 +18,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -64,6 +66,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -71,6 +74,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -116,6 +120,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -123,6 +128,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -171,6 +177,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -178,6 +185,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -214,6 +222,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -221,6 +230,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -260,6 +270,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -267,6 +278,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -307,6 +319,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -314,6 +327,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -358,6 +372,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -365,6 +380,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -412,6 +428,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -419,6 +436,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -451,13 +469,14 @@
   },
   {
    "op": "planifier",
-   "nom": "dans la tolérance après 18 h",
+   "nom": "après 18 h, rendez-vous du lendemain jamais déposé : rappel du MATIN à 7 h (plus de rappel tardif le soir)",
    "entree": {
     "maintenant": "2026-11-16T19:30",
     "clinique": "Clinique Nassièra Too",
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -465,6 +484,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -493,11 +513,11 @@
    "attendu": {
     "envois": [
      {
-      "cle": "rappel_rdv:C1:2026-11-17",
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
       "type": "rappel_rdv",
       "numero": "+2290197000001",
-      "texte": "Clinique Nassièra Too : rappel de votre rendez-vous le 17/11/2026 à 10h30. Pour le modifier, appelez le +22901000000.",
-      "heureEnvoi": "2026-11-16T18:00"
+      "texte": "Clinique Nassièra Too : bonjour Awa, rappel de votre rendez-vous aujourd’hui à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-17T07:00"
      }
     ],
     "ecartes": []
@@ -505,13 +525,14 @@
   },
   {
    "op": "planifier",
-   "nom": "au-delà de la tolérance : heure passée",
+   "nom": "21 h 30, rendez-vous du lendemain jamais déposé : le matin à 7 h aussi",
    "entree": {
     "maintenant": "2026-11-16T21:30",
     "clinique": "Clinique Nassièra Too",
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -519,6 +540,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -545,13 +567,16 @@
     "employes": []
    },
    "attendu": {
-    "envois": [],
-    "ecartes": [
+    "envois": [
      {
-      "cle": "rappel_rdv:C1:2026-11-17",
-      "raison": "HEURE_PASSEE"
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "type": "rappel_rdv",
+      "numero": "+2290197000001",
+      "texte": "Clinique Nassièra Too : bonjour Awa, rappel de votre rendez-vous aujourd’hui à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-17T07:00"
      }
-    ]
+    ],
+    "ecartes": []
    }
   },
   {
@@ -563,6 +588,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 22,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -570,6 +596,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -617,6 +644,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -624,6 +652,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -662,6 +691,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -669,6 +699,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -704,6 +735,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -711,6 +743,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -750,6 +783,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -757,6 +791,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -791,6 +826,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -798,6 +834,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -836,6 +873,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -843,6 +881,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -881,6 +920,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -888,6 +928,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "Bonne fête {{nom}}, votre test est positif.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -923,6 +964,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -930,6 +972,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -965,6 +1008,7 @@
     "telephone": "+22901000000",
     "reglage": {
      "rappelHeure": 18,
+     "rappelHeureMatin": 7,
      "rappelJoursAvant": 1,
      "anniversaireHeure": 9,
      "calmeDebut": 21,
@@ -972,6 +1016,7 @@
      "horizonJours": 2,
      "toleranceMinutes": 120,
      "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
      "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
      "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
     },
@@ -1027,6 +1072,627 @@
       "numero": "+2290197000004",
       "texte": "Clinique Nassièra Too : rappel de votre rendez-vous le 17/11/2026 à 08h00. Pour le modifier, appelez le +22901000000.",
       "heureEnvoi": "2026-11-16T18:00"
+     }
+    ],
+    "ecartes": []
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "veille déjà déposée au relais : le rappel de la veille reste le seul (jamais doublé par le matin)",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": [],
+    "dejaDeposes": [
+     "rappel_rdv:C1:2026-11-17"
+    ]
+   },
+   "attendu": {
+    "envois": [
+     {
+      "cle": "rappel_rdv:C1:2026-11-17",
+      "type": "rappel_rdv",
+      "numero": "+2290197000001",
+      "texte": "Clinique Nassièra Too : rappel de votre rendez-vous le 17/11/2026 à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-16T18:00"
+     }
+    ],
+    "ecartes": []
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "rendez-vous le jour même, vu à 6 h 30 : rappel à 7 h",
+   "entree": {
+    "maintenant": "2026-11-17T06:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "type": "rappel_rdv",
+      "numero": "+2290197000001",
+      "texte": "Clinique Nassièra Too : bonjour Awa, rappel de votre rendez-vous aujourd’hui à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-17T07:00"
+     }
+    ],
+    "ecartes": []
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "rendez-vous le jour même, vu à 9 h 30 : l'heure du matin est passée de plus de la tolérance",
+   "entree": {
+    "maintenant": "2026-11-17T09:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T15:00",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [],
+    "ecartes": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "raison": "HEURE_PASSEE"
+     }
+    ]
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "rendez-vous le jour même déjà passé : rien",
+   "entree": {
+    "maintenant": "2026-11-17T11:00",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [],
+    "ecartes": []
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "rendez-vous à 6 h 30, avant l'heure du matin : jamais après le rendez-vous",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T06:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [],
+    "ecartes": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "raison": "MATIN_APRES_LE_RENDEZ_VOUS"
+     }
+    ]
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "rendez-vous à 7 h pile : pas strictement avant, écarté",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T07:00",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [],
+    "ecartes": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "raison": "MATIN_APRES_LE_RENDEZ_VOUS"
+     }
+    ]
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "heure du matin réglée à 8 h",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 8,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "type": "rappel_rdv",
+      "numero": "+2290197000001",
+      "texte": "Clinique Nassièra Too : bonjour Awa, rappel de votre rendez-vous aujourd’hui à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-17T08:00"
+     }
+    ],
+    "ecartes": []
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "heure du matin réglée à 5 h : reportée à la fin des heures calmes (7 h)",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 5,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "type": "rappel_rdv",
+      "numero": "+2290197000001",
+      "texte": "Clinique Nassièra Too : bonjour Awa, rappel de votre rendez-vous aujourd’hui à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-17T07:00"
+     }
+    ],
+    "ecartes": []
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "matin : consentement retiré, patient inconnu, annulé : écartés ou rien",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     },
+     {
+      "id": "C2",
+      "patientId": "PX",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     },
+     {
+      "id": "C3",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "annulee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15",
+      "consentementSms": false
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [],
+    "ecartes": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "raison": "CONSENTEMENT_RETIRE"
+     },
+     {
+      "cle": "rappel_rdv_matin:C2:2026-11-17",
+      "raison": "PATIENT_INCONNU"
+     }
+    ]
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "matin : le texte porte le prénom, jamais le médecin, le service ni le motif",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-17T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "grossesse",
+      "service": "Maternité"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [
+     {
+      "cle": "rappel_rdv_matin:C1:2026-11-17",
+      "type": "rappel_rdv",
+      "numero": "+2290197000001",
+      "texte": "Clinique Nassièra Too : bonjour Awa, rappel de votre rendez-vous aujourd’hui à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-17T07:00"
+     }
+    ],
+    "ecartes": []
+   }
+  },
+  {
+   "op": "planifier",
+   "nom": "après-demain : encore le rappel de la veille à 18 h, pas le matin",
+   "entree": {
+    "maintenant": "2026-11-16T19:30",
+    "clinique": "Clinique Nassièra Too",
+    "telephone": "+22901000000",
+    "reglage": {
+     "rappelHeure": 18,
+     "rappelHeureMatin": 7,
+     "rappelJoursAvant": 1,
+     "anniversaireHeure": 9,
+     "calmeDebut": 21,
+     "calmeFin": 7,
+     "horizonJours": 2,
+     "toleranceMinutes": 120,
+     "modeleRappel": "{{clinique}} : rappel de votre rendez-vous le {{date}} à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleRappelMatin": "{{clinique}} : bonjour {{nom}}, rappel de votre rendez-vous aujourd’hui à {{heure}}. Pour le modifier, appelez le {{telephone}}.",
+     "modeleAnniversairePatient": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Portez-vous bien.",
+     "modeleAnniversairePersonnel": "{{clinique}} vous souhaite un joyeux anniversaire, {{nom}}. Merci pour votre engagement."
+    },
+    "consultations": [
+     {
+      "id": "C1",
+      "patientId": "P1",
+      "date": "2026-11-18T10:30",
+      "statut": "planifiee",
+      "medecin": "Dr SECRET",
+      "motif": "paludisme"
+     }
+    ],
+    "patients": [
+     {
+      "id": "P1",
+      "nom": "DOSSOU",
+      "prenom": "Awa",
+      "telephone": "01 97 00 00 01",
+      "dateNaissance": "1990-01-15"
+     }
+    ],
+    "deces": [],
+    "employes": []
+   },
+   "attendu": {
+    "envois": [
+     {
+      "cle": "rappel_rdv:C1:2026-11-18",
+      "type": "rappel_rdv",
+      "numero": "+2290197000001",
+      "texte": "Clinique Nassièra Too : rappel de votre rendez-vous le 18/11/2026 à 10h30. Pour le modifier, appelez le +22901000000.",
+      "heureEnvoi": "2026-11-17T18:00"
      }
     ],
     "ecartes": []

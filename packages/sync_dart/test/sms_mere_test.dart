@@ -100,8 +100,8 @@ void main() {
   late SmsMere sms;
   final maintenant = DateTime(2026, 11, 16, 17, 0);
 
-  SmsMere construire({String? url, Duration delai = const Duration(milliseconds: 40)}) => SmsMere(
-      base: m.base, verrou: m.verrou, cle: cleDeTest, relais: url ?? relais.base, secretRelais: secret, evenement: m.evenementAsync, horloge: () => maintenant, delaiChangement: delai, delaiDemarrage: const Duration(days: 1), intervalle: const Duration(days: 1));
+  SmsMere construire({String? url, Duration delai = const Duration(milliseconds: 40), DateTime? a}) => SmsMere(
+      base: m.base, verrou: m.verrou, cle: cleDeTest, relais: url ?? relais.base, secretRelais: secret, evenement: m.evenementAsync, horloge: () => a ?? maintenant, delaiChangement: delai, delaiDemarrage: const Duration(days: 1), intervalle: const Duration(days: 1));
 
   setUp(() async {
     relais = await RelaisSms.lancer();
@@ -197,6 +197,62 @@ void main() {
     expect((e['planifies'] as List).length, 2, reason: 'l\'envoi parti n\'est plus « planifié »');
     final r2 = await sms.passe();
     expect(r2['dejaPartis'], 0, reason: 'une fois parti, il n\'est plus redemandé');
+  });
+
+  group('rappel du matin même (Direction, 16/11/2026)', () {
+    final soir = DateTime(2026, 11, 16, 19, 30);
+    Iterable<Map<String, Object?>> rappels() => relais.lignes.values.where((l) => l['type'] == 'rappel_rdv');
+
+    test('un rendez-vous vu APRÈS 18 h part le matin du rendez-vous à 7 h, avec le prénom, sans médecin ni motif ; le relais ne reçoit rien de plus', () async {
+      await regler(m, {smsCleActif: true});
+      final tard = construire(a: soir);
+      final r = await tard.passe();
+      expect(r['calcules'], 3, reason: 'le rappel du matin, les deux vœux du 17');
+      final l = rappels().single;
+      expect(l['heureEnvoi'], DateTime(2026, 11, 17, 7).millisecondsSinceEpoch);
+      expect('${l['texte']}', contains('Paul'));
+      expect('${l['texte']}', contains('10h30'));
+      final depots = relais.recus.where((x) => x.startsWith('POST /sms/deposer')).join('\n');
+      for (final interdit in ['SECRET', 'paludisme', 'medecin', 'rappel_rdv_matin', 'C1', 'P2', 'patientId']) {
+        expect(depots, isNot(contains(interdit)), reason: 'le relais ne reçoit jamais : $interdit (la clé naturelle reste à la mère)');
+      }
+      tard.arreter();
+    });
+
+    test('la veille déjà déposée à 17 h n\'est JAMAIS doublée par le matin, même après 18 h : un seul rappel pour le rendez-vous', () async {
+      await regler(m, {smsCleActif: true});
+      await sms.passe();
+      expect(rappels().length, 1);
+      expect(rappels().single['heureEnvoi'], DateTime(2026, 11, 16, 18).millisecondsSinceEpoch);
+      final tard = construire(a: DateTime(2026, 11, 16, 19, 0));
+      final r = await tard.passe();
+      expect(rappels().length, 1, reason: 'toujours un seul rappel au relais');
+      expect(r['existants'], greaterThanOrEqualTo(1));
+      tard.arreter();
+    });
+
+    test('idempotent : un second calcul du soir ne double pas le rappel du matin', () async {
+      await regler(m, {smsCleActif: true});
+      final tard = construire(a: soir);
+      await tard.passe();
+      final r = await tard.passe();
+      expect(r['planifies'], 0);
+      expect(rappels().length, 1);
+      tard.arreter();
+    });
+
+    test('l\'heure du matin est LUE EN BASE : réglée à 8 h, le rappel part à 8 h ; jamais à l\'heure du rendez-vous ni après', () async {
+      await regler(m, {smsCleActif: true, smsCleRappelHeureMatin: 8});
+      final tard = construire(a: soir);
+      await tard.passe();
+      expect(rappels().single['heureEnvoi'], DateTime(2026, 11, 17, 8).millisecondsSinceEpoch);
+      await fiche(m, 'consultations', 'C1', {'patientId': 'P2', 'date': '2026-11-17T07:30', 'statut': 'planifiee'});
+      final r = await tard.passe();
+      expect((r['ecartes'] as Map)['MATIN_APRES_LE_RENDEZ_VOUS'], 1, reason: 'rendez-vous à 7 h 30 : le matin de 8 h serait après lui');
+      expect(r['retires'], 1, reason: 'l\'ancien rappel de 8 h est retiré, rien ne part après le rendez-vous');
+      expect(relais.planifies(), 2, reason: 'ne restent que les deux vœux');
+      tard.arreter();
+    });
   });
 
   test('relais injoignable : refus nommé enregistré, rien d\'inventé', () async {

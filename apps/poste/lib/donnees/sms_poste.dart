@@ -108,6 +108,7 @@ class SmsPoste extends ChangeNotifier {
   }
 
   int get rappelHeure => _entier(smsCleRappelHeure, smsRappelHeureDefaut);
+  int get rappelHeureMatin => _entier(smsCleRappelHeureMatin, smsRappelHeureMatinDefaut);
   int get anniversaireHeure => _entier(smsCleAnniversaireHeure, smsAnniversaireHeureDefaut);
   int get calmeDebut => _entier(smsCleCalmeDebut, smsCalmeDebutDefaut);
   int get calmeFin => _entier(smsCleCalmeFin, smsCalmeFinDefaut);
