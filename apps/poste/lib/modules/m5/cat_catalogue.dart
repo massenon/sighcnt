@@ -16,11 +16,19 @@ import 'cat_commun.dart';
 const _delais = ['Immédiat', '1 h', '2 h', '4 h', '6 h', '24 h', '48 h', '72 h'];
 
 /// Le tarif d'une analyse se LIT au référentiel de prix (version en vigueur aujourd'hui) : il ne se modifie plus ici (PRD-TARIFS, lot T6), il se propose à « Tarifs et prix ».
-num? _prixDe(ContexteEcran c, Fiche a) => TarifsPoste.prixAnalyse(c.magasin, a['code'], aujourdhui: c.aujourdhui);
+/// LOT TARIF-FIX : la même lecture que la prescription (`TarifsPoste.ligne`, voie `analyse`) ; une analyse créée ici n'a pas de prix tant qu'aucune prestation famille
+/// Analyses de MÊME code n'est décidée : la ligne le DIT (« sans prix : à tarifier dans Tarifs et prix »), jamais un zéro.
+LignePrix _ligneDe(ContexteEcran c, Fiche a) => TarifsPoste.ligne(c.magasin, a['code'], aujourdhui: c.aujourdhui, voie: 'analyse');
+num? _prixDe(ContexteEcran c, Fiche a) => _ligneDe(c, a).montant;
+const texteSansPrixCatalogue = 'sans prix : à tarifier dans Tarifs et prix';
 String _tarif(ContexteEcran c, Fiche a) {
-  final p = _prixDe(c, a);
-  return p == null ? 'à valider' : money(p, avecDevise: false);
+  final l = _ligneDe(c, a);
+  if (l.ok) return money(l.montant, avecDevise: false);
+  return l.effectifLe != null ? l.libelleCourt : texteSansPrixCatalogue;
 }
+
+/// La commande « Tarifer » n'existe que pour un profil qui peut PROPOSER un prix (modifier « Tarifs et prix ») : ABSENTE sinon, jamais grisée.
+bool _peutTarifer(ContexteEcran c) => (c.donnees?.matrice.peutEditer(c.role, 'cfg-tarifs') ?? false) && (c.ouvre?.call('cfg-tarifs') ?? true);
 
 /// `m5-catalogue` — « Catalogue des analyses » : le référentiel des 48 analyses de la clinique (catégorie, échantillon, délai, tarif). Création et
 /// modification en modale, archivage annulable (RG-14), onglet « Par catégorie », état imprimable. Les tarifs sont des valeurs d'attente : le document
@@ -109,15 +117,29 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
               droite: true,
               valeur: (a) => nombreOuZero(_prixDe(c, a)),
               texte: (a) => _tarif(c, a),
-              rendu: (_, a) => Row(mainAxisSize: MainAxisSize.min, children: [
-                    Text(_tarif(c, a), style: styleCat(couleur: JetonsShell.slate700, poids: FontWeight.w600)),
-                    if (a['tarifProvisoire'] == true) ...[
-                      const SizedBox(width: 4),
-                      const Tooltip(
-                          message: 'Tarif à confirmer',
-                          child: Icon(LucideIcons.circleHelp, size: 14, color: JetonsShell.warning500)),
-                    ],
-                  ])),
+              rendu: (_, a) => !_ligneDe(c, a).ok
+                  ? Wrap(alignment: WrapAlignment.end, crossAxisAlignment: WrapCrossAlignment.center, spacing: 6, runSpacing: 4, children: [
+                      Tooltip(
+                          message: '${_ligneDe(c, a).motif} ${_ligneDe(c, a).geste}',
+                          child: Text(_tarif(c, a), key: ValueKey('sans-prix-${a['code']}'), style: styleCat(taille: 12, couleur: JetonsShell.danger600))),
+                      if (_peutTarifer(c))
+                        BoutonSigh(
+                            key: ValueKey('tarifer-${a['code']}'),
+                            libelle: 'Tarifer',
+                            icone: LucideIcons.coins,
+                            taille: TailleBouton.sm,
+                            variante: VarianteBouton.fantome,
+                            onPressed: () => c.aller('cfg-tarifs')),
+                    ])
+                  : Row(mainAxisSize: MainAxisSize.min, children: [
+                      Text(_tarif(c, a), style: styleCat(couleur: JetonsShell.slate700, poids: FontWeight.w600)),
+                      if (a['tarifProvisoire'] == true) ...[
+                        const SizedBox(width: 4),
+                        const Tooltip(
+                            message: 'Tarif à confirmer',
+                            child: Icon(LucideIcons.circleHelp, size: 14, color: JetonsShell.warning500)),
+                      ],
+                    ])),
           ColonneTableau(
               cle: 'statut',
               libelle: 'Statut',
@@ -151,6 +173,13 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
                 valeur: k.tarifMoyen,
                 icone: LucideIcons.coins,
                 ton: TonSigh.succes),
+            KpiSigh(
+                key: const ValueKey('kpi-analyses-sans-prix'),
+                libelle: 'Analyses sans prix',
+                valeur: nombre(rows.where((a) => !_ligneDe(c, a).ok).length),
+                icone: LucideIcons.circleAlert,
+                ton: TonSigh.danger,
+                indice: 'Sans prix : à tarifier dans « Tarifs et prix » (Nouvelle prestation, famille Analyses de laboratoire, même code).'),
             KpiSigh(
                 libelle: 'Tarifs à confirmer',
                 valeur: nombre(k.aConfirmer),

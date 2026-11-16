@@ -42,6 +42,11 @@
   function analyseParCode(code) {
     return analysesCatalogue().filter(function (a) { return a.code === code; })[0] || null;
   }
+  /* LOT TARIF-FIX : le prix d'une analyse du catalogue, lu au référentiel à la date du jour ; « sans prix » se dit avec la date d'effet quand un prix décidé arrive. */
+  function tarifCatalogue(r) { return PR.prixLignePrescription(r.code, null, false, 'analyse'); }
+  function texteSansPrix(t) {
+    return t.effectifLe ? 'prix à définir, effectif le ' + C.dateFR(t.effectifLe) : 'sans prix : à tarifier dans Tarifs et prix';
+  }
 
   /* --- Amorçage ------------------------------------------------------------ */
   function amorcer() {
@@ -1233,12 +1238,21 @@
         { key: 'echantillon', label: 'Échantillon' },
 
         {
+          /* LOT TARIF-FIX : le tarif se LIT au référentiel de prix à la date du jour (`PR.prixLignePrescription`, la même lecture que la prescription), jamais la
+             projection. Une analyse créée ici n'a pas de prix tant qu'aucune prestation famille Analyses de MÊME code n'est décidée dans « Tarifs et prix » : la ligne
+             le DIT, avec le lien vers l'écran pour qui a le droit d'y proposer un prix (ABSENT sinon, jamais grisé). */
           key: 'prix', label: 'Tarif (lecture)', align: 'right',
-          text: function (r) { return r.prix == null ? 'À valider' : C.money(r.prix, false); },
+          text: function (r) { var t = tarifCatalogue(r); return t.ok ? C.money(t.montant, false) : texteSansPrix(t); },
           render: function (r) {
-            if (r.prix == null) return el('span.text-xs.italic.text-rose-600', { text: 'à valider' });
+            var t = tarifCatalogue(r);
+            if (!t.ok) {
+              return el('span.inline-flex.flex-wrap.items-center.justify-end.gap-2', { 'data-sans-prix': r.code, title: t.motif + ' ' + t.geste }, [
+                el('span.text-xs.italic.text-rose-600', { text: texteSansPrix(t) }),
+                PR.peutProposerTarif() ? K.lien('cfg-tarifs', 'Tarifer', { size: 'sm', icon: 'coins', variant: 'ghost' }) : null,
+              ]);
+            }
             return el('span.inline-flex.items-center.gap-1', null, [
-              el('span.font-semibold', { text: C.money(r.prix, false) }),
+              el('span.font-semibold', { text: C.money(t.montant, false) }),
               r.tarifProvisoire ? el('span.text-warning-500', { title: 'Tarif à confirmer' }, C.icon('help-circle', 'h-3.5 w-3.5')) : null,
             ]);
           },
@@ -1260,7 +1274,9 @@
         return [
           { label: 'Analyses au catalogue', value: C.num(rows.length), icon: 'list-checks', tone: 'navy' },
           { label: 'Catégories', value: C.num(Object.keys(C.groupBy(rows, 'categorie')).length), icon: 'layers', tone: 'info' },
-          { label: 'Tarif moyen', value: C.moneyOu(C.moyenneOuNul(rows, 'prix')), icon: 'coins', tone: 'success' },
+          { label: 'Tarif moyen', value: C.moneyOu(C.moyenneOuNul(rows.filter(function (r) { return tarifCatalogue(r).ok; }).map(function (r) { return { prix: tarifCatalogue(r).montant }; }), 'prix')), icon: 'coins', tone: 'success' },
+          { label: 'Analyses sans prix', value: C.num(rows.filter(function (r) { return !tarifCatalogue(r).ok; }).length), icon: 'circle-alert', tone: 'danger',
+            hint: 'Sans prix : à tarifier dans « Tarifs et prix » (Nouvelle prestation, famille Analyses de laboratoire, même code).' },
           { label: 'Tarifs à confirmer', value: C.num(rows.filter(function (r) { return r.tarifProvisoire; }).length), icon: 'help-circle', tone: 'warning' },
         ];
       },

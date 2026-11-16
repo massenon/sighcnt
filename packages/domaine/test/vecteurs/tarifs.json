@@ -1,9 +1,9 @@
 {
  "_doc": "Référentiel de prix unique : migration des listes d’avant (73 actes, 147 lignes de grille, 48 analyses) sans changer un prix, écran « Tarifs et prix » tel que la maquette le rend.",
  "migration": {
-  "tarifs": 201,
-  "versions": 240,
-  "versions1": 201,
+  "tarifs": 386,
+  "versions": 425,
+  "versions1": 386,
   "propositionsGrille": 39,
   "parFamille": {
    "CONSULTATION": 6,
@@ -13,20 +13,21 @@
    "LABO": 50,
    "AMI": 40,
    "HOSPITALISATION": 3,
-   "CERTIFICAT": 6
+   "CERTIFICAT": 7,
+   "PRODUIT": 184
   },
   "avecActe": 73,
-  "avecGrille": 147,
+  "avecGrille": 148,
   "avecAnalyse": 48,
   "actesEtGrille": 28,
   "analysesEtGrille": 39,
-  "grilleSeule": 80,
+  "grilleSeule": 81,
   "etatsAssure": {
-   "montant": 140,
-   "unique": 92,
+   "montant": 141,
+   "unique": 276,
    "nc": 8
   },
-  "version": 79
+  "version": 88
  },
  "exemples": {
   "SO02": {
@@ -354,7 +355,7 @@
  "ecran": {
   "titre": "Tarifs et prixCFG",
   "onglets": [
-   "Prestations128",
+   "Prestations129",
    "Analyses50",
    "Imagerie23",
    "Produits184",
@@ -362,8 +363,8 @@
    "Historique"
   ],
   "kpi": [
-   "Prestations tarifées201au jour du 16/08/2026",
-   "Prix en vigueur201",
+   "Prestations tarifées202au jour du 16/08/2026",
+   "Prix en vigueur202",
    "Propositions en attente39Oui ou Non à donner",
    "Sans prix en vigueur0ligne non facturable"
   ],
@@ -424,12 +425,16 @@
      "Code",
      "Désignation",
      "Catégorie",
-     "Prix d’achat",
-     "Prix de vente",
-     "Marge"
+     "Prix d’achat en vigueur",
+     "Prix de vente (dérivé)",
+     "Marge",
+     "En vigueur depuis",
+     "Version",
+     "État",
+     "Actions"
     ],
     "lignes": 15,
-    "premiere": "ABAABAISSE LANGUEconso_medical650650Sans marge"
+    "premiere": "ABAABAISSE LANGUEconso_medical650650Sans margeL’originev1En vigueur"
    },
    "alertes": {
     "entetes": [
@@ -1094,7 +1099,7 @@
      "onglet": "alertes"
     },
     {
-     "cle": "notif:NOTxmsvr66ow8iovv",
+     "cle": "notif:NOTxmsvr66ho7mvfc",
      "titre": "Votre changement de prix MG04 a été accepté",
      "detail": "Il prend effet le 15/08/2026. Décidé par Vecteur Direction.",
      "priorite": "information",
@@ -1108,8 +1113,8 @@
   "retour": {
    "comptable": [],
    "apresDa": [
-    "notif:NOTxmsvr66p5la73j",
-    "notif:NOTxmsvr66ow8iovv"
+    "notif:NOTxmsvr66hznwq80",
+    "notif:NOTxmsvr66ho7mvfc"
    ]
   },
   "centre": {

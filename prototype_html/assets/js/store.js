@@ -144,8 +144,12 @@
      87 (14/11/2026) : le CIRCUIT DE CLÔTURE ANNUELLE réglable (lot CLO C1). La collection `reglagesCloture` (qui démarre, qui passe l'inventaire, qui clôture, qui rouvre, mois d'ouverture de l'exercice
      suivant : une fiche par version datée, jamais réécrite) est semée au socle avec les défauts de la Direction ; un geste réservé de la fiche RBAC (`regler_circuit_cloture`) règle le circuit. Sans incrément, un
      poste n'aurait ni la collection ni les défauts et le moteur refuserait nommément de clôturer.
+     88 (16/11/2026) : DEUX CERTIFICATS D'APTITUDE (lot TARIF-FIX, Direction 14/11 et 15/11/2026). La semence du référentiel de prix porte une prestation de plus, CERT-CA
+     « Certificat d’aptitude » (5 000, couverture SOS seule, code proposé à valider), à côté de CERT-APT « Certificat médical d’aptitude » (7 000, inchangé). La reprise d'un
+     magasin versionné garde ses prestations et ses versions telles quelles et y AJOUTE la prestation nouvelle (aucun prix existant ne change, aucune pièce n'est réécrite).
+     Sans incrément, un poste n'aurait pas la seconde prestation.
   */
-  var VERSION = 87;
+  var VERSION = 88;
   var db = null;
   var listeners = {};
 

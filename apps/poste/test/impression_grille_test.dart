@@ -26,7 +26,7 @@ void main() {
   setUpAll(chargerPolices);
   tearDown(ToastsSigh.viderPourTests);
 
-  casM14('la grille imprimée du poste a la structure de celle de la maquette : en-tête officiel, titre, colonnes, 201 lignes, signatures, pied normalisé', (t) async {
+  casM14('la grille imprimée du poste a la structure de celle de la maquette : en-tête officiel, titre, colonnes, 202 lignes, signatures, pied normalisé', (t) async {
     final m = magasinM14();
     await ouvrirM14(t, m, 'cfg-tarifs', role: 'da');
     await toucherM14(t, find.text('Imprimer la grille'));
@@ -73,15 +73,15 @@ void main() {
       expect('${V['texteComplet']}', contains(mot), reason: 'la maquette porte « $mot »');
       expect(txt, contains(mot), reason: 'le PDF du poste porte « $mot »');
     }
-    // Le nombre de lignes : 201 prestations de part et d'autre (une ligne par prestation, jamais de total inventé) : 201 codes DISTINCTS en début de ligne du PDF du poste.
+    // Le nombre de lignes : 202 prestations de part et d'autre (une ligne par prestation, jamais de total inventé ; CERT-CA depuis le lot TARIF-FIX) : 202 codes DISTINCTS en début de ligne du PDF du poste.
     final brut = (await t.runAsync(() => texte(f.path)))!;
     final codes = {
       for (final l in brut.split('\n'))
         if (RegExp(r'^\s*([A-Z][A-Z0-9-]*[0-9A-Z])\s{2,}\S').firstMatch(l) != null) RegExp(r'^\s*([A-Z][A-Z0-9-]*[0-9A-Z])').firstMatch(l)!.group(1)!
     }..removeAll({'CLINIQUE', 'CODE', 'BP', 'IFU', 'RCCM'});
-    expect(V['nbLignes'], 201);
-    expect(codes.length, 201, reason: 'une ligne par prestation, 201 codes distincts dans le PDF du poste');
-    expect(pages, greaterThanOrEqualTo(2), reason: 'la grille de 201 lignes tient sur plusieurs pages A4');
+    expect(V['nbLignes'], 202);
+    expect(codes.length, 202, reason: 'une ligne par prestation, 202 codes distincts dans le PDF du poste');
+    expect(pages, greaterThanOrEqualTo(2), reason: 'la grille de 202 lignes tient sur plusieurs pages A4');
     expect((V['pagesPdf'] as num).toInt(), greaterThanOrEqualTo(2), reason: 'la maquette aussi (PDF de Chrome)');
     expect(info, contains('A4'));
     dossier.deleteSync(recursive: true);

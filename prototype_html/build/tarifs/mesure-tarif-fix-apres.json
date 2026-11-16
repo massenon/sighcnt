@@ -1,0 +1,3373 @@
+{
+ "jour": "2026-08-16",
+ "version": null,
+ "certApt": {
+  "tarifs": [
+   {
+    "id": "CERT-APT",
+    "code": "CERT-APT",
+    "libelle": "Certificat médical d’aptitude",
+    "statut": "actif",
+    "na": null,
+    "pa": null,
+    "etat": null,
+    "version": null,
+    "dateEffet": null
+   },
+   {
+    "id": "CERT-CA",
+    "code": "CERT-CA",
+    "libelle": "Certificat d’aptitude",
+    "statut": "actif",
+    "na": null,
+    "pa": null,
+    "etat": null,
+    "version": null,
+    "dateEffet": null
+   }
+  ],
+  "versionsTarif": [
+   {
+    "id": "CERT-APT@origine@1",
+    "code": "CERT-APT",
+    "libelle": null,
+    "statut": "valide",
+    "na": 7000,
+    "pa": 7000,
+    "etat": "montant",
+    "version": 1,
+    "dateEffet": null
+   }
+  ],
+  "catalogueTarifs": [
+   {
+    "id": "TAR147",
+    "code": "CERT-APT",
+    "libelle": "Certificat médical d’aptitude",
+    "statut": "actif",
+    "na": 7000,
+    "pa": 7000,
+    "etat": null,
+    "version": null,
+    "dateEffet": null
+   },
+   {
+    "id": "TAR148",
+    "code": "CERT-CA",
+    "libelle": "Certificat d’aptitude",
+    "statut": "actif",
+    "na": 5000,
+    "pa": 5000,
+    "etat": null,
+    "version": null,
+    "dateEffet": null
+   }
+  ],
+  "actes": [],
+  "grilleSemence": [
+   {
+    "code": "CERT-APT",
+    "libelle": "Certificat médical d’aptitude",
+    "statut": "actif",
+    "na": 7000,
+    "pa": 7000,
+    "etat": null,
+    "version": null,
+    "dateEffet": null
+   },
+   {
+    "code": "CERT-CA",
+    "libelle": "Certificat d’aptitude",
+    "statut": "actif",
+    "na": 5000,
+    "pa": 5000,
+    "etat": null,
+    "version": null,
+    "dateEffet": null
+   }
+  ],
+  "typesPiece": [
+   {
+    "id": "TPC04",
+    "sigle": "CMA",
+    "libelle": "Certificat médical d’aptitude",
+    "tarifCode": "CERT-APT"
+   }
+  ],
+  "certificatsTypes": "cfg-certificats : type « aptitude » (Certificat d’aptitude physique), sans prix ni code tarifaire",
+  "lu": {
+   "tarifALaDate": [
+    7000,
+    "Certificat médical d’aptitude",
+    1
+   ],
+   "dTarif": [
+    "Certificat médical d’aptitude",
+    7000
+   ]
+  },
+  "creationSecondCode": {
+   "exact": "CODE_EXISTANT : Le code « CERT-APT » existe déjà au référentiel (code ou alias) : un code ne se réutilise pas.",
+   "minuscules": "CODE_EXISTANT : Le code « cert-apt » est déjà pris au référentiel par « CERT-APT » (Certificat médical d’aptitude) : un code ne se réutilise pas, même écrit autrement (casse, espaces).",
+   "espaces": "CODE_EXISTANT : Le code « CERT-APT » est déjà pris au référentiel par « CERT-APT » (Certificat médical d’aptitude) : un code ne se réutilise pas, même écrit autrement (casse, espaces).",
+   "minusculesEspaces": "CODE_EXISTANT : Le code « cert-apt » est déjà pris au référentiel par « CERT-APT » (Certificat médical d’aptitude) : un code ne se réutilise pas, même écrit autrement (casse, espaces)."
+  }
+ },
+ "espaces": {
+  "grille": 148,
+  "actes": 73,
+  "analyses": 48,
+  "codes": 269
+ },
+ "prescriptionActes": {
+  "patients": {
+   "nonAssure": "CNT/1/25",
+   "assure": "CNT/8/25"
+  },
+  "zeroNonAssure": 0,
+  "zeroAssure": 0,
+  "zeroDansLesDeux": 0,
+  "parCause": {
+   "nonAssure": {},
+   "assure": {}
+  },
+  "refus": {},
+  "lignes": {
+   "ABCG": {
+    "nonAssure": {
+     "prixUnitaire": 14000,
+     "montant": 14000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "ABCM": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "ABCP": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "ABCTP": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "ACCD": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "ACCDC": {
+    "nonAssure": {
+     "prixUnitaire": 18000,
+     "montant": 18000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "ACCDL": {
+    "nonAssure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    }
+   },
+   "ACCDM": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "ACCE": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "ACCS1": {
+    "nonAssure": {
+     "prixUnitaire": 60000,
+     "montant": 60000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 45000,
+     "montant": 45000,
+     "tarifValide": true
+    }
+   },
+   "ACCS2": {
+    "nonAssure": {
+     "prixUnitaire": 75000,
+     "montant": 75000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 60000,
+     "montant": 60000,
+     "tarifValide": true
+    }
+   },
+   "AERO": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "AMIU": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "BARI": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "CERT-APT": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    }
+   },
+   "CERT-ATG": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    }
+   },
+   "CERT-CA": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "CERT-CBV": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    }
+   },
+   "CERT-DEC": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "CERT-DPS": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "CERT-VC": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "CH01": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "CH02": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "CH03": {
+    "nonAssure": {
+     "prixUnitaire": 150000,
+     "montant": 150000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 150000,
+     "montant": 150000,
+     "tarifValide": true
+    }
+   },
+   "CH04": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "CH05": {
+    "nonAssure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    }
+   },
+   "CH06": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "CH07": {
+    "nonAssure": {
+     "prixUnitaire": 60000,
+     "montant": 60000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 60000,
+     "montant": 60000,
+     "tarifValide": true
+    }
+   },
+   "CH08": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    }
+   },
+   "CH09": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    }
+   },
+   "CH10": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "CH11": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "CH12": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "CONS-DOM-GEN": {
+    "nonAssure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    }
+   },
+   "CONS-DOM-SPE": {
+    "nonAssure": {
+     "prixUnitaire": 30000,
+     "montant": 30000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    }
+   },
+   "CONS-GEN": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "CONS-PRE": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "CONS-SPE": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "CONS-SPE-SRV": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "DEA": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "DECG": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "DECP": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "DEG": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "DEM": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "DEP": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "DEPM": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "EPG": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "EPM": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "EPP": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "EXAS": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "EXPU": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "EXTN": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "EXTO": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "GY-SAA": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "HO01": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "HO02": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "HO03": {
+    "nonAssure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    }
+   },
+   "HYD": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "IM01": {
+    "nonAssure": {
+     "prixUnitaire": 9000,
+     "montant": 9000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "IM02": {
+    "nonAssure": {
+     "prixUnitaire": 9000,
+     "montant": 9000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "IM03": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IM04": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 11000,
+     "montant": 11000,
+     "tarifValide": true
+    }
+   },
+   "IM05": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IM06": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IMG-ECG": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "IMG-ECHO-ABD": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IMG-ECHO-ABP": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 11000,
+     "montant": 11000,
+     "tarifValide": true
+    }
+   },
+   "IMG-ECHO-OBS": {
+    "nonAssure": {
+     "prixUnitaire": 9000,
+     "montant": 9000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "IMG-ECHO-PEL": {
+    "nonAssure": {
+     "prixUnitaire": 9000,
+     "montant": 9000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "IMG-ECHO-PRO": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IMG-IRM-CER": {
+    "nonAssure": {
+     "prixUnitaire": 150000,
+     "montant": 150000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 130000,
+     "montant": 130000,
+     "tarifValide": true
+    }
+   },
+   "IMG-IRM-GEN": {
+    "nonAssure": {
+     "prixUnitaire": 140000,
+     "montant": 140000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 120000,
+     "montant": 120000,
+     "tarifValide": true
+    }
+   },
+   "IMG-IRM-PEL": {
+    "nonAssure": {
+     "prixUnitaire": 160000,
+     "montant": 160000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 140000,
+     "montant": 140000,
+     "tarifValide": true
+    }
+   },
+   "IMG-IRM-RAC": {
+    "nonAssure": {
+     "prixUnitaire": 150000,
+     "montant": 150000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 130000,
+     "montant": 130000,
+     "tarifValide": true
+    }
+   },
+   "IMG-MAM-DEP": {
+    "nonAssure": {
+     "prixUnitaire": 30000,
+     "montant": 30000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    }
+   },
+   "IMG-MAM-DIA": {
+    "nonAssure": {
+     "prixUnitaire": 35000,
+     "montant": 35000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 30000,
+     "montant": 30000,
+     "tarifValide": true
+    }
+   },
+   "IMG-MAPA": {
+    "nonAssure": {
+     "prixUnitaire": 30000,
+     "montant": 30000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    }
+   },
+   "IMG-RX-ASP": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IMG-RX-BAS": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "IMG-RX-CRA": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "IMG-RX-MEM": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IMG-RX-RAC": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "IMG-RX-THO": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "IMG-TDM-ABP": {
+    "nonAssure": {
+     "prixUnitaire": 100000,
+     "montant": 100000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 90000,
+     "montant": 90000,
+     "tarifValide": true
+    }
+   },
+   "IMG-TDM-CER": {
+    "nonAssure": {
+     "prixUnitaire": 70000,
+     "montant": 70000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 60000,
+     "montant": 60000,
+     "tarifValide": true
+    }
+   },
+   "IMG-TDM-RAC": {
+    "nonAssure": {
+     "prixUnitaire": 85000,
+     "montant": 85000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 75000,
+     "montant": 75000,
+     "tarifValide": true
+    }
+   },
+   "IMG-TDM-THO": {
+    "nonAssure": {
+     "prixUnitaire": 85000,
+     "montant": 85000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 75000,
+     "montant": 75000,
+     "tarifValide": true
+    }
+   },
+   "INFG": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "INFM": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    }
+   },
+   "INFP": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "L01": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "L02": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "L03": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "L04": {
+    "nonAssure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    }
+   },
+   "L05": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "L06": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L07": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L08": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L09": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "L10": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "L11": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "L12": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "L13": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "L14": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "L15": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "L16": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "L17": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "L18": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "L19": {
+    "nonAssure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    }
+   },
+   "L20": {
+    "nonAssure": {
+     "prixUnitaire": 4500,
+     "montant": 4500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4500,
+     "montant": 4500,
+     "tarifValide": true
+    }
+   },
+   "L21": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "L22": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "L23": {
+    "nonAssure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    }
+   },
+   "L24": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "L25": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "L26": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "L27": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "L28": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "L29": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "L30": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "L31": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L32": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "L33": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "L34": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "L35": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "L36": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "L37": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "L38": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "L39": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "L40": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L41": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L42": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L43": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L44": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L45": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "L46": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "L47": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "L48": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "LAB-AKOP": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "LAB-ASLO": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "LAB-AZOT": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "LAB-BILI": {
+    "nonAssure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    }
+   },
+   "LAB-BU": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 500,
+     "montant": 500,
+     "tarifValide": true
+    }
+   },
+   "LAB-CALC": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-CHOH": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-CHOT": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-CREA": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "LAB-CRP": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "LAB-ECBU": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "LAB-EMMEL": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "LAB-EPHB": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "LAB-GEDP": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "LAB-GGT": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-GLY": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "LAB-GLYC": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "LAB-GSRH": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "LAB-HBC": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "LAB-HEPB": {
+    "nonAssure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    }
+   },
+   "LAB-HEPC": {
+    "nonAssure": {
+     "prixUnitaire": 4500,
+     "montant": 4500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4500,
+     "montant": 4500,
+     "tarifValide": true
+    }
+   },
+   "LAB-HIV": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "LAB-IONO": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "LAB-MAGN": {
+    "nonAssure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3500,
+     "montant": 3500,
+     "tarifValide": true
+    }
+   },
+   "LAB-NFS": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "LAB-PROT": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "LAB-PU": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "LAB-PV": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "LAB-SDW": {
+    "nonAssure": {
+     "prixUnitaire": 6500,
+     "montant": 6500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4500,
+     "montant": 4500,
+     "tarifValide": true
+    }
+   },
+   "LAB-SPER": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TBG": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TC": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "LAB-TCA": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TGO": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TGP": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TPHA": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TPINR": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TRIG": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-TS": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "LAB-URIC": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAB-VS": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "LAVO": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "LAVV": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "MA01": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "MA02": {
+    "nonAssure": {
+     "prixUnitaire": 35000,
+     "montant": 35000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 35000,
+     "montant": 35000,
+     "tarifValide": true
+    }
+   },
+   "MA03": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "MA04": {
+    "nonAssure": {
+     "prixUnitaire": 500,
+     "montant": 500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 500,
+     "montant": 500,
+     "tarifValide": true
+    }
+   },
+   "MA05": {
+    "nonAssure": {
+     "prixUnitaire": 1100,
+     "montant": 1100,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1100,
+     "montant": 1100,
+     "tarifValide": true
+    }
+   },
+   "MA06": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1700,
+     "montant": 1700,
+     "tarifValide": true
+    }
+   },
+   "MA07": {
+    "nonAssure": {
+     "prixUnitaire": 450,
+     "montant": 450,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 450,
+     "montant": 450,
+     "tarifValide": true
+    }
+   },
+   "MA08": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "MA09": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "MA10": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "MA11": {
+    "nonAssure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 20000,
+     "montant": 20000,
+     "tarifValide": true
+    }
+   },
+   "MA12": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "MA13": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "MA14": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "MA15": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "MA16": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "MA17": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "MA18": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 500,
+     "montant": 500,
+     "tarifValide": true
+    }
+   },
+   "MG01": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "MG02": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "MG03": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "MG04": {
+    "nonAssure": {
+     "prixUnitaire": 30000,
+     "montant": 30000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 25000,
+     "montant": 25000,
+     "tarifValide": true
+    }
+   },
+   "MG05": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "MG06": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "OXY1-3": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "OXY13-24": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    }
+   },
+   "OXY4-6": {
+    "nonAssure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "OXY7-12": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "PAN": {
+    "nonAssure": {
+     "prixUnitaire": 9000,
+     "montant": 9000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "PANG": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "PANM": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "PANP": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "PANTG": {
+    "nonAssure": {
+     "prixUnitaire": 12000,
+     "montant": 12000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "PANTP": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 500,
+     "montant": 500,
+     "tarifValide": true
+    }
+   },
+   "PCGJ": {
+    "nonAssure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    }
+   },
+   "PONA": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "PONG": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "PONLA": {
+    "nonAssure": {
+     "prixUnitaire": 4000,
+     "montant": 4000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "PONLE": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "PONS": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    }
+   },
+   "POSC": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "POSD": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1700,
+     "montant": 1700,
+     "tarifValide": true
+    }
+   },
+   "POSI": {
+    "nonAssure": {
+     "prixUnitaire": 1100,
+     "montant": 1100,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1100,
+     "montant": 1100,
+     "tarifValide": true
+    }
+   },
+   "POSJ": {
+    "nonAssure": {
+     "prixUnitaire": 1100,
+     "montant": 1100,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1100,
+     "montant": 1100,
+     "tarifValide": true
+    }
+   },
+   "POT": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "PSE": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "PSP": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "PVV": {
+    "nonAssure": {
+     "prixUnitaire": 1200,
+     "montant": 1200,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "RETD": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "RETIM": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "RETJ": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "SC": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "SDI": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "SIM": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "SIN": {
+    "nonAssure": {
+     "prixUnitaire": 450,
+     "montant": 450,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 450,
+     "montant": 450,
+     "tarifValide": true
+    }
+   },
+   "SIS": {
+    "nonAssure": {
+     "prixUnitaire": 500,
+     "montant": 500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 500,
+     "montant": 500,
+     "tarifValide": true
+    }
+   },
+   "SIV": {
+    "nonAssure": {
+     "prixUnitaire": 1200,
+     "montant": 1200,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "SNG": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "SO01": {
+    "nonAssure": {
+     "prixUnitaire": 1200,
+     "montant": 1200,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "SO02": {
+    "nonAssure": {
+     "prixUnitaire": 1200,
+     "montant": 1200,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "SO03": {
+    "nonAssure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "SO04": {
+    "nonAssure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 800,
+     "montant": 800,
+     "tarifValide": true
+    }
+   },
+   "SO05": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    }
+   },
+   "SO06": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "SO07": {
+    "nonAssure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 3000,
+     "montant": 3000,
+     "tarifValide": true
+    }
+   },
+   "SO08": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "SO09": {
+    "nonAssure": {
+     "prixUnitaire": 9000,
+     "montant": 9000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "SO10": {
+    "nonAssure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 15000,
+     "montant": 15000,
+     "tarifValide": true
+    }
+   },
+   "SO11": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "SO12": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "SO13": {
+    "nonAssure": {
+     "prixUnitaire": 2500,
+     "montant": 2500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "SO14": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "SO15": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "SO16": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "SO17": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "SO18": {
+    "nonAssure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 2000,
+     "montant": 2000,
+     "tarifValide": true
+    }
+   },
+   "SO19": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "SO20": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    }
+   },
+   "SO21": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 6000,
+     "montant": 6000,
+     "tarifValide": true
+    }
+   },
+   "SO22": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "SO23": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "SO24": {
+    "nonAssure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "SO25": {
+    "nonAssure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 10000,
+     "montant": 10000,
+     "tarifValide": true
+    }
+   },
+   "SO26": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "SO27": {
+    "nonAssure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "SURT": {
+    "nonAssure": {
+     "prixUnitaire": 8000,
+     "montant": 8000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   },
+   "SUT": {
+    "nonAssure": {
+     "prixUnitaire": 1500,
+     "montant": 1500,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 1000,
+     "montant": 1000,
+     "tarifValide": true
+    }
+   },
+   "SV": {
+    "nonAssure": {
+     "prixUnitaire": 7000,
+     "montant": 7000,
+     "tarifValide": true
+    },
+    "assure": {
+     "prixUnitaire": 5000,
+     "montant": 5000,
+     "tarifValide": true
+    }
+   }
+  }
+ },
+ "catalogueLabo": {
+  "analyses": 48,
+  "sansPrestation": [],
+  "sansVersionEnVigueur": [],
+  "prixNulOuVide": []
+ },
+ "erreursJS": []
+}

@@ -117,6 +117,19 @@
     r.libelle = p.libelle; r.famille = p.famille; r.espaces = { acte: p.codeActe || null, grille: p.codeGrille || null, analyse: p.codeAnalyse || null };
     return r;
   }
+  /** LOT TARIF-FIX : le prix d'une ligne de prescription (`voie` 'acte' ou 'analyse') à la date de la pièce, ou « prix à définir » avec sa cause, son motif et son geste
+      (`D.TARIFS.prixDeLigne`, moteur pur, vecteurs `tarifs.json`, section `ligne`). Jamais un zéro. */
+  function prixLignePrescription(code, date, assure, voie) {
+    var TA = D.TARIFS, h = TA.lire();
+    if (!h) {
+      /* Sans référentiel (semence en cours, page sans socle), les lecteurs retombent sur les constantes, comme avant (PRD-TARIFS, T1) ; une constante absente ou nulle
+         reste « prix à définir ». */
+      var x = voie === 'analyse' ? analyseParCode(code) : acteParCode(code);
+      var m = !x ? null : (voie === 'analyse' ? x.prix : ((assure && x.assurable === true && !x.nonCouvert && x.prixAssure != null) ? x.prixAssure : x.prix));
+      if (Number(m) > 0) return { ok: true, montant: Number(m), tarif: assure ? 'assuré' : 'non assuré', motif: null, prestation: code, libelle: x.libelle || x.designation || code, semence: true };
+    }
+    return TA.prixDeLigne(h, code, date, !!assure, voie);
+  }
   /** Le prix d'un ACTE (espace des codes d'acte) selon la règle historique de la prescription : la colonne assurée ne s'applique que si l'acte est
       assurable ET porte un montant assuré ; sinon le prix non assuré. `undefined` : l'acte n'est pas au référentiel (repli sur la collection). */
   function prixActeALaDate(code, date, assure) {
@@ -443,6 +456,11 @@
     if (estProduit) return evaluerPropositionProduit(o, h, p, viaImport);
     if (o.creation) {
       if (p) return refusTarif('CODE_EXISTANT', 'Le code « ' + o.code + ' » existe déjà au référentiel (code ou alias) : un code ne se réutilise pas.', 'Choisir un autre code, ou proposer un changement de prix à la prestation existante.');
+      /* LOT TARIF-FIX : le doublon CERT-APT ne doit pas renaître. Le code se compare NORMALISÉ (espaces aux bords, casse), dans les trois espaces, les alias et les
+         prestations archivées : « cert-apt » ou « CERT-APT  » est le même code que CERT-APT. */
+      var pris = D.TARIFS.codePris(h.tarifs, o.code);
+      if (pris) return refusTarif('CODE_EXISTANT', 'Le code « ' + String(o.code).trim() + ' » est déjà pris au référentiel par « ' + pris.code + ' » (' + (pris.libelle || pris.code) + (pris.statut === 'archive' ? ', archivée' : '') + ') : un code ne se réutilise pas, même écrit autrement (casse, espaces).',
+        'Choisir un autre code (pour un certificat : CERT- suivi du sigle de la pièce), ou proposer un changement de prix à la prestation existante.');
       if (!String(o.code || '').trim() || !String(o.creation.libelle || '').trim()) return refusTarif('IDENTITE_INCOMPLETE', 'Une prestation porte un code et un libellé.', 'Renseigner le code et le libellé.');
     } else if (!p) {
       return refusTarif('PRESTATION_INTROUVABLE', 'Aucune prestation ne porte le code « ' + o.code + ' ».', 'Choisir une prestation de la liste.');
@@ -765,11 +783,16 @@
     }
     /* RG-09 : la colonne se décide à la date de la pièce, comme pour les actes. Le prix est celui de la version en vigueur à CETTE date (PRD-TARIFS). */
     var assureAnalyses = !!(p.assureur && carteValide(p, date));
+    /* LOT TARIF-FIX : « non calculable n'est pas zéro ». Chaque ligne d'analyse et d'acte lit le référentiel de prix à la date de la PIÈCE par `prixLignePrescription` ; une
+       ligne sans prix strictement positif est « prix à définir », jamais 0 : elle est NOMMÉE (cause, motif, geste) et la prescription est refusée avant toute écriture,
+       comme un médicament sans prix d'achat et un examen d'imagerie sans tarif. */
+    var aDefinir = [];
     var analyses = (v.analyses || []).map(function (code) {
       var a = analyseParCode(code) || {};
-      var pr = prixAnalyseALaDate(code, date, assureAnalyses);
-      return { code: code, designation: a.designation || code, categorie: a.categorie || '',
-        echantillon: a.echantillon || '', delai: a.delai || '', prix: (pr === undefined ? a.prix : pr) || 0 };
+      var pr = prixLignePrescription(code, date, assureAnalyses, 'analyse');
+      if (!pr.ok) aDefinir.push(pr);
+      return { code: code, designation: a.designation || pr.libelle || code, categorie: a.categorie || '',
+        echantillon: a.echantillon || '', delai: a.delai || '', prix: pr.ok ? pr.montant : null };
     });
 
     /* C3 (corrigé le 31/10/2026) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées, décision du
@@ -779,17 +802,20 @@
     var assureActes = !!(p.assureur && carteValide(p, date));
     var actes = (v.actes || []).map(function (code) {
       var a = acteParCode(code) || {};
-      /* Seule la colonne ASSURÉE de la grille change le prix : l'acte du catalogue la porte (`prixAssure`, rapprochée de la grille, SO09 => 6 000).
-         Sans carte valide, ou pour un acte que la grille exclut de l'assurance (`nonCouvert`, certificats `sos`), le prix du catalogue
-         administrable (cfg-tarifs) reste la référence. */
-      var tarifAssure = assureActes && a.assurable === true && !a.nonCouvert && a.prixAssure != null;
-      var prixActe = tarifAssure ? a.prixAssure : a.prix;
-      /* PRD-TARIFS (T1) : le prix vient du référentiel, à la date de la prescription ; la collection `actes` n'est plus qu'une projection de lecture. */
-      var prixRef = a.code ? prixActeALaDate(code, date, assureActes) : undefined;
-      if (prixRef !== undefined) prixActe = prixRef;
-      return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: prixActe || 0,
-        tarifValide: prixActe != null };
+      /* Seule la colonne ASSURÉE change le prix d'un acte assurable (SO09 : 6 000 contre 9 000) ; sans carte valide, NON COUVERT ou certificat `sos`, le prix non
+         assuré. PRD-TARIFS (T1) puis TARIF-FIX : le prix vient du RÉFÉRENTIEL UNIQUE à la date de la prescription (espace des actes, puis le code ou l'alias de toute
+         prestation : un certificat ou une consultation ne tombe plus à 0 parce qu'il n'est pas dans l'espace des actes). La collection `actes` n'est qu'une projection. */
+      var pr = prixLignePrescription(code, date, assureActes, 'acte');
+      if (!pr.ok) aDefinir.push(pr);
+      return { code: code, libelle: a.libelle || pr.libelle || code, secteur: a.secteur || '', prix: pr.ok ? pr.montant : null,
+        tarifValide: pr.ok };
     });
+    if (aDefinir.length) {
+      var refusPrix = new Error('Prix à définir : ' + aDefinir.map(function (x) { return x.motif; }).join(' ; ') + '. ' + aDefinir[0].geste
+        + ' Une ligne sans prix ne se facture jamais à zéro.');
+      refusPrix.code = 'PRIX_A_DEFINIR'; refusPrix.lignes = aDefinir; refusPrix.geste = aDefinir[0].geste;
+      throw refusPrix;
+    }
 
     var mMed = C.sum(medicaments, 'total');
     var mAna = C.sum(analyses, 'prix');
@@ -3762,7 +3788,7 @@
     deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
-    tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate, prixChambreALaDate: prixChambreALaDate,
+    tarifALaDate: tarifALaDate, prixLignePrescription: prixLignePrescription, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate, prixChambreALaDate: prixChambreALaDate,
     produitsAValoriser: produitsAValoriser, refusPrixAchatAbsent: refusPrixAchatAbsent, proposerPrixReception: proposerPrixReception,
     prixProduitALaDate: prixProduitALaDate, prixAchatALaDate: prixAchatALaDate, prixVenteALaDate: prixVenteALaDate, produitDeCode: produitDeCode, peutProposerProduit: peutProposerProduit, creerPrixProduit: creerPrixProduit,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,

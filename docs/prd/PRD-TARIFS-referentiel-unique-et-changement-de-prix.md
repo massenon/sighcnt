@@ -494,3 +494,18 @@ Aucun document du dépôt ne fixe : qui, de la Direction ou de la DAF, décide u
 ## 13. Priorités
 
 **Indispensable** : T0, T1, T2, T3 (la décision 1 et la décision 3, et le moteur d'alerte de la décision 2). **Important** : T4 (import avec Oui/Non), T6 (poste). **Souhaitable** : T5 (produits dans l'écran), T7 (nettoyage). Sans T0, on corrige des défauts qu'on n'a pas vus : c'est lui qui dit si les constats 1 et 2 sont réels.
+
+## 14. Lot TARIF-FIX (16/11/2026) : trois constats de terrain et l'exigence « après la décision, plus jamais prix à définir »
+
+Source : note de la Direction du 14/11/2026, décision du 15/11/2026 (deux certificats distincts), exigence du 15/11/2026. Écarts E2670 à E2678, décisions section AJ.
+
+### 14.1 Exigences ajoutées
+- **EF-TFX-1 : deux certificats d'aptitude, deux codes.** CERT-APT « Certificat médical d’aptitude » 7 000 (celui que la caisse lit, inchangé) ; CERT-CA « Certificat d’aptitude » 5 000, couverture SOS seule (code proposé, à valider). Aucun prix existant ne change, aucune version n'est réécrite.
+- **EF-TFX-2 : un code ne se réutilise pas.** La création d'une prestation compare le code NORMALISÉ (espaces aux bords, casse) aux codes, aux trois espaces, aux alias et aux prestations archivées ; refus `CODE_EXISTANT` qui nomme la prestation qui le porte, avec le geste. Même règle à l'écran, à l'import, au poste et à la mère.
+- **EF-TFX-3 : jamais une ligne à zéro.** La prescription d'actes et d'analyses lit le référentiel UNIQUE à la date de la pièce (espace de la voie, puis code ou alias de toute prestation). Une ligne sans prix strictement positif est « prix à définir » avec sa cause (`absent-du-referentiel`, `sans-version`, `proposition-en-attente`, `version-future`, `prix-non-assure-vide`, `prix-assure-vide`), son motif et son geste ; la prescription est refusée (`PRIX_A_DEFINIR`) avant toute écriture. L'écran dit « prix à définir » sous la ligne, « prix à définir, effectif le JJ/MM/AAAA » quand un prix décidé arrive, et un total « Non calculable : prix à définir pour … ».
+- **EF-TFX-4 : les deux prix.** Une colonne vide ne prend jamais la valeur de l'autre (colonne assurée vide d'un acte assurable : « prix assuré à définir »).
+- **EF-TFX-5 : effet immédiat et date d'effet future.** Après le Oui, la prescription SUIVANTE lit le prix, sans rechargement, sur la mère et sur un fileul après synchronisation ; une date d'effet future est lue le jour dit (lecture à la date de la pièce à chaque lecture, aucune tâche de minuit). Projections remises au pas à la décision, au démarrage et, sur la mère du poste, à l'ouverture d'un écran le jour suivant.
+- **EF-TFX-6 : le catalogue du laboratoire signale les analyses sans prix.** Indication « sans prix : à tarifier dans Tarifs et prix » sur la ligne, indicateur « Analyses sans prix », commande « Tarifer » vers « Tarifs et prix » pour qui peut proposer un prix (ABSENTE sinon).
+
+### 14.2 Mesure (relevé sur le jeu de démonstration, arbre d'avant puis d'après)
+Avant : 268 codes, 195 lignes à 0 dans chaque colonne, toutes dues à la lecture de la seule collection `actes` (106 lignes de grille hors de l'espace des actes : 71 AMI ou gynéco, 23 imagerie, 6 certificats, 6 consultations ; 89 analyses : 48 du catalogue, 41 lignes LABO de la grille). Après : 269 codes (CERT-CA), 0 ligne à 0, 0 refus : aucun code du jeu n'est « prix à définir » aujourd'hui. Le chiffre de la note (199 sur 277) n'est pas celui du dépôt : la base de production porte probablement des codes de plus ; la cause est la même.

@@ -152,6 +152,10 @@ class TarifsPoste {
   static num? prixActe(Magasin m, Object? code, {required DateTime aujourdhui, Object? date, bool assure = false}) =>
       lire(m).prixActe(code, date, assure, aujourdhui: tarIso(aujourdhui)).montant;
 
+  /// LOT TARIF-FIX : le prix d'une ligne de prescription (`voie` `acte` ou `analyse`) à [date], ou « prix à définir » (cause, motif, geste). JAMAIS un zéro.
+  static LignePrix ligne(Magasin m, Object? code, {required DateTime aujourdhui, Object? date, bool assure = false, String voie = 'acte'}) =>
+      lire(m).prixDeLigne(code, date, assure, voie: voie, aujourdhui: tarIso(aujourdhui));
+
   /// Le prix d'une ligne de GRILLE (imagerie, soins AMI, certificats) : la forme de l'ancien `D.tarifPrix`.
   static ResolutionTarif prixGrille(Magasin m, Object? code, {required DateTime aujourdhui, Object? date, bool assure = false}) =>
       lire(m).prixGrille(code, date, assure, aujourdhui: tarIso(aujourdhui));

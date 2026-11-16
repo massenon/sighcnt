@@ -52,16 +52,22 @@
         };
       });
   }
+  /* LOT TARIF-FIX : le prix affiché d'une ligne se LIT au référentiel à la date du jour (jamais la projection, jamais 0) : « prix à définir », avec la date d'effet
+     quand un prix décidé arrive, se dit tel quel. */
+  function prixAffiche(code, voie) {
+    var r = PR.prixLignePrescription(code, null, false, voie);
+    return r.ok ? C.money(r.montant, false) : (r.effectifLe ? 'prix à définir, effectif le ' + C.dateFR(r.effectifLe) : 'prix à définir');
+  }
   function optionsAnalyses() {
     return D.ANALYSES.map(function (a) {
-      return { value: a.code, label: a.designation, detail: a.categorie + ' · ' + C.money(PR.prixAnalyseALaDate(a.code, null, false), false) };
+      return { value: a.code, label: a.designation, detail: a.categorie + ' · ' + prixAffiche(a.code, 'analyse') };
     });
   }
   function optionsActes() {
     return S.collection('actes').active().map(function (a) {
       return {
         value: a.code, label: a.libelle,
-        detail: a.secteur + (a.prix ? ' · ' + C.money(a.prix, false) : ' · tarif à valider'),
+        detail: a.secteur + ' · ' + prixAffiche(a.code, 'acte'),
       };
     });
   }
@@ -2301,11 +2307,13 @@
           return (pr ? (PR.prixAchatALaDate(pr, new Date().toISOString()) || 0) : 0) * l.quantite;
         });
         var ctrl = fExamens.controls;
-        var mAna = C.sum(ctrl.analyses.value || [], function (code) {
-          var a = D.ANALYSES.filter(function (x) { return x.code === code; })[0];
-          return a ? PR.prixAnalyseALaDate(a.code, null, false) : 0;
-        });
         var sansTarif = [];
+        /* LOT TARIF-FIX : une analyse sans prix se nomme, elle ne compte pas pour zéro en silence. */
+        var mAna = C.sum(ctrl.analyses.value || [], function (code) {
+          var r = PR.prixLignePrescription(code, null, assure, 'analyse');
+          if (!r.ok) sansTarif.push(r.prestation + ' (' + (r.effectifLe ? 'prix à définir, effectif le ' + C.dateFR(r.effectifLe) : 'prix à définir') + ')');
+          return r.ok ? r.montant : 0;
+        });
         var mImg = C.sum(ctrl.imagerie.value || [], function (code) {
           var ex = PR.examenImagerieParCode ? PR.examenImagerieParCode(code) : null;
           var pr = D.tarifPrix ? D.tarifPrix((ex && ex.tarifCode) || code, assure) : { montant: null };
@@ -3085,9 +3093,7 @@
     var complements = U.form([
       {
         name: 'analyses', label: 'Analyses de laboratoire', type: 'multiselect', col: 'full',
-        options: D.ANALYSES.map(function (a) {
-          return { value: a.code, label: a.designation, detail: a.categorie + ' · ' + C.money(PR.prixAnalyseALaDate(a.code, null, false), false) };
-        }),
+        options: optionsAnalyses(),
         help: 'Chaque analyse cochée engendre sa demande au laboratoire, sans ressaisie.',
       },
       {
@@ -3149,15 +3155,14 @@
         return (p ? (PR.prixAchatALaDate(p, new Date().toISOString()) || 0) : 0) * l.quantite;
       });
       var ctrl = complements.controls;
-      var mAna = C.sum(ctrl.analyses.value || [], function (code) {
-        var a = D.ANALYSES.filter(function (x) { return x.code === code; })[0];
-        return a ? PR.prixAnalyseALaDate(a.code, null, false) : 0;
-      });
-      var mAct = C.sum(ctrl.actes.value || [], function (code) {
-        var a = S.collection('actes').active().filter(function (x) { return x.code === code; })[0];
-        return (a && a.prix) || 0;
-      });
-      total.textContent = C.money(mMed + mAna + mAct)
+      /* « Non calculable » n'est pas zéro : une ligne à prix à définir rend le total non calculable et se nomme. */
+      var aDefinir = [];
+      function lu(code, voie) { var r = PR.prixLignePrescription(code, null, false, voie); if (!r.ok) aDefinir.push(r.prestation); return r.ok ? r.montant : 0; }
+      var mAna = C.sum(ctrl.analyses.value || [], function (code) { return lu(code, 'analyse'); });
+      var mAct = C.sum(ctrl.actes.value || [], function (code) { return lu(code, 'acte'); });
+      total.textContent = aDefinir.length
+        ? 'Non calculable : prix à définir pour ' + aDefinir.join(', ') + ' (à tarifier dans « Tarifs et prix »)'
+        : C.money(mMed + mAna + mAct)
         + '  (médicaments ' + C.money(mMed, false) + ' · analyses ' + C.money(mAna, false) + ' · actes ' + C.money(mAct, false) + ')';
     }
 

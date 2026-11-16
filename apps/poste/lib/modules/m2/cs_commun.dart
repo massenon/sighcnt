@@ -121,15 +121,20 @@ List<OptionChamp> optionsMedicamentsCs(Magasin m) => [
 /// Les analyses proposées à la prescription : le MODÈLE (désignation, catégorie) du catalogue, le PRIX du référentiel (version en vigueur à [aujourdhui]).
 List<OptionChamp> optionsAnalysesCs(Magasin m, [DateTime? aujourdhui]) => [
       for (final a in TarifsPoste.analyses(m, aujourdhui: aujourdhui ?? DateTime.now()))
-        OptionChamp('${a['code']}',
-            '${a['designation']} — ${a['categorie']} · ${money(a['prix'], avecDevise: false)}')
+        OptionChamp('${a['code']}', '${a['designation']} — ${a['categorie']} · ${prixAfficheCs(m, a['code'], 'analyse', aujourdhui ?? DateTime.now())}')
     ];
 
 List<OptionChamp> optionsActesCs(Magasin m, [DateTime? aujourdhui]) => [
       for (final a in TarifsPoste.actes(m, aujourdhui: aujourdhui ?? DateTime.now()))
-        OptionChamp('${a['code']}',
-            '${a['libelle']} — ${a['secteur']}${vrai(a['prix']) ? ' · ${money(a['prix'], avecDevise: false)}' : ' · tarif à valider'}')
+        OptionChamp('${a['code']}', '${a['libelle']} — ${a['secteur']} · ${prixAfficheCs(m, a['code'], 'acte', aujourdhui ?? DateTime.now())}')
     ];
+
+/// LOT TARIF-FIX : le prix affiché d'une ligne se LIT au référentiel à la date du jour (la lecture de la prescription), jamais un zéro : « prix à définir », avec la date
+/// d'effet quand un prix décidé arrive (le texte même de la maquette).
+String prixAfficheCs(Magasin m, Object? code, String voie, DateTime aujourdhui) {
+  final r = TarifsPoste.ligne(m, code, aujourdhui: aujourdhui, voie: voie);
+  return r.ok ? money(r.montant, avecDevise: false) : r.libelleCourt;
+}
 
 List<OptionChamp> optionsImagerieCs(Magasin m) => [
       for (final x in m.collection('examensImagerie').actives)

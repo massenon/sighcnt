@@ -506,19 +506,23 @@ void main() {
   });
 
   group('la migration des listes d\'avant', () {
-    test('MIGRATION RÉELLE : les listes d\'avant du jeu du poste redonnent EXACTEMENT les 201 prestations et 240 versions que la maquette sème', () {
+    test('MIGRATION RÉELLE : les listes d\'avant du jeu du poste redonnent EXACTEMENT les 202 prestations et 241 versions que la maquette sème (CERT-CA depuis le lot TARIF-FIX)', () {
       List<F> jeu(String n) => liste(jsonDecode(File('../../apps/poste/assets/donnees/jeu/$n.json').readAsStringSync()));
       final ref = (jsonDecode(File('../../apps/poste/assets/donnees/jeu/referentiels.json').readAsStringSync()) as Map).cast<String, Object?>();
       final mg = tarMigrer(actes: jeu('actes'), grille: jeu('catalogueTarifs'), analyses: liste(ref['analyses']));
       final t = jeu('tarifs'), vs = jeu('versionsTarif');
-      expect([mg.tarifs.length, mg.versions.length], [201, 240]);
+      expect([mg.tarifs.length, mg.versions.length], [202, 241]);
       expect([for (final x in mg.tarifs) jsonEncode(x)], [for (final x in t) jsonEncode(x)]);
       expect([for (final x in mg.versions) jsonEncode(x)], [for (final x in vs) jsonEncode(x)]);
-      // Les chiffres que les vecteurs relèvent de l\'écran : 201 versions 1, 39 propositions de la grille des analyses (à dater), 0 écart de parité de projection.
+      // Les chiffres que les vecteurs relèvent de l\'écran : 202 versions 1, 39 propositions de la grille des analyses (à dater), 0 écart de parité de projection.
       final mig = (v['migration'] as Map).cast<String, Object?>();
-      expect(mg.versions.where((x) => x['version'] == 1).length, mig['versions1']);
+      // LOT TARIF-FIX : le relevé de l'écran compte aussi les 184 prestations PRODUIT que la maquette pose à sa projection ; le poste les pose lui-même au démarrage de la mère
+      // (`TarifsPoste.assurerProduits`) et le jeu livré ne les porte pas : la comparaison se fait hors famille PRODUIT.
+      final familles = Map<String, Object?>.of((mig['parFamille'] as Map).cast<String, Object?>());
+      final produits = (familles.remove('PRODUIT') as num?) ?? 0;
+      expect(mg.versions.where((x) => x['version'] == 1).length, (mig['versions1'] as num) - produits);
       expect(mg.versions.where((x) => x['origine'] == 'semence-grille').length, mig['propositionsGrille']);
-      expect({for (final x in mg.tarifs) '${x['famille']}': mg.tarifs.where((y) => y['famille'] == x['famille']).length}, mig['parFamille']);
+      expect({for (final x in mg.tarifs) '${x['famille']}': mg.tarifs.where((y) => y['famille'] == x['famille']).length}, familles);
       final h = ReferentielTarifs(mg.tarifs, mg.versions);
       final projection = tarProjection(h, '2026-10-30', actes: jeu('actes'), analyses: jeu('analyses'), catalogue: jeu('catalogueTarifs'));
       // Les 73 actes et les 48 analyses portent déjà le prix en vigueur ; seules les 39 lignes LABO de la grille imprimée, fusionnées avec leur analyse, portent encore le prix

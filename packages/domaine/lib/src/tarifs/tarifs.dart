@@ -159,6 +159,61 @@ class ResolutionTarif {
   Map<String, Object?> toJson() => {'montant': montant, 'tarif': tarif, 'motif': motif, 'version': version, 'absent': absent, 'reserveSos': reserveSos};
 }
 
+/// LOT TARIF-FIX : le geste commun d'une ligne « prix à définir » (mot pour mot celui de la maquette).
+const String tarGesteProposer =
+    'Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.';
+
+/// LOT TARIF-FIX : le prix d'une ligne de prescription, ou « prix à définir » (code `PRIX_A_DEFINIR`) avec sa cause, son motif et son geste. Jamais un zéro.
+class LignePrix {
+  const LignePrix._ok({required num this.montant, required String this.tarif, this.motif, required this.prestation, required this.libelle, this.famille, this.version, this.dateEffet})
+      : ok = true,
+        cause = null,
+        geste = null,
+        effectifLe = null,
+        colonne = null;
+  const LignePrix._aDefinir(
+      {required String this.cause, required this.prestation, required this.libelle, required String this.motif, required String this.geste, this.effectifLe, this.version, this.colonne})
+      : ok = false,
+        montant = null,
+        tarif = null,
+        famille = null,
+        dateEffet = null;
+  final bool ok;
+  final num? montant;
+  final String? tarif;
+  final String? motif;
+  final String prestation;
+  final String libelle;
+  final String? famille;
+  final int? version;
+  final String? dateEffet;
+  final String? cause;
+  final String? geste;
+  final String? effectifLe;
+  final String? colonne;
+  bool get aDefinir => !ok;
+  String get code => ok ? 'OK' : 'PRIX_A_DEFINIR';
+
+  /// Ce que la vue dit d'une ligne : le montant, ou « prix à définir » (avec la date d'effet quand un prix décidé arrive).
+  String get libelleCourt => ok ? '$montant' : (effectifLe != null ? 'prix à définir, effectif le ${_dateFr(effectifLe!)}' : 'prix à définir');
+  Map<String, Object?> toJson() => ok
+      ? {'ok': true, 'montant': montant, 'tarif': tarif, 'motif': motif, 'prestation': prestation, 'version': version}
+      : {'ok': false, 'code': 'PRIX_A_DEFINIR', 'cause': cause, 'prestation': prestation, 'motif': motif, 'geste': geste, if (effectifLe != null) 'effectifLe': effectifLe};
+}
+
+/// LOT TARIF-FIX : un code ne se réutilise pas. Comparaison sur le code NORMALISÉ (espaces aux bords, majuscules), dans les trois espaces, les alias et les prestations
+/// archivées. Rend la prestation qui le porte déjà, ou `null`. Port de `D.TARIFS.codePris`.
+String tarCodeNormalise(Object? code) => '${code ?? ''}'.trim().toUpperCase();
+FicheTarif? tarCodePris(Iterable<FicheTarif> tarifs, Object? code) {
+  final n = tarCodeNormalise(code);
+  if (n.isEmpty) return null;
+  for (final p in tarifs) {
+    final codes = [p['code'], p['codeActe'], p['codeGrille'], p['codeAnalyse'], ...(p['codesAlias'] as List? ?? const [])];
+    if (codes.any((x) => x != null && tarCodeNormalise(x) == n)) return p;
+  }
+  return null;
+}
+
 /// L'index du référentiel : trois espaces de codes pour UNE prestation. Chaque lecteur historique garde son espace (`parActe`, `parGrille`, `parAnalyse`) ; l'accesseur
 /// nouveau ([aLaDate]) résout les trois, plus les alias.
 class ReferentielTarifs {
@@ -284,6 +339,101 @@ class ReferentielTarifs {
     final s = instantane(p, tarJourDe(date, aujourdhui));
     if (s == null) return (connu: true, montant: null);
     return (connu: true, montant: (assure && s.etatAssure == 'montant') ? s.pa : s.na);
+  }
+
+  /// LOT TARIF-FIX : le prix d'une ligne de PRESCRIPTION (`voie` `acte` ou `analyse`) à la date du JOUR de la pièce, lu à chaque appel. Port de
+  /// `D.TARIFS.prixDeLigne` (maquette, `data-tarifs.js`), vecteurs `tarifs_ligne.json`. Rend un montant strictement positif, ou « prix à définir » avec sa cause,
+  /// son motif et son geste : JAMAIS un zéro. L'espace de la voie d'abord, puis le code ou l'alias de toute prestation (un certificat ou une consultation n'est plus
+  /// à 0 parce qu'il n'est pas dans l'espace des actes). Une colonne vide n'est jamais remplacée par l'autre.
+  LignePrix prixDeLigne(Object? code, Object? date, bool assure, {String voie = 'acte', required String aujourdhui}) {
+    final c = '${code ?? ''}';
+    final analyse = voie == 'analyse';
+    final p = (analyse ? parAnalyse[c] : parActe[c]) ?? parCode[c];
+    final lib = p == null ? c : '${p['libelle'] ?? c}';
+    LignePrix aDefinir(String cause, String motif, String geste, {String? effectifLe, int? version, String? colonne}) =>
+        LignePrix._aDefinir(cause: cause, prestation: c, libelle: lib, motif: '« $c » $lib : $motif', geste: geste, effectifLe: effectifLe, version: version, colonne: colonne);
+    if (vide) return aDefinir('referentiel-absent', 'prix à définir (le référentiel de prix n’est pas chargé)', 'Recharger la page.');
+    if (p == null) {
+      return aDefinir(
+          'absent-du-referentiel',
+          'prix à définir (aucune prestation de prix ne porte ce code)',
+          analyse
+              ? 'Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).'
+              : 'Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.');
+    }
+    final j = tarJourDe(date, aujourdhui);
+    final pc = '${p['code']}';
+    final v = enVigueur(pc, j);
+    if (v == null) {
+      final futures = [
+        for (final x in vers[pc] ?? const <FicheTarif>[])
+          if (x['statut'] == 'valide' && x['dateEffet'] != null && '${x['dateEffet']}'.compareTo(j) > 0) x
+      ]..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
+      if (futures.isNotEmpty) {
+        final de = '${futures.first['dateEffet']}';
+        return aDefinir('version-future', 'prix à définir, effectif le ${_dateFr(de)}',
+            'Le prix décidé prend effet le ${_dateFr(de)} : la ligne le lira ce jour-là. Pour l’appliquer plus tôt, proposer dans « Tarifs et prix » une version datée d’aujourd’hui et la faire décider (Oui).',
+            effectifLe: de);
+      }
+      final attente = (vers[pc] ?? const <FicheTarif>[]).any((x) => x['statut'] == 'propose');
+      if (attente) {
+        return aDefinir('proposition-en-attente', 'prix à définir (une proposition attend la décision)', 'Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.');
+      }
+      return aDefinir('sans-version', 'prix à définir (aucune version de prix décidée)', tarGesteProposer);
+    }
+    final num? na = v['etatNonAssure'] == 'manquant' ? null : v['prixNonAssure'] as num?;
+    final etatA = '${v['etatAssure']}';
+    final version = ((v['version'] as num?) ?? 0).toInt();
+    num? montant;
+    var tarif = 'non assuré';
+    String? motif;
+    var colonneAssuree = false;
+    if (!assure) {
+      montant = na;
+    } else if (!analyse && identical(parActe[c], p)) {
+      // La règle historique de l'acte : la colonne assurée ne vaut que pour un acte assurable ; NON COUVERT et prix unique se facturent au non assuré.
+      if (p['assurable'] == true && etatA == 'montant') {
+        montant = v['prixAssure'] as num?;
+        tarif = 'assuré';
+        colonneAssuree = true;
+      } else if (p['assurable'] == true && etatA == 'manquant') {
+        montant = null;
+        tarif = 'assuré';
+        colonneAssuree = true;
+      } else {
+        montant = na;
+      }
+    } else if (analyse && identical(parAnalyse[c], p)) {
+      if (etatA == 'montant') {
+        montant = v['prixAssure'] as num?;
+        tarif = 'assuré';
+        colonneAssuree = true;
+      } else if (etatA == 'manquant' && na != null) {
+        montant = null;
+        tarif = 'assuré';
+        colonneAssuree = true;
+      } else {
+        montant = na;
+      }
+    } else {
+      final r = resoudre(p, j, true);
+      montant = r.montant;
+      tarif = r.tarif ?? 'non assuré';
+      motif = r.motif;
+      colonneAssuree = r.tarif == 'assuré';
+    }
+    if (montant == null || !(montant > 0)) {
+      if (colonneAssuree && na != null) {
+        return aDefinir('prix-assure-vide',
+            'prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)',
+            'Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).',
+            version: version, colonne: 'assuré');
+      }
+      return aDefinir('prix-non-assure-vide', 'prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)', tarGesteProposer,
+          version: version, colonne: 'non assuré');
+    }
+    return LignePrix._ok(
+        montant: montant, tarif: tarif, motif: motif, prestation: pc, libelle: lib, famille: p['famille'] as String?, version: version, dateEffet: v['dateEffet'] as String?);
   }
 
   /// Le prix d'une ligne de GRILLE (espace des codes de grille : imagerie, soins AMI, certificats) : la forme de l'ancien `D.tarifPrix(code, assure, date)`.
@@ -890,6 +1040,14 @@ ResultatTarif<PropositionTarif> tarProposer(ContexteTarif cx, DemandeProposition
     if (p != null) {
       return non(RefusTarif('CODE_EXISTANT', 'Le code « ${o.code} » existe déjà au référentiel (code ou alias) : un code ne se réutilise pas.',
           'Choisir un autre code, ou proposer un changement de prix à la prestation existante.'));
+    }
+    // LOT TARIF-FIX : le code se compare NORMALISÉ (casse, espaces), dans les trois espaces, les alias et les prestations archivées.
+    final pris = tarCodePris(h.tarifs, o.code);
+    if (pris != null) {
+      return non(RefusTarif(
+          'CODE_EXISTANT',
+          'Le code « ${o.code.trim()} » est déjà pris au référentiel par « ${pris['code']} » (${pris['libelle'] ?? pris['code']}${pris['statut'] == 'archive' ? ', archivée' : ''}) : un code ne se réutilise pas, même écrit autrement (casse, espaces).',
+          'Choisir un autre code (pour un certificat : CERT- suivi du sigle de la pièce), ou proposer un changement de prix à la prestation existante.'));
     }
     if (o.code.trim().isEmpty || '${o.creation!['libelle'] ?? ''}'.trim().isEmpty) {
       return non(const RefusTarif('IDENTITE_INCOMPLETE', 'Une prestation porte un code et un libellé.', 'Renseigner le code et le libellé.'));
