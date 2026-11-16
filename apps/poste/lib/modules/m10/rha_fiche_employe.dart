@@ -9,6 +9,7 @@ import '../../shell/contexte_ecran.dart';
 import '../m13/adm_commun.dart';
 import '../m4/mat_commun.dart';
 import 'plan_indiv.dart';
+import 'rhb_planning.dart' show rhbVacationCompte;
 import 'rha_commun.dart';
 
 /// `ficheEmploye(e)` de la maquette : le bandeau de l'agent puis SIX onglets — informations, planning du mois, primes NS 132, présences & congés,
@@ -28,7 +29,7 @@ class FicheEmploye extends StatelessWidget {
   Widget build(BuildContext context) {
     final e = agent;
     final auj = c.aujourdhui;
-    final vac = trierPar(rhaVacations(c.magasin.collection('planning').actives, e['id'], auj.year, auj.month), (p) => p['date']);
+    final vac = trierPar(rhaVacations(c.magasin.collection('planning').actives.where(rhbVacationCompte), e['id'], auj.year, auj.month), (p) => p['date']);
     final gardes = rhaCompter(vac, 'garde'), permanences = rhaCompter(vac, 'permanence');
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Container(

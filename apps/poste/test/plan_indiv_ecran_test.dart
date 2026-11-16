@@ -75,6 +75,19 @@ void main() {
     await t.pump(const Duration(seconds: 10));
   });
 
+  testWidgets('RG-11 : la fiche de l\'agent ne compte que les vacations VALIDÉES (une garde « à valider » ne compte pas pour les primes)', (t) async {
+    final premier = (jeu('personnel')..sort((a, b) => '${a['matricule']}'.compareTo('${b['matricule']}'))).first;
+    M garde(String id, String date, {String? etat}) => {'id': id, 'statut': 'actif', 'employeId': premier['id'], 'date': date, 'type': 'garde', if (etat != null) 'validationEtat': etat};
+    final m = poste({
+      'planning': [garde('P1', '2026-10-05'), garde('P2', '2026-10-12', etat: 'a_valider'), garde('P3', '2026-10-19', etat: 'validee'), garde('P4', '2026-10-26', etat: 'refuse')],
+    });
+    await ouvrir(t, m, 'm10-employe-profil');
+    await cliquer(t, find.text('Planning du mois'));
+    final kpi = t.widget<KpiSigh>(find.byWidgetPredicate((w) => w is KpiSigh && w.libelle == 'Gardes'));
+    expect(kpi.valeur, '2', reason: 'la garde sans état et la garde validée comptent ; « à valider » et « refusée » non');
+    await t.pump(const Duration(seconds: 10));
+  });
+
   testWidgets('sans le geste réservé : « Définir une version » est ABSENT de l\'onglet', (t) async {
     final m = poste({'planning': const [], 'planningsPersonnalises': const []});
     await ouvrir(t, m, 'm10-employe-profil', role: 'direction');

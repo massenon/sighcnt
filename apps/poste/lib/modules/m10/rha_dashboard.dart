@@ -7,6 +7,7 @@ import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m9/commun.dart' show ecoute;
 import 'rha_commun.dart';
+import 'rhb_planning.dart' show rhbVacationCompte;
 
 /// `m10-dashboard` — « Tableau de bord — Ressources humaines » : effectif, plannings, présences, évaluations, primes et masse salariale. Tout est CALCULÉ
 /// depuis le personnel et le planning du jour (jamais fourni) ; les règles viennent des notes NS 131 / NS 132 en vigueur.
@@ -24,7 +25,7 @@ class EcranDashboardRh extends StatelessWidget with EcranMaquette {
         listenable: ecoute(c, ['personnel', 'planning']),
         builder: (context, _) {
           final p = c.magasin.collection('personnel').actives;
-          final jour = rhaPlanningDuJour(c.magasin.collection('planning').actives, c.aujourdhui);
+          final jour = rhaPlanningDuJour(c.magasin.collection('planning').actives.where(rhbVacationCompte), c.aujourdhui);
           final parService = rhaParService(p);
           final planning = rhaRepartitionPlanning(jour);
           return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
