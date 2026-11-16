@@ -12,6 +12,9 @@ library;
 /// Le geste réservé de la fiche RBAC qui adopte le plan d'un exercice (défaut proposé : la Direction et la Directrice Administrative).
 const String paGesteAdopter = 'adopter_plan_annuel';
 
+/// Les collections de CONFIGURATION du plan (axes et états, signataires de l'impression) : posées à la mère, reçues par les fileuls par le canal de configuration, jamais vers un téléphone.
+const Set<String> paCollectionsConfiguration = {'referentielsPlan', 'reglagesPlan'};
+
 /// Les champs qui forment le CONTENU du plan : figés après l'adoption, ils ne changent plus que par version datée.
 const List<String> paChampsContenu = ['action', 'axe', 'trimestreDebut', 'trimestreFin', 'responsableType', 'responsableRef', 'budgetPrevu', 'budgetId', 'indicateur', 'cible'];
 
@@ -33,7 +36,8 @@ String? paFinTrimestre(String? debut, Object? q) {
   final m = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$').firstMatch(debut ?? '');
   final n = _num(q);
   if (m == null || n == null || !(n >= 1 && n <= 4)) return null;
-  final fin = DateTime.utc(int.parse(m[1]!), int.parse(m[2]!) - 1 + 3 * n.toInt(), int.parse(m[3]!)).subtract(const Duration(days: 1));
+  // Les mois de Dart sont numérotés de 1 à 12 (ceux de JavaScript de 0 à 11) : le trimestre `n` finit la veille du premier jour du mois + 3 n.
+  final fin = DateTime.utc(int.parse(m[1]!), int.parse(m[2]!) + 3 * n.toInt(), int.parse(m[3]!)).subtract(const Duration(days: 1));
   return fin.toIso8601String().substring(0, 10);
 }
 
@@ -114,7 +118,7 @@ TotauxPlan paTotaux(List<FichePlan> actions, String? Function(String code) natur
 }
 
 /// `D.PLAN.retard(a, debutExercice, auj, grace)` : une action non réalisée dont le dernier jour du trimestre de fin, plus la tolérance, est passé.
-({bool enRetard, String motif, String? finTrimestre, String? limite, int? jours}) paRetard(FichePlan a, String? debutExercice, String auj, int grace, String? Function(String code) natureDe) {
+({bool enRetard, String? motif, String? finTrimestre, String? limite, int? jours}) paRetard(FichePlan a, String? debutExercice, String auj, int grace, String? Function(String code) natureDe) {
   final nature = natureDe('${a['avancement'] ?? ''}');
   if (nature == null || nature == 'realisee') return (enRetard: false, motif: nature == 'realisee' ? 'realisee' : 'etat_inconnu', finTrimestre: null, limite: null, jours: null);
   final fin = paFinTrimestre(debutExercice, a['trimestreFin']);
@@ -123,7 +127,7 @@ TotauxPlan paTotaux(List<FichePlan> actions, String? Function(String code) natur
   final jour = auj.length >= 10 ? auj.substring(0, 10) : auj;
   if (jour.compareTo(limite) <= 0) return (enRetard: false, motif: 'dans_les_delais', finTrimestre: fin, limite: limite, jours: null);
   final jours = (DateTime.parse('${jour}T00:00:00Z').difference(DateTime.parse('${fin}T00:00:00Z')).inHours / 24).round();
-  return (enRetard: true, motif: 'retard', finTrimestre: fin, limite: limite, jours: jours);
+  return (enRetard: true, motif: null, finTrimestre: fin, limite: limite, jours: jours);
 }
 
 /// `C.referenceAnnuelle(prefixe, date, largeur, fiches)` : préfixe + année de la DATE de la pièce + rang suivant lu sur les fiches existantes (compteur par année). [date] : AAAA-MM-JJ.
@@ -161,7 +165,7 @@ RefusPlan? paControler(FichePlan f, ContextePlan ctx) {
   if (!(d != null && e != null && d >= 1 && d <= 4 && e >= 1 && e <= 4 && d <= e)) {
     return const RefusPlan('TRIMESTRES_INCOHERENTS', 'La période doit aller d’un trimestre de début à un trimestre de fin, de T1 à T4, la fin non avant le début.', 'Corriger les trimestres.');
   }
-  if (!_vide(f['responsable']) && _vide(f['responsableRef'])) {
+  if (!_vide(f['responsable'])) {
     return const RefusPlan('RESPONSABLE_TEXTE_LIBRE', 'Le responsable n’est pas un texte libre : il se choisit parmi le personnel ou les postes de l’organigramme.', 'Choisir le responsable dans la liste.');
   }
   final type = f['responsableType'], ref = '${f['responsableRef']}';

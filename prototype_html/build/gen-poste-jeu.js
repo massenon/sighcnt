@@ -62,6 +62,10 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
        l'écran comme l'agent, sinon `observations` s'exporte vide. Avant le peuplement des parcours : le jeu sobre l'amorce aussi. */
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m3-hospitalisation.js') });
     await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m3-observation'].render(r); r.remove(); } catch (e) { console.error(e); } });
+    /* Le plan annuel de travail est semé PAR SON ÉCRAN (douze actions de l'exercice du jour, responsables référencés au personnel ou à un poste) : on monte l'écran comme l'agent, sinon
+       `planAnnuel` s'exporte vide et le poste n'a pas la démonstration que la maquette montre (parité des écrans). Lot PTA. */
+    await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m13-administration.js') }).catch(() => {});
+    await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m13-plan-annuel'].render(r); r.remove(); } catch (e) { console.error(e); } });
     /* LE JEU DE DÉMONSTRATION COMPLET : le peuplement des parcours (demandes d'analyses et d'imagerie, ordonnances, tâches, transferts…) est déclenché par
        la page au démarrage dans la maquette ; la page d'extraction ne le fait pas, d'où des collections vides à l'export. */
     if (!SOBRE) await m.page.evaluate(() => { try { SIGH.peuplerParcours(); } catch (e) { console.error(e); } });

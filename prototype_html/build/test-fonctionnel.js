@@ -27845,7 +27845,7 @@ async function viderMessages(page) {
     const fileul = await page.evaluate(() => { const S = window.SIGH.store, avant = S.reglage('posteFileul', false); S.setReglage('posteFileul', true);
       const r = window.SIGH.parametresClinique.definir({ cle: 'stock.delaiPeremptionJours', valeur: 30, motif: 'sonde' }); S.setReglage('posteFileul', avant); return r.code; });
     verifier('Sans le geste réservé (gestionnaire de stock, Direction qui lit l’écran) : « Régler » est ABSENT et le moteur refuse PARAMETRE_CLINIQUE_RESERVE ; la Directrice Administrative règle ; un FILEUL est refusé (FILEUL_LECTURE_SEULE : réglage posé à la mère)',
-      sansGeste.peut === false && sansGeste.refus === 'PARAMETRE_CLINIQUE_RESERVE' && da.boutons === 3 && da.peut && dir.cellules === 3 && dir.boutons === 0 && dir.refus === 'PARAMETRE_CLINIQUE_RESERVE' && fileul === 'FILEUL_LECTURE_SEULE', JSON.stringify({ sansGeste, da, dir, fileul }));
+      sansGeste.peut === false && sansGeste.refus === 'PARAMETRE_CLINIQUE_RESERVE' && da.boutons === 4 && da.peut && dir.cellules === 4 && dir.boutons === 0 && dir.refus === 'PARAMETRE_CLINIQUE_RESERVE' && fileul === 'FILEUL_LECTURE_SEULE', JSON.stringify({ sansGeste, da, dir, fileul }));
 
     /* restauration : les versions de la sonde et le lot sont archivés (RG-14), la semence fait de nouveau foi */
     const fin = await page.evaluate((id) => { const S = window.SIGH.store, C = window.SIGH.core, col = S.collection('parametresClinique');
@@ -28260,7 +28260,7 @@ async function viderMessages(page) {
     await poserSessionServeur(ADM280);
     await ouvrir('m13-plan-annuel.html');
     const VER280 = await page.evaluate(() => (window.SIGH.store.raw() || {})._version || null);
-    const src = await page.evaluate(async () => (await (await fetch('assets/js/modules/m13-administration.js')).text()));
+    const src = await page.evaluate(async () => (await (await fetch('/assets/js/modules/m13-administration.js')).text()));
     const debut = src.indexOf("global.SIGH.screen('m13-plan-annuel'"), fin = src.indexOf('NOTES DE SERVICE', debut);
     const zone = src.slice(debut, fin);
     verifier('Aucune année, aucun nom de signataire ni de responsable n’est écrit dans le code de l’écran du plan (l’exercice se LIT, les signataires et responsables se lisent en base)',
@@ -28286,10 +28286,11 @@ async function viderMessages(page) {
       [...document.querySelectorAll('[role=dialog] button, .modal-root button')].filter((b) => b.textContent.trim() === 'Créer').pop().click(); await dormir(500);
       return window.SIGH.store.collection('planAnnuel').active().filter((x) => x.action === a).map((x) => x.reference);
     }, action, extra || null);
+    const rang0 = await page.evaluate(() => Math.max(0, ...window.SIGH.store.collection('planAnnuel').all().map((x) => parseInt(String(x.reference || '').slice(-3), 10) || 0)));
     const r1 = await creer('Essai 280 A'); const r2 = await creer('Essai 280 B');
     await attendreEcritures();
-    const anneeJ = e0.annee;
-    verifier('Deux actions créées par la modale reçoivent PA-<exercice>-001 puis -002 (compteur lu sur les fiches existantes, jamais une année écrite)', r1[0] === 'PA-' + anneeJ + '-001' && r2[0] === 'PA-' + anneeJ + '-002', JSON.stringify([r1, r2]));
+    const anneeJ = e0.annee, pad3 = (n) => String(n).padStart(3, '0');
+    verifier('Deux actions créées par la modale reçoivent PA-<exercice>-NNN puis le rang suivant (compteur lu sur les fiches existantes : les douze actions de démonstration portent 001 à 012 ; jamais une année écrite)', r1[0] === 'PA-' + anneeJ + '-' + pad3(rang0 + 1) && r2[0] === 'PA-' + anneeJ + '-' + pad3(rang0 + 2), JSON.stringify([rang0, r1, r2]));
     /* l'exercice précédent a sa propre série */
     const prec = e0.exercices.filter((a) => a < anneeJ).pop();
     const r3 = await page.evaluate(async (p) => {
@@ -28372,7 +28373,7 @@ async function viderMessages(page) {
       const annee = window.SIGH.core.aujourdhui().getFullYear();
       S.collection('planAnnuel').active().forEach((a) => S.collection('planAnnuel').archive(a.id, 'banc 282'));
       const mk = (action, extra) => PA.ajouter(Object.assign({ exercice: annee, action, axe: 'qualite', trimestreDebut: 3, trimestreFin: 4, avancement: 'en_cours', responsable: 'poste:' + po.id }, extra || {}));
-      const refus = { p150: mk('P150', { tauxAvancement: 150 }).code, pneg: mk('PNEG', { tauxAvancement: -1 }).code, budgetNeg: mk('BNEG', { budgetPrevu: -5 }).code, cibleTexte: mk('CT', { cible: 'x' }).code };
+      const refus = { p150: mk('P150', { tauxAvancement: 150 }).code, pneg: mk('PNEG', { tauxAvancement: -1 }).code, budgetNeg: mk('BNEG', { budgetPrevu: -5 }).code, cibleTexte: mk('Cible texte', { cible: 'x' }).code };
       const a = mk('Sans chiffre'), b = mk('Zéro', { tauxAvancement: 0, budgetPrevu: 0, budgetRealise: 0 }), c = mk('Chiffrée', { tauxAvancement: 50, budgetPrevu: 400000, budgetRealise: 300000, indicateur: 'Enfants vaccinés', cible: 200, valeurAtteinte: 150 });
       const sans = D.PLAN.totaux([S.collection('planAnnuel').get(a.id)]);
       const tous = D.PLAN.totaux(PA.actions(annee));

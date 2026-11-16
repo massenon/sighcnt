@@ -11,6 +11,10 @@
   {
    "cle": "creances.trancheLongueJours",
    "texte": "90 jours"
+  },
+  {
+   "cle": "plan.graceRetardJours",
+   "texte": "0 jours"
   }
  ],
  "definitions": [
@@ -37,6 +41,14 @@
    "max": 730,
    "unite": "jours",
    "libelle": "Balance âgée : fin de la deuxième tranche (jours)"
+  },
+  {
+   "cle": "plan.graceRetardJours",
+   "defaut": 0,
+   "min": 0,
+   "max": 90,
+   "unite": "jours",
+   "libelle": "Plan annuel : jours de tolérance après la fin du trimestre avant l’alerte de retard"
   }
  ],
  "semence": [
@@ -56,6 +68,12 @@
    "id": "PCL-003",
    "cle": "creances.trancheLongueJours",
    "valeur": 90,
+   "dateEffet": null
+  },
+  {
+   "id": "PCL-004",
+   "cle": "plan.graceRetardJours",
+   "valeur": 0,
    "dateEffet": null
   }
  ],

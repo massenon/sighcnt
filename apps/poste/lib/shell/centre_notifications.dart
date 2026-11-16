@@ -6,6 +6,7 @@ import '../core/service_parametres.dart';
 import '../donnees/magasin.dart';
 import '../modules/m2/cs_commun.dart' show StockMagasin;
 import '../donnees/parametres_clinique_poste.dart';
+import '../donnees/plan_annuel_poste.dart';
 import 'recherche_globale.dart' show ecranOuvertAuRole;
 
 /// Le MOTEUR DE NOTIFICATIONS du poste (`SIGH.notifications` de la maquette, `notifications.js`). Il AFFICHE, il ne DÉCIDE pas : chaque source lit ce que
@@ -118,6 +119,7 @@ const _libellesGroupe = <String, (String, String)>{
   'a_valider_ecritures': ('pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'),
   'pair_conflits': ('champ(s) modifié(s) en même temps sur deux postes', 'Deux valeurs coexistent, la plus récente est retenue provisoirement : la personne habilitée tranche.'),
   'poste': ('notification(s) de poste', 'À consulter dans les écrans concernés.'),
+  'plan_retard': ('action(s) du plan annuel en retard', 'Réaliser chaque action ou la replanifier : l’alerte retombe d’elle-même.'),
   'prix_manquant': ('prestation(s) sans prix attendue(s) à la caisse', 'Poser le prix (« Tarifs et prix » ou « Changer le prix d’achat ») : les pièces en attente se valorisent à leur date.'),
 };
 
@@ -177,6 +179,20 @@ final List<_Source> _sources = [
         }()
     ];
   }),
+  // LOT PTA (16/11/2026) : une action du plan annuel non réalisée dont le trimestre de fin est passé (plus la tolérance lue en base, `plan.graceRetardJours`). UNE alerte PAR ACTION,
+  // DÉRIVÉE : elle retombe d'elle-même quand l'action est réalisée ou replanifiée. Routée vers les détenteurs du geste réservé d'adoption du plan (fiche RBAC, jamais un nom de rôle).
+  // Aucune donnée de santé : la référence, le libellé de l'action et le trimestre.
+  _Source('plan_retard', 'metier', 'Plan annuel', (m, auj) => [
+        for (final a in alertesRetardPlan(m, parametreDateIso(auj)))
+          _Ligne(
+              'plan:${a.action['id']}',
+              'important',
+              'Action en retard : ${a.action['reference']} ${a.action['action']}',
+              'Prévue au plus tard fin T${a.action['trimestreFin']} (${dateFR(DateTime.parse(a.finTrimestre))}), ${nombre(a.jours)} jour(s) de retard. Réaliser l’action ou la replanifier.',
+              'm13-plan-annuel',
+              null,
+              geste: paGesteAdopter)
+      ]),
   _Source('stock_seuil', 'metier', 'Stock', (m, auj) => [
         for (final p in m.collection('produits').actives)
           if (p['seuilAlerte'] != null && (_num(p['stock']) ?? 0) <= (_num(p['seuilAlerte']) ?? 0))
@@ -399,6 +415,7 @@ class CentreNotifications extends ChangeNotifier {
     'admissions',
     'notifications',
     'reglages',
+    'planAnnuel',
   ];
 
   final Magasin magasin;

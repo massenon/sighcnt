@@ -14,6 +14,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         Parametres,
         RefusMobile,
         cfbEssentielles,
+        paCollectionsConfiguration,
         collectionsGestionJamaisMobile,
         collectionsGestionSynchronisees,
         cpcRefusRejeuBudget,
@@ -95,7 +96,7 @@ const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
 /// Les collections de CONFIGURATION que la mère diffuse aux POSTES : les essentielles du paramétrage plus les comptes. Les noms viennent du domaine (la même
 /// liste que le vidage des jeux de test conserve), jamais recopiés ici. Le poste en choisit l'usage ; la mère ne fait que les accepter et les journaliser.
-final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs'}
+final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs', ...paCollectionsConfiguration}
     .difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'})
     .difference(familleDeBase.keys.toSet());
 

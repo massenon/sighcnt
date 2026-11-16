@@ -6015,7 +6015,7 @@
     if (!D.PLAN.etat(f.avancement)) return refusCfg('ETAT_INCONNU', 'L’état d’avancement « ' + f.avancement + ' » n’est pas dans le référentiel des états.', 'Choisir un état du référentiel.');
     var d = Number(f.trimestreDebut), e = Number(f.trimestreFin);
     if (!(d >= 1 && d <= 4 && e >= 1 && e <= 4 && d <= e)) return refusCfg('TRIMESTRES_INCOHERENTS', 'La période doit aller d’un trimestre de début à un trimestre de fin, de T1 à T4, la fin non avant le début.', 'Corriger les trimestres.');
-    if (f.responsable && !f.responsableRef) return refusCfg('RESPONSABLE_TEXTE_LIBRE', 'Le responsable n’est pas un texte libre : il se choisit parmi le personnel ou les postes de l’organigramme.', 'Choisir le responsable dans la liste.');
+    if (f.responsable) return refusCfg('RESPONSABLE_TEXTE_LIBRE', 'Le responsable n’est pas un texte libre : il se choisit parmi le personnel ou les postes de l’organigramme.', 'Choisir le responsable dans la liste.');
     if (!responsablePlan(f)) return refusCfg('RESPONSABLE_INCONNU', 'Le responsable désigné n’existe pas (ou n’est plus actif) au personnel ni à l’organigramme.', 'Choisir un agent ou un poste de la liste.');
     var tx = D.PLAN.pourcentage(f.tauxAvancement);
     if (!tx.ok) return refusCfg('POURCENTAGE_HORS_BORNES', 'Le pourcentage d’avancement est un nombre de 0 à 100 (reçu « ' + f.tauxAvancement + ' »).', 'Saisir un nombre de 0 à 100, ou laisser vide (non renseigné).', { min: 0, max: 100 });

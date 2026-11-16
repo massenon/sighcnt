@@ -13332,6 +13332,17 @@
     "defautSiEcritSur": null
    },
    {
+    "id": "adopter_plan_annuel",
+    "libelle": "Adopter le plan annuel de travail d’un exercice (le contenu ne change plus ensuite que par version datée)",
+    "module": "M13",
+    "ecran": "m13-plan-annuel",
+    "rolesDefaut": [
+     "direction",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
     "id": "exporter_donnees",
     "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
     "module": null,
@@ -13371,6 +13382,7 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "direction": {
@@ -13380,6 +13392,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 1,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 1,
     "exporter_donnees": 1
    },
    "dm": {
@@ -13389,6 +13402,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "da": {
@@ -13398,6 +13412,7 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
+    "adopter_plan_annuel": 1,
     "exporter_donnees": 1
    },
    "medecin": {
@@ -13407,6 +13422,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "infirmier": {
@@ -13416,6 +13432,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "pharmacien": {
@@ -13425,6 +13442,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 0
    },
    "laborantin": {
@@ -13434,6 +13452,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "stock": {
@@ -13443,6 +13462,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "caissier": {
@@ -13452,6 +13472,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "comptable": {
@@ -13461,6 +13482,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "rh": {
@@ -13470,6 +13492,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 0
    },
    "reception": {
@@ -13479,6 +13502,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "agentadmin": {
@@ -13488,6 +13512,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "ambulancier": {
@@ -13497,6 +13522,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "aide_soignant": {
@@ -13506,6 +13532,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "echographiste": {
@@ -13515,6 +13542,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "surveillant": {
@@ -13524,6 +13552,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "assistant_comptable": {
@@ -13533,6 +13562,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "chirurgien": {
@@ -13542,6 +13572,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "anesthesiste": {
@@ -13551,6 +13582,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    },
    "aide_comptable": {
@@ -13560,6 +13592,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "adopter_plan_annuel": 0,
     "exporter_donnees": 1
    }
   }

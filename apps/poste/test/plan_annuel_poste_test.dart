@@ -7,6 +7,7 @@ import 'package:sigh_poste/core/service_parametres.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/donnees/plan_annuel_poste.dart';
 import 'package:sigh_poste/kit/kit.dart';
+import 'package:sigh_poste/shell/centre_notifications.dart';
 import 'package:sigh_poste/main.dart';
 
 import 'aide_polices.dart';
@@ -171,8 +172,27 @@ void main() {
     expect(al('2026-10-30'), isEmpty, reason: 'réalisée : retombée');
     expect(al('2027-01-02'), ['Fin T4'], reason: 'le trimestre de fin est lu sur le premier jour de l\'exercice, plus loin dans l\'année');
     expect(graceRetardPlan(m, '2026-10-30'), 0);
-    expect(reglerParametreGrace(m, 100), isNull);
-    expect(al('2027-01-02'), isEmpty, reason: 'une tolérance de 100 jours repousse l\'alerte');
+    expect(reglerParametreGrace(m, 30), isNull);
+    expect(al('2027-01-02'), isEmpty, reason: 'une tolérance de 30 jours repousse l\'alerte');
+  });
+
+  test('le centre de notifications : UNE alerte par action en retard, vers les détenteurs du geste d\'adoption (fiche RBAC), sans donnée de santé ; elle retombe quand l\'action est réalisée', () {
+    final m = magasin();
+    final a = ajouter(m, saisie(action: 'Fin T2', d: 1, f: 2));
+    ajouter(m, saisie(action: 'Fin T4', d: 1, f: 4));
+    List<AlerteNotif> pour(String role) => CentreNotifications(magasin: m, donnees: () => donnees, role: () => role, horloge: () => auj).collecter(detaille: true).where((n) => n.source == 'plan_retard').toList();
+    final avec = [for (final r in ['admin', 'da', 'direction', 'agentadmin', 'comptable']) if (donnees.matrice.droitGeste(r, paGesteAdopter)) r];
+    final sans = [for (final r in ['admin', 'da', 'direction', 'agentadmin', 'comptable']) if (!donnees.matrice.droitGeste(r, paGesteAdopter)) r];
+    expect(avec.toSet(), {'da', 'direction'}, reason: 'défaut proposé : la Direction et la Directrice Administrative');
+    final x = pour(avec.first);
+    expect(x, hasLength(1), reason: 'la fin T4 n\'est pas en retard au 30/10 ; une alerte par action');
+    expect(x.single.titre, 'Action en retard : ${a['reference']} Fin T2');
+    expect('${x.single.titre} ${x.single.detail}', isNot(contains(RegExp('patient|diagnostic|ordonnance', caseSensitive: false))));
+    for (final r in sans) {
+      expect(pour(r), isEmpty, reason: '$r ne détient pas le geste d\'adoption');
+    }
+    m.collection('planAnnuel').mettreAJour(a['id'], {'avancement': 'realisee'});
+    expect(pour(avec.first), isEmpty, reason: 'réalisée : l\'alerte retombe');
   });
 
   test('signataires : lus au paramétrage (fonction par référence à un poste, titulaire lu au poste à la date), réglés par une version datée et un geste réservé', () {
