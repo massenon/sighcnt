@@ -607,3 +607,15 @@ Ce qui CHANGE par rapport au 09/11 est en gras. Le reste confirme une décision 
 30. **Plan annuel de travail (PTA)** : « rien ne doit rester en dur » ; lot PTA (exercice choisi, responsable lié au personnel, signataires paramétrés, budget, indicateur et cible, adoption par la Direction, alerte de retard, synchronisation, impression du plan et du bilan).
 31. **Inventaire de ce qui est en dur** : tout ce qui est paramétrable devient réglage ou droit ; lots dans l'ordre MIL (année des numéros et agrégats), VAL (validations et acteurs), TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT.
 32. **La liasse fiscale 2025 et ses chiffres de référence**, aujourd'hui transcrits dans le code, sont des données déposées et non des réglages : **ils passent en base, sous forme d'import daté**, dans le lot des listes de référence (REF). Accord de la Direction du 16/11/2026.
+
+## AV. Lot SAT (16/11/2026, relais, mère, maquette, domaine, poste) : la satisfaction en ligne, ce qui reste à trancher par la Direction
+
+Le principe est VALIDÉ (section AQ points 14 et 16) : formulaire public sur une adresse personnalisée de `sighcnt.nassieratoo.com` ou par code QR, réponses chiffrées dans le navigateur par la clé publique de la clinique, relais aveugle, aucun nom ni numéro de dossier, pas un portail patient (CDCT §4.3). `ADR-0009`, `ECARTS-MAQUETTE.md` E2870 à E2875. Hypothèses écrites plutôt qu'inventées :
+
+- **La collecte en ligne est DÉSACTIVÉE par défaut** (réglage `satisfaction.enLigne`, comme la sauvegarde hors site) : une surface publique ne s'ouvre pas sans geste. ☐ Accepter ☐ Activée par défaut dès qu'un lien « En ligne » existe.
+- **Les sept points de collecte** (accueil, consultation, laboratoire, pharmacie, maternité, hospitalisation, sortie) sont ceux de la décision S2 du PRD ; ils se règlent en base (`satisfaction.pointsCollecte`). L'appréciation du personnel par catégorie (S2) reste à porter comme dimension de questionnaire : non faite dans ce lot. ☐ Accepter
+- **Taux de satisfaction = notes 4 ou 5 sur le total des notes valides** ; taux de recommandation = réponses « Oui » ou « Plutôt oui » sur les réponses qui répondent à la question ; **taux de réponse « non calculable »** tant que les passages à l'accueil ne sont pas comptés (jamais zéro). ☐ Accepter ☐ Autre définition : ____
+- **Limites techniques** : 10 réponses par empreinte d'adresse par 10 minutes, enveloppe de 16 Kio, commentaire de 1 000 caractères, 200 liens ouverts au plus, texte rembourré à 1, 2, 4 ou 8 Kio. ☐ Accepter ☐ Autres valeurs : ____
+- **Navigateurs anciens** : la page exige WebCrypto X25519 (Chrome 133, Firefox 130, Safari 17) et le dit sinon ; aucun repli. Un téléphone plus ancien ne peut pas répondre. ☐ Accepter ☐ Demander un repli en JavaScript (lot à venir, à mesurer d'abord sur les téléphones du terrain)
+- **Réponse reçue après la révocation du lien** : refusée (`lien_revoque`) si reçue un jour après la révocation, acceptée le jour même (le relais refuse déjà les suivantes). ☐ Accepter
+- **Mode kiosque hors ligne, langues, alertes SMS, modération des commentaires** : hors lot (restent au PRD). ☐ Prioriser : ____

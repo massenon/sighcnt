@@ -47,6 +47,13 @@ const Set<String> qualCollectionsJamaisMobile = {'reponsesEnquetes', 'jetonsEnqu
 /// Le code du refus d'un lot de tournée qui nomme l'une d'elles.
 const String qualCodeInterditAuMobile = 'satisfaction_interdite_au_mobile';
 
+/// L'adresse publique du relais (réglage de clinique, défaut semé) : le lien d'une enquête en ligne est `<adresse>/s/<jeton>`.
+const String qualCleAdressePublique = 'satisfaction.adressePublique';
+const String qualAdressePubliqueDefaut = 'https://sighcnt.nassieratoo.com';
+
+/// Le lien public d'un jeton (le jeton, jamais l'identifiant de l'enquête).
+String qualLienPublic(String adresse, String jeton) => '${adresse.replaceAll(RegExp(r'/+$'), '')}/s/${Uri.encodeComponent(jeton)}';
+
 /// Les limites de la collecte en ligne (ADR-0009) : mêmes valeurs que le relais.
 const int qualLiensMax = 200;
 const int qualTexteMax = 1000;
@@ -426,6 +433,17 @@ const List<DefinitionParametre> qualDefinitionsEnLigne = [
     libelle: 'Satisfaction en ligne (formulaire public)',
     aide: 'Ouvre la collecte par adresse personnalisée ou code QR (relais, ADR-0009). Désactivée par défaut : une surface publique ne s’ouvre pas sans geste. La mère publie alors la clé publique et les liens anonymes, relève les enveloppes chiffrées et les ouvre.',
     source: 'Proposition à valider (lot SAT, DECISIONS-A-VALIDER section AV) : la Direction a validé le principe (section AQ points 14 et 16)',
+    branche: true,
+    appliquePar: 'Lot SAT (satisfaction en ligne)',
+  ),
+  DefinitionParametre(
+    cle: qualCleAdressePublique,
+    famille: 'satisfaction',
+    type: TypeParametre.texte,
+    defaut: qualAdressePubliqueDefaut,
+    libelle: 'Adresse publique du relais (liens et affiches)',
+    aide: 'Le lien d’une enquête en ligne est « <adresse>/s/<jeton> » ; l’affiche porte le même lien en code QR. Adresse du relais web de la clinique, sans barre finale.',
+    source: 'Décision de la Direction (section AQ point 14) : une adresse personnalisée de sighcnt.nassieratoo.com',
     branche: true,
     appliquePar: 'Lot SAT (satisfaction en ligne)',
   ),

@@ -280,6 +280,29 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
               pw.Text(b.texte, style: s(8, f: b.gras ? p.gras : (b.italique ? p.italique : null)))
             ],
           BlocOrganigramme() => [organigramme(b.miseEnPage)],
+          BlocQr() => [
+              pw.Center(
+                  child: pw.Column(children: [
+                pw.Container(
+                    width: b.cote,
+                    height: b.cote,
+                    child: pw.CustomPaint(painter: (canvas, taille) {
+                      final n = b.matrice.length + 8;
+                      final u = taille.x / n;
+                      canvas.setFillColor(PdfColors.white);
+                      canvas.drawRect(0, 0, taille.x, taille.y);
+                      canvas.fillPath();
+                      canvas.setFillColor(PdfColors.black);
+                      for (var r = 0; r < b.matrice.length; r++) {
+                        for (var c = 0; c < b.matrice[r].length; c++) {
+                          if (b.matrice[r][c]) canvas.drawRect((c + 4) * u, taille.y - (r + 5) * u, u + 0.2, u + 0.2);
+                        }
+                      }
+                      canvas.fillPath();
+                    })),
+                if (b.legende != null) pw.Padding(padding: const pw.EdgeInsets.only(top: 6), child: pw.Text(b.legende!, textAlign: pw.TextAlign.center, style: s(9))),
+              ])),
+            ],
         },
         pw.SizedBox(height: 10),
       ],

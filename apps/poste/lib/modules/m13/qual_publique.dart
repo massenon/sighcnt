@@ -194,6 +194,8 @@ class _EtatPublique extends State<EcranEnquetePublique> {
             aujourdhui: _maintenant,
             canal: qualCanalPublic,
             jetonId: jeton['id'],
+            version: '${qualVersionALaDate(enq, _jour)['version']}',
+            point: jeton['point'] == null ? null : '${jeton['point']}',
             saisiPar: qualSaisiPar(anonyme: anonyme, nom: nom == null ? null : '$nom')),
         prefixe: 'REP');
     setState(() => _envoye = true);

@@ -276,6 +276,11 @@ class FeuilleA4 extends StatelessWidget {
                 fontStyle: b.italique ? FontStyle.italic : FontStyle.normal,
                 color: JetonsShell.slate800)),
         BlocOrganigramme() => _organigramme(b.miseEnPage),
+        BlocQr() => Center(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(key: const Key('impression:qr'), width: b.cote, height: b.cote, child: CustomPaint(painter: _PeintreQr(b.matrice))),
+              if (b.legende != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(b.legende!, textAlign: TextAlign.center, style: const TextStyle(color: JetonsShell.slate800))),
+            ])),
       };
 
   /// L'organigramme : les boîtes aux mesures du domaine, les connecteurs tracés dessous (aucune couleur en dur : celles du design system).
@@ -444,4 +449,27 @@ class _PeintreOrganigramme extends CustomPainter {
 
   @override
   bool shouldRepaint(_PeintreOrganigramme old) => old.m != m;
+}
+
+
+/// Le QR de l'affiche : modules noirs sur fond blanc, zone de silence de quatre modules.
+class _PeintreQr extends CustomPainter {
+  _PeintreQr(this.m);
+  final List<List<bool>> m;
+
+  @override
+  void paint(Canvas canvas, Size taille) {
+    canvas.drawRect(Offset.zero & taille, Paint()..color = Colors.white);
+    final n = m.length + 8;
+    final u = taille.width / n;
+    final p = Paint()..color = Colors.black;
+    for (var r = 0; r < m.length; r++) {
+      for (var c = 0; c < m[r].length; c++) {
+        if (m[r][c]) canvas.drawRect(Rect.fromLTWH((c + 4) * u, (r + 4) * u, u + 0.4, u + 0.4), p);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_PeintreQr o) => o.m != m;
 }

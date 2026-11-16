@@ -71,6 +71,10 @@ const Set<String> collectionsActivite = {
   // à ce poste. Famille A (champ à champ) à la mère ; identité COMMUNE par le contenu (`identiteSyncGestion`) : deux postes qui écrivent la même chose ne font qu'une fiche. La mère
   // refuse au rejeu le budget d'un exercice clos (refus nommé). Jamais vers un téléphone (RG-13). Elles viennent APRÈS `patients` : l'identité d'une couverture lit celle de l'assuré.
   ...collectionsGestionSynchronisees,
+  // LOT SAT (ADR-0009) : les RÉPONSES de satisfaction (ouvertes par la mère, famille B, `REPW-<id>` ; ou recueillies au guichet d'un poste) et les LIENS de collecte (famille A : un lien se révoque) vont
+  // aux postes pour l'analyse. Jamais vers un téléphone (RG-13).
+  'reponsesEnquetes',
+  'jetonsEnquete',
 };
 
 /// Les référentiels d'ACTIVITÉ que la mère seule écrit (famille R de la mère) : un fileul les reçoit, il ne les envoie pas.

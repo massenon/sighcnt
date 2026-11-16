@@ -2009,7 +2009,7 @@
                 else {
                   /* Lot SAT : modifier les questions AJOUTE une version datee d'aujourd'hui ; les reponses deja recueillies gardent la leur. */
                   var av = ajouterVersion(r, qs, C.iso(new Date()));
-                  if (av && av.refus) { U.toast(av.motif, { type: 'error', detail: 'Code ' + av.refus + ' \u2014 ' + av.geste }); return; }
+                  if (av && av.refus) { U.toast(av.motif, { type: 'error', detail: 'Code ' + av.refus + '. ' + av.geste }); return; }
                   if (av) valeursM.versions = av.versions;
                 }
                 K.ecrireValidable(colEnquetes(), { famille: 'enquetes' }, creation ? null : r, valeursM).then(function (w) {

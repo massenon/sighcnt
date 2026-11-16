@@ -7,10 +7,15 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/satisfaction_poste.dart';
+import '../../impression/apercu.dart';
+import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/flux_commun.dart' show modaleSaisie;
+import '../m9/commun.dart' show pieceM9;
+import 'package:qr/qr.dart';
 import 'qual_commun.dart';
 import 'qual_publique.dart';
 import 'qual_qr.dart';
@@ -201,7 +206,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
         surValider: (v) {
           final valeurs = {...v}..remove('_canal');
           final fiche = qualReponse(enq, valeurs,
-              aujourdhui: c.aujourdhui, canal: '${v['_canal']}', saisiPar: acteur(c).nom);
+              aujourdhui: c.aujourdhui, canal: '${v['_canal']}', saisiPar: acteur(c).nom, version: '${qualVersionALaDate(enq, jourIso(c))['version']}');
           colReponses(c.magasin).inserer(fiche, prefixe: 'REP');
           ToastsSigh.afficher(ecran, 'Réponse recueillie.', type: TypeToast.succes);
           return true;
@@ -281,6 +286,20 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                       return;
                     }
                     final col = colEnquetes(c.magasin);
+                    // Lot SAT : modifier les questions AJOUTE une version datée d'aujourd'hui (jamais une réécriture) ; les réponses déjà recueillies gardent la leur.
+                    List<Fiche>? versions;
+                    if (creation) {
+                      versions = [
+                        {'version': 'V1', 'effetLe': jourIso(c), 'questions': [for (final q in questions) {...q}]}
+                      ];
+                    } else {
+                      final av = qualAjouterVersion(r, [for (final q in questions) {...q}], jourIso(c));
+                      if (av.refus != null) {
+                        ToastsSigh.afficher(ecran, av.refus!.motif, type: TypeToast.erreur, detail: 'Code ${av.refus!.code} : ${av.refus!.geste}');
+                        return;
+                      }
+                      versions = av.versions;
+                    }
                     // Lot L1 : la Direction qui enregistre VALIDE ; hors famille, le modèle naît ou repasse « à valider ». UNE ligne de journal.
                     final res = await ValidationPoste(c).enregistrer(ecran, const ValidationCrud('enquetes'), col,
                         avant: r,
@@ -293,8 +312,9 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                                 'aValider': true,
                                 'creeLe': jourIso(c),
                                 'source': 'Créé dans l’application — à valider',
+                                'versions': versions,
                               }
-                            : {...v, 'questions': [for (final q in questions) {...q}]},
+                            : {...v, 'questions': [for (final q in questions) {...q}], if (versions != null) 'versions': versions},
                         prefixeId: 'ENQ');
                     if (res == null || !ecran.mounted) return;
                     fermer();
@@ -347,6 +367,8 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
               rendu: (_, j) => j['anonyme'] == true
                   ? const BadgeSigh('Anonyme', ton: TonSigh.info)
                   : const BadgeSigh('Nominatif', ton: TonSigh.attention)),
+          ColonneTableau(cle: 'point', libelle: 'Point de collecte', texte: (j) => j['point'] == null ? '—' : _libellePoint(c, '${j['point']}')),
+          ColonneTableau(cle: 'enLigne', libelle: 'Partage', texte: (j) => j['enLigne'] == true ? 'En ligne' : 'Local'),
           ColonneTableau(cle: 'expireLe', libelle: 'Expire le', texte: (j) => dateJj(j['expireLe'])),
           ColonneTableau(
               cle: 'reponses',
@@ -377,8 +399,8 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
 
   void _ouvrirPartage(BuildContext ecran, Fiche enq) {
     final c = ContexteEcran.of(ecran);
-    final ctl = ControleurFormulaire(const [
-      ChampDef(
+    final ctl = ControleurFormulaire([
+      const ChampDef(
           nom: 'anonyme',
           libelle: 'Recueil',
           type: TypeChamp.select,
@@ -394,7 +416,15 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
         OptionChamp('salle', 'Dans la clinique — QR affiché ou imprimé'),
         OptionChamp('tablette', 'Sur une tablette de la clinique (mode kiosque)'),
         OptionChamp('reseau', 'Sur le réseau local — lien communiqué'),
+        OptionChamp('en_ligne', 'En ligne : adresse publique ou code QR (le relais ne lit pas la réponse)'),
       ]),
+      ChampDef(
+          nom: 'point',
+          libelle: 'Point de collecte',
+          type: TypeChamp.select,
+          requis: true,
+          options: [for (final p in pointsCollectePoste(c.magasin, c.aujourdhui)) OptionChamp(p.code, p.libelle)],
+          aide: 'Un lien par point : l’analyse compare les services. Aucun nom, aucun numéro de dossier n’est demandé.'),
       ChampDef(
           nom: 'expireLe',
           libelle: 'Le lien expire le',
@@ -405,6 +435,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
     ], {
       'anonyme': 'oui',
       'usage': 'salle',
+      'point': 'accueil',
       'expireLe': iso(c.aujourdhui.add(const Duration(days: 30)))
     });
     afficherModale<void>(ecran,
@@ -441,7 +472,9 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                             expireLe: '${v['expireLe']}',
                             note: '${v['note'] ?? ''}',
                             aujourdhui: c.aujourdhui,
-                            ouvertPar: acteur(c).nom),
+                            ouvertPar: acteur(c).nom,
+                            point: '${v['point'] ?? ''}',
+                            version: '${qualVersionALaDate(enq, jourIso(c))['version']}'),
                         prefixe: 'JET');
                     fermer();
                     _montrerLien(ecran, res.fiche);
@@ -451,7 +484,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
 
   void _montrerLien(BuildContext ecran, Fiche j) {
     final c = ContexteEcran.of(ecran);
-    final lien = lienDuJeton('${j['jeton']}');
+    final lien = j['enLigne'] == true ? qualLienPublic(adressePubliquePoste(c.magasin, c.aujourdhui), '${j['jeton']}') : lienDuJeton('${j['jeton']}');
     final e = qualEtatJeton(j, aLaDate: jourIso(c));
     final nb = colReponses(c.magasin).actives.where((x) => x['jetonId'] == j['id']).length;
     afficherTiroir<void>(ecran,
@@ -493,8 +526,18 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                     ])),
               ])),
           const SizedBox(height: 12),
+          if (j['enLigne'] == true) ...[
+            NoteSigh(
+                collecteEnLignePoste(c.magasin, c.aujourdhui)
+                    ? 'Collecte en ligne ouverte : la mère publie ce lien au relais chaque minute, relève les réponses chiffrées et les ouvre ici. Le relais ne lit rien.'
+                    : 'La collecte en ligne est désactivée (réglage « Satisfaction en ligne » des paramètres) : ce lien ne s’ouvrira pas tant qu’elle ne l’est pas.',
+                ton: collecteEnLignePoste(c.magasin, c.aujourdhui) ? TonSigh.info : TonSigh.attention,
+                icone: LucideIcons.lock),
+            const SizedBox(height: 12),
+          ],
           DescListeSigh([
             ('Enquête', '${j['enqueteTitre']}'),
+            ('Point de collecte', j['point'] == null ? '—' : _libellePoint(c, '${j['point']}')),
             ('Ouvert le', '${dateJj(j['creeLe'])} par ${j['ouvertPar'] ?? '—'}'),
             ('Expire le', dateJj(j['expireLe'])),
             ('Réponses reçues', nombre(nb)),
@@ -502,6 +545,12 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
           ]),
         ]),
         pied: (fermer) => [
+              if (j['enLigne'] == true)
+                BoutonSigh(
+                    libelle: 'Imprimer l’affiche (A4)',
+                    icone: LucideIcons.printer,
+                    variante: VarianteBouton.secondaire,
+                    onPressed: () => afficherApercu(ecran, _afficheA4(c, j, lien))),
               BoutonSigh(
                   libelle: 'Ouvrir la page publique',
                   icone: LucideIcons.externalLink,
@@ -532,6 +581,30 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
     final annuler = colJetons(c.magasin).mettreAJour(j['id'], {'revoqueLe': jourIso(c), 'revoquePar': acteur(c).nom});
     ToastsSigh.afficher(ecran, 'Lien révoqué.',
         type: TypeToast.succes, annuler: annuler, messageAnnulation: 'Révocation annulée.');
+  }
+
+  String _libellePoint(ContexteEcran c, String code) {
+    for (final p in pointsCollectePoste(c.magasin, c.aujourdhui)) {
+      if (p.code == code) return p.libelle;
+    }
+    return code;
+  }
+
+  /// L'AFFICHE A4 d'un point de collecte : en-tête officiel de la clinique, invitation, code QR du lien public, adresse en clair. Aucun nom, aucune donnée de santé.
+  PieceA4 _afficheA4(ContexteEcran c, Fiche j, String lien) {
+    final qr = QrImage(QrCode.fromData(data: lien, errorCorrectLevel: QrErrorCorrectLevel.M));
+    final matrice = [
+      for (var r = 0; r < qr.moduleCount; r++) [for (var k = 0; k < qr.moduleCount; k++) qr.isDark(r, k)]
+    ];
+    final point = j['point'] == null ? '' : _libellePoint(c, '${j['point']}');
+    return pieceM9(c,
+        titre: 'Votre avis nous intéresse',
+        sousTitre: point.isEmpty ? null : 'Point de collecte : $point',
+        blocs: [
+          const BlocTexte('Scannez ce code avec votre téléphone et répondez en moins d’une minute. Le questionnaire est anonyme : il ne demande ni votre nom ni votre numéro de dossier, et aucune question ne porte sur votre santé.'),
+          BlocQr(matrice, legende: lien, cote: 300),
+          const BlocTexte('Votre réponse est chiffrée dans votre navigateur avant d’être envoyée : personne d’autre que la clinique ne peut la lire.', italique: true),
+        ]);
   }
 }
 

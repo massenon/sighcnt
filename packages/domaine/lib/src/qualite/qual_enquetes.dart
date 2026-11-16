@@ -74,7 +74,7 @@ Map<String, Object?> qualNormaliserReponses(Object? questions, Map<String, Objec
 /// Une réponse prête à insérer (`enregistrerReponse`), quel que soit le canal. `jetonId` trace le LIEN (pour compter par lien et révoquer) : il
 /// n'identifie pas le répondant.
 QualFiche qualReponse(QualFiche enquete, Map<String, Object?> valeurs,
-        {required DateTime aujourdhui, String? canal, required String saisiPar, Object? jetonId}) =>
+        {required DateTime aujourdhui, String? canal, required String saisiPar, Object? jetonId, String? version, String? point}) =>
     {
       'enqueteId': enquete['id'],
       'date': iso(aujourdhui),
@@ -82,6 +82,9 @@ QualFiche qualReponse(QualFiche enquete, Map<String, Object?> valeurs,
       'reponses': qualNormaliserReponses(enquete['questions'], valeurs),
       'saisiPar': saisiPar,
       'jetonId': jetonId,
+      // Lot SAT : la version du questionnaire sous laquelle la réponse est donnée et le point de collecte (champs nuls non écrits).
+      if (version != null) 'version': version,
+      if (point != null && point.isNotEmpty) 'point': point,
     };
 
 bool _vrai(Object? v) => v != null && v != '' && v != false && v != 0;
@@ -121,7 +124,9 @@ QualFiche qualNouveauJeton(
         required String expireLe,
         String? note,
         required DateTime aujourdhui,
-        required String ouvertPar}) =>
+        required String ouvertPar,
+        String? point,
+        String? version}) =>
     {
       'jeton': jeton,
       'enqueteId': enquete['id'],
@@ -133,6 +138,10 @@ QualFiche qualNouveauJeton(
       'revoqueLe': null,
       'note': (note == null || note.isEmpty) ? null : note,
       'ouvertPar': ouvertPar,
+      // Lot SAT : « En ligne » (adresse publique du relais), point de collecte et version du questionnaire à l'ouverture du lien.
+      if (usage == 'en_ligne') 'enLigne': true,
+      if (point != null && point.isNotEmpty) 'point': point,
+      if (version != null) 'version': version,
     };
 
 /// Le jeton correspondant au code de l'adresse, ou `null`. Un jeton archivé n'est pas écarté ici : c'est `qualJetonOuvert` qui le refuse.
