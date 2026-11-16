@@ -98,11 +98,11 @@ void main() {
     await ouvrirM14(t, magasinM14(), 'cfg-smtp');
     String v(String champ) => t.widget<TextField>(find.descendant(of: find.byKey(Key('kit:champ:$champ')), matching: find.byType(TextField))).controller!.text;
     expect({for (final k in ['serveur', 'port', 'delai', 'identifiant', 'expediteur', 'nom', 'repondreA', 'repondreNom', 'motDePasse']) k: v(k)}, {
-      'serveur': 'mail.sigh.nassieratoo.com',
+      'serveur': 'mail.sighcnt.nassieratoo.com',
       'port': '587',
       'delai': '20',
-      'identifiant': 'contact@sigh.nassieratoo.com',
-      'expediteur': 'contact@sigh.nassieratoo.com',
+      'identifiant': 'admin@sighcnt.nassieratoo.com',
+      'expediteur': 'admin@sighcnt.nassieratoo.com',
       'nom': 'Clinique Nassièra Too',
       'repondreA': 'cliniquenassiera@gmail.com',
       'repondreNom': 'Clinique Nassièra Too',

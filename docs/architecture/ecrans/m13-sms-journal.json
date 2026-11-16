@@ -1,0 +1,48 @@
+{
+ "id": "m13-sms-journal",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Journal des envois SMS",
+ "acces": "ouvert",
+ "titre": "Journal des envois SMS",
+ "description": "Les envois de la passerelle SMS : motif, statut, refus nommé, numéro masqué et identifiant chez le fournisseur.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Journal des envois SMS"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les envois",
+  "Archivés"
+ ],
+ "kpis": [
+  "Envois journalisés",
+  "Acceptés",
+  "Refusés",
+  "Reportés"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Aujourd’hui",
+  "Sept derniers jours",
+  "Toute la période",
+  "Tous les envois0",
+  "Archivés0",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

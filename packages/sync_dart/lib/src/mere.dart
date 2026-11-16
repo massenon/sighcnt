@@ -11,6 +11,7 @@ import 'dart:math';
 
 import 'package:sigh_domaine/sigh_domaine.dart'
     show
+        MatriceDroits,
         Parametres,
         RefusMobile,
         cfbEssentielles,
@@ -27,6 +28,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         mobRefusFonctionPiece,
         parCollectionParametres,
         parCollectionUsages,
+        smsGesteRegler,
         valCollectionValidations;
 
 import 'commun.dart';
@@ -34,6 +36,7 @@ import 'depot.dart';
 import 'pont.dart';
 import 'fichiers_mere.dart';
 import 'horssite_mere.dart';
+import 'sms_mere.dart';
 import 'sauvegarde_horssite.dart' show ErreurSauvegarde;
 import 'pont_pair.dart';
 import 'stockage_fichiers.dart';
@@ -267,6 +270,9 @@ class Mere {
   /// Lot 5 (ADR-0007) : la copie hors site (relais web ou dossier distant), désactivée par défaut ; planificateur, journal technique, alertes, restauration.
   late final HorsSiteMere horsSite;
 
+  /// Lot SMS-R (ADR-0008) : les envois automatiques de SMS calculés à la mère et déposés au relais.
+  late final SmsMere sms;
+
   static Future<Mere> creer(ConfigMere cfg) async {
     final base = await Depot.ouvrir(cfg.dbChemin, cfg.cleStockage);
     await base.initialiser(_ddl);
@@ -281,6 +287,14 @@ class Mere {
     if (await base.meta('next_patient') == null) await base.poserMeta('next_patient', 1000);
     if (await base.meta('reinit_ouverte') == null) await base.poserMeta('reinit_ouverte', 0);
     final m = Mere._(cfg, base);
+    m.sms = SmsMere(
+        base: base,
+        verrou: m.verrou,
+        cle: () => base64.decode(m.pont.cleBase64),
+        relais: cfg.relais,
+        secretRelais: cfg.secretRelais,
+        evenement: m.evenementAsync);
+    await m.sms.initialiser();
     if (cfg.dossierFichiers.isNotEmpty) {
       m.stockageFichiers = StockageFichiers(cfg.dossierFichiers, cle: cfg.cleStockage.isEmpty ? null : [for (var i = 0; i + 1 < cfg.cleStockage.length; i += 2) int.parse(cfg.cleStockage.substring(i, i + 2), radix: 16)]);
       m.fichiersMere = FichiersMere(m, m.stockageFichiers!);
@@ -318,6 +332,7 @@ class Mere {
     final r = await base.select(
         'INSERT INTO operations(id,appareil,epoch,hlc,collection,fiche,type,champs,famille) VALUES(?,?,?,?,?,?,?,?,?) RETURNING seq',
         [op['id'], appareil, await base.metaInt('epoch'), op['hlc'] ?? 0, op['collection'], op['fiche'], op['type'], enJson(champs), familles[op['collection']]]);
+    if (collectionsSmsSurveillees.contains(op['collection'])) sms.signaler();
     return r.first['seq'] as int;
   }
 
@@ -895,6 +910,45 @@ class Mere {
     throw Err(404, 'route_inconnue', 'Route inconnue.');
   }
 
+  MatriceDroits? _matriceSms;
+
+  /// Le geste réservé `regler_passerelle_sms` (fiche RBAC, défaut administrateur et DAF) : contrôlé ICI à chaque geste d'écriture de la passerelle, sur le rôle déclaré par le poste
+  /// (`x-sigh-role`). Sans rôle, sans matrice lisible ou sans le droit : refus nommé (403), jamais un accès par défaut.
+  void exigerGesteSms([String? role]) {
+    if (role == null || role.isEmpty) throw Err(403, 'ROLE_REQUIS', 'le rôle de l\'agent n\'est pas déclaré', {'geste': 'Mettre le poste à jour.'});
+    final MatriceDroits m;
+    try {
+      m = _matriceSms ??= chargerMatriceRbac(cfg.matriceChemin);
+    } on ErreurFichier catch (e) {
+      throw Err(503, e.refus.code, e.refus.motif, {'geste': e.refus.geste});
+    }
+    if (!m.droitGeste(role, smsGesteRegler)) {
+      throw Err(403, 'GESTE_RESERVE', 'le réglage de la passerelle SMS est un droit réservé de la fiche RBAC', {'geste': 'Demander à l\'administrateur ou à la Directrice Administrative.'});
+    }
+  }
+
+  /// Lot SMS-R : les routes d'administration des envois automatiques de SMS, HORS verrou (réseau). Réservées à la mère de cette machine (secret d'administration).
+  Future<Object?> routeSms(String cle, HttpRequest req, Map<String, Object?> b, Map<String, String> q) async {
+    adminOk(req);
+    try {
+      switch (cle) {
+        case 'GET /admin/sms/etat':
+          return await sms.etat();
+        case 'POST /admin/sms/passe':
+          exigerGesteSms(req.headers.value('x-sigh-role'));
+          return await sms.passe(manuel: true);
+        case 'POST /admin/sms/tester':
+          exigerGesteSms(req.headers.value('x-sigh-role'));
+          return await sms.tester('${b['numero'] ?? ''}');
+        case 'GET /admin/sms/journal':
+          return {'messages': await sms.journal()};
+      }
+    } on ErreurSms catch (e) {
+      throw Err(e.statut, e.code, e.motif, {'geste': e.geste});
+    }
+    throw Err(404, 'route_inconnue', 'Route inconnue.');
+  }
+
   /// Sauvegarde chiffrée (AES-256-GCM, clé de clinique) : le fichier en clair n'existe que le temps de l'écriture.
   /// Conserve les `conservation` dernières ; rend le chemin du fichier chiffré. Appelée sous le verrou.
   Future<String> sauvegarderChiffre({String prefixe = 'quotidienne'}) async {
@@ -930,6 +984,7 @@ class Mere {
     _serveur = await HttpServer.bind(InternetAddress.loopbackIPv4, cfg.port);
     pont.demarrer();
     horsSite.demarrer();
+    sms.demarrer();
     // Sauvegarde quotidienne : toutes les 5 minutes on regarde si l'heure est venue et si la dernière a plus de 20 h.
     _sauvegardeur = Timer.periodic(const Duration(minutes: 5), (_) async {
       try {
@@ -962,7 +1017,9 @@ class Mere {
             ? await codeMobile(req, b)
             : req.uri.path.startsWith('/admin/horssite/')
                 ? await routeHorsSite(cle, req, b, q) // réseau et disque : jamais sous le verrou de la base
-                : await verrou.executer(() => route(cle, req, b, q));
+                : req.uri.path.startsWith('/admin/sms/')
+                    ? await routeSms(cle, req, b, q) // réseau : jamais sous le verrou de la base
+                    : await verrou.executer(() => route(cle, req, b, q));
       } on Err catch (e) {
         statut = e.statut;
         out = e.corps;
@@ -980,6 +1037,7 @@ class Mere {
 
   Future<void> arreter() async {
     horsSite.arreter();
+    sms.arreter();
     _sauvegardeur?.cancel();
     await _serveur?.close(force: true);
     await base.fermer();

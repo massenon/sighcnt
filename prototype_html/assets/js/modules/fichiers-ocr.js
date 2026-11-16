@@ -85,7 +85,7 @@
 
   /* ==========================================================================
    * 2. RÉGLAGE : activer ou non, moteur choisi, langue, délai ; en base ; administrateur et DAF ; DÉSACTIVÉ par défaut (à valider)
-   * Lot C : c'est un réglage de CLINIQUE (la maquette n'a qu'une clinique, donc un seul exemplaire, en base du serveur) ; à la cible il est posé à la poste mère, versionné par date, et reçu des
+   * Lot C : c'est un réglage de CLINIQUE (la maquette n'a qu'une clinique, donc un seul exemplaire, en base du serveur) ; à la cible il est posé à le poste mère, versionné par date, et reçu des
    * fileuls ; chaque poste ne garde en propre que ce qu'il a d'INSTALLÉ (le moteur disponible ou non). Il ne va jamais vers un téléphone.
    * ======================================================================== */
   function reglage() {

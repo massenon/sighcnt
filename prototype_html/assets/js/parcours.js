@@ -6341,6 +6341,114 @@
     }).then(function (x) { _smsAutoEnVol = false; return x; }, function (e) { _smsAutoEnVol = false; console.error('[SIGH] déclencheurs SMS :', e); return null; });
   }
 
+  /* ==========================================================================
+   * ENVOIS AUTOMATIQUES PLANIFIÉS (lot SMS-R, 16/11/2026) : le CALCUL que la mère fait avant de déposer au relais (ADR-0008). La maquette n'a pas de relais : elle porte la règle,
+   * pour que les vecteurs du domaine Dart (`build/vecteurs-sms-auto.js`) soient tirés d'ici. Aucune valeur n'est écrite dans le moteur : le réglage est un ARGUMENT.
+   * ------------------------------------------------------------------------
+   * Consentement du PERSONNEL : DÉCOCHÉ par défaut (Direction) ; celui du patient reste activé par défaut. Un modèle n'a que {{nom}} {{date}} {{heure}} {{clinique}} {{telephone}}.
+   * ======================================================================== */
+  var SMS_VARIABLES = ['nom', 'date', 'heure', 'clinique', 'telephone'];
+  var SMS_MOTS_MEDICAUX = ['diagnostic', 'pathologie', 'maladie', 'seropositif', 'seropositive', 'positif', 'positive', 'negatif', 'negative', 'grossesse', 'enceinte', 'paludisme', 'palu', 'vih', 'sida', 'diabete', 'cancer', 'tuberculose', 'hepatite'];
+  function smsSansAccent(t) { return String(t).toLowerCase().replace(/[àâä]/g, 'a').replace(/[éèêë]/g, 'e').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ùûü]/g, 'u').replace(/ç/g, 'c'); }
+  function smsMotMedical(texte) {
+    var t = smsSansAccent(texte);
+    for (var i = 0; i < SMS_MOTS_MEDICAUX.length; i++) { if (new RegExp('(?<![a-z])' + SMS_MOTS_MEDICAUX[i] + '(?![a-z])').test(t)) return SMS_MOTS_MEDICAUX[i]; }
+    return null;
+  }
+  function smsVerifierModele(modele) {
+    if (!String(modele || '').trim()) return { code: 'MODELE_VIDE' };
+    var re = /\{\{\s*([^}]*?)\s*\}\}/g, m;
+    while ((m = re.exec(modele)) !== null) { if (SMS_VARIABLES.indexOf(m[1]) < 0) return { code: 'VARIABLE_INCONNUE', variable: m[1] }; }
+    var mot = smsMotMedical(modele);
+    return mot ? { code: 'MOT_MEDICAL', mot: mot } : null;
+  }
+  function smsComposerAuto(modele, valeurs) {
+    return String(modele).replace(/\{\{\s*([^}]*?)\s*\}\}/g, function (x, v) { return SMS_VARIABLES.indexOf(v) >= 0 ? (valeurs[v] || '') : ''; });
+  }
+  function tracerConsentementSmsPersonnel(v, record) {
+    var avant = record ? record.consentementSms === true : null;
+    var voulu = v.consentementSms === true;
+    v.consentementSms = voulu;
+    if (avant === null || avant !== voulu || !v.consentementSmsLe) {
+      var s = S.session() || {};
+      v.consentementSmsLe = new Date().toISOString();
+      v.consentementSmsPar = s.nomComplet || s.nom || s.identifiant || 'inconnu';
+    }
+    return v;
+  }
+  function planifierSmsAuto(o) {
+    var p2 = function (n) { return String(n).length < 2 ? '0' + n : String(n); };
+    var jourDe = function (d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); };
+    var lire = function (v) {
+      var m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/.exec(String(v == null ? '' : v));
+      return m ? new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)) : null;
+    };
+    var iso = function (d) { return jourDe(d) + 'T' + p2(d.getHours()) + ':' + p2(d.getMinutes()); };
+    var fr = function (d) { return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear(); };
+    var r = o.reglage, maintenant = lire(o.maintenant);
+    var envois = [], ecartes = [];
+    var decedes = {}; (o.deces || []).forEach(function (d) { decedes[d.patientId || ''] = true; });
+    var patients = {}; (o.patients || []).forEach(function (x) { patients[x.id] = x; });
+    var apresCalmes = function (t) {
+      if (r.calmeDebut === r.calmeFin) return t;
+      var h = t.getHours(), dedans = r.calmeDebut < r.calmeFin ? (h >= r.calmeDebut && h < r.calmeFin) : (h >= r.calmeDebut || h < r.calmeFin);
+      if (!dedans) return t;
+      var j = (r.calmeDebut > r.calmeFin && h >= r.calmeDebut) ? new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1) : new Date(t.getFullYear(), t.getMonth(), t.getDate());
+      return new Date(j.getFullYear(), j.getMonth(), j.getDate(), r.calmeFin);
+    };
+    var ajouter = function (cle, type, tel, texte, heure) {
+      var numero = numeroSms(tel);
+      if (!numero || !/^\+[1-9][0-9]{7,14}$/.test(numero)) { ecartes.push({ cle: cle, raison: 'NUMERO_INVALIDE' }); return; }
+      if (smsMotMedical(texte)) { ecartes.push({ cle: cle, raison: 'MOT_MEDICAL' }); return; }
+      if (!texte.trim() || Array.from(texte).length > 320) { ecartes.push({ cle: cle, raison: 'TEXTE_INVALIDE' }); return; }
+      var h = apresCalmes(heure);
+      if (h.getTime() < maintenant.getTime() - r.toleranceMinutes * 60000) { ecartes.push({ cle: cle, raison: 'HEURE_PASSEE' }); return; }
+      envois.push({ cle: cle, type: type, numero: numero, texte: texte, heureEnvoi: iso(h) });
+    };
+    var anniv = function (n, annee) {
+      if (n.getMonth() === 1 && n.getDate() === 29) { var bis = (annee % 4 === 0 && annee % 100 !== 0) || annee % 400 === 0; return new Date(annee, 1, bis ? 29 : 28); }
+      return new Date(annee, n.getMonth(), n.getDate());
+    };
+    var auj = new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate());
+    for (var k = 0; k <= r.horizonJours; k++) {
+      var jourEnvoi = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() + k);
+      var jourRdv = new Date(jourEnvoi.getFullYear(), jourEnvoi.getMonth(), jourEnvoi.getDate() + r.rappelJoursAvant);
+      (o.consultations || []).forEach(function (c) {
+        var quand = lire(c.date); if (!quand || jourDe(quand) !== jourDe(jourRdv)) return;
+        var cle = 'rappel_rdv:' + c.id + ':' + jourDe(quand);
+        if (c.statut !== 'planifiee' || c.nonPatient === true || !c.patientId) return;
+        var p = patients[c.patientId];
+        if (!p) { ecartes.push({ cle: cle, raison: 'PATIENT_INCONNU' }); return; }
+        if (p.consentementSms === false) { ecartes.push({ cle: cle, raison: 'CONSENTEMENT_RETIRE' }); return; }
+        var texte = smsComposerAuto(r.modeleRappel, { nom: String(p.prenom || '').trim(), date: fr(quand), heure: p2(quand.getHours()) + 'h' + p2(quand.getMinutes()), clinique: o.clinique, telephone: o.telephone });
+        ajouter(cle, 'rappel_rdv', p.telephone, texte, new Date(jourEnvoi.getFullYear(), jourEnvoi.getMonth(), jourEnvoi.getDate(), r.rappelHeure));
+      });
+      (o.patients || []).forEach(function (p) {
+        var n = lire(p.dateNaissance); if (!n) return;
+        var f = anniv(n, jourEnvoi.getFullYear()); if (jourDe(f) !== jourDe(jourEnvoi)) return;
+        var cle = 'anniversaire_patient:' + p.id + ':' + jourEnvoi.getFullYear();
+        if (decedes[p.id]) { ecartes.push({ cle: cle, raison: 'PATIENT_DECEDE' }); return; }
+        if (p.consentementSms === false) { ecartes.push({ cle: cle, raison: 'CONSENTEMENT_RETIRE' }); return; }
+        var texte = smsComposerAuto(r.modeleAnniversairePatient, { nom: String(p.prenom || '').trim(), date: fr(jourEnvoi), heure: '', clinique: o.clinique, telephone: o.telephone });
+        ajouter(cle, 'anniversaire_patient', p.telephone, texte, new Date(jourEnvoi.getFullYear(), jourEnvoi.getMonth(), jourEnvoi.getDate(), r.anniversaireHeure));
+      });
+      (o.employes || []).forEach(function (e) {
+        var n = lire(e.dateNaissance); if (!n) return;
+        var f = anniv(n, jourEnvoi.getFullYear()); if (jourDe(f) !== jourDe(jourEnvoi)) return;
+        var cle = 'anniversaire_personnel:' + e.id + ':' + jourEnvoi.getFullYear();
+        if (e.consentementSms !== true) { ecartes.push({ cle: cle, raison: 'CONSENTEMENT_ABSENT' }); return; }
+        var texte = smsComposerAuto(r.modeleAnniversairePersonnel, { nom: String(e.prenom || '').trim(), date: fr(jourEnvoi), heure: '', clinique: o.clinique, telephone: o.telephone });
+        ajouter(cle, 'anniversaire_personnel', e.telephone, texte, new Date(jourEnvoi.getFullYear(), jourEnvoi.getMonth(), jourEnvoi.getDate(), r.anniversaireHeure));
+      });
+    }
+    envois.sort(function (a, b) { return a.heureEnvoi < b.heureEnvoi ? -1 : a.heureEnvoi > b.heureEnvoi ? 1 : (a.cle < b.cle ? -1 : 1); });
+    return { envois: envois, ecartes: ecartes };
+  }
+  global.SIGH.parcours.planifierSmsAuto = planifierSmsAuto;
+  global.SIGH.parcours.smsVerifierModele = smsVerifierModele;
+  global.SIGH.parcours.smsComposerAuto = smsComposerAuto;
+  global.SIGH.parcours.tracerConsentementSmsPersonnel = tracerConsentementSmsPersonnel;
+
   global.SIGH.parcours.envoyerSms = envoyerSms;
   global.SIGH.parcours.relancerSmsFile = relancerSmsFile;
   global.SIGH.parcours.rappelsRdvSms = rappelsRdvSms;

@@ -60,7 +60,8 @@ void main() {
   // `gen-poste-jeu.js` (`JEUX_IMPORT_NON_PORTES`) et de `parite-statuts.json`.
   const impNonPortes = <String>{
   };
-  const nonPortesNommes = {'m13-sms-journal', 'cfg-sms', ...impNonPortes};
+  // Lots FISC-2 et SMS-R (16/11/2026) : les quatre derniers écrans non portés (calendrier fiscal, barème de l'AIB, journal et passerelle SMS) sont PORTÉS ; plus aucune fermeture du jeu livré.
+  const nonPortesNommes = <String>{...impNonPortes};
 
   // Les droits EN FORCE au poste : la matrice engendrée superposée aux fiches `rbac` et `modulesActifs` du jeu livré (la coque fait ce calcul à chaque écriture).
   final magasinDuJeu = Magasin.depuisDossier(['rbac', 'modulesActifs']);

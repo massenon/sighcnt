@@ -228,6 +228,10 @@
        réglage réservé à l'administrateur et à la DAF a son DROIT PROPRE ; d'origine l'administrateur et la Directrice Administrative, PROPOSITION À VALIDER. Il ne donne aucun écran. */
     { id: 'regler_parametres_clinique', libelle: 'Régler les paramètres de clinique (préavis de péremption, tranches de la balance âgée)', module: 'CFG', ecran: 'cfg-regles',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot SMS-R (16/11/2026) : régler la passerelle SMS (activer les envois automatiques, calculer et déposer maintenant au relais, tester l'envoi). Droit réservé de la fiche RBAC, défaut
+       administrateur et Directrice Administrative (Direction, AQ 27 et 28). Aucun nom de rôle dans un moteur : le poste mère contrôle ce droit à chaque geste. */
+    { id: 'regler_passerelle_sms', libelle: 'Régler la passerelle SMS (activer les envois automatiques, calculer et déposer maintenant, tester l’envoi)', module: 'CFG', ecran: 'cfg-sms',
+      rolesDefaut: ['admin', 'da'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

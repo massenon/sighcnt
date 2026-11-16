@@ -20,7 +20,7 @@
     <p class="note">Cet export contient les enveloppes du journal, les appareils, les réglages et l’audit. Il <strong>n’embarque PAS les blocs des copies hors site</strong> (ni les tables qui les décrivent, inutiles sans eux) : ils sont déjà des copies, chiffrées, sur le disque du relais (<code>storage/app/sauvegardes</code>).</p>
     <div class="carte" id="hors-site">
         <h2>Sauvegardes hors site</h2>
-        <p>Copies chiffrées de la base de la mère et des fichiers numérisés, déposées par la poste mère en blocs opaques. Le relais ne voit que des identifiants, des tailles, des dates et des compteurs : jamais un contenu, jamais la clé de la clinique.</p>
+        <p>Copies chiffrées de la base de la mère et des fichiers numérisés, déposées par le poste mère en blocs opaques. Le relais ne voit que des identifiants, des tailles, des dates et des compteurs : jamais un contenu, jamais la clé de la clinique.</p>
         <div class="grille">
             <div class="carte"><h2>Espace utilisé</h2><div class="valeur">{{ \App\Relais\Format::taille($horsSite['utilise']) }}</div><p>sur {{ \App\Relais\Format::taille($horsSite['quota']) }} ({{ $horsSite['pct'] === null ? 'n/d' : number_format($horsSite['pct'], 1, ',', ' ').' %' }})</p><span class="puce {{ ($horsSite['pct'] ?? 0) >= 90 ? 'alerte' : (($horsSite['pct'] ?? 0) >= 75 ? 'attention' : 'ok') }}">{{ ($horsSite['pct'] ?? 0) >= 90 ? 'ESPACE FAIBLE' : (($horsSite['pct'] ?? 0) >= 75 ? 'À SURVEILLER' : 'OK') }}</span></div>
             <div class="carte"><h2>Libérable sans toucher une copie courante</h2><div class="valeur">{{ \App\Relais\Format::taille($horsSite['liberable']) }}</div><p>{{ $horsSite['nb_blocs'] }} bloc(s) au total</p></div>

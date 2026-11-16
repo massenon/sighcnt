@@ -10,6 +10,9 @@ import 'm10_aide.dart';
 
 /// M10 — RH (premier lot) : les écrans rejouent les vecteurs `rh.json`, tirés des écrans RÉELS de la maquette (Chrome, horloge 30/10/2026 10 h, jeu du
 /// poste) : indicateurs, ordre des lignes, saisies (création, refus nommé, modification), archivage, droits, impressions.
+/// Lot SMS-R : la fiche du personnel porte le consentement SMS (décoché par défaut, daté, signé) ; les vecteurs `rh.json` sont d'avant : ces trois champs sont vérifiés à part (`cfg_sms_test.dart`, `sms_auto_test.dart`).
+const consentementSms = {'consentementSms', 'consentementSmsLe', 'consentementSmsPar'};
+
 void main() {
   setUpAll(chargerPolices);
   setUp(() => ImpressionPoste.enregistrer = (pdf, nom) async => '/faux/$nom.pdf');
@@ -51,7 +54,7 @@ void main() {
       await t.tap(find.widgetWithText(BoutonSigh, 'Créer'));
       await t.pump(const Duration(milliseconds: 400));
       expect(col.toutes.length, n0 + 1);
-      fichesEgales(col.toutes.first, obj(obj(p['creation'])['creee'])['fiche'] as M);
+      fichesEgales(col.toutes.first, obj(obj(p['creation'])['creee'])['fiche'] as M, ignores: consentementSms);
       expect(find.text('Nouveau agent créé.'), findsWidgets, reason: 'le message de la maquette');
       kpisIdentiques(t, obj(obj(p['creation'])['apres'])['kpis']);
       await t.pump(const Duration(seconds: 10));
@@ -76,7 +79,7 @@ void main() {
       await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
       await t.pump(const Duration(milliseconds: 400));
       final f = col.toutes.firstWhere((x) => x['matricule'] == '99');
-      fichesEgales(f, obj(obj(obj(p['modification'])['enregistre'])['fiche']));
+      fichesEgales(f, obj(obj(obj(p['modification'])['enregistre'])['fiche']), ignores: consentementSms);
       expect(f['nomComplet'], 'AGBO Rosine-Marie');
       await archiverLigne(t, 'Départ');
       expect(col.toutes.firstWhere((x) => x['matricule'] == '99')['statut'], 'archive');

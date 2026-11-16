@@ -432,8 +432,8 @@ void main() {
     // Lot IMP-C : les pages de jeux d'import que le poste ne porte pas encore sont fermées de la même façon (liste NOMMÉE : porter un jeu retire sa page d'ici).
     const impNonPortes = <String>{
     };
-    // Lot FISC-2 (16/11/2026) : le calendrier fiscal mensuel et le barème de l'AIB sont PORTÉS au poste ; restent fermés les deux écrans SMS (lot SMS-R).
-    const quatre = {'m13-sms-journal', 'cfg-sms', ...impNonPortes};
+    // Lots FISC-2 et SMS-R (16/11/2026) : les quatre écrans d'abord fermés sont PORTÉS au poste ; plus aucune fermeture du jeu livré.
+    const quatre = <String>{...impNonPortes};
     MatriceDroits chaud({List<Fiche>? modules, List<Fiche>? reference}) => superposerDroits(base, manifeste,
         rbac: jeuRbac, modulesActifs: modules ?? [...jeuModules, ...fermeturesPoste], referenceRbac: jeuRbac, referenceModules: reference ?? jeuModules);
     String cases(MatriceDroits m, String role) {

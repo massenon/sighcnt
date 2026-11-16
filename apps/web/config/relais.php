@@ -16,6 +16,21 @@ return [
     // Lot 5 (ADR-0007) : le dossier des blocs opaques de la sauvegarde hors site (sur disque, jamais en base). Les limites (quota, etc.) sont EN BASE, réglables au panneau.
     'sauvegardes_dir' => env('RELAIS_SAUVEGARDES_DIR', storage_path('app/sauvegardes')),
 
+    /*
+    | Lot SMS-R (ADR-0008) : la passerelle SMS. Les IDENTIFIANTS du fournisseur ne vivent que dans le .env (RELAIS_SMS_*), jamais en base, jamais dans le dépôt, jamais rendus par une route ou par le panneau
+    | (qui dit seulement « défini » ou « non défini »). Les limites (plafond du jour, tentatives, péremption, conservation) sont EN BASE (relais_meta, clés reglage.sms.*), réglables au panneau.
+    */
+    'sms' => [
+        'fournisseur' => env('RELAIS_SMS_FOURNISSEUR', 'twilio'),
+        'expediteur' => env('RELAIS_SMS_EXPEDITEUR', ''),
+        'twilio_sid' => env('RELAIS_SMS_TWILIO_SID', ''),
+        'twilio_token' => env('RELAIS_SMS_TWILIO_TOKEN', ''),
+        'vonage_key' => env('RELAIS_SMS_VONAGE_KEY', ''),
+        'vonage_secret' => env('RELAIS_SMS_VONAGE_SECRET', ''),
+        // Jour du plafond : l'heure du Bénin.
+        'fuseau' => env('RELAIS_SMS_FUSEAU', 'Africa/Porto-Novo'),
+    ],
+
     // Conservation du journal d'audit (jours). Les enveloppes ne sont JAMAIS purgées par le relais.
     'retention_audit_jours' => (int) env('RELAIS_RETENTION_AUDIT_JOURS', 365),
 

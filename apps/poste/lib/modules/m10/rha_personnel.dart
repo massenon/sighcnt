@@ -76,6 +76,13 @@ class EcranPersonnel extends StatelessWidget with EcranMaquette {
         const ChampDef(nom: 'prenom', libelle: 'Prénom(s)', requis: true),
         const ChampDef(nom: 'sexe', libelle: 'Sexe', type: TypeChamp.select, requis: true, options: [OptionChamp('M', 'Masculin'), OptionChamp('F', 'Féminin')]),
         const ChampDef(nom: 'telephone', libelle: 'Téléphone', type: TypeChamp.tel),
+        const ChampDef(nom: 'dateNaissance', libelle: 'Date de naissance', type: TypeChamp.date, aide: 'Sert aux vœux d’anniversaire par SMS, seulement si l’agent y consent.'),
+        const ChampDef(
+            nom: 'consentementSms',
+            libelle: 'Accepte de recevoir les vœux d’anniversaire par SMS',
+            type: TypeChamp.case_,
+            col: ColChamp.plein,
+            aide: 'Décoché par défaut. L’agent peut le retirer à tout moment ; la date et l’auteur du changement sont journalisés.'),
         ChampDef(nom: 'situation', libelle: 'Situation matrimoniale', type: TypeChamp.select, options: rhaOptions(rhaSituations)),
         const ChampDef.section('Affectation'),
         ChampDef(nom: 'fonction', libelle: 'Fonction', type: TypeChamp.select, requis: true, options: rhaOptionsFonctions()),
@@ -87,8 +94,10 @@ class EcranPersonnel extends StatelessWidget with EcranMaquette {
         const ChampDef(nom: 'salaireBase', libelle: 'Salaire de base (FCFA)', type: TypeChamp.nombre, requis: true),
         const ChampDef(nom: 'cnss', libelle: 'Numéro CNSS'),
       ],
-      valeursInitiales: () => {'dateEmbauche': iso(c.aujourdhui), 'salaireBase': '60000', 'categorie': 'E1-1', 'sexe': 'F'},
-      transformer: (ctx, v) => rhaAgentEnregistrable({...v, 'salaireBase': rhaNum(v['salaireBase'])}),
+      valeursInitiales: () => {'dateEmbauche': iso(c.aujourdhui), 'salaireBase': '60000', 'categorie': 'E1-1', 'sexe': 'F', 'consentementSms': false},
+      transformer: (ctx, v) => smsTracerConsentement(rhaAgentEnregistrable({...v, 'salaireBase': rhaNum(v['salaireBase'])}), null, defautActif: false, maintenant: c.aujourdhui, par: acteur(c).nom),
+      // La modification garde la date et l'auteur du consentement tant que la case ne change pas (RG-12).
+      transformerExistante: (ctx, v, e) => smsTracerConsentement(rhaAgentEnregistrable({...v, 'salaireBase': rhaNum(v['salaireBase'])}), e, defautActif: false, maintenant: c.aujourdhui, par: acteur(c).nom),
       filtres: [
         FiltreTableau(nom: 'fonction', libelle: 'Fonction', options: rhaOptionsFonctions()),
         FiltreTableau(nom: 'service', libelle: 'Service', options: rhaOptions(rhaServices)),

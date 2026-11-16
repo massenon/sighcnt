@@ -164,10 +164,12 @@
      personne physique 3 %, personne morale 5 % ; absente = situation de l'acheteur), `baremeAib` leurs deux versions datées, la collection `imputationsAib` (imputation de l'AIB opération par
      opération, laissée au comptable) et deux gestes réservés (`confirmer_obligation_fiscale`, `imputer_aib`) entrent au manifeste ; une obligation fiscale confirmée porte `confirmeeLe`,
      `confirmeePar`, `confirmationReference`. Sans incrément, un poste n'aurait pas le second barème et la caisse ne saurait pas qu'une facture de patient ne porte aucun AIB.
-          93 (16/11/2026, lot IDENT) : l'identité légale est semée en DEUX versions datées (la 1, RCCM d'origine, close au 15/11/2026 ; la 2, RCCM à jour, depuis
+     93 (16/11/2026, lot IDENT) : l'identité légale est semée en DEUX versions datées (la 1, RCCM d'origine, close au 15/11/2026 ; la 2, RCCM à jour, depuis
      le 16/11/2026), et `demandesIdentite` (dépôts d'un fileul habilité, appliqués par la mère) entre au socle.
+     94 (16/11/2026, lot SMS-R) : geste réservé `regler_passerelle_sms` (fiches RBAC semées : défaut administrateur et DAF) ; la fiche du personnel porte `dateNaissance`
+     et `consentementSms` (décoché par défaut). Les fiches RBAC étant semées, la version monte.
   */
-  var VERSION = 93;
+  var VERSION = 94;
   var db = null;
   var listeners = {};
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
+import '../cfg/cfg_sms.dart';
 import 'adm_registres.dart';
 import 'adm_vues.dart';
 import 'qual_enquetes.dart';
@@ -14,6 +15,7 @@ typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste con
 /// `registre.dart` ; on y ajoute une ligne par écran porté.
 final Map<String, ConstruireEcran> ecransM13 = {
   'm13-courriers': (c, cfg) => const EcranCourriers(),
+  'm13-sms-journal': (c, cfg) => const EcranJournalSms(),
   'm13-reunions': (c, cfg) => const EcranReunions(),
   'm13-evenements': (c, cfg) => const EcranEvenements(),
   'm13-plan-annuel': (c, cfg) => const EcranPlanAnnuel(),

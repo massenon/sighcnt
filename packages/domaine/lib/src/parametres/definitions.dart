@@ -19,12 +19,14 @@ import '../fichiers/ocr.dart' show ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrC
 import '../sauvegarde/sauvegarde_horssite.dart';
 import '../tableaux/sortie_tableau.dart' show tabCleLimiteLignes, tabLimiteDefaut;
 import '../caisse/prix_manquant.dart' show cleEncaissementPartielSansPrix;
+import '../sms/sms_definitions.dart';
 import 'parametres.dart';
 import 'parametres_clinique.dart' show pcDefinitions;
 
 const String _decisions = 'Décision de la Direction du 09/11/2026 (DECISIONS-A-VALIDER, section D)';
 
-const List<DefinitionParametre> definitionsParametres = [
+final List<DefinitionParametre> definitionsParametres = [
+  ...definitionsSms,
   DefinitionParametre(
     cle: 'mecef.mode',
     famille: 'mecef',
@@ -165,7 +167,7 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot U (plan du site réglable)',
   ),
-  // Lot C : la lecture des scans (OCR) est un réglage de CLINIQUE posé à la poste mère, versionné par date, reçu des fileuls, JAMAIS envoyé à un téléphone (`mobile: false`, famille réservée).
+  // Lot C : la lecture des scans (OCR) est un réglage de CLINIQUE posé à le poste mère, versionné par date, reçu des fileuls, JAMAIS envoyé à un téléphone (`mobile: false`, famille réservée).
   // Il se règle à l'écran « Lecture des scans (OCR) » (droit, motif, refus nommés), pas au panneau générique.
   DefinitionParametre(
     cle: ocrCleActif,
@@ -173,7 +175,7 @@ const List<DefinitionParametre> definitionsParametres = [
     type: TypeParametre.booleen,
     defaut: false,
     libelle: 'Lecture automatique des scans (OCR)',
-    aide: 'Désactivée par défaut : l\'administrateur ou la Directrice Administrative l\'active à la main, une fois un moteur installé. Réglage de la clinique, posé à la poste mère.',
+    aide: 'Désactivée par défaut : l\'administrateur ou la Directrice Administrative l\'active à la main, une fois un moteur installé. Réglage de la clinique, posé à le poste mère.',
     source: 'Décision de la Direction du 13/11/2026 (DECISIONS-A-VALIDER, sections T et V) : désactivée par défaut, activée à la main',
     branche: true,
     appliquePar: 'Lot C (réglage OCR de clinique)',
@@ -211,7 +213,7 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot C (réglage OCR de clinique)',
   ),
-  // Lot 5 (ADR-0007) : la sauvegarde hors site (relais web ou dossier distant) est un réglage de CLINIQUE posé à la poste mère, versionné par date, reçu des fileuls, JAMAIS envoyé à un téléphone
+  // Lot 5 (ADR-0007) : la sauvegarde hors site (relais web ou dossier distant) est un réglage de CLINIQUE posé à le poste mère, versionné par date, reçu des fileuls, JAMAIS envoyé à un téléphone
   // (`mobile: false`, famille réservée). Désactivée par défaut ; elle se règle à l'écran « Sauvegarde hors site » (droit, motif, refus nommés), pas au panneau générique.
   DefinitionParametre(
     cle: shCleActif,
@@ -219,7 +221,7 @@ const List<DefinitionParametre> definitionsParametres = [
     type: TypeParametre.booleen,
     defaut: false,
     libelle: 'Copie hors site active',
-    aide: 'Désactivée par défaut : l\'administrateur ou la Directrice Administrative l\'active à la main, une fois une destination choisie. Réglage de la clinique, posé à la poste mère.',
+    aide: 'Désactivée par défaut : l\'administrateur ou la Directrice Administrative l\'active à la main, une fois une destination choisie. Réglage de la clinique, posé à le poste mère.',
     source: 'Décision de la Direction du 14/11/2026 (DECISIONS-A-VALIDER, sections V et Z) : lot 5, ADR-0007',
     branche: true,
     appliquePar: 'Lot 5 (sauvegarde hors site)',
@@ -338,7 +340,7 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot 5 (sauvegarde hors site)',
   ),
-  // Lot CLO (14/11/2026, PRD M12 clôture annuelle, réponses de la Direction du 11/11/2026 Q1 et Q2) : le CIRCUIT de la clôture annuelle est un réglage de BRANCHE posé à la poste mère, versionné par
+  // Lot CLO (14/11/2026, PRD M12 clôture annuelle, réponses de la Direction du 11/11/2026 Q1 et Q2) : le CIRCUIT de la clôture annuelle est un réglage de BRANCHE posé à le poste mère, versionné par
   // date, reçu des fileuls, JAMAIS envoyé à un téléphone (`mobile: false`, RG-13). Chaque liste est un texte d'identifiants de rôle séparés par des virgules ; les défauts SEMÉS sont ceux de
   // la maquette (`D.REGLAGES_CLOTURE_SEMENCE`) : aucun nom de rôle n'est lu ailleurs que dans ce registre. Le droit de les régler est le geste réservé `regler_circuit_cloture` de la fiche RBAC
   // (administrateur et Directrice Administrative d'origine, proposition à valider), vérifié par `cpcControleReglageCircuit`.
@@ -464,6 +466,7 @@ const Map<String, String> libellesFamillesParametres = {
   'affichage': 'Affichage',
   'ocr': 'Lecture des scans (OCR)',
   'horssite': 'Sauvegarde hors site',
+  'sms': 'Envois automatiques de SMS',
   'exercice': 'Clôture annuelle',
   'caisse': 'Caisse',
   'clinique': 'Paramètres de clinique',

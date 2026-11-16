@@ -99,7 +99,7 @@ module.exports = function installer({ db, dossier, Err, mereOk, getMeta, setMeta
     if (!u.pathname.startsWith('/sauvegarde/')) return undefined;
     /* RÉSERVÉE À LA MÈRE : un appareil appairé (téléphone, fileul) est refusé en le nommant, avant toute lecture de la requête. */
     if (!mereOk(req)) {
-      if (/^Bearer /.test(req.headers.authorization || '')) throw refus(403, 'sauvegarde_reservee_mere', 'les copies de sauvegarde ne sont accessibles qu\'à la poste mère', 'Aucun appareil appairé n\'y accède : utiliser le poste mère.');
+      if (/^Bearer /.test(req.headers.authorization || '')) throw refus(403, 'sauvegarde_reservee_mere', 'les copies de sauvegarde ne sont accessibles qu\'à le poste mère', 'Aucun appareil appairé n\'y accède : utiliser le poste mère.');
       throw new Err(403, 'mere_requise');
     }
     let m;

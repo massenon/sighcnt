@@ -18,7 +18,7 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'rbac', 'appels', 'reunions', 'contreReferences', 'documentsPatient', 'fichesReference', 'pieces', 'fileAttente', 'soins', 'administrations', 'admissions', 'checklistsBloc', 'cpa', 'crOperatoires', 'observations', 'rapportsMedicaux', 'releves', 'scoresGlasgow', 'surveillancesTransfusion', 'accouchements', 'cpon', 'crMaternite', 'deces', 'dossiersObstetricaux', 'grossesses', 'naissances', 'partogrammes', 'planificationFamiliale', 'ptme', 'registreSONU', 'soinsCuratifsMaternite', 'suiviMaternite', 'chambres', 'lits', 'rendezvous', 'visites', 'antecedents', 'documents', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications',
   /* activités fermées : les fiches de la maquette (la banque de sang), puis les fermetures PROPRES AU POSTE ci-dessous */
   'modulesActifs'];
-/* FERMETURES PROPRES AU POSTE (Direction, 11/11/2026) : quatre écrans que la maquette porte et que le poste ne porte pas encore. Ils sont fermés par la collection
+/* FERMETURES PROPRES AU POSTE (Direction, 11/11/2026) : deux écrans restent fermés (calendrier fiscal et barème de l'AIB) ; le lot SMS-R (16/11/2026) a porté les deux écrans SMS (MODP02 et MODP04 retirés, réouverture des postes déjà installés par `reouvrirFermeturesLevees`). À l'origine, quatre écrans que la maquette porte et que le poste ne porte pas encore. Ils sont fermés par la collection
    `modulesActifs` (activité fermée par écran, pour tous les rôles, administrateur compris), jamais par un nom de rôle. La maquette NE LES FERME PAS : ces fiches
    n'existent que dans le jeu du poste (`proprePoste`), ce qui les écarte de la RÉFÉRENCE de la matrice des droits (`rbac.json` ne les connaît pas). Porter un écran,
    c'est retirer son entrée ici et régénérer ; un poste déjà installé garde la fiche fermée tant qu'on ne la rouvre pas depuis la gestion des activités, qui ne le
@@ -26,10 +26,7 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
 const JEUX_IMPORT_NON_PORTES = [
 ];
 const FERMETURES_PROPRES_AU_POSTE = [
-  /* MODP01 (m12-calendrier-fiscal) : PORTÉ par le lot FISC-2 (16/11/2026), retiré d'ici ; les écrans SMS restent fermés (lot SMS-R). */
-  { id: 'MODP02', module: 'M13', ecran: 'm13-sms-journal', libelle: 'Journal des envois SMS' },
-  /* MODP03 (cfg-bareme-aib) : PORTÉ par le lot FISC-2 (16/11/2026), retiré d'ici. */
-  { id: 'MODP04', module: 'CFG', ecran: 'cfg-sms', libelle: 'Passerelle SMS' },
+  /* MODP01 (m12-calendrier-fiscal) et MODP03 (cfg-bareme-aib) : PORTÉS par le lot FISC-2 (16/11/2026), retirés d'ici. MODP02 (m13-sms-journal) et MODP04 (cfg-sms) : PORTÉS par le lot SMS-R (16/11/2026), retirés d'ici. */
   /* LOT IMP-C (12/11/2026) : les JEUX D'IMPORT que le poste ne porte pas encore. Leur page `imp-<jeu>` existe au manifeste et à la maquette ; sans jeu au registre du poste elle n'aurait
      aucun widget. Elle est fermée comme les quatre ci-dessus (activité fermée par écran, jamais par un nom de rôle) ; PORTER UN JEU, c'est retirer sa ligne ici ET dans
      `ecrans_sans_chantier_test.dart` puis régénérer. La fermeture ferme aussi le DROIT du jeu (`droitImport` lit les activités fermées) : aucun bouton « Importer les données ». */

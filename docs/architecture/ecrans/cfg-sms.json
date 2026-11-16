@@ -1,0 +1,53 @@
+{
+ "id": "cfg-sms",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Passerelle SMS",
+ "acces": "ouvert",
+ "titre": "Passerelle SMS",
+ "description": "Fournisseur de SMS de la clinique (Twilio ou Vonage), plafond, heures calmes et test d’envoi : les patients, et le personnel qui y consent, reçoivent des SMS.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Passerelle SMS"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Couverture du Bénin et expéditeur : déclarés par la Direction, à confirmer chez le fournisseur. Aucun document du dépôt ne dit si l’identifiant alphanumérique est accepté au Bénin, ni le coût d’un message. Seuls les patients reçoivent des SMS ; les alertes du personnel passent par la cloche et le son du poste."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Passerelle",
+  "Activation",
+  "Dernier test",
+  "Envois aujourd’hui"
+ ],
+ "cartes": [
+  "Réglages de la passerelle",
+  "Test d’envoi"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Enregistrer la passerelle",
+  "Tester l’envoi"
+ ],
+ "champs": [
+  "Fournisseur *",
+  "Plafond par jour *",
+  "Passerelle active",
+  "Account SID Twilio",
+  "Jeton d’authentification Twilio",
+  "Messaging Service SID Twilio (facultatif)",
+  "Expéditeur",
+  "Début des heures calmes (heure)",
+  "Fin des heures calmes (heure)",
+  "Numéro de test (format international) *"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

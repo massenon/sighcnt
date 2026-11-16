@@ -171,7 +171,7 @@ class OcrPoste extends ChangeNotifier {
   ResultatFileOcr definirReglage({required String role, required bool actif, required String? moteur, required String langue, required String? motif, int? delaiMs}) {
     final avant = reglage;
     if (estFileul()) {
-      return ResultatFileOcr.refus(ocrRefus('FILEUL_LECTURE_SEULE', 'la lecture des scans est un réglage de la clinique, posé à la poste mère : ce poste le reçoit par le journal',
+      return ResultatFileOcr.refus(ocrRefus('FILEUL_LECTURE_SEULE', 'la lecture des scans est un réglage de la clinique, posé à le poste mère : ce poste le reçoit par le journal',
           'Régler la lecture des scans sur le poste mère : ce poste reçoit ce réglage par le journal.'));
     }
     final r = ocrDefinirReglage(

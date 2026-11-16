@@ -41,11 +41,20 @@ Une seule tâche permanente, chaque minute :
 * * * * * cd ~/sigh-relais && /usr/local/bin/php artisan schedule:run >> /dev/null 2>&1
 ```
 
-(Rien n'est planifié aujourd'hui côté relais ; la ligne est posée pour les tâches à venir — rétention des enveloppes, rappels FCM.)
+Ce cron d'une minute déclenche le planificateur de Laravel, qui lance les tâches suivantes (déclarées dans `routes/console.php`) :
+
+| Tâche planifiée | Cadence | Rôle |
+|---|---|---|
+| `relais:surveiller` | chaque minute | marque le passage du cron (écran Hébergement), lève et résout les alertes |
+| `relais:exporter` | chaque jour à 03:00 | export de la base du relais |
+| `relais:purger --oui` | chaque jour à 03:10 | purge du journal d'audit (jamais des enveloppes) |
+| `relais:sms-envoyer` | chaque minute, sans chevauchement | envoie les SMS arrivés à l'heure (ADR-0008) ; efface le texte clair dès l'envoi |
+
+Pour les SMS, les identifiants du fournisseur se posent dans le `.env` (`RELAIS_SMS_*`, vides dans `.env.example`), jamais dans le dépôt ; sans eux, le panneau (page « Passerelle SMS ») dit « non défini » et aucun envoi ne part.
 
 ## 5. Brancher la mère
 
-Sur la console de la mère (`apps/poste`, mode mère) : adresse du relais (`https://relais.exemple.bj`) et **le même** `RELAIS_SECRET_MERE`. Le relais n'appelle jamais la mère (elle est derrière le routeur de la clinique) : c'est elle qui vient relever, toutes les 10 à 15 secondes. Contrôle : le **tableau de bord** du panneau doit afficher « Poste mère · En ligne » ; sinon, le seuil est de 5 minutes.
+Sur la console de la mère (`apps/poste`, mode mère) : adresse du relais (`https://sighcnt.nassieratoo.com`) et **le même** `RELAIS_SECRET_MERE`. Le relais n'appelle jamais la mère (elle est derrière le routeur de la clinique) : c'est elle qui vient relever, toutes les 10 à 15 secondes. Contrôle : le **tableau de bord** du panneau doit afficher « Poste mère · En ligne » ; sinon, le seuil est de 5 minutes.
 
 ## 6. Contrôles avant mise en service
 

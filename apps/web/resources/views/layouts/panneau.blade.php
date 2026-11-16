@@ -23,6 +23,7 @@
         'panneau.parametres' => 'Paramètres du relais',
         'panneau.hebergement' => 'Hébergement',
         'panneau.sauvegarde' => 'Sauvegarde du relais',
+        'panneau.sms' => 'Passerelle SMS',
         'panneau.opacite' => 'Preuve d’opacité',
         'panneau.consultation' => 'Consultation des copies',
     ];

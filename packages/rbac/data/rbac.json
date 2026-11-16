@@ -13332,6 +13332,17 @@
     "defautSiEcritSur": null
    },
    {
+    "id": "regler_passerelle_sms",
+    "libelle": "Régler la passerelle SMS (activer les envois automatiques, calculer et déposer maintenant, tester l’envoi)",
+    "module": "CFG",
+    "ecran": "cfg-sms",
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
     "id": "exporter_donnees",
     "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
     "module": null,
@@ -13395,6 +13406,7 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
+    "regler_passerelle_sms": 1,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 1,
     "imputer_aib": 1
@@ -13406,6 +13418,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 1,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 1,
     "imputer_aib": 0
@@ -13417,6 +13430,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13428,6 +13442,7 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
+    "regler_passerelle_sms": 1,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 1,
     "imputer_aib": 1
@@ -13439,6 +13454,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13450,6 +13466,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13461,6 +13478,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 0,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13472,6 +13490,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13483,6 +13502,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13494,6 +13514,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13505,6 +13526,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 1
@@ -13516,6 +13538,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 0,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13527,6 +13550,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13538,6 +13562,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13549,6 +13574,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13560,6 +13586,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13571,6 +13598,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13582,6 +13610,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13593,6 +13622,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13604,6 +13634,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13615,6 +13646,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13626,6 +13658,7 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_passerelle_sms": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
