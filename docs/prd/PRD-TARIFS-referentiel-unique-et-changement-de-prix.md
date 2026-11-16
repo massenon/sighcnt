@@ -509,3 +509,17 @@ Source : note de la Direction du 14/11/2026, décision du 15/11/2026 (deux certi
 
 ### 14.2 Mesure (relevé sur le jeu de démonstration, arbre d'avant puis d'après)
 Avant : 268 codes, 195 lignes à 0 dans chaque colonne, toutes dues à la lecture de la seule collection `actes` (106 lignes de grille hors de l'espace des actes : 71 AMI ou gynéco, 23 imagerie, 6 certificats, 6 consultations ; 89 analyses : 48 du catalogue, 41 lignes LABO de la grille). Après : 269 codes (CERT-CA), 0 ligne à 0, 0 refus : aucun code du jeu n'est « prix à définir » aujourd'hui. Le chiffre de la note (199 sur 277) n'est pas celui du dépôt : la base de production porte probablement des codes de plus ; la cause est la même.
+
+## 15. Lot TARIF-FIX-2 (16/11/2026) : prescrire toujours, bloquer seulement l'encaissement d'une ligne sans prix
+
+Décision de la Direction du 16/11/2026 (`DECISIONS-A-VALIDER.md` section AL, point 2), qui REMPLACE le refus de la prescription entière posé au lot TARIF-FIX (EF-TFX-3, section 14). Hypothèses à valider : section AM ; écarts E2710 à E2719.
+
+### 15.1 Exigences
+- **EF-TF2-1 : le médecin prescrit toujours.** Aucune voie de prescription (consultation, ordonnance, hospitalisation, soins, analyses, imagerie, demande externe, transcription du mobile) ne refuse une ligne parce qu'elle n'a pas de prix. Seul un code qui ne désigne rien (examen absent du catalogue d'imagerie) reste refusé, nommé.
+- **EF-TF2-2 : une ligne sans prix se nomme, jamais 0.** « Prix à valoriser » (médicament sans prix d'achat) ou « prix à définir » (acte, analyse, imagerie, soin), avec sa cause et son geste ; prix, montant et parts nuls ; le total de la pièce dit « Non calculable » ; la pièce est « en attente de prix ».
+- **EF-TF2-3 : seul l'encaissement est refusé.** Refus nommé `ENCAISSEMENT_PRIX_MANQUANT` (code, motif, geste) au moteur ; commande « Encaisser » ABSENTE quand elle serait refusée, le motif dit à sa place. Par défaut la pièce entière attend le prix ; l'encaissement du reste est un réglage de clinique en base, versionné par date (défaut semé « non »). Rien ne part au MECeF pour une ligne sans prix.
+- **EF-TF2-4 : alerte vers qui fixe le prix.** Une alerte par code (jamais par prescription), vers les rôles qui peuvent modifier « Tarifs et prix » ou « Référentiel produits » (fiche RBAC) ; ni texte médical ni patient ; elle retombe dès que le prix est en vigueur à la date des pièces.
+- **EF-TF2-5 : le prix posé, la ligne se valorise à la date de la pièce et l'encaissement passe**, sans redémarrage, sur la mère et sur un fileul synchronisé. RG-02 (prix d'achat exact), RG-09 (colonne et taux de la date de la pièce) et la non-réécriture d'une pièce émise restent vrais.
+
+### 15.2 Preuve
+Scénarios Vagues 195 à 197 (maquette), `prix_manquant_test.dart` et `consultation_test.dart` (domaine, vecteurs `prix_manquant.json` et `consultation.json` tirés de la maquette dans Chrome), `tarif_fix2_test.dart` (poste : mère, paramètre de clinique, alerte, date de la pièce, fileul synchronisé contre la vraie mère). Scénarios 186, 187, 136 et « Phase 8 imagerie » ajustés à la décision.
