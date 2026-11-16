@@ -71,13 +71,14 @@ void main() {
         .collecter()
         .where((n) => n.source == 'decisions_en_attente')
         .toList();
-    expect(pour('laborantin', signe.add(const Duration(hours: 23))), isEmpty, reason: 'en deçà du délai semé (24 h) : aucune alerte');
-    final a = pour('laborantin', signe.add(const Duration(hours: 25)));
+    // Défaut semé 4 heures (Direction, 16/11/2026, lot CLO-3) : l'ancien défaut de 24 heures est remplacé.
+    expect(pour('laborantin', signe.add(const Duration(hours: 3))), isEmpty, reason: 'en deçà du délai semé (4 h) : aucune alerte');
+    final a = pour('laborantin', signe.add(const Duration(hours: 5)));
     expect(a, hasLength(1));
-    expect(a.single.titre, 'Décision en attente de la mère depuis 1 jour 1 h : Variables et unités du laboratoire (bornes suppléées)');
+    expect(a.single.titre, 'Décision en attente de la mère depuis 5 h 0 min : Variables et unités du laboratoire (bornes suppléées)');
     expect(a.single.detail, contains('rien n\'est bloqué ni validé d\'office'));
-    expect(pour('admin', signe.add(const Duration(hours: 25))), hasLength(1), reason: 'l\'administrateur aussi');
-    expect(pour('caissier', signe.add(const Duration(hours: 25))), isEmpty, reason: 'pas les autres profils');
+    expect(pour('admin', signe.add(const Duration(hours: 5))), hasLength(1), reason: 'l\'administrateur aussi');
+    expect(pour('caissier', signe.add(const Duration(hours: 5))), isEmpty, reason: 'pas les autres profils');
     expect(m.collection(valCollectionDemandes).parId('DVT1')!['etat'], valEtatDeposee, reason: 'jamais une validation d\'office');
   });
 }
