@@ -8,6 +8,7 @@ export 'src/sync/familles.dart';
 export 'src/sync/codes.dart';
 export 'src/sync/pair.dart';
 export 'src/sync/gestion_synchronisee.dart';
+export 'src/sync/fiscal_jamais_mobile.dart';
 export 'src/parametres/parametres.dart';
 export 'src/tableaux/sortie_tableau.dart';
 export 'src/parametres/definitions.dart';
@@ -95,6 +96,7 @@ export 'src/configuration/cfb_donnees.dart';
 export 'src/configuration/cfb_regles.dart';
 // Configuration fiscale validée et datée (06/11/2026) : identité par versions, obligations et ORTB datés, échéances, validation réservée.
 export 'src/configuration/cfb_fiscal_date.dart';
+export 'src/configuration/cfb_parametres_fiscaux.dart';
 export 'src/referentiels/versions_datees.dart';
 export 'src/qualite/qual_enquetes.dart';
 export 'src/qualite/qual_validations.dart';

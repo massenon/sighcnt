@@ -428,11 +428,12 @@ void main() {
       expect(m.peutVoir('auditeur', 'm8-caisse'), isFalse);
     });
   });
-  group('FERMETURES PROPRES AU POSTE : quatre écrans non portés, fermés pour tous les rôles par le jeu du poste (ECARTS E2422)', () {
+  group('FERMETURES PROPRES AU POSTE : écrans non portés, fermés pour tous les rôles par le jeu du poste (ECARTS E2422)', () {
     // Lot IMP-C : les pages de jeux d'import que le poste ne porte pas encore sont fermées de la même façon (liste NOMMÉE : porter un jeu retire sa page d'ici).
     const impNonPortes = <String>{
     };
-    const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
+    // Lot FISC-2 (16/11/2026) : le calendrier fiscal mensuel et le barème de l'AIB sont PORTÉS au poste ; restent fermés les deux écrans SMS (lot SMS-R).
+    const quatre = {'m13-sms-journal', 'cfg-sms', ...impNonPortes};
     MatriceDroits chaud({List<Fiche>? modules, List<Fiche>? reference}) => superposerDroits(base, manifeste,
         rbac: jeuRbac, modulesActifs: modules ?? [...jeuModules, ...fermeturesPoste], referenceRbac: jeuRbac, referenceModules: reference ?? jeuModules);
     String cases(MatriceDroits m, String role) {
@@ -472,12 +473,13 @@ void main() {
       }
     });
 
-    test('une page de saisie (servant) est fermée par SA fermeture, son registre reste ouvert : m12-calendrier-fiscal fermé, m12-echeances ouvert', () {
+    test('une page de saisie (servant) est fermée par SA fermeture, son registre reste ouvert : calendrier fiscal et barème de l’AIB ouverts, registre des échéances ouvert', () {
       final m = chaud();
       expect(base.peutVoir('comptable', 'm12-calendrier-fiscal'), isTrue);
-      expect(m.peutVoir('comptable', 'm12-calendrier-fiscal'), isFalse);
+      expect(m.peutVoir('comptable', 'm12-calendrier-fiscal'), isTrue, reason: 'lot FISC-2 : le calendrier fiscal mensuel n\'est plus fermé au poste');
       expect(m.peutVoir('comptable', 'm12-echeances'), isTrue, reason: 'le registre qu\'elle prolonge n\'est pas fermé');
       expect(m.peutVoir('admin', 'm12-echeances'), isTrue);
+      expect(m.peutVoir('admin', 'cfg-bareme-aib'), isTrue, reason: 'lot FISC-2 : le barème de l\'AIB est ouvert au poste');
     });
 
     test('réouverture (fiche archivée, RG-14) : l\'écran revient, case pour case, comme avant la fermeture', () {

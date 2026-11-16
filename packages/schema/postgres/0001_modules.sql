@@ -421,6 +421,32 @@ CREATE TABLE IF NOT EXISTS "cfg"."rappels" (
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."rappels" IS 'Collection « rappels » — Configuration';
+CREATE TABLE IF NOT EXISTS "m12"."imputations_aib" (
+  "id" text PRIMARY KEY,
+  "operation" text,
+  "reference" text,
+  "tiers" text,
+  "date_operation" date,
+  "base" integer,
+  "appliquer" boolean,
+  "situation" text,
+  "taux" integer,
+  "montant" integer,
+  "compte" text,
+  "proposition_taux" integer,
+  "proposition_version" text,
+  "proposition_arretee" boolean,
+  "hors_proposition" boolean,
+  "motif" text,
+  "signee_par" text,
+  "signee_role" text,
+  "signee_le" timestamptz,
+  "statut" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m12"."imputations_aib" IS 'Collection « imputationsAib » — Comptabilité';
+CREATE INDEX IF NOT EXISTS "ix_imputations_aib_reference" ON "m12"."imputations_aib" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_imputations_aib_statut" ON "m12"."imputations_aib" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."reglages_aib" (
   "id" text PRIMARY KEY,
   "cle" text,
@@ -480,6 +506,7 @@ CREATE TABLE IF NOT EXISTS "cfg"."situations_aib" (
   "libelle" text,
   "declencheur" text,
   "description" text,
+  "famille" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."situations_aib" IS 'Collection « situationsAib » — Configuration';

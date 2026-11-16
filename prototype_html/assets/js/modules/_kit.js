@@ -362,7 +362,7 @@
         /* Artefact tenu ailleurs (le produit modifié, la valorisation validée) : écriture ordinaire, puis suivi. */
         var apresV = Object.assign({}, record || {}, values);
         var modifie = !!record && (!v.siChange || v.siChange(record, apresV));
-        var ctl = V.controlerEnregistrement(v.famille, { chiffres: modifie && v.siChange ? ['valeur'] : [], motif: motif });
+        var ctl = V.controlerEnregistrement(v.famille, { chiffres: modifie && v.siChange ? ['valeur'] : [], motif: motif, modifie: modifie });
         if (ctl) return { refus: ctl };
         var r = ordinaire();
         var cibleId = record ? v.cible(record) : null;
@@ -370,7 +370,7 @@
         return r;
       }
       var chiffres = V.chiffresModifies(v.famille, record, values);
-      var refus = V.controlerEnregistrement(v.famille, { chiffres: chiffres, motif: motif });
+      var refus = V.controlerEnregistrement(v.famille, { chiffres: chiffres, motif: motif, avant: record, valeurs: values });
       if (refus) return { refus: refus };
       var m = V.marquageEnregistrement(v.famille, { avant: record, valeurs: values, motif: motif,
         modifie: record && v.siChange ? !!v.siChange(record, Object.assign({}, record, values)) : undefined });

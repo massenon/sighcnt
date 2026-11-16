@@ -551,10 +551,63 @@ class _EtatComptabilite extends State<EcranComptabilite> {
             ]);
   }
 
+  /// « Confirmer » une obligation « à confirmer par la CNSS » : la référence est obligatoire (la pièce de la CNSS qui confirme), la confirmation est signée, journalisée et
+  /// versionnée par date (lot FISC-2, Direction du 16/11/2026).
+  void _confirmer(BuildContext ctx, ConfigurationFiscalePoste cf, Fiche o) {
+    final f = ControleurFormulaire(const [
+      ChampDef(
+          nom: 'reference',
+          libelle: 'Référence de la confirmation',
+          requis: true,
+          col: ColChamp.plein,
+          aide: 'Courrier, e-mail ou page de la CNSS qui confirme, avec sa date. Sans référence, l’obligation ne passe pas à « confirmée ».'),
+      ChampDef(nom: 'dateEffet', libelle: 'Confirmée à compter du', type: TypeChamp.date, requis: true, col: ColChamp.plein, aide: 'La version « à confirmer » reste lue pour les dates antérieures.'),
+    ], {'reference': '', 'dateEffet': isoJour(cf.maintenant)});
+    afficherModale<void>(ctx,
+        titre: 'Confirmer : ${o['libelle']}',
+        taille: TailleModale.md,
+        corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+          const NoteSigh('La confirmation est signée (votre compte, la date et l’heure), journalisée (RG-12) et versionnée par date : la version « à confirmer » part à l’historique, elle n’est pas réécrite.',
+              icone: LucideIcons.shieldCheck),
+          const SizedBox(height: 12),
+          FormulaireSigh(controleur: f),
+        ]),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  key: const Key('cfb:confirmer:valider'),
+                  libelle: 'Confirmer',
+                  icone: LucideIcons.check,
+                  onPressed: () {
+                    final v = f.valider();
+                    if (v == null) {
+                      ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
+                      return;
+                    }
+                    try {
+                      final r = cf.confirmerObligation(o, reference: '${v['reference']}', dateEffet: '${v['dateEffet']}');
+                      if (!r.ok) {
+                        ToastsSigh.afficher(ctx, '${r.refus!.code} : ${r.refus!.motif}', type: TypeToast.erreur, detail: r.refus!.geste, duree: const Duration(seconds: 12));
+                        return;
+                      }
+                    } on EcritureRefusee catch (e) {
+                      ToastsSigh.afficher(ctx, 'FILEUL_LECTURE_SEULE : ${e.motif}', type: TypeToast.erreur);
+                      return;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, '${o['code']} confirmée.', type: TypeToast.succes, detail: 'Référence ${v['reference']}, signée par ${cf.acteurNomme}.');
+                    _rafraichir();
+                  }),
+            ]);
+  }
+
   /// `commandesObligation(o)` : Modifier (droit éditer), Retirer (droit annuler). ABSENTES sans droit ; « tenue par la mère » sur un fileul.
   Widget _commandes(BuildContext ctx, ContexteEcran c, ConfigurationFiscalePoste cf, Fiche o) {
     if (cf.fileul) return const Text('tenue par la mère', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate400));
     return Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, children: [
+      // Lot FISC-2 : « Confirmer » n'existe que pour une obligation « à confirmer » et pour le détenteur du geste réservé (commande ABSENTE sinon).
+      if (o['aConfirmer'] == true && cf.peutConfirmer)
+        BoutonSigh(key: Key('cfb:confirmer:${o['code']}'), libelle: 'Confirmer', icone: LucideIcons.check, taille: TailleBouton.sm, onPressed: () => _confirmer(ctx, cf, o)),
       if (c.droit.editer) BoutonIcone(key: Key('cfb:modifier:${o['code']}'), icone: LucideIcons.pencil, libelle: 'Modifier (version datée)', onPressed: () => _modifier(ctx, cf, o)),
       if (c.droit.annuler) BoutonIcone(key: Key('cfb:retirer:${o['code']}'), icone: LucideIcons.archive, libelle: 'Retirer (version datée)', onPressed: () => _retirer(ctx, cf, o)),
     ]);
@@ -628,6 +681,37 @@ class _EtatComptabilite extends State<EcranComptabilite> {
               BoutonSigh(libelle: 'Suivi des échéances', icone: LucideIcons.calendarClock, variante: VarianteBouton.secondaire, onPressed: () => c.aller('m12-echeances')),
             ]),
             cfaKpis(cfbKpisComptabilite(obligations: _calendrier(cal))),
+            // Lot FISC-2 : les PARAMÈTRES du calendrier fiscal (délais d'alerte, montant de la CCIB), datés, en LECTURE (l'écriture d'une version n'est pas portée au poste).
+            CarteSigh(
+                titre: 'Paramètres du calendrier : délais d’alerte et montant de la CCIB',
+                child: cfaPile([
+                  cfbNote(
+                      'Ces valeurs vivaient dans le code. Elles sont des paramètres datés, lus par le suivi des échéances, la vue mensuelle, l’écran des paramètres fiscaux, la cloche et le planificateur du serveur : une seule définition de « proche » pour les cinq.'),
+                  MiniTableauSigh(colonnes: [
+                    ColonneMini('Paramètre', (p) => '${p['libelle']}',
+                        rendu: (p) => Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                              Text('${p['libelle']}', style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500, color: JetonsShell.slate800)),
+                              _mono12('${p['code']}', couleur: JetonsShell.slate500),
+                            ])),
+                    ColonneMini('Valeur en vigueur', (p) => cfbResumeParametre(p['v'] as Fiche, (n) => money(n, avecDevise: false)), rendu: (p) => Text(cfbResumeParametre(p['v'] as Fiche, (n) => money(n, avecDevise: false)), key: Key('cfb:parametre:${p['code']}'))),
+                    ColonneMini('Version', (p) {
+                      final v = p['v'] as Fiche;
+                      return '${v['dateEffet'] != null ? 'depuis le ${_dateFr(v['dateEffet'])}' : 'd’origine'}${v['aValider'] == true ? ', à confirmer' : ''}';
+                    }),
+                    ColonneMini('À venir', (p) {
+                      final l = (p['avenir'] as List).cast<Fiche>();
+                      return l.isEmpty ? 'aucune' : l.map((f) => 'À compter du ${_dateFr(f['dateEffet'])} : ${cfbResumeParametre(f, (n) => money(n, avecDevise: false))}').join(' ; ');
+                    }),
+                  ], lignes: [
+                    for (final s in cfbSemenceParametresFiscaux())
+                      {
+                        'code': s['code'],
+                        'libelle': s['libelle'],
+                        'v': cfbParametreFiscalALaDate(c.magasin.collection('parametresFiscaux').actives, '${s['code']}', c.aujourdhui) ?? s,
+                        'avenir': cfbVersionsAVenirParametre(c.magasin.collection('parametresFiscaux').actives, '${s['code']}', c.aujourdhui),
+                      }
+                  ]),
+                ], espace: 12)),
             CarteSigh(
                 titre: titreMensuelles,
                 child: cfaPile([
@@ -635,7 +719,16 @@ class _EtatComptabilite extends State<EcranComptabilite> {
                       '${mensuelles.map((e) => e['code']).join(', ')} se paient chaque mois, pour le mois d’exercice précédent, au jour porté par chaque obligation. Une déclaration précède le paiement. Si le jour tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi.'),
                   MiniTableauSigh(colonnes: [
                     ColonneMini('Code', (e) => '${e['code']}', rendu: (e) => _mono12('${e['code']}')),
-                    ColonneMini('Obligation', (e) => '${e['libelle']}'),
+                    ColonneMini('Obligation', (e) => '${e['libelle']}',
+                        rendu: (e) => Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                              Text('${e['libelle']}'),
+                              if (e['aConfirmer'] == true)
+                                Text('À confirmer, non arrêtée. Source : ${e['source'] ?? 'non citée'}',
+                                    key: Key('cfb:a-confirmer:${e['code']}'), style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.warning700)),
+                              if (e['confirmationReference'] != null)
+                                Text('Confirmée (référence ${e['confirmationReference']})${e['confirmeePar'] != null ? ', signée par ${e['confirmeePar']}' : ''}',
+                                    key: Key('cfb:confirmee:${e['code']}'), style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.success700)),
+                            ])),
                     ColonneMini('Échéance', _libelleEcheance),
                     ColonneMini('Déclaration préalable', (e) => cfaOuTiret(e['declaration'])),
                     ColonneMini('Version', (e) => e['dateEffet'] != null ? 'depuis le ${_dateFr(e['dateEffet'])}' : 'd’origine'),

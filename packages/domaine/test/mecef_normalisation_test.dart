@@ -15,13 +15,14 @@ Map<String, Object?> vente([Map<String, Object?> sup = const {}]) => {
 
 void main() {
   group('preparerNormalisation', () {
-    test('une vente encaissée est préparée : acheteur par défaut, montants entiers', () {
+    test('une vente encaissée est préparée : acheteur sans AIB, montants entiers', () {
       final p = preparerNormalisation(vente());
       expect(p.ok, isTrue);
-      expect(p.acheteur!.aibTaux, 1);
+      // Lot FISC-2 (16/11/2026) : la facture d'un patient ne porte aucun AIB.
+      expect(p.acheteur!.aibTaux, 0);
       expect(p.montants!.base, 10000);
-      expect(p.montants!.aib, 100);
-      expect(p.montants!.net, 10100);
+      expect(p.montants!.aib, 0);
+      expect(p.montants!.net, 10000);
     });
     test('l\'acheteur de la pièce, sinon celui de la fenêtre', () {
       final p = preparerNormalisation(vente({'ifuClient': '3201642748214', 'acheteurNom': 'Clinique X', 'aibTaux': 5}));

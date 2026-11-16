@@ -38,20 +38,22 @@ int cpcJoursAvant(DateTime auj, Object? echeance) {
   return arrondiJs(d.difference(auj).inMilliseconds / 86400000).toInt();
 }
 
-/// `calculerEtat(e)` : jamais stocké, toujours recalculé.
-String cpcCalculerEtat(CpaFiche e, DateTime auj) {
+/// `calculerEtat(e)` : jamais stocké, toujours recalculé. Les seuils sont des PARAMÈTRES du calendrier fiscal, lus À LA DATE ([delaiAPayer], [delaiDeclaration] :
+/// `cfbDelaisFiscauxALaDate`, lot FISC-2) ; leur défaut est la semence (10 et 30 jours).
+String cpcCalculerEtat(CpaFiche e, DateTime auj, {int delaiAPayer = 10, int delaiDeclaration = 30}) {
   if (e['paye'] == true) return 'payee';
   final j = cpcJoursAvant(auj, e['echeance']);
   if (j < 0) return 'en_retard';
-  if (j <= 10) return 'a_payer';
+  if (j <= delaiAPayer) return 'a_payer';
   final decl = e['declaration'];
-  if (decl != null && decl != '' && j <= 30) return 'declaration';
+  if (decl != null && decl != '' && j <= delaiDeclaration) return 'declaration';
   return 'a_venir';
 }
 
 /// Les lignes du tableau : la fiche, son état calculé et son délai.
-List<CpaFiche> cpcLignesEcheances(Iterable<CpaFiche> actives, DateTime auj) => [
-      for (final e in actives) {...e, 'etat': cpcCalculerEtat(e, auj), 'jours': cpcJoursAvant(auj, e['echeance'])}
+List<CpaFiche> cpcLignesEcheances(Iterable<CpaFiche> actives, DateTime auj, {int delaiAPayer = 10, int delaiDeclaration = 30}) => [
+      for (final e in actives)
+        {...e, 'etat': cpcCalculerEtat(e, auj, delaiAPayer: delaiAPayer, delaiDeclaration: delaiDeclaration), 'jours': cpcJoursAvant(auj, e['echeance'])}
     ];
 
 String _date(Object? d) {

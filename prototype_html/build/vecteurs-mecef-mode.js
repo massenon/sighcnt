@@ -39,13 +39,13 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       const initiale = propre(fac); delete initiale.id;
       const numeros0 = ['factures', 'avoirs'].reduce((n, c) => n + S.collection(c).all().filter((x) => x.numeroMecef).length, 0);
       const appareil0 = S.reglage('mecefBoitier', { compteur: 0, emissions: [] });
-      const r = PR.encaisser(fac.id, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur L3', aibTaux: 1 } });
+      const r = PR.encaisser(fac.id, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur L3' } });
       const apres = S.collection('factures').get(fac.id);
       const numeros1 = ['factures', 'avoirs'].reduce((n, c) => n + S.collection(c).all().filter((x) => x.numeroMecef).length, 0);
       const appareil1 = S.reglage('mecefBoitier', { compteur: 0, emissions: [] });
       const vente = {
         piece: initiale,
-        acheteur: { ifu: '3201642748214', nom: 'Acheteur L3', aibTaux: 1 },
+        acheteur: { ifu: '3201642748214', nom: 'Acheteur L3' },
         normalisation: propre({ ok: r.normalisation.ok, code: r.normalisation.code, motif: r.normalisation.motif, geste: r.normalisation.geste, etat: r.normalisation.etat }),
         facture: propre({ statutPaiement: apres.statutPaiement, montantPaye: apres.montantPaye, statutMecef: apres.statutMecef, numeroMecef: apres.numeroMecef === undefined ? null : apres.numeroMecef,
           codeRetour: apres.codeRetour, motifRefusMecef: apres.motifRefusMecef, modeMecef: apres.modeMecef }),

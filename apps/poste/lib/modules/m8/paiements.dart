@@ -183,7 +183,6 @@ class _EcranPaiementsState extends State<EcranPaiements> {
             return ligneSansPrix(l) || l['statutPaiement'] == 'paye' ? a : a + n(l['partPatient']);
           })
         : n(f['reliquat']);
-    final acheteur = ControleurFormulaire(champsAcheteurNormalise, valeursAcheteur(f));
     final form = ControleurFormulaire(const [
       ChampDef(
           nom: 'montant',
@@ -234,8 +233,6 @@ class _EcranPaiementsState extends State<EcranPaiements> {
               ]),
               const SizedBox(height: 12),
               FormulaireSigh(controleur: form),
-              const SizedBox(height: 12),
-              SectionAcheteur(controleur: acheteur),
             ]),
         pied: (fermer) => [
               BoutonSigh(
@@ -270,20 +267,9 @@ class _EcranPaiementsState extends State<EcranPaiements> {
                     // L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval, base MECeF et ÉCRITURE
                     // comptable (571, 411 de la part assureur, 706). Un encaissement ne s'annule pas : remboursement ou avoir.
                     final c = ContexteEcran.of(ctx);
-                    // La fenêtre « Facture normalisée » se contrôle AVANT toute écriture : un refus nommé n'écrit rien (E2299).
-                    final refusAcheteur = controlerAcheteur(acheteur);
-                    if (refusAcheteur != null) {
-                      ToastsSigh.afficher(ctx,
-                          '${refusAcheteur.code} : ${refusAcheteur.motif}',
-                          type: TypeToast.erreur,
-                          detail: refusAcheteur.geste,
-                          duree: const Duration(seconds: 9));
-                      return;
-                    }
                     final ResultatCaisse res;
                     try {
                       res = encaisserFacture(c.magasin, '${f['id']}',
-                          acheteur: lireAcheteur(acheteur),
                           montant: montant,
                           mode: '${v['modePaiement']}',
                           maintenant: c.aujourdhui);

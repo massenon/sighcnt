@@ -68,8 +68,12 @@ L.push(`const cfbNs132 = CfbNoteService(${q(c.ns132.reference)}, ${c.ns132.versi
 
 /* ---- calendrier fiscal ---- */
 L.push(`class CfbObligation {
-  const CfbObligation(this.code, this.libelle, this.periodicite, this.jour, this.mois, this.part, this.declaration, this.note, this.source);
+  const CfbObligation(this.code, this.libelle, this.periodicite, this.jour, this.mois, this.part, this.declaration, this.note, this.source, [this.aConfirmer = false]);
   final String code, libelle, periodicite, note, source;
+
+  /// Obligation dont la source n'est pas le comptable : « à confirmer » (le versement des cotisations CNSS, Direction du 09/11/2026), confirmée par le geste réservé
+  /// \`confirmer_obligation_fiscale\` (lot FISC-2).
+  final bool aConfirmer;
   final int jour;
 
   /// 0 (janvier) à 11 ; \`null\` pour une obligation mensuelle.
@@ -82,7 +86,7 @@ L.push(`class CfbObligation {
 `);
 L.push('/// `D.CALENDRIER_FISCAL`, dans l\'ordre de la maquette.');
 L.push('const cfbCalendrierFiscal = <CfbObligation>[');
-for (const e of c.calendrierFiscal) L.push(`  CfbObligation(${q(e.code)}, ${q(e.libelle)}, ${q(e.periodicite)}, ${e.jour}, ${n(e.mois)}, ${n(e.part)}, ${q(e.declaration)}, ${q(e.note)}, ${q(e.source)}),`);
+for (const e of c.calendrierFiscal) L.push(`  CfbObligation(${q(e.code)}, ${q(e.libelle)}, ${q(e.periodicite)}, ${e.jour}, ${n(e.mois)}, ${n(e.part)}, ${q(e.declaration)}, ${q(e.note)}, ${q(e.source)}${e.aConfirmer ? ', true' : ''}),`);
 L.push('];');
 L.push(`const cfbCcibTotal = ${c.montantsFiscaux.ccib.total};\n`);
 

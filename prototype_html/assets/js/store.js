@@ -160,8 +160,12 @@
      `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
      Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
      `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
+     92 (16/11/2026) : SECOND BARÈME DE L'AIB (lot FISC-2, Direction, section AQ points 8 et 23). `situationsAib` porte une `famille` (`retenue_tiers` pour les deux situations nouvelles,
+     personne physique 3 %, personne morale 5 % ; absente = situation de l'acheteur), `baremeAib` leurs deux versions datées, la collection `imputationsAib` (imputation de l'AIB opération par
+     opération, laissée au comptable) et deux gestes réservés (`confirmer_obligation_fiscale`, `imputer_aib`) entrent au manifeste ; une obligation fiscale confirmée porte `confirmeeLe`,
+     `confirmeePar`, `confirmationReference`. Sans incrément, un poste n'aurait pas le second barème et la caisse ne saurait pas qu'une facture de patient ne porte aucun AIB.
   */
-  var VERSION = 91;
+  var VERSION = 92;
   var db = null;
   var listeners = {};
 
@@ -4521,6 +4525,7 @@
     situationsAib: 'CFG|Situations de l’acheteur (AIB)',
     baremeAib: 'CFG|Barème de l’AIB par situation',
     reglagesAib: 'CFG|Réglages de l’AIB',
+    imputationsAib: 'M12|Imputations de l’AIB (opération par opération)',
     reglagesCloture: 'M12|Réglages de la clôture annuelle',
     parametresClinique: 'CFG|Paramètres de clinique (préavis de péremption, tranches de la balance âgée)',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',

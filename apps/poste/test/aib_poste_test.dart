@@ -40,12 +40,12 @@ AibPoste _aib(Magasin m, {String role = 'comptable', bool fileul = false, String
 void main() {
   const pref = 'bareme_aib.';
 
-  test('le barème est semé en mémoire, une seule fois : trois situations, quatre versions, toutes « à valider »', () {
+  test('le barème est semé en mémoire, une seule fois : cinq situations (trois de l’acheteur, deux de la retenue sur un tiers), six versions, toutes « à valider »', () {
     final m = _magasin();
     AibPoste.amorcer(m);
     AibPoste.amorcer(m);
-    expect(m.collection('situationsAib').toutes.length, 3);
-    expect(m.collection('baremeAib').toutes.length, 4);
+    expect(m.collection('situationsAib').toutes.length, 5);
+    expect(m.collection('baremeAib').toutes.length, 6);
     expect(m.collection('baremeAib').toutes.every((f) => f['aValider'] == true), isTrue);
   });
 

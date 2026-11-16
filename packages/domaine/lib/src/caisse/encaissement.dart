@@ -64,7 +64,6 @@ ResultatEncaissement encaisser(
   String utilisateur = '',
   List<Map<String, Object?>> ecritures = const [],
   Map<String, Object?>? acheteur,
-  int aibParDefaut = aibTauxParDefaut,
 
   /// LOT TARIF-FIX-2 : le réglage de clinique « encaissement partiel d'une pièce en attente de prix » à la date du geste (défaut semé : non).
   bool encaissementPartiel = false,
@@ -107,14 +106,14 @@ ResultatEncaissement encaisser(
           refusCode: r.code);
     }
   }
-  // La fenêtre « Facture normalisée » (IFU de l'acheteur, nom, AIB) se contrôle AVANT toute écriture : un refus nommé n'écrit rien (E2299).
+  // Un acheteur (IFU, nom) se contrôle AVANT toute écriture : un refus nommé n'écrit rien (E2299) ; un taux d'AIB demandé est refusé AIB_FACTURE_PATIENT (lot FISC-2).
   AcheteurMecef? acheteurSaisi;
   if (acheteur != null) {
     final v = validerAcheteurMecef(
         ifu: acheteur['ifu'],
         nom: acheteur['nom'],
         aibTaux: acheteur['aibTaux'],
-        aibParDefaut: aibParDefaut);
+        aibSituation: acheteur['aibSituation']);
     if (v.refus != null) {
       final lignesDues = ((facture['lignes'] ?? const []) as List)
           .map((l) => (l as Map).cast<String, Object?>())

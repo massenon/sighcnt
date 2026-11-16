@@ -85,8 +85,12 @@ const cfbNs131 = CfbNoteService('NS 131/07/DM/DA/CNT/2026', 1, '2026-07-13', 'AC
 const cfbNs132 = CfbNoteService('NS n° 132/07/DM/DA/CNT/2026', 1, '2026-07-13', 'ACTIVE', 'Primes diverses');
 
 class CfbObligation {
-  const CfbObligation(this.code, this.libelle, this.periodicite, this.jour, this.mois, this.part, this.declaration, this.note, this.source);
+  const CfbObligation(this.code, this.libelle, this.periodicite, this.jour, this.mois, this.part, this.declaration, this.note, this.source, [this.aConfirmer = false]);
   final String code, libelle, periodicite, note, source;
+
+  /// Obligation dont la source n'est pas le comptable : « à confirmer » (le versement des cotisations CNSS, Direction du 09/11/2026), confirmée par le geste réservé
+  /// `confirmer_obligation_fiscale` (lot FISC-2).
+  final bool aConfirmer;
   final int jour;
 
   /// 0 (janvier) à 11 ; `null` pour une obligation mensuelle.

@@ -76,55 +76,26 @@ void main() {
   setUp(() => ImpressionPoste.enregistrer = (pdf, nom) async => '/faux/$nom.pdf');
   tearDown(ToastsSigh.viderPourTests);
 
-  cas('la fenêtre « Facture normalisée » est à l\'émission : trois champs, la phrase qui dit que ce sont les seuls', (t) async {
+  cas('plus de bloc « Facture normalisée » à l\'émission : ni IFU de l\'acheteur, ni nom, ni taux d\'AIB (Direction, 16/11/2026, lot FISC-2)', (t) async {
     await ouvrir(t, magasin());
-    expect(find.text('FACTURE NORMALISÉE'), findsOneWidget);
-    expect(find.text('IFU de l’acheteur'), findsWidgets);
-    expect(find.text('Nom de l’acheteur'), findsWidgets);
-    expect(find.text('Taux d’AIB'), findsWidgets);
-    expect(find.textContaining('Toute vente est normalisée'), findsOneWidget);
+    expect(find.text('FACTURE NORMALISÉE'), findsNothing);
+    expect(find.text('IFU de l’acheteur'), findsNothing);
+    expect(find.text('Nom de l’acheteur'), findsNothing);
+    expect(find.text('Taux d’AIB'), findsNothing);
+    expect(find.textContaining('Toute vente est normalisée'), findsNothing);
   });
 
-  cas('un IFU invalide est refusé en le nommant, AVANT toute écriture', (t) async {
-    final m = magasin();
-    final avant = m.collection('factures').actives.length;
-    final ecrAvant = m.collection('ecritures').actives.length;
-    await ouvrir(t, m);
-    await ajouterLibre(t, 'Carnet de santé', '500');
-    await saisir(t, 'acheteurIfu', '123');
-    await saisir(t, 'acheteurNom', 'Clinique X');
-    await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer et encaisser'));
-    expect(find.textContaining('IFU_INVALIDE'), findsWidgets);
-    expect(find.textContaining('13 chiffres'), findsWidgets);
-    expect(m.collection('factures').actives.length, avant);
-    expect(m.collection('ecritures').actives.length, ecrAvant);
-  });
-
-  cas('un IFU sans nom est refusé en le nommant', (t) async {
-    final m = magasin();
-    final avant = m.collection('factures').actives.length;
-    await ouvrir(t, m);
-    await ajouterLibre(t, 'Carnet de santé', '500');
-    await saisir(t, 'acheteurIfu', '3201642748214');
-    await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer et encaisser'));
-    expect(find.textContaining('NOM_ACHETEUR_ABSENT'), findsWidgets);
-    expect(m.collection('factures').actives.length, avant);
-  });
-
-  cas('vente soldée : l\'acheteur est rangé dans la pièce, la vente reste EN ATTENTE de certification et ne reçoit AUCUN numéro (lot L3)', (t) async {
+  cas('vente soldée : aucun acheteur ni AIB dans la pièce (la facture d\'un patient ne porte aucun AIB), la vente reste EN ATTENTE de certification et ne reçoit AUCUN numéro (lot L3)', (t) async {
     final m = magasin();
     final numeros0 = numerosPris(m).length;
     await ouvrir(t, m);
     await ajouterLibre(t, 'Carnet de santé', '500');
-    await saisir(t, 'acheteurIfu', '3201 6427 48214');
-    await saisir(t, 'acheteurNom', 'Clinique X');
-    await choisir(t, '1 % (taux de la facture de référence, à confirmer)', '5 %');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer et encaisser'));
     final f = m.collection('factures').actives.first;
     expect(f['statutPaiement'], 'soldee', reason: 'l\'encaissement reste acquis');
-    expect(f['ifuClient'], '3201642748214');
-    expect(f['acheteurNom'], 'Clinique X');
-    expect(f['aibTaux'], 5);
+    expect(f['ifuClient'], isNull);
+    expect(f['acheteurNom'], isNull);
+    expect(f['aibTaux'], 0);
     expect(f['statutMecef'], 'en_attente');
     expect(f['numeroMecef'], isNull, reason: 'aucun numéro fabriqué');
     expect(f['codeRetour'], 'MECEF_NON_CONFIGURE');
@@ -247,6 +218,22 @@ void main() {
       final apres = m.collection('factures').parId(f['id'])!;
       expect(apres['statutMecef'], 'en_attente');
       expect(apres['ifuClient'], isNull);
+    });
+
+    test('un taux d\'AIB demandé sur une facture de patient est refusé AIB_FACTURE_PATIENT et n\'écrit rien ; une pièce déjà émise garde son taux', () {
+      final m = magasin();
+      final f = vente(m);
+      final r = normaliserVente(m, '${f['id']}', acheteur: {'aibTaux': 5}, maintenant: aujourdhui);
+      expect(r.code, 'AIB_FACTURE_PATIENT');
+      expect(r.geste, contains('Imputations'));
+      final apres = m.collection('factures').parId(f['id'])!;
+      expect(apres['statutMecef'], 'en_attente');
+      expect(apres['aibTaux'], isNull);
+      final g = vente(m, {'aibTaux': 5, 'ifuClient': '3201642748214', 'acheteurNom': 'Ancien acheteur'});
+      normaliserVente(m, '${g['id']}', maintenant: aujourdhui);
+      final garde = m.collection('factures').parId(g['id'])!;
+      expect(garde['aibTaux'], 5);
+      expect(garde['acheteurNom'], 'Ancien acheteur');
     });
 
     test('une pro-forma ne se normalise pas', () {

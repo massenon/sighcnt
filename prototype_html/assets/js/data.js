@@ -916,7 +916,16 @@
       description: 'Aucun IFU renseigné (particulier) ou IFU désactivé : contribuable non conforme ou non immatriculé.' },
     { code: 'prestation_service', libelle: 'Prestation de service retenue par le payeur', declencheur: 'choix', ordre: 3,
       description: 'Prestation de service dont l’organisme payeur retient l’AIB sur le prix hors taxe. Choisie par le caissier, jamais d’office.' },
+    /* Lot FISC-2 (Direction, 16/11/2026, section AQ points 8 et 23) : SECOND barème, la RETENUE sur la facture d'un tiers (prescripteur, prestataire, fournisseur, assureur), par QUALITÉ du
+       tiers. Deux barèmes datés en base, jamais un taux dans un moteur. La famille `retenue_tiers` n'est jamais proposée à la caisse (la facture d'un patient ne porte aucun AIB). Le
+       comptable choisit la ligne à chaque opération (onglet « Imputations »). */
+    { code: 'personne_physique', libelle: 'Tiers, personne physique (retenue sur sa facture)', declencheur: 'choix', ordre: 4, famille: 'retenue_tiers',
+      description: 'Tiers personne physique dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office.' },
+    { code: 'personne_morale', libelle: 'Tiers, personne morale (retenue sur sa facture)', declencheur: 'choix', ordre: 5, famille: 'retenue_tiers',
+      description: 'Tiers personne morale dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office.' },
   ];
+  var SRC_RETENUE_TIERS = 'Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 '
+    + 'cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.';
   var BAREME_AIB = [
     { situation: 'ifu_inactif_ou_absent', taux: 1, dateEffet: '2026-01-01', dateFin: '2026-09-06', source: SRC_REGIME_REFERENCE,
       motif: 'Taux appliqué avant le communiqué de septembre 2026 : défaut historique de la maquette (date d’effet d’attente : début de l’exercice 2026).' },
@@ -926,6 +935,10 @@
       motif: 'Défaut de la fenêtre MECeF quand l’acheteur a un IFU actif (date d’effet d’attente : début de l’exercice 2026).' },
     { situation: 'prestation_service', taux: 3, dateEffet: '2026-01-01', dateFin: null, source: SRC_PRESTATION,
       motif: 'Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'personne_physique', taux: 3, dateEffet: '2026-01-01', dateFin: null, source: SRC_RETENUE_TIERS,
+      motif: 'Retenue sur la facture d’un tiers personne physique (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'personne_morale', taux: 5, dateEffet: '2026-01-01', dateFin: null, source: SRC_RETENUE_TIERS,
+      motif: 'Retenue sur la facture d’un tiers personne morale (date d’effet d’attente : début de l’exercice 2026).' },
   ];
 
   /* --------------------------------------------------------------------------

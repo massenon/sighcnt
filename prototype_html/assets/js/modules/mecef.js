@@ -135,7 +135,7 @@
           { label: 'Montant total déclaré', value: C.money(C.sum(validees, 'montantTTC')), icon: 'trending-up', tone: 'info' },
           {
             label: TAUX_TVA ? 'TVA collectée' : 'AIB collecté',
-            value: C.money(TAUX_TVA ? tva : C.sum(validees, function (f) { return decomposer(f.montantTTC).aib; })),
+            value: C.money(TAUX_TVA ? tva : C.sum(validees, function (f) { return f.aibTaux != null ? (f.aibMontant || 0) : decomposer(f.montantTTC).aib; })),
             icon: 'landmark', tone: 'navy',
             hint: TAUX_TVA ? 'Taux ' + TAUX_TVA + ' %' : 'AIB ' + TAUX_AIB + ' % — TVA exonérée',
           },
@@ -336,8 +336,9 @@
           { label: 'Taxe', key: 'k' }, { label: 'Montant', key: 'v', align: 'right' },
         ], [
           { k: F.tva.libelle, v: C.money(tva, false) },
-          { k: (f.aibTaux != null && f.aibTaux !== TAUX_AIB ? 'AIB ' + f.aibTaux + ' %' : F.aib.libelle) + ' (' + F.aib.code + ')', v: C.money(aib, false) },
-        ]));
+          /* Lot FISC-2 : la facture d'un patient ne porte aucun AIB (taux nul), la ligne est ABSENTE ; une pièce émise avec un taux le garde. */
+          f.aibTaux === 0 ? null : { k: (f.aibTaux != null && f.aibTaux !== TAUX_AIB ? 'AIB ' + f.aibTaux + ' %' : F.aib.libelle) + ' (' + F.aib.code + ')', v: C.money(aib, false) },
+        ].filter(Boolean)));
         if (!TAUX_TVA) {
           taxes.appendChild(el('p.mt-1.text-\\[9px\\].italic.text-slate-500', { text: F.mentionExoneration }));
         }

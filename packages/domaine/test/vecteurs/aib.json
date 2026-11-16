@@ -85,6 +85,30 @@
     "declencheur": "choix",
     "ordre": 3,
     "description": "Prestation de service dont l’organisme payeur retient l’AIB sur le prix hors taxe. Choisie par le caissier, jamais d’office."
+   },
+   {
+    "id": "SAI04",
+    "statut": "actif",
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "code": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "declencheur": "choix",
+    "ordre": 4,
+    "famille": "retenue_tiers",
+    "description": "Tiers personne physique dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
+   },
+   {
+    "id": "SAI05",
+    "statut": "actif",
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "code": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "declencheur": "choix",
+    "ordre": 5,
+    "famille": "retenue_tiers",
+    "description": "Tiers personne morale dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
    }
   ],
   "bareme": [
@@ -139,6 +163,32 @@
     "dateFin": null,
     "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
     "motif": "Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026)."
+   },
+   {
+    "id": "BAI005",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "personne_physique",
+    "taux": 3,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "motif": "Retenue sur la facture d’un tiers personne physique (date d’effet d’attente : début de l’exercice 2026)."
+   },
+   {
+    "id": "BAI006",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "personne_morale",
+    "taux": 5,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "motif": "Retenue sur la facture d’un tiers personne morale (date d’effet d’attente : début de l’exercice 2026)."
    }
   ],
   "reglages": [
@@ -410,6 +460,166 @@
     "situation": "prestation_service",
     "libelle": "Prestation de service retenue par le payeur",
     "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Tiers, personne physique (retenue sur sa facture) » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "personne_physique",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Tiers, personne morale (retenue sur sa facture) » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "personne_morale",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
     "date": "2026-11-09"
    }
   },

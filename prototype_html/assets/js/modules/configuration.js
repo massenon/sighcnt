@@ -3832,9 +3832,37 @@
     });
   }
   /** Les commandes d'une ligne d'obligation : Modifier (éditer), Retirer (annuler). Absentes sans droit. */
+  /* Lot FISC-2 (Direction, 16/11/2026) : « Confirmer » une obligation « à confirmer par la CNSS ». La commande est ABSENTE sans le geste réservé `confirmer_obligation_fiscale` ; le moteur refuse aussi.
+     La référence est obligatoire (la pièce de la CNSS qui confirme) ; la confirmation est signée, journalisée et versionnée par date (la version « à confirmer » reste à l'historique). */
+  function confirmerObligationUI(o, apres) {
+    var f = U.form([
+      { name: 'reference', label: 'Référence de la confirmation', required: true, col: 'full', help: 'Courrier, e-mail ou page de la CNSS qui confirme, avec sa date. Sans référence, l’obligation ne passe pas à « confirmée ».' },
+      { name: 'dateEffet', label: 'Confirmée à compter du', type: 'date', required: true, col: 'full', help: 'La version « à confirmer » reste lue pour les dates antérieures.' },
+    ], { dateEffet: C.iso(C.aujourdhui()) });
+    var m = U.modal({
+      title: 'Confirmer : ' + o.libelle, size: 'md',
+      body: el('div.space-y-3', null, [
+        K.note('La confirmation est <strong>signée</strong> (votre compte, la date et l’heure), <strong>journalisée</strong> (RG-12) et <strong>versionnée par date</strong> : la version « à confirmer » part à l’historique, elle n’est pas réécrite.', { tone: 'info', icon: 'shield-check' }),
+        f,
+      ]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.commande('Confirmer', { variant: 'primary', icon: 'check', moduleCode: 'CFG', onclick: function () {
+          var v = f.collect();
+          if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+          var r = CF().confirmerObligation({ code: o.code, reference: v.reference, dateEffet: v.dateEffet });
+          if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 12000 }); return; }
+          m.close();
+          U.toast(o.code + ' confirmée.', { type: 'success', detail: 'Référence ' + r.reference + ', signée par ' + r.confirmeePar + ', à compter du ' + C.dateFR(r.dateEffet) + '.' });
+          if (apres) apres();
+        } }),
+      ],
+    });
+  }
   function commandesObligation(o, apres) {
     if (CF().posteFileul()) return el('span.text-xs.text-slate-400', { text: 'tenue par la mère' });
     return el('div.flex.items-center.justify-end.gap-1', null, [
+      o.aConfirmer && CF().peutConfirmerObligation() ? K.commande('Confirmer', { size: 'sm', icon: 'check', moduleCode: 'CFG', onclick: function () { confirmerObligationUI(o, apres); } }) : null,
       K.commandeIcone('pencil', 'Modifier (version datée)', function () { modifierObligationUI(o, apres); }, { moduleCode: 'CFG' }),
       CF().versionAVenirDe(o.code) ? K.commandeIcone('undo-2', 'Annuler la version à venir', function () { annulerVersionUI(o, apres); }, { moduleCode: 'CFG' }) : null,
       K.commandeIcone('archive', 'Retirer (version datée)', function () { retirerObligationUI(o, apres); }, { moduleCode: 'CFG', droit: 'annuler' }),
@@ -4020,7 +4048,8 @@
           { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
           { label: 'Obligation', render: function (e) {
             return el('div', null, [el('span', { text: e.libelle }),
-              e.aConfirmer ? el('span.a-confirmer.block.text-xs.text-warning-700', { 'data-code': e.code, text: 'À confirmer, non arrêtée. Source : ' + (e.source || 'non citée') }) : null]);
+              e.aConfirmer ? el('span.a-confirmer.block.text-xs.text-warning-700', { 'data-code': e.code, text: 'À confirmer, non arrêtée. Source : ' + (e.source || 'non citée') }) : null,
+              e.confirmationReference ? el('span.confirmee.block.text-xs.text-success-700', { 'data-code': e.code, text: 'Confirmée (référence ' + e.confirmationReference + ')' + (e.confirmeePar ? ', signée par ' + e.confirmeePar : '') }) : null]);
           } },
           { label: 'Échéance', render: celluleEcheance },
           { label: 'Déclaration préalable', render: function (e) { return e.declaration || '—'; } },
@@ -5354,7 +5383,7 @@
 
       /* Le formulaire d'une version : une nouvelle version (situation libre) ou la correction d'une version existante (situation figée, taux proposé). */
       function formulaireVersion(base) {
-        var sits = B.situations();
+        var sits = B.situations('tous');
         var dernieres = base ? B.versionsDe(base.situation) : [];
         var minimum = dernieres.length ? C.iso(C.addDays(dernieres[dernieres.length - 1].dateEffet, 1)) : aujourdhui();
         var defauts = base
@@ -5547,6 +5576,92 @@
         ]);
       }
 
+
+      /* --- Imputations (lot FISC-2, Direction, 16/11/2026) : l'AIB s'impute OPÉRATION PAR OPÉRATION, par le comptable. Le logiciel propose le taux du barème à la date de l'opération, il ne décide jamais. --- */
+      function ongletImputations() {
+        var IA = global.SIGH.imputationAib;
+        var lignes = IA.liste().sort(function (a, b) { return String(b.dateOperation).localeCompare(String(a.dateOperation)); });
+        var libOp = function (v) { var o = IA.OPERATIONS.filter(function (x) { return x.value === v; })[0]; return o ? o.label : v; };
+        function formulaireImputation() {
+          var comptes = S.collection('comptes').active().slice().sort(function (a, b) { return String(a.num).localeCompare(String(b.num)); })
+            .map(function (c) { return { value: String(c.num), label: c.num + ' ' + c.libelle }; });
+          var f = U.form([
+            { name: 'operation', label: 'Opération', type: 'select', required: true, col: 'full', value: '', options: [{ value: '', label: '— choisir —' }].concat(IA.OPERATIONS) },
+            { name: 'reference', label: 'Référence de la pièce', required: true, help: 'Facture, règlement ou relevé auquel l’imputation se rattache.' },
+            { name: 'tiers', label: 'Tiers (fournisseur, prescripteur, prestataire, assureur)' },
+            { name: 'dateOperation', label: 'Date de l’opération', type: 'date', required: true, value: aujourdhui() },
+            { name: 'base', label: 'Base hors taxes (FCFA)', type: 'money', required: true, min: 1 },
+            { name: 'appliquer', label: 'Appliquer l’AIB à cette opération ?', type: 'select', required: true, col: 'full', value: '',
+              options: [{ value: '', label: '— à décider par le comptable —' }, { value: 'oui', label: 'Oui, appliquer' }, { value: 'non', label: 'Non, ne pas appliquer' }],
+              help: 'Le logiciel ne décide jamais : il propose un taux, vous répondez.' },
+            { name: 'situation', label: 'Ligne du barème', type: 'select', col: 'full', value: '', options: [{ value: '', label: '— choisir (si appliqué) —' }].concat(B.situations('tous').map(function (x) { return { value: x.code, label: x.libelle }; })),
+              condition: { controle: 'appliquer', quand: ['oui'] } },
+            { name: 'taux', label: 'Taux retenu (%)', type: 'number', min: 0, max: 100, step: 1, col: 'third', condition: { controle: 'appliquer', quand: ['oui'] } },
+            { name: 'compte', label: 'Compte d’imputation', type: 'select', col: 'full', value: '', options: [{ value: '', label: '— choisir (aucun présélectionné) —' }].concat(comptes),
+              condition: { controle: 'appliquer', quand: ['oui'] } },
+            { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, col: 'full', help: 'Obligatoire pour ne pas appliquer, ou si le taux retenu n’est pas celui du barème à la date de l’opération.' },
+          ], {});
+          var proposition = el('p.text-xs.text-slate-600', { 'data-proposition': '' });
+          function proposer() {
+            var c = f.controls, sit = c.situation && c.situation.value, d = c.dateOperation && c.dateOperation.value;
+            if (!sit || !d) { proposition.textContent = 'Choisir la ligne et la date pour voir la proposition du barème.'; return; }
+            var r = IA.proposer({ situation: sit, date: d });
+            proposition.textContent = r.ok ? 'Proposition du barème au ' + C.dateFR(d) + ' : ' + r.taux + ' %' + (r.arrete ? '' : ' (version pas encore arrêtée)') + '. Le taux retenu reste le vôtre.'
+              : 'Aucune proposition : ' + r.motif;
+          }
+          ['situation', 'dateOperation'].forEach(function (n) { if (f.controls[n]) { f.controls[n].addEventListener('change', proposer); f.controls[n].addEventListener('input', proposer); } });
+          proposer();
+          var m = U.modal({
+            title: 'Imputer l’AIB d’une opération', size: 'lg',
+            body: el('div.space-y-3', null, [
+              K.note('Appliquer ou non, quelle ligne, quel taux, quel compte : <strong>le comptable décide, opération par opération</strong>. Le taux du barème à la date de l’opération est une proposition. L’imputation est signée et journalisée ; elle n’écrit aucune écriture comptable.', { tone: 'info', icon: 'scale' }),
+              f, proposition,
+            ]),
+            footer: [
+              K.btn('Annuler', { onclick: function () { m.close(); } }),
+              K.commande('Enregistrer l’imputation', { variant: 'primary', icon: 'check', moduleCode: 'M12', onclick: function () {
+                var v = f.collect();
+                if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+                var r = IA.imputer({ operation: v.operation, reference: v.reference, tiers: v.tiers, dateOperation: v.dateOperation, base: v.base,
+                  appliquer: v.appliquer === 'oui' ? true : (v.appliquer === 'non' ? false : undefined), situation: v.situation, taux: v.taux, compte: v.compte, motif: v.motif });
+                if (!r.ok) { refuser(r); return; }
+                m.close(); U.toast('Imputation enregistrée.', { type: 'success' }); dessiner();
+              } }),
+            ],
+          });
+        }
+        function annuler(x) {
+          U.confirm({ title: 'Annuler l’imputation ' + x.reference, message: 'L’imputation est archivée avec son motif (RG-14) ; l’opération redevient imputable.', confirmLabel: 'Annuler l’imputation', requireMotif: true }).then(function (rep) {
+            if (!rep || !String(rep.motif || '').trim()) return;
+            var r = IA.annuler(x.id, rep.motif);
+            if (!r.ok) { refuser(r); return; }
+            dessiner();
+          });
+        }
+        return el('div.space-y-3', null, [
+          K.note('<strong>L’AIB s’impute opération par opération, par le comptable.</strong> Achats auprès des fournisseurs, règlements des prescripteurs et des prestataires externes, règlements reçus des assureurs : '
+            + 'appliquer ou non, quelle ligne, quel compte, dépend de conditions que le logiciel ne connaît pas. Il propose le taux du barème à la date de l’opération ; il ne décide jamais. '
+            + 'Le patient, lui, paie le montant total : sa facture ne porte aucun AIB.', { tone: 'info', icon: 'scale' }),
+          U.dataTable({
+            title: 'Imputations de l’AIB', rows: lignes, pageSize: 15, exportName: 'imputations-aib', searchable: true,
+            emptyMessage: 'Aucune imputation enregistrée.',
+            columns: [
+              { key: 'dateOperation', label: 'Date', render: function (x) { return C.dateFR(x.dateOperation); } },
+              { key: 'operation', label: 'Opération', render: function (x) { return libOp(x.operation); } },
+              { key: 'reference', label: 'Référence', render: function (x) { return el('span.font-mono.text-xs', { text: x.reference }); } },
+              { key: 'tiers', label: 'Tiers', render: function (x) { return x.tiers || '—'; } },
+              { key: 'base', label: 'Base', align: 'right', render: function (x) { return C.money(x.base, false); } },
+              { key: 'appliquer', label: 'Décision', render: function (x) { return x.appliquer ? U.badge('Appliqué ' + x.taux + ' %', x.horsProposition ? 'warning' : 'success') : U.badge('Non appliqué', 'neutral'); } },
+              { key: 'montant', label: 'AIB', align: 'right', render: function (x) { return x.appliquer ? C.money(x.montant, false) : '—'; } },
+              { key: 'compte', label: 'Compte', render: function (x) { return x.compte || '—'; } },
+              { key: 'signeePar', label: 'Signée par', render: function (x) { return x.signeePar + ' (' + x.signeeRole + ')'; } },
+            ],
+            rowActions: function (x) { return [IA.peut() ? K.commandeIcone('undo-2', 'Annuler l’imputation', function () { annuler(x); }, { moduleCode: 'M12', variant: 'ghost' }) : null].filter(Boolean); },
+            actions: [IA.peut() ? K.commande('Imputer une opération', { variant: 'primary', size: 'sm', icon: 'plus', moduleCode: 'M12', onclick: formulaireImputation }) : null].filter(Boolean),
+          }),
+        ]);
+      }
+
       function dessiner() {
         C.clear(root);
         var host = el('div.space-y-4');
@@ -5563,7 +5678,7 @@
         }
         host.appendChild(K.note('<strong>Un IFU saisi est présumé actif.</strong> La maquette ne peut pas interroger la DGI : elle applique la situation « avec IFU » à tout IFU de 13 chiffres et le dit à la caisse.', { tone: 'info', icon: 'shield-question' }));
         host.appendChild(U.kpiGrid([
-          { label: 'Situations actives', value: C.num(B.situations().length), icon: 'users', tone: 'navy' },
+          { label: 'Situations actives', value: C.num(B.situations('tous').length), icon: 'users', tone: 'navy' },
           { label: 'Versions en vigueur', value: C.num(enVigueur.length), icon: 'percent', tone: 'success', hint: 'À la date du jour' },
           { label: 'Versions en attente de validation', value: C.num(aValider.length), icon: 'clipboard-check', tone: aValider.length ? 'warning' : 'neutral' },
           { label: 'Versions archivées', value: C.num(colV.archived().length), icon: 'archive', tone: 'neutral', hint: 'Restaurables depuis la corbeille' },
@@ -5576,7 +5691,7 @@
             lignes.forEach(function (v) { var l = B.versionsDe(v.situation); derniere[v.id] = l.length && l[l.length - 1].id === v.id; });
             return U.dataTable({
               title: 'Versions du barème', rows: lignes, exportName: 'bareme-aib', pageSize: 20, searchable: true,
-              filters: [{ name: 'situation', label: 'Situation', options: B.situations().map(function (x) { return { value: x.code, label: x.libelle }; }) }],
+              filters: [{ name: 'situation', label: 'Situation', options: B.situations('tous').map(function (x) { return { value: x.code, label: x.libelle }; }) }],
               emptyMessage: 'Aucune version : sans version, la caisse refuse de proposer un taux (AIB_SANS_BAREME).',
               onRowClick: detailVersion,
               columns: [
@@ -5599,7 +5714,7 @@
               actions: [K.commande('Nouvelle version', { variant: 'primary', size: 'sm', icon: 'plus', moduleCode: 'CFG', onclick: function () { formulaireVersion(null); } })].filter(Boolean),
             });
           } },
-          { id: 'situations', label: 'Situations', badge: colS.active().length, render: function () {
+          { id: 'situations', label: 'Situations et lignes', badge: colS.active().length, render: function () {
             var h = el('div');
             K.crud({
               collection: 'situationsAib', module: 'CFG', entite: 'situation', entiteP: 'situations', tabLabel: 'Situations actives', defaultSort: 'ordre',
@@ -5607,6 +5722,7 @@
                 return [
                   { key: 'code', label: 'Code', render: function (r) { return el('span.font-mono.text-xs', { text: r.code }); } },
                   { key: 'libelle', label: 'Libellé' },
+                  { key: 'famille', label: 'Barème', render: function (r) { var f = B.FAMILLES.filter(function (x) { return x.value === (r.famille || 'acheteur'); })[0]; return f ? f.label : r.famille; } },
                   { key: 'declencheur', label: 'Choisie', render: function (r) { var d = B.DECLENCHEURS.filter(function (x) { return x.value === r.declencheur; })[0]; return d ? d.label : r.declencheur; } },
                   { key: 'taux', label: 'Taux du jour', align: 'right', render: function (r) { var t = global.SIGH.baremeAib.aLaDate(r.code); return t.ok ? t.taux + ' %' : U.badge('Sans barème', 'warning'); } },
                 ];
@@ -5615,6 +5731,8 @@
                 return [
                   { name: 'code', label: 'Code', required: true, readonly: !!rec, help: 'Minuscules, chiffres et tiret bas. Ne change plus après la création : des versions le citent.' },
                   { name: 'libelle', label: 'Libellé', required: true },
+                  { name: 'famille', label: 'Barème', type: 'select', required: true, options: B.FAMILLES, value: (rec && rec.famille) || 'acheteur',
+                    help: 'Deux barèmes datés : la situation de l’acheteur, et la retenue sur la facture d’un tiers (jamais proposée à la caisse).' },
                   { name: 'declencheur', label: 'La fenêtre de la caisse la choisit', type: 'select', required: true, options: B.DECLENCHEURS },
                   { name: 'ordre', label: 'Ordre d’affichage', type: 'number', min: 1 },
                   { name: 'description', label: 'Description', type: 'textarea', rows: 3, col: 'full' },
@@ -5627,10 +5745,11 @@
                 if (B.ROLES_ECRITURE.indexOf(role) < 0) return 'AIB_ECRITURE_RESERVEE : le barème se tient par le comptable, la DAF ou l’administrateur.';
                 return null;
               },
-              transform: function (v) { v.ordre = v.ordre ? Number(v.ordre) : colS.all().length + 1; return v; },
+              transform: function (v) { v.ordre = v.ordre ? Number(v.ordre) : colS.all().length + 1; if (!v.famille) v.famille = 'acheteur'; return v; },
             })(h);
             return h;
           } },
+          { id: 'imputations', label: 'Imputations', badge: global.SIGH.imputationAib.liste().length || undefined, render: ongletImputations },
           { id: 'reglages', label: 'Réglages', badge: colReglages().active().filter(function (v) { return v.aValider === true; }).length || undefined, render: ongletReglages },
           { id: 'achats', label: 'Achats à écrire', render: ongletAchats },
           { id: 'abrancher', label: 'Ce qu’il faudrait y brancher', badge: B.aBrancher().filter(function (x) { return x.etat !== 'branche'; }).length, render: function () {

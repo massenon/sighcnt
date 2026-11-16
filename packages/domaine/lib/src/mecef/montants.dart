@@ -394,15 +394,18 @@ class AcheteurMecef {
   Map<String, Object?> toJson() => {'ifu': ifu, 'nom': nom, 'aibTaux': aibTaux};
 }
 
-/// Contrôle de la fenêtre « Facture normalisée » : IFU de l'acheteur (13 chiffres quand il est renseigné, facultatif pour un particulier),
-/// nom (obligatoire dès qu'un IFU est saisi), taux d'AIB (0, 1 ou 5 ; [aibParDefaut] quand il est vide).
+/// Contrôle de l'acheteur d'une facture de PATIENT : IFU de l'acheteur (13 chiffres quand il est renseigné, facultatif pour un particulier), nom (obligatoire dès qu'un IFU
+/// est saisi). Direction, 16/11/2026 (section AQ point 8, lot FISC-2) : la facture d'un patient ne porte AUCUN AIB, le patient paie le montant total. Un taux demandé
+/// (taux non nul, ou ligne du barème [aibSituation]) est REFUSÉ `AIB_FACTURE_PATIENT`, sans rien écrire ; sans taux l'acheteur porte un taux nul. [conserve] : pièce DÉJÀ
+/// ÉMISE avec un taux, elle le garde tel quel (il n'est pas rejugé). Port de `SIGH.mecef.validerAcheteur`.
 ({AcheteurMecef? acheteur, RefusMecef? refus}) validerAcheteurMecef({
   Object? ifu,
   Object? nom,
   Object? aibTaux,
-  int aibParDefaut = aibTauxParDefaut,
+  Object? aibSituation,
+  bool conserve = false,
 }) {
-  final i = (ifu == null ? '' : '$ifu').replaceAll(RegExp('[\\s  ]'), '');
+  final i = (ifu == null ? '' : '$ifu').replaceAll(RegExp('[\\s  ]'), '');
   if (i.isNotEmpty && !RegExp(r'^\d{13}$').hasMatch(i)) {
     return (
       acheteur: null,
@@ -422,19 +425,31 @@ class AcheteurMecef {
           'Saisir le nom de l’acheteur qui porte cet IFU.')
     );
   }
-  final brut = aibTaux == null || aibTaux == '' ? aibParDefaut.toDouble() : _nombre(aibTaux);
-  if (!brut.isFinite || !aibTauxAdmis.contains(brut.toInt()) || brut != brut.truncateToDouble()) {
+  final vide = aibTaux == null || aibTaux == '';
+  final sit = aibSituation == null || aibSituation == '' ? null : '$aibSituation';
+  int taux;
+  if (conserve && !vide) {
+    final brut = _nombre(aibTaux);
+    if (!brut.isFinite || brut != brut.truncateToDouble() || brut < 0 || brut > 100) {
+      return (
+        acheteur: null,
+        refus: _refus('AIB_TAUX_INVALIDE', 'Le taux d’AIB (${_js(aibTaux)}) n’est pas un pourcentage entier.', 'Reprendre la pièce.')
+      );
+    }
+    taux = brut.toInt();
+  } else if ((!vide && _nombre(aibTaux) != 0) || sit != null) {
     return (
       acheteur: null,
       refus: _refus(
-          'AIB_TAUX_INVALIDE',
-          'Le taux d’AIB (${_js(aibTaux)}) n’est pas l’un des choix admis (0, 1 ou 5 %).',
-          'Choisir 0, 1 ou 5 %.')
+          'AIB_FACTURE_PATIENT',
+          'Une facture de patient ne porte aucun AIB : le patient paie le montant total, seul affiché sur sa facture de caisse (taux demandé : ${sit ?? _js(aibTaux)}).',
+          'Retirer le taux. L’AIB concerne les règlements de la clinique à des tiers et les règlements reçus des assureurs : il s’impute à l’écran « Barème de l’AIB », onglet « Imputations ».')
     );
+  } else {
+    taux = 0;
   }
   return (
-    acheteur: AcheteurMecef(
-        ifu: i.isEmpty ? null : i, nom: n.isEmpty ? null : n, aibTaux: brut.toInt()),
+    acheteur: AcheteurMecef(ifu: i.isEmpty ? null : i, nom: n.isEmpty ? null : n, aibTaux: taux),
     refus: null
   );
 }

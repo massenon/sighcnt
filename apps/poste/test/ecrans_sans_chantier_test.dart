@@ -60,7 +60,7 @@ void main() {
   // `gen-poste-jeu.js` (`JEUX_IMPORT_NON_PORTES`) et de `parite-statuts.json`.
   const impNonPortes = <String>{
   };
-  const nonPortesNommes = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
+  const nonPortesNommes = {'m13-sms-journal', 'cfg-sms', ...impNonPortes};
 
   // Les droits EN FORCE au poste : la matrice engendrée superposée aux fiches `rbac` et `modulesActifs` du jeu livré (la coque fait ce calcul à chaque écriture).
   final magasinDuJeu = Magasin.depuisDossier(['rbac', 'modulesActifs']);

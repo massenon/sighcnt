@@ -10,6 +10,7 @@
 // (désactivé par défaut : le moteur liste, n'écrit rien) ; Q7 qui supporte les 5 % est un réglage (défaut « clinique », non arrêté : le texte officiel manque, aucun
 // effet comptable n'en découle). Symboles préfixés `aib` / `Aib`.
 
+import '../configuration/cfb_fiscal_date.dart' show cfbControleDateEffet;
 import '../parametres/definitions.dart' show definitionDeParametre;
 import '../parametres/parametres.dart' show Parametre;
 
@@ -135,9 +136,10 @@ String aibNormaliserIfu(Object? x) => _s(x).replaceAll(RegExp('[\\s  ]'), '')
 // Le barème : taux de la situation à la date
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 
-/// Les situations actives, dans l'ordre d'affichage (puis par code).
-List<AibFiche> aibSituationsActives(AibDonnees d) {
-  final l = d.situations.where(_actif).toList();
+/// Les situations actives d'UN barème, dans l'ordre d'affichage (puis par code) : `acheteur` (défaut : celle d'une fiche sans famille), `retenue_tiers` (retenue sur la facture
+/// d'un tiers, lot FISC-2) ou `tous`.
+List<AibFiche> aibSituationsActives(AibDonnees d, {String famille = 'acheteur'}) {
+  final l = d.situations.where((x) => _actif(x) && (famille == 'tous' || (_vide(x['famille']) ? 'acheteur' : '${x['famille']}') == famille)).toList();
   num ordre(AibFiche f) => (f['ordre'] is num && f['ordre'] != 0) ? f['ordre'] as num : 99;
   l.sort((a, b) {
     final c = ordre(a).compareTo(ordre(b));
@@ -493,6 +495,94 @@ AibFiche aibDefinirReglage(
   };
 }
 
+/// Une version nouvelle du barème (`SIGH.baremeAib.nouvelleVersion`, lot FISC-2 : portée au poste) : la situation existe, le taux est un entier de 0 à 100, la date d'effet est lisible,
+/// la SOURCE est dite (on n'invente pas un taux), le motif est dit, aucune version ne commence déjà ce jour-là, la date est postérieure à la plus récente. Elle FERME la précédente à
+/// la veille. Une version saisie par un profil de la famille de validation naît ARRÊTÉE ([marquage] : `{aValider: false, valideLe, validePar, valideRole}`) ; hors famille, « à valider ».
+/// Rend `{ok, fiche, fermeture, ...}` ou le refus nommé ; l'appelant écrit la fiche, ferme la précédente et journalise (RG-12).
+AibFiche aibNouvelleVersion(
+  AibDonnees d,
+  AibFiche entree, {
+  required String role,
+  required String libelleRole,
+  bool fileul = false,
+  required String id,
+  required String creeLe,
+  required String auteur,
+  Map<String, Object?>? marquage,
+}) {
+  final refus = aibMotifEcriture(role: role, libelleRole: libelleRole, fileul: fileul);
+  if (refus != null) return refus;
+  final situation = entree['situation'];
+  AibFiche? sit;
+  for (final s in d.situations) {
+    if (_actif(s) && s['code'] == situation) {
+      sit = s;
+      break;
+    }
+  }
+  if (sit == null) {
+    return aibRefus('AIB_SITUATION_INCONNUE', 'La situation « ${situation ?? ''} » n’existe pas au barème de l’AIB.', 'Choisir une situation listée ou la créer d’abord.');
+  }
+  final brut = entree['taux'];
+  final taux = brut is num ? brut : num.tryParse(_s(brut));
+  if (brut == null || brut == '' || taux == null || !taux.isFinite || taux.floor() != taux || taux < 0 || taux > 100) {
+    return aibRefus('AIB_TAUX_INVALIDE', 'Le taux (« ${brut ?? ''} ») doit être un pourcentage entier de 0 à 100 : la maquette calcule en montants entiers.', 'Saisir un entier, par exemple 5.');
+  }
+  final dateEffet = _vide(entree['dateEffet']) ? '' : _jour('${entree['dateEffet']}');
+  if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dateEffet)) {
+    return aibRefus('AIB_DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle le taux s’applique.');
+  }
+  final source = _s(entree['source']).trim();
+  if (source.isEmpty) {
+    return aibRefus('AIB_SOURCE_ABSENTE', 'Aucune source n’est dite pour ce taux : on n’invente pas un taux, on cite son texte.', 'Indiquer le texte, la décision ou la déclaration d’où vient le taux.');
+  }
+  final motif = _s(entree['motif']).trim();
+  if (motif.isEmpty) {
+    return aibRefus('AIB_MOTIF_ABSENT', 'Le motif de cette version est obligatoire.', 'Dire pourquoi le taux change ou pourquoi la version est ajoutée.');
+  }
+  final existantes = aibVersionsBareme(d, '$situation');
+  final derniere = existantes.isEmpty ? null : existantes.last;
+  if (existantes.any((v) => _s(v['dateEffet']) == dateEffet)) {
+    return aibRefus('AIB_DATE_EXISTANTE', 'Une version de cette situation commence déjà le ${aibDateFr(dateEffet)} : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure, ou retirer l’autre version (archive).');
+  }
+  if (derniere != null && _s(derniere['dateEffet']).compareTo(dateEffet) > 0) {
+    return aibRefus('AIB_DATE_ANTERIEURE', 'La version la plus récente de cette situation commence le ${aibDateFr(_s(derniere['dateEffet']))} : une version insérée avant elle masquerait l’historique.',
+        'Choisir une date d’effet postérieure au ${aibDateFr(_s(derniere['dateEffet']))}.');
+  }
+  final veillee = aibVeille(dateEffet);
+  AibFiche? fermeture;
+  if (derniere != null && (_vide(derniere['dateFin']) || _s(derniere['dateFin']).compareTo(veillee) > 0)) {
+    fermeture = {'id': derniere['id'], 'dateFin': veillee, 'avant': _vide(derniere['dateFin']) ? null : derniere['dateFin']};
+  }
+  final patch = marquage ?? const {'aValider': true};
+  final fiche = <String, Object?>{
+    'id': id,
+    'statut': 'actif',
+    'situation': situation,
+    'taux': taux.toInt(),
+    'dateEffet': dateEffet,
+    'dateFin': null,
+    'source': source,
+    'motif': motif,
+    'creeLe': creeLe,
+    'creePar': auteur,
+    ...patch,
+  };
+  return {
+    'ok': true,
+    'id': id,
+    'version': existantes.length + 1,
+    'situation': situation,
+    'taux': taux.toInt(),
+    'dateEffet': dateEffet,
+    'precedente': derniere?['id'],
+    'precedenteFermeeLe': fermeture == null ? null : veillee,
+    'enAttenteDeValidation': patch['aValider'] == true,
+    'fiche': fiche,
+    'fermeture': fermeture,
+  };
+}
+
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // Les achats : ce qu'il faudrait écrire, puis ce qui s'écrit quand le branchement est actif
 // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -673,4 +763,135 @@ List<AibFiche> aibReglagesDepuisParametres(Iterable<Parametre> versions) {
     }
   }
   return out;
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// L'imputation de l'AIB, opération par opération (Direction, 16/11/2026, section AQ points 8 et 23, lot FISC-2) : `SIGH.imputationAib`
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// L'AIB concerne les règlements de la clinique à des tiers et les règlements reçus des assureurs, qui tantôt l'appliquent, tantôt non : l'imputation est LAISSÉE AU
+// COMPTABLE, opération par opération. Le logiciel PROPOSE le taux du barème daté à la date de l'opération ; il ne décide JAMAIS (le moteur refuse une décision absente).
+// Un taux autre que la proposition se motive. Aucune écriture comptable n'en découle. [droit] : le geste réservé `imputer_aib` de la fiche RBAC.
+
+/// Les trois opérations qui s'imputent.
+const List<Map<String, Object?>> aibOperations = [
+  {'value': 'achat_fournisseur', 'label': 'Achat auprès d’un fournisseur'},
+  {'value': 'reglement_prescripteur', 'label': 'Règlement d’un prescripteur ou d’un prestataire externe'},
+  {'value': 'reglement_assureur', 'label': 'Règlement reçu d’un assureur'},
+];
+
+/// La PROPOSITION du barème à la date de l'opération : `{ok, taux, situation, versionId, arrete, date, famille}` ou le refus nommé. N'écrit rien, ne décide rien.
+AibFiche aibProposerImputation(AibDonnees d, {required Object? situation, required String date}) {
+  AibFiche? sit;
+  for (final s in d.situations) {
+    if (_actif(s) && s['code'] == situation) {
+      sit = s;
+      break;
+    }
+  }
+  if (sit == null) {
+    return aibRefus('AIB_SITUATION_INCONNUE', 'La ligne « ${situation ?? ''} » n’existe pas au barème de l’AIB.', 'Choisir une ligne d’un des deux barèmes (écran « Barème de l’AIB »).');
+  }
+  final r = aibTauxALaDate(d, '$situation', date);
+  if (r['ok'] == true) return {...r, 'famille': _vide(sit['famille']) ? 'acheteur' : sit['famille']};
+  return r;
+}
+
+/// Imputer une opération : `{ok: true, fiche}` (la fiche à insérer dans `imputationsAib`, signée) ou le refus nommé, dans l'ordre de la maquette : droit, opération, référence,
+/// date (illisible, exercice clos), base, décision ABSENTE, déjà imputée, puis (non appliqué) motif, ou (appliqué) ligne, taux, compte, motif d'un taux hors proposition.
+AibFiche aibImputer(
+  AibDonnees d,
+  Iterable<AibFiche> imputations, {
+  required bool droit,
+  required Map<String, Object?> saisie,
+  required String acteur,
+  required String libelleRole,
+  required DateTime maintenant,
+  required DateTime aujourdhui,
+  Iterable<Map<String, Object?>> exercices = const [],
+}) {
+  if (!droit) {
+    return aibRefus('IMPUTATION_AIB_RESERVEE', 'Imputer l’AIB est un droit réservé de la fiche du rôle : « $libelleRole » ne l’a pas. Le logiciel propose un taux, il ne décide jamais.',
+        'Demander à un rôle qui détient le droit « Imputer l’AIB » (matrice des droits), en général le comptable.');
+  }
+  final operation = saisie['operation'];
+  if (!aibOperations.any((x) => x['value'] == operation)) {
+    return aibRefus('AIB_OPERATION_INCONNUE', 'L’opération « ${operation ?? ''} » n’est pas l’une des trois opérations qui s’imputent (${aibOperations.map((x) => x['value']).join(', ')}).', 'Choisir le type de l’opération.');
+  }
+  final reference = _s(saisie['reference']).trim();
+  if (reference.isEmpty) {
+    return aibRefus('AIB_REFERENCE_ABSENTE', 'La référence de l’opération (facture, règlement, relevé) est obligatoire : une imputation se rattache à une pièce.', 'Saisir la référence de la pièce.');
+  }
+  final dateOp = _vide(saisie['dateOperation']) ? '' : _jour('${saisie['dateOperation']}');
+  if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dateOp)) {
+    return aibRefus('AIB_DATE_INVALIDE', 'La date de l’opération est absente ou illisible.', 'Choisir la date de la facture ou du règlement.');
+  }
+  final clos = cfbControleDateEffet(dateOp, exercices: exercices, aujourdhui: aujourdhui);
+  if (clos != null) return aibRefus(clos.code, clos.motif, clos.geste);
+  final base = saisie['base'] is num ? saisie['base'] as num : num.tryParse(_s(saisie['base']));
+  if (base == null || !(base > 0) || base != base.floor()) {
+    return aibRefus('AIB_BASE_INVALIDE', 'La base (montant hors taxes de l’opération) est un entier strictement positif (reçu « ${saisie['base'] ?? ''} »).', 'Saisir le montant de la facture ou du règlement, en francs entiers.');
+  }
+  final appliquer = saisie['appliquer'];
+  if (appliquer != true && appliquer != false) {
+    return aibRefus('AIB_DECISION_ABSENTE', 'Le comptable n’a pas décidé : appliquer l’AIB à cette opération ou non. Le logiciel propose un taux, il ne décide jamais.', 'Répondre « appliquer » ou « ne pas appliquer ».');
+  }
+  for (final x in imputations) {
+    if (_actif(x) && x['operation'] == operation && _s(x['reference']).toLowerCase() == reference.toLowerCase()) {
+      return aibRefus('AIB_DEJA_IMPUTEE', 'L’opération $reference est déjà imputée (${x['appliquer'] == true ? '${x['taux']} %' : 'AIB non appliqué'}) : une imputation ne se réécrit pas.', 'L’annuler avec un motif, puis la refaire.', {'id': x['id']});
+    }
+  }
+  final motif = _s(saisie['motif']).trim();
+  final fiche = <String, Object?>{
+    'operation': operation,
+    'reference': reference,
+    if (!_vide(saisie['tiers'])) 'tiers': _s(saisie['tiers']).trim(),
+    'dateOperation': dateOp,
+    'base': base.toInt(),
+    'appliquer': appliquer,
+  };
+  if (appliquer == false) {
+    if (motif.isEmpty) {
+      return aibRefus('AIB_MOTIF_ABSENT', 'Ne pas appliquer l’AIB se motive (le tiers paie lui-même son AIB, l’assureur ne l’applique pas, exonération).', 'Saisir le motif de la décision.');
+    }
+    fiche['motif'] = motif;
+  } else {
+    if (_vide(saisie['situation'])) {
+      return aibRefus('AIB_LIGNE_ABSENTE', 'La ligne du barème n’est pas choisie : le comptable choisit la ligne à chaque opération.', 'Choisir la ligne (personne physique, personne morale, ou une situation de l’acheteur).');
+    }
+    final prop = aibProposerImputation(d, situation: saisie['situation'], date: dateOp);
+    if (prop['ok'] != true && prop['code'] == 'AIB_SITUATION_INCONNUE') return prop;
+    if (_vide(saisie['taux'])) {
+      return aibRefus('AIB_TAUX_ABSENT', 'Le taux n’est pas posé : le logiciel le propose${prop['ok'] == true ? ' (${prop['taux']} % au ${aibDateFr(dateOp)})' : ''}, le comptable le retient ou le change.', 'Saisir le taux retenu pour cette opération.');
+    }
+    final taux = saisie['taux'] is num ? saisie['taux'] as num : num.tryParse(_s(saisie['taux']));
+    if (taux == null || !(taux >= 0 && taux <= 100) || taux != taux.floor()) {
+      return aibRefus('AIB_TAUX_INVALIDE', 'Le taux (« ${saisie['taux']} ») doit être un pourcentage entier de 0 à 100.', 'Saisir un entier, par exemple 5.');
+    }
+    if (_vide(saisie['compte'])) {
+      return aibRefus('AIB_COMPTE_ABSENT', 'Le compte d’imputation n’est pas choisi : aucun numéro n’est présélectionné.', 'Choisir un compte du plan comptable.');
+    }
+    if (aibCompteDuPlan(d, saisie['compte']) == null) {
+      return aibRefus('AIB_COMPTE_INCONNU', 'Le compte « ${saisie['compte']} » n’est pas au plan comptable : aucun numéro n’est inventé.', 'Choisir un compte du plan comptable (ou le créer d’abord).');
+    }
+    final hors = prop['ok'] != true || prop['taux'] != taux;
+    if (hors && motif.isEmpty) {
+      return aibRefus('AIB_MOTIF_ABSENT', 'Le taux retenu ($taux %) n’est pas celui du barème à la date de l’opération${prop['ok'] == true ? ' (${prop['taux']} %)' : ' (aucune version du barème ne couvre cette date)'} : il se motive.', 'Saisir le motif du taux retenu.');
+    }
+    fiche['situation'] = saisie['situation'];
+    fiche['taux'] = taux.toInt();
+    fiche['montant'] = aibDivArrondi(base * taux, 100);
+    fiche['compte'] = _s(saisie['compte']).trim();
+    if (prop['ok'] == true) {
+      fiche['propositionTaux'] = prop['taux'];
+      fiche['propositionVersion'] = prop['versionId'];
+      fiche['propositionArretee'] = prop['arrete'] == true;
+    }
+    fiche['horsProposition'] = hors;
+    if (motif.isNotEmpty) fiche['motif'] = motif;
+  }
+  fiche['signeePar'] = acteur;
+  fiche['signeeRole'] = libelleRole;
+  fiche['signeeLe'] = maintenant.toUtc().toIso8601String();
+  return {'ok': true, 'fiche': fiche};
 }

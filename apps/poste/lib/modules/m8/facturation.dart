@@ -67,7 +67,6 @@ class _EtatFacturation extends State<EcranFacturation> {
   late ControleurFormulaire _nature;
   late ControleurFormulaire _ajout;
   late ControleurFormulaire _reglement;
-  late ControleurFormulaire _acheteur;
   List<Fiche> _patients = const [];
   List<_Article> _articles = const [];
   String _natureVue = '';
@@ -195,7 +194,6 @@ class _EtatFacturation extends State<EcranFacturation> {
     ], {
       'regle': '0'
     });
-    _acheteur = ControleurFormulaire(champsAcheteurNormalise, valeursAcheteur(null));
     _patient.addListener(_majPatient);
     _ajout.addListener(_majAjout);
     _remplirArticles(m);
@@ -418,17 +416,6 @@ class _EtatFacturation extends State<EcranFacturation> {
     }
     final c = _c!;
     final m = c.magasin;
-    // La fenêtre « Facture normalisée » se contrôle AVANT toute écriture : un refus nommé n'écrit rien.
-    final refusAcheteur = proforma ? null : controlerAcheteur(_acheteur);
-    if (refusAcheteur != null) {
-      ToastsSigh.afficher(
-          context, '${refusAcheteur.code} : ${refusAcheteur.motif}',
-          type: TypeToast.erreur,
-          detail: refusAcheteur.geste,
-          duree: const Duration(seconds: 9));
-      return;
-    }
-    final acheteur = proforma ? null : lireAcheteur(_acheteur);
     final r = _emettre(proforma);
     final annulations = <VoidCallback>[];
     final creees = <Fiche>[];
@@ -438,14 +425,6 @@ class _EtatFacturation extends State<EcranFacturation> {
       // Le numéro fiscal vient de la NORMALISATION, jamais d'un tirage à l'émission : une vente non soldée n'en porte pas (E2299).
       final aNormaliser = p['mecef'] == true;
       final fiche = {...p}..remove('mecef');
-      if (acheteur != null) {
-        final v = validerAcheteurMecef(
-            ifu: acheteur['ifu'], nom: acheteur['nom'], aibTaux: acheteur['aibTaux']);
-        final a = v.acheteur!;
-        fiche['ifuClient'] = a.ifu;
-        fiche['acheteurNom'] = a.nom;
-        fiche['aibTaux'] = a.aibTaux;
-      }
       fiche['statut'] = 'actif';
       final ins = factures.inserer(fiche, prefixe: 'FAC');
       creees.add(ins.fiche);
@@ -453,7 +432,7 @@ class _EtatFacturation extends State<EcranFacturation> {
       // TOUTE VENTE SOLDÉE EST NORMALISÉE ; le refus de la normalisation ne défait pas l'émission (l'argent est reçu) : la pièce devient refusée.
       if (aNormaliser) {
         final norm = normaliserVente(m, '${ins.fiche['id']}',
-            acheteur: acheteur, maintenant: c.aujourdhui);
+            maintenant: c.aujourdhui);
         annulations.add(norm.annuler);
         normalisations.add(norm);
         creees[creees.length - 1] = factures.parId(ins.fiche['id'])!;
@@ -926,9 +905,6 @@ class _EtatFacturation extends State<EcranFacturation> {
             icone: LucideIcons.landmark),
         const SizedBox(height: 12),
         FormulaireSigh(controleur: _reglement),
-        // TOUTE VENTE EST NORMALISÉE (E2299) : la fenêtre ne sert qu'à saisir l'acheteur et le taux d'AIB.
-        const SizedBox(height: 12),
-        SectionAcheteur(controleur: _acheteur),
       ]),
     );
   }

@@ -442,7 +442,8 @@ CfaFiche cfbFicheDepuisObligation(CfbObligation o, {String? id}) => {
       'part': o.part,
       'declaration': o.declaration,
       'note': o.note,
-      'source': cfbSourceObligations,
+      'aConfirmer': o.aConfirmer,
+      'source': o.aConfirmer ? o.source : cfbSourceObligations,
       'dateEffet': null,
       'modifieLe': null,
       'modifiePar': null,
@@ -479,6 +480,24 @@ CfaFiche cfbSemenceOrtbParametres() => {
       'valideLe': null,
       'validePar': null,
     };
+
+/// Lot FISC-2 (portage du versement CNSS, Direction du 09/11/2026 puis du 16/11/2026) : le VERSEMENT des cotisations CNSS (le 15) est une obligation DISTINCTE de la
+/// déclaration (le 10), « à confirmer par la CNSS », DERNIÈRE de la liste (`FIS20`) : les identifiants déjà posés ne se décalent pas. Le bouton « Confirmer » (geste
+/// réservé `confirmer_obligation_fiscale`) la fait passer à « confirmée » (`cfbConfirmerObligation`). Elle est ajoutée par le poste à une base qui ne la porte pas.
+const cfbObligationCnssVersement = CfbObligation(
+    'CNSS-VERSEMENT',
+    'Cotisations sociales CNSS, versement',
+    'mensuelle',
+    15,
+    null,
+    100,
+    null,
+    'Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.',
+    'Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).',
+    true);
+
+/// La fiche de la semence de cette obligation (`FIS20`) : à poser quand la base ne la porte pas (ni en vigueur, ni à l'historique).
+CfaFiche cfbFicheCnssVersement() => cfbFicheDepuisObligation(cfbObligationCnssVersement, id: 'FIS${(cfbCalendrierFiscal.length + 1).toString().padLeft(2, '0')}');
 
 /// `D.semenceObligations()` : les 19 obligations du calendrier confirmé, puis la fiche des paramètres ORTB.
 List<CfaFiche> cfbSemenceObligations() => [for (final o in cfbCalendrierFiscal) cfbFicheDepuisObligation(o), cfbSemenceOrtbParametres()];
@@ -643,6 +662,66 @@ CfbEcritureObligation cfbModifierObligation(Iterable<CfaFiche> obligations,
       dateEffet: d,
       fiche: {...fiche, ...patch},
       historique: cfbCopieHistorique(fiche, d, motif: motif.trim(), retiree: false, acteur: acteur, maintenant: maintenant));
+}
+
+/// `confirmerObligation` (Direction, 16/11/2026, section AQ point 2, lot FISC-2) : l'obligation « à confirmer par la CNSS » passe à « confirmée ». RÉFÉRENCE OBLIGATOIRE
+/// (la pièce de la CNSS qui confirme), signée, VERSIONNÉE PAR DATE : la version « à confirmer » part à l'historique (date de fin = la veille), elle n'est jamais réécrite.
+/// [droit] : le geste réservé `confirmer_obligation_fiscale` de la fiche RBAC du rôle (le moteur refuse aussi : masquer la commande ne protège rien).
+/// Ordre des refus (celui de la maquette) : fileul, droit, obligation inconnue, obligation déjà confirmée, référence absente, date d'effet (exercice clos, antérieure).
+CfbEcritureObligation cfbConfirmerObligation(Iterable<CfaFiche> obligations,
+    {String? id,
+    String? code,
+    String? reference,
+    Object? dateEffet,
+    required bool droit,
+    required String acteur,
+    required DateTime maintenant,
+    required DateTime aujourdhui,
+    Iterable<CfaFiche> exercices = const [],
+    bool fileul = false}) {
+  final f = cfbControleFileul(fileul);
+  if (f != null) return CfbEcritureObligation.refusee(f);
+  if (!droit) {
+    return const CfbEcritureObligation.refusee(CfbRefus('CONFIRMATION_RESERVEE',
+        'Confirmer une obligation fiscale est un droit réservé de la fiche du rôle.',
+        'Demander à un rôle qui détient le droit « Confirmer une obligation fiscale » (matrice des droits).'));
+  }
+  final fiche = _obligationActive(obligations, id: id, code: code);
+  if (fiche == null) return const CfbEcritureObligation.refusee(_obligationInconnue);
+  if (fiche['aConfirmer'] != true) {
+    return CfbEcritureObligation.refusee(CfbRefus('OBLIGATION_DEJA_CONFIRMEE',
+        'L’obligation ${fiche['code']} n’est pas « à confirmer »${_vide(fiche['confirmationReference']) ? '.' : ' : elle est déjà confirmée (référence ${fiche['confirmationReference']}).'}',
+        'Rien à confirmer : une version confirmée ne se réécrit pas, une modification crée une version datée.'));
+  }
+  final ref = (reference ?? '').trim();
+  if (ref.isEmpty) {
+    return const CfbEcritureObligation.refusee(CfbRefus('CONFIRMATION_REFERENCE_ABSENTE',
+        'La référence de la confirmation est obligatoire : sans la pièce de la CNSS qui confirme, l’obligation ne passe pas à « confirmée ».',
+        'Saisir la référence (courrier, e-mail ou page de la CNSS, avec sa date).'));
+  }
+  final d = isoJour(dateEffet ?? aujourdhui);
+  final r = cfbControleDateEffet(d, minimum: fiche['dateEffet'] == null ? null : isoJour(fiche['dateEffet']), exercices: exercices, aujourdhui: aujourdhui);
+  if (r != null) return CfbEcritureObligation.refusee(r);
+  final note = '${fiche['note'] ?? ''}'.replaceFirst(RegExp(r'\s*À confirmer par la CNSS, non arrêtée\.'), '').trim();
+  final quand = _horodatage(maintenant);
+  final patch = <String, Object?>{
+    'aConfirmer': false,
+    'confirmeeLe': quand,
+    'confirmeePar': acteur,
+    'confirmationReference': ref,
+    'dateEffet': d,
+    'note': '${note.isEmpty ? '' : '$note '}Confirmée (référence $ref).',
+    'source': 'Confirmée le ${_dateFrIso(d)} (référence $ref)',
+    'modifieLe': quand,
+    'modifiePar': acteur,
+    'motif': 'Confirmation : $ref',
+  };
+  return CfbEcritureObligation._(
+      id: '${fiche['id']}',
+      code: '${fiche['code']}',
+      dateEffet: d,
+      fiche: {...fiche, ...patch},
+      historique: cfbCopieHistorique(fiche, d, motif: 'Confirmation : $ref', retiree: false, acteur: acteur, maintenant: maintenant));
 }
 
 /// `creerObligation` : un code unique en majuscules (tous les codes connus, historique et archivées compris), une famille (préfixe), une date

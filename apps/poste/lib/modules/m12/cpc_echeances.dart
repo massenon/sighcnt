@@ -87,7 +87,11 @@ class _EtatEcheances extends State<EcranEcheances> {
     super.dispose();
   }
 
-  List<Fiche> _lignes(ContexteEcran c) => cpcLignesEcheances(c.magasin.collection('echeancesFiscales').actives, c.aujourdhui);
+  /// Les seuils « à payer » et « déclaration » sont des PARAMÈTRES du calendrier fiscal lus à la date du poste (lot FISC-2), les mêmes que la vue mensuelle.
+  List<Fiche> _lignes(ContexteEcran c) {
+    final d = cfbDelaisFiscauxALaDate(c.magasin.collection('parametresFiscaux').actives, c.aujourdhui);
+    return cpcLignesEcheances(c.magasin.collection('echeancesFiscales').actives, c.aujourdhui, delaiAPayer: d.delaiAPayer, delaiDeclaration: d.delaiDeclaration);
+  }
 
   TonSigh _ton(String t) => switch (t) {
         'succes' => TonSigh.succes,
