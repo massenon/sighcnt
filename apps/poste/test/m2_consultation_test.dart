@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
-import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
 
 import 'aide_polices.dart';

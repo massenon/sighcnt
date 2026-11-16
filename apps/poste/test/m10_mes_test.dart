@@ -13,7 +13,6 @@ import 'rhb_aide.dart';
 /// m10-mes (lot L7, Direction, 09/11/2026, Planning Q5, Q6, Q8) : l'espace « Mes » de l'agent, la copie de la fiche de paie pour le téléphone, « Mon assurance du personnel ».
 /// Les règles (rubriques, refus nommés, copie de l'agent seul) sont rejouées sur les vecteurs de la maquette par `packages/domaine/test/mes_pointage_test.dart` ; ici l'ÉCRAN
 /// monté sur le magasin du poste, les gestes accomplis, ce qui est écrit, et l'état d'affichage au verrou et à la déconnexion (poste partagé).
-const _jour = '2026-08-16';
 
 String _nom(String role) => agentDemonstration(role, nom: donneesNav.matrice.libelle(role)).nom;
 

@@ -161,7 +161,7 @@ class _Onglet extends StatelessWidget {
                 : null,
           ),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(ic.icone(this.icone), size: 16, color: couleur),
+            Icon(ic.icone(icone), size: 16, color: couleur),
             const SizedBox(width: 8),
             Text(libelle,
                 style: TextStyle(

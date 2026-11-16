@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../modules/cfg/cfb_notifications.dart' show CfbAudio;

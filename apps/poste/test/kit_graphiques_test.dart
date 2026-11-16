@@ -52,7 +52,9 @@ Future<double> ecart(
         final i = (y * img.width + x) * 4, j = (y * ref.width + x) * 4;
         if ((a[i] - r[j]).abs() > 64 ||
             (a[i + 1] - r[j + 1]).abs() > 64 ||
-            (a[i + 2] - r[j + 2]).abs() > 64) diff++;
+            (a[i + 2] - r[j + 2]).abs() > 64) {
+          diff++;
+        }
       }
     }
     return (diff + (ref.height - img.height).abs() * 600) / (ref.height * 600);

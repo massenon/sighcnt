@@ -36,24 +36,27 @@ typedef LireInstantane = Future<InstantaneSync> Function();
 /// Règle de lecture, dans l'ordre : suspendu > hors ligne > en retard (des opérations attendent) > synchronisé.
 /// Une panne du moteur lui-même se lit « hors ligne » : jamais un voyant resté vert faute de réponse.
 EtatSync lireEtat(InstantaneSync i, {DateTime? depuis}) {
-  if (i.suspendu)
+  if (i.suspendu) {
     return EtatSync(
         niveau: NiveauSync.suspendu,
         enAttente: i.enAttente,
         aTraiter: i.aTraiter,
         depuis: depuis);
-  if (i.horsLigne)
+  }
+  if (i.horsLigne) {
     return EtatSync(
         niveau: NiveauSync.horsLigne,
         enAttente: i.enAttente,
         aTraiter: i.aTraiter,
         depuis: depuis);
-  if (i.enAttente > 0)
+  }
+  if (i.enAttente > 0) {
     return EtatSync(
         niveau: NiveauSync.enCours,
         enAttente: i.enAttente,
         aTraiter: i.aTraiter,
         depuis: depuis);
+  }
   return EtatSync(niveau: NiveauSync.synchronise, aTraiter: i.aTraiter);
 }
 

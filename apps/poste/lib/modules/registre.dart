@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../core/config_poste.dart';
 import '../core/controleur_poste.dart';
 import '../mere/client_mere.dart';
-import '../mere/console.dart';
 import 'auth/registre_auth.dart';
 import 'cfg/registre_cfg.dart';
 import 'dash/registre_dash.dart';
@@ -58,7 +57,6 @@ Map<String, ConstruireEcran> ecransPortes(
     {ControleurPoste? controleur, ClientMere? client}) {
   // Le lot (b) de la console mère lit le service par ce client (voir mere/mrb_source.dart).
   mrbClientMere = client;
-  Widget console(SectionMere s) => ConsoleMere(client: client!, section: s);
   Mrc.brancher(client: client, controleur: controleur);
   return {
     // Tranche 1 — Caisse, MECeF, impression.

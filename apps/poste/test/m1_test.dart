@@ -448,7 +448,7 @@ void main() {
   group('m1-externe', () {
     final d = vecteurs('pat_externe');
     cas('le registre dit la cause du verrou : caisse, ou échantillon non parvenu (E309)', (t) async {
-      final dem = (Fiche o) => {
+      Map<String, Object?> dem(Fiche o) => {
             'statut': 'actif', 'patientId': 'E1', 'patientCode': 'CNT/901/26', 'patient': 'EXT1 Un', 'analyse': 'NFS',
             'dateHeure': '2026-08-01T10:00:00.000Z', 'prescripteur': 'Dr Ext', 'origineDemande': 'externe', 'factureId': 'F1', ...o
           };

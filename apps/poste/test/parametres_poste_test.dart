@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
@@ -7,7 +6,6 @@ import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/sync/configuration_sync.dart';
 import 'package:sigh_poste/sync/pont_activite.dart';
 import 'package:sigh_poste/sync/transcription_mobile.dart';
-import 'package:sigh_sync/sigh_sync.dart';
 
 /// Lot L0 : les paramètres versionnés par date au poste. Le domaine porte les règles (rejouées sur les vecteurs du banc) ; ici : le branchement au magasin, la
 /// garde d'immutabilité tenue AU MOTEUR, la publication par la mère (refus nommé de la mère compris) et la réception par un fileul qui ne peut pas écrire.

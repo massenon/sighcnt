@@ -37,9 +37,6 @@ ColonneTableau _colPatient(String lib, {String nom = 'patient', String code = 'p
     texte: (r) => '${r[nom] ?? ''} ${r[code] ?? ''}',
     rendu: (_, r) => matCelPatient('${r[nom] ?? ''}', '${r[code] ?? ''}'));
 
-/// « Nom — CODE » sur une ligne.
-ColonneTableau _colPatientLigne(String lib, {String nom = 'patient', String code = 'patientCode'}) =>
-    ColonneTableau(cle: nom, libelle: lib, texte: (r) => '${r[nom] ?? ''} — ${r[code] ?? ''}');
 
 ColonneTableau _colBadge(String cle, String lib, String Function(Fiche) texte, TonSigh Function(Fiche) ton) => ColonneTableau(
     cle: cle, libelle: lib, texte: texte, rendu: (_, r) => BadgeSigh(texte(r), ton: ton(r)));
@@ -406,7 +403,7 @@ List<ChampDef> _champsNaissance(Magasin m) {
 }
 
 /// `transformNaissance` : la mère est rattachée, la référence suit le registre, l'alerte néonatale reste GÉNÉRIQUE (aucune donnée médicale).
-Fiche _fiche_naissance(BuildContext ctx, Fiche v, Fiche? existante) {
+Fiche _ficheNaissance(BuildContext ctx, Fiche v, Fiche? existante) {
   final c = ContexteEcran.of(ctx);
   final m = matFemmes(c.magasin).where((x) => x['code'] == v['mereCode']).firstOrNull;
   if (m != null) {
@@ -433,7 +430,6 @@ class EcranNaissances extends StatelessWidget with EcranMaquette {
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
-    final seuil = matBornesNouveauNe.apgarSeuil5min;
     return CrudMat(
       collection: c.magasin.collection('naissances'),
       entite: 'naissance',
@@ -474,8 +470,8 @@ class EcranNaissances extends StatelessWidget with EcranMaquette {
       champs: _champsNaissance,
       valeursInitiales: () => {'vivant': true, 'declare': false, 'apgar1': '8', 'apgar5': '9', 'apgar10': '10', 'vitK1': true, 'collyre': true},
       valeursEdition: (f) => matValeursEdition(f, const ['dateHeure']),
-      transformer: (ctx, v) => _fiche_naissance(ctx, v, null),
-      transformerExistante: _fiche_naissance,
+      transformer: (ctx, v) => _ficheNaissance(ctx, v, null),
+      transformerExistante: _ficheNaissance,
       filtres: [
         const FiltreTableau(nom: 'sexe', libelle: 'Sexe', options: [OptionChamp('M', 'Masculin'), OptionChamp('F', 'Féminin')]),
         FiltreTableau(
@@ -602,8 +598,8 @@ class EcranDossierBebe extends StatelessWidget with EcranMaquette {
       champs: _champsNaissance,
       valeursInitiales: () => {'vivant': true, 'declare': false, 'vitK1': true, 'collyre': true},
       valeursEdition: (f) => matValeursEdition(f, const ['dateHeure']),
-      transformer: (ctx, v) => _fiche_naissance(ctx, v, null),
-      transformerExistante: _fiche_naissance,
+      transformer: (ctx, v) => _ficheNaissance(ctx, v, null),
+      transformerExistante: _ficheNaissance,
       filtres: [_filtreOuiNon('reanimation', 'Réanimation', 'Réanimés', 'Sans réanimation', (r) => matVrai(r['reanimation']))],
       referenceToast: (f) => '${f['reference'] ?? ''}',
       kpis: (ctx, rows) {

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -114,7 +113,7 @@ void main() {
     expect(publie['patients_actifs'], 1, reason: 'l’aperçu de l’écran calcule la même valeur par /admin/compte');
 
     // 5. La réplication rattrape son retard : le compteur d'enveloppes avance.
-    await attendre(() => relais.depots.length >= 1);
+    await attendre(() => relais.depots.isNotEmpty);
     etat = await s.etat();
     expect(etat.repN, greaterThan(0));
 

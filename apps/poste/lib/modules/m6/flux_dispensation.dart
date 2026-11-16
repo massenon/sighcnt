@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+// Homonymes que la bibliothèque publique du domaine masque (`hide`) pour éviter un conflit de noms : importés sous préfixe depuis leur fichier.
+// ignore: implementation_imports
 import 'package:sigh_domaine/src/stock/delivrance.dart' as dv show LigneStock;
 
 import '../../donnees/magasin.dart';

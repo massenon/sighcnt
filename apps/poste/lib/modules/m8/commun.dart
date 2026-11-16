@@ -35,8 +35,9 @@ num partNonAssuree(Iterable<Fiche> lignes) => lignes.fold<num>(0, (a, l) {
 
 List<Fiche> lignesDe(Fiche f) {
   final l = f['lignes'];
-  if (l is List && l.isNotEmpty)
+  if (l is List && l.isNotEmpty) {
     return [for (final x in l) (x as Map).cast<String, Object?>()];
+  }
   return [
     {
       'designation': 'Prestation — ${f['type']}',

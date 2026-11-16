@@ -98,7 +98,9 @@ class ControleurFormulaire extends ChangeNotifier {
       if (c.type == TypeChamp.select &&
           c.requis &&
           (v == null || v == '') &&
-          c.options.isNotEmpty) v = c.options.first.valeur;
+          c.options.isNotEmpty) {
+        v = c.options.first.valeur;
+      }
       _valeurs[c.nom] = v ??
           (c.type == TypeChamp.multiselect
               ? <String>[]
@@ -420,9 +422,10 @@ class _Date extends StatelessWidget {
               lastDate: DateTime(2100));
           // `locale: Locale('fr')` levait « No MaterialLocalizations found » : l'application ne déclare pas flutter_localizations (le sélecteur
           // d'un champ date ne s'ouvrait donc jamais). Sans locale, il s'ouvre avec les libellés par défaut ; la francisation est à décider.
-          if (d != null)
+          if (d != null) {
             ctl.poser(def.nom,
                 '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}');
+          }
         },
         child: InputDecorator(
           decoration: decorationChamp(

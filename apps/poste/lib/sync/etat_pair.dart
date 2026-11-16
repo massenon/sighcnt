@@ -7,7 +7,7 @@ class InstantanePair {
   final int enAttente, cycles;
 
   @override
-  bool operator ==(Object o) => o is InstantanePair && o.appaire == appaire && o.horsLigne == horsLigne && o.enAttente == enAttente && o.cycles == cycles;
+  bool operator ==(Object other) => other is InstantanePair && other.appaire == appaire && other.horsLigne == horsLigne && other.enAttente == enAttente && other.cycles == cycles;
   @override
   int get hashCode => Object.hash(appaire, horsLigne, enAttente, cycles);
 

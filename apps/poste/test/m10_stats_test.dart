@@ -55,7 +55,7 @@ void main() {
     casM14('la périodicité POSITIONNE la plage : semaine = sept jours, et les compteurs suivent', (t) async {
       await ouvrirM14(t, magasinM14(), 'm10-stats-gardes', horloge: _auj16);
       await regler(t, 'periode', 'semaine');
-      final f = (n) => t.widget<FormulaireSigh>(find.byKey(Key('rhb:filtre:$n'))).controleur[n];
+      Object? f(n) => t.widget<FormulaireSigh>(find.byKey(Key('rhb:filtre:$n'))).controleur[n];
       expect([f('du'), f('au')], ['2026-08-10', '2026-08-16']);
       final k = kpis(t);
       expect([k['Vacations travaillées'], k['Gardes'], k['Agents concernés'], k['Moyenne par agent']], ['132', '101', '34', '3.9']);

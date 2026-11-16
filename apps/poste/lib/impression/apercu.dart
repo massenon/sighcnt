@@ -101,9 +101,10 @@ Future<void> afficherApercu(BuildContext context, PieceA4 piece0) {
               final octets = await pdfA4(piece, p);
               final chemin =
                   await ImpressionPoste.enregistrer(octets, piece.reference);
-              if (context.mounted)
+              if (context.mounted) {
                 ToastsSigh.afficher(context, 'PDF enregistré.',
                     type: TypeToast.succes, detail: chemin);
+              }
             }),
         if (magasin != null)
           BoutonSigh(

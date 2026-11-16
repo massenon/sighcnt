@@ -450,7 +450,7 @@ class _EtatValeurs extends State<EcranValeursReference> {
                   onPressed: fermer),
               // Lot L1 : le choix « Valider » du pied de modale (le biologiste, variable en attente seulement ; ABSENT sinon).
               if (!creation)
-                if (ValidationPoste(c).boutonModale(ctx, const ValidationCrud('labo_variables'), v!, fermer) case final b?) b,
+                if (ValidationPoste(c).boutonModale(ctx, const ValidationCrud('labo_variables'), v, fermer) case final b?) b,
               BoutonSigh(
                   libelle: creation ? 'Créer' : 'Enregistrer',
                   icone: creation ? LucideIcons.plus : LucideIcons.check,

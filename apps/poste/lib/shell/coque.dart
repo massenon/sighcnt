@@ -450,13 +450,14 @@ class _CoquePosteState extends State<CoquePoste> {
     setState(() {
       _autonome = null;
       _ecran = id;
-      if (e != null)
+      if (e != null) {
         _domaine = _ruban
                 .where((d) => d.rangees
                     .any((r) => r.ecrans.any((x) => x.id == id) || r.hub == id))
                 .map((d) => d.nom)
                 .firstOrNull ??
             _domaine;
+      }
       // Un clic sur une pastille referme le panneau : la page appelée s'ouvre menu replié (comme la maquette).
       _panneauOuvert = false;
     });
@@ -729,8 +730,9 @@ class _CoquePosteState extends State<CoquePoste> {
         donnees: _nav,
         ecranPorte: widget.ecrans.containsKey,
         aller: (cible) {
-          if (_nav.matrice.peutVoir(_role, cible))
+          if (_nav.matrice.peutVoir(_role, cible)) {
             _ouvrir(cible);
+          }
         },
         child: Builder(builder: (context) {
           final w = porte(context, widget.config);

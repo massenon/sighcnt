@@ -86,15 +86,17 @@ class FauxService {
   http.Client client() => MockClient((req) async {
         appels.add(
             '${req.method} ${req.url.path}${req.body.isEmpty ? '' : ' ${req.body}'}');
-        if (req.headers['x-admin'] != 'secret')
+        if (req.headers['x-admin'] != 'secret') {
           return http.Response(
               jsonEncode({
                 'code': 'admin_requis',
                 'motif': 'Accès administrateur requis.'
               }),
               403);
-        if (refus != null && req.method == 'POST')
+        }
+        if (refus != null && req.method == 'POST') {
           return http.Response(jsonEncode(refus), 422);
+        }
         switch ('${req.method} ${req.url.path}') {
           case 'GET /admin/etat':
             return http.Response(jsonEncode(etat), 200);

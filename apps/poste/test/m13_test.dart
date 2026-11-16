@@ -568,7 +568,7 @@ void main() {
       await ouvrir(t, m, 'm13-repertoire-ambulances');
       final a = m.collection('ambulances').toutes;
       expect(a.length, 5);
-      expect([for (final x in a) if (x['telephone'] != null) x['telephone']].toSet(), IdentiteClinique.telephones.toSet());
+      expect({for (final x in a) if (x['telephone'] != null) x['telephone']}, IdentiteClinique.telephones.toSet());
       expect(a.where((x) => x['telephone'] == null).length, 3);
       expect(find.textContaining('3 fiche(s) sans numéro'), findsOneWidget);
       await t.pump(const Duration(seconds: 10));

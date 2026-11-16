@@ -223,7 +223,9 @@ class _CarteIdentiteState extends State<_CarteIdentite> {
     if (cfbRefuseSiGarde(context, () {
       cfbPoserReglage(cf.m, 'impression.doubleLogo', v['doubleLogo'] == true);
       cfbPoserReglage(cf.m, 'impression.filigrane', '${v['filigrane'] ?? ''}');
-    })) return;
+    })) {
+      return;
+    }
     cfbEnregistrerIdentiteDepuis(context, cf, 'cfg-branding', {for (final k in champsBranding) k: v[k]});
   }
 

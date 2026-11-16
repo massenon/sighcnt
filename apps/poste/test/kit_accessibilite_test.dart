@@ -34,8 +34,9 @@ void main() {
       final n = contraste(t.texte900, t.fond50);
       if (n < 4.5) echecs.add('note $t ${n.toStringAsFixed(2)}');
       final i = contraste(t.icone600, t.fond50);
-      if (i < 3)
+      if (i < 3) {
         echecs.add('icône KPI $t ${i.toStringAsFixed(2)} (< 3:1 non textuel)');
+      }
     }
     for (final v in VarianteBouton.values) {
       final (fond, texte, _) = BoutonSigh.couleurs(v);

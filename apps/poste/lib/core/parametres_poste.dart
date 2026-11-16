@@ -121,7 +121,7 @@ class StockageFichier implements StockageParametres {
     if (_cle == null) {
       await tmp.writeAsString(texte, flush: true);
     } else {
-      final boite = await _aes.encrypt(utf8.encode(texte), secretKey: SecretKey(_cle!), aad: utf8.encode(_entete));
+      final boite = await _aes.encrypt(utf8.encode(texte), secretKey: SecretKey(_cle), aad: utf8.encode(_entete));
       await tmp.writeAsBytes([...utf8.encode(_entete), ...boite.concatenation()], flush: true);
     }
     await tmp.rename(chemin);
@@ -137,7 +137,7 @@ class StockageFichier implements StockageParametres {
       final String texte;
       if (chiffre) {
         if (_cle == null) return null;
-        texte = utf8.decode(await _aes.decrypt(SecretBox.fromConcatenation(brut.sublist(4), nonceLength: 12, macLength: 16), secretKey: SecretKey(_cle!), aad: utf8.encode(_entete)));
+        texte = utf8.decode(await _aes.decrypt(SecretBox.fromConcatenation(brut.sublist(4), nonceLength: 12, macLength: 16), secretKey: SecretKey(_cle), aad: utf8.encode(_entete)));
       } else {
         texte = utf8.decode(brut);
       }

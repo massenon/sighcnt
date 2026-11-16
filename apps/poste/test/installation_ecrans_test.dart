@@ -156,7 +156,7 @@ void main() {
       await s.attacher(StockageMemoire(), const ParametresPoste(uuidPoste: 'u'));
       final r = await s.creerPremierAdministrateur(identifiant: 'k.adjovi', nom: 'ADJOVI Koffi', motDePasse: secret, confirmation: secret, maintenant: auj);
       code = r.codeSecours!;
-      id = '${r.compte!.agent?.utilisateurId ?? ''}';
+      id = r.compte!.agent?.utilisateurId ?? '';
     });
     final s = SessionPoste(exigeConnexion: true, horloge: () => auj);
     await monter(t, m, s);

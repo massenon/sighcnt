@@ -62,8 +62,9 @@ ResultatCaisse encaisserFacture(
   Map<String, Object?>? acheteur,
 }) {
   final fac = m.collection('factures').parId(factureId);
-  if (fac == null)
+  if (fac == null) {
     throw const RefusCaisse('FACTURE_INTROUVABLE', 'Facture introuvable.');
+  }
   final aujourdhui = d.iso(maintenant);
   final r = d.encaisser(
     fac,
@@ -133,8 +134,9 @@ ResultatCaisse encaisserFacture(
   // L'imagerie suit la même règle : la séance réglée passe.
   final imagerie = m.collection('demandesImagerie');
   for (final l in reglees) {
-    if (l['categorie'] != 'imagerie' || l['demandeImagerieId'] == null)
+    if (l['categorie'] != 'imagerie' || l['demandeImagerieId'] == null) {
       continue;
+    }
     final di = imagerie.parId(l['demandeImagerieId']);
     if (di == null) continue;
     annulations.add(imagerie.mettreAJour(di['id'], {
@@ -182,10 +184,11 @@ ResultatCaisse encaisserFacture(
       }));
       liberees.add('${di['reference'] ?? di['id']}');
     }
-    if (f['ordonnanceId'] != null)
+    if (f['ordonnanceId'] != null) {
       annulations.add(m
           .collection('ordonnances')
           .mettreAJour(f['ordonnanceId'], {'statutPaiement': 'soldee'}));
+    }
   }
 
   // Le comptable est informé par une écriture (brouillon), à CHAQUE versement.

@@ -168,7 +168,6 @@ void main() {
   cas('assuré : lignes couvertes ET non couvertes → deux pièces jumelles -A / -B',
       (t) async {
     final m = magasin();
-    final avant = m.collection('factures').actives.length;
     await ouvrir(t, m);
     await choisir(t, 'TCHANE Bertine', 'DOSSOU Salifou');
     expect(find.textContaining('Couverture OLEA ASSURANCE'), findsWidgets);

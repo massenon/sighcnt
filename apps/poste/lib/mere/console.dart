@@ -267,8 +267,9 @@ class _ConsoleMereState extends State<ConsoleMere> {
       ];
 
   Widget _journalVue() {
-    if (_journal.isEmpty)
+    if (_journal.isEmpty) {
       return const Center(child: Text('Aucun évènement enregistré.'));
+    }
     return ListView(
       padding: const EdgeInsets.all(16),
       children: _journal
@@ -444,8 +445,9 @@ class _ConsoleMereState extends State<ConsoleMere> {
 
   // --- Conflits ----------------------------------------------------------------------------------------------------
   Widget _conflitsVue() {
-    if (_conflits.isEmpty)
+    if (_conflits.isEmpty) {
       return const Center(child: Text('Aucun conflit à régulariser.'));
+    }
     return ListView(
         padding: const EdgeInsets.all(16),
         children: _conflits.map((c) {

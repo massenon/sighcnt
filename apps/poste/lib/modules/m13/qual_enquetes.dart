@@ -268,7 +268,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
               BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
               // Lot L1 : le choix « Valider » du pied de modale (la Direction, modèle en attente seulement ; ABSENT sinon).
               if (!creation)
-                if (ValidationPoste(c).boutonModale(ecran, const ValidationCrud('enquetes'), r!, fermer) case final b?) b,
+                if (ValidationPoste(c).boutonModale(ecran, const ValidationCrud('enquetes'), r, fermer) case final b?) b,
               BoutonSigh(
                   libelle: creation ? 'Créer le modèle' : 'Enregistrer',
                   icone: LucideIcons.save,

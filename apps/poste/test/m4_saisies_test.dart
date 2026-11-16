@@ -103,12 +103,10 @@ void main() {
       }
       final col = m.collection(colNom);
       // La maquette a créé les fiches de ce lot dans l'ordre : on rejoue les précédentes du même registre pour que la référence suivante soit la même.
-      var avant = 0;
       for (final x in toutes.take(idx)) {
         if (collections[x['ecran']] == colNom && x['modification'] != true) {
           for (final n in liste(x['nouvelles'] ?? const [])) {
             col.inserer({...n}, prefixe: 'T');
-            avant++;
           }
         }
       }
@@ -173,14 +171,14 @@ void main() {
       expect(apres['reference'], ref, reason: 'la référence ne change pas à la modification (E401)');
       for (final e in obj(s['saisie']).entries) {
         if (e.key == 'dateHeure') continue;
-        expect(egal(apres[e.key], e.value) || '${apres[e.key]}' == '${e.value}', isTrue, reason: '${e.key}');
+        expect(egal(apres[e.key], e.value) || '${apres[e.key]}' == '${e.value}', isTrue, reason: e.key);
       }
       for (final k in obj(s['patch']).keys) {
         if (k == 'dateHeure') {
           expect('${apres[k]}'.length, 16, reason: 'date-heure locale AAAA-MM-JJThh:mm (E402)');
           continue;
         }
-        expect(egal(apres[k], obj(s['patch'])[k]) || '${apres[k]}' == '${obj(s['patch'])[k]}', isTrue, reason: 'patch ${k}: ${apres[k]} / ${obj(s['patch'])[k]}');
+        expect(egal(apres[k], obj(s['patch'])[k]) || '${apres[k]}' == '${obj(s['patch'])[k]}', isTrue, reason: 'patch $k: ${apres[k]} / ${obj(s['patch'])[k]}');
       }
     });
   }

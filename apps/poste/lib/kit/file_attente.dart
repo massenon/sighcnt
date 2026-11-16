@@ -61,10 +61,11 @@ class FileAttenteSigh extends StatelessWidget {
           if (ua != ub) return ub ? 1 : -1;
           return '${a['date']}'.compareTo('${b['date']}');
         });
-        if (taches.isEmpty)
+        if (taches.isEmpty) {
           return CarteSigh(
               titre: titre,
               child: VideSigh(vide, icone: LucideIcons.circleCheck));
+        }
         final pretes = _stable([
           for (final t in taches)
             if (t['statut'] == 'en_attente') t

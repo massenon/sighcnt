@@ -93,8 +93,9 @@ class _EcranRecettesState extends State<EcranRecettes> {
 
   Bornes _plage() {
     final f = _f!;
-    if (f['libre'] == true)
+    if (f['libre'] == true) {
       return bornesLibres(_jour('${f['du']}'), _jour('${f['au']}'));
+    }
     return bornes('${f['periode']}', _jour('${f['au']}'));
   }
 

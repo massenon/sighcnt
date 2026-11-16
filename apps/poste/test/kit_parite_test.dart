@@ -60,9 +60,10 @@ void comparer(String comp, String partie, Rect r,
   };
   expect(dh.abs(), lessThanOrEqualTo(tolH),
       reason: '$comp.$partie hauteur ${r.height} ≠ ${m['h']}');
-  if (largeur)
+  if (largeur) {
     expect(dl.abs(), lessThanOrEqualTo(tolL),
         reason: '$comp.$partie largeur ${r.width} ≠ ${m['l']}');
+  }
 }
 
 void main() {

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
-import 'package:sigh_domaine/src/stock/mouvements_stock.dart' as mv show typesStock, categoriesProduit, typesMouvement;
+// Homonymes que la bibliothèque publique du domaine masque (`hide`) pour éviter un conflit de noms : importés sous préfixe depuis leur fichier.
+// ignore: implementation_imports
+import 'package:sigh_domaine/src/stock/mouvements_stock.dart' as mv show typesStock, typesMouvement;
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';

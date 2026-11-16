@@ -847,9 +847,7 @@ class _EtatFacturation extends State<EcranFacturation> {
                               ? JetonsShell.info600
                               : JetonsShell.slate300),
                       cellule(
-                          m(d['partPatient'] != null
-                              ? d['partPatient']
-                              : n(l['quantite']) * net),
+                          m(d['partPatient'] ?? n(l['quantite']) * net),
                           droite: true,
                           gras: true),
                       Padding(

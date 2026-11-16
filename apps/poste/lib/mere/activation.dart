@@ -49,9 +49,10 @@ class RelaisMereHttp implements RelaisMere {
     }
     if (r.statusCode == 200) return;
     final j = r.body.isEmpty ? const {} : (jsonDecode(r.body) as Map);
-    if (r.statusCode == 403)
+    if (r.statusCode == 403) {
       throw ActivationRefusee(
           'secret_invalide', 'Le secret de la mère est refusé par le relais.');
+    }
     throw ActivationRefusee('${j['code'] ?? 'http_${r.statusCode}'}',
         '${j['motif'] ?? 'Refus du relais (${r.statusCode}).'}');
   }
@@ -142,15 +143,18 @@ class ActivationMere {
     final p = await parametres();
     if (p.mode == ModePoste.mere && service.enMarche) return p;
     relais = normaliserAdresseRelais(relais);
-    if (relais.isEmpty || Uri.tryParse(relais)?.hasScheme != true || !_hoteValide(Uri.tryParse(relais)?.host ?? ''))
+    if (relais.isEmpty || Uri.tryParse(relais)?.hasScheme != true || !_hoteValide(Uri.tryParse(relais)?.host ?? '')) {
       throw ActivationRefusee('relais_invalide',
           'Adresse du relais invalide (ex. sighcnt.nassieratoo.com).');
-    if (secretMere.trim().isEmpty)
+    }
+    if (secretMere.trim().isEmpty) {
       throw ActivationRefusee(
           'secret_requis', 'Le secret de la mère est obligatoire.');
-    if (cleClinique.trim().length < 16)
+    }
+    if (cleClinique.trim().length < 16) {
       throw ActivationRefusee('cle_invalide',
           'La clé de clinique est obligatoire (16 caractères au moins) : sans elle, rien de ce qui quitte le serveur ne pourrait être restauré.');
+    }
     final etiquette = (nomPoste == null || nomPoste.trim().isEmpty)
         ? p.nomPoste
         : nomPoste.trim();

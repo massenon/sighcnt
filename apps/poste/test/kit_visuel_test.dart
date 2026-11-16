@@ -57,7 +57,9 @@ Future<double> ecart(WidgetTester t, String id, Widget w, ui.Image ref) async {
         final i = (y * img.width + x) * 4, j = (y * ref.width + x) * 4;
         if ((a[i] - r[j]).abs() > 64 ||
             (a[i + 1] - r[j + 1]).abs() > 64 ||
-            (a[i + 2] - r[j + 2]).abs() > 64) diff++;
+            (a[i + 2] - r[j + 2]).abs() > 64) {
+          diff++;
+        }
       }
     }
     // Une hauteur différente est elle-même un écart : les lignes en trop comptent comme différentes.

@@ -546,6 +546,7 @@ class _EtatModaleObjectif extends State<_ModaleObjectif> {
         c.magasin.collection('objectifsPilotage'), avant: widget.objectif, valeurs: {...v, 'cible': cible, 'alerte': alerte});
     if (r == null || !mounted) return;
     Navigator.of(context).pop();
+    if (!widget.ecran.mounted) return;
     ToastsSigh.afficher(widget.ecran, 'Modifications enregistrées.', type: TypeToast.succes, annuler: r.annuler, messageAnnulation: 'Modification annulée.');
   }
 

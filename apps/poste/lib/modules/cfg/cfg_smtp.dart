@@ -171,7 +171,7 @@ class _EtatSmtp extends State<EcranSmtp> {
     } on FormatException catch (e) {
       if (mounted) {
         setState(() => _enCours = false);
-        ToastsSigh.afficher(ctx, e.message, type: TypeToast.erreur);
+        if (ctx.mounted) ToastsSigh.afficher(ctx, e.message, type: TypeToast.erreur);
       }
       return;
     }

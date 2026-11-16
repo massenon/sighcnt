@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import '../donnees/magasin.dart';
 
@@ -42,8 +41,6 @@ const Map<String, ({String champ, String marqueur})> champsNumero = {
   'avoirs': (champ: 'reference', marqueur: 'numeroEnDoublon'),
   'ecritures': (champ: 'numero', marqueur: 'numeroEnDoublon'),
 };
-
-String _j(Object? o) => jsonEncode(o);
 
 const _ordreStatutPaiement = {'impayee': 0, 'partielle': 1, 'soldee': 2};
 

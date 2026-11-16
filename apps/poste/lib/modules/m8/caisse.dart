@@ -708,9 +708,10 @@ class _EcranCaisseState extends State<EcranCaisse> {
                           type: TypeToast.erreur);
                       return;
                     }
-                    if ('${form['reference']}'.isNotEmpty)
+                    if ('${form['reference']}'.isNotEmpty) {
                       col.mettreAJour(fac['id'],
                           {'referenceTransaction': form['reference']});
+                    }
                     fermer();
                     annoncerNormalisation(ctx, res.normalisation);
                     final detail = [

@@ -7,7 +7,6 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
-import '../../kit/acteur.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 
