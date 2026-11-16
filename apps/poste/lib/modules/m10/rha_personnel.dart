@@ -89,15 +89,15 @@ class EcranPersonnel extends StatelessWidget with EcranMaquette {
         const ChampDef(nom: 'poste', libelle: 'Poste occupé', col: ColChamp.plein),
         ChampDef(nom: 'service', libelle: 'Service', type: TypeChamp.select, requis: true, options: rhaOptions(rhaServices)),
         const ChampDef(nom: 'categorie', libelle: 'Catégorie / échelon', indicatif: 'ex. E3-1'),
-        const ChampDef(nom: 'dateEmbauche', libelle: 'Date d’embauche', type: TypeChamp.date, requis: true),
+        const ChampDef(nom: 'dateEmbauche', libelle: 'Date d’embauche', type: TypeChamp.date),
         const ChampDef.section('Rémunération et couverture sociale'),
-        const ChampDef(nom: 'salaireBase', libelle: 'Salaire de base (FCFA)', type: TypeChamp.nombre, requis: true),
+        const ChampDef(nom: 'salaireBase', libelle: 'Salaire de base (FCFA)', type: TypeChamp.nombre),
         const ChampDef(nom: 'cnss', libelle: 'Numéro CNSS'),
       ],
-      valeursInitiales: () => {'dateEmbauche': iso(c.aujourdhui), 'salaireBase': '60000', 'categorie': 'E1-1', 'sexe': 'F', 'consentementSms': false},
-      transformer: (ctx, v) => smsTracerConsentement(rhaAgentEnregistrable({...v, 'salaireBase': rhaNum(v['salaireBase'])}), null, defautActif: false, maintenant: c.aujourdhui, par: acteur(c).nom),
+      valeursInitiales: () => {'sexe': 'F', 'consentementSms': false}, // lot PLAN-INDIV : plus aucune valeur inventée (salaire, catégorie, date d'embauche)
+      transformer: (ctx, v) => smsTracerConsentement(_agentSaisi(v), null, defautActif: false, maintenant: c.aujourdhui, par: acteur(c).nom),
       // La modification garde la date et l'auteur du consentement tant que la case ne change pas (RG-12).
-      transformerExistante: (ctx, v, e) => smsTracerConsentement(rhaAgentEnregistrable({...v, 'salaireBase': rhaNum(v['salaireBase'])}), e, defautActif: false, maintenant: c.aujourdhui, par: acteur(c).nom),
+      transformerExistante: (ctx, v, e) => smsTracerConsentement(_agentSaisi(v), e, defautActif: false, maintenant: c.aujourdhui, par: acteur(c).nom),
       filtres: [
         FiltreTableau(nom: 'fonction', libelle: 'Fonction', options: rhaOptionsFonctions()),
         FiltreTableau(nom: 'service', libelle: 'Service', options: rhaOptions(rhaServices)),
@@ -130,4 +130,12 @@ class EcranPersonnel extends StatelessWidget with EcranMaquette {
           signatures: [Signature('L’Agent', nom: '${e['nomComplet']}'), rhaSignDa]),
     );
   }
+}
+
+/// Un salaire laissé vide reste « non renseigné » (jamais zéro) ; une date d'embauche vide aussi (lot PLAN-INDIV). Le consentement SMS se trace ensuite (lot SMS-R).
+Map<String, Object?> _agentSaisi(Map<String, Object?> v) {
+  final vide = '${v['salaireBase'] ?? ''}'.trim().isEmpty;
+  final f = rhaAgentEnregistrable({...v, 'salaireBase': vide ? null : rhaNum(v['salaireBase'])});
+  if (vide) f.remove('salaireBase');
+  return f;
 }

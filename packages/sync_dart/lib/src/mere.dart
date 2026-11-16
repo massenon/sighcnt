@@ -103,6 +103,8 @@ const familleDeBase = <String, String>{
   'budgets': 'A', 'immobilisations': 'A', 'couverturesAssurance': 'A',
   // Lot SAT (ADR-0009) : les réponses de satisfaction (ouvertes par la mère, ajout seul, identité `REPW-<id>` ou posée au guichet) et les liens de collecte (un lien se révoque : fiche descriptive). Jamais vers un téléphone.
   'reponsesEnquetes': 'B', 'jetonsEnquete': 'A',
+  // Lot PLAN-INDIV : le planning personnalisé d'un agent (une version datée figée par fiche, identité commune par le contenu). Jamais vers un téléphone (RG-13).
+  'planningsPersonnalises': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 

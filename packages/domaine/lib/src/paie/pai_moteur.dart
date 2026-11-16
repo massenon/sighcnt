@@ -520,7 +520,11 @@ class PaiCalcul {
   String get nomComplet => '${employe['nomComplet'] ?? ''}';
 }
 
-int _compter(List<PaiFiche> planning, String employeId, int annee, int mois, String type) => planning.where(_actif).where((p) {
+/// RG-11 : seules les vacations VALIDÉES comptent (lot PLAN-INDIV). Une vacation « à valider » (proposition, application d'un modèle non encore validée) est visible mais ne compte
+/// pour aucune prime ; une pièce d'avant le circuit (sans état) est lue validée, comme à la maquette (`m11-paie.js`).
+bool _vacationValidee(PaiFiche p) => p['validationEtat'] == null || p['validationEtat'] == '' || p['validationEtat'] == 'validee';
+
+int _compter(List<PaiFiche> planning, String employeId, int annee, int mois, String type) => planning.where(_actif).where(_vacationValidee).where((p) {
       if (p['employeId'] != employeId || p['type'] != type) return false;
       final d = paiDate(p['date']).toLocal();
       return d.year == annee && d.month - 1 == mois;

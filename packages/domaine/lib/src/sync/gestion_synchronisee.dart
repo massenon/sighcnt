@@ -20,7 +20,9 @@ import 'dart:convert';
 import '../fichiers/sha256.dart';
 
 /// Les trois collections de gestion que le pont du poste synchronise depuis ce lot (famille A à la mère).
-const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance'};
+// Lot PLAN-INDIV (16/11/2026) : le PLANNING PERSONNALISÉ d'un agent voyage entre postes lui aussi (famille A, identité commune par le contenu : l'agent et la date d'effet), jamais vers un
+// téléphone (RG-13 : aucune donnée RH de la clinique sur un appareil mobile hors espace de l'agent). Une version est figée : deux postes qui la définissent à l'identique n'en font qu'une.
+const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises'};
 
 /// Elles ne vont JAMAIS vers un téléphone (RG-13) : la comptabilité et l'assurance d'un patient ne sont lues par aucun écran du mobile ; un téléphone perdu n'emporte ni budget, ni
 /// patrimoine, ni police d'assurance.
@@ -49,6 +51,10 @@ String? identiteSyncGestion(String collection, Map<String, Object?> f, {String? 
     case 'immobilisations':
       if ('${f['designation'] ?? ''}'.isEmpty || '${f['dateAcquisition'] ?? ''}'.isEmpty) return null;
       return 'IMM-${_empreinte([f['designation'], _jour(f['dateAcquisition']), f['valeurAcquisition']])}';
+    case 'planningsPersonnalises':
+      final agent = '${f['matricule'] ?? ''}'.isNotEmpty ? '${f['matricule']}' : '${f['employeId'] ?? ''}';
+      if (agent.isEmpty || '${f['dateEffet'] ?? ''}'.isEmpty) return null;
+      return 'PPE-${_empreinte([agent, _jour(f['dateEffet'])])}';
     case 'couverturesAssurance':
       final p = (patientSync == null || patientSync.isEmpty) ? '${f['patientId'] ?? ''}' : patientSync;
       if (p.isEmpty) return null;

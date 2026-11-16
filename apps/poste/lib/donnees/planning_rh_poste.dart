@@ -12,10 +12,13 @@ import 'magasin.dart';
 /// Les écrans (carte des régimes individuels, filtres avancés, commandes de validation, écran des propositions) sont portés au lot Y (E2339 et suivants) : ils
 /// n'appellent que ce fichier et le domaine, jamais une règle écrite à l'écran.
 class PlanningRhPoste {
-  PlanningRhPoste(this.m, {required this.auteur, required this.role, DateTime Function()? horloge}) : _horloge = horloge ?? DateTime.now;
+  PlanningRhPoste(this.m, {required this.auteur, required this.role, required this.droitGeste, DateTime Function()? horloge}) : _horloge = horloge ?? DateTime.now;
   final Magasin m;
   final String Function() auteur;
   final String role;
+
+  /// Le droit d'un geste réservé pour le rôle de la session (fiche RBAC, `matrice.droitGeste`) : JAMAIS un nom de rôle dans ce fichier (lot PLAN-INDIV).
+  final bool Function(String geste) droitGeste;
   final DateTime Function() _horloge;
 
   String get aujourdhui => parametreDateIso(_horloge());
@@ -74,6 +77,7 @@ class PlanningRhPoste {
     required Map<String, Object?> champs,
     required String? motif,
     bool retourCategorie = false,
+    String? mode,
   }) {
     Fiche? e;
     for (final x in m.collection('personnel').actives) {
@@ -81,7 +85,8 @@ class PlanningRhPoste {
     }
     final versions = _versions(employeId);
     final r = validerDerogationRh(
-      role: role,
+      droit: droitGeste(gesteRegimeIndividuelRh),
+      mode: mode,
       agentExiste: e != null,
       dateEffet: dateEffet,
       motif: motif,
@@ -94,10 +99,117 @@ class PlanningRhPoste {
     final avant = regimeALaDate(e!, dateEffet!);
     final res = m.collection('regimesIndividuels').inserer({
       'employeId': e['id'], 'employe': e['nomComplet'], 'matricule': e['matricule'], 'fonction': e['fonction'], 'categorie': avant.categorie,
-      'champs': r.champs, 'retourCategorie': retourCategorie, 'dateEffet': dateEffet, 'motif': (motif ?? '').trim(), 'version': versions.length + 1,
+      'champs': r.champs, 'mode': retourCategorie ? null : (mode == null || mode.isEmpty ? 'deroge' : mode), 'retourCategorie': retourCategorie, 'dateEffet': dateEffet, 'motif': (motif ?? '').trim(), 'version': versions.length + 1,
       'creeLe': aujourdhui, 'creePar': auteur(), 'statut': 'actif',
     }, prefixe: 'RGI');
     return {'ok': true, 'id': res.fiche['id'], 'version': versions.length + 1, 'derogations': (r.champs ?? const {}).keys.toList(), 'retourCategorie': retourCategorie};
+  }
+
+  // -------------------------------------------------------------------------------------------------------------------------------------------------
+  // Lot PLAN-INDIV (16/11/2026) : planning personnalisé, application à une période, valeurs d'attente. Les règles sont celles du domaine (vecteurs de la maquette).
+  // -------------------------------------------------------------------------------------------------------------------------------------------------
+
+  List<Fiche> versionsPersonnalisees(Object? employeId) => [
+        for (final v in m.collection('planningsPersonnalises').actives)
+          if (v['employeId'] == employeId) v
+      ];
+
+  /// L'historique du planning personnalisé d'un agent, version par version (date d'effet, périodicité, jours, motif, auteur).
+  List<Map<String, Object?>> historiquePlanningPerso(Object? employeId) {
+    final vs = [...versionsPersonnalisees(employeId)]..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
+    return [
+      for (final (i, v) in vs.indexed)
+        {
+          'id': v['id'], 'version': i + 1, 'periodicite': v['periodicite'], 'dateEffet': v['dateEffet'], 'jours': v['jours'], 'motif': v['motif'], 'creePar': v['creePar'], 'creeLe': v['creeLe'],
+        }
+    ];
+  }
+
+  /// DÉFINIR une version de planning personnalisé (geste réservé `regler_planning_personnalise`) : contrôlée comme la grille, écrite comme une version immuable.
+  Map<String, Object?> definirPlanningPerso({required Object? employeId, required String? periodicite, required String? dateEffet, required String? motif, required Object? jours}) {
+    final e = _agent(employeId);
+    final d = dateEffet ?? '';
+    final dateRegime = RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(d) ? d : aujourdhui;
+    final versions = versionsPersonnalisees(employeId);
+    final r = validerPlanningPersoRh(
+      droit: droitGeste(gestePlanningPersonnaliseRh),
+      agentExiste: e != null,
+      periodicite: periodicite,
+      dateEffet: dateEffet,
+      motif: motif,
+      jours: jours,
+      regime: e == null ? RegimeRhResolu(date: dateRegime) : regimeALaDate(e, dateRegime),
+      nomAgent: e == null ? '' : '${e['nomComplet']}',
+      versions: versions,
+      aujourdhui: aujourdhui,
+    );
+    if (r.refus != null) return r.refus!.toJson();
+    final res = m.collection('planningsPersonnalises').inserer({
+      'employeId': e!['id'], 'employe': e['nomComplet'], 'matricule': e['matricule'], 'fonction': e['fonction'], 'periodicite': periodicite, 'jours': r.jours,
+      'dateEffet': dateEffet, 'motif': (motif ?? '').trim(), 'version': versions.length + 1, 'creeLe': aujourdhui, 'creePar': auteur(), 'statut': 'actif',
+    }, prefixe: 'PPE');
+    return {'ok': true, 'id': res.fiche['id'], 'version': versions.length + 1, 'periodicite': periodicite, 'dateEffet': dateEffet, 'jours': r.jours!.length};
+  }
+
+  /// APPLIQUER le modèle d'un agent à une période. [ecrire] faux : APERÇU, aucune écriture. Un jour occupé n'est jamais écrasé ; chaque jour passe par le contrôle unique du domaine.
+  /// Les vacations posées sont VALIDÉES (celui qui applique est celui qui valide), comme [poserVacation] ; le modèle lui-même ne compte pour aucune prime (RG-11).
+  Map<String, Object?> appliquerPlanningPerso({required Object? employeId, required String? du, required String? au, bool ecrire = false}) {
+    final e = _agent(employeId);
+    final r = apercuApplicationPersoRh(
+      role: role,
+      agent: e,
+      du: du,
+      au: au,
+      versions: versionsPersonnalisees(employeId),
+      planningActif: m.collection('planning').actives,
+      regimeALaDate: (d) => regimeALaDate(e!, d),
+    );
+    if (r.refus != null) return r.refus!.toJson();
+    int n(String etat) => r.lignes.where((l) => l.etat == etat).length;
+    final out = <String, Object?>{
+      'ok': true, 'apercu': !ecrire, 'agent': employeId, 'du': du, 'au': au, 'lignes': [for (final l in r.lignes) l.toJson()],
+      'aPoser': n('a_poser'), 'occupes': n('occupe'), 'refuses': n('refuse'), 'libres': n('libre'), 'sansModele': n('sans_modele'), 'ids': <Object?>[], 'poses': 0,
+    };
+    if (!ecrire) return out;
+    final annulations = <void Function()>[];
+    final ids = <Object?>[];
+    final plan = m.collection('planning');
+    for (final l in r.lignes.where((l) => l.etat == 'a_poser')) {
+      final regime = l.regime!;
+      final res = plan.inserer({
+        'date': l.date, 'employeId': e!['id'], 'employe': e['nomComplet'], 'fonction': e['fonction'], 'service': e['service'], 'type': l.type, 'observation': null,
+        'statut': 'validee', 'regimeLibelle': regime.categorie, 'regimeIndividuelId': regime.versionId, 'derogations': [...regime.derogations],
+        'validationEtat': 'validee', 'validePar': auteur(), 'valideLe': aujourdhui, 'origine': 'modele', 'planningPersonnaliseId': l.versionId,
+      }, prefixe: 'PLN');
+      ids.add(res.fiche['id']);
+      annulations.add(res.annuler);
+    }
+    m.journaliser('Planning personnalisé : modèle appliqué à une période', 'M10', 'planning', '${e!['id']}', null,
+        {'du': du, 'au': au, 'poses': ids.length, 'occupes': out['occupes'], 'refuses': out['refuses']});
+    out['ids'] = ids;
+    out['poses'] = ids.length;
+    out['annuler'] = () {
+      for (final a in annulations) {
+        a();
+      }
+    };
+    return out;
+  }
+
+  /// Les champs de la fiche d'un agent qui portent encore la mention « valeur d'attente ».
+  List<String> valeursAttente(Object? employeId) => valeursAttenteRh(_agent(employeId));
+
+  /// CONFIRMER une valeur d'attente telle quelle (geste réservé `confirmer_valeur_attente_personnel`) : motif obligatoire, journal RG-12, la mention de CE champ tombe.
+  Map<String, Object?> confirmerValeurAttente({required Object? employeId, required String? champ, required String? motif}) {
+    final e = _agent(employeId);
+    final r = controlerConfirmationAttenteRh(droit: droitGeste(gesteValeurAttenteRh), agent: e, champ: champ, motif: motif);
+    if (r.refus != null) return r.refus!.toJson();
+    final col = m.collection('personnel');
+    final avant = e![champ!];
+    final annuler = col.mettreAJour(employeId, r.patch!, journaliser: false);
+    m.journaliser('Valeur d’attente confirmée', 'M10', 'personnel', '$employeId', {'champ': champ, 'valeur': avant, 'attente': true},
+        {'champ': champ, 'attente': false, 'motif': (motif ?? '').trim()});
+    return {'ok': true, 'id': employeId, 'champ': champ, 'restantes': valeursAttenteRh(e), 'annuler': annuler};
   }
 
   /// TRANCHER une pièce (pointage, congé, ordre de mission) selon le circuit en vigueur : le patch du domaine est écrit sur la fiche, le circuit consigné.
@@ -285,7 +397,7 @@ class PlanningRhPoste {
     return [
       for (final (i, v) in vs.indexed)
         {
-          'id': v['id'], 'version': i + 1, 'dateEffet': v['dateEffet'], 'retourCategorie': v['retourCategorie'] == true,
+          'id': v['id'], 'version': i + 1, 'dateEffet': v['dateEffet'], 'mode': v['retourCategorie'] == true ? null : (v['mode'] ?? 'deroge'), 'retourCategorie': v['retourCategorie'] == true,
           'champs': (v['champs'] as Map?)?.cast<String, Object?>() ?? const <String, Object?>{}, 'motif': v['motif'], 'creePar': v['creePar'], 'creeLe': v['creeLe'],
         }
     ];

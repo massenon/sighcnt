@@ -242,6 +242,15 @@
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en
        exploitation part de zéro, comme pour tout geste réservé. Le composant de tableau rend la commande ABSENTE sans le droit et le moteur de sortie refuse aussi. */
+    /* Lot PLAN-INDIV (16/11/2026, Direction section AQ points 9 et 10) : trois gestes réservés remplacent le nom de rôle écrit à quatre endroits (moteur et écran de la maquette, domaine,
+       poste). Défaut = les rôles d'avant (administrateur et Directrice Administrative), PROPOSITION À VALIDER : régler le régime individuel d'un agent (déroge OU remplace), définir son planning
+       personnalisé (versions datées), confirmer une valeur d'attente de sa fiche (salaire, catégorie, date d'embauche, numéro CNSS). Aucun ne donne d'écran. */
+    { id: 'regler_regime_individuel', libelle: 'Régler le régime individuel d\u2019un agent (déroge à sa catégorie ou la remplace)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da'] },
+    { id: 'regler_planning_personnalise', libelle: 'Définir le planning personnalisé d\u2019un agent (hebdomadaire ou mensuel, versions datées)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da'] },
+    { id: 'confirmer_valeur_attente_personnel', libelle: 'Confirmer une valeur d\u2019attente de la fiche du personnel (salaire, catégorie, date d\u2019embauche, numéro CNSS)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da'] },
     { id: 'exporter_donnees', libelle: 'Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)', module: null, ecran: null,
       rolesDefaut: Object.keys(ROLES) },
     /* Lot FISC-2 (16/11/2026, Direction, section AQ points 2 et 3) : CONFIRMER une obligation fiscale « à confirmer par la CNSS » (le versement du 15 : le bouton « Confirmer » la fait passer à « confirmée »,

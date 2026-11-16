@@ -58,10 +58,12 @@ const FAMILLES = {
      la suivante prend effet). Identité commune par le contenu, posée par le poste. Jamais vers un téléphone (RG-13). Le refus au rejeu du budget d'un exercice clos est tenu par la mère
      Dart (`sync_dart`), comme celui des pièces (lot CLO-2) : cette mère de référence ne connaît pas les exercices. */
   budgets: 'A', immobilisations: 'A', couverturesAssurance: 'A',
+  /* Lot PLAN-INDIV : le planning personnalisé d'un agent (version datée figée, identité commune par le contenu), jamais vers un téléphone (RG-13). */
+  planningsPersonnalises: 'A',
 };
 const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers', 'lecturesOcr']);
 /* Lot SYNC-CFG : les trois collections de gestion (identité commune par le contenu, jamais vers un téléphone). */
-const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance']);
+const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises']);
 const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 
 const PARAMETRES = require('./parametres');

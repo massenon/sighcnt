@@ -13,7 +13,8 @@ import '../../shell/contexte_ecran.dart';
 /// magasin du poste par [PlanningRhPoste] ; le circuit et « l'agent modifie directement » se LISENT au registre des paramètres (lot L0), jamais en constante.
 
 /// Le moteur du planning RH pour l'agent de la session (nom nominatif, rôle, horloge du poste).
-PlanningRhPoste rhbPlanningPoste(ContexteEcran c) => PlanningRhPoste(c.magasin, auteur: () => acteur(c).nom, role: c.role, horloge: () => c.aujourdhui);
+PlanningRhPoste rhbPlanningPoste(ContexteEcran c) => PlanningRhPoste(c.magasin,
+    auteur: () => acteur(c).nom, role: c.role, droitGeste: (g) => c.donnees?.matrice.droitGeste(c.role, g) ?? false, horloge: () => c.aujourdhui);
 
 /// Les états de validation d'une pièce (libellés de la maquette).
 const Map<String, (String, TonSigh)> rhbEtatsValidation = {

@@ -12,7 +12,7 @@
    "session.role !== 'echographiste'": 1
   },
   "js/modules/m10-rh.js": {
-   "['admin', 'da']": 5,
+   "['admin', 'da']": 4,
    "['admin', 'da', 'surveillant']": 1,
    "['surveillant', 'da', 'admin']": 3,
    "['surveillant', 'da', 'admin', 'direction', 'rh']": 1
@@ -63,11 +63,11 @@
    "['direction', 'da', 'admin', 'comptable']": 1,
    "['comptable', 'admin', 'da']": 1,
    "['caissier', 'da', 'admin']": 1,
-   "['admin', 'da']": 6,
-   "['admin', 'da', 'surveillant']": 2,
+   "['admin', 'da', 'surveillant']": 1,
    "['surveillant']": 1,
    "['surveillant', 'admin']": 1,
    "['da', 'admin']": 1,
+   "['admin', 'da']": 5,
    "['surveillant', 'da', 'admin']": 4,
    ".role !== 'reception'": 1,
    "role === 'caissier'": 1

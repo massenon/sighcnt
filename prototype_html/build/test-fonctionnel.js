@@ -29218,6 +29218,356 @@ async function viderMessages(page) {
   });
   /* LOT SAT FIN */
 
+  /* =========================================================================
+   * LOT PLAN-INDIV (16/11/2026, Direction section AQ points 9 et 10) : Vagues 260 à 262
+   * Vague 260 : le régime individuel en DEUX MODES (déroge, remplace), au geste réservé de la fiche RBAC.
+   * Vague 261 : le PLANNING PERSONNALISÉ de la fiche du personnel (définition contrôlée, application à une période, immuabilité, RG-11).
+   * Vague 262 : les VALEURS D'ATTENTE du personnel (marquage par champ, levée par la modification du champ seul, « Confirmer » signé), plus aucune valeur pré-remplie.
+   * Chaque scénario RESTAURE ce qu'il touche (versions, vacations, fiche du personnel, session).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 260 : lot PLAN-INDIV, régime individuel en deux modes (déroge ou remplace), geste réservé regler_regime_individuel, refus nommés MODE_INCONNU et REMPLACEMENT_INCOMPLET');
+    erreursJS = [];
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    await ouvrir('m10-planning.html');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const meds = S.collection('personnel').active().filter((e) => e.fonction === 'medecin');
+      const iso = (n) => C.iso(C.addDays(C.aujourdhui(), n));
+      return { m1: meds[0].id, d1: iso(1), d10: iso(10), d20: iso(20), reg0: S.collection('regimesIndividuels').all().map((p) => p.id), plan0: S.collection('planning').all().map((p) => p.id),
+        rbac0: JSON.stringify(S.collection('rbac').all().filter((y) => y.role === 'da' && y.statut !== 'archive').map((y) => [y.id, y.droitsGestes === undefined ? null : y.droitsGestes])) };
+    });
+    const ecran = await page.evaluate(() => {
+      const t = document.getElementById('page-content').textContent;
+      return { carte: /Régimes individuels/.test(t), noteModes: /au choix/.test(t) && /déroge/.test(t) && /remplace/.test(t), bouton: [...document.querySelectorAll('#page-content button')].some((b) => /Déroger pour un agent/.test(b.textContent)) };
+    });
+    verifier('La carte des régimes individuels dit les deux modes et offre « Déroger pour un agent » à l’administrateur (geste réservé)', ecran.carte && ecran.noteModes && ecran.bouton, JSON.stringify(ecran));
+    /* modale : le mode se choisit, un remplacement sans vacations est refusé en le nommant (toast lu à l'écran), rien n'est écrit */
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => /Déroger pour un agent/.test(b.textContent)).click(); });
+    await pause(400);
+    const modale = await page.evaluate((m) => {
+      const racine = document.querySelector('.modal-root, [role=dialog]');
+      const dire = (sel, v) => { const c = racine.querySelector(sel); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      const options = [...racine.querySelectorAll('#f_mode option')].map((o) => o.value).filter(Boolean);
+      dire('#f_employeId', m.m1); dire('#f_dateEffet', m.d1); dire('#f_mode', 'remplace'); dire('#f_repos', 'repos24'); dire('#f_motif', 'Sonde Vague 260 : remplacement incomplet');
+      [...racine.querySelectorAll('button')].filter((b) => /Enregistrer la version/.test(b.textContent)).pop().click();
+      return { options };
+    }, monde);
+    await pause(500);
+    const refusUi = await page.evaluate((m) => ({ toast: /n’hérite de rien/.test(document.body.textContent) && /manque : vacations/.test(document.body.textContent), versions: window.SIGH.store.collection('regimesIndividuels').all().filter((x) => m.reg0.indexOf(x.id) < 0).length }), monde);
+    verifier('Le mode se choisit dans la modale (déroge, remplace) ; un remplacement sans vacations est refusé À L’ÉCRAN en nommant le manque, rien n’est écrit', modale.options.join() === 'deroge,remplace' && refusUi.toast && refusUi.versions === 0, JSON.stringify({ modale, refusUi }));
+    await page.evaluate(() => { document.querySelectorAll('.modal-root button, [role=dialog] button').forEach((b) => { if (/Annuler/.test(b.textContent)) b.click(); }); });
+
+    /* moteur : refus nommés, remplacement complet, résolution à la date, sans cumul avec la catégorie */
+    const moteur = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh, S = window.SIGH.store;
+      const sansVac = PR.deroger({ employeId: m.m1, dateEffet: m.d1, motif: 'x', mode: 'remplace', champs: { repos: 'repos24' } });
+      const sansRepos = PR.deroger({ employeId: m.m1, dateEffet: m.d1, motif: 'x', mode: 'remplace', champs: { vacations: ['garde'] } });
+      const rien = PR.deroger({ employeId: m.m1, dateEffet: m.d1, motif: 'x', mode: 'remplace', champs: { honoraire: 5000 } });
+      const inconnu = PR.deroger({ employeId: m.m1, dateEffet: m.d1, motif: 'x', mode: 'fusionne', champs: { repos: 'repos24' } });
+      const avantEcriture = S.collection('regimesIndividuels').all().filter((x) => m.reg0.indexOf(x.id) < 0).length;
+      const ok = PR.deroger({ employeId: m.m1, dateEffet: m.d1, motif: 'Sonde 260 : remplacement', mode: 'remplace', champs: { vacations: ['permanence'], repos: 'repos24' } });
+      const cat = PR.regimeALaDate(m.m1, 'medecin', m.d1).mode;
+      const r1 = PR.regimeALaDate(m.m1, 'medecin', m.d1);
+      const catAvant = PR.regimeALaDate(m.m1, 'medecin', window.SIGH.core.iso(window.SIGH.core.aujourdhui()));
+      const deroge = PR.deroger({ employeId: m.m1, dateEffet: m.d10, motif: 'Sonde 260 : déroge', champs: { honoraire: 20000 } });
+      const r2 = PR.regimeALaDate(m.m1, 'medecin', m.d10);
+      const retour = PR.deroger({ employeId: m.m1, dateEffet: m.d20, motif: 'Sonde 260 : retour', retourCategorie: true });
+      const r3 = PR.regimeALaDate(m.m1, 'medecin', m.d20);
+      const types = PR.typesAutorises(m.m1, 'medecin', m.d1);
+      const histo = PR.historique(m.m1).map((h) => h.mode);
+      return { sansVac: sansVac.code, sansRepos: sansRepos.code, rien: [rien.code, rien.manquants], inconnu: inconnu.code, avantEcriture, ok: ok.ok && ok.mode === 'remplace', cat, r1: { vac: r1.vacations, repos: r1.repos, cycle: r1.cycle, hon: r1.honoraire, ind: r1.individuel, remplace: r1.remplace },
+        catAvant: catAvant.mode, deroge: deroge.ok, r2: { mode: r2.mode, vac: r2.vacations, hon: r2.honoraire, cycle: r2.cycle }, retour: retour.ok, r3: r3.mode, types, histo };
+    }, monde);
+    verifier('REMPLACEMENT_INCOMPLET est nommé pour les vacations, le repos, ou les deux manques (honoraire seul) ; MODE_INCONNU pour un mode qui n’existe pas ; rien n’est écrit sur refus',
+      moteur.sansVac === 'REMPLACEMENT_INCOMPLET' && moteur.sansRepos === 'REMPLACEMENT_INCOMPLET' && moteur.rien[0] === 'REMPLACEMENT_INCOMPLET' && moteur.rien[1].join() === 'vacations,repos' && moteur.inconnu === 'MODE_INCONNU' && moteur.avantEcriture === 0, JSON.stringify(moteur));
+    verifier('Le remplacement posé à J+1 : vacations et repos de la version, RIEN de la catégorie (cycle et honoraire absents), la catégorie avant J+1 inchangée', moteur.ok && moteur.r1.vac.join() === 'permanence' && moteur.r1.repos === 'repos24' && moteur.r1.cycle === null && moteur.r1.hon === null && moteur.r1.ind && moteur.r1.remplace && moteur.catAvant === 'categorie', JSON.stringify(moteur.r1));
+    verifier('Une version « déroge » posée après un remplacement reprend la catégorie pour tout ce qu’elle ne dit pas (pas de cumul avec le remplacement) ; le retour à la catégorie rétablit tout', moteur.deroge && moteur.r2.mode === 'deroge' && moteur.r2.hon === 20000 && moteur.r2.cycle === 2 && moteur.r2.vac.join() === 'garde' && moteur.retour && moteur.r3 === 'categorie' && moteur.histo.join() === 'remplace,deroge,', JSON.stringify(moteur));
+    verifier('Le type permis par le régime REMPLACÉ suit la version : la permanence est permise au médecin à J+1 (elle ne l’est pas par sa catégorie)', moteur.types.indexOf('permanence') >= 0 && moteur.types.indexOf('garde') < 0, moteur.types.join());
+
+    /* le contrôle de repos de la grille suit le régime REMPLACÉ (repos 24 h, la catégorie dit 48 h) ; fenêtre lointaine : aucune vacation semée. Les colonnes « Mode » et « Planning personnalisé » se lisent sur la carte. */
+    const grille = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh, C = window.SIGH.core;
+      const d = (n) => C.iso(C.addDays(C.aujourdhui(), 300 + n));
+      const v = PR.deroger({ employeId: m.m1, dateEffet: d(0), motif: 'Sonde 260 : repos 24 h remplacé', mode: 'remplace', champs: { vacations: ['garde'], repos: 'repos24' } });
+      const g0 = PR.poserVacation({ employeId: m.m1, date: d(0), type: 'garde' });
+      const veille = PR.poserVacation({ employeId: m.m1, date: d(1), type: 'garde' });
+      const j2 = PR.poserVacation({ employeId: m.m1, date: d(2), type: 'garde' });
+      return { v: v.ok, g0: g0.ok, veille: veille.code, j2: j2.ok, reposHeures: veille.reposHeures };
+    }, monde);
+    verifier('Le contrôle de repos de la grille suit le régime REMPLACÉ : repos 24 h pour cet agent (la garde à J+1 est refusée, nommée ; à J+2 elle passe, alors que la catégorie dit 48 h)', grille.v && grille.g0 && grille.veille === 'INCOMPATIBILITE_REPOS' && grille.reposHeures === 24 && grille.j2, JSON.stringify(grille));
+    await ouvrir('m10-planning.html');
+    const colonnes = await page.evaluate(() => { const t = document.getElementById('page-content').textContent; return { mode: /Mode/.test(t), planning: /Planning personnalisé/.test(t), depuis: /Depuis/.test(t) }; });
+    verifier('La carte des régimes individuels porte les colonnes « Mode » et « Planning personnalisé » dès qu’un agent a une version', colonnes.mode && colonnes.planning && colonnes.depuis, JSON.stringify(colonnes));
+
+    /* immuabilité et geste réservé */
+    const droits = await page.evaluate((m) => {
+      const S = window.SIGH.store, N = window.SIGH.nav, PR = window.SIGH.planningRh;
+      const v = S.collection('regimesIndividuels').all().filter((x) => m.reg0.indexOf(x.id) < 0)[0];
+      const modif = S.collection('regimesIndividuels').update(v.id, { motif: 'réécrit' });
+      const archive = S.collection('regimesIndividuels').archive(v.id, 'x');
+      const gestes = ['regler_regime_individuel', 'regler_planning_personnalise', 'confirmer_valeur_attente_personnel'].map((g) => ({ g: g, admin: N.droitGeste('admin', g), da: N.droitGeste('da', g), surv: N.droitGeste('surveillant', g), cais: N.droitGeste('caissier', g) }));
+      const sess = S.session();
+      const essai = (role) => { S.setSession(Object.assign({}, sess, { role: role })); const r = PR.deroger({ employeId: m.m1, dateEffet: m.d20 === m.d20 ? m.d20 : m.d20, motif: 'x', champs: { cycle: 3 } }); return r.code || (r.ok ? 'OK' : '?'); };
+      const parRole = { caissier: essai('caissier'), surveillant: essai('surveillant') };
+      S.setSession(sess);
+      return { modif: modif === null && S.collection('regimesIndividuels').get(v.id).motif !== 'réécrit', archive: archive === null && S.collection('regimesIndividuels').get(v.id).statut !== 'archive', gestes, parRole };
+    }, monde);
+    verifier('Une version ne se réécrit ni ne s’archive (le moteur refuse), les trois gestes réservés appartiennent à l’administrateur et à la DA d’origine, pas au surveillant ni au caissier',
+      droits.modif && droits.archive && droits.gestes.every((x) => x.admin && x.da && !x.surv && !x.cais), JSON.stringify(droits));
+    verifier('Sans le geste, le moteur refuse en le nommant (DEROGATION_RESERVEE) pour le caissier ET le surveillant', droits.parRole.caissier === 'DEROGATION_RESERVEE' && droits.parRole.surveillant === 'DEROGATION_RESERVEE', JSON.stringify(droits.parRole));
+
+    /* la fiche RBAC retire le geste à la DA : la commande est ABSENTE à l'écran et le moteur refuse ; elle le rend à l'identique ensuite */
+    const retire = await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      const f = col.all().filter((y) => y.role === 'da' && y.statut !== 'archive')[0];
+      const avant = f ? JSON.stringify(f.droitsGestes === undefined ? null : f.droitsGestes) : 'SANS_FICHE';
+      if (f) col.update(f.id, { droitsGestes: Object.assign({}, f.droitsGestes || {}, { regler_regime_individuel: false }) });
+      else col.insert({ role: 'da', droitsGestes: { regler_regime_individuel: false } });
+      N.invaliderRbac();
+      S.setSession(Object.assign({}, S.session(), { role: 'da' }));
+      return { avant: avant, droit: N.droitGeste('da', 'regler_regime_individuel') };
+    });
+    await ouvrir('m10-planning.html');
+    const absent = await page.evaluate(() => ({ bouton: [...document.querySelectorAll('#page-content button')].some((b) => /Déroger pour un agent/.test(b.textContent)), carte: /Régimes individuels/.test(document.getElementById('page-content').textContent) }));
+    const refusDa = await page.evaluate((m) => window.SIGH.planningRh.deroger({ employeId: m.m1, dateEffet: m.d20, motif: 'x', champs: { cycle: 3 } }).code, monde);
+    verifier('Le geste retiré à la DA par la fiche RBAC : « Déroger pour un agent » est ABSENT (la carte reste lisible) et le moteur refuse en le nommant', retire.droit === false && absent.carte && !absent.bouton && refusDa === 'DEROGATION_RESERVEE', JSON.stringify({ retire, absent, refusDa }));
+    /* RESTAURATION : fiche RBAC, session, versions de sonde */
+    await page.evaluate((m) => {
+      const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      const avant = JSON.parse(m.rbac0);
+      const f = col.all().filter((y) => y.role === 'da' && y.statut !== 'archive')[0];
+      if (!avant.length) col.archive(f.id, 'Sonde 260 : restauration');
+      else { const rec = S.raw().rbac.filter((y) => y.id === f.id)[0]; if (avant[0][1] === null) delete rec.droitsGestes; else rec.droitsGestes = avant[0][1]; }
+      N.invaliderRbac();
+      S.collection('planning').all().filter((p) => m.plan0.indexOf(p.id) < 0 && p.statut !== 'archive').forEach((p) => S.collection('planning').archive(p.id, 'Sonde Vague 260'));
+      S.raw().regimesIndividuels = S.raw().regimesIndividuels.filter((x) => m.reg0.indexOf(x.id) >= 0);
+      S.setSession(Object.assign({}, S.session(), { role: 'admin' }));
+      S.save();
+    }, monde);
+    const fin = await page.evaluate((m) => ({ da: window.SIGH.nav.droitGeste('da', 'regler_regime_individuel'), versions: window.SIGH.store.collection('regimesIndividuels').all().filter((x) => m.reg0.indexOf(x.id) < 0).length }), monde);
+    verifier('Restauré : la DA retrouve le geste, aucune version de sonde ne reste', fin.da === true && fin.versions === 0, JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 261 : lot PLAN-INDIV, planning personnalisé sur la fiche du personnel (modèle hebdomadaire ou mensuel contrôlé contre la grille, versions datées figées, application à une période sans écraser un jour occupé, aucun compte pour la paie)');
+    erreursJS = [];
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    await ouvrir('m10-employe-profil.html');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const agent = S.collection('personnel').active().slice().sort((a, b) => String(a.matricule).localeCompare(String(b.matricule)))[0];
+      const iso = (n) => C.iso(C.addDays(C.aujourdhui(), n));
+      return { agent: agent.id, fonction: agent.fonction, nom: agent.nomComplet, d7: iso(400), d13: iso(406), d0: iso(0),   /* fenêtre lointaine : aucune vacation semée */ plan0: S.collection('planning').all().map((p) => p.id), ppe0: (S.raw().planningsPersonnalises || []).map((p) => p.id), reg0: S.collection('regimesIndividuels').all().map((p) => p.id) };
+    });
+    const clique = (re, racine) => page.evaluate((a) => { const r = a[1] ? document.querySelector(a[1]) : document; const b = [...r.querySelectorAll('button')].find((x) => new RegExp(a[0]).test(x.textContent)); if (b) b.click(); return !!b; }, [re, racine || null]);
+    /* 1. l'onglet existe sur la fiche, vide au départ, avec ses deux commandes réservées */
+    verifier('La fiche employé porte l’onglet « Planning personnalisé »', await clique('Planning personnalisé'));
+    await pause(400);
+    const onglet = await page.evaluate(() => { const p = document.querySelector('[data-planning-perso]'); return p && { vide: /Aucun planning personnalisé/.test(p.textContent), definir: [...p.querySelectorAll('button')].some((b) => /Définir une version/.test(b.textContent)), appliquer: [...p.querySelectorAll('button')].some((b) => /Appliquer à une période/.test(b.textContent)), note: /aucune prime/.test(p.textContent) }; });
+    verifier('L’onglet est vide, dit que le modèle ne compte pour aucune prime, offre « Définir une version » et n’offre PAS « Appliquer à une période » tant qu’aucune version n’existe', onglet && onglet.vide && onglet.note && onglet.definir && !onglet.appliquer, JSON.stringify(onglet));
+    /* 2. définition par la modale : refus nommé à l'écran (garde le lundi et le mardi), puis succès */
+    const choisir = (jour, type) => page.evaluate((a) => { const s = document.querySelector('.modal-root [data-jour="' + a[0] + '"], [role=dialog] [data-jour="' + a[0] + '"]'); s.value = a[1]; s.dispatchEvent(new Event('change', { bubbles: true })); }, [jour, type]);
+    const poser = (sel, v) => page.evaluate((a) => { const c = document.querySelector(a[0]); c.value = a[1]; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); }, [sel, v]);
+    await clique('Définir une version');
+    await pause(400);
+    const nbChamps = await page.evaluate(() => document.querySelectorAll('[role=dialog] [data-jour], .modal-root [data-jour]').length);
+    await poser('#ppe_date', monde.d7); await poser('#ppe_motif', 'Sonde 261 : gardes serrées');
+    await choisir(1, 'garde'); await choisir(2, 'garde');
+    await clique('Enregistrer la version');
+    await pause(500);
+    const refusUi = await page.evaluate(() => ({ toast: /Incompatibilité/.test(document.body.textContent) && /lue en boucle|puis garde mardi/.test(document.body.textContent), n: (window.SIGH.store.raw().planningsPersonnalises || []).length }));
+    verifier('La modale porte les sept jours de la semaine type ; deux gardes à la suite sont refusées À L’ÉCRAN (INCOMPATIBILITE_REPOS, repos 48 h du médecin), rien n’est écrit', nbChamps === 7 && refusUi.toast && refusUi.n === monde.ppe0.length, JSON.stringify({ nbChamps, refusUi }));
+    await choisir(2, '');
+    await choisir(4, 'garde');
+    await clique('Enregistrer la version');
+    await pause(500);
+    const defini = await page.evaluate((m) => { const v = window.SIGH.planningRh.historiquePlanningPerso(m.agent); const p = document.querySelector('[data-planning-perso]'); return { v: v.map((x) => [x.version, x.periodicite, x.jours.map((j) => j.jour + ':' + j.type).join(',')]), ecran: p && /Version 1 \(hebdomadaire\)/.test(p.textContent), appliquer: p && [...p.querySelectorAll('button')].some((b) => /Appliquer à une période/.test(b.textContent)) }; }, monde);
+    verifier('Le lundi et le jeudi sont enregistrés (version 1 hebdomadaire), lus sur l’écran, et « Appliquer à une période » apparaît', defini.v.length === 1 && defini.v[0][1] === 'hebdomadaire' && defini.v[0][2] === '1:garde,4:garde' && defini.ecran && defini.appliquer, JSON.stringify(defini));
+
+    /* 3. contrôles du moteur : tout ce que la grille refuse, le modèle le refuse dès sa définition */
+    const refus = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh, C = window.SIGH.core, iso = (n) => C.iso(C.addDays(C.aujourdhui(), n));
+      const def = (o) => { const r = PR.definirPlanningPerso(Object.assign({ employeId: m.agent, periodicite: 'hebdomadaire', dateEffet: iso(500), motif: 'x', jours: [{ jour: 1, type: 'garde' }] }, o)); return r.ok ? 'OK' : r.code; };
+      const boucle = PR.definirPlanningPerso({ employeId: m.agent, periodicite: 'hebdomadaire', dateEffet: iso(500), motif: 'x', jours: [{ jour: 7, type: 'garde' }, { jour: 1, type: 'garde' }] });
+      return { boucle: [boucle.code, /boucle/.test(boucle.motif || '')], typeNonPermis: def({ jours: [{ jour: 2, type: 'permanence' }] }), typeInconnu: def({ jours: [{ jour: 2, type: 'sieste' }] }), vide: def({ jours: [] }), jour8: def({ jours: [{ jour: 8, type: 'garde' }] }), double: def({ jours: [{ jour: 1, type: 'garde' }, { jour: 1, type: 'garde' }] }),
+        periodicite: def({ periodicite: 'annuel' }), motif: def({ motif: ' ' }), passee: def({ dateEffet: iso(-1) }), dateExistante: def({ dateEffet: m.d7 }), anterieure: def({ dateEffet: iso(100) }), mensuelFin: def({ periodicite: 'mensuel', jours: [{ jour: 31, type: 'garde' }, { jour: 1, type: 'garde' }] }) };
+    }, monde);
+    verifier('Refus nommés du modèle : semaine lue en BOUCLE (dimanche puis lundi), type non permis par le régime, type inconnu, modèle vide, jour hors semaine, jour en double, périodicité inconnue, motif absent, date passée',
+      refus.boucle[0] === 'INCOMPATIBILITE_REPOS' && refus.boucle[1] && refus.typeNonPermis === 'TYPE_NON_PERMIS' && refus.typeInconnu === 'TYPE_INCONNU' && refus.vide === 'MODELE_VIDE' && refus.jour8 === 'JOUR_INVALIDE' && refus.double === 'JOUR_EN_DOUBLE'
+      && refus.periodicite === 'PERIODICITE_INCONNUE' && refus.motif === 'MOTIF_OBLIGATOIRE' && refus.passee === 'DATE_PASSEE', JSON.stringify(refus));
+    verifier('Une version ne se réécrit pas : date déjà prise (DATE_EXISTANTE), version insérée avant la plus récente (VERSION_ANTERIEURE) ; le mois n’est PAS lu en boucle (le 31 puis le 1er passent)', refus.dateExistante === 'DATE_EXISTANTE' && refus.anterieure === 'VERSION_ANTERIEURE' && refus.mensuelFin === 'OK', JSON.stringify(refus));
+    await page.evaluate((m) => { const S = window.SIGH.store; const nouv = (S.raw().planningsPersonnalises || []).filter((x) => m.ppe0.indexOf(x.id) < 0); const garde = nouv.filter((x) => x.dateEffet === m.d7); S.raw().planningsPersonnalises = (S.raw().planningsPersonnalises || []).filter((x) => m.ppe0.indexOf(x.id) >= 0 || x.dateEffet === m.d7); void garde; S.save(); }, monde);
+
+    /* 4. l'application à une période : un jour occupé reste, l'aperçu n'écrit rien */
+    const occupe = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh, C = window.SIGH.core;
+      const num = (d) => { const p = d.split('-').map(Number); return ((new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay() + 6) % 7) + 1; };
+      let lundi = null; for (let i = 0; i < 7; i++) { const d = C.iso(C.addDays(m.d7, i)); if (num(d) === 1) lundi = d; }
+      const r = PR.poserVacation({ employeId: m.agent, date: lundi, type: 'conge' });
+      return { lundi: lundi, ok: r.ok, code: r.code };
+    }, monde);
+    await clique('Appliquer à une période');
+    await pause(400);
+    await poser('#ppa_du', monde.d7); await poser('#ppa_au', monde.d13);
+    const avantApercu = await page.evaluate(() => window.SIGH.store.collection('planning').all().length);
+    await clique('Aperçu', '[role=dialog], .modal-root');
+    await pause(400);
+    const apercu = await page.evaluate(() => { const b = document.querySelector('[data-bilan=apercu]'); return { texte: b ? b.textContent : null, n: window.SIGH.store.collection('planning').all().length, lignes: [...document.querySelectorAll('#ppa_apercu tbody tr')].map((tr) => tr.textContent.replace(/\s+/g, ' ')) }; });
+    verifier('L’aperçu n’écrit rien, dit « 1 à poser, 1 jour occupé conservé » et nomme le jour occupé par le lundi déjà pris', occupe.ok && apercu.n === avantApercu && /Aperçu : 1 à poser, 1 jour\(s\) occupé\(s\) conservé\(s\)/.test(apercu.texte || '') && apercu.lignes.some((l) => /Jour occupé/.test(l) && /JOUR_OCCUPE/.test(l)), JSON.stringify({ occupe, apercu, avantApercu }));
+    await clique('Appliquer', '[role=dialog], .modal-root');
+    await pause(500);
+    const applique = await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      const lignes = S.collection('planning').active().filter((p) => p.employeId === m.agent && p.date >= m.d7 && p.date <= m.d13);
+      return { lignes: lignes.map((p) => [p.date, p.type, p.origine || null, p.validationEtat || null]), nbModele: lignes.filter((p) => p.origine === 'modele').length, lundiIntact: lignes.filter((p) => p.date === m.lundi && p.type === 'conge').length };
+    }, Object.assign({}, monde, { lundi: occupe.lundi }));
+    verifier('« Appliquer » pose la garde du jeudi seule (origine modèle, validée) et laisse le congé du lundi en place', applique.nbModele === 1 && applique.lundiIntact === 1 && applique.lignes.filter((l) => l[2] === 'modele')[0][1] === 'garde' && applique.lignes.filter((l) => l[2] === 'modele')[0][3] === 'validee', JSON.stringify(applique));
+    await page.evaluate(() => { document.querySelectorAll('[role=dialog] button, .modal-root button').forEach((b) => { if (/Fermer/.test(b.textContent)) b.click(); }); });
+
+    /* 5. gardes de collection, droits, RG-11 */
+    const garde = await page.evaluate((m) => {
+      const S = window.SIGH.store, PR = window.SIGH.planningRh, C = window.SIGH.core;
+      const v = (S.raw().planningsPersonnalises || []).filter((x) => m.ppe0.indexOf(x.id) < 0)[0];
+      const modif = S.collection('planningsPersonnalises').update(v.id, { motif: 'réécrit' });
+      const arch = S.collection('planningsPersonnalises').archive(v.id, 'x');
+      const sess = S.session();
+      const sous = (role) => { S.setSession(Object.assign({}, sess, { role: role })); const a = PR.definirPlanningPerso({ employeId: m.agent, periodicite: 'hebdomadaire', dateEffet: C.iso(C.addDays(C.aujourdhui(), 600)), motif: 'x', jours: [{ jour: 1, type: 'garde' }] });
+        const b = PR.appliquerPlanningPerso({ employeId: m.agent, du: m.d7, au: m.d13 }); return [a.code || 'OK', b.code || 'OK']; };
+      const res = { caissier: sous('caissier'), surveillant: sous('surveillant'), medecin: sous('medecin') };
+      S.setSession(sess);
+      return { modif: modif === null && S.collection('planningsPersonnalises').get(v.id).motif !== 'réécrit', arch: arch === null && S.collection('planningsPersonnalises').get(v.id).statut !== 'archive', res };
+    }, monde);
+    verifier('Une version de planning personnalisé ne se réécrit ni ne s’archive (PLANNING_PERSO_FIGE par le moteur) ; sans le geste, la définition est refusée (PLANNING_PERSO_RESERVE) ; seul le surveillant (qui pose le planning) peut appliquer',
+      garde.modif && garde.arch && garde.res.caissier[0] === 'PLANNING_PERSO_RESERVE' && garde.res.surveillant[0] === 'PLANNING_PERSO_RESERVE' && garde.res.medecin[0] === 'PLANNING_PERSO_RESERVE'
+      && garde.res.caissier[1] === 'PLANNING_RESERVE' && garde.res.surveillant[1] === 'OK' && garde.res.medecin[1] === 'PLANNING_RESERVE', JSON.stringify(garde));
+    const pErr = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh;
+      const r = (o) => { const x = PR.appliquerPlanningPerso(Object.assign({ employeId: m.agent, du: m.d7, au: m.d13 }, o)); return x.ok ? 'OK' : x.code; };
+      return { inversee: r({ du: m.d13, au: m.d7 }), illisible: r({ du: '02/11/2026' }), longue: r({ du: m.d0, au: window.SIGH.core.iso(window.SIGH.core.addDays(m.d0, 100)) }), sansModele: PR.appliquerPlanningPerso({ employeId: 'ABSENT', du: m.d7, au: m.d13 }).code };
+    }, monde);
+    verifier('Refus nommés de l’application : période inversée, illisible, de plus de 92 jours, agent introuvable', pErr.inversee === 'PERIODE_INVERSEE' && pErr.illisible === 'DATE_INVALIDE' && pErr.longue === 'PERIODE_TROP_LONGUE' && pErr.sansModele === 'AGENT_INTROUVABLE', JSON.stringify(pErr));
+    /* RG-11 : le modèle ne compte pour aucune prime ; une vacation à valider non plus */
+    const rg11 = await page.evaluate((m) => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const mois = (d) => { const x = new Date(d); return [x.getFullYear(), x.getMonth()]; };
+      const [an, mo] = mois(m.d7);
+      const comptees = () => S.collection('planning').active().filter((p) => p.employeId === m.agent && p.type === 'garde' && (!p.validationEtat || p.validationEtat === 'validee') && mois(p.date)[0] === an && mois(p.date)[1] === mo).length;
+      const avant = comptees();
+      const modele = (S.raw().planningsPersonnalises || []).filter((x) => x.employeId === m.agent && x.statut !== 'archive').length;
+      const posee = S.collection('planning').active().filter((p) => p.employeId === m.agent && p.origine === 'modele')[0];
+      const rec = S.raw().planning.filter((p) => p.id === posee.id)[0];
+      rec.validationEtat = 'a_valider';
+      const sans = comptees();
+      delete rec.validationEtat; rec.validationEtat = 'validee';
+      return { avant: avant, sans: sans, modele: modele };
+    }, monde);
+    verifier('RG-11 : la garde posée par le modèle compte (validée), repassée « à valider » elle ne compte plus ; le modèle lui-même ne figure dans aucun décompte', rg11.avant >= 1 && rg11.sans === rg11.avant - 1 && rg11.modele >= 1, JSON.stringify(rg11));
+    /* sans le droit, l'onglet n'offre aucune commande réservée */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'caissier' }));
+    await ouvrir('m10-employe-profil.html');
+    const sansDroit = await page.evaluate(() => { const t = document.getElementById('page-content'); return t ? t.textContent.length : 0; });
+    void sansDroit;
+    /* RESTAURATION : vacations de sonde archivées, versions de sonde retirées, session remise */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      S.collection('planning').all().filter((p) => m.plan0.indexOf(p.id) < 0 && p.statut !== 'archive').forEach((p) => S.collection('planning').archive(p.id, 'Sonde Vague 261'));
+      S.raw().planningsPersonnalises = (S.raw().planningsPersonnalises || []).filter((x) => m.ppe0.indexOf(x.id) >= 0);
+      S.raw().regimesIndividuels = S.raw().regimesIndividuels.filter((x) => m.reg0.indexOf(x.id) >= 0);
+      S.save();
+    }, monde);
+    const fin = await page.evaluate((m) => ({ ppe: (window.SIGH.store.raw().planningsPersonnalises || []).length, plan: window.SIGH.store.collection('planning').active().filter((p) => m.plan0.indexOf(p.id) < 0).length }), monde);
+    verifier('Restauré : aucune version de modèle, aucune vacation de sonde', fin.ppe === monde.ppe0.length && fin.plan === 0, JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 262 : lot PLAN-INDIV, valeurs d’attente du personnel (marquage par champ, levée par la modification du champ seul, « Confirmer » avec motif et journal RG-12, plus aucune valeur pré-remplie à la création)');
+    erreursJS = [];
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    await ouvrir('m10-employe-profil.html');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const agent = S.collection('personnel').active().slice().sort((a, b) => String(a.matricule).localeCompare(String(b.matricule)))[0];
+      return { agent: agent.id, nom: agent.nomComplet, copie: JSON.stringify(agent), ids0: S.collection('personnel').all().map((p) => p.id), aud0: S.raw().audit.length,
+        marques: JSON.stringify(agent.valeursAttente || null), sal: agent.salaireBase, cnss: agent.cnss };
+    });
+    const clique = (re, racine) => page.evaluate((a) => { const r = a[1] ? document.querySelector(a[1]) : document; const b = [...r.querySelectorAll('button')].find((x) => new RegExp(a[0]).test(x.textContent)); if (b) b.click(); return !!b; }, [re, racine || null]);
+    const lu = () => page.evaluate((id) => { const e = window.SIGH.store.collection('personnel').get(id); return { m: JSON.stringify(e.valeursAttente || null), sal: e.salaireBase, cnss: e.cnss, cat: e.categorie, emb: e.dateEmbauche }; }, monde.agent);
+    /* 1. le jeu porte les quatre mentions, la fiche les affiche avec « Confirmer » (geste réservé) */
+    const ecran = await page.evaluate(() => ({ badges: [...document.querySelectorAll('[data-attente]')].map((x) => x.dataset.attente), confirmer: [...document.querySelectorAll('#page-content button')].filter((b) => /^Confirmer$/.test(b.textContent.trim())).length }));
+    verifier('Le jeu marque salaire, catégorie, date d’embauche et CNSS « valeur d’attente » ; la fiche les affiche et offre « Confirmer » (quatre commandes) à l’administrateur', JSON.parse(monde.marques) && ['categorie', 'cnss', 'dateEmbauche', 'salaireBase'].every((k) => ecran.badges.indexOf(k) >= 0) && ecran.confirmer === 4, JSON.stringify({ monde: monde.marques, ecran }));
+    /* 2. confirmer le salaire par la modale : motif obligatoire (refus lu à l'écran), puis la seule mention du salaire tombe, journal RG-12 */
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content [data-attente=salaireBase]')][0].parentElement.querySelector('button').click(); });
+    await pause(400);
+    await clique('Confirmer la valeur', '[role=dialog], .modal-root');
+    await pause(400);
+    const sansMotif = await page.evaluate((id) => ({ garde: !!document.querySelector('[role=dialog], .modal-root'), marque: !!(window.SIGH.store.collection('personnel').get(id).valeursAttente || {}).salaireBase }), monde.agent);
+    verifier('Sans motif, la confirmation n’aboutit pas : la mention du salaire reste', sansMotif.garde && sansMotif.marque, JSON.stringify(sansMotif));
+    await page.evaluate(() => { const c = document.querySelector('[role=dialog] #f_motif, .modal-root #f_motif'); c.value = 'Contrat signé du 02/04/2018'; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await clique('Confirmer la valeur', '[role=dialog], .modal-root');
+    await pause(500);
+    const conf = await lu();
+    const audit = await page.evaluate((m) => { const l = window.SIGH.store.raw().audit.slice(0, window.SIGH.store.raw().audit.length - m.aud0 + 8).filter((x) => x.action === 'Valeur d’attente confirmée')[0]; return l ? { nouveau: l.nouvelleValeur, ancien: l.ancienneValeur, qui: l.utilisateur } : null; }, monde);
+    verifier('Confirmer le salaire lève SA mention seule (catégorie, embauche, CNSS restent), la valeur est inchangée, le journal RG-12 porte le motif et l’auteur', JSON.parse(conf.m).salaireBase === undefined && JSON.parse(conf.m).categorie === true && JSON.parse(conf.m).cnss === true && JSON.parse(conf.m).dateEmbauche === true && conf.sal === monde.sal && audit && /Contrat signé/.test(audit.nouveau) && audit.qui, JSON.stringify({ conf, audit }));
+    /* 3. modifier un champ lève sa mention seule (par l'écriture de la collection, d'où qu'elle vienne) ; un champ inchangé n'en lève aucune */
+    const levee = await page.evaluate((id) => {
+      const S = window.SIGH.store, col = S.collection('personnel');
+      const e = col.get(id);
+      col.update(id, { cnss: e.cnss });
+      const identique = JSON.stringify(col.get(id).valeursAttente);
+      col.update(id, { telephone: '0100000000' });
+      const tel = JSON.stringify(col.get(id).valeursAttente);
+      col.update(id, { cnss: '999888777' });
+      const apres = JSON.stringify(col.get(id).valeursAttente);
+      return { identique: identique, tel: tel, apres: apres };
+    }, monde.agent);
+    verifier('Réécrire la CNSS à l’identique ou changer le téléphone ne lève rien ; modifier la CNSS lève sa mention seule', JSON.parse(levee.identique).cnss === true && JSON.parse(levee.tel).cnss === true && JSON.parse(levee.apres).cnss === undefined && JSON.parse(levee.apres).categorie === true && JSON.parse(levee.apres).dateEmbauche === true, JSON.stringify(levee));
+    /* 4. refus nommés du moteur */
+    const refus = await page.evaluate((id) => {
+      const PR = window.SIGH.planningRh, S = window.SIGH.store, sess = S.session();
+      const c = (o) => { const r = PR.confirmerValeurAttente(Object.assign({ employeId: id, champ: 'categorie', motif: 'x' }, o)); return r.ok ? 'OK' : r.code; };
+      const sans = (role) => { S.setSession(Object.assign({}, sess, { role: role })); const r = c({}); S.setSession(sess); return r; };
+      return { motif: c({ motif: '  ' }), champ: c({ champ: 'telephone' }), dejaConfirmee: c({ champ: 'salaireBase' }), agent: c({ employeId: 'ABSENT' }), caissier: sans('caissier'), surveillant: sans('surveillant'), medecin: sans('medecin') };
+    }, monde.agent);
+    verifier('Refus nommés : motif absent, champ sans valeur d’attente (téléphone), champ déjà confirmé, agent introuvable ; sans le geste (caissier, surveillant, médecin) CONFIRMATION_RESERVEE',
+      refus.motif === 'MOTIF_OBLIGATOIRE' && refus.champ === 'CHAMP_INCONNU' && refus.dejaConfirmee === 'PAS_UNE_VALEUR_ATTENTE' && refus.agent === 'AGENT_INTROUVABLE' && refus.caissier === 'CONFIRMATION_RESERVEE' && refus.surveillant === 'CONFIRMATION_RESERVEE' && refus.medecin === 'CONFIRMATION_RESERVEE', JSON.stringify(refus));
+    /* 5. sans le geste, « Confirmer » est ABSENT de la fiche */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'direction' }));
+    await ouvrir('m10-employe-profil.html');
+    const absent = await page.evaluate(() => ({ badges: document.querySelectorAll('[data-attente]').length, confirmer: [...document.querySelectorAll('#page-content button')].filter((b) => /^Confirmer$/.test(b.textContent.trim())).length }));
+    verifier('Pour un profil sans le geste, les mentions restent visibles mais « Confirmer » est ABSENT (jamais grisé)', absent.badges >= 1 && absent.confirmer === 0, JSON.stringify(absent));
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    /* 6. la création ne pré-remplit plus rien : salaire, catégorie et date d'embauche vides, la fiche créée n'invente rien et ne porte aucune mention */
+    await ouvrir('m10-personnel.html');
+    const ouvert = await clique('^\\s*(Nouveau|Nouvel|Ajouter)', '#page-content');
+    await pause(500);
+    const form = await page.evaluate(() => { const r = document.querySelector('[role=dialog], .modal-root'); const v = (s) => { const c = r && r.querySelector(s); return c ? c.value : 'ABSENT'; }; return { sal: v('#f_salaireBase'), cat: v('#f_categorie'), emb: v('#f_dateEmbauche') }; });
+    verifier('Le formulaire de création s’ouvre sans salaire, sans catégorie et sans date d’embauche pré-remplis (plus de 60 000 ni de E1-1 inventés)', ouvert && form.sal === '' && form.cat === '' && form.emb === '', JSON.stringify({ ouvert, form }));
+    await page.evaluate(() => {
+      const r = document.querySelector('[role=dialog], .modal-root');
+      const dire = (sel, v) => { const c = r.querySelector(sel); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      dire('#f_matricule', 'PI262'); dire('#f_nom', 'SONDEPI'); dire('#f_prenom', 'Agent'); dire('#f_fonction', 'medecin'); dire('#f_service', 'Médecine générale');
+    });
+    await clique('^Créer$', '[role=dialog], .modal-root');
+    await pause(600);
+    const cree = await page.evaluate((ids0) => { const e = window.SIGH.store.collection('personnel').all().filter((x) => ids0.indexOf(x.id) < 0)[0]; return e ? { sal: e.salaireBase === undefined ? 'absent' : e.salaireBase, cat: e.categorie === undefined ? 'absent' : e.categorie, emb: e.dateEmbauche === undefined ? 'absent' : e.dateEmbauche, marques: e.valeursAttente === undefined ? 'aucune' : JSON.stringify(e.valeursAttente), id: e.id } : null; }, monde.ids0);
+    verifier('L’agent créé sans ces valeurs n’en porte aucune (ni 0, ni valeur inventée) et ne porte aucune mention d’attente', cree && (cree.sal === 'absent' || cree.sal === null || cree.sal === '') && (cree.cat === 'absent' || cree.cat === '' || cree.cat === null) && (cree.emb === 'absent' || cree.emb === '' || cree.emb === null) && cree.marques === 'aucune', JSON.stringify(cree));
+    /* RESTAURATION : l'agent de sonde archivé et retiré, la fiche de l'agent d'essai remise à l'identique (SHA du JSON) */
+    await page.evaluate((m) => {
+      const S = window.SIGH.store, db = S.raw();
+      db.personnel = db.personnel.filter((x) => m.ids0.indexOf(x.id) >= 0);
+      const i = db.personnel.findIndex((x) => x.id === m.agent); db.personnel[i] = JSON.parse(m.copie);
+      S.save();
+    }, monde);
+    const fin = await page.evaluate((m) => ({ copie: JSON.stringify(window.SIGH.store.collection('personnel').get(m.agent)), n: window.SIGH.store.collection('personnel').all().length }), monde);
+    verifier('Restauré : la fiche de l’agent d’essai est identique à l’origine et l’agent de sonde a disparu', fin.copie === monde.copie && fin.n === monde.ids0.length, fin.n + ' / ' + monde.ids0.length);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT PLAN-INDIV FIN */
+
 
 
 
