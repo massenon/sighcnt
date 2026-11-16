@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show tabVersSerie;
 import 'package:xml/xml.dart';
 
 /// Écrivain et lecteur de classeurs .xlsx (OOXML) du poste : port de `prototype_html/assets/js/vendor/xlsx-mini.js`.
@@ -12,7 +13,7 @@ import 'package:xml/xml.dart';
 /// NOMBRE (série Excel) : c'est au moteur d'import, qui connaît la colonne, de la convertir (`importVersDate`).
 class FeuilleXlsx {
   const FeuilleXlsx(this.nom, this.lignes,
-      {this.largeurs = const [], this.entete = true, this.validations = const [], this.colonnesTexte = const []});
+      {this.largeurs = const [], this.entete = true, this.validations = const [], this.colonnesTexte = const [], this.formats = const []});
   final String nom;
   final List<List<Object?>> lignes;
   final List<double> largeurs;
@@ -25,6 +26,10 @@ class FeuilleXlsx {
 
   /// Colonnes au format texte (`@`) : elles conservent les zéros de tête d'un téléphone.
   final List<int> colonnesTexte;
+
+  /// À la LECTURE : le format de nombre (`numFmtId`) de chaque cellule (14 : date, 22 : date et heure), pour dire qu'une cellule est une date sans deviner
+  /// sur sa valeur (lot EXP). Ignoré à l'écriture.
+  final List<List<int>> formats;
 }
 
 const _enteteXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
@@ -79,6 +84,17 @@ Uint8List ecrireClasseur(List<FeuilleXlsx> feuilles) {
         if (v == null || (v is String && v.isEmpty)) continue;
         final ref = '${_nomColonne(c)}${r + 1}';
         final style = (r == 0 && f.entete) ? ' s="1"' : '';
+        // Lot EXP : une cellule `{'date': 'AAAA-MM-JJ'}` ou `{'dateHeure': …}` s'écrit en NUMÉRO DE SÉRIE au format date (style 5) ou date et heure (style 6) :
+        // Excel la lit comme une date, jamais comme un texte (`SIGH.xlsx.ecrire` de la maquette).
+        if (v is Map && (v['date'] != null || v['dateHeure'] != null)) {
+          final serie = tabVersSerie('${v['date'] ?? v['dateHeure']}');
+          if (serie != null) {
+            b.write('<c r="$ref" s="${v['dateHeure'] != null ? 6 : 5}"><v>${serie == serie.truncate() ? serie.truncate() : serie}</v></c>');
+          } else {
+            b.write('<c r="$ref"$style t="s"><v>${sst('${v['date'] ?? v['dateHeure']}')}</v></c>');
+          }
+          continue;
+        }
         if (v is num && v.isFinite) {
           b.write('<c r="$ref"$style><v>${v == v.truncate() ? v.truncate() : v}</v></c>');
         } else if (v is bool) {
@@ -120,17 +136,19 @@ Uint8List ecrireClasseur(List<FeuilleXlsx> feuilles) {
         '<Relationship Id="rId${feuilles.length + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
         '<Relationship Id="rId${feuilles.length + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>'
         '</Relationships>',
-    // Styles : 0 normal, 1 entête (gras sur fond bleu clair), 2 note en italique, 3 texte renvoyé à la ligne, 4 texte (format @, conserve les zéros de tête).
+    // Styles : 0 normal, 1 entête (gras sur fond bleu clair), 2 note en italique, 3 texte renvoyé à la ligne, 4 texte (format @, conserve les zéros de tête),
+    // 5 date (format 14), 6 date et heure (format 22).
     'xl/styles.xml': '$_enteteXml<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
         '<fonts count="3"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><i/><sz val="11"/><color rgb="FF475569"/><name val="Calibri"/></font></fonts>'
         '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDBEAFE"/><bgColor indexed="64"/></patternFill></fill></fills>'
         '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
         '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
-        '<cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+        '<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
         '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'
         '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
         '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf>'
-        '<xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>'
+        '<xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'
+        '<xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="22" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>'
         '</styleSheet>',
     'xl/sharedStrings.xml': '$_enteteXml<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${chaines.length}" uniqueCount="${chaines.length}">'
         '${chaines.map((s) => '<si><t xml:space="preserve">${_echappe(s)}</t></si>').join()}</sst>',
@@ -197,6 +215,17 @@ List<FeuilleXlsx> lireClasseur(List<int> octets) {
       partages.add(_textes(si));
     }
   }
+  // Le format de nombre de chaque style (cellXfs), pour dire qu'une cellule est une date.
+  final formatsStyle = <int>[];
+  final stylesXml = lire('xl/styles.xml');
+  if (stylesXml != null) {
+    final cx = XmlDocument.parse(stylesXml).findAllElements('cellXfs').firstOrNull;
+    if (cx != null) {
+      for (final xf in cx.findElements('xf')) {
+        formatsStyle.add(int.tryParse(xf.getAttribute('numFmtId') ?? '') ?? 0);
+      }
+    }
+  }
   final sortie = <FeuilleXlsx>[];
   var k = 0;
   for (final s in wb.findAllElements('sheet')) {
@@ -209,10 +238,12 @@ List<FeuilleXlsx> lireClasseur(List<int> octets) {
     if (brut == null) throw FormatException('Feuille « $nom » introuvable dans le classeur.');
     final doc = XmlDocument.parse(brut);
     final lignes = <List<Object?>>[];
+    final formats = <List<int>>[];
     for (final row in doc.findAllElements('row')) {
       var idx = (int.tryParse(row.getAttribute('r') ?? '') ?? (lignes.length + 1)) - 1;
       if (idx < 0) idx = lignes.length;
       final ligne = <Object?>[];
+      final fmt = <int>[];
       for (final cell in row.findElements('c')) {
         final t = cell.getAttribute('t');
         final col = _colonneDe(cell.getAttribute('r'));
@@ -242,20 +273,29 @@ List<FeuilleXlsx> lireClasseur(List<int> octets) {
         } else {
           ligne[col] = v;
         }
+        final s = int.tryParse(cell.getAttribute('s') ?? '') ?? 0;
+        while (fmt.length <= col) {
+          fmt.add(0);
+        }
+        fmt[col] = s < formatsStyle.length ? formatsStyle[s] : 0;
       }
       while (lignes.length < idx) {
         lignes.add(<Object?>[]);
+        formats.add(<int>[]);
       }
       if (lignes.length == idx) {
         lignes.add(ligne);
+        formats.add(fmt);
       } else {
         lignes[idx] = ligne;
+        formats[idx] = fmt;
       }
     }
     while (lignes.isNotEmpty && lignes.last.every((v) => v == '' || v == null)) {
       lignes.removeLast();
+      formats.removeLast();
     }
-    sortie.add(FeuilleXlsx(nom, lignes));
+    sortie.add(FeuilleXlsx(nom, lignes, formats: formats));
   }
   return sortie;
 }

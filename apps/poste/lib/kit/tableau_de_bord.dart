@@ -6,6 +6,8 @@ import '../core/jetons_shell.dart';
 import '../donnees/magasin.dart';
 import 'bouton.dart';
 import 'carte.dart';
+import 'sortie_tableau.dart';
+import 'tableau.dart' show ColonneTableau;
 
 /// `K.shortcuts` : cartes d'accès (icône 36 px sur navy-50, libellé 14 en 500, détail 12), 1 / 2 / 4 colonnes selon la largeur.
 class RaccourciDef {
@@ -94,19 +96,41 @@ class ColonneMini {
   final Widget Function(Fiche)? rendu;
 }
 
-/// `K.miniTable` : petit tableau de lecture (en-têtes 12 en 600 majuscules, lignes à filet), sans tri ni pagination.
-class MiniTableauSigh extends StatelessWidget {
+/// `K.miniTable` : petit tableau de lecture (en-têtes 12 en 600 majuscules, lignes à filet), sans tri ni pagination. Lot EXP : l'encart a ses cases et sa
+/// commande « Exporter » (lignes cochées ou tout l'encart ; .xlsx, CSV, impression) par le moteur commun de sortie (droit, limite, journal). Une cellule sort
+/// sous le texte montré (`tabCelluleTexte` : une date jj/mm/aaaa en date, un nombre d'une colonne à droite en nombre).
+class MiniTableauSigh extends StatefulWidget {
   const MiniTableauSigh(
       {super.key,
       required this.colonnes,
       required this.lignes,
-      this.vide = 'Aucune donnée.'});
+      this.vide = 'Aucune donnée.',
+      this.nomExport = 'encart'});
   final List<ColonneMini> colonnes;
   final List<Fiche> lignes;
   final String vide;
+  final String nomExport;
+
+  @override
+  State<MiniTableauSigh> createState() => _MiniTableauSighState();
+}
+
+class _MiniTableauSighState extends State<MiniTableauSigh> {
+  final Set<int> _coches = {};
+
+  List<ColonneTableau> get _colonnesSortie => [
+        for (var i = 0; i < widget.colonnes.length; i++)
+          ColonneTableau(
+              cle: 'c$i',
+              libelle: widget.colonnes[i].libelle,
+              droite: widget.colonnes[i].droite,
+              valeur: (l) => tabCelluleTexte(widget.colonnes[i].valeur(l), droite: widget.colonnes[i].droite)),
+      ];
 
   @override
   Widget build(BuildContext context) {
+    final colonnes = widget.colonnes, lignes = widget.lignes, vide = widget.vide;
+    if (_coches.any((i) => i >= lignes.length)) _coches.removeWhere((i) => i >= lignes.length);
     if (lignes.isEmpty)
       return Padding(
           padding: const EdgeInsets.all(24),
@@ -117,10 +141,53 @@ class MiniTableauSigh extends StatelessWidget {
     Widget cel(Widget w, {bool tete = false}) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: w);
-    return Table(
+    Widget caseDe(bool coche, String libelle, ValueChanged<bool> changer) => Semantics(
+        checked: coche,
+        label: libelle,
+        excludeSemantics: true,
+        onTap: () => changer(!coche),
+        child: InkWell(
+            onTap: () => changer(!coche),
+            child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                    color: coche ? JetonsShell.navy900 : Colors.white,
+                    border: Border.all(color: coche ? JetonsShell.navy900 : JetonsShell.slate300),
+                    borderRadius: BorderRadius.circular(4)),
+                child: coche ? const Icon(LucideIcons.check, size: 12, color: Colors.white) : null)));
+    final peut = droitSortie(context) != false;
+    final n = _coches.length;
+    final barre = Padding(
+        key: const Key('kit:mini-barre'),
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          if (n > 0)
+            Text('$n ligne${n > 1 ? 's' : ''} sélectionnée${n > 1 ? 's' : ''}',
+                style: const TextStyle(color: JetonsShell.navy900, fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w500)),
+          if (peut)
+            BoutonSigh(
+                key: const Key('kit:mini-exporter'),
+                libelle: 'Exporter',
+                icone: LucideIcons.download,
+                taille: TailleBouton.sm,
+                variante: VarianteBouton.fantome,
+                onPressed: () => afficherFenetreSortie(context,
+                    cochees: () => [for (var i = 0; i < lignes.length; i++) if (_coches.contains(i)) lignes[i]],
+                    filtrees: () => lignes,
+                    toutes: () => lignes,
+                    filtreActif: false,
+                    colonnes: () => _colonnesSortie,
+                    nom: widget.nomExport,
+                    cle: (l) => '${l['id'] ?? lignes.indexOf(l) + 1}')),
+        ]));
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+      barre,
+      Table(
         columnWidths: {
+          0: const FixedColumnWidth(40),
           for (var i = 0; i < colonnes.length; i++)
-            i: const IntrinsicColumnWidth(flex: 1)
+            i + 1: const IntrinsicColumnWidth(flex: 1)
         },
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: [
@@ -130,6 +197,9 @@ class MiniTableauSigh extends StatelessWidget {
                   border:
                       Border(bottom: BorderSide(color: JetonsShell.slate200))),
               children: [
+                cel(Center(
+                    child: caseDe(lignes.isNotEmpty && n == lignes.length, 'Tout sélectionner',
+                        (v) => setState(() => v ? _coches.addAll([for (var i = 0; i < lignes.length; i++) i]) : _coches.clear())))),
                 for (final c in colonnes)
                   cel(Align(
                       alignment: c.droite
@@ -143,12 +213,14 @@ class MiniTableauSigh extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.6))))
               ]),
-          for (final r in lignes)
+          for (final (k, r) in lignes.indexed)
             TableRow(
-                decoration: const BoxDecoration(
-                    border: Border(
+                decoration: BoxDecoration(
+                    color: _coches.contains(k) ? JetonsShell.navy50 : null,
+                    border: const Border(
                         bottom: BorderSide(color: JetonsShell.slate100))),
                 children: [
+                  cel(Center(child: caseDe(_coches.contains(k), 'Sélectionner la ligne', (v) => setState(() => v ? _coches.add(k) : _coches.remove(k))))),
                   for (final c in colonnes)
                     cel(Align(
                         alignment: c.droite
@@ -165,7 +237,8 @@ class MiniTableauSigh extends StatelessWidget {
                                       FontFeature.tabularFigures()
                                     ])))),
                 ]),
-        ]);
+        ]),
+    ]);
   }
 }
 

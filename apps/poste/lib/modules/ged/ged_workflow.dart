@@ -119,7 +119,8 @@ class EcranWorkflowGed extends StatelessWidget with EcranMaquette {
       nomExport: 'ged-a-valider',
       triInitial: 'date',
       sensInitial: 'desc',
-      selectionnable: false,
+      // Défaut 7 : aucune validation en MASSE. Les cases (lot EXP, 16/11/2026) ne servent qu'à SORTIR des lignes (export, impression) : aucune action de
+      // groupe n'est déclarée ici, aucune « Valider la sélection » n'existe.
       messageVide: 'Aucun document en attente de validation.',
       colonnes: [
         colonneReference(),

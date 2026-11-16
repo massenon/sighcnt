@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_poste/core/jetons_shell.dart';
 import 'package:sigh_poste/kit/kit.dart';
+import 'package:sigh_poste/kit/sortie_tableau.dart';
 
 import 'aide_polices.dart';
 
@@ -434,12 +435,18 @@ void main() {
     await t.pump();
     expect(find.text('Affichage de 13 à 24 sur 30 enregistrements'),
         findsOneWidget);
+    // Lot EXP : la fenêtre de sortie (périmètre puis format) passe par le moteur commun : droit, limite, journal (un contexte de test les donne ici).
+    final journal = <Map<String, Object?>>[];
+    SortieTableauxPoste.contexteDeTest = ContexteSortieTableau(droit: true, libelleRole: 'Administrateur', limite: 2000, journaliser: journal.add, jour: DateTime(2026, 10, 30));
+    addTearDown(SortieTableauxPoste.reinitialiser);
     await t.tap(find.text('Exporter'));
     await t.pumpAndSettle();
-    await t.tap(find.text('CSV / Excel'));
+    await t.tap(find.byKey(const Key('sortie:format-csv')));
     await t.pumpAndSettle();
     expect(csv, startsWith('﻿"Nom";"N"\r\n'));
-    expect(csv!.split('\r\n').length, 31);
+    expect(csv!.split('\r\n').length, 31, reason: 'tout le tableau (aucune case cochée, aucun filtre) : toutes pages');
+    expect(journal.single['perimetre'], 'tout');
+    await t.pump(const Duration(seconds: 10));
   });
 }
 

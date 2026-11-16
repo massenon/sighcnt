@@ -13307,6 +13307,37 @@
      "da"
     ],
     "defautSiEcritSur": null
+   },
+   {
+    "id": "exporter_donnees",
+    "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "direction",
+     "dm",
+     "da",
+     "medecin",
+     "infirmier",
+     "pharmacien",
+     "laborantin",
+     "stock",
+     "caissier",
+     "comptable",
+     "rh",
+     "reception",
+     "agentadmin",
+     "ambulancier",
+     "aide_soignant",
+     "echographiste",
+     "surveillant",
+     "assistant_comptable",
+     "chirurgien",
+     "anesthesiste",
+     "aide_comptable"
+    ],
+    "defautSiEcritSur": null
    }
   ],
   "parRole": {
@@ -13314,133 +13345,155 @@
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
-    "regler_circuit_cloture": 1
+    "regler_circuit_cloture": 1,
+    "exporter_donnees": 1
    },
    "direction": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "dm": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "da": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
-    "regler_circuit_cloture": 1
+    "regler_circuit_cloture": 1,
+    "exporter_donnees": 1
    },
    "medecin": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "infirmier": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "pharmacien": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 0
    },
    "laborantin": {
     "valider_seuil_labo": 1,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "stock": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "caissier": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "comptable": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 1,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "rh": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 0
    },
    "reception": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "agentadmin": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "ambulancier": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "aide_soignant": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "echographiste": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "surveillant": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 1,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "assistant_comptable": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "chirurgien": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "anesthesiste": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    },
    "aide_comptable": {
     "valider_seuil_labo": 0,
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
-    "regler_circuit_cloture": 0
+    "regler_circuit_cloture": 0,
+    "exporter_donnees": 1
    }
   }
  },

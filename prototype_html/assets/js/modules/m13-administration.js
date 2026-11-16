@@ -538,6 +538,8 @@
         tb.appendChild(tr);
       });
       t.appendChild(tb);
+      /* Lot EXP : le plan se coche et s'exporte (garde-tableaux : consultation). */
+      gantt.appendChild(U.equiperTableau(t, { nom: 'plan-annuel', titre: 'Plan annuel de travail' }));
       gantt.appendChild(t);
 
       host.appendChild(U.card('Plan annuel de travail 2026', gantt, [

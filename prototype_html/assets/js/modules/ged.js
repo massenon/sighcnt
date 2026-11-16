@@ -273,8 +273,8 @@
             },
           },
         ],
-        /* Défaut 7 : plus de validation en MASSE. Une validation est un geste humain, un document à la fois. */
-        selectable: false,
+        /* Défaut 7 : plus de validation en MASSE. Une validation est un geste humain, un document à la fois. Les cases (lot EXP, 16/11/2026) ne servent qu'à
+           SORTIR des lignes (export, impression) : aucune action de groupe n'est déclarée ici, aucune « Valider la sélection » n'existe. */
         rowActions: function (d) {
           return [
             K.btn('Valider', {

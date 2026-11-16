@@ -311,7 +311,7 @@ void main() {
       await ouvrir(t, 'mere-journal-technique', f);
       await t.tap(bouton('Exporter'));
       await pomper(t);
-      await t.tap(bouton('CSV / Excel'));
+      await t.tap(bouton('CSV'));
       await pomper(t);
       expect(ecrits.keys.single, startsWith('journal-technique-mere-'));
       final csv = ecrits.values.single;

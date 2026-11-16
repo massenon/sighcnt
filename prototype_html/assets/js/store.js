@@ -148,8 +148,11 @@
      « Certificat d’aptitude » (5 000, couverture SOS seule, code proposé à valider), à côté de CERT-APT « Certificat médical d’aptitude » (7 000, inchangé). La reprise d'un
      magasin versionné garde ses prestations et ses versions telles quelles et y AJOUTE la prestation nouvelle (aucun prix existant ne change, aucune pièce n'est réécrite).
      Sans incrément, un poste n'aurait pas la seconde prestation.
+     89 (16/11/2026) : la SORTIE DES TABLEAUX (lot EXP). Le journal d'audit porte une nouvelle espèce d'entrée (`journaliserSortie` : `format`, `perimetre`, `lignes`,
+     `references`, `referencesTotal`) et le geste réservé `exporter_donnees` entre au manifeste ; la limite de lignes par export est un réglage de clinique (`exportLimiteLignes`).
+     Sans incrément, un poste n'aurait pas la garde qui journalise et borne la sortie.
   */
-  var VERSION = 88;
+  var VERSION = 89;
   var db = null;
   var listeners = {};
 
@@ -4671,9 +4674,42 @@
     return rec;
   }
 
+  /**
+   * Journalise une SORTIE de tableau (lot EXP, RG-12, PRD des tableaux O5) : un classeur .xlsx, un fichier .csv ou une impression des lignes d'un tableau. Le journal dit
+   * QUI, QUAND, QUEL écran, QUEL format, QUEL périmètre (lignes cochées, filtrées, tout le tableau), COMBIEN de lignes et les IDENTIFIANTS des fiches sorties ; jamais le
+   * contenu d'une cellule (le texte médical ne se recopie pas dans un journal). Les identifiants sont plafonnés à 50 par entrée (le journal garde 400 entrées et pèse sur le
+   * magasin) : `referencesTotal` dit combien il y en avait. Proposition à valider (section AK).
+   */
+  var REFERENCES_SORTIE_MAX = 50;
+  function journaliserSortie(o) {
+    load();
+    var refs = (o.references || []).map(function (x) { return String(x); });
+    var rec = {
+      id: 'LOG' + C.uid(),
+      dateHeure: new Date().toISOString(),
+      utilisateur: currentUser(),
+      action: o.action,
+      module: o.module || 'TAB',
+      entite: 'Tableau',
+      reference: o.ecran || o.nom || 'tableau',
+      format: o.format, perimetre: o.perimetre, lignes: o.lignes,
+      references: refs.slice(0, REFERENCES_SORTIE_MAX), referencesTotal: refs.length,
+      poste: 'POSTE-LOCAL', succes: true,
+    };
+    var sess = session();
+    if (sess && sess.role) rec.role = sess.role;
+    if (o.ecran) rec.ecran = o.ecran;
+    if (o.nom) rec.cible = o.nom;
+    db.audit.unshift(rec);
+    if (db.audit.length > 400) db.audit.length = 400;
+    save();
+    return rec;
+  }
+
   global.SIGH.store = {
     enLot: enLot,
     journaliserAcces: journaliserAcces,
+    journaliserSortie: journaliserSortie,
     load: load, save: save, reset: reset, collection: collection,
     COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, CHAMPS_DE_TEST_CONSERVES: CHAMPS_DE_TEST_CONSERVES, viderActivite: viderActivite,
     jeuVide: jeuVide, amorcable: amorcable, migrerOrganigramme: migrerOrganigramme,

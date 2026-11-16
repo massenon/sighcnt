@@ -660,7 +660,8 @@
           rows: rowsFn,
           filters: cfg.filters,
           pageSize: cfg.pageSize,
-          selectable: cfg.selectable && !archived,
+          /* Les archives se cochent aussi (pour les sortir) ; elles n'ont pas d'action de groupe. */
+          selectable: cfg.selectable,
           exportName: cfg.collection,
           searchPlaceholder: 'Rechercher un ' + cfg.entite + '…',
           /* `recherche: { extra(r), indice(q) }` : ce que la recherche lit EN PLUS des colonnes (le texte extrait d'une pièce numérisée), et ce qu'elle ne lit pas. */
@@ -676,23 +677,10 @@
              répartition. Le bouton conduit alors à l'écran de saisie complet
              plutôt que d'ouvrir une modale qui perdrait l'essentiel. */
           actions: archived ? null : barreActions(),
+          /* « Imprimer la sélection » et « Exporter la sélection » sont posés par le composant de tableau (lot EXP) : colonnes visibles seulement,
+             droit de sortie, journal RG-12. L'ancienne impression d'ici imprimait aussi les colonnes masquées, sans trace. */
           bulkActions: archived ? null : function (getSelected, clear) {
             return [
-              btn('Imprimer la sélection', {
-                size: 'sm', icon: 'printer',
-                onclick: function () {
-                  var sel = getSelected();
-                  P.etat({
-                    titre: 'Sélection — ' + cfg.entiteP,
-                    sousTitre: sel.length + ' enregistrement(s)',
-                    contenu: P.tableau(
-                      (typeof cfg.columns === 'function' ? cfg.columns() : cfg.columns)
-                        .filter(function (c) { return c.key !== '_actions'; })
-                        .map(function (c) { return { label: c.label, align: c.align, value: function (r) { return textOf(c, r); } }; }),
-                      sel),
-                  });
-                },
-              }),
               !peutAnnuler ? null : btn('Archiver', {
                 size: 'sm', variant: 'danger', icon: 'archive',
                 onclick: function () {
@@ -743,12 +731,6 @@
           },
         });
         return t;
-      }
-
-      function textOf(c, r) {
-        var v = c.text ? c.text(r) : (c.value ? c.value(r) : r[c.key]);
-        if (v instanceof Node) v = v.textContent;
-        return v == null ? '' : String(v);
       }
 
       /* --- Plage de dates (optionnelle) -------------------------------------
@@ -1356,7 +1338,12 @@
       tb.appendChild(tr);
     });
     t.appendChild(tb);
-    return el('div.-mx-5.-mb-5.overflow-x-auto', null, t);
+    /* Lot EXP : l'encart a ses cases et sa commande « Exporter » (lignes cochées ou tout l'encart, .xlsx, .csv, impression), par le moteur commun de
+       sortie (droit `exporter_donnees`, journal, limite). `opts.nom` nomme le fichier ; `opts.sortie === false` n'existe pas : un encart sans sortie
+       se déclare dans la garde (`build/garde-tableaux.js`). */
+    var barre = U.equiperTableau(t, { nom: opts.nom || 'encart', titre: opts.titre || opts.nom || null, colonnes: columns, lignes: rows });
+    barre.classList.add('px-5', 'pb-2');
+    return el('div.-mx-5.-mb-5', null, [barre, el('div.overflow-x-auto', null, t)]);
   }
 
   /* --- Raccourcis d'accès à d'autres écrans -------------------------------- */

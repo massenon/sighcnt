@@ -8,6 +8,7 @@ export 'src/sync/familles.dart';
 export 'src/sync/codes.dart';
 export 'src/sync/pair.dart';
 export 'src/parametres/parametres.dart';
+export 'src/tableaux/sortie_tableau.dart';
 export 'src/parametres/definitions.dart';
 export 'src/parametres/service.dart';
 

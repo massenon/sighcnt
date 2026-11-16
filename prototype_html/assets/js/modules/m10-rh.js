@@ -3287,6 +3287,8 @@
         tb.appendChild(tr);
       });
       t.appendChild(tb);
+      /* Lot EXP : la grille des primes se coche et s'exporte (garde-tableaux : consultation). */
+      grilleWrap.appendChild(U.equiperTableau(t, { nom: 'grille-primes', titre: 'Grille des primes' }));
       grilleWrap.appendChild(t);
 
       var actionsGrille = [

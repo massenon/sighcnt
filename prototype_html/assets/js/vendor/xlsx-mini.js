@@ -6,7 +6,10 @@
  *
  *   SIGH.xlsx.ecrire({ feuilles: [{ nom, lignes: [[...]], largeurs: [20, 12], entete: true, listes: [{colonne, liste}] }] })
  *       -> Uint8Array (un classeur .xlsx, archive ZIP sans compression, chaînes partagées, entête figé)
- *   SIGH.xlsx.lire(octets)       -> { feuilles: [{ nom, lignes: [[valeur, ...], ...] }] }  (inflate intégré : lit aussi les classeurs d'Excel)
+ *       une cellule { date: 'AAAA-MM-JJ' } ou { dateHeure: 'AAAA-MM-JJTHH:MM' } s'écrit en NUMÉRO DE SÉRIE au format date (style 5, jj/mm/aaaa)
+ *       ou date et heure (style 6) : Excel la lit comme une date, jamais comme un texte (lot EXP, 16/11/2026).
+ *   SIGH.xlsx.lire(octets)       -> { feuilles: [{ nom, lignes: [[valeur, ...], ...], formats: [[numFmtId, ...], ...] }] }  (inflate intégré : lit aussi les classeurs d'Excel)
+ *   SIGH.xlsx.versSerie(iso)     -> numéro de série Excel d'une date ou d'une date et heure (heure LOCALE, celle que l'écran montre)
  *   SIGH.xlsx.lireCsv(texte)     -> lignes (séparateur ; , ou tabulation détecté, guillemets, BOM)
  *   SIGH.xlsx.versDate(n)        -> 'AAAA-MM-JJ' depuis un numéro de série Excel (système 1900)
  *
@@ -239,6 +242,11 @@
           if (v === null || v === undefined || v === '') return;
           var ref = nomColonne(c) + (r + 1);
           var style = (r === 0 && f.entete !== false) ? ' s="1"' : (f.styles && f.styles[r] ? ' s="' + f.styles[r] + '"' : '');
+          if (v && typeof v === 'object' && (v.date || v.dateHeure)) {
+            var serie = versSerie(v.date || v.dateHeure);
+            if (serie !== null) { x += '<c r="' + ref + '" s="' + (v.dateHeure ? 6 : 5) + '"><v>' + serie + '</v></c>'; return; }
+            v = String(v.date || v.dateHeure);
+          }
           if (typeof v === 'number' && isFinite(v)) x += '<c r="' + ref + '"' + style + '><v>' + v + '</v></c>';
           else if (typeof v === 'boolean') x += '<c r="' + ref + '"' + style + ' t="b"><v>' + (v ? 1 : 0) + '</v></c>';
           else x += '<c r="' + ref + '"' + style + ' t="s"><v>' + sst(v) + '</v></c>';
@@ -274,16 +282,18 @@
       + '<Relationship Id="rId' + (feuilles.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
       + '<Relationship Id="rId' + (feuilles.length + 2) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>'
       + '</Relationships>';
-    /* Styles : 0 normal, 1 entête (gras sur fond bleu clair), 2 note en italique, 3 texte renvoyé à la ligne, 4 texte (format @, conserve les zéros de tête). */
+    /* Styles : 0 normal, 1 entête (gras sur fond bleu clair), 2 note en italique, 3 texte renvoyé à la ligne, 4 texte (format @, conserve les zéros de tête),
+       5 date (format 14, jj/mm/aaaa à la langue du poste), 6 date et heure (format 22). */
     xml['xl/styles.xml'] = ENTETE_XML + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
       + '<fonts count="3"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><i/><sz val="11"/><color rgb="FF475569"/><name val="Calibri"/></font></fonts>'
       + '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDBEAFE"/><bgColor indexed="64"/></patternFill></fill></fills>'
       + '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
       + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
-      + '<cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+      + '<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
       + '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'
       + '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
-      + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>'
+      + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'
+      + '<xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="22" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>'
       + '</styleSheet>';
     xml['xl/sharedStrings.xml'] = ENTETE_XML + '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="' + chaines.length + '" uniqueCount="' + chaines.length + '">'
       + chaines.map(function (s) { return '<si><t xml:space="preserve">' + xmlEchappe(s) + '</t></si>'; }).join('') + '</sst>';
@@ -332,6 +342,13 @@
       var sis = parserXml(enTexte(sstOctets)).getElementsByTagName('si');
       for (var j = 0; j < sis.length; j++) partages.push(textesDe(sis[j]));
     }
+    /* Le format de nombre de chaque style (cellXfs), pour dire qu'une cellule est une DATE sans deviner sur sa valeur. */
+    var formatsStyle = [];
+    var stylesOctets = zip.lire('xl/styles.xml');
+    if (stylesOctets) {
+      var cx = parserXml(enTexte(stylesOctets)).getElementsByTagName('cellXfs')[0];
+      if (cx) { var xfs = cx.getElementsByTagName('xf'); for (var q = 0; q < xfs.length; q++) formatsStyle.push(Number(xfs[q].getAttribute('numFmtId') || 0)); }
+    }
     var sheets = wb.getElementsByTagName('sheet'), sortie = [];
     for (var k = 0; k < sheets.length; k++) {
       var nom = sheets[k].getAttribute('name');
@@ -341,11 +358,11 @@
       var brut = zip.lire(cible);
       if (!brut) throw new Error('Feuille « ' + nom + ' » introuvable dans le classeur.');
       var doc = parserXml(enTexte(brut));
-      var rows = doc.getElementsByTagName('row'), lignes = [];
+      var rows = doc.getElementsByTagName('row'), lignes = [], formats = [];
       for (var r = 0; r < rows.length; r++) {
         var idxLigne = Number(rows[r].getAttribute('r')) - 1;
         if (!(idxLigne >= 0)) idxLigne = lignes.length;
-        var cells = rows[r].getElementsByTagName('c'), ligne = [];
+        var cells = rows[r].getElementsByTagName('c'), ligne = [], fmt = [];
         for (var c = 0; c < cells.length; c++) {
           var cell = cells[c], t = cell.getAttribute('t'), col = colonneDe(cell.getAttribute('r'));
           var vEl = cell.getElementsByTagName('v')[0], v = '';
@@ -359,12 +376,15 @@
           }
           while (ligne.length < col) ligne.push('');
           ligne[col] = v;
+          while (fmt.length < col) fmt.push(0);
+          fmt[col] = formatsStyle[Number(cell.getAttribute('s') || 0)] || 0;
         }
-        while (lignes.length < idxLigne) lignes.push([]);
+        while (lignes.length < idxLigne) { lignes.push([]); formats.push([]); }
         lignes[idxLigne] = ligne;
+        formats[idxLigne] = fmt;
       }
-      while (lignes.length && lignes[lignes.length - 1].every(function (v) { return v === '' || v == null; })) lignes.pop();
-      sortie.push({ nom: nom, lignes: lignes });
+      while (lignes.length && lignes[lignes.length - 1].every(function (v) { return v === '' || v == null; })) { lignes.pop(); formats.pop(); }
+      sortie.push({ nom: nom, lignes: lignes, formats: formats });
     }
     return { feuilles: sortie };
   }
@@ -406,6 +426,24 @@
     return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
   }
 
+  /* --- AAAA-MM-JJ[THH:MM[:SS]] vers série Excel (système 1900) --------------------------------------------------
+     Une date seule se lit telle quelle (aucun fuseau) ; une date et heure se lit à l'heure LOCALE du poste, celle que l'écran affiche
+     (`C.heure`) : un instant écrit en UTC (« …Z ») sort à l’heure de Natitingou, jamais décalé d’une heure. */
+  function versSerie(iso) {
+    var t = String(iso == null ? '' : iso);
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?/.exec(t);
+    if (!m) return null;
+    var a = +m[1], mo = +m[2] - 1, j = +m[3], h = 0, mi = 0, se = 0;
+    if (m[4] !== undefined) {
+      if (/Z|[+-]\d{2}:?\d{2}$/.test(t)) { var d = new Date(t); if (isNaN(d.getTime())) return null; a = d.getFullYear(); mo = d.getMonth(); j = d.getDate(); h = d.getHours(); mi = d.getMinutes(); se = d.getSeconds(); }
+      else { h = +m[4]; mi = +m[5]; se = m[6] ? +m[6] : 0; }
+    }
+    var jours = Math.round((Date.UTC(a, mo, j) - Date.UTC(1899, 11, 30)) / 86400000);
+    if (!(jours > 60)) return null;
+    var fraction = (h * 3600 + mi * 60 + se) / 86400;
+    return m[4] !== undefined ? Math.round((jours + fraction) * 1e8) / 1e8 : jours;
+  }
+
   global.SIGH = global.SIGH || {};
-  global.SIGH.xlsx = { ecrire: ecrire, lire: lire, lireCsv: lireCsv, versDate: versDate, crc32: crc32, inflate: inflate };
+  global.SIGH.xlsx = { ecrire: ecrire, lire: lire, lireCsv: lireCsv, versDate: versDate, versSerie: versSerie, crc32: crc32, inflate: inflate };
 })(window);

@@ -8,6 +8,7 @@ import 'bouton.dart';
 import 'carte.dart';
 import 'formulaire.dart';
 import 'modale.dart';
+import 'sortie_tableau.dart';
 import 'ton.dart';
 
 typedef Ligne = Map<String, Object?>;
@@ -21,7 +22,8 @@ class ColonneTableau {
       this.valeur,
       this.rendu,
       this.sansCoupure = false,
-      this.texte});
+      this.texte,
+      this.somme = false});
   final String cle;
   final String libelle;
   final bool droite;
@@ -32,6 +34,9 @@ class ColonneTableau {
 
   /// Texte exporté / recherché quand la cellule est un widget.
   final String Function(Ligne)? texte;
+
+  /// Lot EXP : l'impression des lignes porte un total CALCULÉ de cette colonne sur les lignes imprimées (« non calculable » si une valeur n'est pas un nombre).
+  final bool somme;
 
   Object? lire(Ligne l) => valeur != null ? valeur!(l) : l[cle];
   String enTexte(Ligne l) => texte != null ? texte!(l) : '${lire(l) ?? ''}';
@@ -51,7 +56,8 @@ class FiltreTableau {
 
 /// `U.dataTable` : carte `overflow-hidden` → barre d'outils → (barre de sélection) → tableau → pied (compteur + pagination).
 /// Comportements repris de la maquette : recherche sans accents sur toutes les colonnes, filtres, tri à deux états,
-/// colonnes configurables, export CSV, sélection multiple, pagination de 12, message d'état vide distinct selon qu'un filtre est actif.
+/// colonnes configurables, sortie (.xlsx, CSV, impression) des lignes cochées, filtrées ou de tout le tableau (lot EXP), sélection multiple PAR DÉFAUT et
+/// gardée d'une page à l'autre, pagination de 12, message d'état vide distinct selon qu'un filtre est actif.
 class TableauSigh extends StatefulWidget {
   const TableauSigh({
     super.key,
@@ -61,7 +67,8 @@ class TableauSigh extends StatefulWidget {
     this.taillePage = 12,
     this.recherche = true,
     this.filtres = const [],
-    this.selectionnable = false,
+    this.selectionnable = true,
+    this.cleLigne,
     this.actionsLigne,
     this.alClicLigne,
     this.messageVide = 'Aucun enregistrement.',
@@ -93,7 +100,12 @@ class TableauSigh extends StatefulWidget {
   final int taillePage;
   final bool recherche;
   final List<FiltreTableau> filtres;
+
+  /// Lot EXP : les cases sont posées PAR DÉFAUT (Direction, 15/11/2026) ; `false` se déclare (aucun écran ne le fait aujourd'hui).
   final bool selectionnable;
+
+  /// La clé de sélection d'une ligne : à défaut `id`, puis `code`, puis une empreinte du contenu (stable d'un rendu à l'autre).
+  final String Function(Ligne)? cleLigne;
   final List<Widget> Function(BuildContext, Ligne)? actionsLigne;
   final void Function(Ligne)? alClicLigne;
   final String messageVide;
@@ -103,11 +115,13 @@ class TableauSigh extends StatefulWidget {
   final String nomExport;
   final String libelleRecherche;
 
-  /// Reçoit `(nomDeFichier, contenuCsv)` : l'écriture du fichier appartient à la plateforme, pas au kit.
+  /// Reçoit `(nomDeFichier, contenuCsv)` d'un export CSV, APRÈS le contrôle et le journal du moteur de sortie ; sans lui, le kit enregistre le fichier
+  /// lui-même (`SortieTableauxPoste.enregistrer`). Le .xlsx et l'impression passent toujours par le moteur.
   final void Function(String nom, String csv)? alExporter;
   final List<Widget> actions;
 
-  /// Commandes de la barre de sélection (`bulkActions`) : reçoivent les lignes sélectionnées et la fonction qui désélectionne.
+  /// Commandes de la barre de sélection (`bulkActions`) : reçoivent les lignes sélectionnées (y compris celles que le filtre actif cache) et la fonction qui
+  /// désélectionne.
   final List<Widget> Function(
       BuildContext, List<Ligne> selection, VoidCallback effacer)? actionsGroupe;
 
@@ -122,7 +136,21 @@ class TableauSighState extends State<TableauSigh> {
   String _sens = 'asc';
   int _page = 1;
   final Set<String> _caches = {};
-  final Set<Object?> _selection = {};
+  final Set<String> _selection = {};
+
+  String _cle(Ligne r) {
+    if (widget.cleLigne != null) return widget.cleLigne!(r);
+    final id = r['id'];
+    if (id != null && '$id'.isNotEmpty) return '$id';
+    final code = r['code'];
+    if (code != null && '$code'.isNotEmpty) return 'code:$code';
+    final s = r.entries.where((e) => e.value is String || e.value is num || e.value is bool || e.value == null).map((e) => '${e.key}=${e.value}').join('|');
+    var h = 5381;
+    for (final u in s.codeUnits) {
+      h = ((h * 33) ^ u) & 0xFFFFFFFF;
+    }
+    return 'h:${h.toRadixString(36)}:${s.length}';
+  }
 
   @override
   void initState() {
@@ -133,6 +161,20 @@ class TableauSighState extends State<TableauSigh> {
 
   List<ColonneTableau> get _visibles =>
       widget.colonnes.where((c) => !_caches.contains(c.cle)).toList();
+
+  List<Ligne> _trier(List<Ligne> l) {
+    if (_tri != null) {
+      final c = widget.colonnes.where((c) => c.cle == _tri).firstOrNull;
+      if (c != null) return trierPar(l, c.lire, descendant: _sens == 'desc');
+    }
+    return l;
+  }
+
+  /// Toutes les lignes que l'écran a construites pour ce profil (« en masse » : toutes pages, sans filtre), dans l'ordre du tri affiché.
+  List<Ligne> get toutesTriees => _trier([...widget.lignes]);
+
+  /// Les lignes COCHÉES, y compris celles que le filtre actif cache (la sélection se garde jusqu'à ce que l'agent la vide, et le compte le dit).
+  List<Ligne> get lignesCochees => [for (final r in toutesTriees) if (_selection.contains(_cle(r))) r];
 
   /// Lignes après recherche, filtres et tri — c'est CE que l'état imprime et que l'export écrit.
   List<Ligne> get lignesFiltrees {
@@ -152,39 +194,30 @@ class TableauSighState extends State<TableauSigh> {
               : '${r[e.key]}' == e.value)
           .toList();
     }
-    if (_tri != null) {
-      final c = widget.colonnes.where((c) => c.cle == _tri).firstOrNull;
-      if (c != null) l = trierPar(l, c.lire, descendant: _sens == 'desc');
-    }
-    return l;
+    return _trier(l);
   }
 
-  void _exporter() {
-    final l = lignesFiltrees, v = _visibles;
-    afficherModale<void>(context,
-        titre: 'Exporter les données',
-        taille: TailleModale.sm,
-        corps: Text(
-            'Choisir le format d’export des ${l.length} lignes filtrées.',
-            style: const TextStyle(
-                color: JetonsShell.slate600, fontSize: 14, height: 20 / 14)),
-        pied: (fermer) => [
-              BoutonSigh(
-                  libelle: 'CSV / Excel',
-                  icone: LucideIcons.fileSpreadsheet,
-                  variante: VarianteBouton.secondaire,
-                  onPressed: () {
-                    fermer();
-                    widget.alExporter?.call(
-                        '${widget.nomExport}-${DateTime.now().toIso8601String().substring(0, 10)}.csv',
-                        exporterCsv([
-                          for (final c in v) c.libelle
-                        ], [
-                          for (final r in l) [for (final c in v) c.enTexte(r)]
-                        ]));
-                  }),
-            ]);
+  /// La fenêtre de sortie (périmètre puis format) : moteur commun, droit, limite, journal (lot EXP).
+  void _exporter([String? perimetre]) => afficherFenetreSortie(context,
+      cochees: () => lignesCochees,
+      filtrees: () => lignesFiltrees,
+      toutes: () => toutesTriees,
+      filtreActif: _filtreActif,
+      colonnes: () => _visibles,
+      nom: widget.nomExport,
+      titre: widget.titre ?? widget.nomExport,
+      cle: _cle,
+      perimetre: perimetre,
+      alExporterCsv: widget.alExporter);
+
+  Future<void> _imprimerSelection() async {
+    final r = await sortirLignesPoste(context,
+        format: 'impression', colonnes: _visibles, lignes: lignesCochees, perimetre: tabPerimetreSelection, nom: widget.nomExport, titre: widget.titre ?? widget.nomExport, cle: _cle);
+    if (mounted) direSortie(context, r);
   }
+
+  /// La commande « Exporter » est ABSENTE sans le droit (fiche RBAC) ; droits illisibles (aucune coque) : visible, le moteur refuse.
+  bool get _peutSortir => droitSortie(context) != false;
 
   void _colonnes() {
     afficherModale<void>(context,
@@ -332,40 +365,64 @@ class TableauSighState extends State<TableauSigh> {
                   taille: TailleBouton.sm,
                   variante: VarianteBouton.secondaire,
                   onPressed: _colonnes),
-              BoutonSigh(
-                  libelle: 'Exporter',
-                  icone: LucideIcons.download,
-                  taille: TailleBouton.sm,
-                  variante: VarianteBouton.secondaire,
-                  onPressed: _exporter),
+              if (_peutSortir)
+                BoutonSigh(
+                    key: const Key('kit:tableau-exporter'),
+                    libelle: 'Exporter',
+                    icone: LucideIcons.download,
+                    taille: TailleBouton.sm,
+                    variante: VarianteBouton.secondaire,
+                    onPressed: _exporter),
               ...widget.actions,
             ]),
       );
 
-  Widget _barreSelection() => Container(
+  Widget _barreSelection() {
+    final coches = lignesCochees, filtrees = lignesFiltrees;
+    final n = coches.length;
+    final visibles = {for (final r in filtrees) _cle(r)};
+    final hors = coches.where((r) => !visibles.contains(_cle(r))).length;
+    final nonCochees = filtrees.where((r) => !_selection.contains(_cle(r))).length;
+    return Container(
+        key: const Key('kit:tableau-selection'),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: const BoxDecoration(
             color: JetonsShell.navy50,
             border: Border(bottom: BorderSide(color: JetonsShell.navy200))),
-        child: Row(children: [
+        child: Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
           Text(
-              '${_selection.length} ligne${_selection.length > 1 ? 's' : ''} sélectionnée${_selection.length > 1 ? 's' : ''}',
+              '$n ligne${n > 1 ? 's' : ''} sélectionnée${n > 1 ? 's' : ''}${hors > 0 ? ' (dont $hors hors du filtre actif)' : ''}',
+              key: const Key('kit:tableau-compte-selection'),
               style: const TextStyle(
                   color: JetonsShell.navy900,
                   fontSize: 14,
                   height: 20 / 14,
                   fontWeight: FontWeight.w500)),
-          const Spacer(),
+          if (nonCochees > 0)
+            BoutonSigh(
+                key: const Key('kit:tableau-cocher-filtrees'),
+                libelle: 'Cocher les ${filtrees.length} ligne${filtrees.length > 1 ? 's' : ''} filtrée${filtrees.length > 1 ? 's' : ''}',
+                variante: VarianteBouton.fantome,
+                taille: TailleBouton.sm,
+                onPressed: () => setState(() => _selection.addAll(visibles))),
+          if (_peutSortir) ...[
+            BoutonSigh(
+                key: const Key('kit:tableau-exporter-selection'),
+                libelle: 'Exporter la sélection',
+                icone: LucideIcons.download,
+                variante: VarianteBouton.secondaire,
+                taille: TailleBouton.sm,
+                onPressed: () => _exporter(tabPerimetreSelection)),
+            BoutonSigh(
+                key: const Key('kit:tableau-imprimer-selection'),
+                libelle: 'Imprimer la sélection',
+                icone: LucideIcons.printer,
+                variante: VarianteBouton.secondaire,
+                taille: TailleBouton.sm,
+                onPressed: _imprimerSelection),
+          ],
           if (widget.actionsGroupe != null)
-            for (final a in widget.actionsGroupe!(
-                context,
-                [
-                  for (final r in lignesFiltrees)
-                    if (_selection.contains(r['id'])) r
-                ],
-                () => setState(_selection.clear)))
-              Padding(padding: const EdgeInsets.only(left: 8), child: a),
-          const SizedBox(width: 8),
+            for (final a in widget.actionsGroupe!(context, coches, () => setState(_selection.clear))) a,
           BoutonSigh(
               libelle: 'Tout désélectionner',
               variante: VarianteBouton.fantome,
@@ -373,6 +430,7 @@ class TableauSighState extends State<TableauSigh> {
               onPressed: () => setState(_selection.clear)),
         ]),
       );
+  }
 
   Widget _table(List<ColonneTableau> cols, List<Ligne> page) {
     final colonnes = <int, TableColumnWidth>{};
@@ -409,20 +467,20 @@ class TableauSighState extends State<TableauSigh> {
                                     child: _Cocher(
                                         page.isNotEmpty &&
                                             page.every((r) =>
-                                                _selection.contains(r['id'])),
+                                                _selection.contains(_cle(r))),
                                         'Tout sélectionner',
                                         (v) => setState(() {
                                               for (final r in page) {
                                                 v
-                                                    ? _selection.add(r['id'])
+                                                    ? _selection.add(_cle(r))
                                                     : _selection
-                                                        .remove(r['id']);
+                                                        .remove(_cle(r));
                                               }
                                             }))),
                                 tete: true),
                           for (final (i, col) in cols.indexed)
                             _tete(col,
-                                cle: i == 0 && !widget.selectionnable
+                                cle: i == 0
                                     ? const Key('kit:tableau-entete')
                                     : null),
                           if (widget.actionsLigne != null)
@@ -435,7 +493,7 @@ class TableauSighState extends State<TableauSigh> {
                     for (final r in page)
                       TableRow(
                           decoration: BoxDecoration(
-                              color: _selection.contains(r['id'])
+                              color: _selection.contains(_cle(r))
                                   ? JetonsShell.navy50
                                   : null,
                               border: const Border(
@@ -445,15 +503,14 @@ class TableauSighState extends State<TableauSigh> {
                             if (widget.selectionnable)
                               _cellule(Center(
                                   child: _Cocher(
-                                      _selection.contains(r['id']),
+                                      _selection.contains(_cle(r)),
                                       'Sélectionner la ligne',
                                       (v) => setState(() => v
-                                          ? _selection.add(r['id'])
-                                          : _selection.remove(r['id']))))),
+                                          ? _selection.add(_cle(r))
+                                          : _selection.remove(_cle(r)))))),
                             for (final (i, col) in cols.indexed)
                               _cellule(
                                   cle: i == 0 &&
-                                          !widget.selectionnable &&
                                           widget.actionsLigne == null &&
                                           identical(r, page.first)
                                       ? const Key('kit:tableau-ligne')
