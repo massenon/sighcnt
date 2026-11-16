@@ -19647,7 +19647,7 @@ async function viderMessages(page) {
     console.log('\n  T1 écarts entre les sources : ' + JSON.stringify(ecarts.par) + '\n   analyses sans ligne de grille : ' + ecarts.sansGrille.join(', ') + '\n   lignes LABO sans analyse : ' + ecarts.laboSansAnalyse.join(', ')
       + '\n   prix de grille proposés en version 2 (facturé -> grille non assuré/assuré) :\n     ' + ecarts.grille.join('\n     '));
     verifier('Les écarts entre les sources sont LISTÉS et chiffrés : 39 analyses dont la grille diffère (version 2 proposée), 9 analyses sans ligne de grille, 1 ligne LABO sans analyse (SDW ; BU est déjà l’alias de l’acte MA18), aucun écart acte/grille sur la semence',
-      ecarts.par['analyse-grille'] === 39 && ecarts.par['analyse-sans-grille'] === 9 && ecarts.par['grille-sans-analyse'] === 1 && !ecarts.par['acte-grille'] && !ecarts.par['catalogue-grille'] && ecarts.n === '201/240', JSON.stringify(ecarts.par));
+      ecarts.par['analyse-grille'] === 39 && ecarts.par['analyse-sans-grille'] === 9 && ecarts.par['grille-sans-analyse'] === 1 && !ecarts.par['acte-grille'] && !ecarts.par['catalogue-grille'] && ecarts.n === '202/241', JSON.stringify(ecarts.par));   /* 202/241 : CERT-CA « Certificat d’aptitude », lot TARIF-FIX (avant : 201/240) */
     /* --- Reprise d'un magasin d'avant : le prix facturé aujourd'hui (collection actes) devient la version 1, les éditions sans effet sont listées ----------------- */
     const reprise = await page.evaluate(() => {
       const S = window.SIGH.store, clone = (x) => JSON.parse(JSON.stringify(x));
@@ -27222,6 +27222,296 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401|500|refusée/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CONT ETAPE 0 FIN */
+  /* LOT TARIF-FIX DEBUT */
+  await etape(async () => {
+    scenario('Vague 185 : lot TARIF-FIX, deux certificats d’aptitude, deux identifiants (CERT-APT « Certificat médical d’aptitude » 7 000 que la caisse lit, CERT-CA « Certificat d’aptitude » 5 000), un code ne se réutilise pas même écrit autrement (refus nommé au moteur et à l’écran), aucun prix ni aucune version réécrits à la reprise');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN185', nomComplet: 'ADMIN185', fonction: 'direction', identifiant: 's185.admin', secteur: 'DIR' });
+    await ouvrir('cfg-tarifs.html');
+    const etat = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data, TA = D.TARIFS, brut = S.raw();
+      const norm = (c) => String(c == null ? '' : c).trim().toUpperCase();
+      const lignes = (code) => brut.tarifs.filter((p) => norm(p.code) === code || (p.codesAlias || []).some((c) => norm(c) === code));
+      const lu = (c) => { const r = PR.tarifALaDate(c, null, false), a = PR.tarifALaDate(c, null, true); return { na: r.montant, pa: a.montant, lib: r.libelle, sos: a.reserveSos === true }; };
+      const tp = brut.typesPiece.filter((t) => t.id === 'TPC04')[0];
+      return { apt: lignes('CERT-APT').map((p) => [p.code, p.libelle, p.statut]), ca: lignes('CERT-CA').map((p) => [p.code, p.libelle, p.statut, p.famille, p.assurable]),
+        luApt: lu('CERT-APT'), luCa: lu('CERT-CA'), caisseApt: (D.tarif('CERT-APT') || {}).prixNonAssure, caisseCa: (D.tarif('CERT-CA') || {}).prixNonAssure,
+        versionsApt: brut.versionsTarif.filter((v) => v.code === 'CERT-APT').map((v) => [v.version, v.statut, v.prixNonAssure]),
+        typePiece: tp && [tp.libelle, tp.tarifCode], version: S.raw()._version, grille: D.tarifParFamille('CERTIFICAT').map((t) => t.code) };
+    });
+    verifier('Deux prestations, deux codes : CERT-APT « Certificat médical d’aptitude » (7 000, une seule ligne, sa version 1 inchangée) et CERT-CA « Certificat d’aptitude » (5 000, famille CERTIFICAT, couverture SOS seule) ; la caisse et le type de pièce TPC04 lisent toujours CERT-APT à 7 000 ; VERSION 88 ou plus',
+      etat.apt.length === 1 && etat.apt[0][1] === 'Certificat médical d’aptitude' && etat.luApt.na === 7000 && etat.caisseApt === 7000 && JSON.stringify(etat.versionsApt) === '[[1,"valide",7000]]'
+        && etat.ca.length === 1 && etat.ca[0][1] === 'Certificat d’aptitude' && etat.ca[0][3] === 'CERTIFICAT' && etat.ca[0][4] === 'sos' && etat.luCa.na === 5000 && etat.luCa.pa === 5000 && etat.luCa.sos && etat.caisseCa === 5000
+        && etat.typePiece[0] === 'Certificat médical d’aptitude' && etat.typePiece[1] === 'CERT-APT' && etat.version >= 88 && etat.grille.indexOf('CERT-CA') >= 0, JSON.stringify(etat));
+    /* 2. Le moteur refuse un second code identique, même écrit autrement (casse, espaces, alias, archivé) */
+    const refus = await page.evaluate(() => {
+      const PR = window.SIGH.parcours, C = window.SIGH.core, jour = C.iso(C.aujourdhui());
+      const essai = (code) => PR.proposerTarif({ code: code, prixNonAssure: 5000, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 185', essai: true, creation: { libelle: 'Certificat d’aptitude (sonde)', famille: 'CERTIFICAT' } });
+      return ['CERT-APT', 'cert-apt', ' CERT-APT ', 'Cert-Ca', 'SIV', ' l01 '].map((c) => { const r = essai(c); return [c, r.ok === true, r.code || null, !!r.geste, /déjà/.test(r.motif || '')]; });
+    });
+    verifier('Un code ne se réutilise pas : CERT-APT, « cert-apt », « CERT-APT » entouré d’espaces, « Cert-Ca », l’alias de grille SIV et « l01 » sont REFUSÉS au moteur (CODE_EXISTANT, motif « déjà », geste)',
+      refus.every((x) => x[1] === false && x[2] === 'CODE_EXISTANT' && x[3] && x[4]), JSON.stringify(refus));
+    /* 3. À l'écran : « Nouvelle prestation » avec « cert-apt » est refusée en le nommant, rien n'est écrit */
+    const ecran = await page.evaluate(async () => {
+      const S = window.SIGH.store, pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const n0 = S.raw().tarifs.length, v0 = S.raw().versionsTarif.length;
+      const b = [...document.querySelectorAll('#page-content button, .page-actions button, header button, button')].find((x) => /Nouvelle prestation/.test(x.textContent));
+      if (!b) return { bouton: false };
+      b.click(); await pause(400);
+      const poser = (id, v) => { const e = document.getElementById(id); if (!e) return false; e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); return true; };
+      poser('f_code', 'cert-apt'); poser('f_libelle', 'Certificat d’aptitude (sonde 185)'); poser('f_famille', 'CERTIFICAT'); poser('f_prixNonAssure', '5000'); poser('f_etatAssure', 'unique'); poser('f_motif', 'Sonde 185 : second code');
+      const env = [...document.querySelectorAll('.modal button, [role="dialog"] button')].find((x) => /^\s*Enregistrer\s*$/.test(x.textContent));
+      if (!env) return { bouton: true, enregistrer: false };
+      env.click(); await pause(500);
+      const toast = [...document.querySelectorAll('[role="status"], .toast, [data-toast]')].map((t) => t.textContent.replace(/\s+/g, ' ')).join(' | ');
+      const fermer = [...document.querySelectorAll('.modal button, [role="dialog"] button')].find((x) => /Annuler/.test(x.textContent)); if (fermer) fermer.click();
+      return { bouton: true, enregistrer: true, toast: toast.slice(0, 400), dTarifs: S.raw().tarifs.length - n0, dVersions: S.raw().versionsTarif.length - v0 };
+    });
+    verifier('À l’écran « Tarifs et prix » : « Nouvelle prestation » avec le code « cert-apt » est refusée en le NOMMANT (toast « déjà pris … CERT-APT ») et rien n’est écrit (ni prestation, ni version)',
+      ecran.bouton && ecran.enregistrer && /déjà pris/.test(ecran.toast) && /CERT-APT/.test(ecran.toast) && ecran.dTarifs === 0 && ecran.dVersions === 0, JSON.stringify(ecran));
+    /* 4. Une pièce émise sur CERT-APT garde son prix et son libellé ; la reprise d'un magasin d'une version antérieure ne change aucun prix et n'ajoute pas un second CERT-CA */
+    const avant = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const r = PR.prescrire({ patientCode: pt.code, medecin: 'S185', diagnostic: 'sonde 185', actes: ['CERT-APT'] });
+      const f = S.collection('factures').get(r.facture.id);
+      return { id: f.id, lignes: JSON.stringify((f.lignes || []).map((l) => [l.designation, l.prixUnitaire, l.montant])), total: f.montantTTC,
+        versions: JSON.stringify(S.raw().versionsTarif.filter((v) => v.code === 'CERT-APT' || v.code === 'CERT-CA').map((v) => [v.id, v.prixNonAssure, v.statut]).sort()) };
+    });
+    await page.evaluate(() => { window.SIGH.store.raw()._version = 87; window.SIGH.store.save(); });
+    await attendreEcritures();
+    await ouvrir('cfg-tarifs.html');
+    const apres = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, f = S.collection('factures').get(id);
+      return { version: S.raw()._version, lignes: f ? JSON.stringify((f.lignes || []).map((l) => [l.designation, l.prixUnitaire, l.montant])) : null, total: f && f.montantTTC,
+        versions: JSON.stringify(S.raw().versionsTarif.filter((v) => v.code === 'CERT-APT' || v.code === 'CERT-CA').map((v) => [v.id, v.prixNonAssure, v.statut]).sort()),
+        nCa: S.raw().tarifs.filter((p) => p.code === 'CERT-CA').length, apt: PR.tarifALaDate('CERT-APT', null, false).montant, ca: PR.tarifALaDate('CERT-CA', null, false).montant };
+    }, avant.id);
+    /* La montée de VERSION de la maquette RÉ-AMORCE l'activité de démonstration (les factures repartent de la semence) et ne garde que les référentiels que la reprise protège,
+       dont le référentiel de prix : la non-réécriture d'une pièce émise se prouve donc au scénario 187 (c), ici seulement les versions et les prix. */
+    verifier('Une prescription de CERT-APT se facture 7 000 (« Certificat médical d’aptitude ») ; après la montée de VERSION (reprise d’un magasin en 87), les versions de CERT-APT et CERT-CA sont identiques (aucune réécrite, aucune ajoutée), CERT-CA n’est pas doublé, aucun prix ne change',
+      /Certificat médical d’aptitude",7000,7000/.test(avant.lignes) && apres.version >= 88 && apres.versions === avant.versions && apres.nCa === 1 && apres.apt === 7000 && apres.ca === 5000,
+      JSON.stringify({ avant, apres }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 186 : lot TARIF-FIX, la prescription d’actes ne produit JAMAIS un zéro silencieux (chaque code des trois espaces, deux colonnes : un prix strictement positif ou « prix à définir » nommé avec sa cause et son geste, refusé avant toute écriture), lecture par le référentiel unique, colonne vide jamais remplacée par l’autre, écran qui dit « prix à définir » et « non calculable »');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN186', nomComplet: 'ADMIN186', fonction: 'direction', identifiant: 's186.admin', secteur: 'DIR' });
+    await ouvrir('m8-facturation.html');
+    const m = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data, now = new Date().toISOString();
+      const ptNon = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const ptAss = S.collection('patients').active().filter((p) => !p.externe && p.assureur && PR.carteValide(p, now) && Number(p.tauxPriseEnCharge) > 0)[0];
+      const codes = Array.from(new Set(D.CATALOGUE.map((e) => e.code).concat(S.collection('actes').all().map((a) => a.code), D.ANALYSES.map((a) => a.code)))).sort();
+      /* Le relevé EXHAUSTIF passe par la lecture que le moteur appelle (`PR.prixLignePrescription`) ; le moteur lui-même est appelé pour CHAQUE ligne à prix à définir
+         (un refus n'écrit rien) et pour un échantillon de lignes tarifées (une facture écrite chacune, pour ne pas charger le magasin de cinq cents pièces de sonde). */
+      const nF0 = S.raw().factures.length, nO0 = S.raw().ordonnances.length;
+      const R = { codes: codes.length, zero: [], refus: 0, refusSansGeste: [], refusSansCode: [], prix: 0, causes: {}, ecrituresRefus: 0, echantillon: 0, lectureMoteur: [] };
+      let tarifees = 0;
+      codes.forEach((c) => [ptNon, ptAss].forEach((pt) => {
+        const lu = PR.prixLignePrescription(c, now, pt === ptAss, 'acte');
+        if (lu.ok && !(lu.montant > 0)) R.zero.push(c + ' (lecture)');
+        if (lu.ok && tarifees++ % 12 !== 0) { R.prix++; return; }
+        const f0 = S.raw().factures.length;
+        try {
+          const r = PR.prescrire({ patientCode: pt.code, medecin: 'S186', diagnostic: 'sonde 186', actes: [c] });
+          const l = r.facture.lignes.filter((x) => x.acteCode === c)[0];
+          if (!l || !(l.prixUnitaire > 0) || !(l.montant > 0)) R.zero.push(c + (pt === ptAss ? ' (assuré)' : '')); else { R.prix++; R.echantillon++; }
+          if (!lu.ok || l.prixUnitaire !== lu.montant) R.lectureMoteur.push(c);
+        } catch (e) {
+          R.refus++;
+          if (lu.ok) R.lectureMoteur.push(c + ' refusé');
+          if (e.code !== 'PRIX_A_DEFINIR') R.refusSansCode.push(c + ' : ' + String(e.message).slice(0, 60));
+          else {
+            if (!e.geste || !/prix à définir/.test(e.message) || e.message.indexOf(c) < 0) R.refusSansGeste.push(c);
+            (e.lignes || []).forEach((x) => { R.causes[x.cause] = (R.causes[x.cause] || 0) + 1; });
+          }
+          if (S.raw().factures.length !== f0) R.ecrituresRefus++;
+        }
+      }));
+      R.dFactures = S.raw().factures.length - nF0; R.dOrdonnances = S.raw().ordonnances.length - nO0;
+      R.certApt = PR.prescrire({ patientCode: ptNon.code, medecin: 'S186', diagnostic: 's', actes: ['CERT-APT'] }).facture.lignes[0].prixUnitaire;
+      R.consGen = PR.prescrire({ patientCode: ptNon.code, medecin: 'S186', diagnostic: 's', actes: ['CONS-GEN'] }).facture.lignes[0].prixUnitaire;
+      R.consGenAss = PR.prescrire({ patientCode: ptAss.code, medecin: 'S186', diagnostic: 's', actes: ['CONS-GEN'] }).facture.lignes[0].prixUnitaire;
+      R.attenduConsGen = [PR.tarifALaDate('CONS-GEN', null, false).montant, PR.tarifALaDate('CONS-GEN', null, true).montant];
+      return R;
+    });
+    verifier('Chaque code des trois espaces (grille, actes, analyses), patient non assuré puis assuré à carte valide : AUCUNE ligne à 0 (lecture du moteur pour tous, moteur appelé pour chaque ligne sans prix et un échantillon tarifé, même montant) ; chaque refus est « PRIX_A_DEFINIR », nomme le code, dit « prix à définir » et porte son geste ; un refus n’écrit ni facture ni ordonnance',
+      m.codes >= 268 && m.zero.length === 0 && m.refusSansGeste.length === 0 && m.refusSansCode.length === 0 && m.ecrituresRefus === 0 && m.prix > 0 && m.echantillon >= 10 && m.lectureMoteur.length === 0 && m.dFactures === m.echantillon, JSON.stringify(Object.assign({}, m, { zero: m.zero.slice(0, 12) })));
+    verifier('Le référentiel UNIQUE est lu par la prescription d’actes : un certificat (CERT-APT, 7 000) et une consultation (CONS-GEN, les deux colonnes de son prix en vigueur) ne tombent plus à 0 hors de l’espace des actes',
+      m.certApt === 7000 && m.consGen === m.attenduConsGen[0] && m.consGenAss === m.attenduConsGen[1] && m.consGen > 0, JSON.stringify([m.certApt, m.consGen, m.consGenAss, m.attenduConsGen, m.causes]));
+    /* 2. Les DEUX colonnes : une colonne vide n'est jamais remplacée par l'autre (moteur pur, index de sonde) ; un prix non assuré absent ne prend pas le prix assuré */
+    const col = await page.evaluate(() => {
+      const TA = window.SIGH.data.TARIFS;
+      const h = TA.indexer([{ code: 'Z1', codeActe: 'Z1', libelle: 'Acte sonde', famille: 'ACTE', assurable: true, statut: 'actif' }, { code: 'Z2', codeActe: 'Z2', libelle: 'Acte sonde 2', famille: 'ACTE', assurable: true, statut: 'actif' }],
+        [{ code: 'Z1', version: 1, prixNonAssure: 4000, prixAssure: null, etatAssure: 'manquant', statut: 'valide' }, { code: 'Z2', version: 1, prixNonAssure: null, etatNonAssure: 'manquant', prixAssure: 3000, etatAssure: 'montant', statut: 'valide' }]);
+      const l = (c, a) => { const r = TA.prixDeLigne(h, c, '2026-08-16', a, 'acte'); return [r.ok, r.montant, r.cause || null]; };
+      return { z1Non: l('Z1', false), z1Ass: l('Z1', true), z2Non: l('Z2', false), z2Ass: l('Z2', true) };
+    });
+    verifier('Deux prix : colonne assurée vide (Z1, 4 000 non assuré) : le non assuré lit 4 000, l’assuré lit « prix assuré à définir » (jamais 4 000) ; colonne non assurée vide (Z2, 3 000 assuré) : le non assuré lit « prix à définir » (jamais 3 000), l’assuré lit 3 000',
+      JSON.stringify(col.z1Non) === '[true,4000,null]' && JSON.stringify(col.z1Ass) === '[false,null,"prix-assure-vide"]' && JSON.stringify(col.z2Non) === '[false,null,"prix-non-assure-vide"]' && JSON.stringify(col.z2Ass) === '[true,3000,null]', JSON.stringify(col));
+    /* 3. L'écran de prescription dit « prix à définir » et un total « non calculable », jamais 0 */
+    await ouvrir('m2-ordonnance-nouvelle.html');
+    const scr = await page.evaluate(async () => {
+      const S = window.SIGH.store, C = window.SIGH.core, PR = window.SIGH.parcours, pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const jour = C.iso(C.aujourdhui()), demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const suf = Date.now().toString(36).toUpperCase().slice(-5);
+      const cP = 'TF186P' + suf, cF = 'TF186F' + suf;
+      /* deux prestations neuves : l'une seulement PROPOSÉE, l'autre décidée à effet de DEMAIN ; leurs fiches de lecture posées comme au catalogue (sans prix) */
+      const p1 = PR.proposerTarif({ code: cP, prixNonAssure: 2500, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 186', creation: { libelle: 'Acte sonde proposé', famille: 'ACTE', secteur: 'Soins' } });
+      const p2 = PR.proposerTarif({ code: cF, prixNonAssure: 3500, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 186', creation: { libelle: 'Acte sonde futur', famille: 'ACTE', secteur: 'Soins' } });
+      const d2 = p2.ok ? PR.deciderTarif(p2.version.id, 'oui') : p2;
+      [[cP, 'Acte sonde proposé'], [cF, 'Acte sonde futur']].forEach((x) => S.collection('actes').insert({ id: 'ACT-' + x[0], code: x[0], libelle: x[1], secteur: 'Soins', statut: 'actif' }));
+      window.SIGH.app && window.SIGH.app.go ? null : null;
+      return { cP, cF, p1: p1.ok, d2: d2.ok, demain };
+    });
+    await ouvrir('m2-ordonnance-nouvelle.html');
+    const vue = await page.evaluate(async (x) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const ctrl = document.getElementById('f_actes');
+      if (!ctrl) return { champ: false };
+      const btn = ctrl.querySelector('button'); if (btn) btn.click(); await pause(300);
+      const champ = document.querySelector('.combo-panel:not([hidden]) input.combo-search'); if (champ) { champ.value = 'Acte sonde'; champ.dispatchEvent(new Event('input', { bubbles: true })); } await pause(300);
+      const options = [...document.querySelectorAll('.combo-panel:not([hidden]) [role="option"]')].map((o) => o.textContent.replace(/\s+/g, ' ').trim()).filter((t) => /Acte sonde/.test(t));
+      if (btn) btn.click();
+      ctrl.value = [x.cP]; ctrl.dispatchEvent(new Event('change', { bubbles: true })); await pause(300);
+      const total = [...document.querySelectorAll('#page-content p')].map((p) => p.textContent).filter((t) => /Non calculable|FCFA|F CFA|médicaments/.test(t)).join(' | ');
+      return { champ: true, options, total: total.slice(0, 300) };
+    }, scr);
+    const fr = scr.demain.split('-').reverse().join('/');
+    verifier('L’écran « Nouvelle ordonnance » dit, sous chaque acte sans prix, « prix à définir » (proposé non décidé) et « prix à définir, effectif le JJ/MM/AAAA » (décidé à effet de demain) ; un acte sans prix rend le total « Non calculable : prix à définir pour … », jamais 0',
+      scr.p1 && scr.d2 && vue.champ && vue.options.some((t) => /Acte sonde proposé/.test(t) && /prix à définir/.test(t) && !/effectif/.test(t)) && vue.options.some((t) => /Acte sonde futur/.test(t) && t.indexOf('prix à définir, effectif le ' + fr) >= 0)
+        && /Non calculable : prix à définir pour /.test(vue.total) && vue.total.indexOf(scr.cP) >= 0, JSON.stringify({ scr, vue }));
+    await page.evaluate((x) => { const S = window.SIGH.store; [x.cP, x.cF].forEach((c) => S.collection('actes').archive('ACT-' + c, 'Sonde 186 : fin')); }, scr);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 187 : lot TARIF-FIX, exigence de la Direction du 15/11/2026 : après la décision du prix, la prescription ne dit PLUS « prix à définir » (effet immédiat sans rechargement, date d’effet future lue le jour dit sans tâche ni redémarrage, pièce émise qui garde son prix, chaque cause rendue tarifable par son geste, projections au pas), et le catalogue du laboratoire signale les analyses sans prix (compte, indication, commande « Tarifer » ABSENTE sans le droit)');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN187', nomComplet: 'ADMIN187', fonction: 'direction', identifiant: 's187.admin', secteur: 'DIR' });
+    await ouvrir('cfg-tarifs.html');
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core, TA = window.SIGH.data.TARIFS;
+      const jour = C.iso(C.aujourdhui()), demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const suf = Date.now().toString(36).toUpperCase().slice(-5);
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const ptAss = S.collection('patients').active().filter((p) => !p.externe && p.assureur && PR.carteValide(p, new Date().toISOString()) && Number(p.tauxPriseEnCharge) > 0)[0];
+      const essai = (code, patient, voie) => { try { const v = { patientCode: (patient || pt).code, medecin: 'S187', diagnostic: 's' }; v[voie || 'actes'] = [code]; const r = PR.prescrire(v);
+        const l = r.facture.lignes[0]; return { prix: l.prixUnitaire, id: r.facture.id }; } catch (e) { return { refus: e.code, cause: (e.lignes || [])[0] && e.lignes[0].cause, texte: String(e.message).slice(0, 220), geste: e.geste || null }; } };
+      const R = { jour, demain };
+      /* (a) un code sans prix, puis proposition et Oui à effet d'AUJOURD'HUI : la prescription SUIVANTE lit ce prix, sans rechargement */
+      const cA = 'TF187A' + suf;
+      const pA = PR.proposerTarif({ code: cA, prixNonAssure: 4200, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 187 (a)', creation: { libelle: 'Acte sonde (a)', famille: 'ACTE', secteur: 'Soins' } });
+      R.aAvant = essai(cA);
+      const dA = PR.deciderTarif(pA.version.id, 'oui');
+      R.aApres = essai(cA);
+      R.aProjection = (S.collection('actes').active().filter((x) => x.code === cA)[0] || {}).prix;
+      R.aParite = S.paritesTarifs().length;
+      R.aDecide = dA.ok;
+      /* (b) date d'effet FUTURE : « prix à définir, effectif le … » jusqu'au jour dit, puis le nouveau prix ce jour-là, horloge avancée, sans rechargement */
+      const cB = 'TF187B' + suf;
+      const pB = PR.proposerTarif({ code: cB, prixNonAssure: 6100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 187 (b)', creation: { libelle: 'Acte sonde (b)', famille: 'ACTE', secteur: 'Soins' } });
+      const dB = PR.deciderTarif(pB.version.id, 'oui');
+      R.bAvant = essai(cB);
+      R.bLigneAvant = PR.prixLignePrescription(cB, null, false, 'acte');
+      window.__SIGH_HORLOGE.decaler(86400000);
+      try { R.bJourDit = essai(cB); R.bProjAvant = (S.collection('actes').active().filter((x) => x.code === cB)[0] || {}).prix; S.projeterTarifs(); R.bProjApres = (S.collection('actes').active().filter((x) => x.code === cB)[0] || {}).prix; }
+      finally { window.__SIGH_HORLOGE.decaler(-86400000); }
+      S.projeterTarifs();
+      R.bRetour = essai(cB); R.bDecide = dB.ok;
+      /* (c) un prix modifié pour un code qui en avait déjà un : la pièce émise garde son prix, la suivante lit le nouveau */
+      const fGarde = essai(cA);
+      const fG0 = JSON.stringify(S.collection('factures').get(fGarde.id).lignes.map((l) => [l.prixUnitaire, l.montant]));
+      const pC = PR.proposerTarif({ code: cA, prixNonAssure: 4800, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 187 (c)' });
+      const dC = pC.ok ? PR.deciderTarif(pC.version.id, 'oui') : pC;
+      window.__SIGH_HORLOGE.decaler(86400000);
+      try { R.cSuivante = essai(cA); } finally { window.__SIGH_HORLOGE.decaler(-86400000); }
+      R.cGarde = JSON.stringify(S.collection('factures').get(fGarde.id).lignes.map((l) => [l.prixUnitaire, l.montant])) === fG0 && fG0 === '[[4200,4200]]';
+      R.cDecide = dC.ok === true; R.cAujourdhui = essai(cA);
+      /* (d) les DEUX prix : un acte assurable dont la colonne assurée est vide ; puis le geste (une version qui porte le prix assuré) */
+      const cD = 'TF187D' + suf;
+      const pD = PR.proposerTarif({ code: cD, prixNonAssure: 5000, etatAssure: 'manquant', dateEffet: jour, motif: 'Sonde 187 (d)', assurable: true, creation: { libelle: 'Acte sonde (d)', famille: 'ACTE', secteur: 'Soins' } });
+      const dD = pD.ok ? PR.deciderTarif(pD.version.id, 'oui') : pD;
+      R.dNon = essai(cD); R.dAss = essai(cD, ptAss);
+      PR.usagesTarif(TA.lire().parCode[cD], jour).forEach((u) => S.collection('factures').archive(u.id, 'Sonde 187'));
+      const pD2 = PR.proposerTarif({ code: cD, prixNonAssure: 5000, etatAssure: 'montant', prixAssure: 3500, dateEffet: jour, motif: 'Sonde 187 (d) : prix assuré' });
+      const dD2 = pD2.ok ? PR.deciderTarif(pD2.version.id, 'oui') : pD2;
+      R.dAssApres = essai(cD, ptAss); R.dDecide = [pD.ok, dD.ok, pD2.ok, dD2.ok, pD2.code || null];
+      /* (e) analyse absente du référentiel : le geste « Nouvelle prestation, famille Analyses, même code » puis Oui */
+      const cL = 'TF187L' + suf;
+      R.eAvant = essai(cL, null, 'analyses');
+      const pL = PR.proposerTarif({ code: cL, prixNonAssure: 2700, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 187 (e)', creation: { libelle: 'Analyse sonde (e)', famille: 'LABO' } });
+      const dL = pL.ok ? PR.deciderTarif(pL.version.id, 'oui') : pL;
+      R.eApres = essai(cL, null, 'analyses'); R.eDecide = dL.ok;
+      /* (e) une proposition refusée laisse la prestation sans version : « sans-version », puis proposer et Oui */
+      const cS = 'TF187S' + suf;
+      const pS = PR.proposerTarif({ code: cS, prixNonAssure: 1900, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 187 (e2)', creation: { libelle: 'Acte sonde (e2)', famille: 'ACTE', secteur: 'Soins' } });
+      PR.deciderTarif(pS.version.id, 'non', { motif: 'Sonde 187 : refus' });
+      R.sAvant = essai(cS);
+      const pS2 = PR.proposerTarif({ code: cS, prixNonAssure: 2100, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 187 (e2) : reproposé' });
+      if (pS2.ok) PR.deciderTarif(pS2.version.id, 'oui');
+      R.sApres = essai(cS);
+      R.codes = { cA, cB, cD, cL, cS };
+      [cA, cB, cD, cS].forEach((c) => { const f = S.collection('actes').get('ACT-' + c); if (f) S.collection('actes').archive(f.id, 'Sonde 187 : fin'); });
+      return R;
+    });
+    const frDemain = a.demain.split('-').reverse().join('/');
+    verifier('(a) Un code sans prix décidé dit « prix à définir » (refus nommé, cause « proposition-en-attente », jamais 0) ; après le Oui à effet d’AUJOURD’HUI, la prescription suivante lit CE prix (4 200), sans rechargement ; la liste de lecture `actes` est projetée à la décision (parité nulle)',
+      a.aAvant.refus === 'PRIX_A_DEFINIR' && a.aAvant.cause === 'proposition-en-attente' && /prix à définir/.test(a.aAvant.texte) && a.aDecide && a.aApres.prix === 4200 && a.aProjection === 4200 && a.aParite === 0, JSON.stringify([a.aAvant, a.aApres, a.aProjection, a.aParite]));
+    verifier('(b) Date d’effet FUTURE : avant le jour dit, « prix à définir, effectif le JJ/MM/AAAA » (cause « version-future », jamais 0 ni un ancien prix inventé) ; le jour dit (horloge avancée), la prescription lit 6 100 SANS rechargement ni tâche, AVANT même la projection ; la projection suit à l’ouverture de l’écran ; l’horloge revenue, « prix à définir » revient',
+      a.bDecide && a.bAvant.refus === 'PRIX_A_DEFINIR' && a.bAvant.cause === 'version-future' && a.bAvant.texte.indexOf('prix à définir, effectif le ' + frDemain) >= 0 && a.bLigneAvant.effectifLe === a.demain
+        && a.bJourDit.prix === 6100 && a.bProjAvant === undefined && a.bProjApres === 6100 && a.bRetour.refus === 'PRIX_A_DEFINIR', JSON.stringify([a.bAvant, a.bJourDit, a.bProjAvant, a.bProjApres, a.bRetour]));
+    verifier('(c) Un prix modifié pour un code qui en avait un (4 200 vers 4 800, à effet de demain) : la pièce déjà émise garde 4 200 au franc près ; aujourd’hui la prescription lit encore 4 200 ; la prochaine, le jour dit, lit 4 800',
+      a.cDecide && a.cGarde && a.cAujourdhui.prix === 4200 && a.cSuivante.prix === 4800, JSON.stringify([a.cDecide, a.cGarde, a.cAujourdhui, a.cSuivante]));
+    verifier('(d) Les deux prix : acte assurable à colonne assurée vide : le non assuré lit 5 000, l’assuré lit « prix assuré à définir » (cause « prix-assure-vide », jamais 5 000) ; après le geste (une version qui porte 3 500 assuré, Oui), l’assuré lit 3 500',
+      a.dNon.prix === 5000 && a.dAss.refus === 'PRIX_A_DEFINIR' && a.dAss.cause === 'prix-assure-vide' && /prix assuré à définir/.test(a.dAss.texte) && a.dAssApres.prix === 3500, JSON.stringify([a.dDecide, a.dNon, a.dAss, a.dAssApres]));
+    verifier('(e) Chaque cause rendue tarifable par son geste : analyse absente du référentiel (« Nouvelle prestation, famille Analyses, même code », puis Oui : 2 700) ; prestation sans version après un Non (reproposer, Oui : 2 100) ; plus aucun « prix à définir » après le geste',
+      a.eAvant.refus === 'PRIX_A_DEFINIR' && a.eAvant.cause === 'absent-du-referentiel' && /famille Analyses de laboratoire, MÊME code/.test(a.eAvant.geste || '') && a.eDecide && a.eApres.prix === 2700 && a.sAvant.cause === 'sans-version' && a.sApres.prix === 2100,
+      JSON.stringify([a.eAvant, a.eApres, a.sAvant, a.sApres]));
+    /* 2. Le catalogue du laboratoire : une analyse créée ici sans prix est signalée, comptée, et « Tarifer » n'existe que pour qui peut proposer un prix */
+    const cat = await page.evaluate(() => {
+      const S = window.SIGH.store, suf = Date.now().toString(36).toUpperCase().slice(-5), code = 'TF187N' + suf;
+      S.collection('analyses').insert({ id: 'ANA-' + code, n: 999, code: code, designation: 'Analyse sonde 187 sans prix', categorie: 'Biochimie', echantillon: 'Sang', delai: '24 h', statut: 'Actif' });
+      return code;
+    });
+    const lireCatalogue = async (code) => {
+      await ouvrir('m5-catalogue.html');
+      return page.evaluate(async (c) => {
+        const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+        const q = [...document.querySelectorAll('#page-content input')].find((i) => /Recherch/i.test(i.getAttribute('placeholder') || ''));
+        if (q) { q.value = c; q.dispatchEvent(new Event('input', { bubbles: true })); } await pause(700);
+        const marque = document.querySelector('[data-sans-prix="' + c + '"]');
+        const kpi = [...document.querySelectorAll('#page-content .kpi')].map((k) => k.textContent.replace(/\s+/g, ' ').trim()).filter((t) => /Analyses sans prix/.test(t))[0] || '';
+        const S = window.SIGH.store, PR = window.SIGH.parcours;
+        const attendu = S.collection('analyses').active().filter((a) => !PR.prixLignePrescription(a.code, null, false, 'analyse').ok).length;
+        return { marque: !!marque, texte: marque ? marque.textContent.replace(/\s+/g, ' ').trim() : null, lien: marque ? !!marque.querySelector('a[href*="cfg-tarifs"]') : null,
+          grise: marque ? !!marque.querySelector('[disabled], .disabled') : null, kpi: kpi, attendu: attendu };
+      }, code);
+    };
+    const vAdmin = await lireCatalogue(cat);
+    await poserSessionServeur({ role: 'laborantin', nom: 'LABO187', nomComplet: 'LABO187', fonction: 'tsl', identifiant: 's187.labo', secteur: 'LAB' });
+    const vLabo = await lireCatalogue(cat);
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN187', nomComplet: 'ADMIN187', fonction: 'direction', identifiant: 's187.admin', secteur: 'DIR' });
+    verifier('Catalogue du laboratoire : une analyse créée ici sans prestation de prix porte « sans prix : à tarifier dans Tarifs et prix » ; l’indicateur « Analyses sans prix » compte exactement les analyses sans prix ; l’administrateur voit la commande « Tarifer » vers « Tarifs et prix »',
+      vAdmin.marque && /sans prix : à tarifier dans Tarifs et prix/.test(vAdmin.texte) && vAdmin.lien === true && vAdmin.grise === false && new RegExp('Analyses sans prix\\s*' + vAdmin.attendu + '(?!\\d)').test(vAdmin.kpi) && vAdmin.attendu >= 1, JSON.stringify(vAdmin));
+    verifier('Le laborantin (qui ne peut pas proposer un prix) lit la même indication, mais la commande « Tarifer » est ABSENTE (ni lien, ni bouton grisé)',
+      vLabo.marque && /sans prix : à tarifier dans Tarifs et prix/.test(vLabo.texte) && vLabo.lien === false && vLabo.grise === false, JSON.stringify(vLabo));
+    await ouvrir('cfg-tarifs.html');
+    await page.evaluate((code) => {
+      const PR = window.SIGH.parcours, C = window.SIGH.core;
+      const p = PR.proposerTarif({ code: code, prixNonAssure: 3300, etatAssure: 'unique', dateEffet: C.iso(C.aujourdhui()), motif: 'Sonde 187 : tarifer l’analyse', creation: { libelle: 'Analyse sonde 187', famille: 'LABO' } });
+      if (p.ok) PR.deciderTarif(p.version.id, 'oui');
+    }, cat);
+    const vApres = await lireCatalogue(cat);
+    verifier('Après le geste (Nouvelle prestation famille Analyses, même code, Oui), l’analyse n’est plus « sans prix » : la ligne lit 3 300 et l’indicateur décroît d’une unité',
+      vApres.marque === false && vApres.attendu === vAdmin.attendu - 1 && new RegExp('Analyses sans prix\\s*' + vApres.attendu + '(?!\\d)').test(vApres.kpi), JSON.stringify(vApres));
+    await page.evaluate((code) => { window.SIGH.store.collection('analyses').archive('ANA-' + code, 'Sonde 187 : fin'); }, cat);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT TARIF-FIX FIN */
 
 
 

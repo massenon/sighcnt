@@ -3767,8 +3767,10 @@
           {
             name: 'acteCode', label: 'Type de pansement', type: 'select', required: true,
             options: actesPansement().map(function (a) {
+              /* LOT TARIF-FIX : lu au référentiel à la date du jour, « prix à définir » dit tel quel (jamais la projection, jamais 0). */
+              var r = PR.prixLignePrescription(a.code, null, false, 'acte');
               return { value: a.code, label: a.libelle,
-                detail: a.prix != null ? C.money(a.prix) + ' la séance' : 'tarif à valider' };
+                detail: r.ok ? C.money(r.montant) + ' la séance' : (r.effectifLe ? 'prix à définir, effectif le ' + C.dateFR(r.effectifLe) : 'prix à définir') };
             }),
           },
           { name: 'seances', label: 'Nombre de séances', type: 'number', min: 1, max: 12, value: 1, required: true,

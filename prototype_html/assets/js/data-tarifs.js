@@ -269,6 +269,11 @@
     ['CERT-CBV', 'Certificat médical initial / de coups et blessures volontaires', 20000, 20000, 'sos'],
     ['CERT-VC', 'Certificat médical de visite et de contre-visite', 8000, 8000, 'sos', { source: 'Mention manuscrite portée sur la grille des certificats' }],
     ['CERT-APT', 'Certificat médical d’aptitude', 7000, 7000, 'sos'],
+    /* LOT TARIF-FIX (Direction, 14/11 et 15/11/2026) : la note de la Direction signale DEUX certificats distincts sous le code CERT-APT, « Certificat médical d’aptitude »
+       à 7 000 (celui que la caisse lit, il garde CERT-APT) et « Certificat d’aptitude » à 5 000. Mesuré : la seconde ligne n'est ni dans la grille imprimée ni dans la
+       semence (seule la note la donne). Elle reçoit un code propre. Convention lue dans la semence : CERT- suivi du sigle du type de pièce privé du « CM » de « certificat médical » (CMDPS, CMCBV, CMVC), le sigle entier pour une
+       pièce qui n'est pas un certificat médical (ATG) ; « Certificat d’aptitude » donne CA. CODE PROPOSÉ, À VALIDER par la Direction (DECISIONS-A-VALIDER, section AJ). */
+    ['CERT-CA', 'Certificat d’aptitude', 5000, 5000, 'sos', { source: 'Note de la Direction du 14/11/2026 (deux certificats distincts, décision du 15/11/2026) : code proposé, à valider' }],
   ];
 
   /* ==========================================================================
@@ -491,6 +496,82 @@
       return { na: na, pa: pa, etatNonAssure: v.etatNonAssure || 'montant', etatAssure: v.etatAssure, nc: v.etatAssure === 'nc', version: v.version, dateEffet: v.dateEffet || null, provisoire: v.provisoire === true, vrs: v };
     }
 
+    /* ---- LE PRIX D'UNE LIGNE DE PRESCRIPTION (lot TARIF-FIX, 16/11/2026) -----------------------------------------------------------------------------------------
+       La prescription d'actes et d'analyses rendait 0 pour une majorité de codes (mesure du lot TARIF-FIX) : un code hors de l'espace des actes, une prestation sans
+       version en vigueur, une colonne vide tombaient sur `prix || 0`. « Non calculable n'est pas zéro » : cette fonction rend SOIT un montant strictement positif,
+       SOIT « prix à définir » avec sa CAUSE, son motif lisible et le GESTE qui rend la ligne tarifable. Elle lit l'index à la date du JOUR de la pièce, à chaque
+       appel : une version validée dont la date d'effet arrive est lue ce jour-là, sans tâche de minuit ni redémarrage.
+       `voie` : 'acte' (espace des actes d'abord, puis le code ou l'alias de toute prestation) ou 'analyse' (espace des analyses d'abord, puis le code ou l'alias).
+       La colonne est celle que décide la carte (RG-09). La règle historique de l'acte est gardée (la colonne assurée ne vaut que pour un acte `assurable === true`,
+       sinon le prix non assuré) ; mais une colonne assurée NON RENSEIGNÉE (`manquant`) n'est plus remplacée par le prix non assuré : la ligne dit « prix assuré à
+       définir », et inversement un prix non assuré absent ne prend jamais le prix assuré. */
+    function jourFr(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : String(iso || ''); }
+    var GESTE_PROPOSER = 'Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.';
+    function prixDeLigne(h, code, jour, assure, voie) {
+      var c = String(code == null ? '' : code);
+      var analyse = voie === 'analyse';
+      var p = h ? ((analyse ? h.parAnalyse[c] : h.parActe[c]) || h.parCode[c] || null) : null;
+      var lib = p ? (p.libelle || c) : c;
+      function aDefinir(cause, motif, geste, extra) {
+        return Object.assign({ ok: false, aDefinir: true, montant: null, code: 'PRIX_A_DEFINIR', cause: cause, prestation: c, libelle: lib,
+          motif: '« ' + c + ' » ' + lib + ' : ' + motif, geste: geste }, extra || {});
+      }
+      if (!h) return aDefinir('referentiel-absent', 'prix à définir (le référentiel de prix n’est pas chargé)', 'Recharger la page.');
+      if (!p) {
+        return aDefinir('absent-du-referentiel', 'prix à définir (aucune prestation de prix ne porte ce code)', analyse
+          ? 'Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).'
+          : 'Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.');
+      }
+      var j = jourDe(jour), v = enVigueur(h, p.code, j);
+      if (!v) {
+        var futures = (h.vers[p.code] || []).filter(function (x) { return x.statut === 'valide' && x.dateEffet && x.dateEffet > j; })
+          .sort(function (a, b) { return a.dateEffet < b.dateEffet ? -1 : a.dateEffet > b.dateEffet ? 1 : 0; });
+        if (futures.length) {
+          return aDefinir('version-future', 'prix à définir, effectif le ' + jourFr(futures[0].dateEffet),
+            'Le prix décidé prend effet le ' + jourFr(futures[0].dateEffet) + ' : la ligne le lira ce jour-là. Pour l’appliquer plus tôt, proposer dans « Tarifs et prix » une version datée d’aujourd’hui et la faire décider (Oui).',
+            { effectifLe: futures[0].dateEffet });
+        }
+        var attente = (h.vers[p.code] || []).filter(function (x) { return x.statut === 'propose'; })[0];
+        if (attente) return aDefinir('proposition-en-attente', 'prix à définir (une proposition attend la décision)', 'Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.');
+        return aDefinir('sans-version', 'prix à définir (aucune version de prix décidée)', GESTE_PROPOSER);
+      }
+      var na = v.etatNonAssure === 'manquant' ? null : v.prixNonAssure;
+      var etatA = v.etatAssure, montant, tarif = 'non assuré', motif = null, colonneAssuree = false;
+      if (!assure) montant = na;
+      else if (!analyse && h.parActe[c] === p) {
+        /* La règle historique de l'acte : la colonne assurée ne vaut que pour un acte assurable ; NON COUVERT et prix unique se facturent au non assuré. */
+        if (p.assurable === true && etatA === 'montant') { montant = v.prixAssure; tarif = 'assuré'; colonneAssuree = true; }
+        else if (p.assurable === true && etatA === 'manquant') { montant = null; tarif = 'assuré'; colonneAssuree = true; }
+        else montant = na;
+      } else if (analyse && h.parAnalyse[c] === p) {
+        if (etatA === 'montant') { montant = v.prixAssure; tarif = 'assuré'; colonneAssuree = true; }
+        else if (etatA === 'manquant' && na != null) { montant = null; tarif = 'assuré'; colonneAssuree = true; }
+        else montant = na;
+      } else {
+        var r = resoudre(h, p, j, true);
+        montant = r.montant; tarif = r.tarif; motif = r.motif || null; colonneAssuree = r.tarif === 'assuré';
+      }
+      if (montant == null || !(Number(montant) > 0)) {
+        if (colonneAssuree && na != null) {
+          return aDefinir('prix-assure-vide', 'prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)',
+            'Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).', { version: v.version, colonne: 'assuré' });
+        }
+        return aDefinir('prix-non-assure-vide', 'prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)', GESTE_PROPOSER, { version: v.version, colonne: 'non assuré' });
+      }
+      return { ok: true, montant: Number(montant), tarif: tarif, motif: motif, prestation: p.code, libelle: lib, famille: p.famille, version: v.version, dateEffet: v.dateEffet || null };
+    }
+
+    /* UN CODE NE SE RÉUTILISE PAS (lot TARIF-FIX) : la comparaison se fait sur le code NORMALISÉ (espaces retirés aux bords, majuscules), dans les trois espaces, les
+       alias, et les prestations ARCHIVÉES (un code archivé reste celui d'anciennes pièces). Rend la prestation qui le porte déjà, ou null. */
+    function codeNormalise(code) { return String(code == null ? '' : code).trim().toUpperCase(); }
+    function codePris(tarifs, code) {
+      var n = codeNormalise(code);
+      if (!n) return null;
+      return (tarifs || []).filter(function (p) {
+        return [p.code, p.codeActe, p.codeGrille, p.codeAnalyse].concat(p.codesAlias || []).some(function (x) { return x != null && codeNormalise(x) === n; });
+      })[0] || null;
+    }
+
     /** La forme de l'ancienne entrée de grille : la SEMENCE (libellés, arbitrages, colonnes imprimées) superposée au prix en vigueur. */
     function entreeGrille(h, p, semence) {
       var s = instantane(h, p, null);
@@ -681,6 +762,7 @@
     return {
       brancher: brancher, invalider: invalider, modeSemence: modeSemence, lire: lire, indexer: indexer, enVigueur: enVigueur, resoudre: resoudre,
       instantane: instantane, entreeGrille: entreeGrille, jourDe: jourDe, migrer: migrer, normLibelle: normLib,
+      prixDeLigne: prixDeLigne, codeNormalise: codeNormalise, codePris: codePris, jourFr: jourFr,
       correctifActe: correctifActe, correctifAnalyse: correctifAnalyse, correctifGrille: correctifGrille,
       correctifProduit: correctifProduit, prixVenteProduit: prixVenteProduit, prixAchatDe: prixAchatDe, versionProduit: versionProduit, migrerProduits: migrerProduits, CATEGORIE_SANS_MARGE: CATEGORIE_SANS_MARGE,
       semence: null, DATE_SEMENCE: DATE_SEMENCE, MOTIF_GRILLE_ANALYSES: MOTIF_GRILLE_ANALYSES, MOTIF_NC: MOTIF_NC,
