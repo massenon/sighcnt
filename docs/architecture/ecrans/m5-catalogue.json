@@ -27,6 +27,7 @@
   "Analyses au catalogue",
   "Catégories",
   "Tarif moyen",
+  "Analyses sans prix",
   "Tarifs à confirmer"
  ],
  "cartes": [],
@@ -55,5 +56,5 @@
  ],
  "champs": [],
  "nbTableaux": 1,
- "nbKpis": 4
+ "nbKpis": 5
 }

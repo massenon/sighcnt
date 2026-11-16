@@ -75,6 +75,13 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
     for (const nom of COLLECTIONS.filter((n) => !FILTRE.length || FILTRE.includes(n))) {
       const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
       if (nom === 'modulesActifs' && !SOBRE) lignes.push(...FERMETURES_PROPRES_AU_POSTE);
+      /* LOT TARIF-FIX : les prestations de prix des PRODUITS (famille PRODUIT, version 1 « reprise ») ne sont pas livrées : la maquette les pose à sa projection, le poste les pose
+         lui-même au démarrage de la mère (`TarifsPoste.assurerProduits`, lot TFIN-2). Les exporter changerait l'origine de leur version 1 au poste. */
+      if (nom === 'tarifs' || nom === 'versionsTarif') {
+        const produits = await m.page.evaluate(() => SIGH.store.collection('tarifs').all().filter((t) => t.famille === 'PRODUIT').map((t) => t.code));
+        const exclus = new Set(produits);
+        for (let i = lignes.length - 1; i >= 0; i--) if (exclus.has(lignes[i].code) && (nom === 'versionsTarif' || lignes[i].famille === 'PRODUIT')) lignes.splice(i, 1);
+      }
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));
       console.log(`  ${nom} : ${lignes.length} fiches, ${(fs.statSync(path.join(SORTIE, nom + '.json')).size / 1024).toFixed(0)} Ko`);
     }

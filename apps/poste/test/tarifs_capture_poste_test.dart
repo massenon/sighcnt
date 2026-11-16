@@ -84,7 +84,9 @@ void main() {
     };
     // --- La comparaison avec le relevé d'AVANT le référentiel (versionné : `test/fixtures/tarifs/prix-avant-t6.json`) -----------------------------------------------------------
     final avant = (jsonDecode(File('test/fixtures/tarifs/prix-avant-t6.json').readAsStringSync()) as Map).cast<String, Object?>();
-    expect(avant['codes'], codes.length, reason: 'mêmes codes, mêmes espaces (grille, actes, analyses)');
+    // LOT TARIF-FIX : un code de plus, CERT-CA « Certificat d’aptitude » (décision de la Direction du 15/11/2026, deux certificats distincts) ; le relevé d'avant ne le porte pas.
+    expect(codes.length, (avant['codes'] as num) + 1, reason: 'mêmes codes, mêmes espaces (grille, actes, analyses), plus CERT-CA');
+    expect(codes.contains('CERT-CA'), isTrue);
     final apres = jsonDecode(jsonEncode({for (final e in voies.entries) e.key: e.value})) as Map;
     // Les codes de GRILLE dont le prix lu change PAR CONSTRUCTION (décision T2 du 11/11) : la ligne LABO de la grille imprimée est fusionnée avec l'analyse de même libellé, dont le prix
     // FACTURÉ aujourd'hui est la version 1 ; le prix de la grille devient la version 2 PROPOSÉE. Aucune voie ne les adresse (les soins sont des actes AMI, l'imagerie des examens IMG).
@@ -95,11 +97,28 @@ void main() {
     expect(attendus.length, 39);
     final inattendus = <String>[];
     final attendusVus = <String, int>{};
+    // LOT TARIF-FIX : la prescription d'actes et d'analyses ne rend plus JAMAIS un zéro silencieux. Sur ces deux voies, une ligne d'avant à 0 devient un prix strictement positif
+    // (le référentiel unique est lu hors de l'espace de la voie : certificat, consultation…) ou un refus nommé « Prix à définir » ; toute ligne d'avant tarifée reste IDENTIQUE.
+    final zerosLeves = <String, int>{};
+    bool zero(Object? x) => x is List && x.isNotEmpty && x.first == 0;
+    bool leve(Object? x) => (x is List && x.isNotEmpty && x.first is num && (x.first as num) > 0) || (x is String && x.startsWith('ERREUR:Prix à définir'));
     (avant['voies'] as Map).forEach((voie, anciennes) {
       for (final c in (anciennes as Map).keys) {
         final ancien = jsonEncode(anciennes[c]);
         final nouveau = jsonEncode((apres[voie] as Map)[c]);
         if (ancien == nouveau) continue;
+        if ((voie == 'prescrire.acte' || voie == 'prescrire.analyse') && anciennes[c] is List && ((apres[voie] as Map)[c]) is List) {
+          final a = anciennes[c] as List, n = (apres[voie] as Map)[c] as List;
+          var toutLeve = true;
+          for (var i = 0; i < a.length; i++) {
+            if (jsonEncode(a[i]) == jsonEncode(n[i])) continue;
+            if (!(zero(a[i]) && leve(n[i]))) toutLeve = false;
+          }
+          if (toutLeve) {
+            zerosLeves[voie as String] = (zerosLeves[voie] ?? 0) + 1;
+            continue;
+          }
+        }
         if (attendus.contains(c)) {
           attendusVus[voie as String] = (attendusVus[voie] ?? 0) + 1;
         } else {
@@ -111,9 +130,17 @@ void main() {
     // Les écarts ATTENDUS ne touchent que les trois voies qui lisent l'espace des codes de grille.
     expect(attendusVus.keys.toSet(), {'accesseur.csTarifPrix', 'soins', 'imagerie'});
     expect(attendusVus.values.toSet(), {39}, reason: 'les 39 lignes LABO de la grille fusionnées avec leur analyse, sur chacune des trois voies');
-    // La caisse manuelle, les certificats, la prescription d'actes et d'analyses : IDENTIQUES au franc près.
-    for (final voie in ['prescrire.acte', 'prescrire.analyse', 'caisse.acte', 'caisse.analyse', 'caisse.hospitalisation', 'certificats']) {
+    // La caisse manuelle et les certificats : IDENTIQUES au franc près. La prescription d'actes et d'analyses : identique partout où elle était tarifée ; ses zéros sont levés.
+    for (final voie in ['caisse.acte', 'caisse.analyse', 'caisse.hospitalisation', 'certificats']) {
       expect(jsonEncode((avant['voies'] as Map)[voie]), jsonEncode(apres[voie]), reason: voie);
+    }
+    expect(zerosLeves['prescrire.acte'] ?? 0, greaterThan(150), reason: 'les codes qui donnaient 0 à la prescription d’actes ne le donnent plus');
+    for (final voie in ['prescrire.acte', 'prescrire.analyse']) {
+      for (final e in (apres[voie] as Map).entries) {
+        for (final x in e.value as List) {
+          expect(zero(x), isFalse, reason: '$voie ${e.key} : jamais une ligne à 0');
+        }
+      }
     }
     // Le détail d'un écart attendu : le prix lu est celui que la caisse facturait pour l'analyse (version 1), non plus le prix imprimé de la grille.
     final akop = (apres['accesseur.csTarifPrix'] as Map)['LAB-AKOP'] as List;

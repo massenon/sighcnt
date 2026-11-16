@@ -17,6 +17,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../core/jetons_shell.dart';
 import 'contexte_ecran.dart';
 import 'contexte_autonome.dart';
+import '../donnees/tarifs_poste.dart';
 import 'droit_fileul.dart';
 import '../modules/auth/acc_session.dart';
 import 'acces_rapides.dart';
@@ -709,6 +710,10 @@ class _CoquePosteState extends State<CoquePoste> {
     }
     widget.magasin?.poserActeur(_agent());
     if (widget.horloge != null) widget.magasin?.horloge = widget.horloge!;
+    // LOT TARIF-FIX : le CHANGEMENT DE JOUR sans tâche de minuit (constat de la section AF). Les listes de lecture (`actes`, `analyses`, `catalogueTarifs`) sont ramenées
+    // au prix en vigueur du jour à l'ouverture d'un écran, sur la mère (un fileul les reçoit d'elle) ; rien quand la projection du jour est déjà faite. Les prix de
+    // prescription, eux, se lisent à la date de la pièce à chaque lecture (`TarifsPoste.ligne`) : ils n'attendent pas cette projection.
+    if (widget.magasin != null && widget.config.estMere) TarifsPoste.projeterSiNouveauJour(widget.magasin!, (widget.horloge ?? DateTime.now)());
     return Builder(builder: (context) {
       // Les droits sont ceux de l'ÉCRAN (une surcharge d'écran l'emporte sur son module) ; un servant hérite du registre qu'il alimente.
       final droit = _droitDe(id);

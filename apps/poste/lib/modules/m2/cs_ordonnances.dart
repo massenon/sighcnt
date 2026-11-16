@@ -474,12 +474,25 @@ class _EtatOrdonnanceNouvelle extends State<EcranOrdonnanceNouvelle> {
       mMed += nombreOuZero(m.collection('produits').parId(l['produitId'])?['prixAchat']) *
           nombreOuZero(l['quantite']);
     }
+    // LOT TARIF-FIX : « non calculable n'est pas zéro ». Une ligne à prix à définir rend le total non calculable et se nomme.
+    final aDefinir = <String>[];
     for (final code in (_complements['analyses'] as List? ?? const [])) {
-      mAna += nombreOuZero(TarifsPoste.prixAnalyse(m, code, aujourdhui: c.aujourdhui));
+      final r = TarifsPoste.ligne(m, code, aujourdhui: c.aujourdhui, voie: 'analyse');
+      if (r.ok) {
+        mAna += r.montant!;
+      } else {
+        aDefinir.add(r.prestation);
+      }
     }
     for (final code in (_complements['actes'] as List? ?? const [])) {
-      mAct += nombreOuZero(TarifsPoste.prixActe(m, code, aujourdhui: c.aujourdhui));
+      final r = TarifsPoste.ligne(m, code, aujourdhui: c.aujourdhui, voie: 'acte');
+      if (r.ok) {
+        mAct += r.montant!;
+      } else {
+        aDefinir.add(r.prestation);
+      }
     }
+    if (aDefinir.isNotEmpty) return 'Non calculable : prix à définir pour ${aDefinir.join(', ')} (à tarifier dans « Tarifs et prix »)';
     return '${money(mMed + mAna + mAct)}  (médicaments ${money(mMed, avecDevise: false)} · analyses ${money(mAna, avecDevise: false)} · actes ${money(mAct, avecDevise: false)})';
   }
 

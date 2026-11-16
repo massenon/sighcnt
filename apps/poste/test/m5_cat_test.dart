@@ -152,6 +152,21 @@ void main() {
       expect(find.byTooltip('Tarif à confirmer'), findsWidgets);
     });
 
+    cas('LOT TARIF-FIX : une analyse créée au catalogue sans prestation de prix est signalée (« sans prix : à tarifier dans Tarifs et prix »), comptée (« Analyses sans prix »), et la commande « Tarifer » n’existe que pour qui peut proposer un prix', (t) async {
+      final m = jeu();
+      collectionAnalyses(m).inserer({'id': 'ANA-TFN1', 'n': 0, 'code': 'TFN1', 'designation': 'Analyse de sonde sans prix', 'categorie': 'Biochimie', 'echantillon': 'Sang', 'delai': '24 h', 'statut': 'Actif'});
+      await ouvrir(t, m, 'm5-catalogue', role: 'admin');
+      expect(kpi(t, 'Analyses sans prix'), '1');
+      expect(find.byKey(const ValueKey('sans-prix-TFN1')), findsOneWidget);
+      expect(find.text('sans prix : à tarifier dans Tarifs et prix'), findsWidgets);
+      expect(find.byKey(const ValueKey('tarifer-TFN1')), findsOneWidget, reason: 'l’administrateur peut proposer un prix');
+      expect(find.byKey(const ValueKey('sans-prix-L01')), findsNothing, reason: 'une analyse tarifée lit son prix');
+      await ouvrir(t, m, 'm5-catalogue', role: 'laborantin');
+      expect(find.byKey(const ValueKey('sans-prix-TFN1')), findsOneWidget, reason: 'le laborantin lit la même indication');
+      expect(find.byKey(const ValueKey('tarifer-TFN1')), findsNothing, reason: 'la commande est ABSENTE sans le droit, jamais grisée');
+      expect(find.widgetWithText(BoutonSigh, 'Tarifer'), findsNothing);
+    });
+
     cas('« Imprimer le catalogue » ouvre l\'aperçu : 48 désignations, tarifs en vigueur', (t) async {
       await ouvrir(t, jeu(), 'm5-catalogue');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Imprimer le catalogue'));

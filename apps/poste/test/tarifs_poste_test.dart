@@ -29,10 +29,10 @@ DemandeProposition prop(String code, num prix, {String? date, bool valider = fal
 
 void main() {
   group('le jeu livré porte le référentiel', () {
-    test('201 prestations, 240 versions ; l\'accesseur lit les trois espaces de codes', () {
+    test('202 prestations, 241 versions (CERT-CA, lot TARIF-FIX) ; l\'accesseur lit les trois espaces de codes', () {
       final m = jeu();
       final h = TarifsPoste.lire(m);
-      expect([h.tarifs.length, h.versions.length], [201, 240]);
+      expect([h.tarifs.length, h.versions.length], [202, 241]);
       expect(TarifsPoste.prix(m, 'SIV', null, false, aujourdhui: auj).montant, TarifsPoste.prix(m, 'SO02', null, false, aujourdhui: auj).montant, reason: 'SIV est l\'alias de grille de SO02');
       expect(TarifsPoste.prixAnalyse(m, 'L01', aujourdhui: auj), 2000);
       expect(TarifsPoste.prixActe(m, 'MG01', aujourdhui: auj, assure: true), 3000);
@@ -229,7 +229,7 @@ void main() {
       expect(m.appliquerDemandes(), 2);
       expect(mere.collection('propositionsTarif').parId('DTF1')!['resultatCode'], 'PROPOSITION_RESERVEE');
       expect(mere.collection('propositionsTarif').parId('DTF2')!['resultatCode'], 'VALIDATION_RESERVEE', reason: 'valider en un geste n\'est pas modifier la fiche');
-      expect(mere.collection('versionsTarif').toutes.length, 240, reason: 'aucune version écrite');
+      expect(mere.collection('versionsTarif').toutes.length, 241, reason: 'aucune version écrite');
     });
 
     test('sur un fileul, « Oui à tout » dépose une demande par ligne : jamais sans la comparaison affichée', () {

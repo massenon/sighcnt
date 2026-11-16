@@ -37,7 +37,7 @@ void main() {
     for (final k in ['Prestations tarifées', 'Prix en vigueur', 'Propositions en attente', 'Sans prix en vigueur']) {
       expect(find.text(k), findsOneWidget, reason: k);
     }
-    expect(find.text('201'), findsWidgets, reason: 'les 201 prestations du référentiel');
+    expect(find.text('202'), findsWidgets, reason: 'les 202 prestations du référentiel (CERT-CA, lot TARIF-FIX)');
     expect(find.text('39'), findsWidgets, reason: 'les 39 prix de la grille imprimée des analyses sont des PROPOSITIONS à décider');
     for (final o in ['Prestations', 'Analyses', 'Imagerie', 'Produits', 'Alertes', 'Historique']) {
       expect(find.text(o), findsWidgets, reason: o);
