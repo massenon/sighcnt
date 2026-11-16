@@ -24,8 +24,10 @@ void main() {
     for (final p in m.collection('produits').actives.toList()) {
       m.collection('produits').mettreAJour(p['id'], {'stock': 100000});
     }
+    // Lot PARAM-CLINIQUE : le statut d'un lot se RECALCULE au jour selon le préavis de péremption lu (le statut écrit ne suffit plus) : la sonde pose une
+    // péremption lointaine, hors de tout préavis.
     for (final l in m.collection('lots').actives.toList()) {
-      m.collection('lots').mettreAJour(l['id'], {'statut': 'actif'});
+      m.collection('lots').mettreAJour(l['id'], {'statut': 'actif', 'datePeremption': '2099-12-31'});
     }
     await ouvrir(t, m, 'dash-stock', role: 'stock');
     expect(find.byKey(const Key('tba:alerte:m6-alertes')), findsNothing);

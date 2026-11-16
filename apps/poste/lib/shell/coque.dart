@@ -741,7 +741,7 @@ class _CoquePosteState extends State<CoquePoste> {
               module: e.module,
               defilable: w is EcranMaquette ? true : false,
               description: w is EcranMaquette ? w.description : null,
-              regle: _regleAvecMere(id, w is EcranMaquette ? w.regle : null),
+              regle: _regleAvecMere(id, w is EcranMaquette ? w.regleDe(context) : null),
               actions: _actions(context, e, ruban, w),
               child: w);
         }),

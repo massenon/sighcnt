@@ -149,16 +149,19 @@
     {
       code: 'lots_peremption', categorie: 'metier', domaine: 'Pharmacie',
       lire: function () {
+        /* Lot PARAM-CLINIQUE : le statut se LIT à la date, selon le préavis de péremption en vigueur (paramètre de clinique daté, RG-05), jamais le statut écrit à la saisie. */
         return S.collection('lots').active()
-          .filter(function (l) { return l.statut === 'perime' || l.statut === 'alerte'; })
-          .map(function (l) {
+          .map(function (l) { return { l: l, st: D.statutLotALaDate(l, C.aujourdhui()) }; })
+          .filter(function (x) { return x.st === 'perime' || x.st === 'alerte'; })
+          .map(function (x) {
+            var l = x.l;
             return {
               cle: 'lot:' + l.id,
-              priorite: l.statut === 'perime' ? 'critique' : 'important',
-              titre: l.statut === 'perime'
+              priorite: x.st === 'perime' ? 'critique' : 'important',
+              titre: x.st === 'perime'
                 ? 'Lot périmé : ' + (l.produit || l.numero)
                 : 'Péremption proche : ' + (l.produit || l.numero),
-              detail: l.statut === 'perime'
+              detail: x.st === 'perime'
                 ? 'À sortir du rayon et à déclarer en perte.'
                 : 'Appliquer le principe FEFO (RG-05).',
               lien: 'm6-lots',

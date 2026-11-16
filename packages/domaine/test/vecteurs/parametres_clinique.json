@@ -1,0 +1,1392 @@
+{
+ "ecran": [
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "texte": "90 jours"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "texte": "30 jours"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "texte": "90 jours"
+  }
+ ],
+ "definitions": [
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "defaut": 90,
+   "min": 1,
+   "max": 730,
+   "unite": "jours",
+   "libelle": "Préavis de péremption des lots (jours)"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "defaut": 30,
+   "min": 1,
+   "max": 365,
+   "unite": "jours",
+   "libelle": "Balance âgée : fin de la première tranche (jours)"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "defaut": 90,
+   "min": 2,
+   "max": 730,
+   "unite": "jours",
+   "libelle": "Balance âgée : fin de la deuxième tranche (jours)"
+  }
+ ],
+ "semence": [
+  {
+   "id": "PCL-001",
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 90,
+   "dateEffet": null
+  },
+  {
+   "id": "PCL-002",
+   "cle": "creances.trancheCourteJours",
+   "valeur": 30,
+   "dateEffet": null
+  },
+  {
+   "id": "PCL-003",
+   "cle": "creances.trancheLongueJours",
+   "valeur": 90,
+   "dateEffet": null
+  }
+ ],
+ "controles": [
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 90,
+   "autres": {},
+   "code": null
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 1,
+   "autres": {},
+   "code": null
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 730,
+   "autres": {},
+   "code": null
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 0,
+   "autres": {},
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 731,
+   "autres": {},
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 12.5,
+   "autres": {},
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": "",
+   "autres": {},
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": null,
+   "autres": {},
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": "45",
+   "autres": {},
+   "code": null
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": "abc",
+   "autres": {},
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": -3,
+   "autres": {},
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "valeur": 45,
+   "autres": {
+    "creances.trancheLongueJours": 90
+   },
+   "code": null
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "valeur": 90,
+   "autres": {
+    "creances.trancheLongueJours": 90
+   },
+   "code": "TRANCHES_INCOHERENTES"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "valeur": 100,
+   "autres": {
+    "creances.trancheLongueJours": 90
+   },
+   "code": "TRANCHES_INCOHERENTES"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "valeur": 366,
+   "autres": {
+    "creances.trancheLongueJours": 400
+   },
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "valeur": 30,
+   "autres": {
+    "creances.trancheCourteJours": 30
+   },
+   "code": "TRANCHES_INCOHERENTES"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "valeur": 31,
+   "autres": {
+    "creances.trancheCourteJours": 30
+   },
+   "code": null
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "valeur": 1,
+   "autres": {
+    "creances.trancheCourteJours": 30
+   },
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "valeur": 731,
+   "autres": {
+    "creances.trancheCourteJours": 30
+   },
+   "code": "PARAMETRE_HORS_BORNES"
+  },
+  {
+   "cle": "stock.inconnu",
+   "valeur": 10,
+   "autres": {},
+   "code": "PARAMETRE_CLINIQUE_INCONNU"
+  }
+ ],
+ "tranches": [
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": -2,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 0,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 1,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 2,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 29,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 30,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 31,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 44,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 45,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 46,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 59,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 60,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 61,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 89,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 90,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 91,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 364,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 365,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 366,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "jours": 1000,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": -2,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 0,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 1,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 2,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 29,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 30,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 31,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 44,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 45,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 46,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 59,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 60,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 61,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 89,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 90,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 91,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 364,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 365,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 366,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "jours": 1000,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": -2,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 0,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 1,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 2,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 29,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 30,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 31,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 44,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 45,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 46,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 59,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 60,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 61,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 89,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 90,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 91,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 364,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 365,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 366,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "jours": 1000,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": -2,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 0,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 1,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 2,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 29,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 30,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 31,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 44,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 45,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 46,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 59,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 60,
+   "tranche": "moins30"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 61,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 89,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 90,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 91,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 364,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 365,
+   "tranche": "30a90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 366,
+   "tranche": "plus90"
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "jours": 1000,
+   "tranche": "plus90"
+  }
+ ],
+ "libelles": [
+  {
+   "t": {
+    "courte": 30,
+    "longue": 90
+   },
+   "libelles": {
+    "moins30": "30 jours ou moins",
+    "30a90": "De 31 à 90 jours",
+    "plus90": "Au-delà de 90 jours",
+    "courts": {
+     "moins30": "≤ 30 j",
+     "30a90": "31 à 90 j",
+     "plus90": "> 90 j"
+    }
+   }
+  },
+  {
+   "t": {
+    "courte": 45,
+    "longue": 90
+   },
+   "libelles": {
+    "moins30": "45 jours ou moins",
+    "30a90": "De 46 à 90 jours",
+    "plus90": "Au-delà de 90 jours",
+    "courts": {
+     "moins30": "≤ 45 j",
+     "30a90": "46 à 90 j",
+     "plus90": "> 90 j"
+    }
+   }
+  },
+  {
+   "t": {
+    "courte": 1,
+    "longue": 2
+   },
+   "libelles": {
+    "moins30": "1 jours ou moins",
+    "30a90": "De 2 à 2 jours",
+    "plus90": "Au-delà de 2 jours",
+    "courts": {
+     "moins30": "≤ 1 j",
+     "30a90": "2 à 2 j",
+     "plus90": "> 2 j"
+    }
+   }
+  },
+  {
+   "t": {
+    "courte": 60,
+    "longue": 365
+   },
+   "libelles": {
+    "moins30": "60 jours ou moins",
+    "30a90": "De 61 à 365 jours",
+    "plus90": "Au-delà de 365 jours",
+    "courts": {
+     "moins30": "≤ 60 j",
+     "30a90": "61 à 365 j",
+     "plus90": "> 365 j"
+    }
+   }
+  }
+ ],
+ "versions": [
+  {
+   "id": "PCL-001",
+   "statut": "actif",
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 90,
+   "dateEffet": null,
+   "creeLe": "2026-11-16"
+  },
+  {
+   "id": "PCL-002",
+   "statut": "actif",
+   "cle": "creances.trancheCourteJours",
+   "valeur": 30,
+   "dateEffet": null,
+   "creeLe": "2026-11-16"
+  },
+  {
+   "id": "PCL-003",
+   "statut": "actif",
+   "cle": "creances.trancheLongueJours",
+   "valeur": 90,
+   "dateEffet": null,
+   "creeLe": "2026-11-16"
+  },
+  {
+   "id": "PCL-004",
+   "statut": "actif",
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 120,
+   "dateEffet": "2026-11-20",
+   "creeLe": "2026-11-16T10:00:00.000Z"
+  },
+  {
+   "id": "PCL-005",
+   "statut": "actif",
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 60,
+   "dateEffet": "2026-12-01",
+   "creeLe": "2026-11-16T10:05:00.000Z"
+  },
+  {
+   "id": "PCL-006",
+   "statut": "actif",
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 75,
+   "dateEffet": "2026-12-01",
+   "creeLe": "2026-11-16T10:06:00.000Z"
+  },
+  {
+   "id": "PCL-007",
+   "statut": "archive",
+   "cle": "stock.delaiPeremptionJours",
+   "valeur": 5,
+   "dateEffet": "2026-11-18",
+   "creeLe": "2026-11-16T10:07:00.000Z"
+  },
+  {
+   "id": "PCL-008",
+   "statut": "actif",
+   "cle": "creances.trancheCourteJours",
+   "valeur": 45,
+   "dateEffet": "2026-11-25",
+   "creeLe": "2026-11-16T10:08:00.000Z"
+  }
+ ],
+ "resolutions": [
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-01-01",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-001"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-01-01",
+   "valeur": 30,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-002"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-01-01",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-11-16",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-001"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-11-16",
+   "valeur": 30,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-002"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-11-16",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-11-18",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-001"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-11-18",
+   "valeur": 30,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-002"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-11-18",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-11-19",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-001"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-11-19",
+   "valeur": 30,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-002"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-11-19",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-11-20",
+   "valeur": 120,
+   "dateEffet": "2026-11-20",
+   "origine": "version",
+   "versionId": "PCL-004"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-11-20",
+   "valeur": 30,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-002"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-11-20",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-11-25",
+   "valeur": 120,
+   "dateEffet": "2026-11-20",
+   "origine": "version",
+   "versionId": "PCL-004"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-11-25",
+   "valeur": 45,
+   "dateEffet": "2026-11-25",
+   "origine": "version",
+   "versionId": "PCL-008"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-11-25",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-11-30",
+   "valeur": 120,
+   "dateEffet": "2026-11-20",
+   "origine": "version",
+   "versionId": "PCL-004"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-11-30",
+   "valeur": 45,
+   "dateEffet": "2026-11-25",
+   "origine": "version",
+   "versionId": "PCL-008"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-11-30",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2026-12-01",
+   "valeur": 75,
+   "dateEffet": "2026-12-01",
+   "origine": "version",
+   "versionId": "PCL-006"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2026-12-01",
+   "valeur": 45,
+   "dateEffet": "2026-11-25",
+   "origine": "version",
+   "versionId": "PCL-008"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2026-12-01",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  },
+  {
+   "cle": "stock.delaiPeremptionJours",
+   "date": "2027-06-01",
+   "valeur": 75,
+   "dateEffet": "2026-12-01",
+   "origine": "version",
+   "versionId": "PCL-006"
+  },
+  {
+   "cle": "creances.trancheCourteJours",
+   "date": "2027-06-01",
+   "valeur": 45,
+   "dateEffet": "2026-11-25",
+   "origine": "version",
+   "versionId": "PCL-008"
+  },
+  {
+   "cle": "creances.trancheLongueJours",
+   "date": "2027-06-01",
+   "valeur": 90,
+   "dateEffet": null,
+   "origine": "version",
+   "versionId": "PCL-003"
+  }
+ ],
+ "lots": [
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2026-11-15",
+   "statutEcrit": "actif",
+   "statut": "perime"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2026-11-16",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2026-11-17",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2027-01-30",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2027-02-14",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2027-02-15",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2027-02-16",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2027-03-20",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2027-03-21",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": "2027-04-01",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-11-16",
+   "datePeremption": null,
+   "statutEcrit": "alerte",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2026-11-15",
+   "statutEcrit": "actif",
+   "statut": "perime"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2026-11-16",
+   "statutEcrit": "actif",
+   "statut": "perime"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2026-11-17",
+   "statutEcrit": "actif",
+   "statut": "perime"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2027-01-30",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2027-02-14",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2027-02-15",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2027-02-16",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2027-03-20",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2027-03-21",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": "2027-04-01",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-11-20",
+   "datePeremption": null,
+   "statutEcrit": "alerte",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2026-11-15",
+   "statutEcrit": "actif",
+   "statut": "perime"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2026-11-16",
+   "statutEcrit": "actif",
+   "statut": "perime"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2026-11-17",
+   "statutEcrit": "actif",
+   "statut": "perime"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2027-01-30",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2027-02-14",
+   "statutEcrit": "actif",
+   "statut": "alerte"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2027-02-15",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2027-02-16",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2027-03-20",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2027-03-21",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": "2027-04-01",
+   "statutEcrit": "actif",
+   "statut": "actif"
+  },
+  {
+   "date": "2026-12-01",
+   "datePeremption": null,
+   "statutEcrit": "alerte",
+   "statut": "alerte"
+  }
+ ]
+}

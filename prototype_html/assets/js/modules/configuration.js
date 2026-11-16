@@ -1604,6 +1604,84 @@
       var host = el('div.space-y-4');
 
       /* --------------------------------------------------------------------
+       * LES PARAMÈTRES DE CLINIQUE DATÉS (lot PARAM-CLINIQUE, décisions 10 et 14
+       * de la Direction du 15/11/2026) : le préavis de péremption (RG-05) et les
+       * tranches de la balance âgée. Une version datée, jamais réécrite, bornée,
+       * motivée, journalisée. « Régler » est ABSENT sans le geste réservé
+       * `regler_parametres_clinique` ; le moteur refuse aussi.
+       * ------------------------------------------------------------------ */
+      var PC = global.SIGH.parametresClinique;
+      var carteParam = el('div', { 'data-carte': 'parametres-clinique' });
+      host.appendChild(carteParam);
+      dessinerParametresClinique();
+
+      function dessinerParametresClinique() {
+        C.clear(carteParam);
+        var auj = C.iso(C.aujourdhui()), peut = PC.peutRegler();
+        var lignes = PC.definitions().map(function (d) {
+          var r = PC.aLaDate(d.cle, auj);
+          var aVenir = PC.versions(d.cle).filter(function (v) { return v.dateEffet && String(v.dateEffet).slice(0, 10) > auj; });
+          return { id: d.cle, def: d, valeur: r.valeur, depuis: r.dateEffet, origine: r.origine, version: r.version, aVenir: aVenir, nb: PC.versions(d.cle).length };
+        });
+        var tableau = K.miniTable([
+          { label: 'Paramètre', render: function (x) { return el('div', null, [el('p.text-sm.font-medium.text-slate-800', { text: x.def.libelle }), el('p.text-xs.text-slate-500', { text: x.def.aide })]); } },
+          { label: 'En vigueur', align: 'right', render: function (x) { return el('span.font-semibold', { 'data-parametre-clinique': x.id, text: C.num(x.valeur) + ' ' + x.def.unite }); } },
+          { label: 'Depuis', render: function (x) { return x.depuis ? C.dateFR(String(x.depuis).slice(0, 10)) : 'défaut semé'; } },
+          { label: 'Bornes', render: function (x) { return x.def.min + ' à ' + x.def.max + ' ' + x.def.unite; } },
+          { label: 'Version à venir', render: function (x) {
+            if (!x.aVenir.length) return el('span.text-xs.text-slate-400', { text: 'aucune' });
+            var v = x.aVenir[x.aVenir.length - 1];
+            return el('div.flex.items-center.gap-2', null, [
+              el('span.text-xs', { text: C.num(v.valeur) + ' ' + x.def.unite + ' au ' + C.dateFR(String(v.dateEffet).slice(0, 10)) }),
+              peut ? el('button.btn.btn-ghost.btn-sm', { type: 'button', 'data-annuler-version': v.id, onclick: function () { annulerVersion(v); } }, 'Annuler la version à venir') : null,
+            ].filter(Boolean));
+          } },
+          { label: '', render: function (x) {
+            return peut ? el('button.btn.btn-secondary.btn-sm', { type: 'button', 'data-regler-parametre': x.id, onclick: function () { regler(x); } }, 'Régler') : null;
+          } },
+        ], lignes, { nom: 'parametres-clinique', titre: 'Paramètres de clinique' });
+        carteParam.appendChild(U.card('Paramètres de clinique (datés)', el('div.space-y-3', null, [
+          K.note('Le préavis de péremption (RG-05) et les tranches de la balance âgée des créances sont des paramètres de la clinique, <strong>en base</strong> : '
+            + 'une nouvelle valeur s’applique à partir de sa date d’effet, l’ancienne reste lisible ; alertes, tableaux de bord et états lisent la valeur en vigueur à leur date. '
+            + 'Les bornes sont une proposition à valider. Réglage de la clinique, posé à la mère, jamais envoyé aux téléphones.'
+            + (peut ? '' : ' Votre profil consulte sans régler (droit « Régler les paramètres de clinique » de la matrice).'), { tone: 'info', icon: 'calendar-clock' }),
+          tableau,
+        ])));
+        U.icons(carteParam);
+      }
+      function regler(x) {
+        var f = U.form([
+          { name: 'valeur', label: x.def.libelle, type: 'number', required: true, value: x.valeur, min: x.def.min, max: x.def.max },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: C.iso(C.aujourdhui()) },
+          { name: 'motif', label: 'Motif du changement', required: true },
+        ], {});
+        var m = U.modal({ title: 'Régler : ' + x.def.libelle, size: 'sm', body: [
+          el('p.mb-3.text-sm.text-slate-600', { text: 'Une NOUVELLE version, à partir de la date d’effet ; la version en vigueur reste lisible. ' + x.def.aide }), f],
+        footer: [
+          el('button.btn.btn-secondary', { type: 'button', onclick: function () { m.close(); } }, 'Annuler'),
+          el('button.btn.btn-primary', { type: 'button', 'data-enregistrer-parametre': x.id, onclick: function () {
+            var v = f.collect(); if (!v) return;
+            var r = PC.definir({ cle: x.id, valeur: v.valeur, dateEffet: v.dateEffet, motif: v.motif });
+            if (!r.ok) { U.toast('Réglage refusé (' + r.code + ') : ' + r.motif, { type: 'error', detail: r.geste || '' }); return; }
+            m.close(); dessinerParametresClinique();
+            U.toast('Nouvelle version : ' + C.num(r.valeur) + ' ' + x.def.unite + ' à partir du ' + C.dateFR(r.dateEffet) + '.', { type: 'success' });
+          } }, 'Enregistrer'),
+        ] });
+      }
+      function annulerVersion(v) {
+        var f = U.form([{ name: 'motif', label: 'Motif de l’annulation', required: true }], {});
+        var m = U.modal({ title: 'Annuler la version à venir', size: 'sm', body: [f], footer: [
+          el('button.btn.btn-secondary', { type: 'button', onclick: function () { m.close(); } }, 'Fermer'),
+          el('button.btn.btn-danger', { type: 'button', onclick: function () {
+            var w = f.collect(); if (!w) return;
+            var r = PC.annuler(v.id, w.motif);
+            if (!r.ok) { U.toast('Annulation refusée (' + r.code + ') : ' + r.motif, { type: 'error', detail: r.geste || '' }); return; }
+            m.close(); dessinerParametresClinique(); U.toast('Version à venir annulée (archivée, RG-14).', { type: 'success' });
+          } }, 'Annuler la version'),
+        ] });
+      }
+
+      /* --------------------------------------------------------------------
        * Valorisation des sorties de stock — le paramètre demandé par la
        * Direction, avec la mesure de ce qu'il change réellement.
        * ------------------------------------------------------------------ */

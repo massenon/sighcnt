@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/parametres_clinique_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'stock_commun.dart';
@@ -95,11 +96,11 @@ class EcranAlertesStock extends StatelessWidget with EcranMaquette {
         ];
         final perimes = [
           for (final l in lots)
-            if (statutDuLot(l, auj) == 'perime') l
+            if (statutDuLot(c.magasin, l, auj) == 'perime') l
         ];
         final proches = [
           for (final l in lots)
-            if (statutDuLot(l, auj) == 'alerte') l
+            if (statutDuLot(c.magasin, l, auj) == 'alerte') l
         ];
         final peremptions =
             trierStable([...perimes, ...proches], (l) => l['datePeremption']);
@@ -125,7 +126,7 @@ class EcranAlertesStock extends StatelessWidget with EcranMaquette {
                     icone: LucideIcons.calendarX,
                     ton: TonSigh.danger),
                 KpiSigh(
-                    libelle: 'Péremption sous $delaiPreavisPeremption j',
+                    libelle: 'Péremption sous ${preavisPeremptionPoste(c.magasin, auj)} j',
                     valeur: nombre(proches.length),
                     icone: LucideIcons.clock,
                     ton: TonSigh.attention),
@@ -209,8 +210,8 @@ class EcranAlertesStock extends StatelessWidget with EcranMaquette {
                         )),
               ]),
               const SizedBox(height: 16),
-              const NoteSigh(
-                  'Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de $delaiPreavisPeremption jours et se règle dans la configuration du module (RG-05).'),
+              NoteSigh(
+                  'Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de ${preavisPeremptionPoste(c.magasin, auj)} jours : un paramètre de clinique daté, réglé à l’écran « Règles métier versionnées » (RG-05).'),
             ]);
       },
     );

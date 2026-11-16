@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/parametres_clinique_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -142,9 +143,10 @@ List<Fiche> produitsActifs(Magasin m) => m.collection('produits').actives;
 List<Fiche> lotsActifs(Magasin m) => m.collection('lots').actives;
 List<Fiche> mouvementsActifs(Magasin m) => m.collection('mouvements').actives;
 
-/// Statut d'un lot À LA DATE DU JOUR (écart E19) : `perime`, `alerte` ou `actif`.
-String statutDuLot(Fiche l, DateTime auj) =>
-    statutLot(joursAvantPeremption(auj, l['datePeremption']));
+/// Statut d'un lot À LA DATE DU JOUR (écart E19) : `perime`, `alerte` ou `actif`, selon le préavis de péremption LU à cette date (paramètre de clinique daté,
+/// lot PARAM-CLINIQUE ; jamais une constante).
+String statutDuLot(Magasin m, Fiche l, DateTime auj) =>
+    statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisPeremptionPoste(m, auj));
 
 TonSigh tonDeBadge(String badge) => switch (badge) {
       'success' => TonSigh.succes,
@@ -155,8 +157,8 @@ TonSigh tonDeBadge(String badge) => switch (badge) {
       _ => TonSigh.neutre,
     };
 
-Widget badgeEcheance(int? jours, String texte) {
-  final teinte = teinteEcheance(jours);
+Widget badgeEcheance(int? jours, String texte, {required int preavis}) {
+  final teinte = teinteEcheance(jours, preavis: preavis);
   if (teinte == 'neutre') {
     return cellule(texte, couleur: JetonsShell.slate600, droite: true);
   }
@@ -346,10 +348,11 @@ Widget detailProduit(BuildContext ctx, Fiche p) {
                       droite: true),
                   ColonneMini('État', (l) => '', rendu: (l) {
                     final j = joursAvantPeremption(auj, l['datePeremption']);
-                    return BadgeSigh(texteEtatLotFiche(j),
+                    final preavis = preavisPeremptionPoste(c.magasin, auj);
+                    return BadgeSigh(texteEtatLotFiche(j, preavis: preavis),
                         ton: j != null && j < 0
                             ? TonSigh.danger
-                            : (j != null && j <= delaiPreavisPeremption
+                            : (j != null && j <= preavis
                                 ? TonSigh.attention
                                 : TonSigh.succes));
                   }),

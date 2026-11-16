@@ -523,7 +523,7 @@
     var out = {};
     try {
       var lots = S.collection('lots').active();
-      out.M6 = lots.filter(function (l) { return l.statut === 'perime' || l.statut === 'alerte'; }).length;
+      out.M6 = lots.filter(function (l) { var st = D.statutLotALaDate(l, C.aujourdhui()); return st === 'perime' || st === 'alerte'; }).length;
       var fac = S.collection('factures').active();
       out.M9 = fac.filter(function (f) { return f.assureur && f.statutPaiement !== 'soldee'; }).length;
       out.MECEF = fac.filter(function (f) { return f.statutMecef === 'rejete' || f.statutMecef === 'en_attente'; }).length;

@@ -17,7 +17,10 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
   var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
-  var SEUIL_PEREMPTION = 90; /* jours — paramétrable (RG-05) */
+  /* RG-05 : le préavis de péremption est un PARAMÈTRE DE CLINIQUE daté (lot PARAM-CLINIQUE, `parametresClinique`), lu à la date du jour à chaque peinture, jamais
+     une constante. Le statut d'un lot se recalcule de même (un statut écrit à la saisie ne suit pas un préavis changé). */
+  function seuilPeremption() { return D.delaiPeremptionALaDate(AUJ); }
+  function statutLot(l) { return D.statutLotALaDate(l, AUJ); }
 
   /* ==========================================================================
    * VALORISATION DES ARTICLES QUE LE DOCUMENT SAGE NE VALORISE PAS
@@ -238,11 +241,11 @@
           { label: 'Valeur totale du stock', value: C.money(valeurStock(p)), icon: 'wallet', tone: 'navy', hint: 'Valorisation au CUMP' },
           { label: 'Références gérées', value: C.num(p.length), icon: 'package', tone: 'info' },
           { label: 'Produits critiques', value: C.num(p.filter(function (x) { return x.stock <= x.seuilAlerte; }).length), icon: 'trending-down', tone: 'danger' },
-          { label: 'Produits périmés', value: C.num(l.filter(function (x) { return x.statut === 'perime'; }).length), icon: 'calendar-x', tone: 'danger' },
+          { label: 'Produits périmés', value: C.num(l.filter(function (x) { return statutLot(x) === 'perime'; }).length), icon: 'calendar-x', tone: 'danger' },
           { label: 'Valeur stock gros', value: C.money(C.sum(p, function (x) { return x.stockGros * x.cump; })), icon: 'warehouse', tone: 'neutral' },
           { label: 'Valeur stock détail', value: C.money(C.sum(p, function (x) { return x.stockDetail * x.cump; })), icon: 'pill', tone: 'neutral' },
           { label: 'Mouvements du mois', value: C.num(mouvements().filter(function (m) { var d = C.toDate(m.date); return d.getMonth() === AUJ.getMonth() && d.getFullYear() === AUJ.getFullYear(); }).length), icon: 'arrow-left-right', tone: 'success' },
-          { label: 'Péremption sous 90 j', value: C.num(l.filter(function (x) { return x.statut === 'alerte'; }).length), icon: 'clock', tone: 'warning', hint: 'Application du FEFO' },
+          { label: 'Péremption sous ' + seuilPeremption() + ' j', value: C.num(l.filter(function (x) { return statutLot(x) === 'alerte'; }).length), icon: 'clock', tone: 'warning', hint: 'Application du FEFO' },
         ];
       },
       kpiCols: 'grid-cols-2 lg:grid-cols-4',
@@ -293,9 +296,9 @@
                 title: 'État des péremptions',
                 render: function () {
                   var l = lots();
-                  var perimes = l.filter(function (x) { return x.statut === 'perime'; }).length;
-                  var alerte = l.filter(function (x) { return x.statut === 'alerte'; }).length;
-                  return G.anneau(['Périmés', 'Sous 90 jours', 'Au-delà de 90 jours'],
+                  var perimes = l.filter(function (x) { return statutLot(x) === 'perime'; }).length;
+                  var alerte = l.filter(function (x) { return statutLot(x) === 'alerte'; }).length;
+                  return G.anneau(['Périmés', 'Sous ' + seuilPeremption() + ' jours', 'Au-delà de ' + seuilPeremption() + ' jours'],
                     [perimes, alerte, l.length - perimes - alerte],
                     { legend: 'bottom', colors: [G.TONES.rouge, G.TONES.orange, G.TONES.vert] });
                 },
@@ -383,7 +386,7 @@
               label: 'État',
               render: function (l) {
                 var j = joursAvantPeremption(l);
-                return j < 0 ? U.badge('Périmé', 'danger') : (j <= SEUIL_PEREMPTION ? U.badge('Dans ' + j + ' j', 'warning') : U.badge('Valide', 'success'));
+                return j < 0 ? U.badge('Périmé', 'danger') : (j <= seuilPeremption() ? U.badge('Dans ' + j + ' j', 'warning') : U.badge('Valide', 'success'));
               },
             },
             { label: 'Emplacement', key: 'emplacement' },
@@ -1458,9 +1461,11 @@
   global.SIGH.screen('m6-lots', {
     title: 'Lots & péremptions (FEFO)',
     description: 'Suivi des lots par date de péremption, application du principe « premier périmé, premier sorti ».',
-    regle: '<strong>RG-05</strong> — le rangement applique le principe <strong>FEFO</strong> (premier périmé, premier sorti). '
-      + 'Les alertes sont déclenchées automatiquement ' + SEUIL_PEREMPTION + ' jours avant échéance. '
-      + 'Les produits périmés sont retournés aux fournisseurs habilités (CAME, SoBAPS) et la perte est valorisée en comptabilité.',
+    regle: function () {
+      return '<strong>RG-05</strong> — le rangement applique le principe <strong>FEFO</strong> (premier périmé, premier sorti). '
+        + 'Les alertes sont déclenchées automatiquement ' + seuilPeremption() + ' jours avant échéance (paramètre de clinique daté, écran « Règles métier versionnées »). '
+        + 'Les produits périmés sont retournés aux fournisseurs habilités (CAME, SoBAPS) et la perte est valorisée en comptabilité.';
+    },
     render: K.crud({
       collection: 'lots', entite: 'lot', entiteP: 'lots', module: 'M6',
       defaultSort: 'datePeremption', pageSize: 15,
@@ -1476,7 +1481,7 @@
             var j = joursAvantPeremption(l);
             if (j < 0) return U.badge('Périmé depuis ' + Math.abs(j) + ' j', 'danger');
             if (j <= 30) return U.badge('Dans ' + j + ' j', 'danger');
-            if (j <= SEUIL_PEREMPTION) return U.badge('Dans ' + j + ' j', 'warning');
+            if (j <= seuilPeremption()) return U.badge('Dans ' + j + ' j', 'warning');
             return el('span.num.text-slate-600', { text: j + ' j' });
           },
         },
@@ -1484,9 +1489,9 @@
         { key: 'emplacement', label: 'Emplacement' },
         {
           key: 'statut2', label: 'État FEFO',
-          value: function (l) { return l.statut; },
-          text: function (l) { return l.statut; },
-          render: function (l) { return U.statut(l.statut === 'actif' ? 'normal' : l.statut); },
+          value: function (l) { return statutLot(l); },
+          text: function (l) { return statutLot(l); },
+          render: function (l) { var st = statutLot(l); return U.statut(st === 'actif' ? 'normal' : st); },
         },
       ],
       fields: function () {
@@ -1505,23 +1510,24 @@
         var p = produits().filter(function (x) { return x.id === v.produitId; })[0];
         if (p) v.produit = p.designation;
         var j = C.daysBetween(AUJ, v.datePeremption);
-        v.statut = j < 0 ? 'perime' : (j <= SEUIL_PEREMPTION ? 'alerte' : 'actif');
+        v.statut = j < 0 ? 'perime' : (j <= seuilPeremption() ? 'alerte' : 'actif');
         return v;
       },
       filters: [
         {
           name: 'statut', label: 'État',
           options: [{ value: 'perime', label: 'Périmés' }, { value: 'alerte', label: 'Péremption proche' }, { value: 'actif', label: 'Valides' }],
+          match: function (l, v) { return statutLot(l) === v; },
         },
       ],
       kpis: function (rows) {
-        var perimes = rows.filter(function (l) { return l.statut === 'perime'; });
-        var alerte = rows.filter(function (l) { return l.statut === 'alerte'; });
+        var perimes = rows.filter(function (l) { return statutLot(l) === 'perime'; });
+        var alerte = rows.filter(function (l) { return statutLot(l) === 'alerte'; });
         return [
           { label: 'Lots suivis', value: C.num(rows.length), icon: 'boxes', tone: 'navy' },
           { label: 'Périmés', value: C.num(perimes.length), icon: 'calendar-x', tone: 'danger', hint: C.num(C.sum(perimes, 'quantiteRestante')) + ' unités à retourner' },
-          { label: 'Péremption sous ' + SEUIL_PEREMPTION + ' j', value: C.num(alerte.length), icon: 'clock', tone: 'warning', hint: 'Prioriser en sortie (FEFO)' },
-          { label: 'Lots valides', value: C.num(rows.filter(function (l) { return l.statut === 'actif'; }).length), icon: 'check-circle-2', tone: 'success' },
+          { label: 'Péremption sous ' + seuilPeremption() + ' j', value: C.num(alerte.length), icon: 'clock', tone: 'warning', hint: 'Prioriser en sortie (FEFO)' },
+          { label: 'Lots valides', value: C.num(rows.filter(function (l) { return statutLot(l) === 'actif'; }).length), icon: 'check-circle-2', tone: 'success' },
         ];
       },
       extraTabs: [{
@@ -1612,14 +1618,14 @@
       var prods = produits();
       var ruptures = prods.filter(function (p) { return p.stock === 0; });
       var critiques = prods.filter(function (p) { return p.stock > 0 && p.stock <= p.seuilAlerte; });
-      var perimes = lots().filter(function (l) { return l.statut === 'perime'; });
-      var proches = lots().filter(function (l) { return l.statut === 'alerte'; });
+      var perimes = lots().filter(function (l) { return statutLot(l) === 'perime'; });
+      var proches = lots().filter(function (l) { return statutLot(l) === 'alerte'; });
 
       host.appendChild(U.kpiGrid([
         { label: 'Ruptures de stock', value: C.num(ruptures.length), icon: 'x-circle', tone: 'danger' },
         { label: 'Sous le seuil d’alerte', value: C.num(critiques.length), icon: 'trending-down', tone: 'warning' },
         { label: 'Lots périmés', value: C.num(perimes.length), icon: 'calendar-x', tone: 'danger' },
-        { label: 'Péremption sous ' + SEUIL_PEREMPTION + ' j', value: C.num(proches.length), icon: 'clock', tone: 'warning' },
+        { label: 'Péremption sous ' + seuilPeremption() + ' j', value: C.num(proches.length), icon: 'clock', tone: 'warning' },
       ]));
 
       host.appendChild(U.tabs([
@@ -1662,7 +1668,7 @@
       ]));
 
       host.appendChild(K.note('Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de <strong>'
-        + SEUIL_PEREMPTION + ' jours</strong> et se règle dans la configuration du module (RG-05).', { tone: 'info' }));
+        + seuilPeremption() + ' jours</strong> : un paramètre de clinique daté, réglé à l’écran « Règles métier versionnées » (RG-05).', { tone: 'info' }));
 
       root.appendChild(host);
       return null;

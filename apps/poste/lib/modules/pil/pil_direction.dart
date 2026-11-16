@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../donnees/parametres_clinique_poste.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
@@ -149,7 +150,7 @@ class EcranDirection extends StatelessWidget with EcranMaquette {
       patients: pilActives(c, 'patients'),
       admissions: pilActives(c, 'admissions'),
       personnel: pilActives(c, 'personnel'),
-      lots: pilActives(c, 'lots'),
+      lots: lotsAuJour(c.magasin, pilActives(c, 'lots'), c.aujourdhui),
       echeances: pilActives(c, 'echeancesFiscales'),
       facturesFournisseurs: pilActives(c, 'facturesFournisseurs'),
       mouvements: pilActives(c, 'mouvements'),

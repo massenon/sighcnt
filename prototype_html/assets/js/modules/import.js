@@ -295,7 +295,7 @@
             ecrireFiche('lots', {
               produitId: prod.id, produit: p.designation, numeroLot: x.lot, datePeremption: x.peremption,
               quantiteRestante: x.quantite, emplacement: x.emplacement || p.emplacement || '',
-              statut: jours < 0 ? 'perime' : (jours < 90 ? 'alerte' : 'actif'),
+              statut: jours < 0 ? 'perime' : (jours < D.delaiPeremptionALaDate(jour) ? 'alerte' : 'actif'), /* préavis : paramètre de clinique lu au jour (lot PARAM-CLINIQUE) */
             });
           }
           var ref = C.referenceSuivante('M', 6, mouvs);
@@ -1020,7 +1020,8 @@
     return { colonne: 'Code article', valeur: v.code, code: 'ARTICLE_INCONNU', niveau: 'refus', motif: 'aucun article « ' + v.code + ' » au référentiel produits',
       geste: 'Créez l’article d’abord (jeu « Importation du référentiel produits » ou écran Référentiel produits), ou corrigez le code.' };
   }
-  function statutLot(peremption, jour) { var j = joursEntre(jour, peremption); return j < 0 ? 'perime' : (j < 90 ? 'alerte' : 'actif'); }
+  /* Le préavis de péremption est le paramètre de clinique en vigueur au jour de l'import (lot PARAM-CLINIQUE), jamais une constante ; la comparaison stricte de l'import est gardée. */
+  function statutLot(peremption, jour) { var j = joursEntre(jour, peremption); return j < 0 ? 'perime' : (j < D.delaiPeremptionALaDate(jour) ? 'alerte' : 'actif'); }
   function distincts(lignes, cle) { var vus = {}, out = []; lignes.forEach(function (l) { var x = l.v[cle]; if (x != null && x !== '' && !vus[x]) { vus[x] = true; out.push(x); } }); return out; }
   /** L'article a-t-il servi à un acte (mouvement, lot, stock, pièce de caisse ou ordonnance) ? Un lot de référentiel ne s'annule que tant qu'aucun acte ne s'appuie dessus. */
   function acteSurProduit(produitId) {

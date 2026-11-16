@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../donnees/parametres_clinique_poste.dart';
+
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -30,7 +32,7 @@ class EcranDashboardStock extends StatelessWidget with EcranMaquette {
       builder: (context, _) {
         final auj = c.aujourdhui;
         final p = cp.actives, l = cl.actives, m = cm.actives;
-        final statuts = [for (final x in l) statutDuLot(x, auj)];
+        final statuts = [for (final x in l) statutDuLot(c.magasin, x, auj)];
         final perimes = statuts.where((s) => s == 'perime').length;
         final proches = statuts.where((s) => s == 'alerte').length;
         final critiques =
@@ -153,7 +155,7 @@ class EcranDashboardStock extends StatelessWidget with EcranMaquette {
                     icone: LucideIcons.arrowLeftRight,
                     ton: TonSigh.succes),
                 KpiSigh(
-                    libelle: 'Péremption sous $delaiPreavisPeremption j',
+                    libelle: 'Péremption sous ${preavisPeremptionPoste(c.magasin, auj)} j',
                     valeur: nombre(proches),
                     icone: LucideIcons.clock,
                     ton: TonSigh.attention,

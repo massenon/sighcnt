@@ -589,6 +589,45 @@ ALTER TABLE "cfg"."obligations_fiscales_redevances" ADD COLUMN IF NOT EXISTS "ca
 ALTER TABLE "cfg"."obligations_fiscales_redevances" ADD COLUMN IF NOT EXISTS "mois_label" text; -- @montee
 ALTER TABLE "cfg"."obligations_fiscales_redevances" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."obligations_fiscales_redevances" IS 'Lignes « redevances » de « obligationsFiscales »';
+CREATE TABLE IF NOT EXISTS "cfg"."parametres_clinique" (
+  "id" text PRIMARY KEY,
+  "cle" text,
+  "motif" text,
+  "cree_le" timestamptz,
+  "source" text,
+  "statut" text,
+  "valeur" integer,
+  "cree_le_2" timestamptz,
+  "cree_par" text,
+  "libelle" text,
+  "cree_par_2" text,
+  "date_effet" date,
+  "archive_le" timestamptz,
+  "archive_par" text,
+  "motif_archivage" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "extra" jsonb
+);
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "cle" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "valeur" integer; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "cree_le_2" timestamptz; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "cree_par_2" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "cfg"."parametres_clinique" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "cfg"."parametres_clinique" IS 'Collection « parametresClinique » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_parametres_clinique_statut" ON "cfg"."parametres_clinique" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."parametres_fiscaux" (
   "id" text PRIMARY KEY,
   "code" text,

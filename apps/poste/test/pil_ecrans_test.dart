@@ -386,8 +386,10 @@ void main() {
     casM14('le bandeau d’alertes, le premier regard et le BFR : 51 produits sous seuil, 13 échéances dépassées, BFR 305 jours de CA', (t) async {
       await ouvrirM14(t, magasinComplet(), 'dash-direction');
       expect(find.text('51 produit(s) sous le seuil d’alerte'), findsOneWidget);
-      expect(find.text('17 lot(s) périmé(s) à retourner'), findsOneWidget);
-      expect(find.text('37 lot(s) à péremption proche (FEFO)'), findsOneWidget);
+      // Lot PARAM-CLINIQUE : le statut d'un lot se RECALCULE au jour (30/10/2026 ici) selon le préavis lu, comme la maquette (`dashboards.js`) ; il ne lit plus
+      // le statut écrit à la génération du jeu (16/08/2026 : 17 et 37).
+      expect(find.text('42 lot(s) périmé(s) à retourner'), findsOneWidget);
+      expect(find.text('56 lot(s) à péremption proche (FEFO)'), findsOneWidget);
       expect(find.textContaining('13 échéance(s) fiscale(s) dépassée(s) — engagent la clinique'), findsOneWidget);
       expect(find.text(money(5011584)), findsOneWidget);
       expect(find.text('305 jours de CA'), findsOneWidget);

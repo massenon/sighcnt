@@ -18,7 +18,7 @@
   "Pharmacie & Stocks"
  ],
  "regle": [
-  "Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de 90 jours et se règle dans la configuration du module (RG-05)."
+  "Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de 90 jours : un paramètre de clinique daté, réglé à l’écran « Règles métier versionnées » (RG-05)."
  ],
  "onglets": [
   "Ruptures",
@@ -38,7 +38,7 @@
  "commandes": [
   "Ruptures0",
   "Sous le seuil51",
-  "Péremptions54",
+  "Péremptions98",
   "Colonnes",
   "Exporter",
   "Ouvrir les bons de besoins (M7)"

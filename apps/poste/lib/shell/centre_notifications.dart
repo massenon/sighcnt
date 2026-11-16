@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../core/donnees_navigation.dart';
 import '../core/service_parametres.dart';
 import '../donnees/magasin.dart';
+import '../donnees/parametres_clinique_poste.dart';
 import 'recherche_globale.dart' show ecranOuvertAuRole;
 
 /// Le MOTEUR DE NOTIFICATIONS du poste (`SIGH.notifications` de la maquette, `notifications.js`). Il AFFICHE, il ne DÉCIDE pas : chaque source lit ce que
@@ -148,14 +149,15 @@ final List<_Source> _sources = [
                 'm6-alertes',
                 const ['stock', 'pharmacien', 'caissier', 'da']),
       ]),
+  // Lot PARAM-CLINIQUE : le statut se LIT au jour, selon le préavis de péremption en vigueur (paramètre de clinique daté, RG-05), jamais le statut écrit à la saisie.
   _Source('lots_peremption', 'metier', 'Pharmacie', (m, auj) => [
         for (final l in m.collection('lots').actives)
-          if (l['statut'] == 'perime' || l['statut'] == 'alerte')
+          if (const {'perime', 'alerte'}.contains(statutLotPoste(m, l, auj)))
             _Ligne(
                 'lot:${l['id']}',
-                l['statut'] == 'perime' ? 'critique' : 'important',
-                l['statut'] == 'perime' ? 'Lot périmé : ${_ou(l['produit'], l['numero'])}' : 'Péremption proche : ${_ou(l['produit'], l['numero'])}',
-                l['statut'] == 'perime' ? 'À sortir du rayon et à déclarer en perte.' : 'Appliquer le principe FEFO (RG-05).',
+                statutLotPoste(m, l, auj) == 'perime' ? 'critique' : 'important',
+                statutLotPoste(m, l, auj) == 'perime' ? 'Lot périmé : ${_ou(l['produit'], l['numero'])}' : 'Péremption proche : ${_ou(l['produit'], l['numero'])}',
+                statutLotPoste(m, l, auj) == 'perime' ? 'À sortir du rayon et à déclarer en perte.' : 'Appliquer le principe FEFO (RG-05).',
                 'm6-lots',
                 const ['stock', 'pharmacien', 'caissier', 'laborantin']),
       ]),

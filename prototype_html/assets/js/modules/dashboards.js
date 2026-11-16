@@ -71,8 +71,9 @@
   function caDuMois() { return C.sum(duMois(factures(), 'date'), 'montantTTC'); }
   function encaisseDuMois() { return C.sum(duMois(factures(), 'date'), 'montantPaye'); }
   function ruptures() { return produits().filter(function (p) { return p.stock <= p.seuilAlerte; }); }
-  function perimes() { return lots().filter(function (l) { return l.statut === 'perime'; }); }
-  function peremptionProche() { return lots().filter(function (l) { return l.statut === 'alerte'; }); }
+  /* Lot PARAM-CLINIQUE : le statut d'un lot se LIT à la date selon le préavis de péremption en vigueur (paramètre de clinique daté, RG-05). */
+  function perimes() { return lots().filter(function (l) { return D.statutLotALaDate(l, C.aujourdhui()) === 'perime'; }); }
+  function peremptionProche() { return lots().filter(function (l) { return D.statutLotALaDate(l, C.aujourdhui()) === 'alerte'; }); }
   function litsOccupes() { return admissions().filter(function (a) { return a.statut === 'en_cours'; }); }
   function totalLits() { return D.CHAMBRES.reduce(function (n, ch) { return n + ch.lits.length; }, 0); }
 

@@ -27713,6 +27713,135 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT EXP FIN */
+  /* LOT PARAM-CLINIQUE DEBUT */
+  await etape(async () => {
+    scenario('Vague 200 : lot PARAM-CLINIQUE, le préavis de péremption (RG-05) et les tranches de la balance âgée sont des PARAMÈTRES DE CLINIQUE datés (défauts semés 90, 30 et 90, version datée jamais réécrite, bornes et cohérence refusées nommées, motif exigé, journal RG-12, « Régler » ABSENT sans le geste réservé et moteur qui refuse, fileul en lecture seule) ; les états du stock, les alertes et la balance âgée lisent la valeur à la date');
+    erreursJS = [];
+    const ADM200 = { role: 'admin', nom: 'ADMIN200', nomComplet: 'ADMIN200', fonction: 'admin', identifiant: 's200.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM200);
+    await ouvrir('cfg-regles.html');
+    const VER = await page.evaluate(() => (window.SIGH.store.raw() || {})._version || null);
+    const etat0 = await page.evaluate(() => {
+      const PC = window.SIGH.parametresClinique, S = window.SIGH.store, auj = window.SIGH.core.iso(window.SIGH.core.aujourdhui());
+      const lus = {}; PC.definitions().forEach((d) => { lus[d.cle] = PC.aLaDate(d.cle, auj).valeur; });
+      const cellules = [...document.querySelectorAll('#page-content [data-parametre-clinique]')].map((x) => [x.getAttribute('data-parametre-clinique'), x.textContent.trim()]);
+      return { lus, cellules, boutons: document.querySelectorAll('#page-content [data-regler-parametre]').length, semence: S.collection('parametresClinique').active().filter((v) => !v.dateEffet).length, geste: !!window.SIGH.nav.geste('regler_parametres_clinique'),
+        detenteurs: window.SIGH.nav.rolesAvecGeste('regler_parametres_clinique').slice().sort() };
+    });
+    verifier('Les trois paramètres de clinique sont SEMÉS en base (90, 30, 90), l’écran « Règles métier versionnées » les montre avec « Régler » ; le geste réservé est au manifeste, détenu d’origine par l’administrateur et la Directrice Administrative',
+      etat0.semence === 3 && etat0.lus['stock.delaiPeremptionJours'] === 90 && etat0.lus['creances.trancheCourteJours'] === 30 && etat0.lus['creances.trancheLongueJours'] === 90
+      && etat0.cellules.length === 3 && etat0.cellules.some((c) => c[0] === 'stock.delaiPeremptionJours' && /^90 jours$/.test(c[1])) && etat0.boutons === 3 && etat0.geste
+      && JSON.stringify(etat0.detenteurs) === JSON.stringify(['admin', 'da']), JSON.stringify(etat0));
+
+    /* un lot qui périme dans 100 jours : « valide » sous le préavis de 90 jours */
+    const lot200 = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const p = S.collection('produits').active()[0];
+      const r = S.collection('lots').insert({ produitId: p.id, produit: p.designation, numeroLot: 'SONDE-200', datePeremption: C.iso(C.addDays(C.aujourdhui(), 100)), quantiteRestante: 5, emplacement: 'S200', statut: 'actif' });
+      return { id: r.record.id };
+    });
+    await attendreEcritures();
+    const lireLots = async () => {
+      await ouvrir('m6-lots.html');
+      return page.evaluate((id) => {
+        const t = (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' ');
+        const tout = document.body.textContent.replace(/\s+/g, ' '); /* la règle de l'en-tête est peinte hors de #page-content */
+        const l = window.SIGH.store.collection('lots').get(id);
+        return { kpi: (t.match(/Péremption sous (\d+) j/) || [])[1] || null, statut: window.SIGH.data.statutLotALaDate(l), regle: /automatiquement (\d+) jours avant/.exec(tout) ? /automatiquement (\d+) jours avant/.exec(tout)[1] : null };
+      }, lot200.id);
+    };
+    const avantLots = await lireLots();
+
+    /* Régler le préavis À L'ÉCRAN : 120 jours, date d'effet du jour, motif */
+    await ouvrir('cfg-regles.html');
+    await page.click('#page-content [data-regler-parametre="stock.delaiPeremptionJours"]');
+    await page.waitForSelector('.modal [data-enregistrer-parametre]', { timeout: 10000 }).catch(() => null);
+    const saisir = async (nom, val) => page.evaluate((o) => { const f = document.querySelector('.modal [name="' + o.nom + '"]') || [...document.querySelectorAll('[name="' + o.nom + '"]')].pop(); f.value = o.val; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true })); }, { nom, val });
+    await saisir('valeur', '120'); await saisir('motif', 'Sonde 200 : préavis allongé');
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[data-enregistrer-parametre]')].pop(); b.click(); });
+    await attendreEcritures();
+    const apresLots = await lireLots();
+    const journal = await page.evaluate(() => window.SIGH.store.collection('audit').all().filter((a) => a.action === 'Paramètre de clinique : nouvelle version' && /Sonde 200/.test(JSON.stringify(a.apres || a.nouvelle || a))).length);
+    verifier('Réglé à l’écran (120 jours, motif) : une NOUVELLE version est écrite et journalisée ; sans recharger les données, l’écran des lots dit « Péremption sous 120 j » et le lot qui périme dans 100 jours passe de « valide » à « péremption proche » (statut lu à la date, jamais une constante)',
+      avantLots.kpi === '90' && avantLots.statut === 'actif' && apresLots.kpi === '120' && apresLots.statut === 'alerte' && apresLots.regle === '120' && journal >= 1, JSON.stringify({ avantLots, apresLots, journal }));
+
+    /* bornes, cohérence, motif, version figée, date d'effet antérieure, version à venir */
+    const refus = await page.evaluate(() => {
+      const PC = window.SIGH.parametresClinique, C = window.SIGH.core, S = window.SIGH.store;
+      const auj = C.iso(C.aujourdhui()), dans10 = C.iso(C.addDays(C.aujourdhui(), 10));
+      const r = {};
+      r.zero = PC.definir({ cle: 'stock.delaiPeremptionJours', valeur: 0, motif: 'sonde' }).code;
+      r.trop = PC.definir({ cle: 'stock.delaiPeremptionJours', valeur: 731, motif: 'sonde' }).code;
+      r.decimal = PC.definir({ cle: 'stock.delaiPeremptionJours', valeur: 12.5, motif: 'sonde' }).code;
+      r.vide = PC.definir({ cle: 'stock.delaiPeremptionJours', valeur: '', motif: 'sonde' }).code;
+      r.incoherent = PC.definir({ cle: 'creances.trancheCourteJours', valeur: 90, motif: 'sonde' }).code;
+      r.sansMotif = PC.definir({ cle: 'stock.delaiPeremptionJours', valeur: 100 }).code;
+      r.inconnu = PC.definir({ cle: 'stock.inconnu', valeur: 10, motif: 'sonde' }).code;
+      r.passe = PC.definir({ cle: 'stock.delaiPeremptionJours', valeur: 100, dateEffet: C.iso(C.addDays(C.aujourdhui(), -5)), motif: 'sonde' }).code;
+      const v = S.collection('parametresClinique').active().filter((x) => x.cle === 'stock.delaiPeremptionJours' && x.dateEffet).pop();
+      const figee = S.collection('parametresClinique').update(v.id, { valeur: 7 });
+      r.figee = figee === null || figee === undefined ? 'refusee' : 'acceptee';
+      r.valeurApres = S.collection('parametresClinique').get(v.id).valeur;
+      const fut = PC.definir({ cle: 'stock.delaiPeremptionJours', valeur: 60, dateEffet: dans10, motif: 'Sonde 200 : version à venir' });
+      r.futur = { ok: fut.ok, aujourdhui: PC.aLaDate('stock.delaiPeremptionJours', auj).valeur, dans10: PC.aLaDate('stock.delaiPeremptionJours', dans10).valeur };
+      r.annulerEnVigueur = PC.annuler(v.id, 'sonde').code;
+      const an = PC.annuler(fut.id, 'Sonde 200 : annulation');
+      r.annule = { ok: an.ok, dans10: PC.aLaDate('stock.delaiPeremptionJours', dans10).valeur, archivee: S.collection('parametresClinique').get(fut.id).statut };
+      return r;
+    });
+    verifier('Les bornes sont tenues et DITES (0, 731, 12,5 et vide : PARAMETRE_HORS_BORNES), une première tranche plus longue que la deuxième est refusée (TRANCHES_INCOHERENTES), le motif est exigé, une clé inconnue et une date d’effet antérieure à la dernière version sont refusées, une version ne se réécrit pas (garde du magasin)',
+      refus.zero === 'PARAMETRE_HORS_BORNES' && refus.trop === 'PARAMETRE_HORS_BORNES' && refus.decimal === 'PARAMETRE_HORS_BORNES' && refus.vide === 'PARAMETRE_HORS_BORNES' && refus.incoherent === 'TRANCHES_INCOHERENTES'
+      && refus.sansMotif === 'PARAMETRE_MOTIF_OBLIGATOIRE' && refus.inconnu === 'PARAMETRE_CLINIQUE_INCONNU' && refus.passe === 'DATE_EFFET_ANTERIEURE' && refus.figee === 'refusee' && refus.valeurApres === 120, JSON.stringify(refus));
+    verifier('VERSIONNÉ PAR DATE : une version à venir (60 jours dans dix jours) ne change pas la valeur du jour (120) mais s’applique le jour dit ; elle s’annule par archivage motivé (RG-14), une version en vigueur ne s’annule pas (PARAMETRE_VERSION_EN_VIGUEUR)',
+      refus.futur.ok && refus.futur.aujourdhui === 120 && refus.futur.dans10 === 60 && refus.annulerEnVigueur === 'PARAMETRE_VERSION_EN_VIGUEUR' && refus.annule.ok && refus.annule.dans10 === 120 && refus.annule.archivee === 'archive', JSON.stringify(refus.futur));
+
+    /* balance âgée : les tranches lues à la date */
+    const lireBalance = async () => {
+      await ouvrir('m9-creances.html');
+      return page.evaluate(() => {
+        const t = (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' ');
+        const D = window.SIGH.data, C = window.SIGH.core, S = window.SIGH.store, tr = D.tranchesCreancesALaDate(C.aujourdhui());
+        const f = S.collection('factures').active().filter((x) => x.assureur && (x.partAssurance || 0) > 0 && x.statutPaiement !== 'soldee');
+        const somme = (k) => f.filter((x) => D.trancheCreance(C.daysBetween(x.date, C.aujourdhui()), tr) === k).reduce((n, x) => n + (x.partAssurance || 0), 0);
+        return { premiere: /(\d+) jours ou moins/.exec(t) ? +/(\d+) jours ou moins/.exec(t)[1] : null, deuxieme: /De (\d+) à (\d+) jours/.exec(t) ? /De (\d+) à (\d+) jours/.exec(t).slice(1).map(Number) : null,
+          tranches: tr, recompte: { a: somme('moins30'), b: somme('30a90'), c: somme('plus90') } };
+      });
+    };
+    const bal0 = await lireBalance();
+    const regleTranche = await page.evaluate(() => window.SIGH.parametresClinique.definir({ cle: 'creances.trancheCourteJours', valeur: 45, motif: 'Sonde 200 : première tranche à 45 jours' }));
+    await attendreEcritures();
+    const bal1 = await lireBalance();
+    verifier('La balance âgée lit ses tranches à la date : « 30 jours ou moins » et « De 31 à 90 jours » au défaut semé ; la première tranche réglée à 45 jours, l’écran dit « 45 jours ou moins » et « De 46 à 90 jours » et chaque tranche se recompte avec les bornes lues',
+      bal0.premiere === 30 && JSON.stringify(bal0.deuxieme) === '[31,90]' && regleTranche.ok && bal1.premiere === 45 && JSON.stringify(bal1.deuxieme) === '[46,90]' && bal1.tranches.courte === 45
+      && bal1.recompte.a >= bal0.recompte.a && bal1.recompte.a + bal1.recompte.b + bal1.recompte.c === bal0.recompte.a + bal0.recompte.b + bal0.recompte.c, JSON.stringify({ bal0, bal1 }));
+
+    /* sans le geste : « Régler » ABSENT et le moteur refuse ; un fileul ne règle pas */
+    await poserSessionServeur({ role: 'stock', nom: 'STOCK200', nomComplet: 'STOCK200', fonction: 'stock', identifiant: 's200.stock', secteur: 'PHA' });
+    const sansGeste = await page.evaluate(() => ({ peut: window.SIGH.parametresClinique.peutRegler(), refus: window.SIGH.parametresClinique.definir({ cle: 'stock.delaiPeremptionJours', valeur: 30, motif: 'sonde' }).code }));
+    await poserSessionServeur({ role: 'da', nom: 'DA200', nomComplet: 'DA200', fonction: 'da', identifiant: 's200.da', secteur: 'DIR' });
+    await ouvrir('cfg-regles.html');
+    const da = await page.evaluate(() => ({ boutons: document.querySelectorAll('#page-content [data-regler-parametre]').length, peut: window.SIGH.parametresClinique.peutRegler() }));
+    await poserSessionServeur({ role: 'direction', nom: 'DIR200', nomComplet: 'DIR200', fonction: 'direction', identifiant: 's200.dir', secteur: 'DIR' });
+    await ouvrir('cfg-regles.html');
+    const dir = await page.evaluate(() => ({ boutons: document.querySelectorAll('#page-content [data-regler-parametre]').length, cellules: document.querySelectorAll('#page-content [data-parametre-clinique]').length,
+      refus: window.SIGH.parametresClinique.definir({ cle: 'stock.delaiPeremptionJours', valeur: 30, motif: 'sonde' }).code }));
+    await poserSessionServeur(ADM200);
+    const fileul = await page.evaluate(() => { const S = window.SIGH.store, avant = S.reglage('posteFileul', false); S.setReglage('posteFileul', true);
+      const r = window.SIGH.parametresClinique.definir({ cle: 'stock.delaiPeremptionJours', valeur: 30, motif: 'sonde' }); S.setReglage('posteFileul', avant); return r.code; });
+    verifier('Sans le geste réservé (gestionnaire de stock, Direction qui lit l’écran) : « Régler » est ABSENT et le moteur refuse PARAMETRE_CLINIQUE_RESERVE ; la Directrice Administrative règle ; un FILEUL est refusé (FILEUL_LECTURE_SEULE : réglage posé à la mère)',
+      sansGeste.peut === false && sansGeste.refus === 'PARAMETRE_CLINIQUE_RESERVE' && da.boutons === 3 && da.peut && dir.cellules === 3 && dir.boutons === 0 && dir.refus === 'PARAMETRE_CLINIQUE_RESERVE' && fileul === 'FILEUL_LECTURE_SEULE', JSON.stringify({ sansGeste, da, dir, fileul }));
+
+    /* restauration : les versions de la sonde et le lot sont archivés (RG-14), la semence fait de nouveau foi */
+    const fin = await page.evaluate((id) => { const S = window.SIGH.store, C = window.SIGH.core, col = S.collection('parametresClinique');
+      col.active().filter((v) => v.dateEffet && /Sonde 200/.test(v.motif || '')).forEach((v) => col.archive(v.id, 'restauration de la sonde 200'));
+      S.collection('lots').archive(id, 'restauration de la sonde 200');
+      const PC = window.SIGH.parametresClinique, auj = C.iso(C.aujourdhui());
+      return [PC.aLaDate('stock.delaiPeremptionJours', auj).valeur, PC.aLaDate('creances.trancheCourteJours', auj).valeur, PC.aLaDate('creances.trancheLongueJours', auj).valeur]; }, lot200.id);
+    await attendreEcritures();
+    verifier('État restauré : les versions de la sonde archivées, la semence (90, 30, 90) fait de nouveau foi ; VERSION du magasin au moins 90', JSON.stringify(fin) === '[90,30,90]' && VER >= 90, JSON.stringify({ fin, VER }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT PARAM-CLINIQUE FIN */
 
 
 

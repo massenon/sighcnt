@@ -17,8 +17,8 @@ import 'referentiels_stock.dart';
 /// Une fiche du magasin (produit, lot, mouvement).
 typedef FicheStock = Map<String, Object?>;
 
-/// RG-05 : préavis de péremption, en jours (paramétrable dans la configuration du module).
-const int delaiPreavisPeremption = 90;
+// RG-05 : le préavis de péremption n'est PLUS une constante (lot PARAM-CLINIQUE, décision 10) : c'est un paramètre de clinique daté, lu à la date par
+// `pcDelaiPeremption` (`parametres_clinique.dart`) et passé à chaque fonction ci-dessous ([preavis] obligatoire, aucun défaut écrit ici).
 
 /// En deçà, l'échéance s'affiche en rouge (le lot doit être servi sans attendre).
 const int delaiEcheanceUrgente = 30;
@@ -120,15 +120,15 @@ int? joursAvantPeremption(DateTime auj, Object? datePeremption) {
 }
 
 /// Statut d'un lot : `perime` (échéance dépassée), `alerte` (dans le délai de préavis, y compris le jour même), `actif`.
-String statutLot(int? jours, {int preavis = delaiPreavisPeremption}) {
+String statutLot(int? jours, {required int preavis}) {
   if (jours == null) return 'actif';
   if (jours < 0) return 'perime';
   if (jours <= preavis) return 'alerte';
   return 'actif';
 }
 
-/// Teinte d'une échéance : `danger` (périmé ou ≤ 30 j), `attention` (≤ 90 j), `neutre` au-delà.
-String teinteEcheance(int? jours, {int preavis = delaiPreavisPeremption}) {
+/// Teinte d'une échéance : `danger` (périmé ou ≤ 30 j), `attention` (dans le préavis lu), `neutre` au-delà.
+String teinteEcheance(int? jours, {required int preavis}) {
   if (jours == null) return 'neutre';
   if (jours < 0 || jours <= delaiEcheanceUrgente) return 'danger';
   if (jours <= preavis) return 'attention';
@@ -136,10 +136,10 @@ String teinteEcheance(int? jours, {int preavis = delaiPreavisPeremption}) {
 }
 
 /// Texte de la colonne « Échéance » du registre des lots : « Périmé depuis 10 j », « Dans 29 j », « 91 j ».
-String texteEcheance(int? jours) {
+String texteEcheance(int? jours, {required int preavis}) {
   if (jours == null) return '—';
   if (jours < 0) return 'Périmé depuis ${jours.abs()} j';
-  if (jours <= delaiPreavisPeremption) return 'Dans $jours j';
+  if (jours <= preavis) return 'Dans $jours j';
   return '$jours j';
 }
 
@@ -150,10 +150,10 @@ String texteEcheanceAlerte(int? jours) {
 }
 
 /// Texte de l'onglet « Lots (FEFO) » de la fiche produit : « Périmé », « Dans N j » (dans le préavis) ou « Valide ».
-String texteEtatLotFiche(int? jours) {
+String texteEtatLotFiche(int? jours, {required int preavis}) {
   if (jours == null) return 'Valide';
   if (jours < 0) return 'Périmé';
-  if (jours <= delaiPreavisPeremption) return 'Dans $jours j';
+  if (jours <= preavis) return 'Dans $jours j';
   return 'Valide';
 }
 
@@ -258,7 +258,7 @@ double _nombreSaisiOuZero(Object? v) {
 
 /// `transform` du registre des lots : le produit est libellé sur le lot, le statut se déduit de l'échéance.
 FicheStock transformerLot(
-    Map<String, Object?> saisie, DateTime auj, Iterable<FicheStock> produits) {
+    Map<String, Object?> saisie, DateTime auj, Iterable<FicheStock> produits, {required int preavis}) {
   final v = {...saisie};
   final q = _nombreSaisi(v['quantiteRestante']);
   if (q != null) v['quantiteRestante'] = q;
@@ -268,6 +268,6 @@ FicheStock transformerLot(
       break;
     }
   }
-  v['statut'] = statutLot(joursAvantPeremption(auj, v['datePeremption']));
+  v['statut'] = statutLot(joursAvantPeremption(auj, v['datePeremption']), preavis: preavis);
   return v;
 }

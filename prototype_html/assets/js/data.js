@@ -2013,6 +2013,72 @@
 
 
   /* ==========================================================================
+   * LES PARAMÈTRES DE CLINIQUE, DATÉS (lot PARAM-CLINIQUE, décisions 10 et 14 de la Direction du 15/11/2026)
+   * --------------------------------------------------------------------------
+   * Deux valeurs vivaient dans le code : le préavis de péremption des lots (90 jours, RG-05 : `SEUIL_PEREMPTION` de l'écran
+   * du stock, son double dans la semence des lots) et les deux bornes des tranches de la balance âgée des créances (30 et 90
+   * jours, écrites dans l'écran des créances et dans le filtre des compagnies). Elles sont une collection, `parametresClinique` :
+   * UNE FICHE PAR VERSION, jamais réécrite ; la valeur en vigueur à une date est celle de la plus grande date d'effet qui ne la
+   * dépasse pas (`null` : depuis toujours, le défaut semé) ; une version à venir s'annule en l'archivant (RG-14). Ce tableau ne
+   * DÉFINIT que les clés, leurs bornes et leur défaut SEMÉ ; aucun écran ne relit une constante. Réglage de BRANCHE : posé à la
+   * mère, il voyage aux fileuls, jamais aux téléphones. Régler est un geste réservé de la fiche RBAC (`regler_parametres_clinique`).
+   * Les BORNES sont une proposition à valider (aucun document ne les fixe) : un préavis d'un jour à deux ans, une tranche courte
+   * d'un jour à un an, une tranche longue plus grande que la courte et au plus deux ans.
+   * ======================================================================== */
+  var SOURCE_PARAMETRES_CLINIQUE = 'Valeur d’avant (constante du code), semée telle quelle : décisions 10 et 14 de la Direction du 15/11/2026 (DECISIONS-A-VALIDER, section AH)';
+  var PARAMETRES_CLINIQUE = [
+    { cle: 'stock.delaiPeremptionJours', libelle: 'Préavis de péremption des lots (jours)', unite: 'jours', defaut: 90, min: 1, max: 730, module: 'M6',
+      aide: 'Un lot dont la date de péremption tombe dans ce délai est « péremption proche » : alerte, tableau de bord, ordre FEFO (RG-05). Entier de 1 à 730.' },
+    { cle: 'creances.trancheCourteJours', libelle: 'Balance âgée : fin de la première tranche (jours)', unite: 'jours', defaut: 30, min: 1, max: 365, module: 'M9',
+      aide: 'Une créance de ce nombre de jours ou moins est dans la première tranche. Entier de 1 à 365, plus petit que la fin de la deuxième tranche.' },
+    { cle: 'creances.trancheLongueJours', libelle: 'Balance âgée : fin de la deuxième tranche (jours)', unite: 'jours', defaut: 90, min: 2, max: 730, module: 'M9',
+      aide: 'Au-delà de ce nombre de jours, la créance est dans la dernière tranche (relance impérative). Entier de 2 à 730, plus grand que la fin de la première tranche.' },
+  ];
+  function semenceParametresClinique() {
+    return PARAMETRES_CLINIQUE.map(function (d, i) {
+      return { id: 'PCL-' + C.pad(i + 1, 3), statut: 'actif', cle: d.cle, valeur: d.defaut, dateEffet: null, source: SOURCE_PARAMETRES_CLINIQUE,
+        motif: 'Défaut semé', creeLe: '2026-11-16', creePar: 'Semence du socle' };
+    });
+  }
+  function definitionParametreClinique(cle) { return PARAMETRES_CLINIQUE.filter(function (d) { return d.cle === cle; })[0] || null; }
+  /** Les versions d'un paramètre de clinique, de la plus ancienne à la plus récente (date d'effet, puis ordre de création ; les archivées n'y sont pas). */
+  function versionsParametreClinique(cle) {
+    var rows = magasinPret() ? lireCollection('parametresClinique').filter(function (p) { return p.cle === cle; }) : [];
+    if (!rows.length) rows = semenceParametresClinique().filter(function (p) { return p.cle === cle; });
+    return rows.slice().sort(function (a, b) {
+      return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')) || String(a.creeLe || '').localeCompare(String(b.creeLe || '')) || String(a.id).localeCompare(String(b.id));
+    });
+  }
+  /** La version en vigueur à une date : { valeur, dateEffet, version (fiche) } ; le défaut de la définition si aucune version ne la couvre (jamais une valeur inventée). */
+  function parametreCliniqueALaDate(cle, date) {
+    var d = dateIso(date), v = null;
+    versionsParametreClinique(cle).forEach(function (p) { if (!p.dateEffet || String(p.dateEffet).slice(0, 10) <= d) v = p; });
+    var def = definitionParametreClinique(cle);
+    if (!v) return { valeur: def ? def.defaut : null, dateEffet: null, version: null, origine: 'defaut' };
+    return { valeur: Number(v.valeur), dateEffet: v.dateEffet || null, version: v, origine: 'version' };
+  }
+  /** RG-05 : le préavis de péremption en vigueur à la date (jours). */
+  function delaiPeremptionALaDate(date) { return parametreCliniqueALaDate('stock.delaiPeremptionJours', date).valeur; }
+  /** Les deux bornes de la balance âgée en vigueur à la date : { courte, longue } (jours). */
+  function tranchesCreancesALaDate(date) {
+    return { courte: parametreCliniqueALaDate('creances.trancheCourteJours', date).valeur, longue: parametreCliniqueALaDate('creances.trancheLongueJours', date).valeur };
+  }
+  /** La tranche d'une créance de `jours` jours, selon les bornes LUES : 'moins30' (première), '30a90' (deuxième), 'plus90' (dernière). Les identifiants restent ceux des écrans. */
+  function trancheCreance(jours, t) { return jours <= t.courte ? 'moins30' : (jours <= t.longue ? '30a90' : 'plus90'); }
+  /** Les trois libellés des tranches, tirés des bornes lues (jamais « 30 » ou « 90 » écrits dans un écran). */
+  function libellesTranches(t) {
+    return { moins30: t.courte + ' jours ou moins', '30a90': 'De ' + (t.courte + 1) + ' à ' + t.longue + ' jours', plus90: 'Au-delà de ' + t.longue + ' jours',
+      courts: { moins30: '≤ ' + t.courte + ' j', '30a90': (t.courte + 1) + ' à ' + t.longue + ' j', plus90: '> ' + t.longue + ' j' } };
+  }
+  /** Le statut d'un lot À LA DATE, selon le préavis lu à cette date : 'perime', 'alerte' (péremption proche) ou 'actif'. Sans date de péremption : le statut écrit. */
+  function statutLotALaDate(l, date) {
+    if (!l || !l.datePeremption) return l ? l.statut : null;
+    var d = dateIso(date);
+    var j = Math.round((Date.parse(String(l.datePeremption).slice(0, 10) + 'T00:00:00Z') - Date.parse(d + 'T00:00:00Z')) / 86400000);
+    return j < 0 ? 'perime' : (j <= delaiPeremptionALaDate(d) ? 'alerte' : 'actif');
+  }
+
+  /* ==========================================================================
    * VALORISATION DES SORTIES DE STOCK
    * --------------------------------------------------------------------------
    * Annotation manuscrite de la réunion du 30/12/2024 : « Paramétrer pour que
@@ -2487,6 +2553,9 @@
     ACTES: ACTES, SECTEURS_ACTIVITE: SECTEURS_ACTIVITE, NS145: NS145,
     NATURES_FACTURE: NATURES_FACTURE, CENTRES_COUTS: CENTRES_COUTS,
     PARAM_STOCK: PARAM_STOCK, FAMILLES_ARTICLES: FAMILLES_ARTICLES, GROUPES_ARTICLES: GROUPES_ARTICLES,
+    PARAMETRES_CLINIQUE: PARAMETRES_CLINIQUE, semenceParametresClinique: semenceParametresClinique, definitionParametreClinique: definitionParametreClinique,
+    versionsParametreClinique: versionsParametreClinique, parametreCliniqueALaDate: parametreCliniqueALaDate, delaiPeremptionALaDate: delaiPeremptionALaDate,
+    tranchesCreancesALaDate: tranchesCreancesALaDate, trancheCreance: trancheCreance, libellesTranches: libellesTranches, statutLotALaDate: statutLotALaDate,
     familleDe: familleDe, groupeDe: groupeDe,
     RUBRIQUES_RESULTAT: RUBRIQUES_RESULTAT, NATURE_CHARGE: NATURE_CHARGE,
     rubriqueDuCompte: rubriqueDuCompte, natureCharge: natureCharge,

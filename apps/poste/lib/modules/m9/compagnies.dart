@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/parametres_clinique_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -61,7 +62,8 @@ class EcranCompagnies extends StatelessWidget with EcranMaquette {
             assures: assures,
             facturesAssurance: fa,
             carteValide: (p) => carteValideLe(c, p),
-            auj: auj);
+            auj: auj,
+            tranches: tranchesCreancesPoste(c.magasin, auj));
 
         return CrudFormulaireSigh(
           collection: c.magasin.collection('assureurs'),
@@ -148,11 +150,11 @@ class EcranCompagnies extends StatelessWidget with EcranMaquette {
                 correspond: (a, v) => filtre('creanceEtat', a, v)),
             FiltreTableau(
                 nom: 'anciennete',
-                libelle: 'Ancienneté de la dette',
+                libelle: 'Ancienneté de la dette (tranches de la balance âgée)',
                 options: [
-                  OptionChamp('plus90', 'Au-delà de 90 jours'),
-                  OptionChamp('30a90', 'De 30 à 90 jours'),
-                  OptionChamp('moins30', 'Moins de 30 jours'),
+                  OptionChamp('plus90', 'Dernière tranche (relance impérative)'),
+                  OptionChamp('30a90', 'Deuxième tranche'),
+                  OptionChamp('moins30', 'Première tranche'),
                 ],
                 correspond: (a, v) => filtre('anciennete', a, v)),
             FiltreTableau(

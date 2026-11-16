@@ -159,6 +159,34 @@ function sigh_cron_circuit(PDO $pdo, string $cle, string $iso)
     return $retenu['valeur'];
 }
 
+/**
+ * LES PARAMÈTRES DE CLINIQUE (lot PARAM-CLINIQUE) : la valeur d'une clé de `parametresClinique` (une fiche par version datée) en vigueur le jour `$iso` : la plus grande date
+ * d'effet qui ne le dépasse pas (`null` : depuis toujours, le défaut semé). Aucune valeur de repli écrite ici : une clé sans version FAIT ÉCHOUER la tâche, nommément.
+ */
+function sigh_cron_parametre_clinique(PDO $pdo, string $cle, string $iso): int
+{
+    $retenu = null;
+    $cleRetenue = '';
+    foreach (sigh_cron_collection($pdo, 'parametresClinique') as $v) {
+        if (($v['cle'] ?? '') !== $cle) {
+            continue;
+        }
+        $d = substr((string) ($v['dateEffet'] ?? ''), 0, 10);
+        if ($d !== '' && $d > $iso) {
+            continue;
+        }
+        $tri = $d . '|' . (string) ($v['creeLe'] ?? '') . '|' . (string) ($v['id'] ?? '');
+        if ($retenu === null || strcmp($tri, $cleRetenue) >= 0) {
+            $retenu = $v;
+            $cleRetenue = $tri;
+        }
+    }
+    if ($retenu === null || !is_numeric($retenu['valeur'] ?? null)) {
+        throw new RuntimeException('Paramètre de clinique « ' . $cle . ' » absent du magasin (écran Règles métier versionnées).');
+    }
+    return (int) $retenu['valeur'];
+}
+
 /** Une sauvegarde qui n'a pas pu s'écrire : exécution en ERREUR (jamais « ok » sans rien avoir écrit) ET alerte critique routée à l'administrateur et à la DAF. */
 function sigh_cron_echec_sauvegarde(string $cle, string $titre, array $refus): array
 {
@@ -273,8 +301,16 @@ function sigh_cron_taches(): array
             'frequence_min' => 60,
             'executer' => function (PDO $pdo, int $auj): array {
                 $out = [];
+                /* Lot PARAM-CLINIQUE : le statut se LIT au jour, selon le préavis de péremption en vigueur (RG-05), jamais le statut écrit à la saisie. */
+                $iso = gmdate('Y-m-d', $auj * 86400);
+                $preavis = sigh_cron_parametre_clinique($pdo, 'stock.delaiPeremptionJours', $iso);
                 foreach (sigh_cron_collection($pdo, 'lots') as $l) {
                     $st = $l['statut'] ?? '';
+                    $dp = substr((string) ($l['datePeremption'] ?? ''), 0, 10);
+                    if ($dp !== '' && ($t = strtotime($dp . 'T00:00:00Z')) !== false) {
+                        $j = (int) round(($t - $auj * 86400) / 86400);
+                        $st = $j < 0 ? 'perime' : ($j <= $preavis ? 'alerte' : 'actif');
+                    }
                     if ($st !== 'perime' && $st !== 'alerte') {
                         continue;
                     }

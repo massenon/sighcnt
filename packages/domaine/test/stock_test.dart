@@ -34,6 +34,9 @@ const etats = {
   'normal': 'Normal'
 };
 
+
+/// Le préavis de péremption SEMÉ (paramètre de clinique, lot PARAM-CLINIQUE) : les vecteurs du stock ont été relevés à cette valeur. Lu au registre, jamais recopié.
+final int preavisSeme = definitionDeParametre(pcCleDelaiPeremption)!.defaut as int;
 void main() {
   // chargés AVANT la déclaration des groupes : certains génèrent un test par cas
   final f = File('test/vecteurs/stock.json');
@@ -167,7 +170,7 @@ void main() {
           kpi(d(), 'Produits périmés'),
           nombre(lots
               .where((l) =>
-                  statutLot(joursAvantPeremption(auj, l['datePeremption'])) ==
+                  statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme) ==
                   'perime')
               .length));
       expect(kpi(d(), 'Valeur stock gros'),
@@ -180,7 +183,7 @@ void main() {
           kpi(d(), 'Péremption sous 90 j'),
           nombre(lots
               .where((l) =>
-                  statutLot(joursAvantPeremption(auj, l['datePeremption'])) ==
+                  statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme) ==
                   'alerte')
               .length));
     });
@@ -190,7 +193,7 @@ void main() {
           produits.where((p) => sousSeuil(p['stock'], p['seuilAlerte'])).length;
       final pe = lots
           .where((l) =>
-              statutLot(joursAvantPeremption(auj, l['datePeremption'])) ==
+              statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme) ==
               'perime')
           .length;
       expect((d()['notes']! as List), [
@@ -221,7 +224,7 @@ void main() {
       final pe = (graphes[3]['args']! as List)[1] as List;
       final st = [
         for (final l in lots)
-          statutLot(joursAvantPeremption(auj, l['datePeremption']))
+          statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme)
       ];
       expect([
         st.where((x) => x == 'perime').length,
@@ -328,13 +331,13 @@ void main() {
       for (var i = 0; i < num.length; i++) {
         final l = lots.firstWhere((x) => x['numeroLot'] == num[i]);
         final j = joursAvantPeremption(auj, l['datePeremption']);
-        expect(texteEcheance(j), ech[i], reason: num[i]);
+        expect(texteEcheance(j, preavis: preavisSeme), ech[i], reason: num[i]);
         expect(
             {
               'perime': 'Périmé',
               'alerte': 'Péremption proche',
               'actif': 'Normal'
-            }[statutLot(j)],
+            }[statutLot(j, preavis: preavisSeme)],
             etat[i],
             reason: num[i]);
       }
@@ -343,15 +346,15 @@ void main() {
     test(
         'bornes du préavis : 0 jour = alerte, 90 = alerte, 91 = actif, -1 = périmé',
         () {
-      expect(statutLot(-1), 'perime');
-      expect(statutLot(0), 'alerte');
-      expect(statutLot(90), 'alerte');
-      expect(statutLot(91), 'actif');
-      expect(teinteEcheance(30), 'danger');
-      expect(teinteEcheance(31), 'attention');
-      expect(teinteEcheance(90), 'attention');
-      expect(teinteEcheance(91), 'neutre');
-      expect(teinteEcheance(-5), 'danger');
+      expect(statutLot(-1, preavis: preavisSeme), 'perime');
+      expect(statutLot(0, preavis: preavisSeme), 'alerte');
+      expect(statutLot(90, preavis: preavisSeme), 'alerte');
+      expect(statutLot(91, preavis: preavisSeme), 'actif');
+      expect(teinteEcheance(30, preavis: preavisSeme), 'danger');
+      expect(teinteEcheance(31, preavis: preavisSeme), 'attention');
+      expect(teinteEcheance(90, preavis: preavisSeme), 'attention');
+      expect(teinteEcheance(91, preavis: preavisSeme), 'neutre');
+      expect(teinteEcheance(-5, preavis: preavisSeme), 'danger');
     });
 
     test(
@@ -374,7 +377,7 @@ void main() {
       final e = s['lots'];
       final st = [
         for (final l in lots)
-          statutLot(joursAvantPeremption(auj, l['datePeremption']))
+          statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme)
       ];
       expect(kpi(e, 'Lots suivis'), nombre(lots.length));
       expect(kpi(e, 'Périmés'), nombre(st.where((x) => x == 'perime').length));
@@ -384,7 +387,7 @@ void main() {
           kpi(e, 'Lots valides'), nombre(st.where((x) => x == 'actif').length));
       final perimes = [
         for (final l in lots)
-          if (statutLot(joursAvantPeremption(auj, l['datePeremption'])) ==
+          if (statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme) ==
               'perime')
             l
       ];
@@ -424,7 +427,7 @@ void main() {
       final e = carte(s['alertes']);
       final st = [
         for (final l in lots)
-          statutLot(joursAvantPeremption(auj, l['datePeremption']))
+          statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme)
       ];
       final ruptures =
           produits.where((p) => nombreOuZero(p['stock']) == 0).toList();
@@ -452,7 +455,7 @@ void main() {
       final num = colonne(t, 'N° LOT');
       final concernes = trierStable([
         for (final l in lots)
-          if (statutLot(joursAvantPeremption(auj, l['datePeremption'])) !=
+          if (statutLot(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme) !=
               'actif')
             l
       ], (l) => l['datePeremption']);
@@ -472,7 +475,7 @@ void main() {
       for (var i = 0; i < num.length; i++) {
         final l = lots.firstWhere((x) => x['numeroLot'] == num[i]);
         expect(
-            texteEtatLotFiche(joursAvantPeremption(auj, l['datePeremption'])),
+            texteEtatLotFiche(joursAvantPeremption(auj, l['datePeremption']), preavis: preavisSeme),
             etat[i]);
       }
     });
@@ -519,7 +522,7 @@ void main() {
         final sortie = carte(c['sortie']);
         if (sortie['creee'] == null)
           return; // champ obligatoire : contrôle du formulaire
-        final t = transformerLot(carte(c['entree']), auj, produits);
+        final t = transformerLot(carte(c['entree']), auj, produits, preavis: preavisSeme);
         final att = carte(sortie['creee']);
         for (final k in [
           'statut',
