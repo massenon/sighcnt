@@ -163,8 +163,19 @@ void main() {
   group('cfg-catalogue', () {
     final cat = obj(v['catalogue']);
     final rows = actives('catalogueTarifs');
+    // La section `catalogue` du vecteur est FIGÉE (l'écran de la maquette a été refait par le lot des prix, E2370 : `SIGH_ARRET_APRES` la conserve) ;
+    // elle a été mesurée sur le jeu d'alors. Le lot TARIF-FIX (section AJ) a ajouté au jeu UNE ligne, CERT-CA « Certificat d'aptitude » (SOS seule) :
+    // les indicateurs se comparent au jeu tel qu'il était, puis le jeu courant doit compter cette ligne de plus, exactement là où elle va.
+    const ajoutsDepuisLeVecteur = {'CERT-CA'};
+    final rowsDuVecteur = [for (final r in rows) if (!ajoutsDepuisLeVecteur.contains(r['code'])) r];
     test('indicateurs et notes de tête', () {
-      kpis(cfaKpisCatalogue(rows), cat['kpis']);
+      expect(rows.length - rowsDuVecteur.length, ajoutsDepuisLeVecteur.length, reason: 'chaque ajout nommé est au jeu, une fois');
+      kpis(cfaKpisCatalogue(rowsDuVecteur), cat['kpis']);
+      expect(cfaNotesCatalogue(rowsDuVecteur).map((x) => s(x.texte)).toList(), [for (final x in (cat['notes'] as List)) s(x)]);
+      final courant = {for (final k in cfaKpisCatalogue(rows)) k.libelle: int.parse(s(k.valeur))};
+      final fige = {for (final k in (cat['kpis'] as List).cast<List>()) k[0] as String: int.parse(s(k[1]))};
+      expect(courant, {...fige, 'Actes au catalogue': fige['Actes au catalogue']! + 1, 'Couverts par SOS seule': fige['Couverts par SOS seule']! + 1},
+          reason: 'CERT-CA est un acte de plus, couvert par SOS seule, avec son prix');
       expect(cfaNotesCatalogue(rows).map((x) => s(x.texte)).toList(), [for (final x in (cat['notes'] as List)) s(x)]);
     });
     test('l’écart est « — » si un prix manque ou si l’acte n’est pas couvert, « + » seulement quand l’assuré paie plus', () {

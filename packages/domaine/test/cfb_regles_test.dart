@@ -376,7 +376,21 @@ void main() {
     ].where((n) => !techniques.contains(n)).toList();
     // Le vecteur date du moment où le jeu comptait ses collections d'alors : les collections ajoutées depuis (support, appels…) ne font pas partie du bilan mesuré.
     final connues = {for (final x in (sy['collections'] as List).cast<List>()) x[0] as String};
-    final fiches = {for (final n in noms.where(connues.contains)) n: jeu(n)};
+    // De même, les fiches ajoutées au jeu APRÈS le vecteur, nommées : le lot TARIF-FIX (section AJ) a posé CERT-CA « Certificat d'aptitude » au
+    // catalogue. Le bilan se compare au jeu d'alors ; chaque ajout nommé doit être au jeu courant, une fois, actif.
+    const ajoutsDepuisLeVecteur = {'catalogueTarifs': {'CERT-CA'}};
+    final fiches = {
+      for (final n in noms.where(connues.contains))
+        n: [for (final f in jeu(n)) if (!(ajoutsDepuisLeVecteur[n] ?? const <String>{}).contains(f['code'])) f]
+    };
+    test('les ajouts au jeu postérieurs au vecteur sont présents, une fois, actifs', () {
+      for (final e in ajoutsDepuisLeVecteur.entries) {
+        for (final code in e.value) {
+          final l = [for (final f in jeu(e.key)) if (f['code'] == code) f];
+          expect([l.length, l.isEmpty ? null : l.first['statut']], [1, 'actif'], reason: '${e.key} $code');
+        }
+      }
+    });
     test('contenu du jeu : collections, enregistrements, actifs, archivés', () {
       final stats = [for (final n in fiches.keys) cfbStatCollection(n, fiches[n]!)];
       final att = {for (final x in (sy['collections'] as List).cast<List>()) x[0] as String: x};
