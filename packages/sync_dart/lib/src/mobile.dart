@@ -112,7 +112,7 @@ class Mobile {
       final op = (jsonDecode(r['op'] as String) as Map).cast<String, Object?>();
       if (r['etat'] == 'acceptee') {
         final res = jsonDecode(r['resultat'] as String) as Map;
-        if (res['numero'] != null) (op['champs'] as Map)['code'] = res['numero'];
+        if (res['numero'] != null) (op['champs'] as Map)['${res['champNumero'] ?? 'code'}'] = res['numero'];
       }
       return op;
     }).toList();

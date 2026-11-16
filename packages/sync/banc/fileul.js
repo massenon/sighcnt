@@ -78,7 +78,7 @@ function enVol() {
     WHERE etat='en_attente' OR (etat='acceptee' AND CAST(json_extract(resultat,'$.seq') AS INTEGER) > ?) ORDER BY ordre`).all(+meta('curseur'));
   return lignes.map((r) => {
     const op = JSON.parse(r.op);
-    if (r.etat === 'acceptee') { const res = JSON.parse(r.resultat); if (res.numero) op.champs.code = res.numero; }
+    if (r.etat === 'acceptee') { const res = JSON.parse(r.resultat); if (res.numero) op.champs[res.champNumero || 'code'] = res.numero; }
     return op;
   });
 }

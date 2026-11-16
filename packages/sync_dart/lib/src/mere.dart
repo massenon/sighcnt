@@ -14,10 +14,14 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         Parametres,
         RefusMobile,
         cfbEssentielles,
+        collectionsAchatsJamaisMobile,
+        collectionsAchatsSynchronisees,
         collectionsGestionJamaisMobile,
         collectionsGestionSynchronisees,
         cpcRefusRejeuBudget,
         cpcRefusRejeuPiece,
+        referenceCommandeDefinitive,
+        refusRejeuValidationCommande,
         mobMotifFonctionNonHabilitee,
         mobPeutPrescrire,
         mobRefusAffectation,
@@ -87,6 +91,9 @@ const familleDeBase = <String, String>{
   // Lot SYNC-CFG (décision 26) : budgets, immobilisations et couvertures d'assurance, écrits à n'importe quel poste. Famille A (champ à champ) : une couverture se CLÔT sur sa propre
   // fiche quand la suivante prend effet, un budget se corrige, un bien se cède ; l'identité est commune par le contenu (`identiteSyncGestion`). Jamais vers un téléphone (RG-13).
   'budgets': 'A', 'immobilisations': 'A', 'couverturesAssurance': 'A',
+  // Lot CMD (AQ point 1) : la commande de stock gros voyage. Famille A, identité commune par le contenu (`identiteSyncCommande`), référence provisoire par poste que la mère remplace par le rang
+  // définitif à l'adoption, validation seulement par décision signée appliquée à la mère. Jamais vers un téléphone (RG-13).
+  'commandes': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
@@ -375,6 +382,13 @@ class Mere {
       if (r != null) return refus(r.code, r.motif, r.geste);
     }
 
+    // LOT CMD : la MÈRE refait la garde RG-04 sur ce qu'un AUTRE POSTE écrit : une validation de commande écrite directement sur la fiche est REFUSÉE au rejeu (refus nommé). Seule la mère écrit une
+    // validation, en appliquant une décision signée déposée dans `demandesValidation`.
+    if (collection == 'commandes' && app.role != 'mere' && (type == 'creer' || type == 'modifier')) {
+      final r = refusRejeuValidationCommande(f?.data, {...?f?.data, ...champsOp});
+      if (r != null) return refus(r.code, r.motif, r.geste);
+    }
+
     // LOT SYNC-CFG : le BUDGET d'un exercice CLOS reçu d'un autre poste est refusé au rejeu, comme une pièce (même garde que le magasin du poste, `cpcGardeBudgets`). Refus nommé.
     if (collection == 'budgets' && app.role != 'mere') {
       final exercices = <Map<String, Object?>>[
@@ -450,8 +464,12 @@ class Mere {
       // Lot SYNC-CFG : budget, bien, couverture portent une identité COMMUNE par le contenu. Deux postes coupés de la mère qui créent la même fiche : la seconde création est une FUSION
       // champ à champ, jamais un refus bruyant à « traiter » ; les mêmes valeurs sont acceptées sans effet, un champ que la première n'a pas posé s'ajoute, une valeur différente d'un champ
       // déjà écrit est un CONFLIT nommé (`fusionnee`), jamais un écrasement silencieux.
-      if (f != null && collectionsGestionSynchronisees.contains(collection)) {
-        final differents = <String, Object?>{for (final e in champsOp.entries) if (enJson(f.data[e.key]) != enJson(e.value)) e.key: e.value};
+      if (f != null && (collectionsGestionSynchronisees.contains(collection) || collectionsAchatsSynchronisees.contains(collection))) {
+        // Lot CMD : la référence d'une commande déjà adoptée ne se réécrit JAMAIS (la seconde création porte une autre référence provisoire) ; le reste fusionne champ à champ.
+        final differents = <String, Object?>{
+          for (final e in champsOp.entries)
+            if (!(collection == 'commandes' && e.key == 'reference' && '${f.data['reference'] ?? ''}'.isNotEmpty) && enJson(f.data[e.key]) != enJson(e.value)) e.key: e.value
+        };
         if (differents.isEmpty) return {'id': id, 'statut': 'acceptee', 'seq': await seqMax(), 'rejeu': true};
         return traiter({...op, 'type': 'modifier', 'champs': differents, 'vu': const <String, Object?>{}}, app);
       }
@@ -477,6 +495,20 @@ class Mere {
         final dup = await base.select("SELECT 1 FROM fiches WHERE collection='patients' AND ${base.champJson('data', 'code')}=?", ['${champs['code']}']);
         if (dup.isNotEmpty) return refus('doublon_numero', 'Code patient déjà attribué : ${champs['code']}', 'Demander une nouvelle plage');
       }
+      // Lot CMD : la MÈRE attribue le rang DÉFINITIF d'une commande créée sur un fileul (référence provisoire `BC-AAAA-P<poste>-nnnn`) ; une référence définitive ne se réécrit jamais.
+      String? champNumero;
+      if (collection == 'commandes') {
+        final prov = '${champs['reference'] ?? ''}';
+        final refs = <String>[
+          for (final r in await base.select("SELECT data FROM fiches WHERE collection='commandes'")) '${(jsonDecode(r['data'] as String) as Map)['reference'] ?? ''}'
+        ];
+        final def = referenceCommandeDefinitive(prov, refs);
+        if (def != null) {
+          champs['reference'] = def;
+          numero = def;
+          champNumero = 'reference';
+        }
+      }
       String? doublon;
       if (collection == 'patients' && champs['nom'] != null && '${champs['nom']}'.isNotEmpty && champs['naissance'] != null && '${champs['naissance']}'.isNotEmpty) {
         final nomK = '${champs['nom']}'.trim().toLowerCase();
@@ -494,7 +526,7 @@ class Mere {
         await base.exec('INSERT INTO conflits(collection,fiche,champ,a,b,appareil) VALUES(?,?,?,?,?,?)',
             [collection, ficheId, 'doublon_possible', enJson(doublon), enJson(ficheId), app.uuid]);
       }
-      return {'id': id, 'statut': 'acceptee', 'seq': seq, 'numero': ?numero, 'doublon_possible': ?doublon};
+      return {'id': id, 'statut': 'acceptee', 'seq': seq, 'numero': ?numero, 'champNumero': ?champNumero, 'doublon_possible': ?doublon};
     }
     if (f == null) return refus('fiche_inconnue', 'Fiche inconnue : $ficheId', 'Rafraîchir le poste');
     if (type == 'archiver' || type == 'restaurer') {
@@ -682,7 +714,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, ...collectionsAchatsJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})

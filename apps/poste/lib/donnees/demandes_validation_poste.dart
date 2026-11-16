@@ -13,9 +13,20 @@ import 'magasin.dart';
 ///
 /// [ecrireVerdict] est LE chemin d'écriture d'une validation, partagé avec le geste direct de `ValidationPoste` : une seule copie du code qui écrit le marquage et sa ligne de journal (RG-12).
 class DemandesValidationPoste {
-  DemandesValidationPoste(this.m, {required this.libelles, DateTime Function()? horloge, this.etiquette = 'F'}) : _horloge = horloge ?? DateTime.now;
+  DemandesValidationPoste(this.m, {required this.libelles, DateTime Function()? horloge, this.etiquette = 'F', this.matrice}) : _horloge = horloge ?? DateTime.now;
   final Magasin m;
   final Map<String, String> libelles;
+
+  /// La matrice des droits (lot CMD) : le geste réservé `valider_commande_stock` se relit à la mère SOUS LE RÔLE DE L'AUTEUR. Absente (outil) : aucun rôle ne détient le geste.
+  final MatriceDroits? matrice;
+
+  bool _gesteCommande(String role) => matrice?.droitGeste(role, gesteValiderCommandeStock) ?? false;
+  String _libelleRole(String role) => matrice?.libelle(role) ?? role;
+  String get _valideursCommande {
+    final n = [for (final r in matrice?.matriceGestes.rolesAvec(gesteValiderCommandeStock) ?? const <String>[]) _libelleRole(r)];
+    if (n.isEmpty) return 'aucun rôle';
+    return n.length > 1 ? '${n.sublist(0, n.length - 1).join(', ')} ou ${n.last}' : n.first;
+  }
   final String etiquette;
   final DateTime Function() _horloge;
 
@@ -49,11 +60,61 @@ class DemandesValidationPoste {
     return r;
   }
 
+  /// LOT CMD, FILEUL : signe et dépose la décision de VALIDER une commande de stock gros (geste réservé `valider_commande_stock`, RG-04). Le droit est contrôlé ici (refus nommé), la mère le
+  /// RELIT sous le rôle de l'auteur. La commande reste « en attente de validation » chez tous les postes tant que la mère n'a pas appliqué. Journalise une ligne (RG-12).
+  VerdictDepotValidation deposerCommande(Fiche commande, {required String role, required String acteur}) {
+    final r = commandeDeposerValidation(
+        commande: commande,
+        role: role,
+        acteur: acteur,
+        maintenant: _horloge(),
+        gesteAccorde: _gesteCommande(role),
+        libelleRole: _libelleRole(role),
+        valideurs: _valideursCommande,
+        demandes: [for (final d in demandes) {...d}],
+        etiquette: etiquette);
+    if (!r.ok) return r;
+    try {
+      m.collection(valCollectionDemandes).inserer(r.fiche!);
+    } on EcritureRefusee catch (e) {
+      return VerdictDepotValidation.refus(RefusValidation('ECRITURE_REFUSEE', e.motif, null));
+    }
+    m.journaliser('Validation : décision déposée à la mère (signée)', 'M7', valLibelleCommandeStock, '${commande['reference']}', null, {'role': role, 'demandePar': acteur, 'demandeLe': r.fiche!['demandeLe']});
+    return r;
+  }
+
+  /// LOT CMD, MÈRE : applique la décision de validation d'une commande (mêmes contrôles que le geste direct, sous le rôle de l'auteur, datée de la signature) puis écrit la validation comme le geste.
+  int _appliquerCommande(Fiche d) {
+    final a = commandeAppliquerDemande(d,
+        maintenant: _horloge(),
+        commandes: [for (final c in m.collection('commandes').toutes) {...c}],
+        gesteDe: _gesteCommande,
+        libelleRole: _libelleRole,
+        valideurs: _valideursCommande,
+        comptes: m.collection('utilisateurs').toutes);
+    if (a == null) return 0;
+    var champs = a.champsDemande;
+    if (a.ok) {
+      try {
+        m.collection('commandes').mettreAJour(a.commandeId, a.patch!, journaliser: false);
+        m.journaliser('Validation', 'M7', valLibelleCommandeStock, '${d['reference'] ?? d['cible']}', {'statutCommande': 'attente_validation'}, {...a.patch!, 'signeLe': d['demandeLe']});
+      } on EcritureRefusee catch (e) {
+        champs = {'etat': valEtatRefusee, 'traiteLe': a.champsDemande['traiteLe'], 'resultatCode': 'ECRITURE_REFUSEE', 'resultatMotif': e.motif, 'resultatGeste': null};
+      }
+    }
+    m.collection(valCollectionDemandes).mettreAJour(d['id'], {...champs, 'traitePar': 'Mère'}, journaliser: false);
+    return 1;
+  }
+
   /// MÈRE : applique les décisions déposées. Rend le nombre de demandes traitées (appliquées ou refusées en nommant).
   int appliquer() {
     var n = 0;
     final col = m.collection(valCollectionDemandes);
     for (final d in valDemandesEnAttente(col.toutes)) {
+      if (d['famille'] == valFamilleCommandeStock) {
+        n += _appliquerCommande(d);
+        continue;
+      }
       // Lot CLO-3 point 6 : le compte signataire doit exister à la mère avec ce rôle à la date de la signature (refus nommé sinon).
       final a = valAppliquerDemande(d, maintenant: _horloge(), lire: lire, libelles: libelles, comptes: m.collection('utilisateurs').toutes);
       if (a == null) continue;

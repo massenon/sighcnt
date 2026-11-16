@@ -44,7 +44,7 @@ const ecrireConfirme = (c, id, s) => db.prepare(`INSERT INTO confirme(collection
   ON CONFLICT(collection,id) DO UPDATE SET data=excluded.data, fieldseq=excluded.fieldseq, archive=excluded.archive, dulot=excluded.dulot`).run(c, id, JSON.stringify(s.data), JSON.stringify(s.fieldseq), s.archive ? 1 : 0, s.dulot ? 1 : 0);
 function enVol() {
   return db.prepare(`SELECT op, resultat, etat FROM file WHERE etat IN ('en_attente','envoyee') OR (etat='acceptee' AND CAST(json_extract(resultat,'$.seq') AS INTEGER) > ?) ORDER BY ordre`)
-    .all(+meta('curseur_seq', 0)).map((r) => { const op = JSON.parse(r.op); if (r.etat === 'acceptee') { const res = JSON.parse(r.resultat); if (res.numero) op.champs.code = res.numero; } return op; });
+    .all(+meta('curseur_seq', 0)).map((r) => { const op = JSON.parse(r.op); if (r.etat === 'acceptee') { const res = JSON.parse(r.resultat); if (res.numero) op.champs[res.champNumero || 'code'] = res.numero; } return op; });
 }
 function vue(c, id) { const s = lireConfirme(c, id); for (const op of enVol()) if (op.collection === c && op.fiche === id) { appliquer(s, op, 0); s.existe = true; } return s; }
 function liste(c) {

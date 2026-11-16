@@ -335,7 +335,7 @@ final List<_Source> _sources = [
           return _Ligne(
               'decision-attente:${d['id']}',
               'important',
-              'Décision en attente de la mère${age == null ? '' : ' depuis ${valDureeLisible(age)}'} : ${f?.libelle ?? d['famille']}',
+              'Décision en attente de la mère${age == null ? '' : ' depuis ${valDureeLisible(age)}'} : ${f?.libelle ?? d['libelle'] ?? d['famille']}',
               'Signée par ${d['demandePar']}. La mère l\'applique dès qu\'elle est joignable : le travail continue, rien n\'est bloqué ni validé d\'office. Vérifier que le poste de la mère est allumé et relié.',
               f?.ecran,
               [...?f?.roles, 'admin']);

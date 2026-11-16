@@ -40,6 +40,8 @@ const Map<String, ({String champ, String marqueur})> champsNumero = {
   'factures': (champ: 'numero', marqueur: 'numeroEnDoublon'),
   'avoirs': (champ: 'reference', marqueur: 'numeroEnDoublon'),
   'ecritures': (champ: 'numero', marqueur: 'numeroEnDoublon'),
+  // Lot CMD : deux commandes au même rang DÉFINITIF (la mère de ce poste et la mère du service en ont tiré chacune un) : marquées, jamais corrigées en silence.
+  'commandes': (champ: 'reference', marqueur: 'numeroEnDoublon'),
 };
 
 const _ordreStatutPaiement = {'impayee': 0, 'partielle': 1, 'soldee': 2};
