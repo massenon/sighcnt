@@ -14,6 +14,9 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         Parametres,
         RefusMobile,
         cfbEssentielles,
+        collectionsGestionJamaisMobile,
+        collectionsGestionSynchronisees,
+        cpcRefusRejeuBudget,
         cpcRefusRejeuPiece,
         mobMotifFonctionNonHabilitee,
         mobPeutPrescrire,
@@ -81,6 +84,9 @@ const familleDeBase = <String, String>{
   'courriers': 'A', 'documentsPatient': 'A', 'fichiers': 'B',
   // Lot OCR-prep : une lecture OCR est une version immuable du texte d'un fichier (famille B : ajout seul, identité commune).
   'lecturesOcr': 'B',
+  // Lot SYNC-CFG (décision 26) : budgets, immobilisations et couvertures d'assurance, écrits à n'importe quel poste. Famille A (champ à champ) : une couverture se CLÔT sur sa propre
+  // fiche quand la suivante prend effet, un budget se corrige, un bien se cède ; l'identité est commune par le contenu (`identiteSyncGestion`). Jamais vers un téléphone (RG-13).
+  'budgets': 'A', 'immobilisations': 'A', 'couverturesAssurance': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
@@ -109,6 +115,9 @@ const Set<String> collectionsValidationJamaisMobile = {'demandesValidation'};
 /// (courriers, documents du patient, y compris les pièces de zone 1 : pièce d'identité, carte d'assurance), ni le registre par empreinte et son texte indexé. Aucun écran du
 /// téléphone ne les lit ; un téléphone perdu n'emporte ni scan ni texte de scan.
 const Set<String> collectionsFichiersJamaisMobile = {'courriers', 'documentsPatient', 'fichiers', 'lecturesOcr'};
+
+// Lot SYNC-CFG : budgets, immobilisations et couvertures d'assurance ne vont JAMAIS vers un téléphone (RG-13) : `collectionsGestionJamaisMobile`, lue du domaine.
+
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
@@ -366,6 +375,15 @@ class Mere {
       if (r != null) return refus(r.code, r.motif, r.geste);
     }
 
+    // LOT SYNC-CFG : le BUDGET d'un exercice CLOS reçu d'un autre poste est refusé au rejeu, comme une pièce (même garde que le magasin du poste, `cpcGardeBudgets`). Refus nommé.
+    if (collection == 'budgets' && app.role != 'mere') {
+      final exercices = <Map<String, Object?>>[
+        for (final r in await base.select("SELECT data FROM fiches WHERE collection='exercices' AND archive=0")) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
+      ];
+      final r = cpcRefusRejeuBudget(exercices, {...?f?.data, ...champsOp});
+      if (r != null) return refus(r.code, r.motif, r.geste);
+    }
+
     // L0 : une version de paramètre est une fiche IMMUABLE. La mère REFAIT le contrôle du poste (même fonction, domaine) : version croissante, type, date d'effet,
     // valeur déjà utilisée par une pièce (usages relevés des postes), téléphone interdit pour un paramètre réservé. Un refus est nommé, jamais avalé.
     if (collection == parCollectionParametres) {
@@ -429,6 +447,14 @@ class Mere {
       // Lot CLO-2 (C5) : l'exercice `EXO-<année>` est une identité COMMUNE (chaque poste en dérive la fiche) : la seconde création est ACCEPTÉE SANS EFFET, jamais un refus bruyant
       // à « traiter ». Ses changements d'état arrivent ensuite par des modifications champ à champ.
       if (f != null && collection == 'exercices') return {'id': id, 'statut': 'acceptee', 'seq': await seqMax(), 'rejeu': true};
+      // Lot SYNC-CFG : budget, bien, couverture portent une identité COMMUNE par le contenu. Deux postes coupés de la mère qui créent la même fiche : la seconde création est une FUSION
+      // champ à champ, jamais un refus bruyant à « traiter » ; les mêmes valeurs sont acceptées sans effet, un champ que la première n'a pas posé s'ajoute, une valeur différente d'un champ
+      // déjà écrit est un CONFLIT nommé (`fusionnee`), jamais un écrasement silencieux.
+      if (f != null && collectionsGestionSynchronisees.contains(collection)) {
+        final differents = <String, Object?>{for (final e in champsOp.entries) if (enJson(f.data[e.key]) != enJson(e.value)) e.key: e.value};
+        if (differents.isEmpty) return {'id': id, 'statut': 'acceptee', 'seq': await seqMax(), 'rejeu': true};
+        return traiter({...op, 'type': 'modifier', 'champs': differents, 'vu': const <String, Object?>{}}, app);
+      }
       if (f != null) return refus('fiche_existe', 'Cette fiche existe déjà.', 'Aucun');
       final champs = {...champsOp};
       String? numero;
@@ -656,7 +682,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsValidationJamaisMobile, ...collectionsFichiersJamaisMobile, ...collectionsGestionJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})

@@ -7,6 +7,7 @@ export 'src/sync/operation.dart';
 export 'src/sync/familles.dart';
 export 'src/sync/codes.dart';
 export 'src/sync/pair.dart';
+export 'src/sync/gestion_synchronisee.dart';
 export 'src/parametres/parametres.dart';
 export 'src/tableaux/sortie_tableau.dart';
 export 'src/parametres/definitions.dart';
