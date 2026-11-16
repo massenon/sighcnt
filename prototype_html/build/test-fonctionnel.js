@@ -8518,7 +8518,8 @@ async function viderMessages(page) {
         /* Colonnes INVERSÉES (26/08) : pelvienne 9 000 et ECG 15 000 pour le
            non-assuré. */
         tarifs: pel.prix === 9000 && ecg.prix === 15000,
-        refusNomme: /Tarif non renseigné/.test(refus || '') && /IMG-FAUX/.test(refus || ''),
+        /* LOT TARIF-FIX-2 : un examen ABSENT du catalogue est refusé en le nommant (un examen du catalogue sans tarif, lui, se prescrit et attend son prix à la caisse). */
+        refusNomme: /Examen absent du catalogue d’imagerie/.test(refus || '') && /IMG-FAUX/.test(refus || ''),
         pelPayee: pelApres.statut === 'payee' && pelApres.bloqueParPaiement === false,
         ecgAttend: ecgApres.statut === 'demandee' && ecgApres.bloqueParPaiement === true,
         taches,
@@ -8530,7 +8531,7 @@ async function viderMessages(page) {
       && moteur.taches.indexOf('encaissement:en_attente') !== -1
       && moteur.taches.indexOf('imagerie:bloque') !== -1);
     verifier('RG-09 sur la grille inversée : pelvienne 9 000, ECG 15 000 (non assuré)', moteur.tarifs);
-    verifier('Un examen sans tarif est refusé EN LE NOMMANT', moteur.refusNomme);
+    verifier('Un examen absent du catalogue est refusé EN LE NOMMANT', moteur.refusNomme);
     verifier('Le règlement partiel libère l’examen NOMMÉ : pelvienne payée, ECG en attente',
       moteur.pelPayee && moteur.ecgAttend);
 
@@ -22569,8 +22570,11 @@ async function viderMessages(page) {
     const px = await T.prixAu(p3, null);
     const presc = await T.prescrire(p3, 2, null, false);
     const apresOrd = await page.evaluate(() => window.SIGH.store.collection('ordonnances').all().length + '/' + window.SIGH.store.collection('factures').all().length);
-    verifier('L’accesseur dit « absent » avec son motif (prix d’achat non renseigné, à valider) ; la PRESCRIPTION est refusée en nommant l’article (« Prix d’achat absent pour : … jamais à zéro ») et n’écrit NI ordonnance NI facture',
-      px.absent === true && /à valider/.test(px.motif) && presc.ok === false && /Prix d’achat absent pour/.test(presc.erreur) && /Lancettes sonde 136/.test(presc.erreur) && /jamais à zéro/.test(presc.erreur) && avantOrd === apresOrd, JSON.stringify({ px, presc, avantOrd, apresOrd }));
+    /* LOT TARIF-FIX-2 (Direction, 16/11/2026) : le médecin prescrit TOUJOURS ; la ligne dit « prix à valoriser » (jamais 0) et seule la caisse attend le prix. */
+    const prescPiece = presc.ok ? await page.evaluate((id) => { const f = window.SIGH.store.collection('factures').get(id); const l = f.lignes[0]; return { pu: l.prixUnitaire, montant: l.montant, manque: l.prixManquant || null, total: f.montantTTC, attente: f.enAttentePrix === true }; }, presc.factureId) : null;
+    verifier('L’accesseur dit « absent » avec son motif (prix d’achat non renseigné, à valider) ; la PRESCRIPTION est acceptée (lot TARIF-FIX-2) et sa ligne dit « prix à valoriser » en nommant l’article, prix et total NULS (jamais 0), pièce en attente de prix',
+      px.absent === true && /à valider/.test(px.motif) && presc.ok === true && prescPiece && prescPiece.pu === null && prescPiece.montant === null && prescPiece.total === null && prescPiece.attente
+        && prescPiece.manque && prescPiece.manque.nature === 'prix_achat' && /prix à valoriser/.test(prescPiece.manque.motif) && /Lancettes sonde 136/.test(prescPiece.manque.motif), JSON.stringify({ px, presc, prescPiece, avantOrd, apresOrd }));
     await poserSessionServeur(roleImp('caissier', 'CAISSE136'));
     await ouvrir('m8-facturation.html');
     const caisse = await page.evaluate(async (c1, c3) => {
@@ -27298,7 +27302,7 @@ async function viderMessages(page) {
   });
 
   await etape(async () => {
-    scenario('Vague 186 : lot TARIF-FIX, la prescription d’actes ne produit JAMAIS un zéro silencieux (chaque code des trois espaces, deux colonnes : un prix strictement positif ou « prix à définir » nommé avec sa cause et son geste, refusé avant toute écriture), lecture par le référentiel unique, colonne vide jamais remplacée par l’autre, écran qui dit « prix à définir » et « non calculable »');
+    scenario('Vague 186 : lot TARIF-FIX, la prescription d’actes ne produit JAMAIS un zéro silencieux (chaque code des trois espaces, deux colonnes : un prix strictement positif ou « prix à définir » nommé avec sa cause et son geste ; depuis TARIF-FIX-2 la prescription est acceptée et seule la caisse attend), lecture par le référentiel unique, colonne vide jamais remplacée par l’autre, écran qui dit « prix à définir » et « non calculable »');
     erreursJS = [];
     await poserSessionServeur({ role: 'admin', nom: 'ADMIN186', nomComplet: 'ADMIN186', fonction: 'direction', identifiant: 's186.admin', secteur: 'DIR' });
     await ouvrir('m8-facturation.html');
@@ -27310,27 +27314,28 @@ async function viderMessages(page) {
       /* Le relevé EXHAUSTIF passe par la lecture que le moteur appelle (`PR.prixLignePrescription`) ; le moteur lui-même est appelé pour CHAQUE ligne à prix à définir
          (un refus n'écrit rien) et pour un échantillon de lignes tarifées (une facture écrite chacune, pour ne pas charger le magasin de cinq cents pièces de sonde). */
       const nF0 = S.raw().factures.length, nO0 = S.raw().ordonnances.length;
-      const R = { codes: codes.length, zero: [], refus: 0, refusSansGeste: [], refusSansCode: [], prix: 0, causes: {}, ecrituresRefus: 0, echantillon: 0, lectureMoteur: [] };
+      const R = { codes: codes.length, zero: [], refus: 0, attente: 0, refusSansGeste: [], refusSansCode: [], prix: 0, causes: {}, ecrituresRefus: 0, echantillon: 0, lectureMoteur: [] };
       let tarifees = 0;
       codes.forEach((c) => [ptNon, ptAss].forEach((pt) => {
         const lu = PR.prixLignePrescription(c, now, pt === ptAss, 'acte');
         if (lu.ok && !(lu.montant > 0)) R.zero.push(c + ' (lecture)');
         if (lu.ok && tarifees++ % 12 !== 0) { R.prix++; return; }
-        const f0 = S.raw().factures.length;
+        /* LOT TARIF-FIX-2 (Direction, 16/11/2026) : une ligne sans prix ne refuse PLUS la prescription ; elle porte `prixManquant` (prix, montant et total NULS,
+           jamais 0) et seule la caisse l'attend. Tout refus de la prescription est désormais un défaut. */
         try {
           const r = PR.prescrire({ patientCode: pt.code, medecin: 'S186', diagnostic: 'sonde 186', actes: [c] });
           const l = r.facture.lignes.filter((x) => x.acteCode === c)[0];
-          if (!l || !(l.prixUnitaire > 0) || !(l.montant > 0)) R.zero.push(c + (pt === ptAss ? ' (assuré)' : '')); else { R.prix++; R.echantillon++; }
-          if (!lu.ok || l.prixUnitaire !== lu.montant) R.lectureMoteur.push(c);
+          if (l && l.prixManquant) {
+            R.refus++; R.attente++;
+            if (lu.ok) R.lectureMoteur.push(c + ' sans prix');
+            if (!(l.prixUnitaire === null && l.montant === null && r.facture.montantTTC === null && r.facture.enAttentePrix === true)) R.zero.push(c + ' (attente non nulle)');
+            const mq = l.prixManquant;
+            if (!mq.geste || !/prix à définir/.test(mq.motif) || mq.motif.indexOf(c) < 0) R.refusSansGeste.push(c);
+            R.causes[mq.cause] = (R.causes[mq.cause] || 0) + 1;
+          } else if (!l || !(l.prixUnitaire > 0) || !(l.montant > 0)) R.zero.push(c + (pt === ptAss ? ' (assuré)' : '')); else { R.prix++; R.echantillon++; }
+          if (l && !l.prixManquant && (!lu.ok || l.prixUnitaire !== lu.montant)) R.lectureMoteur.push(c);
         } catch (e) {
-          R.refus++;
-          if (lu.ok) R.lectureMoteur.push(c + ' refusé');
-          if (e.code !== 'PRIX_A_DEFINIR') R.refusSansCode.push(c + ' : ' + String(e.message).slice(0, 60));
-          else {
-            if (!e.geste || !/prix à définir/.test(e.message) || e.message.indexOf(c) < 0) R.refusSansGeste.push(c);
-            (e.lignes || []).forEach((x) => { R.causes[x.cause] = (R.causes[x.cause] || 0) + 1; });
-          }
-          if (S.raw().factures.length !== f0) R.ecrituresRefus++;
+          R.refusSansCode.push(c + ' refusé : ' + String(e.message).slice(0, 60));
         }
       }));
       R.dFactures = S.raw().factures.length - nF0; R.dOrdonnances = S.raw().ordonnances.length - nO0;
@@ -27340,8 +27345,8 @@ async function viderMessages(page) {
       R.attenduConsGen = [PR.tarifALaDate('CONS-GEN', null, false).montant, PR.tarifALaDate('CONS-GEN', null, true).montant];
       return R;
     });
-    verifier('Chaque code des trois espaces (grille, actes, analyses), patient non assuré puis assuré à carte valide : AUCUNE ligne à 0 (lecture du moteur pour tous, moteur appelé pour chaque ligne sans prix et un échantillon tarifé, même montant) ; chaque refus est « PRIX_A_DEFINIR », nomme le code, dit « prix à définir » et porte son geste ; un refus n’écrit ni facture ni ordonnance',
-      m.codes >= 268 && m.zero.length === 0 && m.refusSansGeste.length === 0 && m.refusSansCode.length === 0 && m.ecrituresRefus === 0 && m.prix > 0 && m.echantillon >= 10 && m.lectureMoteur.length === 0 && m.dFactures === m.echantillon, JSON.stringify(Object.assign({}, m, { zero: m.zero.slice(0, 12) })));
+    verifier('Chaque code des trois espaces (grille, actes, analyses), patient non assuré puis assuré à carte valide : AUCUNE ligne à 0 (lecture du moteur pour tous, moteur appelé pour chaque ligne sans prix et un échantillon tarifé, même montant) ; lot TARIF-FIX-2 : AUCUN refus de la prescription, chaque ligne sans prix nomme le code, dit « prix à définir », porte son geste, et sa pièce a un total nul (non calculable)',
+      m.codes >= 268 && m.zero.length === 0 && m.refusSansGeste.length === 0 && m.refusSansCode.length === 0 && m.prix > 0 && m.echantillon >= 10 && m.lectureMoteur.length === 0 && m.dFactures === m.echantillon + m.attente, JSON.stringify(Object.assign({}, m, { zero: m.zero.slice(0, 12) })));
     verifier('Le référentiel UNIQUE est lu par la prescription d’actes : un certificat (CERT-APT, 7 000) et une consultation (CONS-GEN, les deux colonnes de son prix en vigueur) ne tombent plus à 0 hors de l’espace des actes',
       m.certApt === 7000 && m.consGen === m.attenduConsGen[0] && m.consGenAss === m.attenduConsGen[1] && m.consGen > 0, JSON.stringify([m.certApt, m.consGen, m.consGenAss, m.attenduConsGen, m.causes]));
     /* 2. Les DEUX colonnes : une colonne vide n'est jamais remplacée par l'autre (moteur pur, index de sonde) ; un prix non assuré absent ne prend pas le prix assuré */
@@ -27401,8 +27406,10 @@ async function viderMessages(page) {
       const suf = Date.now().toString(36).toUpperCase().slice(-5);
       const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
       const ptAss = S.collection('patients').active().filter((p) => !p.externe && p.assureur && PR.carteValide(p, new Date().toISOString()) && Number(p.tauxPriseEnCharge) > 0)[0];
+      /* LOT TARIF-FIX-2 : une ligne sans prix ne refuse plus la prescription ; elle porte `prixManquant` (le « refus » lu ici est celui que la caisse opposera). */
       const essai = (code, patient, voie) => { try { const v = { patientCode: (patient || pt).code, medecin: 'S187', diagnostic: 's' }; v[voie || 'actes'] = [code]; const r = PR.prescrire(v);
-        const l = r.facture.lignes[0]; return { prix: l.prixUnitaire, id: r.facture.id }; } catch (e) { return { refus: e.code, cause: (e.lignes || [])[0] && e.lignes[0].cause, texte: String(e.message).slice(0, 220), geste: e.geste || null }; } };
+        const l = r.facture.lignes[0]; if (l.prixManquant) return { refus: 'PRIX_A_DEFINIR', cause: l.prixManquant.cause, texte: String(l.prixManquant.motif).slice(0, 220), geste: l.prixManquant.geste || null, nul: l.prixUnitaire === null && r.facture.montantTTC === null, id: r.facture.id };
+        return { prix: l.prixUnitaire, id: r.facture.id }; } catch (e) { return { refusPrescription: e.code || 'ERREUR', texte: String(e.message).slice(0, 220) }; } };
       const R = { jour, demain };
       /* (a) un code sans prix, puis proposition et Oui à effet d'AUJOURD'HUI : la prescription SUIVANTE lit ce prix, sans rechargement */
       const cA = 'TF187A' + suf;
@@ -27713,6 +27720,269 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT EXP FIN */
+
+  /* LOT TARIF-FIX-2 DEBUT (Vagues 195 à 197) : prescrire toujours, bloquer seulement l'encaissement d'une ligne sans prix (Direction, 16/11/2026, section AL point 2) */
+  await etape(async () => {
+    scenario('Vague 195 : lot TARIF-FIX-2, le médecin prescrit TOUJOURS : médicament sans prix d’achat (« prix à valoriser »), analyse, acte et examen d’imagerie sans prix (« prix à définir »), soins, demande externe et imagerie directe ; chaque ligne sans prix est NOMMÉE (nature, cause, motif, geste), jamais 0, le total est « Non calculable » (nul) et la pièce est marquée en attente de prix');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN195', nomComplet: 'ADMIN195', fonction: 'direction', identifiant: 's195.admin', secteur: 'DIR' });
+    await ouvrir('m8-facturation.html');
+    const r = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core;
+      const jour = C.iso(C.aujourdhui()), suf = Date.now().toString(36).toUpperCase().slice(-5);
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur && !p.personnelId)[0];
+      const cActe = 'TF195A' + suf, cAna = 'TF195L' + suf, cImg = 'TF195I' + suf, cProd = 'TF195M' + suf;
+      /* un acte PROPOSÉ non décidé, une analyse ABSENTE du référentiel, un examen d'imagerie du catalogue SANS TARIF, un médicament SANS PRIX D'ACHAT */
+      PR.proposerTarif({ code: cActe, prixNonAssure: 2500, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 195', creation: { libelle: 'Acte sonde 195', famille: 'ACTE', secteur: 'Soins' } });
+      S.collection('examensImagerie').insert({ id: 'EXI-' + cImg, code: cImg, label: 'Imagerie sonde 195', modalite: 'echographie', statut: 'actif' });
+      const prod = S.collection('produits').insert({ id: 'PRD-' + cProd, code: cProd, designation: 'Médicament sonde 195', categorie: 'medicament', unite: 'Boîte', stock: 50, stockDetail: 50, stockGros: 0, statut: 'actif', valorisationProvisoire: true }).record;
+      const nF0 = S.raw().factures.length, nO0 = S.raw().ordonnances.length;
+      let res = null, erreur = null;
+      try {
+        res = PR.prescrire({ patientCode: pt.code, medecin: 'S195', diagnostic: 'sonde 195', medicaments: [{ produitId: prod.id, quantite: 2 }], analyses: [cAna], actes: [cActe, 'CONS-GEN'], imagerie: [cImg] });
+      } catch (e) { erreur = String(e.message).slice(0, 200); }
+      const R = { erreur, codes: { cActe, cAna, cImg, cProd }, dF: S.raw().factures.length - nF0, dO: S.raw().ordonnances.length - nO0 };
+      if (res) {
+        const f = res.facture, o = res.ordonnance;
+        const pend = f.lignes.filter((l) => l.prixManquant), prix = f.lignes.filter((l) => !l.prixManquant);
+        R.facture = { total: f.montantTTC, partPatient: f.partPatient, reliquat: f.reliquat, attente: f.enAttentePrix === true, statut: f.statutPaiement, mecef: f.statutMecef };
+        R.pend = pend.map((l) => ({ cat: l.categorie, pu: l.prixUnitaire, m: l.montant, pp: l.partPatient, nat: l.prixManquant.nature, code: l.prixManquant.code, cause: l.prixManquant.cause, motif: l.prixManquant.motif, geste: !!l.prixManquant.geste }));
+        R.prix = prix.map((l) => ({ cat: l.categorie, pu: l.prixUnitaire, m: l.montant }));
+        R.zero = f.lignes.filter((l) => l.prixUnitaire === 0 || l.montant === 0).length;
+        R.ord = { montant: o.montant, med: o.montantMedicaments, ana: o.montantAnalyses, act: o.montantActes, img: o.montantImagerie, medPrix: o.medicaments[0].prix, medManque: !!o.medicaments[0].prixManquant };
+        R.demandeAna = res.demandes.map((d) => d.prix);
+        R.demandeImg = res.demandesImagerie.map((d) => ({ prix: d.prix, manque: !!d.prixManquant }));
+        R.tacheEnc = (res.taches.filter((t) => t.type === 'encaissement')[0] || {}).montant;
+        R.message = PR.messageSansPrix(res);
+        R.attendu = PR.tarifALaDate('CONS-GEN', null, false).montant;
+      }
+      /* les soins : une ligne sans prix rend le montant nul (E2677 point 1 : elle comptait pour 0) */
+      const soin = PR.prescrireSoins({ patientCode: pt.code, actes: [cActe], prescripteur: 'S195' });
+      R.soin = { montant: soin.montant, prix: soin.lignes[0].prix, manque: soin.lignes[0].prixManquant ? soin.lignes[0].prixManquant.cause : null };
+      /* la demande EXTERNE (le laboratoire facturait `|| 0`) et l'imagerie DIRECTE (refusée jusqu'ici) */
+      const ext = PR.ouvrirDemandeExterne({ patientId: pt.id, analyses: [cAna], prescripteur: 'Docteur sonde 195' });
+      R.ext = { total: ext.facture.montantTTC, pu: ext.facture.lignes[0].prixUnitaire, manque: !!ext.facture.lignes[0].prixManquant, attente: ext.facture.enAttentePrix === true };
+      let img = null; try { img = PR.ouvrirDemandeImagerie({ patientId: pt.id, examens: [cImg], prescripteur: 'S195' }); } catch (e) { R.imgErreur = e.message; }
+      R.img = img ? { total: img.facture.montantTTC, pu: img.facture.lignes[0].prixUnitaire, manque: !!img.facture.lignes[0].prixManquant } : null;
+      let inconnu = null; try { PR.ouvrirDemandeImagerie({ patientId: pt.id, examens: ['IMG-INEXISTANT-195'] }); } catch (e) { inconnu = { code: e.code, texte: e.message }; }
+      R.inconnu = inconnu;
+      window.__tf195 = R.codes;
+      return R;
+    });
+    const nat = (code) => (r.pend || []).filter((x) => x.code === code)[0] || {};
+    verifier('La prescription (médicament sans prix d’achat, analyse absente du référentiel, acte proposé non décidé, examen d’imagerie sans tarif, plus une consultation tarifée) est ACCEPTÉE : une ordonnance, une facture',
+      !r.erreur && r.dF >= 1 && r.dO === 1 && r.pend && r.pend.length === 4, JSON.stringify(r).slice(0, 600));
+    verifier('Chaque ligne sans prix est NOMMÉE : « prix à valoriser » (nature prix d’achat) pour le médicament, « prix à définir » (cause lue au référentiel : absent du référentiel, proposition en attente) pour l’analyse, l’acte et l’imagerie, avec le code et un geste',
+      nat(r.codes.cProd).nat === 'prix_achat' && /prix à valoriser/.test(nat(r.codes.cProd).motif) && nat(r.codes.cAna).cause === 'absent-du-referentiel' && nat(r.codes.cActe).cause === 'proposition-en-attente'
+        && nat(r.codes.cImg).nat === 'tarif' && /prix à définir/.test(nat(r.codes.cImg).motif) && r.pend.every((x) => x.geste && x.motif.indexOf(x.code) >= 0), JSON.stringify(r.pend));
+    verifier('Jamais 0 : prix, montant et part patient NULS sur chaque ligne sans prix, aucune ligne à zéro ; la consultation tarifée garde son prix ; total, part patient et reste dû NULS (non calculable), pièce « en attente de prix », impayée, rien au MECeF',
+      r.pend.every((x) => x.pu === null && x.m === null && x.pp === null) && r.zero === 0 && r.prix.length === 1 && r.prix[0].pu === r.attendu && r.attendu > 0
+        && r.facture.total === null && r.facture.partPatient === null && r.facture.reliquat === null && r.facture.attente && r.facture.statut === 'impayee' && r.facture.mecef === 'en_attente', JSON.stringify([r.facture, r.prix, r.zero]));
+    verifier('L’ordonnance, les demandes et la tâche de caisse le disent aussi : montants NULS (médicaments, analyses, actes, imagerie, total), demande d’analyse et demande d’imagerie sans prix (nommée), tâche de caisse « Non calculable » ; l’écran reçoit le message « total non calculable, la caisse attend le prix »',
+      r.ord.montant === null && r.ord.med === null && r.ord.ana === null && r.ord.act === null && r.ord.img === null && r.ord.medPrix === null && r.ord.medManque
+        && r.demandeAna.every((x) => x === null) && r.demandeImg.every((x) => x.prix === null && x.manque) && r.tacheEnc === null && /total non calculable, la caisse attend le prix/.test(r.message || ''), JSON.stringify([r.ord, r.demandeAna, r.demandeImg, r.tacheEnc, r.message]));
+    verifier('Les soins (E2677 point 1) : la ligne sans prix dit « prix à définir » et le montant de la prescription est NUL, jamais compté pour 0',
+      r.soin.montant === null && r.soin.prix === null && r.soin.manque === 'proposition-en-attente', JSON.stringify(r.soin));
+    verifier('La demande externe du laboratoire (qui facturait `|| 0`) et l’imagerie directe (refusée jusqu’ici) : acceptées, ligne sans prix nommée, total nul ; un examen ABSENT du catalogue reste refusé en le nommant (EXAMEN_INCONNU)',
+      r.ext.total === null && r.ext.pu === null && r.ext.manque && r.ext.attente && r.img && r.img.total === null && r.img.pu === null && r.img.manque && r.inconnu && r.inconnu.code === 'EXAMEN_INCONNU' && /IMG-INEXISTANT-195/.test(r.inconnu.texte), JSON.stringify([r.ext, r.img, r.imgErreur, r.inconnu]));
+    /* L'écran « Nouvelle ordonnance » : un médicament sans prix d'achat dit « prix à valoriser », le total « Non calculable », jamais 0 */
+    await ouvrir('m2-ordonnance-nouvelle.html');
+    const ecran = await page.evaluate(async (codes) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const ctrl = document.getElementById('f_actes');
+      if (ctrl) { ctrl.value = [codes.cActe]; ctrl.dispatchEvent(new Event('change', { bubbles: true })); } await pause(300);
+      const total = [...document.querySelectorAll('#page-content p')].map((p) => p.textContent).filter((t) => /Non calculable|FCFA|F CFA|médicaments/.test(t)).join(' | ');
+      return { total: total.slice(0, 400) };
+    }, r.codes);
+    verifier('L’écran « Nouvelle ordonnance » dit « Non calculable : prix à définir pour … » et que la prescription reste permise (la caisse attendra le prix)',
+      /Non calculable : prix à définir pour /.test(ecran.total) && /La prescription est permise ; la caisse attendra le prix/.test(ecran.total) && ecran.total.indexOf(r.codes.cActe) >= 0, JSON.stringify(ecran));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 196 : lot TARIF-FIX-2, SEUL l’encaissement d’une ligne sans prix est refusé (nommé : code, motif, geste ; rien n’est écrit, rien ne part au MECeF) ; par défaut la pièce entière attend (réglage de clinique en base, défaut semé « non », versionné par date, réservé) ; commande « Encaisser » ABSENTE avec le motif dit ; alerte UNE par code vers qui fixe le prix (fiche RBAC), sans donnée de santé, qui retombe ; le prix posé, la ligne se valorise À LA DATE DE LA PIÈCE et l’encaissement passe');
+    erreursJS = [];
+    const ADM = { role: 'admin', nom: 'ADMIN196', nomComplet: 'ADMIN196', fonction: 'direction', identifiant: 's196.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM);
+    await ouvrir('m8-facturation.html');
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core, NT = window.SIGH.notifications;
+      const jour = C.iso(C.aujourdhui()), suf = Date.now().toString(36).toUpperCase().slice(-5);
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur && !p.personnelId)[0];
+      const cX = 'TF196X' + suf;
+      PR.proposerTarif({ code: cX, prixNonAssure: 3100, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 196', creation: { libelle: 'Acte sonde 196', famille: 'ACTE', secteur: 'Soins' } });
+      const R = { cX, jour, reglageBrut: S.reglage('caisseEncaissementPartielSansPrix', 'ABSENT'), reglage: PR.encaissementPartielALaDate(null) };
+      const p1 = PR.prescrire({ patientCode: pt.code, medecin: 'S196', diagnostic: 's', actes: [cX, 'CONS-GEN'] });
+      const p2 = PR.prescrire({ patientCode: pt.code, medecin: 'S196', diagnostic: 's', actes: [cX] });
+      const f1 = p1.facture, e0 = S.collection('ecritures').all().length;
+      const avant = JSON.stringify(S.collection('factures').get(f1.id));
+      const rl = PR.encaisser(f1.id, { lignes: f1.lignes.map((l) => l.id), mode: 'especes' });
+      const rm = PR.encaisser(f1.id, { montant: 999999, mode: 'especes' });
+      const rp = PR.encaisser(f1.id, { lignes: [f1.lignes.filter((l) => !l.prixManquant)[0].id], mode: 'especes' });
+      R.refus = [rl, rm, rp].map((x) => ({ code: x.refusNomme && x.refusNomme.code, motif: x.refusNomme && x.refusNomme.motif, geste: x.refusNomme && x.refusNomme.geste, regle: x.montantRegle }));
+      R.inchange = JSON.stringify(S.collection('factures').get(f1.id)) === avant && S.collection('ecritures').all().length === e0;
+      R.f1 = f1.id; R.f1num = f1.numero; R.f2 = p2.facture.id;
+      /* l'ALERTE : une par code, routée par la fiche RBAC, sans donnée de santé */
+      const toutes = NT.collecter({ tousPostes: true, detaille: true }).filter((n) => n.source === 'prix_manquant' && n.cle === 'prix:tarif:' + cX);
+      R.alerte = toutes.map((n) => ({ titre: n.titre, detail: n.detail, postes: n.postes, lien: n.lien }));
+      R.rolesAttendus = PR.rolesQuiFixent('tarif');
+      R.patient = { nom: pt.nom, prenom: pt.prenom, code: pt.code };
+      const N = window.SIGH.nav;
+      R.sansDroit = Object.keys(N.ROLES).filter((x) => { const d = N.droitsEcran(x, 'cfg-tarifs', 'CFG'); return !(d && d.editer); })[0];
+      R.vuSansDroit = NT.collecter({ poste: R.sansDroit, detaille: true }).some((n) => n.cle === 'prix:tarif:' + cX);
+      R.vuAdmin = NT.collecter({ poste: 'admin', detaille: true }).some((n) => n.cle === 'prix:tarif:' + cX);
+      R.mecef = PR.mecef.montants({ lignes: [{ designation: 'Ligne sonde', quantite: 1, prixUnitaire: null, prixManquant: true }] });
+      return R;
+    });
+    verifier('Réglage de clinique « encaissement partiel d’une pièce en attente de prix » : défaut SEMÉ « non » (aucune version écrite, la lecture rend la version semée et sa source « proposition à valider »)',
+      (a.reglageBrut === 'ABSENT' || a.reglageBrut === null) && a.reglage.valeur === 'non' && a.reglage.partiel === false && /proposition à valider/.test(a.reglage.source || ''), JSON.stringify([a.reglageBrut, a.reglage]));
+    verifier('Encaisser une pièce qui porte une ligne sans prix est REFUSÉ, nommé « ENCAISSEMENT_PRIX_MANQUANT » (par lignes, par montant, et même la seule ligne tarifée : la pièce entière attend) ; le motif nomme le code et « prix à définir », le geste dit où poser le prix et la date de la pièce ; rien n’est écrit (pièce identique, aucune écriture comptable)',
+      a.refus.every((x) => x.code === 'ENCAISSEMENT_PRIX_MANQUANT' && x.motif.indexOf(a.cX) >= 0 && /prix à définir/.test(x.motif) && /Tarifs et prix/.test(x.geste) && /date de la pièce/.test(x.geste) && x.regle === 0) && a.inchange, JSON.stringify(a.refus));
+    verifier('MECeF : une ligne sans prix ne part JAMAIS au boîtier (fonction unique des montants : refus « PRIX_MANQUANT », ni 0 ni prix supposé)',
+      a.mecef.ok === false && a.mecef.code === 'PRIX_MANQUANT', JSON.stringify(a.mecef));
+    const al = a.alerte[0] || {};
+    const sante = [a.patient.nom, a.patient.prenom, a.patient.code].filter((x) => x && (String(al.titre) + ' ' + String(al.detail)).indexOf(x) >= 0);
+    verifier('UNE alerte pour ce code malgré deux prescriptions (« 2 pièce(s) en attente »), lien « Tarifs et prix », routée vers les rôles lus dans la fiche RBAC (droit de modifier « Tarifs et prix ») : l’administrateur la voit, un rôle sans ce droit non ; aucune donnée de santé (ni nom, ni prénom, ni code du patient)',
+      a.alerte.length === 1 && /Prix à définir : « /.test(al.titre) && al.titre.indexOf(a.cX) >= 0 && /^2 pièce\(s\) en attente/.test(al.detail) && al.lien === 'cfg-tarifs'
+        && JSON.stringify(al.postes.slice().sort()) === JSON.stringify(a.rolesAttendus.slice().sort()) && a.vuAdmin && a.sansDroit && !a.vuSansDroit && sante.length === 0, JSON.stringify([a.alerte, a.rolesAttendus, a.sansDroit, a.vuSansDroit, sante]));
+    /* La CAISSE : la commande « Encaisser » est ABSENTE (ni bouton grisé) et le motif est dit à sa place, dans la file et dans « Paiements » */
+    await poserSessionServeur({ role: 'caissier', nom: 'CAISSE196', nomComplet: 'CAISSE196', fonction: 'caissier', identifiant: 's196.caisse', secteur: 'DIR' });
+    await ouvrir('m8-caisse.html');
+    const file = await page.evaluate(async (num) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const q = [...document.querySelectorAll('#page-content input')].find((i) => /Recherch/i.test(i.getAttribute('placeholder') || ''));
+      if (q) { q.value = num; q.dispatchEvent(new Event('input', { bubbles: true })); } await pause(500);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(num) >= 0);
+      if (!tr) return { trouve: false };
+      return { trouve: true, encaisser: !!tr.querySelector('button[title="Encaisser"], button[aria-label="Encaisser"]'), boutons: [...tr.querySelectorAll('button')].map((b) => b.getAttribute('title') || b.getAttribute('aria-label') || b.textContent.trim()),
+        emp: (tr.querySelector('[data-empechement]') || {}).textContent || null, code: tr.querySelector('[data-empechement]') ? tr.querySelector('[data-empechement]').getAttribute('data-empechement') : null, montant: tr.textContent.indexOf('Non calculable') >= 0 };
+    }, a.f1num);
+    verifier('File de caisse : la prescription en attente de prix est LISTÉE, montant « Non calculable », SANS commande « Encaisser » (ni bouton grisé), le motif « En attente de prix : « CODE » prix à définir » dit à sa place (code du refus porté)',
+      file.trouve && !file.encaisser && file.code === 'ENCAISSEMENT_PRIX_MANQUANT' && /En attente de prix/.test(file.emp || '') && (file.emp || '').indexOf(a.cX) >= 0 && file.montant, JSON.stringify(file));
+    await ouvrir('m8-paiements.html');
+    const pai = await page.evaluate(async (num) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const q = [...document.querySelectorAll('#page-content input')].find((i) => /Recherch/i.test(i.getAttribute('placeholder') || ''));
+      if (q) { q.value = num; q.dispatchEvent(new Event('input', { bubbles: true })); } await pause(500);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(num) >= 0);
+      const note = document.querySelector('[data-reglage-encaissement-partiel]');
+      return { trouve: !!tr, encaisser: tr ? [...tr.querySelectorAll('button')].some((b) => /Encaisser/.test(b.textContent)) : null, code: tr && tr.querySelector('[data-empechement]') ? tr.querySelector('[data-empechement]').getAttribute('data-empechement') : null,
+        nonCalc: tr ? /Non calculable/.test(tr.textContent) : null, reglage: note ? note.getAttribute('data-reglage-encaissement-partiel') : null, regler: note ? !!note.querySelector('button') : null };
+    }, a.f1num);
+    verifier('« Paiements » : la pièce reste visible parmi celles à encaisser (« Non calculable », jamais absente), sans commande « Encaisser », motif porté ; le réglage « non » est dit et le caissier n’a PAS la commande pour le changer',
+      pai.trouve && pai.encaisser === false && pai.code === 'ENCAISSEMENT_PRIX_MANQUANT' && pai.nonCalc && pai.reglage === 'non' && pai.regler === false, JSON.stringify(pai));
+    /* Le réglage : réservé (le moteur refuse au caissier) ; posé « oui » par un profil qui décide les prix, le reste de la pièce s'encaisse, la ligne sans prix jamais */
+    const b = await page.evaluate((x) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const brut = S.reglage('caisseEncaissementPartielSansPrix', null);
+      return { brut, refus: PR.definirEncaissementPartiel({ valeur: 'oui', motif: 'Sonde 196 caissier' }) };
+    }, a);
+    await poserSessionServeur(ADM);
+    await ouvrir('m8-paiements.html');
+    const c = await page.evaluate((x) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const R = {};
+      R.pose = PR.definirEncaissementPartiel({ valeur: 'oui', motif: 'Sonde 196 : le reste de la pièce s’encaisse' });
+      R.lu = PR.encaissementPartielALaDate(null);
+      R.versions = PR.versionsEncaissementPartiel().length;
+      const f = S.collection('factures').get(x.f1);
+      const lp = f.lignes.filter((l) => !l.prixManquant)[0], ls = f.lignes.filter((l) => l.prixManquant)[0];
+      const rs = PR.encaisser(f.id, { lignes: [ls.id], mode: 'especes' });
+      R.refusLigne = rs.refusNomme && rs.refusNomme.code;
+      const rp = PR.encaisser(f.id, { lignes: [lp.id], mode: 'especes' });
+      const f2 = S.collection('factures').get(f.id);
+      R.partiel = { regle: rp.montantRegle, attendu: lp.partPatient, statut: f2.statutPaiement, reliquat: f2.reliquat, numeroMecef: f2.numeroMecef || null, normalisation: rp.normalisation, restantSansPrix: rp.restantSansPrix, sansPrixDu: f2.lignes.filter((l) => l.prixManquant)[0].statutPaiement };
+      /* on RESTAURE le réglage tel qu'il était (scénario qui change un réglage) */
+      if (x.brut === null) { const db = S.raw(); if (db._reglages) delete db._reglages.caisseEncaissementPartielSansPrix; S.save(); } else S.setReglage('caisseEncaissementPartielSansPrix', x.brut);
+      R.restaure = PR.encaissementPartielALaDate(null).valeur;
+      return R;
+    }, { f1: a.f1, brut: b.brut });
+    verifier('Le réglage est RÉSERVÉ : refusé au caissier par le moteur (REGLAGE_RESERVE) ; posé « oui » par un profil qui décide les prix, nouvelle version datée (la semée reste)',
+      b.refus.ok === false && b.refus.code === 'REGLAGE_RESERVE' && c.pose.ok && c.lu.valeur === 'oui' && c.versions === 2, JSON.stringify([b.refus, c.pose, c.lu, c.versions]));
+    verifier('Réglage « oui » : la ligne sans prix reste REFUSÉE à l’encaissement ; la ligne tarifée s’encaisse seule (montant = sa part patient), la pièce est « partielle », son reste dû NON CALCULABLE, jamais soldée ni normalisée (rien au MECeF) ; le réglage est restauré ensuite',
+      c.refusLigne === 'ENCAISSEMENT_PRIX_MANQUANT' && c.partiel.regle === c.partiel.attendu && c.partiel.regle > 0 && c.partiel.statut === 'partielle' && c.partiel.reliquat === null && c.partiel.numeroMecef === null && c.partiel.normalisation === null
+        && c.partiel.restantSansPrix === true && c.partiel.sansPrixDu === 'du' && c.restaure === 'non', JSON.stringify(c));
+    /* Le prix posé (Oui à effet d'aujourd'hui) : la décision n'est PAS bloquée par la pièce en attente, la ligne se VALORISE à la date de la pièce, l'alerte RETOMBE, l'encaissement passe */
+    const d = await page.evaluate((x) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core, NT = window.SIGH.notifications;
+      const v = S.collection('versionsTarif').all().filter((y) => y.code === x.cX && y.statut === 'propose')[0];
+      const dec = PR.deciderTarif(v.id, 'oui');
+      const f2 = S.collection('factures').get(x.f2);
+      const R = { dec: { ok: dec.ok, code: dec.code || null }, f2: { total: f2.montantTTC, pu: f2.lignes[0].prixUnitaire, attente: f2.enAttentePrix, manque: !!f2.lignes[0].prixManquant, valorisation: f2.lignes[0].valorisation || null, reliquat: f2.reliquat } };
+      R.alerte = NT.collecter({ tousPostes: true, detaille: true }).filter((n) => n.cle === 'prix:tarif:' + x.cX).length;
+      R.journal = S.collection('audit').all().filter((e) => /Valorisation d’une ligne sans prix/.test(e.action || '') && e.reference === f2.numero).length;
+      const enc = PR.encaisser(f2.id, { lignes: f2.lignes.map((l) => l.id), mode: 'especes' });
+      const f3 = S.collection('factures').get(x.f2);
+      R.enc = { refus: enc.refus || null, regle: enc.montantRegle, statut: f3.statutPaiement, mecef: f3.statutMecef, numeroMecef: !!f3.numeroMecef };
+      const f1 = S.collection('factures').get(x.f1);
+      const enc1 = PR.encaisser(f1.id, { lignes: f1.lignes.filter((l) => l.statutPaiement !== 'paye').map((l) => l.id), mode: 'especes' });
+      R.f1 = { refus: enc1.refus || null, statut: S.collection('factures').get(x.f1).statutPaiement };
+      return R;
+    }, a);
+    verifier('Le Oui à effet d’aujourd’hui n’est PAS bloqué par les pièces en attente (une ligne sans prix ne dit aucun prix : pas de TARIF_DEJA_UTILISE) ; la ligne se VALORISE aussitôt à 3 100 (date de la pièce), total calculé, valorisation tracée et journalisée (RG-12) ; l’alerte RETOMBE',
+      d.dec.ok && d.f2.pu === 3100 && d.f2.total === 3100 && d.f2.attente === false && !d.f2.manque && d.f2.valorisation && d.f2.valorisation.jour === a.jour && d.f2.reliquat === 3100 && d.journal >= 1 && d.alerte === 0, JSON.stringify(d));
+    verifier('L’encaissement passe ensuite : pièce soldée et normalisée (numéro MECeF) ; la pièce partiellement réglée se solde de la ligne valorisée',
+      !d.enc.refus && d.enc.regle === 3100 && d.enc.statut === 'soldee' && d.enc.numeroMecef && !d.f1.refus && d.f1.statut === 'soldee', JSON.stringify([d.enc, d.f1]));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 197 : lot TARIF-FIX-2, médicament sans prix d’achat (circuit « Changer le prix d’achat », alerte vers qui modifie le Référentiel produits), RG-02 à la valorisation (prix d’achat exact, sans marge), RG-09 (colonne et taux décidés à la date de la pièce), et le prix lu À LA DATE DE LA PIÈCE : une pièce de la veille n’est pas valorisée par un prix d’aujourd’hui, elle l’est par une version datée de sa date');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN197', nomComplet: 'ADMIN197', fonction: 'direction', identifiant: 's197.admin', secteur: 'DIR' });
+    await ouvrir('m8-facturation.html');
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core, NT = window.SIGH.notifications;
+      const jour = C.iso(C.aujourdhui()), hier = C.iso(new Date(C.aujourdhui().getTime() - 86400000)), suf = Date.now().toString(36).toUpperCase().slice(-5);
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur && !p.personnelId)[0];
+      const ptAss = S.collection('patients').active().filter((p) => !p.externe && p.assureur && !p.personnelId && PR.carteValide(p, new Date().toISOString()) && Number(p.tauxPriseEnCharge) > 0)[0];
+      const cM = 'TF197M' + suf, cH = 'TF197H' + suf;
+      const prod = S.collection('produits').insert({ id: 'PRD-' + cM, code: cM, designation: 'Médicament sonde 197', categorie: 'medicament', unite: 'Boîte', stock: 50, stockDetail: 50, stockGros: 0, statut: 'actif', valorisationProvisoire: true }).record;
+      const R = { cM, cH, jour, jourHier: hier };
+      const pm = PR.prescrire({ patientCode: ptAss.code, medecin: 'S197', diagnostic: 's', medicaments: [{ produitId: prod.id, quantite: 3 }] });
+      R.fm = pm.facture.id; R.taux = pm.facture.tauxPriseEnCharge;
+      R.alerte = NT.collecter({ tousPostes: true, detaille: true }).filter((n) => n.cle === 'prix:prix_achat:' + cM).map((n) => ({ titre: n.titre, lien: n.lien, postes: n.postes }));
+      R.roles = PR.rolesQuiFixent('prix_achat');
+      R.refus = PR.encaisser(pm.facture.id, { lignes: pm.facture.lignes.map((l) => l.id) }).refusNomme;
+      /* le prix d'achat décidé (en un geste, effectif aujourd'hui) : RG-02, la ligne prend le prix d'achat EXACT, la part assureur au taux décidé à la date de la pièce */
+      const dec = PR.proposerTarif({ code: cM, prixNonAssure: 450, dateEffet: jour, motif: 'Sonde 197 : premier prix d’achat', valider: true });
+      const f = S.collection('factures').get(pm.facture.id), l = f.lignes[0];
+      R.dec = dec.ok; R.valo = { pu: l.prixUnitaire, m: l.montant, pa: l.partAssureur, pp: l.partPatient, total: f.montantTTC, ord: S.collection('ordonnances').get(f.ordonnanceId).medicaments[0].prix };
+      R.apresAlerte = NT.collecter({ tousPostes: true, detaille: true }).filter((n) => n.cle === 'prix:prix_achat:' + cM).length;
+      /* LA DATE DE LA PIÈCE : un acte prescrit HIER, son prix décidé aujourd'hui à effet d'aujourd'hui, ne valorise pas la pièce d'hier */
+      PR.proposerTarif({ code: cH, prixNonAssure: 2700, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 197 (date)', creation: { libelle: 'Acte sonde 197', famille: 'ACTE', secteur: 'Soins' } });
+      const ph = PR.prescrire({ patientCode: pt.code, medecin: 'S197', diagnostic: 's', date: hier + 'T10:00:00', actes: [cH] });
+      const vh = S.collection('versionsTarif').all().filter((y) => y.code === cH && y.statut === 'propose')[0];
+      R.decH = PR.deciderTarif(vh.id, 'oui').ok;
+      const fh = S.collection('factures').get(ph.facture.id);
+      R.hier = { pu: fh.lignes[0].prixUnitaire, cause: fh.lignes[0].prixManquant && fh.lignes[0].prixManquant.cause, refus: PR.encaisser(fh.id, { lignes: fh.lignes.map((x) => x.id) }).refusNomme };
+      R.fh = fh.id; R.aujourdhui = PR.prixLignePrescription(cH, null, false, 'acte').montant;
+      return R;
+    });
+    verifier('Médicament sans prix d’achat : la caisse refuse (ENCAISSEMENT_PRIX_MANQUANT, « prix à valoriser », geste « Changer le prix d’achat ») ; UNE alerte « Prix à valoriser » vers les rôles qui modifient le Référentiel produits (fiche RBAC), lien « Référentiel produits »',
+      a.refus && a.refus.code === 'ENCAISSEMENT_PRIX_MANQUANT' && /prix à valoriser/.test(a.refus.motif) && /Changer le prix d’achat/.test(a.refus.geste) && a.alerte.length === 1 && /Prix à valoriser : « /.test(a.alerte[0].titre)
+        && a.alerte[0].lien === 'm6-produits' && JSON.stringify(a.alerte[0].postes.slice().sort()) === JSON.stringify(a.roles.slice().sort()) && a.roles.length > 0, JSON.stringify([a.refus, a.alerte, a.roles]));
+    verifier('Le prix d’achat décidé (450) VALORISE la ligne : RG-02 (prix unitaire = prix d’achat exact, sans marge, 3 × 450 = 1 350), RG-09 (part assureur au taux décidé à la date de la pièce), ordonnance valorisée ; l’alerte retombe',
+      a.dec && a.valo.pu === 450 && a.valo.m === 1350 && a.valo.total === 1350 && a.valo.pa === Math.round(1350 * a.taux / 100) && a.valo.pp === 1350 - a.valo.pa && a.taux > 0 && a.valo.ord === 450 && a.apresAlerte === 0, JSON.stringify([a.valo, a.taux]));
+    verifier('Prix lu À LA DATE DE LA PIÈCE : la pièce d’HIER reste « prix à définir » (cause « version-future ») malgré le Oui d’aujourd’hui, et sa caisse refuse en disant « date d’effet du JJ/MM/AAAA au plus tard » ; une pièce d’aujourd’hui lit 2 700',
+      a.decH && a.hier.pu === null && a.hier.cause === 'version-future' && a.hier.refus && a.hier.refus.code === 'ENCAISSEMENT_PRIX_MANQUANT'
+        && a.hier.refus.geste.indexOf('date d’effet du ' + a.jourHier.split('-').reverse().join('/') + ' au plus tard') >= 0 && a.aujourdhui === 2700, JSON.stringify([a.hier, a.jourHier]));
+    /* La Directrice Administrative pose une version datée de la pièce (date passée, décision réservée) : la pièce d'hier se valorise à 2 600 et s'encaisse */
+    await poserSessionServeur({ role: 'da', nom: 'DAF197', nomComplet: 'DAF197', fonction: 'da', identifiant: 's197.da', secteur: 'DIR' });
+    await ouvrir('cfg-tarifs.html');
+    const b = await page.evaluate((x) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const p = PR.proposerTarif({ code: x.cH, prixNonAssure: 2600, etatAssure: 'unique', dateEffet: x.jourHier, datePassee: true, motif: 'Sonde 197 : prix de la pièce d’hier' });
+      const d = p.ok ? PR.deciderTarif(p.version.id, 'oui') : p;
+      const f = S.collection('factures').get(x.fh);
+      const enc = PR.encaisser(f.id, { lignes: f.lignes.map((l) => l.id) });
+      return { p: p.ok || p.code, d: d.ok || d.code, pu: f.lignes[0].prixUnitaire, jour: f.lignes[0].valorisation && f.lignes[0].valorisation.jour, statut: S.collection('factures').get(x.fh).statutPaiement, refus: enc.refus || null };
+    }, a);
+    verifier('Une version datée de la pièce (hier, date passée réservée à la Directrice Administrative) valorise la pièce d’hier à 2 600 (lue à SA date, pas à 2 700), qui s’encaisse',
+      b.p === true && b.d === true && b.pu === 2600 && b.jour === a.jourHier && b.statut === 'soldee' && !b.refus, JSON.stringify(b));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT TARIF-FIX-2 FIN */
 
 
 

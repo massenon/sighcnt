@@ -578,7 +578,7 @@
                 m.close();
                 U.toast('Prescription ' + res.ordonnance.numero + ' transmise.', {
                   type: 'success', duration: 6000,
-                  detail: res.demandes.length + ' examen(s) au laboratoire · facture ' + res.facture.numero + ' à la caisse',
+                  detail: res.demandes.length + ' examen(s) au laboratoire · facture ' + res.facture.numero + ' à la caisse' + (PR.messageSansPrix(res) ? ' · ' + PR.messageSansPrix(res) : ''),
                 });
               },
             }),
@@ -3802,7 +3802,7 @@
                 U.toast('Bon ' + res.ordonnance.numero + ' émis — ' + n + ' séance(s).', {
                   type: 'success', duration: 8000,
                   detail: 'Facture ' + res.facture.numero + ' à la caisse ; la salle de soins est '
-                    + 'informée, exécutable après encaissement.',
+                    + 'informée, exécutable après encaissement.' + (PR.messageSansPrix(res) ? ' ' + PR.messageSansPrix(res) : ''),
                 });
                 imprimerBon(res.ordonnance);
               },

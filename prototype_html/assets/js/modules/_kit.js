@@ -914,8 +914,9 @@
           { key: 'detail', label: 'À faire' },
           {
             key: 'montant', label: 'Montant', align: 'right',
-            text: function (r) { return C.money(r.montant || 0, false); },
-            render: function (r) { return C.money(r.montant || 0, false); },
+            /* LOT TARIF-FIX-2 : un montant NUL (ligne sans prix) est « Non calculable », jamais 0. */
+            text: function (r) { return r.montant === null ? 'Non calculable' : C.money(r.montant || 0, false); },
+            render: function (r) { return r.montant === null ? 'Non calculable' : C.money(r.montant || 0, false); },
           },
           {
             key: 'statut', label: 'État', nowrap: true,
@@ -945,6 +946,13 @@
             return [iconBtn('lock', 'Votre profil consulte cette file sans l’exécuter', function () {
               U.toast('Votre profil consulte cette file sans pouvoir la traiter.', { type: 'warning' });
             })];
+          }
+          /* LOT TARIF-FIX-2 : une action que le moteur REFUSERAIT (pièce en attente de prix) est ABSENTE, et son motif est dit à sa place (code, motif, geste). */
+          var emp = cfg.empechement ? cfg.empechement(r) : null;
+          if (emp) {
+            return [el('span.inline-flex.max-w-xs.items-start.gap-1.text-xs.text-warning-800', { 'data-empechement': emp.code || 'refus', title: emp.motif + ' ' + (emp.geste || '') }, [
+              C.icon('triangle-alert', 'h-3.5 w-3.5 shrink-0'), el('span', { text: emp.titre || emp.motif }),
+            ])];
           }
           return [iconBtn(cfg.icon || 'check', cfg.action || 'Traiter', function () {
             if (cfg.onAction) cfg.onAction(r, dessiner);

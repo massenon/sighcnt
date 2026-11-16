@@ -2784,7 +2784,8 @@
                 return el('div.flex.flex-wrap.gap-1', null, t);
               },
             },
-            { key: 'montant', label: 'Montant', align: 'right', text: function (r) { return C.money(r.montant, false); }, render: function (r) { return C.money(r.montant, false); } },
+            /* LOT TARIF-FIX-2 : une ordonnance qui porte une ligne sans prix a un montant NUL (« Non calculable »), jamais 0. */
+            { key: 'montant', label: 'Montant', align: 'right', text: function (r) { return C.moneyOu(r.montant, 'Non calculable', false); }, render: function (r) { return C.moneyOu(r.montant, 'Non calculable', false); } },
             {
               key: 'statutPaiement', label: 'Caisse',
               render: function (r) {
@@ -3150,18 +3151,23 @@
 
     function recalculer() {
       var med = collecterMedicaments();
+      var ctrl = complements.controls;
+      /* « Non calculable » n'est pas zéro : une ligne à prix à définir rend le total non calculable et se nomme. LOT TARIF-FIX-2 : un médicament sans prix d'achat
+         dit « prix à valoriser » (il était compté pour 0). La prescription reste permise : seule la caisse attend le prix. */
+      var aDefinir = [], aValoriser = [];
       var mMed = C.sum(med, function (l) {
         var p = S.collection('produits').get(l.produitId);
-        return (p ? (PR.prixAchatALaDate(p, new Date().toISOString()) || 0) : 0) * l.quantite;
+        var pu = p ? PR.prixAchatALaDate(p, new Date().toISOString()) : null;
+        if (pu == null) { aValoriser.push(p ? (p.code || p.designation) : l.produitId); return 0; }
+        return pu * l.quantite;
       });
-      var ctrl = complements.controls;
-      /* « Non calculable » n'est pas zéro : une ligne à prix à définir rend le total non calculable et se nomme. */
-      var aDefinir = [];
       function lu(code, voie) { var r = PR.prixLignePrescription(code, null, false, voie); if (!r.ok) aDefinir.push(r.prestation); return r.ok ? r.montant : 0; }
       var mAna = C.sum(ctrl.analyses.value || [], function (code) { return lu(code, 'analyse'); });
       var mAct = C.sum(ctrl.actes.value || [], function (code) { return lu(code, 'acte'); });
-      total.textContent = aDefinir.length
-        ? 'Non calculable : prix à définir pour ' + aDefinir.join(', ') + ' (à tarifier dans « Tarifs et prix »)'
+      total.textContent = (aDefinir.length || aValoriser.length)
+        ? 'Non calculable : ' + [aDefinir.length ? 'prix à définir pour ' + aDefinir.join(', ') + ' (à tarifier dans « Tarifs et prix »)' : null,
+          aValoriser.length ? 'prix à valoriser pour ' + aValoriser.join(', ') + ' (« Changer le prix d’achat »)' : null].filter(Boolean).join(' ; ')
+          + '. La prescription est permise ; la caisse attendra le prix.'
         : C.money(mMed + mAna + mAct)
         + '  (médicaments ' + C.money(mMed, false) + ' · analyses ' + C.money(mAna, false) + ' · actes ' + C.money(mAct, false) + ')';
     }
@@ -3190,6 +3196,7 @@
       if (res.demandes.length) envois.push(res.demandes.length + ' demande(s) au laboratoire');
       if (med.length) envois.push('pharmacie informée');
       envois.push('facture ' + res.facture.numero + ' en attente à la caisse');
+      if (PR.messageSansPrix(res)) envois.push(PR.messageSansPrix(res));
       /* DIFFÉRÉ : `apres()` ramène au registre, et le message partirait avec
          le document — or c'est lui qui nomme le numéro d'ordonnance et les
          postes saisis. */
@@ -3558,7 +3565,7 @@
             { key: 'prescripteur', label: 'Prescripteur' },
             {
               key: 'montant', label: 'Montant', align: 'right',
-              render: function (r) { return C.money(r.montant || 0); },
+              render: function (r) { return r.montant === null ? 'Non calculable' : C.money(r.montant || 0); },
             },
             {
               key: 'statutPaiement', label: 'Règlement', render: function (r) {

@@ -86,15 +86,17 @@
     text: function (f) { return C.dateFR(f.date); },
     render: function (f) { return C.dateFR(f.date); },
   };
+  /* LOT TARIF-FIX-2 : une pièce en attente de prix a un total NON CALCULABLE (nul), jamais 0. */
   var colMontant = {
     key: 'montantTTC', label: 'Montant', align: 'right',
-    text: function (f) { return C.money(f.montantTTC, false); },
-    render: function (f) { return el('span.font-semibold', { text: C.money(f.montantTTC, false) }); },
+    text: function (f) { return f.enAttentePrix ? 'Non calculable' : C.money(f.montantTTC, false); },
+    render: function (f) { return f.enAttentePrix ? el('span.text-xs.font-medium.text-warning-700', { text: 'Non calculable : prix à définir' }) : el('span.font-semibold', { text: C.money(f.montantTTC, false) }); },
   };
   var colReliquat = {
     key: 'reliquat', label: 'Reste dû', align: 'right',
-    text: function (f) { return C.money(f.reliquat, false); },
+    text: function (f) { return f.enAttentePrix ? 'Non calculable' : C.money(f.reliquat, false); },
     render: function (f) {
+      if (f.enAttentePrix) return el('span.text-xs.font-medium.text-warning-700', { text: 'Non calculable' });
       return f.reliquat > 0
         ? el('span.font-semibold.text-danger-600', { text: C.money(f.reliquat, false) })
         : el('span.text-xs.text-slate-400', { text: '—' });
@@ -213,6 +215,14 @@
     };
   }
   /** Ce que la normalisation a rendu, dit au guichet : une pièce refusée ou à vérifier se DIT, avec son code, son motif et son geste. */
+  /** LOT TARIF-FIX-2 : à la place d'une commande « Encaisser » ABSENTE, le motif du refus (code, motif, geste) que le moteur opposerait. */
+  function motifSansPrix(refus) {
+    var m = refus || { code: 'ENCAISSEMENT_PRIX_MANQUANT', motif: 'Ligne sans prix.', geste: '' };
+    return el('span.inline-flex.max-w-xs.items-start.gap-1.text-xs.text-warning-800', { 'data-empechement': m.code, title: m.motif + ' ' + (m.geste || '') }, [
+      C.icon('triangle-alert', 'h-3.5 w-3.5 shrink-0'),
+      el('span', { text: 'En attente de prix : ' + (m.lignes || []).map(function (x) { return '« ' + x.code + ' » ' + (x.nature === 'prix_achat' ? 'prix à valoriser' : 'prix à définir'); }).join(', ') }),
+    ]);
+  }
   function annonceNormalisation(n) {
     if (!n || n.ignore) return;
     if (n.ok) { U.toast('Vente normalisée : ' + n.numero + '.', { type: 'success', detail: 'Numéro de démonstration, non fiscal (simulation de la maquette).' }); return; }
@@ -1637,7 +1647,36 @@
       var host = el('div.space-y-4');
       var table;
 
-      function aRegler() { return factures().filter(function (f) { return f.reliquat > 0; }); }
+      /* LOT TARIF-FIX-2 : une pièce en attente de prix reste VISIBLE parmi celles à encaisser (son reste dû est non calculable, jamais absent). Les pièces dont le
+         prix est désormais en vigueur à leur date se valorisent à l'ouverture de l'écran. */
+      PR.valoriserEnAttente();
+      function aRegler() { return factures().filter(function (f) { return f.reliquat > 0 || (f.enAttentePrix && f.statutPaiement !== 'soldee'); }); }
+
+      /* Le RÉGLAGE de la clinique (en base, versionné par date, défaut semé « non ») : une pièce en attente de prix s'encaisse-t-elle en partie ? */
+      var regP = PR.encaissementPartielALaDate(null);
+      var nbAttente = factures().filter(function (f) { return f.enAttentePrix && f.statutPaiement !== 'soldee'; }).length;
+      host.appendChild(el('div', { 'data-reglage-encaissement-partiel': regP.valeur }, [K.note('<strong>Pièces en attente de prix : ' + C.num(nbAttente) + '.</strong> '
+        + (regP.partiel ? 'Réglage de la clinique : le reste de la pièce s’encaisse ; une ligne sans prix ne s’encaisse jamais.'
+          : 'Réglage de la clinique : la pièce entière attend le prix (rien ne s’encaisse tant qu’une ligne est sans prix).')
+        + ' En vigueur depuis le ' + C.dateFR(regP.dateEffet) + (regP.source ? ' (' + C.escapeHtml(regP.source) + ')' : '') + '.', { tone: nbAttente ? 'warning' : 'info', icon: 'scale' }),
+        PR.peutDeciderTarif() ? K.btn('Régler l’encaissement partiel', { size: 'sm', icon: 'settings-2', onclick: reglerPartiel }) : null]));
+      function reglerPartiel() {
+        var fm = U.form([
+          { name: 'valeur', label: 'Une pièce en attente de prix', type: 'select', required: true, col: 'full', options: [
+            { value: 'non', label: 'Attend le prix en entier (rien ne s’encaisse)' }, { value: 'oui', label: 'S’encaisse pour le reste (la ligne sans prix attend)' }] },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: C.iso(C.aujourdhui()) },
+          { name: 'motif', label: 'Motif', required: true, col: 'full' },
+        ], { valeur: regP.valeur, dateEffet: C.iso(C.aujourdhui()) });
+        var mo = U.modal({ title: 'Encaissement d’une pièce en attente de prix', size: 'md', body: fm, footer: [
+          K.btn('Annuler', { onclick: function () { mo.close(); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+            var v = fm.collect(); if (!v) return;
+            var r = PR.definirEncaissementPartiel(v);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            mo.close(); U.toast('Réglage enregistré : nouvelle version à effet du ' + C.dateFR(r.dateEffet) + '.', { type: 'success' }); global.SIGH.app.go('m8-paiements');
+          } }),
+        ] });
+      }
 
       host.appendChild(U.kpiGrid(D.MODES_PAIEMENT.slice(0, 4).map(function (m) {
         var f = factures().filter(function (x) { return x.modePaiement === m.id; });
@@ -1657,6 +1696,9 @@
                 colReliquat, colStatutPaiement,
               ],
               rowActions: function (f) {
+                /* Une pièce que le moteur refuserait d'encaisser (ligne sans prix) n'a PAS de commande « Encaisser » : le motif est dit à sa place. */
+                var ep = PR.etatCaissePrix(f);
+                if (!ep.encaissable) return [motifSansPrix(ep.refus)];
                 return [K.commande('Encaisser', { size: 'sm', variant: 'primary', icon: 'banknote', onclick: function () { encaisser(f); } })];
               },
             });
@@ -1689,8 +1731,10 @@
       return null;
 
       function encaisser(f) {
+        var epf = PR.etatCaissePrix(f);
+        var resteCalc = epf.manques.length ? C.sum((f.lignes || []).filter(function (l) { return !PR.ligneSansPrix(l) && l.statutPaiement !== 'paye'; }), 'partPatient') : f.reliquat;
         var form = U.form([
-          { name: 'montant', label: 'Montant encaissé (FCFA)', type: 'money', required: true, min: 1, value: f.reliquat },
+          { name: 'montant', label: 'Montant encaissé (FCFA)', type: 'money', required: true, min: 1, value: resteCalc },
           { name: 'modePaiement', label: 'Mode de règlement', type: 'select', required: true, options: D.MODES_PAIEMENT.slice(0, 4).map(function (m) { return { value: m.id, label: m.label }; }) },
           { name: 'reference', label: 'Référence de la transaction', help: 'N° de transaction Mobile Money ou ticket TPE, le cas échéant.' },
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
@@ -1714,7 +1758,7 @@
               onclick: function () {
                 var v = form.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-                if (v.montant > f.reliquat) { U.toast('Le montant dépasse le reste dû (' + C.money(f.reliquat) + ').', { type: 'error' }); return; }
+                if (v.montant > resteCalc) { U.toast('Le montant dépasse le reste dû (' + C.money(resteCalc) + ').', { type: 'error' }); return; }
                 /* L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval ouvertes, base MECeF et
                    ÉCRITURE comptable. Il écrivait la facture seule : ni journal, ni déblocage, ni créance de l'assureur. Un versement refusé
                    (au-delà du dû) l'est en le disant. Un encaissement ne s'annule pas : la correction passe par un remboursement ou un avoir. */
@@ -2208,11 +2252,21 @@
       var vue = el('div.space-y-4');
 
       /* --- Ce que les prescriptions du jour ont adressé à la caisse -------- */
+      /* LOT TARIF-FIX-2 : les pièces dont le prix est désormais en vigueur à leur date se valorisent à l'ouverture de la caisse ; une pièce qui attend encore un
+         prix n'a PAS de commande « Encaisser » (le moteur la refuserait) : le motif est dit à sa place. */
+      PR.valoriserEnAttente();
       var file = K.fileAttente('encaissement', {
         titre: 'Prescriptions à encaisser',
         vide: 'Aucune prescription en attente de règlement.',
         icon: 'coins', action: 'Encaisser',
         onAction: function (tache, refresh) { encaisser(tache, refresh); },
+        empechement: function (tache) {
+          var fac = tache.factureId ? S.collection('factures').get(tache.factureId) : null;
+          if (!fac) return null;
+          var ep = PR.etatCaissePrix(fac);
+          if (ep.encaissable) return null;
+          return Object.assign({}, ep.refus, { titre: 'En attente de prix : ' + ep.manques.map(function (x) { return '« ' + x.code + ' » ' + (x.nature === 'prix_achat' ? 'prix à valoriser' : 'prix à définir'); }).join(', ') });
+        },
       });
       host.appendChild(file);
 
@@ -2227,7 +2281,9 @@
       function encaisser(tache, refresh) {
         var fac = S.collection('factures').get(tache.factureId);
         if (!fac) { U.toast('Facture introuvable.', { type: 'error' }); return; }
-        var lignes = (fac.lignes || []).filter(function (l) { return l.statutPaiement !== 'paye'; });
+        /* LOT TARIF-FIX-2 : une ligne sans prix (encaissement du reste réglé par la clinique) est montrée, sans case : elle ne s'encaisse pas. */
+        var sansPrix = (fac.lignes || []).filter(function (l) { return PR.ligneSansPrix(l) && l.statutPaiement !== 'paye'; });
+        var lignes = (fac.lignes || []).filter(function (l) { return l.statutPaiement !== 'paye' && !PR.ligneSansPrix(l); });
         var deja = (fac.lignes || []).filter(function (l) { return l.statutPaiement === 'paye'; });
 
         /* Le caissier COCHE les prestations que le patient règle. Le total
@@ -2274,6 +2330,17 @@
           tr.appendChild(el('td.text-right.text-sm.font-semibold', { text: C.money(l.partPatient, false) }));
           tb.appendChild(tr);
         });
+        sansPrix.forEach(function (l) {
+          tb.appendChild(el('tr', { 'data-ligne-sans-prix': l.prixManquant.code }, [
+            el('td', null, C.icon('triangle-alert', 'h-4 w-4 text-warning-600')),
+            el('td', null, el('div.min-w-0', null, [
+              el('p.truncate.text-sm.font-medium.text-slate-800', { text: l.designation }),
+              el('p.text-xs.text-warning-700', { text: l.prixManquant.motif }),
+            ])),
+            el('td.text-right.text-xs.text-slate-500', { text: '—' }),
+            el('td.text-right.text-xs.font-medium.text-warning-700', { text: l.prixManquant.nature === 'prix_achat' ? 'Prix à valoriser' : 'Prix à définir' }),
+          ]));
+        });
         t.appendChild(tb);
         tableau.appendChild(t);
 
@@ -2289,6 +2356,7 @@
             ? 'Reste dû après ce règlement : ' + C.money(reste) + ' — '
               + C.num(lignes.length - sel.length) + ' prestation(s) non réglée(s), non exécutable(s).'
             : 'La facture sera intégralement soldée.';
+          if (sansPrix.length) resteLigne.textContent = (reste > 0 ? resteLigne.textContent + ' ' : '') + C.num(sansPrix.length) + ' prestation(s) sans prix restent dues (reste non calculable).';
         }
 
         var acheteurFen = sectionAcheteur(fac);
@@ -2568,7 +2636,8 @@
               })];
               /* Reprendre l'encaissement : c'est la demande exacte de la
                  Direction pour le patient qui revient. */
-              if (r.reliquat > 0 && K.droits('M8').editer) {
+              /* LOT TARIF-FIX-2 : une pièce en attente de prix ne propose « Encaisser le reste » que si le moteur l'accepterait (réglage de la clinique). */
+              if ((r.reliquat > 0 || (r.enAttentePrix && r.statutPaiement !== 'soldee' && PR.etatCaissePrix(r).encaissable)) && K.droits('M8').editer) {
                 actes.push(K.btn('Encaisser le reste', {
                   variant: 'primary', size: 'sm', icon: 'coins',
                   onclick: function () {

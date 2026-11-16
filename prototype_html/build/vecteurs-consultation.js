@@ -256,7 +256,9 @@ function litteralDart(x, indent) {
         ['médicaments seuls, urgence', base('CNT/1001/26', { analyses: [], actes: [], imagerie: [], urgent: true })],
         ['analyses seules', base('CNT/1001/26', { medicaments: [], actes: [], imagerie: [] })],
         ['quantité nulle : la ligne est écartée', base('CNT/1001/26', { medicaments: [med(0, 0), med(1, 1)], analyses: [], actes: [], imagerie: [] })],
-        ['imagerie sans tarif : refusée en nommant l’examen, rien d’orphelin', base('CNT/1001/26', { medicaments: [med(0, 1)], analyses: [], actes: [], imagerie: ['IMG-SANS-PRIX'] })],
+        ['imagerie sans tarif : PRESCRITE (lot TARIF-FIX-2), ligne « prix à définir » nommée, totaux nuls, pièce en attente de prix', base('CNT/1001/26', { medicaments: [med(0, 1)], analyses: [], actes: [], imagerie: ['IMG-SANS-PRIX'] })],
+        ['examen ABSENT du catalogue d’imagerie : refusé en le nommant (EXAMEN_INCONNU), rien d’orphelin', base('CNT/1001/26', { medicaments: [med(0, 1)], analyses: [], actes: [], imagerie: ['IMG-INCONNU-TF2'] })],
+        ['acte et analyse sans prix : PRESCRITS (lot TARIF-FIX-2), lignes « prix à définir » nommées, jamais 0', base('CNT/1001/26', { medicaments: [], analyses: ['ANA-SANS-PRIX-TF2'], actes: ['ACTE-SANS-PRIX-TF2', actes[0].code], imagerie: [] })],
         ['ordonnance vide (aucune ligne)', base('CNT/1001/26', { medicaments: [], analyses: [], actes: [], imagerie: [] })],
         ['patient introuvable', base('CNT/9999/26')],
       ];
@@ -300,8 +302,10 @@ function litteralDart(x, indent) {
         ['orientation mise en observation', avecDossier('CNT/1001/26'), fiche('CNT/1001/26', { orientation: 'observation' })],
         ['orientation référence', avecDossier('CNT/1001/26'), fiche('CNT/1001/26', { orientation: 'reference' })],
         ['type de venue urgence → consultation « Urgence »', () => { poser('dossiersConsultation', [DOSS('CNT/1001/26', 'consultation', { typeVenue: 'urgence' })]); }, fiche('CNT/1001/26')],
-        ['prescription REFUSÉE (imagerie sans tarif) : la consultation est défaite, rien n’est écrit', avecDossier('CNT/1001/26'),
+        ['imagerie sans tarif : la prescription PASSE (lot TARIF-FIX-2), sa ligne attend son prix à la caisse', avecDossier('CNT/1001/26'),
           fiche('CNT/1001/26', { medicaments: [med(0, 1)], imagerie: ['IMG-SANS-PRIX'] })],
+        ['prescription REFUSÉE (examen absent du catalogue) : la consultation est défaite, rien n’est écrit', avecDossier('CNT/1001/26'),
+          fiche('CNT/1001/26', { medicaments: [med(0, 1)], imagerie: ['IMG-INCONNU-TF2'] })],
         ['dossier ancien (constantes à plat, sans copie)', () => { poser('dossiersConsultation', [DOSS('CNT/1001/26', 'consultation', { temperature: 39, tension: '14/9', pouls: 100 })]); }, fiche('CNT/1001/26')],
       ];
       for (const [nom, prep, v] of ficheCas) {
@@ -320,8 +324,8 @@ function litteralDart(x, indent) {
         ['hospitalisation, patient assuré (carte valide) : tarif assuré, premier administrateur = salle de soins', { patientCode: 'CNT/1002/26', prescripteurId: soignantPrescripteur.id, origine: 'hospitalisation', secteurDestinataire: 'hospitalisation', modalite: 'hospitalisation', indication: 'IV', actes: [{ code: ami[0], nbAdministrations: 4 }] }],
         ['carte expirée : tarif non assuré', { patientCode: 'CNT/1003/26', prescripteurId: soignantPrescripteur.id, origine: 'bloc', secteurDestinataire: 'salle_soins', modalite: 'ambulatoire', actes: [{ code: ami[2], nbAdministrations: 1 }] }],
         ['prescripteur non habilité : refusé en le nommant', { patientCode: 'CNT/1001/26', prescripteurId: soignantNonHabilite.id, origine: 'consultation', actes: [{ code: ami[0] }] }],
-        ['acte sans prix au catalogue : ligne « à valider », montant exclu', { patientCode: 'CNT/1001/26', prescripteurId: soignantPrescripteur.id, origine: 'maternite', secteurDestinataire: 'maternite', actes: [{ code: ami[0] }, { code: amiSansPrix[0] || 'INCONNU-X' }] }],
-        ['code d’acte inconnu : libellé = code, prix nul', { patientCode: 'CNT/1001/26', prescripteurId: soignantPrescripteur.id, actes: ['ZZZ-INCONNU'] }],
+        ['acte sans prix au catalogue : ligne « à valider », « prix à définir » nommé, montant NON CALCULABLE (nul, lot TARIF-FIX-2)', { patientCode: 'CNT/1001/26', prescripteurId: soignantPrescripteur.id, origine: 'maternite', secteurDestinataire: 'maternite', actes: [{ code: ami[0] }, { code: amiSansPrix[0] || 'INCONNU-X' }] }],
+        ['code d’acte inconnu : libellé = code, prix nul, « prix à définir » nommé, montant nul', { patientCode: 'CNT/1001/26', prescripteurId: soignantPrescripteur.id, actes: ['ZZZ-INCONNU'] }],
         ['patient introuvable', { patientCode: 'CNT/9999/26', prescripteurId: soignantPrescripteur.id, actes: [{ code: ami[0] }] }],
         ['sans prescripteurId : prescripteur de la saisie, urgent', { patientCode: 'CNT/1001/26', prescripteur: 'Dr Libre', urgent: true, actes: [{ code: ami[0] }] }],
       ];

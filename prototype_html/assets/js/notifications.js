@@ -394,6 +394,28 @@
       },
     },
     {
+      code: 'prix_manquant', categorie: 'metier', domaine: 'Tarifs',
+      /* LOT TARIF-FIX-2 (Direction, 16/11/2026) : une prescription acceptée avec une ligne SANS PRIX attend ce prix à la caisse. L'alerte part vers le profil qui le
+         FIXE, lu dans la fiche RBAC (droit de modifier « Tarifs et prix » pour un acte, une analyse, un examen ; « Référentiel produits » pour un prix d'achat), jamais
+         un nom de rôle. UNE alerte PAR CODE (jamais une par prescription), DÉRIVÉE : elle retombe d'elle-même dès qu'un prix est en vigueur à la date des pièces. Aucune
+         donnée de santé : le code, le libellé de la prestation et le nombre de pièces, jamais un patient. */
+      lire: function () {
+        var PR = global.SIGH.parcours;
+        if (!PR || !PR.prixManquantsEnAttente) return [];
+        return PR.prixManquantsEnAttente().map(function (m) {
+          var achat = m.nature === 'prix_achat';
+          return {
+            cle: 'prix:' + m.cle,
+            priorite: 'important',
+            titre: (achat ? 'Prix à valoriser : « ' : 'Prix à définir : « ') + m.code + ' » ' + m.libelle,
+            detail: C.num(m.pieces.length) + ' pièce(s) en attente à la caisse. ' + m.geste,
+            lien: achat ? 'm6-produits' : 'cfg-tarifs',
+            postes: PR.rolesQuiFixent(m.nature),
+          };
+        });
+      },
+    },
+    {
       code: 'poste', categorie: 'metier', domaine: 'Poste',
       /* Les notifications de POSTE, écrites par le moteur transactionnel
          (`PR.notifier`). Elles s'adressent à un poste et non à une personne :
@@ -519,6 +541,8 @@
       'Établir un bon de commande, validation de la Direction requise (RG-04).'],
     lots_peremption: ['lot(s) périmés ou proches de la péremption',
       'Appliquer le principe FEFO (RG-05) et déclarer les pertes constatées.'],
+    prix_manquant: ['prestation(s) sans prix attendue(s) à la caisse',
+      'Poser le prix (« Tarifs et prix » ou « Changer le prix d’achat ») : les pièces en attente se valorisent à leur date.'],
     mecef_rejet: ['facture(s) rejetée(s) par la MECeF',
       'Corriger puis réémettre auprès de l’administration fiscale.'],
     echeance_fiscale: ['échéance(s) fiscale(s) dépassée(s)',
