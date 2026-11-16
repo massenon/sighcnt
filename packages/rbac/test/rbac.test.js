@@ -202,7 +202,7 @@ test('lot VAL : chaque validation, écriture ou arbitrage qui était une LISTE D
     valider_famille_modeles_messages: ['direction', 'da', 'admin'], valider_famille_bareme_aib: ['direction', 'da', 'admin', 'comptable'], valider_famille_bareme_its: ['direction', 'da', 'admin'],
     voir_toutes_les_familles_validation: ['direction', 'da', 'admin'], valider_configuration_fiscale: ['direction', 'da', 'admin'], ecrire_bareme_aib: ['comptable', 'admin', 'da'],
     retransmettre_mecef: ['caissier', 'da', 'admin'], retransmettre_mecef_sans_limite: ['da', 'admin'], regler_mode_mecef: ['admin', 'da'], trancher_pair: ['da', 'direction', 'admin'],
-    valider_pair: ['da', 'admin'], valider_etape_surveillant: ['surveillant', 'admin'], valider_etape_daf: ['da', 'admin'], arbitrer_besoins: ['da', 'direction', 'admin'], tarifer_date_passee: ['da', 'direction'],
+    valider_pair: ['da', 'admin'], valider_etape_surveillant: ['surveillant', 'admin'], valider_etape_daf: ['da', 'admin'], arbitrer_besoins: ['da', 'direction', 'admin'], dater_prix_passe: ['da', 'direction'],
   };
   for (const [id, liste] of Object.entries(hier)) {
     const g = rbac.gestes.jeux.find((x) => x.id === id);

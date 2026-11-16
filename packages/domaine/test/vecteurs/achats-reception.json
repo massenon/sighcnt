@@ -83,15 +83,13 @@
    {
     "nom": "conforme : tout est reçu",
     "commande": {
-     "id": "COMxmvvapqzhesxkn",
+     "id": "COMxmvux79nuteixv",
      "statut": "actif",
-     "reference": "BC-2096-0118",
+     "reference": "BC-2096-0120",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -110,18 +108,18 @@
        "montant": 7000
       }
      ],
-     "montant": 20000
+     "montant": 20000,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvvapqzhesxkn",
+     "id": "COMxmvux79nuteixv",
      "statut": "actif",
-     "reference": "BC-2096-0118",
+     "reference": "BC-2096-0120",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -140,7 +138,9 @@
        "montant": 7000
       }
      ],
-     "montant": 20000
+     "montant": 20000,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "defauts": {
      "referenceBL": "",
@@ -196,10 +196,10 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvvapr48r2crg",
+     "id": "LIVxmvux79t0dfhn1",
      "statut": "actif",
      "reference": "26LNA00099",
-     "commandeRef": "BC-2096-0118",
+     "commandeRef": "BC-2096-0120",
      "date": "2026-10-30",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
@@ -235,7 +235,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvvapr49v3nsx",
+      "id": "MOUxmvux79t4ioi3y",
       "statut": "actif",
       "reference": "M000402",
       "date": "2026-10-30",
@@ -249,7 +249,7 @@
       "utilisateur": "MAMAN Zoukanéri"
      },
      {
-      "id": "MOUxmvvapr48ha6cf",
+      "id": "MOUxmvux79t3lmkat",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -274,19 +274,19 @@
     "kpisAvant": [
      [
       "Commandes à réceptionner",
-      "8"
+      "5"
      ],
      [
       "Réceptions réalisées",
-      "12"
+      "11"
      ],
      [
       "Valeur attendue",
-      "986 900 FCFA"
+      "972 500 FCFA"
      ],
      [
       "Fournisseurs concernés",
-      "3"
+      "2"
      ]
     ],
     "apresAnnulation": {
@@ -312,15 +312,13 @@
    {
     "nom": "manquant sur une ligne, surplus sur l'autre, rien sur la troisième",
     "commande": {
-     "id": "COMxmvvapr9prx2v8",
+     "id": "COMxmvux79yg1j8x2",
      "statut": "actif",
-     "reference": "BC-2096-0119",
+     "reference": "BC-2096-0121",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -347,18 +345,18 @@
        "montant": 1250
       }
      ],
-     "montant": 21250
+     "montant": 21250,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvvapr9prx2v8",
+     "id": "COMxmvux79yg1j8x2",
      "statut": "actif",
-     "reference": "BC-2096-0119",
+     "reference": "BC-2096-0121",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -385,7 +383,9 @@
        "montant": 1250
       }
      ],
-     "montant": 21250
+     "montant": 21250,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "defauts": {
      "referenceBL": "",
@@ -459,10 +459,10 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvvaprel8ecck",
+     "id": "LIVxmvux7a3br9c60",
      "statut": "actif",
      "reference": "26LNA00100",
-     "commandeRef": "BC-2096-0119",
+     "commandeRef": "BC-2096-0121",
      "date": "2026-10-30",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
@@ -509,7 +509,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvvapreo1217l",
+      "id": "MOUxmvux7a3c9h230",
       "statut": "actif",
       "reference": "M000402",
       "date": "2026-10-30",
@@ -523,7 +523,7 @@
       "utilisateur": "MAMAN Zoukanéri"
      },
      {
-      "id": "MOUxmvvapreo7dmim",
+      "id": "MOUxmvux7a3cbc7fl",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -548,19 +548,19 @@
     "kpisAvant": [
      [
       "Commandes à réceptionner",
-      "9"
+      "6"
      ],
      [
       "Réceptions réalisées",
-      "12"
+      "11"
      ],
      [
       "Valeur attendue",
-      "1 008 150 FCFA"
+      "993 750 FCFA"
      ],
      [
       "Fournisseurs concernés",
-      "3"
+      "2"
      ]
     ],
     "apresAnnulation": {
@@ -592,15 +592,13 @@
    {
     "nom": "prix de commande différent du CUMP : le CUMP bouge",
     "commande": {
-     "id": "COMxmvvaprk5kofoo",
+     "id": "COMxmvux7a8medqa4",
      "statut": "actif",
-     "reference": "BC-2096-0120",
+     "reference": "BC-2096-0122",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -611,18 +609,18 @@
        "montant": 13370
       }
      ],
-     "montant": 13370
+     "montant": 13370,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvvaprk5kofoo",
+     "id": "COMxmvux7a8medqa4",
      "statut": "actif",
-     "reference": "BC-2096-0120",
+     "reference": "BC-2096-0122",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -633,7 +631,9 @@
        "montant": 13370
       }
      ],
-     "montant": 13370
+     "montant": 13370,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "defauts": {
      "referenceBL": "",
@@ -675,10 +675,10 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvvaprou3ze5w",
+     "id": "LIVxmvux7ad9018ko",
      "statut": "actif",
      "reference": "26LNA00101",
-     "commandeRef": "BC-2096-0120",
+     "commandeRef": "BC-2096-0122",
      "date": "2026-10-30",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
@@ -704,7 +704,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvvaprovckwv7",
+      "id": "MOUxmvux7adaumlo6",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -723,25 +723,25 @@
      {
       "message": "Réception enregistrée — livraison conforme.",
       "type": "success",
-      "detail": "Stock gros mis à jour, CUMP recalculé."
+      "detail": "Stock gros mis à jour, CUMP recalculé. 1 proposition(s) de changement du prix d’achat ouverte(s) (ABA : 650 à 1 337) : le prix en vigueur ne change qu’au Oui de la Directrice Administrative."
      }
     ],
     "kpisAvant": [
      [
       "Commandes à réceptionner",
-      "10"
+      "7"
      ],
      [
       "Réceptions réalisées",
-      "12"
+      "11"
      ],
      [
       "Valeur attendue",
-      "1 021 520 FCFA"
+      "1 007 120 FCFA"
      ],
      [
       "Fournisseurs concernés",
-      "3"
+      "2"
      ]
     ],
     "apresAnnulation": {
@@ -761,15 +761,13 @@
    {
     "nom": "article inconnu du référentiel : le bon est écrit, le stock ne bouge pas",
     "commande": {
-     "id": "COMxmvvaprubxrrvo",
+     "id": "COMxmvux7aiy76ng7",
      "statut": "actif",
-     "reference": "BC-2096-0121",
+     "reference": "BC-2096-0123",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD-INCONNU",
@@ -788,18 +786,18 @@
        "montant": 2000
       }
      ],
-     "montant": 5600
+     "montant": 5600,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvvaprubxrrvo",
+     "id": "COMxmvux7aiy76ng7",
      "statut": "actif",
-     "reference": "BC-2096-0121",
+     "reference": "BC-2096-0123",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD-INCONNU",
@@ -818,7 +816,9 @@
        "montant": 2000
       }
      ],
-     "montant": 5600
+     "montant": 5600,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "defauts": {
      "referenceBL": "",
@@ -862,10 +862,10 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvvapryzro60t",
+     "id": "LIVxmvux7anosf9gu",
      "statut": "actif",
      "reference": "26LNA00102",
-     "commandeRef": "BC-2096-0121",
+     "commandeRef": "BC-2096-0123",
      "date": "2026-10-30",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
@@ -901,7 +901,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvvaprz0d4iqs",
+      "id": "MOUxmvux7anogj3um",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -926,19 +926,19 @@
     "kpisAvant": [
      [
       "Commandes à réceptionner",
-      "11"
+      "8"
      ],
      [
       "Réceptions réalisées",
-      "12"
+      "11"
      ],
      [
       "Valeur attendue",
-      "1 027 120 FCFA"
+      "1 012 720 FCFA"
      ],
      [
       "Fournisseurs concernés",
-      "3"
+      "2"
      ]
     ],
     "apresAnnulation": {
@@ -958,15 +958,13 @@
    {
     "nom": "commande « transmise » : réceptionnable aussi",
     "commande": {
-     "id": "COMxmvvaps4bskecp",
+     "id": "COMxmvux7asz6t7jf",
      "statut": "actif",
-     "reference": "BC-2096-0122",
+     "reference": "BC-2096-0124",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0003",
@@ -977,18 +975,18 @@
        "montant": 750
       }
      ],
-     "montant": 750
+     "montant": 750,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvvaps4bskecp",
+     "id": "COMxmvux7asz6t7jf",
      "statut": "actif",
-     "reference": "BC-2096-0122",
+     "reference": "BC-2096-0124",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "livree",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0003",
@@ -999,7 +997,9 @@
        "montant": 750
       }
      ],
-     "montant": 750
+     "montant": 750,
+     "statutCommande": "livree",
+     "valideePar": "TAKI Alimatou"
     },
     "defauts": {
      "referenceBL": "",
@@ -1041,10 +1041,10 @@
      }
     ],
     "bl": {
-     "id": "LIVxmvvaps906heox",
+     "id": "LIVxmvux7b1j63a9x",
      "statut": "actif",
      "reference": "26LNA00103",
-     "commandeRef": "BC-2096-0122",
+     "commandeRef": "BC-2096-0124",
      "date": "2026-10-30",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
@@ -1070,7 +1070,7 @@
     },
     "mouvements": [
      {
-      "id": "MOUxmvvaps90honfq",
+      "id": "MOUxmvux7b1jvehzb",
       "statut": "actif",
       "reference": "M000401",
       "date": "2026-10-30",
@@ -1095,19 +1095,19 @@
     "kpisAvant": [
      [
       "Commandes à réceptionner",
-      "12"
+      "9"
      ],
      [
       "Réceptions réalisées",
-      "12"
+      "11"
      ],
      [
       "Valeur attendue",
-      "1 027 870 FCFA"
+      "1 013 470 FCFA"
      ],
      [
       "Fournisseurs concernés",
-      "3"
+      "2"
      ]
     ],
     "apresAnnulation": {
@@ -1127,15 +1127,13 @@
    {
     "nom": "SANS numéro de bordereau : refusée, rien n'est écrit",
     "commande": {
-     "id": "COMxmvvapsei91x68",
+     "id": "COMxmvux7b6uj0ne2",
      "statut": "actif",
-     "reference": "BC-2096-0123",
+     "reference": "BC-2096-0125",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "validee",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -1146,18 +1144,18 @@
        "montant": 3250
       }
      ],
-     "montant": 3250
+     "montant": 3250,
+     "statutCommande": "validee",
+     "valideePar": "TAKI Alimatou"
     },
     "commandeApres": {
-     "id": "COMxmvvapsei91x68",
+     "id": "COMxmvux7b6uj0ne2",
      "statut": "actif",
-     "reference": "BC-2096-0123",
+     "reference": "BC-2096-0125",
      "date": "2096-03-01",
      "fournisseur": "CAME",
      "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
      "delaiLivraison": 7,
-     "statutCommande": "validee",
-     "valideePar": "TAKI Alimatou",
      "lignes": [
       {
        "produitId": "PRD0001",
@@ -1168,7 +1166,9 @@
        "montant": 3250
       }
      ],
-     "montant": 3250
+     "montant": 3250,
+     "statutCommande": "validee",
+     "valideePar": "TAKI Alimatou"
     },
     "defauts": {
      "referenceBL": "",
@@ -1222,19 +1222,19 @@
     "kpisAvant": [
      [
       "Commandes à réceptionner",
-      "13"
+      "10"
      ],
      [
       "Réceptions réalisées",
-      "12"
+      "11"
      ],
      [
       "Valeur attendue",
-      "1 031 120 FCFA"
+      "1 016 720 FCFA"
      ],
      [
       "Fournisseurs concernés",
-      "3"
+      "2"
      ]
     ]
    }
@@ -1828,35 +1828,35 @@
      "kpis": [
       [
        "Commandes à réceptionner",
-       "13"
+       "10"
       ],
       [
        "Réceptions réalisées",
-       "12"
+       "11"
       ],
       [
        "Valeur attendue",
-       "1 031 120 FCFA"
+       "1 016 720 FCFA"
       ],
       [
        "Fournisseurs concernés",
-       "3"
+       "2"
       ]
      ],
      "refs": [
       "1. Pro-forma / bon de commande",
       "2. Bordereau de livraison",
       "3. Facture de vente normalisée",
+      "BC-2096-0125",
+      "BC-2096-0124",
       "BC-2096-0123",
       "BC-2096-0122",
       "BC-2096-0121",
       "BC-2096-0120",
-      "BC-2096-0119",
-      "BC-2096-0118",
-      "BC-2095-0116",
-      "BC-2095-0115",
-      "BC-2026-0018",
-      "BC-2098-0114"
+      "BC-2095-0118",
+      "BC-2098-0112",
+      "BC-2026-0010",
+      "BC-2026-0011"
      ],
      "actionsPremiereLigne": [
       [
@@ -1933,35 +1933,35 @@
      "kpis": [
       [
        "Commandes à réceptionner",
-       "13"
+       "10"
       ],
       [
        "Réceptions réalisées",
-       "12"
+       "11"
       ],
       [
        "Valeur attendue",
-       "1 031 120 FCFA"
+       "1 016 720 FCFA"
       ],
       [
        "Fournisseurs concernés",
-       "3"
+       "2"
       ]
      ],
      "refs": [
       "1. Pro-forma / bon de commande",
       "2. Bordereau de livraison",
       "3. Facture de vente normalisée",
+      "BC-2096-0125",
+      "BC-2096-0124",
       "BC-2096-0123",
       "BC-2096-0122",
       "BC-2096-0121",
       "BC-2096-0120",
-      "BC-2096-0119",
-      "BC-2096-0118",
-      "BC-2095-0116",
-      "BC-2095-0115",
-      "BC-2026-0018",
-      "BC-2098-0114"
+      "BC-2095-0118",
+      "BC-2098-0112",
+      "BC-2026-0010",
+      "BC-2026-0011"
      ],
      "actionsPremiereLigne": [
       [
@@ -2036,35 +2036,35 @@
      "kpis": [
       [
        "Commandes à réceptionner",
-       "13"
+       "10"
       ],
       [
        "Réceptions réalisées",
-       "12"
+       "11"
       ],
       [
        "Valeur attendue",
-       "1 031 120 FCFA"
+       "1 016 720 FCFA"
       ],
       [
        "Fournisseurs concernés",
-       "3"
+       "2"
       ]
      ],
      "refs": [
       "1. Pro-forma / bon de commande",
       "2. Bordereau de livraison",
       "3. Facture de vente normalisée",
+      "BC-2096-0125",
+      "BC-2096-0124",
       "BC-2096-0123",
       "BC-2096-0122",
       "BC-2096-0121",
       "BC-2096-0120",
-      "BC-2096-0119",
-      "BC-2096-0118",
-      "BC-2095-0116",
-      "BC-2095-0115",
-      "BC-2026-0018",
-      "BC-2098-0114"
+      "BC-2095-0118",
+      "BC-2098-0112",
+      "BC-2026-0010",
+      "BC-2026-0011"
      ],
      "actionsPremiereLigne": [
       []
@@ -2137,35 +2137,35 @@
      "kpis": [
       [
        "Commandes à réceptionner",
-       "13"
+       "10"
       ],
       [
        "Réceptions réalisées",
-       "12"
+       "11"
       ],
       [
        "Valeur attendue",
-       "1 031 120 FCFA"
+       "1 016 720 FCFA"
       ],
       [
        "Fournisseurs concernés",
-       "3"
+       "2"
       ]
      ],
      "refs": [
       "1. Pro-forma / bon de commande",
       "2. Bordereau de livraison",
       "3. Facture de vente normalisée",
+      "BC-2096-0125",
+      "BC-2096-0124",
       "BC-2096-0123",
       "BC-2096-0122",
       "BC-2096-0121",
       "BC-2096-0120",
-      "BC-2096-0119",
-      "BC-2096-0118",
-      "BC-2095-0116",
-      "BC-2095-0115",
-      "BC-2026-0018",
-      "BC-2098-0114"
+      "BC-2095-0118",
+      "BC-2098-0112",
+      "BC-2026-0010",
+      "BC-2026-0011"
      ],
      "actionsPremiereLigne": [
       []
@@ -2239,35 +2239,35 @@
      "kpis": [
       [
        "Commandes à réceptionner",
-       "13"
+       "10"
       ],
       [
        "Réceptions réalisées",
-       "12"
+       "11"
       ],
       [
        "Valeur attendue",
-       "1 031 120 FCFA"
+       "1 016 720 FCFA"
       ],
       [
        "Fournisseurs concernés",
-       "3"
+       "2"
       ]
      ],
      "refs": [
       "1. Pro-forma / bon de commande",
       "2. Bordereau de livraison",
       "3. Facture de vente normalisée",
+      "BC-2096-0125",
+      "BC-2096-0124",
       "BC-2096-0123",
       "BC-2096-0122",
       "BC-2096-0121",
       "BC-2096-0120",
-      "BC-2096-0119",
-      "BC-2096-0118",
-      "BC-2095-0116",
-      "BC-2095-0115",
-      "BC-2026-0018",
-      "BC-2098-0114"
+      "BC-2095-0118",
+      "BC-2098-0112",
+      "BC-2026-0010",
+      "BC-2026-0011"
      ],
      "actionsPremiereLigne": [
       [
@@ -2342,35 +2342,35 @@
      "kpis": [
       [
        "Commandes à réceptionner",
-       "13"
+       "10"
       ],
       [
        "Réceptions réalisées",
-       "12"
+       "11"
       ],
       [
        "Valeur attendue",
-       "1 031 120 FCFA"
+       "1 016 720 FCFA"
       ],
       [
        "Fournisseurs concernés",
-       "3"
+       "2"
       ]
      ],
      "refs": [
       "1. Pro-forma / bon de commande",
       "2. Bordereau de livraison",
       "3. Facture de vente normalisée",
+      "BC-2096-0125",
+      "BC-2096-0124",
       "BC-2096-0123",
       "BC-2096-0122",
       "BC-2096-0121",
       "BC-2096-0120",
-      "BC-2096-0119",
-      "BC-2096-0118",
-      "BC-2095-0116",
-      "BC-2095-0115",
-      "BC-2026-0018",
-      "BC-2098-0114"
+      "BC-2095-0118",
+      "BC-2098-0112",
+      "BC-2026-0010",
+      "BC-2026-0011"
      ],
      "actionsPremiereLigne": [
       [
@@ -2417,6 +2417,7 @@
    ]
   ],
   "ecartsEntete": [
+   "",
    "N° BL",
    "Commande",
    "Date",
@@ -2429,15 +2430,13 @@
   ],
   "commandes": [
    {
-    "id": "COMxmvvapsei91x68",
+    "id": "COMxmvux7b6uj0ne2",
     "statut": "actif",
-    "reference": "BC-2096-0123",
+    "reference": "BC-2096-0125",
     "date": "2096-03-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
     "delaiLivraison": 7,
-    "statutCommande": "validee",
-    "valideePar": "TAKI Alimatou",
     "lignes": [
      {
       "produitId": "PRD0001",
@@ -2448,18 +2447,18 @@
       "montant": 3250
      }
     ],
-    "montant": 3250
+    "montant": 3250,
+    "statutCommande": "validee",
+    "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvvaps4bskecp",
+    "id": "COMxmvux7asz6t7jf",
     "statut": "actif",
-    "reference": "BC-2096-0122",
+    "reference": "BC-2096-0124",
     "date": "2096-03-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
     "delaiLivraison": 7,
-    "statutCommande": "transmise",
-    "valideePar": "TAKI Alimatou",
     "lignes": [
      {
       "produitId": "PRD0003",
@@ -2470,18 +2469,18 @@
       "montant": 750
      }
     ],
-    "montant": 750
+    "montant": 750,
+    "statutCommande": "transmise",
+    "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvvaprubxrrvo",
+    "id": "COMxmvux7aiy76ng7",
     "statut": "actif",
-    "reference": "BC-2096-0121",
+    "reference": "BC-2096-0123",
     "date": "2096-03-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
     "delaiLivraison": 7,
-    "statutCommande": "validee",
-    "valideePar": "TAKI Alimatou",
     "lignes": [
      {
       "produitId": "PRD-INCONNU",
@@ -2500,18 +2499,18 @@
       "montant": 2000
      }
     ],
-    "montant": 5600
+    "montant": 5600,
+    "statutCommande": "validee",
+    "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvvaprk5kofoo",
+    "id": "COMxmvux7a8medqa4",
     "statut": "actif",
-    "reference": "BC-2096-0120",
+    "reference": "BC-2096-0122",
     "date": "2096-03-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
     "delaiLivraison": 7,
-    "statutCommande": "validee",
-    "valideePar": "TAKI Alimatou",
     "lignes": [
      {
       "produitId": "PRD0001",
@@ -2522,18 +2521,18 @@
       "montant": 13370
      }
     ],
-    "montant": 13370
+    "montant": 13370,
+    "statutCommande": "validee",
+    "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvvapr9prx2v8",
+    "id": "COMxmvux79yg1j8x2",
     "statut": "actif",
-    "reference": "BC-2096-0119",
+    "reference": "BC-2096-0121",
     "date": "2096-03-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
     "delaiLivraison": 7,
-    "statutCommande": "validee",
-    "valideePar": "TAKI Alimatou",
     "lignes": [
      {
       "produitId": "PRD0001",
@@ -2560,18 +2559,18 @@
       "montant": 1250
      }
     ],
-    "montant": 21250
+    "montant": 21250,
+    "statutCommande": "validee",
+    "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvvapqzhesxkn",
+    "id": "COMxmvux79nuteixv",
     "statut": "actif",
-    "reference": "BC-2096-0118",
+    "reference": "BC-2096-0120",
     "date": "2096-03-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
     "delaiLivraison": 7,
-    "statutCommande": "validee",
-    "valideePar": "TAKI Alimatou",
     "lignes": [
      {
       "produitId": "PRD0001",
@@ -2590,12 +2589,14 @@
       "montant": 7000
      }
     ],
-    "montant": 20000
+    "montant": 20000,
+    "statutCommande": "validee",
+    "valideePar": "TAKI Alimatou"
    },
    {
-    "id": "COMxmvvapqduq03ti",
+    "id": "COMxmvux793blwt1u",
     "statut": "actif",
-    "reference": "BC-2095-0117",
+    "reference": "BC-2095-0119",
     "date": "2099-06-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
@@ -2615,9 +2616,9 @@
     "observations": ""
    },
    {
-    "id": "COMxmvvapq5gw0s8t",
+    "id": "COMxmvux78ux4l4fy",
     "statut": "actif",
-    "reference": "BC-2095-0116",
+    "reference": "BC-2095-0118",
     "date": "2099-06-01",
     "fournisseur": "CAME",
     "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
@@ -2639,12 +2640,12 @@
     "observations": ""
    },
    {
-    "id": "COMxmvvappx4o9qlc",
+    "id": "COMxmvux78ml6ecu1",
     "statut": "actif",
-    "reference": "BC-2095-0115",
+    "reference": "BC-2095-0117",
     "date": "2099-06-01",
     "fournisseur": "CAME",
-    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "fournisseurNom": "CAME",
     "lignes": [
      {
       "produitId": "PRD0001",
@@ -2657,61 +2658,10 @@
     ],
     "montant": 6500,
     "delaiLivraison": 7,
-    "statutCommande": "validee",
-    "observations": "",
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
+    "statutCommande": "brouillon"
    },
    {
-    "id": "COMxmvvappl7jwm7j",
-    "statut": "actif",
-    "date": "2026-10-30",
-    "fournisseur": "NATIFOURN",
-    "statutCommande": "soldee",
-    "observations": "",
-    "fournisseurNom": "NATI Fournitures",
-    "delaiLivraison": 2,
-    "lignes": [
-     {
-      "produitId": "PRD0001",
-      "produit": "ABAISSE LANGUE",
-      "unite": "Unité",
-      "quantite": 1,
-      "prixUnitaire": 500,
-      "montant": 500
-     }
-    ],
-    "montant": 500,
-    "reference": "BC-2026-0019",
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
-   },
-   {
-    "id": "COMxmvvapp9utgvf7",
-    "statut": "actif",
-    "date": "2026-10-30",
-    "fournisseur": "SOBAPS",
-    "statutCommande": "transmise",
-    "observations": "",
-    "fournisseurNom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
-    "delaiLivraison": 5,
-    "lignes": [
-     {
-      "produitId": "PRD0001",
-      "produit": "ABAISSE LANGUE",
-      "unite": "Unité",
-      "quantite": 2,
-      "prixUnitaire": 700,
-      "montant": 1400
-     }
-    ],
-    "montant": 1400,
-    "reference": "BC-2026-0018",
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
-   },
-   {
-    "id": "COMxmvvapoyk3mhjl",
+    "id": "COMxmvux77pax58dn",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "MEDIPLUS",
@@ -2733,7 +2683,7 @@
     "reference": "BC-2026-0017"
    },
    {
-    "id": "COMxmvvaponvqij8u",
+    "id": "COMxmvux77fovwb95",
     "statut": "actif",
     "date": "2026-10-30",
     "fournisseur": "CAME",
@@ -2763,7 +2713,49 @@
     "reference": "BC-2026-0016"
    },
    {
-    "id": "COMxmvvapo7swp2bp",
+    "id": "COMxmvux774wh99ft",
+    "statut": "actif",
+    "reference": "BC-2098-0116",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation"
+   },
+   {
+    "id": "COMxmvux772jor8m4",
+    "statut": "actif",
+    "reference": "BC-2098-0115",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation"
+   },
+   {
+    "id": "COMxmvux77063tewk",
     "statut": "actif",
     "reference": "BC-2098-0114",
     "date": "2098-02-01",
@@ -2780,13 +2772,11 @@
      }
     ],
     "montant": 6500,
-    "statutCommande": "validee",
     "delaiLivraison": 7,
-    "valideePar": "TAKI Alimatou",
-    "dateValidation": "2026-10-30"
+    "statutCommande": "attente_validation"
    },
    {
-    "id": "COMxmvvapo5aiaor9",
+    "id": "COMxmvux76xih3vsd",
     "statut": "actif",
     "reference": "BC-2098-0113",
     "date": "2098-02-01",
@@ -2803,11 +2793,11 @@
      }
     ],
     "montant": 6500,
-    "statutCommande": "attente_validation",
-    "delaiLivraison": 7
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation"
    },
    {
-    "id": "COMxmvvapny7olvg6",
+    "id": "COMxmvux76q7gkwyw",
     "statut": "actif",
     "reference": "BC-2098-0112",
     "date": "2098-02-01",
@@ -2824,8 +2814,8 @@
      }
     ],
     "montant": 6500,
-    "statutCommande": "validee",
     "delaiLivraison": 7,
+    "statutCommande": "validee",
     "valideePar": "TAKI Alimatou",
     "dateValidation": "2026-10-30"
    },
@@ -3403,7 +3393,7 @@
    {
     "nom": "contrôleurs inchangés : la liste est conservée",
     "avant": {
-     "id": "LIVxmvvapukazxgo4",
+     "id": "LIVxmvux7dc365arl",
      "statut": "actif",
      "reference": "26LNA-M1",
      "commandeRef": "BC-M",
@@ -3428,7 +3418,7 @@
     },
     "champs": {},
     "apres": {
-     "id": "LIVxmvvapukazxgo4",
+     "id": "LIVxmvux7dc365arl",
      "statut": "actif",
      "reference": "26LNA-M1",
      "commandeRef": "BC-M",
@@ -3454,7 +3444,7 @@
    {
     "nom": "contrôleurs réécrits, avec espaces et virgule vide",
     "avant": {
-     "id": "LIVxmvvapusxozh8r",
+     "id": "LIVxmvux7dkes92he",
      "statut": "actif",
      "reference": "26LNA-M2",
      "commandeRef": "BC-M",
@@ -3483,7 +3473,7 @@
      "montant": "2500"
     },
     "apres": {
-     "id": "LIVxmvvapusxozh8r",
+     "id": "LIVxmvux7dkes92he",
      "statut": "actif",
      "reference": "26LNA-M2",
      "commandeRef": "BC-M",
@@ -3528,7 +3518,7 @@
      "controlePar": "MAMAN Zoukanéri"
     },
     "bl": {
-     "id": "LIVxmvvapu1oecuqr",
+     "id": "LIVxmvux7ctttc9r1",
      "statut": "actif",
      "commandeRef": "BC-2026-0001",
      "fournisseur": "NATIFOURN",
@@ -3571,7 +3561,7 @@
      "controlePar": ""
     },
     "bl": {
-     "id": "LIVxmvvapu9aoe23l",
+     "id": "LIVxmvux7d1cr6spl",
      "statut": "actif",
      "commandeRef": "BC-2026-0002",
      "fournisseur": "CAME",
@@ -3679,7 +3669,7 @@
    ],
    "livraisons": [
     {
-     "id": "LIVxmvvapv10oxb10",
+     "id": "LIVxmvux7dtm3tmkt",
      "statut": "actif",
      "reference": "26LNA-X3",
      "commandeRef": "BC-X3",
@@ -3706,7 +3696,7 @@
      "montant": 3250
     },
     {
-     "id": "LIVxmvvapv10xzzb4",
+     "id": "LIVxmvux7dtm1x2vq",
      "statut": "actif",
      "reference": "26LNA-X2",
      "commandeRef": "BC-X2",
@@ -3732,7 +3722,7 @@
      "montant": 60000
     },
     {
-     "id": "LIVxmvvapv10q1tat",
+     "id": "LIVxmvux7dtmi8q1g",
      "statut": "actif",
      "reference": "26LNA-X1",
      "commandeRef": "BC-X1",
@@ -3779,7 +3769,7 @@
      "montant": 1400
     },
     {
-     "id": "LIVxmvvapusxozh8r",
+     "id": "LIVxmvux7dkes92he",
      "statut": "actif",
      "reference": "26LNA-M2",
      "commandeRef": "BC-M",
@@ -3796,7 +3786,7 @@
      "montant": 2500
     },
     {
-     "id": "LIVxmvvapukazxgo4",
+     "id": "LIVxmvux7dc365arl",
      "statut": "actif",
      "reference": "26LNA-M1",
      "commandeRef": "BC-M",
@@ -3812,7 +3802,7 @@
      "montant": 1000
     },
     {
-     "id": "LIVxmvvapu9aoe23l",
+     "id": "LIVxmvux7d1cr6spl",
      "statut": "actif",
      "commandeRef": "BC-2026-0002",
      "fournisseur": "CAME",
@@ -3825,7 +3815,7 @@
      "lignes": []
     },
     {
-     "id": "LIVxmvvapu1oecuqr",
+     "id": "LIVxmvux7ctttc9r1",
      "statut": "actif",
      "commandeRef": "BC-2026-0001",
      "fournisseur": "NATIFOURN",

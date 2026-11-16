@@ -10,6 +10,8 @@ import '../droits/droit_geste.dart' show gesDroit;
 import 'etats.dart';
 import 'montants.dart';
 
+/// Les gestes réservés de la retransmission (lot CLO-3 point 7) : défauts d'origine `caissier`, `da`, `admin` (une fois), `da`, `admin` (sans limite).
+
 /// Ce que la normalisation retient d'une pièce, ou le refus nommé.
 class PreparationNormalisation {
   const PreparationNormalisation.ok(AcheteurMecef this.acheteur, MontantsMecef this.montants) : refus = null, ignore = false;
@@ -119,7 +121,6 @@ String numeroMecefLibre(int tire, Set<String> pris) {
 /// LOT VAL : retransmettre, retransmettre sans limite d'essais et régler le mode sont des gestes réservés de la fiche RBAC ; les listes ne sont que le DÉFAUT d'origine du manifeste.
 const String mecefGesteRetransmettre = 'retransmettre_mecef';
 const String mecefGesteSansLimite = 'retransmettre_mecef_sans_limite';
-const String mecefGesteMode = 'regler_mode_mecef';
 const List<String> mecefRolesRetransmettre = ['caissier', 'da', 'admin'];
 const List<String> mecefRolesSansLimite = ['da', 'admin'];
 const List<String> mecefRolesMode = ['admin', 'da'];

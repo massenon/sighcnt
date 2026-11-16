@@ -2,9 +2,9 @@
 ///
 /// Rejoué sur `test/vecteurs/achats-commandes.json` (écran réel piloté dans Chrome).
 ///
-/// Écarts de la maquette portés fidèlement et signalés (E72) : le geste « Valider (DA) » est offert à tout profil qui écrit dans M7 (le gestionnaire
-/// de stock compris) et le validateur est TOUJOURS 'TAKI Alimatou' ; surtout, choisir le statut « Validée », « Transmise », « Livrée » ou « Soldée »
-/// dans le formulaire pose d'office la validation de la DAF — RG-04 est donc contournable par qui peut modifier une commande.
+/// Lot CLO-3 (Direction, 16/11/2026, section AH point 3 et AQ point 1) : VALIDER est le geste réservé `valider_commande_stock` de la fiche RBAC (d'origine la
+/// Directrice Administrative seule), jamais un nom écrit : le validateur enregistré est l'AGENT de la session ; choisir « Validée », « Transmise », « Livrée » ou
+/// « Soldée » au formulaire est REFUSÉ tant que la commande n'est pas validée par le geste (ce qui remplace les écarts E72 et E74 de la maquette d'origine).
 library;
 
 import 'nombres.dart';
@@ -19,7 +19,7 @@ class StatutCommande {
 
 const statutsCommande = [
   StatutCommande('brouillon', 'Brouillon', 'neutral'),
-  StatutCommande('attente_validation', 'En attente de validation DA', 'warning'),
+  StatutCommande('attente_validation', 'En attente de validation', 'warning'),
   StatutCommande('validee', 'Validée', 'info'),
   StatutCommande('transmise', 'Transmise au fournisseur', 'navy'),
   StatutCommande('livree', 'Livrée', 'success'),
@@ -58,12 +58,66 @@ List<_Commande> commandesEnAttente(Iterable<_Commande> actives) => [
           .length,
     );
 
-/// Le geste de la DAF (RG-04) : la commande devient « Validée » — elle peut alors être transmise.
-_Commande validationCommande({required String jour}) => {
-      'statutCommande': 'validee',
-      'valideePar': directriceAdministrative,
-      'dateValidation': jour,
-    };
+/// Le geste réservé de la fiche RBAC qui valide une commande de stock gros (RG-04).
+const gesteValiderCommandeStock = 'valider_commande_stock';
+
+/// Les statuts qu'aucun formulaire ne pose : seul le geste de validation (ou la poursuite du circuit d'une commande déjà validée) y mène.
+const statutsCommandeValides = ['validee', 'transmise', 'livree', 'soldee'];
+
+bool _validee(_Commande? c) =>
+    c != null && statutsCommandeValides.contains(c['statutCommande']) && c['valideePar'] != null && c['valideePar'] != '';
+
+/// Le refus de la maquette quand on choisit un statut validé sans validation (même texte, dit à l'agent).
+String messageStatutCommandeNonValide(String statut, String valideurs) =>
+    'Statut refusé (COMMANDE_NON_VALIDEE) : « ${libelleCommande(statut)} » ne se choisit pas au formulaire, la commande doit d’abord être validée par le geste « Valider une commande de stock gros » ($valideurs, RG-04). Choisir « En attente de validation ».';
+
+/// Le geste de validation (RG-04) : la commande devient « Validée » et elle peut alors être transmise. Rend le correctif à écrire ou lève le refus NOMMÉ
+/// (droit absent : le moteur refuse aussi, un bouton masqué ne protège rien ; commande introuvable, déjà validée, pas en attente).
+/// [agent] est l'agent de la session ; [libelleRole] le libellé de son rôle ; [valideurs] les libellés des rôles qui détiennent le droit.
+_Commande validationCommande(
+    {required _Commande? commande,
+    required String jour,
+    required String agent,
+    required bool gesteAccorde,
+    required String libelleRole,
+    required String valideurs}) {
+  if (!gesteAccorde) {
+    throw RefusAchat(
+        'Validation refusée (VALIDATION_COMMANDE_RESERVEE) : Valider une commande de stock gros (RG-04) est un droit réservé de la fiche du rôle (« Valider une commande de stock gros ») : « $libelleRole » ne l’a pas. Demander la validation à : $valideurs.');
+  }
+  if (commande == null || commande['statut'] == 'archive') {
+    throw const RefusAchat('Validation refusée (COMMANDE_INCONNUE) : La commande est introuvable ou archivée. Rafraîchir l’écran.');
+  }
+  if (_validee(commande)) {
+    throw RefusAchat(
+        'Validation refusée (COMMANDE_DEJA_VALIDEE) : La commande ${commande['reference']} est déjà validée par ${commande['valideePar']} : une validation ne se réécrit pas. Aucun geste : la commande peut suivre son circuit.');
+  }
+  if (commande['statutCommande'] != 'attente_validation') {
+    throw RefusAchat(
+        'Validation refusée (COMMANDE_PAS_EN_ATTENTE) : La commande ${commande['reference']} est « ${commande['statutCommande']} » : seule une commande en attente de validation se valide. Soumettre la commande à la validation d’abord (statut « En attente de validation »).');
+  }
+  return {'statutCommande': 'validee', 'valideePar': agent, 'dateValidation': jour};
+}
+
+/// LA GARDE RG-04 DU MAGASIN (`S.garder('commandes')` de la maquette) : un statut « validée », « transmise », « livrée » ou « soldée » (ou un validateur) ne naît que de la validation
+/// posée par le geste réservé (de « en attente de validation » vers « validée », validateur nommé), jamais d'une autre écriture ; une validation posée ne se réécrit pas (RG-14).
+/// Rend le motif nommé du refus ou `null`. [apres] est la fiche fusionnée ; [avant] la fiche d'avant (null à la création).
+String? gardeCommandeRg04(String operation, Map<String, Object?> apres, Map<String, Object?>? avant) {
+  if (operation != 'inserer' && operation != 'modifier') return null;
+  final valide = statutsCommandeValides.contains(apres['statutCommande']);
+  final aValideur = apres['valideePar'] != null && apres['valideePar'] != '';
+  if (operation == 'modifier' && _validee(avant)) {
+    if ('${avant!['valideePar']}' != '${apres['valideePar'] ?? ''}' || '${avant['dateValidation'] ?? ''}' != '${apres['dateValidation'] ?? ''}') {
+      return 'VALIDATION_COMMANDE_FIGEE : la validation de la commande ${avant['reference']} (${avant['valideePar']}) ne se réécrit pas.';
+    }
+    return null;
+  }
+  final geste = operation == 'modifier' && avant != null && avant['statutCommande'] == 'attente_validation' && apres['statutCommande'] == 'validee' && aValideur;
+  if ((valide || aValideur) && !geste && !(operation == 'inserer' && valide && aValideur)) {
+    return 'COMMANDE_NON_VALIDEE : un statut « validée », « transmise », « livrée » ou « soldée » (ou un validateur) ne se pose que par le geste « Valider une commande de stock gros » (RG-04), jamais par le formulaire.';
+  }
+  return null;
+}
 
 /// Une ligne de commande : l'article, la quantité et le prix unitaire (la valeur est quantité × prix).
 _Commande nouvelleLigneCommande(
@@ -95,7 +149,8 @@ _Commande commandeEnregistree(
     _Commande? existante,
     required Iterable<_Commande> fournisseurs,
     required Iterable<_Commande> commandes,
-    required String jour}) {
+    required String jour,
+    String valideurs = 'aucun rôle'}) {
   if (lignes.isEmpty) throw const RefusAchat('Ajouter au moins un article.');
   final v = {...saisie};
   final four =
@@ -107,17 +162,14 @@ _Commande commandeEnregistree(
   if (existante == null) {
     v['reference'] = referenceAchatSuivante('BC-2026-', 4, commandes);
   }
-  // E72/E74 : le statut choisi pose la validation de la DAF d'office, sauf si un validateur est déjà connu.
-  final dejaValidee = existante != null &&
-      existante['valideePar'] != null &&
-      existante['valideePar'] != '';
-  final validateur = v['valideePar'];
-  if (const ['validee', 'transmise', 'livree', 'soldee']
-          .contains(v['statutCommande']) &&
-      (validateur == null || validateur == '') &&
-      !dejaValidee) {
-    v['valideePar'] = directriceAdministrative;
-    v['dateValidation'] = jour;
+  // RG-04 : choisir un statut validé ne vaut PAS validation (refus nommé) ; une commande déjà validée garde son validateur et sa date.
+  if (statutsCommandeValides.contains(v['statutCommande']) &&
+      !(_validee(existante))) {
+    throw RefusAchat(messageStatutCommandeNonValide('${v['statutCommande']}', valideurs));
+  }
+  if (_validee(existante)) {
+    v.remove('valideePar');
+    v.remove('dateValidation');
   }
   return v;
 }

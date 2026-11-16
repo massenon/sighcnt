@@ -124,7 +124,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       const r4 = CF.modifierObligation({ code: 'ITS', valeurs: { jour: 12 }, dateEffet: '2026-09-01', motif: 'Vecteur : après validation' });
       out.validation.apresModification = { ok: r4.ok, etat: propre(CF.etatConfigurationFiscale('obligations')).etat, regeneration: propre(r4.echeances) };
       S.setSession(sess);
-      out.roles = CF.ROLES_VALIDATION;
+      out.roles = CF.rolesValidation();
       return out;
     });
     sortie.erreurs = await m.page.evaluate(() => window.__erreurs);

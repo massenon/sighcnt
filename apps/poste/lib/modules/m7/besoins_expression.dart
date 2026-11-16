@@ -92,7 +92,7 @@ class EcranBesoins extends StatelessWidget with EcranMaquette {
         final miennes = bonsMiens(actifs, moi);
         final aArbitrer = bonsAArbitrer(actifs);
         final pourAchat = bonsPourAchat(actifs);
-        final vues = vuesOffertes(role: c.role, droitVoir: c.droit.voir);
+        final vues = vuesOffertes(role: c.role, droitVoir: c.droit.voir, arbitre: c.donnees?.matrice.droitGeste(c.role, gesteArbitrerBesoins) ?? false);
 
         Widget tableau(String titre, List<Fiche> lignes, String vue) =>
             _TableauBesoins(
@@ -543,7 +543,9 @@ class _EtatModaleArbitrage extends State<_ModaleArbitrage> {
           quoi: widget.quoi,
           motif: '${v['motif'] ?? ''}',
           utilisateur: acteur(c).nom,
-          maintenant: c.aujourdhui.toIso8601String());
+          maintenant: c.aujourdhui.toIso8601String(),
+          // Les postes qui TRAITENT un besoin accordé : ceux qui détiennent le geste réservé de la fiche RBAC, jamais une liste de rôles écrite ici.
+          postesTraitants: c.donnees?.matrice.matriceGestes.rolesAvec(gesteTraiterBesoinsAccordes) ?? const <String>[]);
     } on RefusAchat catch (e) {
       dire(widget.ecran, e.motif, type: TypeToast.erreur);
       return;

@@ -130,7 +130,8 @@
       var session = S.session() || {};
       var moi = S.currentUser();
       var dr = K.droits('M7');
-      var estArbitre = global.SIGH.nav.droitGeste(session.role, 'arbitrer_besoins');
+      /* Qui arbitre : geste réservé `arbitrer_besoins` de la fiche RBAC (lot CLO-3), jamais une liste de rôles écrite ici. */
+      var estArbitre = !!(global.SIGH.nav && global.SIGH.nav.droitGeste(session.role, 'arbitrer_besoins'));
       var estAchat = ['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']
         .indexOf(session.role) !== -1;
 
@@ -352,7 +353,7 @@
                 if (quoi === 'valider') informerAchat(b, v.motif);
                 m.close();
                 U.toast(quoi === 'valider'
-                  ? 'Besoin ' + b.reference + ' accordé — le comptable et le gestionnaire de stock sont informés.'
+                  ? 'Besoin ' + b.reference + ' accordé : les postes qui traitent les besoins accordés sont informés.'
                   : 'Besoin ' + b.reference + ' — ' + etatBesoin(etape).label.toLowerCase() + '.',
                 { type: quoi === 'valider' ? 'success' : 'warning', duration: 8000 });
                 rafraichir();
@@ -367,16 +368,16 @@
         if (!PR || !PR.notifier) return;
         var detail = b.service + ' — ' + C.num((b.lignes || []).length) + ' article(s), '
           + C.money(b.montantEstime, false) + (motif ? ' · ' + motif : '');
-        ['comptable', 'stock'].forEach(function (poste) {
+        /* Les postes qui TRAITENT un besoin accordé sont ceux qui détiennent le geste réservé `traiter_besoins_accordes` (lot CLO-3) : liste DÉRIVÉE du droit, jamais écrite ici. */
+        var postes = global.SIGH.nav && global.SIGH.nav.rolesAvecGeste ? global.SIGH.nav.rolesAvecGeste('traiter_besoins_accordes') : [];
+        postes.forEach(function (poste) {
           try {
             /* `libelle` et non `titre`, `reference` et non `lien` : c'est
                l'API du moteur, lue et non supposée. */
             PR.notifier({
               type: 'besoin_accorde', poste: poste,
               libelle: 'Besoin accordé — ' + b.reference,
-              detail: detail + (poste === 'comptable'
-                ? ' · engagement budgétaire et décaissement à préparer'
-                : ' · achat à lancer ou distribution à planifier'),
+              detail: detail + ' · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier',
               reference: b.reference,
               priorite: 'important',
             });
@@ -392,7 +393,7 @@
           title: 'Transformer en bon de commande ?',
           message: 'Le besoin <strong>' + b.reference + '</strong> passe en <strong>préparation</strong> '
             + 'et l’écran des commandes s’ouvre. <strong>RG-04</strong> : la commande devra être '
-            + 'validée par la Directrice Administrative avant transmission au fournisseur.',
+            + 'validée (' + PR.libellesValidentCommandeStock() + ') avant transmission au fournisseur.',
           confirmLabel: 'Ouvrir les commandes',
         }).then(function (ok) {
           if (!ok) return;
@@ -704,8 +705,8 @@
    * ======================================================================== */
   global.SIGH.screen('m7-commandes', {
     title: 'Bons de commande',
-    description: 'Commandes fournisseurs, validation par la Directrice Administrative et transmission.',
-    regle: '<strong>RG-04</strong> — toute commande d’achat de stock gros doit être <strong>validée par la Directrice Administrative</strong> avant transmission au fournisseur.',
+    description: 'Commandes fournisseurs, validation (RG-04) et transmission.',
+    regle: '<strong>RG-04</strong> — toute commande d’achat de stock gros doit être <strong>validée</strong> (geste réservé « Valider une commande de stock gros » de la fiche du rôle) avant transmission au fournisseur.',
     render: function (root) {
       amorcer();
       var col = S.collection('commandes', { module: 'M7', entite: 'BonCommande' });
@@ -714,7 +715,7 @@
 
       var STATUTS_CMD = [
         { value: 'brouillon', label: 'Brouillon' },
-        { value: 'attente_validation', label: 'En attente de validation DA' },
+        { value: 'attente_validation', label: 'En attente de validation' },
         { value: 'validee', label: 'Validée' },
         { value: 'transmise', label: 'Transmise au fournisseur' },
         { value: 'livree', label: 'Livrée' },
@@ -730,7 +731,7 @@
 
       var enAttente = col.active().filter(function (c) { return c.statutCommande === 'attente_validation'; });
       if (enAttente.length) {
-        host.appendChild(K.note('<strong>' + enAttente.length + ' commande(s)</strong> en attente de validation par la Directrice Administrative. '
+        host.appendChild(K.note('<strong>' + enAttente.length + ' commande(s)</strong> en attente de validation (' + PR.libellesValidentCommandeStock() + '). '
           + 'Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).', { tone: 'warning', icon: 'shield-alert' }));
       }
 
@@ -772,10 +773,8 @@
           function pousser(liste, cmd) { if (cmd) liste.push(cmd); }
           var acts = [K.iconBtn('eye', 'Consulter', function () { consulter(c); })];
           if (c.statutCommande === 'attente_validation') {
-            /* LA VALIDATION RG-04 EST L'ACTE DE LA DIRECTRICE
-               ADMINISTRATIVE. L'offrir à qui lit les commandes ferait croire
-               que la commande peut partir sans elle. */
-            pousser(acts, K.commandeIcone('shield-check', 'Valider (DA)', function () { valider(c); }, 'ghost'));
+            /* LA VALIDATION RG-04 EST UN GESTE RÉSERVÉ (`valider_commande_stock`) : ABSENTE sans le droit, le moteur refuse aussi. */
+            if (PR.peutValiderCommandeStock()) pousser(acts, K.commandeIcone('shield-check', 'Valider la commande', function () { valider(c); }, 'ghost'));
           }
           acts.push(K.iconBtn('printer', 'Imprimer', function () { etat(c); }));
           pousser(acts, K.commandeIcone('pencil', 'Modifier', function () { ouvrir(c); }));
@@ -794,9 +793,10 @@
           confirmLabel: 'Valider la commande',
         }).then(function (ok) {
           if (!ok) return;
-          var res = col.update(c.id, { statutCommande: 'validee', valideePar: S.currentUser(), dateValidation: C.iso(C.aujourdhui()) });
+          var res = PR.validerCommandeStock(c.id);
+          if (!res.ok) { U.toast('Validation refusée (' + res.code + ') : ' + res.motif + ' ' + (res.geste || ''), { type: 'error' }); return; }
           table.refresh();
-          U.toast('Commande validée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+          U.toast('Commande validée par ' + res.valideePar + '.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
         });
       }
 
@@ -890,10 +890,13 @@
                 v.lignes = lignes; v.montant = C.sum(lignes, 'montant');
                 /* E75 : idem — modifier une commande ne change pas son numéro. */
                 if (!record) v.reference = C.referenceAnnuelle('BC-', v.date, 4, col.all());   /* E70 */
-                /* E74 : idem — ne jamais remplacer le validateur ni la date de validation d'une commande déjà validée. */
-                if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar && !(record && record.valideePar)) {
-                  v.valideePar = S.currentUser(); v.dateValidation = C.iso(AUJ);
+                /* RG-04 (lot CLO-3) : choisir « Validée », « Transmise », « Livrée » ou « Soldée » ne VAUT PAS validation. Une commande qui n'a pas été validée par le geste réservé ne passe
+                   pas à ces statuts (refus nommé) ; une commande déjà validée garde son validateur et sa date. */
+                if (PR.STATUTS_COMMANDE_VALIDES.indexOf(v.statutCommande) !== -1 && !(record && record.valideePar && PR.STATUTS_COMMANDE_VALIDES.indexOf(record.statutCommande) !== -1)) {
+                  U.toast('Statut refusé (COMMANDE_NON_VALIDEE) : « ' + labelCmd(v.statutCommande) + ' » ne se choisit pas au formulaire, la commande doit d’abord être validée par le geste « Valider une commande de stock gros » (' + PR.libellesValidentCommandeStock() + ', RG-04). Choisir « En attente de validation ».', { type: 'error' });
+                  return;
                 }
+                if (record && record.valideePar) { delete v.valideePar; delete v.dateValidation; }
                 var res = record ? col.update(record.id, v) : col.insert(v);
                 m.close(); table.refresh();
                 U.toast(record ? 'Commande mise à jour.' : 'Commande créée — ' + res.record.reference, { type: 'success', undo: res.undo });
@@ -913,7 +916,7 @@
               ['Validée par (RG-04)', c.valideePar || 'En attente'],
               ['Date de validation', c.dateValidation ? C.dateFR(c.dateValidation) : '—']]),
             c.statutCommande === 'attente_validation'
-              ? K.note('Cette commande <strong>ne peut être transmise</strong> au fournisseur tant que la Directrice Administrative ne l’a pas validée (RG-04).', { tone: 'warning', icon: 'shield-alert' })
+              ? K.note('Cette commande <strong>ne peut être transmise</strong> au fournisseur tant qu’elle n’est pas validée (RG-04 : ' + PR.libellesValidentCommandeStock() + ').', { tone: 'warning', icon: 'shield-alert' })
               : null,
             U.card('Articles commandés', K.miniTable([
               { label: 'Article', key: 'produit' },
@@ -923,8 +926,8 @@
             ], c.lignes || [])),
           ]),
           footer: [
-            c.statutCommande === 'attente_validation'
-              ? K.commande('Valider (DA)', { variant: 'success', icon: 'shield-check', onclick: function () { valider(c); } }) : null,
+            c.statutCommande === 'attente_validation' && PR.peutValiderCommandeStock()
+              ? K.commande('Valider la commande', { variant: 'success', icon: 'shield-check', onclick: function () { valider(c); } }) : null,
             K.btn('Imprimer', { variant: 'primary', icon: 'printer', onclick: function () { etat(c); } }),
           ].filter(Boolean),
         });
@@ -952,7 +955,7 @@
           ], c.lignes || [], { total: true }),
           signatures: [
             { role: 'Le Gestionnaire de Stock', nom: 'MAMAN Zoukanéri' },
-            { role: 'La Directrice Administrative', nom: 'TAKI Alimatou', mention: 'Bon pour commande (RG-04)' },
+            { role: 'Validation de la commande', nom: c.valideePar || undefined, mention: 'Bon pour commande (RG-04)' },
           ],
         });
       }

@@ -30,11 +30,11 @@
   /* --- Files d'attente : à qui l'information est adressée ------------------ */
   var TACHES = {
     encaissement: {
-      role: 'caissier', module: 'M8', ecran: 'm8-caisse',
+      module: 'M8', ecran: 'm8-caisse',
       titre: 'Encaisser la prescription', icon: 'coins',
     },
     dispensation: {
-      role: 'pharmacien', module: 'M6', ecran: 'm6-dispensation',
+      module: 'M6', ecran: 'm6-dispensation',
       titre: 'Délivrer les médicaments', icon: 'pill',
     },
     prelevement: {
@@ -259,7 +259,8 @@
   function rolesDecidentPrix() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_DECIDER_PRIX) : []; }
   function libellesDecidentPrix() { var n = rolesDecidentPrix().map(function (r) { return libelleRole(r); }); return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle'); }
   /* T6 (Direction, 11/11/2026) : la date d'effet PASSÉE est une autorité de la Directrice Administrative et de la Direction, avec un motif. */
-  var GESTE_DATE_PASSEE = 'tarifer_date_passee';
+  /* Lots VAL et CLO-3 : UN seul geste réservé pour dater un prix dans le passé, `dater_prix_passe`. */
+  var GESTE_DATE_PASSEE = 'dater_prix_passe';
   function refusTarif(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
   function roleDeLaSession() { var s = S.session(); return s && s.role; }
   function peutDeciderTarif() { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleDeLaSession(), GESTE_DECIDER_PRIX)); }
@@ -1331,10 +1332,19 @@
     return t.join(' · ') || 'Prescription sans ligne';
   }
 
+  /* Lot CLO-3 point 7 : le poste visé par la tâche de caisse et celle de pharmacie est lu de la fiche RBAC (gestes `poste_caisse`, `poste_pharmacie`), jamais un nom de rôle écrit ici ;
+     les autres tâches gardent leur rôle déclaré. Seul change QUI est visé, jamais la chaîne. Sans détenteur (rôle archivé, cas d'origine de la pharmacie), le rôle d'origine du manifeste est écrit. */
+  var GESTE_POSTE_TACHE = { encaissement: 'poste_caisse', dispensation: 'poste_pharmacie' };
+  function roleDeLaTache(type, def) {
+    var g = GESTE_POSTE_TACHE[type], N = global.SIGH.nav;
+    if (!g) return def.role;
+    var r = N && N.rolesAvecGeste ? N.rolesAvecGeste(g) : [];
+    return r[0] || (N && N.geste(g) ? N.geste(g).rolesDefaut[0] : null) || null;
+  }
   function creerTache(type, ord, facture, extra) {
     var def = TACHES[type];
     return col('taches').insert(Object.assign({
-      type: type, role: def.role, module: def.module, ecran: def.ecran,
+      type: type, role: roleDeLaTache(type, def), module: def.module, ecran: def.ecran,
       titre: def.titre, icon: def.icon,
       reference: ord.numero, ordonnanceId: ord.id,
       factureId: facture ? facture.id : null, factureNumero: facture ? facture.numero : null,
@@ -4156,11 +4166,14 @@
 
   /* LE CHOIX DE L'EXERCICE VIT DANS LA SESSION DE L'UTILISATEUR, en un seul endroit : cette fonction. Tous les écrans la lisent, aucun ne garde de copie.
      Il ne fait que CHOISIR CE QUE L'ON LIT : il n'écrit rien, ne donne aucun droit, et une pièce s'enregistre toujours dans l'exercice de SA date.
-     Par défaut : l'exercice ouvert le plus récent, sinon le plus récent tout court. */
+     Par défaut (lot CLO-3, Direction du 15/11/2026, section AH point 5) : l'exercice qui CONTIENT la date du jour ; à défaut (il n'existe pas encore), l'exercice ouvert le plus récent,
+     sinon le plus récent tout court. L'exercice suivant reste choisissable ; le choix mémorisé de la session l'emporte toujours. */
   function exerciceParDefaut() {
-    var liste = exercices();
+    var liste = exercices(), auj = anneeCourante();
+    var duJour = liste.filter(function (x) { return x.annee === auj; })[0];
+    if (duJour) return duJour.annee;
     var ouverts = liste.filter(function (x) { return x.etat === 'ouvert'; });
-    return (ouverts[0] || liste[0] || { annee: anneeCourante() }).annee;
+    return (ouverts[0] || liste[0] || { annee: auj }).annee;
   }
   function exerciceChoisi() {
     var v = null;
@@ -6270,6 +6283,72 @@
     controler: controlerActionPlan, ajouter: ajouterActionPlan, reviser: reviserActionPlan, adopter: adopterPlan, reconduire: reconduirePlan, signataires: signatairesPlan, definirSignataires: definirSignatairesPlan,
     alertes: alertesRetardPlan, bilan: bilanPlan, reference: referencePlan, figee: planFige,
   };
+
+  /* ==========================================================================
+   * LA COMMANDE DE STOCK GROS (RG-04) : VALIDER EST UN GESTE RÉSERVÉ (lot CLO-3, 16/11/2026 ; Direction, section AH point 3 et AQ point 1)
+   * --------------------------------------------------------------------------
+   * Toute commande d'achat de stock gros est validée AVANT transmission au fournisseur. Valider est le geste réservé `valider_commande_stock` de la fiche RBAC (d'origine la Directrice
+   * Administrative SEULE, jamais un nom de rôle dans le moteur), vérifié ICI aussi : masquer un bouton ne protège rien. Le validateur enregistré est l'AGENT DE LA SESSION (jamais un nom écrit).
+   * Choisir « Validée », « Transmise », « Livrée » ou « Soldée » au formulaire ne vaut PAS validation : la garde de la collection refuse tout statut validé qu'un geste n'a pas posé, d'où
+   * qu'il vienne (formulaire, import, rejeu). Une validation posée ne se réécrit pas (RG-14) : le validateur et la date sont figés.
+   * ======================================================================== */
+  var GESTE_VALIDER_COMMANDE_STOCK = 'valider_commande_stock';
+  var STATUTS_COMMANDE_VALIDES = ['validee', 'transmise', 'livree', 'soldee'];
+  var enValidationCommande = false;
+  function colCommandesStock() { return S.collection('commandes', { module: 'M7', entite: 'BonCommande' }); }
+  function peutValiderCommandeStock(role) {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_VALIDER_COMMANDE_STOCK));
+  }
+  function libellesValidentCommandeStock() {
+    var N = global.SIGH.nav;
+    var n = (N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_VALIDER_COMMANDE_STOCK) : []).map(function (r) { return libelleRole(r); });
+    return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle');
+  }
+  function refusValidationCommande() {
+    return refusCfg('VALIDATION_COMMANDE_RESERVEE', 'Valider une commande de stock gros (RG-04) est un droit réservé de la fiche du rôle (« Valider une commande de stock gros ») : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+      'Demander la validation à : ' + libellesValidentCommandeStock() + '.', { droit: GESTE_VALIDER_COMMANDE_STOCK });
+  }
+  /** Valider la commande `id` (état « en attente de validation » seulement). Rend { ok, id, valideePar, dateValidation, undo } ou le refus nommé. */
+  function validerCommandeStock(id) {
+    if (!peutValiderCommandeStock()) return refusValidationCommande();
+    var c = colCommandesStock().get(id);
+    if (!c || c.statut === 'archive') return refusCfg('COMMANDE_INCONNUE', 'La commande est introuvable ou archivée.', 'Rafraîchir l’écran.');
+    if (STATUTS_COMMANDE_VALIDES.indexOf(c.statutCommande) >= 0 && c.valideePar) {
+      return refusCfg('COMMANDE_DEJA_VALIDEE', 'La commande ' + c.reference + ' est déjà validée par ' + c.valideePar + ' : une validation ne se réécrit pas.', 'Aucun geste : la commande peut suivre son circuit.');
+    }
+    if (c.statutCommande !== 'attente_validation') {
+      return refusCfg('COMMANDE_PAS_EN_ATTENTE', 'La commande ' + c.reference + ' est « ' + c.statutCommande + ' » : seule une commande en attente de validation se valide.', 'Soumettre la commande à la validation d’abord (statut « En attente de validation »).');
+    }
+    var res;
+    enValidationCommande = true;
+    try {
+      res = colCommandesStock().update(id, { statutCommande: 'validee', valideePar: acteur(), dateValidation: aujIso() },
+        { journal: { action: 'Commande de stock gros validée (RG-04)', module: 'M7', entite: 'BonCommande', avant: { statutCommande: c.statutCommande }, apres: { statutCommande: 'validee', valideePar: acteur(), dateValidation: aujIso() } } });
+    } finally { enValidationCommande = false; }
+    if (!res) return refusCfg('COMMANDE_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la validation.', 'Relire le journal.');
+    return { ok: true, id: id, valideePar: acteur(), dateValidation: aujIso(), undo: res.undo };
+  }
+  S.garder('commandes', function (op, rec) {
+    if (op === 'archiver' || enValidationCommande || !rec) return null;
+    var valide = STATUTS_COMMANDE_VALIDES.indexOf(rec.statutCommande) >= 0;
+    var avant = op === 'modifier' && rec.id ? colCommandesStock().get(rec.id) : null;
+    var avantValidee = !!(avant && STATUTS_COMMANDE_VALIDES.indexOf(avant.statutCommande) >= 0 && avant.valideePar);
+    if (avantValidee) {
+      if (String(avant.valideePar) !== String(rec.valideePar || '') || String(avant.dateValidation || '') !== String(rec.dateValidation || '')) {
+        return 'VALIDATION_COMMANDE_FIGEE : la validation de la commande ' + avant.reference + ' (' + avant.valideePar + ') ne se réécrit pas.';
+      }
+      return null;
+    }
+    if (valide || rec.valideePar) {
+      return 'COMMANDE_NON_VALIDEE : un statut « validée », « transmise », « livrée » ou « soldée » (ou un validateur) ne se pose que par le geste « Valider une commande de stock gros » (RG-04), jamais par le formulaire.';
+    }
+    return null;
+  });
+  global.SIGH.parcours.validerCommandeStock = validerCommandeStock;
+  global.SIGH.parcours.peutValiderCommandeStock = peutValiderCommandeStock;
+  global.SIGH.parcours.libellesValidentCommandeStock = libellesValidentCommandeStock;
+  global.SIGH.parcours.STATUTS_COMMANDE_VALIDES = STATUTS_COMMANDE_VALIDES;
 
   /* ==========================================================================
    * PASSERELLE SMS : LA FABRIQUE UNIQUE D’ENVOI (étape S2, 08/11/2026)

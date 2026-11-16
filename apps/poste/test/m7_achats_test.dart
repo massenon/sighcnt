@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show money;
+import 'package:sigh_domaine/sigh_domaine.dart' show money, RefusAchat, commandeEnregistree;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -186,7 +186,7 @@ void main() {
       expect({for (final x in notifs) x['poste']}, {'comptable', 'stock'});
       expect(notifs.every((x) => x['type'] == 'besoin_accorde' && x['reference'] == 'BEB-TEST-1'), isTrue);
       expect(notifs.every((x) => x['lue'] == false), isTrue);
-      expect(find.textContaining('le comptable et le gestionnaire de stock sont informés'),
+      expect(find.textContaining('les postes qui traitent les besoins accordés sont informés'),
           findsOneWidget);
     });
 
@@ -381,13 +381,14 @@ void main() {
       final m = magasin();
       commande(m, 'BC-TEST-1', 'attente_validation');
       await ouvrir(t, m, 'm7-commandes', role: 'da');
-      expect(find.textContaining('en attente de validation par la Directrice Administrative'), findsOneWidget);
-      await toucher(t, find.byTooltip('Valider (DA)').first);
+      expect(find.textContaining('en attente de validation (Directrice de l’Administration et des Finances (DAF))'), findsOneWidget);
+      await toucher(t, find.byTooltip('Valider la commande').first);
       expect(find.text('Valider la commande BC-TEST-1 ?'), findsOneWidget);
       await toucher(t, bouton('Valider la commande'));
       final c = m.collection('commandes').toutes.firstWhere((x) => x['reference'] == 'BC-TEST-1');
       expect(c['statutCommande'], 'validee');
-      expect(c['valideePar'], 'TAKI Alimatou');
+      expect(c['valideePar'], isNot('TAKI Alimatou'), reason: 'le validateur est l\'agent de la SESSION, jamais un nom écrit');
+      expect(c['valideePar'], 'Directrice de l’Administration et des Finances (DAF)', reason: 'l\'agent du poste d\'essai de ce profil');
       expect(c['dateValidation'], '2026-10-30');
       await toucher(t, find.text('Annuler').last);
       final apres = m.collection('commandes').toutes.firstWhere((x) => x['reference'] == 'BC-TEST-1');
@@ -401,10 +402,36 @@ void main() {
       commande(m, 'BC-TEST-2', 'attente_validation');
       await ouvrir(t, m, 'm7-commandes', role: 'comptable');
       expect(find.text('BC-TEST-2'), findsOneWidget);
-      expect(find.byTooltip('Valider (DA)'), findsNothing);
+      expect(find.byTooltip('Valider la commande'), findsNothing);
       expect(find.byTooltip('Modifier'), findsNothing);
       expect(bouton('Nouvelle commande'), findsNothing);
       expect(find.byTooltip('Consulter'), findsWidgets);
+    });
+
+
+    cas('RG-04 (lot CLO-3) : valider est un geste RÉSERVÉ, ABSENT pour l\'administrateur et la Direction (la DAF seule d\'origine), et le moteur refuse aussi',
+        (t) async {
+      for (final role in ['admin', 'direction', 'stock']) {
+        final m = magasin();
+        commande(m, 'BC-TEST-R-$role', 'attente_validation');
+        await ouvrir(t, m, 'm7-commandes', role: role);
+        expect(find.text('BC-TEST-R-$role'), findsOneWidget);
+        expect(find.byTooltip('Valider la commande'), findsNothing, reason: '$role ne détient pas le geste valider_commande_stock');
+      }
+      final m = magasin();
+      final c = commande(m, 'BC-TEST-MOTEUR', 'attente_validation');
+      // Le moteur refuse une écriture directe d'un statut validé, d'où qu'elle vienne.
+      expect(() => m.collection('commandes').mettreAJour(c['id'], {'statutCommande': 'transmise'}), throwsA(anything));
+      expect(() => m.collection('commandes').mettreAJour(c['id'], {'valideePar': 'X'}), throwsA(anything));
+      expect(m.collection('commandes').parId(c['id'])!['statutCommande'], 'attente_validation');
+    });
+
+    cas('choisir « Transmise » au formulaire ne vaut PAS validation : refus nommé, rien n\'est écrit', (t) async {
+      final m = magasin();
+      final c = commande(m, 'BC-TEST-FORM', 'brouillon');
+      expect(
+          () => commandeEnregistree(saisie: {'statutCommande': 'transmise', 'fournisseur': 'CAME'}, lignes: [{'montant': 1}], existante: c, fournisseurs: const [], commandes: const [], jour: '2026-10-30', valideurs: 'DAF'),
+          throwsA(isA<RefusAchat>().having((e) => e.motif, 'motif', contains('COMMANDE_NON_VALIDEE'))));
     });
 
     cas('une commande créée porte la série BC-2026 à la suite de l\'existante et son montant est la somme de ses lignes',

@@ -84,6 +84,7 @@ function verifier(libelle, condition, detail) {
 async function etape(bloc) {
   try { await bloc(); }
   catch (e) {
+    if (process.env.SIGH_DBG) console.log(String(e && e.stack));
     const message = String((e && e.message) || e).split('\n')[0];
     if (!courant) scenario('(exception avant tout scenario())');
     verifier('Le scénario s’exécute sans erreur', false, message);
@@ -13229,8 +13230,12 @@ async function viderMessages(page) {
     const a = await compter();
     verifier('Sur un registre comptable, le sélecteur est dans la BARRE SUPÉRIEURE et non plus dans l’en-tête de la page', a.dansBarre && !a.dansPage, JSON.stringify(a));
     const defaut = await page.evaluate(() => ({ choisi: window.SIGH.exercice.choisi(), parDefaut: window.SIGH.exercice.parDefaut(),
-      ouverts: window.SIGH.exercice.liste().filter((x) => x.etat === 'ouvert').map((x) => x.annee) }));
-    verifier('Sans choix, l’exercice par défaut est l’exercice OUVERT le plus récent', defaut.choisi === Math.max.apply(null, defaut.ouverts) && defaut.parDefaut === defaut.choisi, JSON.stringify(defaut));
+      ouverts: window.SIGH.exercice.liste().filter((x) => x.etat === 'ouvert').map((x) => x.annee), duJour: window.SIGH.core.aujourdhui().getFullYear(),
+      existe: window.SIGH.exercice.liste().some((x) => x.annee === window.SIGH.core.aujourdhui().getFullYear()) }));
+    /* Lot CLO-3 point 5 (Direction, 15/11/2026, section AH point 5) : l'assertion figeait l'ancien défaut (« l'exercice OUVERT le plus récent ») ; le défaut est désormais l'exercice qui
+       CONTIENT la date du jour (l'exercice suivant reste choisissable), l'ancien repli (ouvert le plus récent) ne valant que si l'exercice du jour n'existe pas. */
+    verifier('Sans choix, l’exercice par défaut est celui qui CONTIENT la date du jour (lot CLO-3, remplace « l’exercice ouvert le plus récent »), à défaut l’ouvert le plus récent', defaut.parDefaut === defaut.choisi
+      && defaut.choisi === (defaut.existe ? defaut.duJour : Math.max.apply(null, defaut.ouverts)), JSON.stringify(defaut));
     verifier('Les boutons « exercice précédent » et « suivant » existent quand l’exercice voisin existe', a.prec, JSON.stringify(a));
 
     const absent = await page.evaluate(async () => {
@@ -20362,7 +20367,7 @@ async function viderMessages(page) {
       const na = (code, d) => PR.tarifALaDate(code, d || null, false).montant;
       const en = (role) => S.setSession({ role: role, nom: 'SONDE117 ' + role, nomComplet: 'SONDE117 ' + role, fonction: role, identifiant: 's117.' + role, secteur: 'DIR' });
       const prop = (o) => PR.proposerTarif(Object.assign({ etatAssure: 'unique', motif: 'Sonde 117' }, o));
-      const s = { roles: PR.ROLES_DATE_PASSEE };
+      const s = { roles: PR.ROLES_DATE_PASSEE.slice() };
       en('da');
       s.sansCase = prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1) });
       const avecCase = prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1), datePassee: true });
@@ -22902,7 +22907,9 @@ async function viderMessages(page) {
     await T.produit({ code: pd, designation: 'Médicament D sonde 139', prixAchat: 70, stockDetail: 2 });
     const commande = (ref, lignes) => page.evaluate((r, ls, jour) => { const S = window.SIGH.store; const ps = S.collection('produits').all();
       const L = ls.map((l) => { const p = ps.filter((x) => x.code === l.code)[0]; return { produitId: p.id, produit: p.designation, unite: p.unite, quantite: l.quantite, prixUnitaire: l.prix }; });
-      const rec = S.collection('commandes', { module: 'M7', entite: 'BonCommande' }).insert({ reference: r, date: jour, fournisseur: 'ZZ139', fournisseurNom: 'Fournisseur sonde 139', montant: L.reduce((t, l) => t + l.quantite * l.prixUnitaire, 0), lignes: L, statutCommande: 'validee', valideePar: 'TAKI Alimatou', sondeT5b: true });
+      const rec = S.collection('commandes', { module: 'M7', entite: 'BonCommande' }).insert({ reference: r, date: jour, fournisseur: 'ZZ139', fournisseurNom: 'Fournisseur sonde 139', montant: L.reduce((t, l) => t + l.quantite * l.prixUnitaire, 0), lignes: L, statutCommande: 'brouillon', sondeT5b: true });
+      /* lot CLO-3 (RG-04) : un statut validé ne s'écrit pas sans le geste ; l'état de départ de la sonde est posé à même la fiche, comme la semence */
+      if (rec && rec.record) Object.assign(rec.record, { statutCommande: 'validee', valideePar: 'TAKI Alimatou' });
       return rec.record.id; }, ref, lignes, D.aujourdhui);
     const etat = (code) => page.evaluate((c, jour) => { const S = window.SIGH.store, PR = window.SIGH.parcours; const p = S.collection('produits').all().filter((x) => x.code === c)[0];
       const v = S.collection('versionsTarif').all().filter((x) => x.code === c).sort((a, b) => a.version - b.version).map((x) => ({ version: x.version, statut: x.statut, achat: x.prixNonAssure, dateEffet: x.dateEffet || null, motif: x.motif, source: x.source || null }));
@@ -29996,13 +30003,13 @@ async function viderMessages(page) {
     await ouvrir('m10-conges.html');
     const a303 = await page.evaluate(() => {
       const N = window.SIGH.nav, d = (id) => { const g = N.geste(id); return g ? g.rolesDefaut.slice() : null; };
-      return { surv: d('valider_etape_surveillant'), daf: d('valider_etape_daf'), arb: d('arbitrer_besoins'), passe: d('tarifer_date_passee'), tr: d('trancher_pair'), va: d('valider_pair') };
+      return { surv: d('valider_etape_surveillant'), daf: d('valider_etape_daf'), arb: d('arbitrer_besoins'), passe: d('dater_prix_passe'), tr: d('trancher_pair'), va: d('valider_pair') };
     });
     verifier('Défauts semés = hier : étape surveillant (surveillant, administrateur), étape DAF (Directrice Administrative, administrateur), arbitrer les besoins (Directrice Administrative, Direction, administrateur), date antérieure d’un tarif (Directrice Administrative, Direction), trancher un flux de pont (Directrice Administrative, Direction, administrateur), valider un flux (Directrice Administrative, administrateur)',
       JSON.stringify(a303.surv) === JSON.stringify(['surveillant', 'admin']) && JSON.stringify(a303.daf) === JSON.stringify(['da', 'admin']) && JSON.stringify(a303.arb) === JSON.stringify(['da', 'direction', 'admin'])
       && JSON.stringify(a303.passe) === JSON.stringify(['da', 'direction']) && JSON.stringify(a303.tr) === JSON.stringify(['da', 'direction', 'admin']) && JSON.stringify(a303.va) === JSON.stringify(['da', 'admin']), JSON.stringify(a303));
     const avEt = await fiche('admin', 'valider_etape_surveillant', false);
-    const avPa = await fiche('direction', 'tarifer_date_passee', false);
+    const avPa = await fiche('direction', 'dater_prix_passe', false);
     const avAr = await fiche('admin', 'arbitrer_besoins', false);
     const b303 = await page.evaluate(() => {
       const S = window.SIGH.store, PRH = window.SIGH.planningRh, PR = window.SIGH.parcours, N = window.SIGH.nav;
@@ -30010,7 +30017,7 @@ async function viderMessages(page) {
       ['presences', 'conges', 'missions'].forEach((nom) => { if (cible) return; S.collection(nom).active().forEach((r) => { if (!cible && PRH.etatValidation(nom, r) !== 'valide' && PRH.etatValidation(nom, r) !== 'refuse') cible = { nom, rec: r }; }); });
       const r = cible ? PRH.peutTrancher(cible.nom, cible.rec) : null;
       S.setSession(Object.assign({}, S.session(), { role: 'direction' }));
-      const passe = { droit: N.droitGeste('direction', 'tarifer_date_passee'), peut: PR.peutDatePasseeTarif(), roles: PR.ROLES_DATE_PASSEE.slice() };
+      const passe = { droit: N.droitGeste('direction', 'dater_prix_passe'), peut: PR.peutDatePasseeTarif(), roles: PR.ROLES_DATE_PASSEE.slice() };
       S.setSession(Object.assign({}, S.session(), { role: 'admin' }));
       return { droitEtape: N.droitGeste('admin', 'valider_etape_surveillant'), arb: N.droitGeste('admin', 'arbitrer_besoins'), cible: !!cible, refus: r && { ok: r.ok, code: r.code, droit: r.droit, etape: r.etape }, passe };
     });
@@ -30018,7 +30025,7 @@ async function viderMessages(page) {
       b303.droitEtape === false && b303.arb === false && (!b303.cible || (b303.refus.ok === false && b303.refus.code === 'VALIDATION_RESERVEE' && /^valider_etape_/.test(b303.refus.droit || ''))) && b303.passe.droit === false && b303.passe.peut === false && JSON.stringify(b303.passe.roles) === JSON.stringify(['da']), JSON.stringify(b303));
     /* En ORDRE INVERSE (deux retraits sur la fiche de l'administrateur). */
     const apAr = await restaurer('admin', avAr), apPa = await restaurer('direction', avPa), apEt = await restaurer('admin', avEt);
-    const c303 = await page.evaluate(() => { const N = window.SIGH.nav; return { e: N.droitGeste('admin', 'valider_etape_surveillant'), p: N.droitGeste('direction', 'tarifer_date_passee'), a: N.droitGeste('admin', 'arbitrer_besoins') }; });
+    const c303 = await page.evaluate(() => { const N = window.SIGH.nav; return { e: N.droitGeste('admin', 'valider_etape_surveillant'), p: N.droitGeste('direction', 'dater_prix_passe'), a: N.droitGeste('admin', 'arbitrer_besoins') }; });
     verifier('Fiches restaurées à l’identique : les trois droits sont revenus', apEt === avEt && apPa === avPa && apAr === avAr && c303.e && c303.p && c303.a, JSON.stringify({ avEt, apEt, avPa, apPa, avAr, apAr, c303 }));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
@@ -30033,9 +30040,266 @@ async function viderMessages(page) {
 
 
 
+  /* LOT CLO-3 DEBUT (Vagues 210 à 219) : commande de stock gros en geste réservé, rôles en dur migrés, exercice du jour, continuité (Direction, 16/11/2026, sections AH, AL, AQ) */
+  await etape(async () => {
+    scenario('Vague 210 : lot CLO-3 point 1, RG-04 : valider une commande de stock gros est le geste réservé `valider_commande_stock` (la Directrice Administrative SEULE d’origine, extensible par la fiche RBAC), commande ABSENTE sans le droit, moteur qui refuse en citant le droit, validateur = l’agent de la session (jamais un nom écrit), statut « Validée », « Transmise », « Livrée » ou « Soldée » refusé au formulaire tant que la validation n’est pas posée par le geste');
+    erreursJS = [];
+    const DA210 = { role: 'da', nom: 'AGENTE Da210', nomComplet: 'AGENTE Da210', fonction: 'da', identifiant: 's210.da', secteur: 'DIR' };
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN210', nomComplet: 'ADMIN210', fonction: 'direction', identifiant: 's210.admin0', secteur: 'DIR' });
+    await ouvrir('m7-commandes.html');
+    const c210 = await page.evaluate(() => { try {
+      const S = window.SIGH.store, col = S.collection('commandes');
+      const lg = [{ produitId: 'PRD0001', produit: 'ABAISSE LANGUE', unite: 'Unité', quantite: 2, prixUnitaire: 100, montant: 200 }];
+      const mk = (ref, st) => col.insert({ reference: ref, date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), fournisseur: 'CAME', fournisseurNom: 'CAME', lignes: lg, montant: 200, statutCommande: st, delaiLivraison: 7 }).record;
+      const a = mk('BC-S210-A', 'attente_validation'), b = mk('BC-S210-B', 'brouillon'), c = mk('BC-S210-C', 'attente_validation');
+      const N = window.SIGH.nav;
+      return { a: a.id, b: b.id, c: c.id, detenteurs: N.rolesAvecGeste('valider_commande_stock').slice().sort(), geste: !!N.geste('valider_commande_stock') };
+    } catch (e) { return { erreur: String(e && e.stack || e) }; } });
+    await attendreEcritures();
+    verifier('Le geste réservé est au manifeste et détenu D’ORIGINE par la Directrice Administrative SEULE (ni l’administrateur ni la Direction)',
+      c210.geste && JSON.stringify(c210.detenteurs) === JSON.stringify(['da']), JSON.stringify(c210));
+    /* la DA voit la commande (icône Valider la commande) ; elle valide : l'agent de la SESSION est enregistré */
+    await poserSessionServeur(DA210);
+    await ouvrir('m7-commandes.html');
+    const voitDA = await page.evaluate((id) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('BC-S210-A') >= 0);
+      return { bouton: !!tr && [...tr.querySelectorAll('button')].some((b) => /Valider la commande/.test(b.getAttribute('title') || b.getAttribute('aria-label') || '')) };
+    }, c210.a);
+    const valide = await page.evaluate((id) => {
+      const PR = window.SIGH.parcours, S = window.SIGH.store;
+      const r = PR.validerCommandeStock(id);
+      const c = S.collection('commandes').get(id);
+      const j = S.collection('audit').all().filter((x) => /Commande de stock gros validée/.test(x.action || '') && x.cible === id || /Commande de stock gros validée/.test(x.action || '')).length;
+      return { ok: r.ok, par: c.valideePar, st: c.statutCommande, date: c.dateValidation, journal: j };
+    }, c210.a);
+    verifier('La DA a la commande À l’écran ; elle valide : « Validée », validateur = l’AGENT de la session (« AGENTE Da210 », jamais « TAKI Alimatou » écrit), date du jour, une ligne de journal RG-12',
+      voitDA.bouton && valide.ok && valide.st === 'validee' && valide.par === 'AGENTE Da210' && valide.par !== 'TAKI Alimatou' && !!valide.date && valide.journal >= 1, JSON.stringify({ voitDA, valide }));
+    /* admin et Direction : commande ABSENTE, le moteur refuse en citant le droit */
+    const refusPar = {};
+    for (const role of ['admin', 'direction']) {
+      await poserSessionServeur({ role, nom: role.toUpperCase() + '210', nomComplet: role.toUpperCase() + '210', fonction: role, identifiant: 's210.' + role, secteur: 'DIR' });
+      await ouvrir('m7-commandes.html');
+      refusPar[role] = await page.evaluate((id) => {
+        const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('BC-S210-C') >= 0);
+        const r = window.SIGH.parcours.validerCommandeStock(id);
+        return { ligne: !!tr, bouton: !!tr && [...tr.querySelectorAll('button')].some((b) => /Valider/.test(b.getAttribute('title') || b.getAttribute('aria-label') || '')), code: r.code, droit: r.droit, geste: r.geste,
+          statut: window.SIGH.store.collection('commandes').get(id).statutCommande };
+      }, c210.c);
+    }
+    verifier('L’administrateur et la Direction : commande « Valider » ABSENTE de la ligne, et le MOTEUR refuse (VALIDATION_COMMANDE_RESERVEE, qui cite le droit et dit à qui demander) ; la commande reste « en attente »',
+      ['admin', 'direction'].every((r) => refusPar[r].ligne && !refusPar[r].bouton && refusPar[r].code === 'VALIDATION_COMMANDE_RESERVEE' && refusPar[r].droit === 'valider_commande_stock' && /Directrice/.test(refusPar[r].geste) && refusPar[r].statut === 'attente_validation'), JSON.stringify(refusPar));
+    /* le formulaire : « Transmise » sur une commande jamais validée est refusé, rien n'est écrit ; la garde de la collection refuse aussi une écriture directe */
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN210', nomComplet: 'ADMIN210', fonction: 'direction', identifiant: 's210.admin', secteur: 'DIR' });
+    await ouvrir('m7-commandes.html');
+    const direct = await page.evaluate((o) => {
+      const col = window.SIGH.store.collection('commandes');
+      const tentatives = {};
+      ['validee', 'transmise', 'livree', 'soldee'].forEach((st) => { tentatives[st] = col.update(o.b, { statutCommande: st }) ? 'ACCEPTEE' : 'refusee'; });
+      tentatives.validateur = col.update(o.b, { valideePar: 'Quelqu’un' }) ? 'ACCEPTEE' : 'refusee';
+      tentatives.insertion = col.insert({ reference: 'BC-S210-D', date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), fournisseur: 'CAME', lignes: [], montant: 0, statutCommande: 'validee' }) ? 'ACCEPTEE' : 'refusee';
+      const b = col.get(o.b);
+      const figee = col.update(o.a, { valideePar: 'Autre' }) ? 'ACCEPTEE' : 'refusee';
+      const ap = col.get(o.a);
+      const apres = col.update(o.a, { statutCommande: 'transmise' }) ? 'transmise' : 'refusee';
+      return { tentatives, statutB: b.statutCommande, valideB: b.valideePar || null, figee, validateurA: ap.valideePar, progressionApresValidation: apres };
+    }, c210);
+    verifier('Garde de la collection : « Validée », « Transmise », « Livrée », « Soldée » ou un validateur écrits sans le geste sont REFUSÉS (aussi à la création) ; une validation posée ne se réécrit pas, mais la commande validée peut poursuivre son circuit (transmise)',
+      Object.values(direct.tentatives).every((v) => v === 'refusee') && direct.statutB === 'brouillon' && !direct.valideB && direct.figee === 'refusee' && direct.validateurA === 'AGENTE Da210' && direct.progressionApresValidation === 'transmise', JSON.stringify(direct));
+    /* la fiche RBAC étend le droit à un autre rôle (comptable) puis le retire */
+    const etendu = await page.evaluate((id) => {
+      const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      const f = col.all().filter((x) => x.role === 'comptable')[0];
+      const g = Object.assign({}, (f && f.droitsGestes) || {}, { valider_commande_stock: true });
+      if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'comptable', droitsGestes: g, libelleOrigine: 'Comptable' });
+      N.invaliderRbac();
+      return { liste: N.rolesAvecGeste('valider_commande_stock').slice().sort() };
+    }, c210.c);
+    await poserSessionServeur({ role: 'comptable', nom: 'COMPTA210', nomComplet: 'COMPTA210', fonction: 'comptable', identifiant: 's210.cpt', secteur: 'DIR' });
+    await ouvrir('m7-commandes.html');
+    const parCompta = await page.evaluate((id) => {
+      const r = window.SIGH.parcours.validerCommandeStock(id);
+      return { ok: r.ok, par: window.SIGH.store.collection('commandes').get(id).valideePar };
+    }, c210.c);
+    verifier('Étendu par la fiche RBAC au comptable : la liste des détenteurs suit (da, comptable) et la commande est validée au nom de l’agent COMPTA210',
+      JSON.stringify(etendu.liste) === JSON.stringify(['comptable', 'da']) && parCompta.ok && parCompta.par === 'COMPTA210', JSON.stringify({ etendu, parCompta }));
+    /* restauration : le droit retiré, les commandes de la sonde archivées (RG-14) */
+    await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      const f = col.all().filter((x) => x.role === 'comptable')[0];
+      if (f) { const g = Object.assign({}, f.droitsGestes || {}); delete g.valider_commande_stock; col.update(f.id, { droitsGestes: g }); }
+      N.invaliderRbac();
+      S.collection('commandes').active().filter((c) => /^BC-S210-/.test(c.reference)).forEach((c) => S.collection('commandes').archive(c.id, 'restauration de la sonde 210'));
+    });
+    await attendreEcritures();
+    const fin210 = await page.evaluate(() => ({ det: window.SIGH.nav.rolesAvecGeste('valider_commande_stock').slice().sort(), restes: window.SIGH.store.collection('commandes').active().filter((c) => /^BC-S210-/.test(c.reference)).length }));
+    verifier('État restauré : le droit est retiré du comptable (da seul), aucune commande de la sonde active (archivées, RG-14)', JSON.stringify(fin210.det) === JSON.stringify(['da']) && fin210.restes === 0, JSON.stringify(fin210));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 211 : lot CLO-3 points 3 et 4, un DROIT PROPRE par geste au lieu d’une liste de rôles : arbitrer les besoins et traiter les besoins accordés (la tâche vise les détenteurs, jamais des rôles écrits), régler les fichiers, la lecture des scans et le mode MECeF, valider la configuration fiscale, dater un prix dans le passé ; défauts semés = les listes d’avant, la fiche RBAC accorde et retire dans les deux sens');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN211', nomComplet: 'ADMIN211', fonction: 'direction', identifiant: 's211.admin', secteur: 'DIR' });
+    await ouvrir('m7-besoins.html');
+    const defauts = await page.evaluate(() => {
+      const N = window.SIGH.nav, R = (g) => N.rolesAvecGeste(g).slice().sort();
+      const o = {}; ['arbitrer_besoins', 'traiter_besoins_accordes', 'regler_fichiers', 'regler_lecture_scans', 'regler_mode_mecef', 'valider_configuration_fiscale', 'dater_prix_passe'].forEach((g) => { o[g] = { declare: !!N.geste(g), roles: R(g) }; });
+      return o;
+    });
+    const att = { arbitrer_besoins: ['admin', 'da', 'direction'], traiter_besoins_accordes: ['comptable', 'stock'], regler_fichiers: ['admin', 'da'], regler_lecture_scans: ['admin', 'da'], regler_mode_mecef: ['admin', 'da'],
+      valider_configuration_fiscale: ['admin', 'da', 'direction'], dater_prix_passe: ['da', 'direction'] };
+    verifier('Les sept gestes sont au manifeste et leurs défauts SEMÉS sont les listes d’avant le lot (aucun changement de comportement)',
+      Object.keys(att).every((g) => defauts[g].declare && JSON.stringify(defauts[g].roles) === JSON.stringify(att[g])), JSON.stringify(defauts));
+    /* arbitrer : un bon à arbitrer ; le médecin n'a pas l'onglet, la fiche le lui accorde (puis retire) ; la tâche « besoin accordé » vise les détenteurs de traiter_besoins_accordes */
+    const bon = await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('besoins', { module: 'M7', entite: 'BonExpressionBesoins' });
+      const p = S.collection('produits').active()[0];
+      const r = col.insert({ reference: 'BEB-S211-1', date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), service: 'Accueil', demandeur: 'Sonde 211', etape: 'validation_da', motif: 'Sonde 211', montantEstime: 1000,
+        lignes: [{ produitId: p.id, produit: p.designation, unite: p.unite, quantiteDemandee: 2, quantiteAccordee: null }] });
+      return r.record.id;
+    });
+    await attendreEcritures();
+    const onglets = async (role) => {
+      await poserSessionServeur({ role, nom: role.toUpperCase() + '211', nomComplet: role.toUpperCase() + '211', fonction: role, identifiant: 's211.' + role, secteur: 'DIR' });
+      await ouvrir('m7-besoins.html');
+      return page.evaluate(() => [...document.querySelectorAll('#page-content [role=tab]')].map((t) => t.textContent.replace(/\s+/g, ' ').trim()));
+    };
+    const avantMed = await onglets('medecin');
+    const avantDa = await onglets('da');
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN211', nomComplet: 'ADMIN211', fonction: 'direction', identifiant: 's211.admin', secteur: 'DIR' });
+    await page.evaluate(() => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'medecin')[0];
+      const g = Object.assign({}, (f && f.droitsGestes) || {}, { arbitrer_besoins: true, traiter_besoins_accordes: true });
+      if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'medecin', droitsGestes: g, libelleOrigine: 'Médecin' }); N.invaliderRbac(); });
+    const apresMed = await onglets('medecin');
+    const res = await page.evaluate((id) => {
+      const S = window.SIGH.store, N = window.SIGH.nav;
+      const avant = S.collection('notifications').all().length;
+      /* le geste d'arbitrage de l'écran : on rejoue ce qu'il fait (informerAchat lit rolesAvecGeste) via la même source */
+      return { detenteurs: N.rolesAvecGeste('traiter_besoins_accordes').slice().sort(), arbitres: N.rolesAvecGeste('arbitrer_besoins').slice().sort(), nNotifs: avant };
+    }, bon);
+    verifier('Arbitrer les besoins : le médecin n’a PAS l’onglet « Arbitrage » d’origine, la fiche RBAC le lui accorde (l’onglet paraît) ; la liste des détenteurs de « traiter un besoin accordé » (cible de la tâche) suit la fiche (comptable, médecin, stock)',
+      !avantMed.some((t) => /Arbitrage/.test(t)) && avantDa.some((t) => /Arbitrage/.test(t)) && apresMed.some((t) => /Arbitrage/.test(t))
+      && JSON.stringify(res.detenteurs) === JSON.stringify(['comptable', 'medecin', 'stock']) && res.arbitres.indexOf('medecin') >= 0, JSON.stringify({ avantMed, avantDa, apresMed, res }));
+    /* la tâche : valider un besoin depuis l'écran crée une notification PAR détenteur */
+    await poserSessionServeur({ role: 'da', nom: 'DA211', nomComplet: 'DA211', fonction: 'da', identifiant: 's211.da2', secteur: 'DIR' });
+    await ouvrir('m7-besoins.html');
+    const ongletArb = await page.evaluate(async (ref) => {
+      const t = [...document.querySelectorAll('#page-content [role=tab]')].find((x) => /Arbitrage/.test(x.textContent)); if (t) t.click();
+      await new Promise((r) => setTimeout(r, 300));
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(ref) >= 0);
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => /Valider le besoin/.test(x.getAttribute('title') || x.getAttribute('aria-label') || ''));
+      if (b) b.click();
+      await new Promise((r) => setTimeout(r, 300));
+      const ok = [...document.querySelectorAll('.modal button, [role=dialog] button')].find((x) => /Valider et informer/.test(x.textContent));
+      if (ok) ok.click();
+      await new Promise((r) => setTimeout(r, 400));
+      const S = window.SIGH.store;
+      return { ligne: !!tr, bouton: !!b, postes: S.collection('notifications').all().filter((n) => n.type === 'besoin_accorde' && n.reference === ref).map((n) => n.poste).sort() };
+    }, 'BEB-S211-1');
+    verifier('La validation du besoin informe EXACTEMENT les détenteurs du geste « traiter un besoin accordé » (comptable, médecin, stock), la liste n’est écrite nulle part dans l’écran',
+      ongletArb.ligne && ongletArb.bouton && JSON.stringify(ongletArb.postes) === JSON.stringify(['comptable', 'medecin', 'stock']), JSON.stringify(ongletArb));
+    /* réglages : un droit propre par réglage, retiré à l'administrateur, accordé au comptable */
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN211', nomComplet: 'ADMIN211', fonction: 'direction', identifiant: 's211.admin', secteur: 'DIR' });
+    const reg = await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav, PR = window.SIGH.parcours, col = S.collection('rbac');
+      const poser = (role, g) => { const f = col.all().filter((x) => x.role === role)[0]; const gg = Object.assign({}, (f && f.droitsGestes) || {}, g); if (f) col.update(f.id, { droitsGestes: gg }); else col.insert({ role, droitsGestes: gg, libelleOrigine: role }); N.invaliderRbac(); };
+      const lire = () => ({ adminFichiers: N.droitGeste('admin', 'regler_fichiers'), adminScans: N.droitGeste('admin', 'regler_lecture_scans'), adminMecef: N.droitGeste('admin', 'regler_mode_mecef'),
+        adminFiscal: N.droitGeste('admin', 'valider_configuration_fiscale'), comptaFichiers: N.droitGeste('comptable', 'regler_fichiers'), comptaPasse: N.droitGeste('comptable', 'dater_prix_passe') });
+      const avant = lire();
+      poser('admin', { regler_fichiers: false, regler_mode_mecef: false, valider_configuration_fiscale: false });
+      poser('comptable', { regler_fichiers: true, dater_prix_passe: true });
+      const apres = lire();
+      /* le moteur suit la fiche : l'administrateur ne valide plus la configuration fiscale (refus nommé), la liste des profils du refus dit qui la détient */
+      const refusFiscal = PR.configurationFiscale ? null : null;
+      const CF = window.SIGH.configurationFiscale;
+      const ctl = CF.validerObligations ? CF.validerObligations() : null;
+      const profilsPasse = PR.profilsDatePassee();
+      poser('admin', { regler_fichiers: true, regler_mode_mecef: true, valider_configuration_fiscale: true });
+      poser('comptable', { regler_fichiers: false, dater_prix_passe: false });
+      return { avant, apres, refus: ctl && (ctl.code || (ctl.ok === false ? 'refus' : null)), profilsPasse, fin: lire() };
+    });
+    verifier('Un droit PROPRE par réglage : d’origine administrateur et DAF (fichiers, scans, MECeF), Direction, DAF et administrateur (configuration fiscale) ; la fiche RBAC retire à l’administrateur et accorde au comptable, DANS LES DEUX SENS, et le moteur suit (validation fiscale refusée à l’administrateur, profils de la date passée dérivés du droit) ; état restauré',
+      reg.avant.adminFichiers && reg.avant.adminScans && reg.avant.adminMecef && reg.avant.adminFiscal && !reg.avant.comptaFichiers && !reg.avant.comptaPasse
+      && !reg.apres.adminFichiers && reg.apres.adminScans && !reg.apres.adminMecef && !reg.apres.adminFiscal && reg.apres.comptaFichiers && reg.apres.comptaPasse
+      && reg.refus === 'VALIDATION_RESERVEE' && /Comptable/.test(reg.profilsPasse) && reg.fin.adminFichiers && reg.fin.adminMecef && reg.fin.adminFiscal && !reg.fin.comptaFichiers && !reg.fin.comptaPasse, JSON.stringify(reg));
+    /* restauration : le droit du médecin retiré, le bon archivé */
+    await page.evaluate((id) => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'medecin')[0];
+      if (f) { const g = Object.assign({}, f.droitsGestes || {}); delete g.arbitrer_besoins; delete g.traiter_besoins_accordes; col.update(f.id, { droitsGestes: g }); }
+      N.invaliderRbac();
+      S.collection('besoins').active().filter((b) => /^BEB-S211-/.test(b.reference)).forEach((b) => S.collection('besoins').archive(b.id, 'restauration de la sonde 211'));
+      S.collection('notifications').active().filter((n) => n.type === 'besoin_accorde' && /^BEB-S211-/.test(n.reference || '')).forEach((n) => S.collection('notifications').archive(n.id, 'restauration de la sonde 211')); }, bon);
+    await attendreEcritures();
+    const fin211 = await page.evaluate(() => ({ det: window.SIGH.nav.rolesAvecGeste('traiter_besoins_accordes').slice().sort(), arb: window.SIGH.nav.rolesAvecGeste('arbitrer_besoins').slice().sort() }));
+    verifier('État restauré : détenteurs d’origine (comptable et stock ; admin, da et direction)', JSON.stringify(fin211.det) === JSON.stringify(['comptable', 'stock']) && JSON.stringify(fin211.arb) === JSON.stringify(['admin', 'da', 'direction']), JSON.stringify(fin211));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 212 : lot CLO-3 point 7, pharmacie et caisse SÉPARABLES par la seule fiche RBAC : les tâches de la chaîne et les postes de notification ne citent plus caissier ni pharmacien (gestes poste_caisse et poste_pharmacie), la retransmission MECeF est deux gestes ; défaut = aujourd’hui, fiche restaurée');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN212', nomComplet: 'ADMIN212', fonction: 'direction', identifiant: 's212.admin', secteur: 'DIR' });
+    await ouvrir('m8-caisse.html');
+    const d0 = await page.evaluate(() => {
+      const N = window.SIGH.nav, PR = window.SIGH.parcours, S = window.SIGH.store, NT = window.SIGH.notifications;
+      const R = (g) => N.rolesAvecGeste(g).slice().sort();
+      const vu = (role, titre) => { try { return NT.collecter({ poste: role }).some((a) => (a.titre || '').indexOf(titre) >= 0); } catch (e) { return 'ERR ' + e.message; } };
+      PR.notifier({ type: 'sonde212', poste: 'caisse', libelle: 'Sonde212 caisse', detail: 'x', reference: 'S212C', priorite: 'important' });
+      PR.notifier({ type: 'sonde212', poste: 'stock', libelle: 'Sonde212 stock', detail: 'x', reference: 'S212S', priorite: 'important' });
+      return { caisse: R('poste_caisse'), pharma: R('poste_pharmacie'), retr: R('retransmettre_mecef'), illim: R('retransmettre_mecef_sans_limite'),
+        vuCaisse: { caissier: vu('caissier', 'Sonde212 caisse'), stock: vu('stock', 'Sonde212 caisse') }, vuStock: { stock: vu('stock', 'Sonde212 stock'), da: vu('da', 'Sonde212 stock'), caissier: vu('caissier', 'Sonde212 stock') } };
+    });
+    verifier('Défauts = aujourd’hui : la caisse est tenue par le caissier, la pharmacie n’a aucun poste propre (rôle pharmacien archivé), retransmission MECeF caissier, DA, administrateur (sans limite : DA, administrateur) ; la notification de caisse va au caissier seul, celle du stock au stock et à la DA, pas au caissier',
+      JSON.stringify(d0.caisse) === '["caissier"]' && d0.pharma.length === 0 && JSON.stringify(d0.retr) === '["admin","caissier","da"]' && JSON.stringify(d0.illim) === '["admin","da"]'
+      && d0.vuCaisse.caissier === true && d0.vuCaisse.stock === false && d0.vuStock.stock === true && d0.vuStock.da === true && d0.vuStock.caissier === false, JSON.stringify(d0));
+    const prescrire = () => page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur && !p.personnelId)[0];
+      const prod = S.collection('produits').active().filter((p) => p.categorie === 'medicament' && p.prixAchat > 0 && (p.stock || 0) > 5)[0];
+      const res = PR.prescrire({ patientCode: pt.code, medecin: 'S212', diagnostic: 'sonde 212', medicaments: [{ produitId: prod.id, quantite: 1 }] });
+      return { roles: res.taches.map((t) => t.type + ':' + t.role).sort(), ids: res.taches.map((t) => t.id), ord: res.ordonnance.id, fac: res.facture && res.facture.id };
+    });
+    const t0 = await prescrire();
+    verifier('Défaut : la chaîne crée « encaissement » pour le caissier et « dispensation » pour le rôle d’origine de la pharmacie (pharmacien, archivé)', t0.roles.indexOf('encaissement:caissier') >= 0 && t0.roles.indexOf('dispensation:pharmacien') >= 0, JSON.stringify(t0));
+    /* séparation par la seule fiche : pharmacien rouvert avec le poste de pharmacie, la caisse passée au comptable */
+    const poser = (role, g, extra) => page.evaluate((o) => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === o.role)[0];
+      const gg = Object.assign({}, (f && f.droitsGestes) || {}, o.g); const patch = Object.assign({ droitsGestes: gg }, o.extra || {});
+      if (f) col.update(f.id, patch); else col.insert(Object.assign({ role: o.role, libelleOrigine: o.role }, patch)); N.invaliderRbac(); }, { role, g, extra });
+    const sauve = await page.evaluate(() => { const col = window.SIGH.store.collection('rbac'); const o = {}; ['pharmacien', 'caissier', 'comptable'].forEach((r) => { const f = col.all().filter((x) => x.role === r)[0]; o[r] = f ? JSON.stringify({ id: f.id, statut: f.statut || null, droitsGestes: f.droitsGestes || null }) : null; }); return o; });
+    await poser('pharmacien', { poste_pharmacie: true }, { statut: 'actif' });
+    await poser('comptable', { poste_caisse: true, retransmettre_mecef: true });
+    await poser('caissier', { poste_caisse: false });
+    const d1 = await page.evaluate(() => {
+      const N = window.SIGH.nav, NT = window.SIGH.notifications, PR = window.SIGH.parcours;
+      const R = (g) => N.rolesAvecGeste(g).slice().sort();
+      const vu = (role, titre) => NT.collecter({ poste: role }).some((a) => (a.titre || '').indexOf(titre) >= 0);
+      const e = (role, ecran, mod) => { const d = N.droitsEcran(role, ecran, mod); return !!(d && d.editer); };
+      return { caisse: R('poste_caisse'), pharma: R('poste_pharmacie'), retr: R('retransmettre_mecef'),
+        vuCaisse: { comptable: vu('comptable', 'Sonde212 caisse'), caissier: vu('caissier', 'Sonde212 caisse'), pharmacien: vu('pharmacien', 'Sonde212 caisse') },
+        vuStock: { pharmacien: vu('pharmacien', 'Sonde212 stock'), stock: vu('stock', 'Sonde212 stock'), caissier: vu('caissier', 'Sonde212 stock'), comptable: vu('comptable', 'Sonde212 stock') },
+        ecrans: { pharmaDisp: e('pharmacien', 'm6-dispensation', 'M6'), pharmaCaisse: e('pharmacien', 'm8-caisse', 'M8'), caissierCaisse: e('caissier', 'm8-caisse', 'M8') },
+        retrCaissier: N.droitGeste('caissier', 'retransmettre_mecef'), retrCompta: N.droitGeste('comptable', 'retransmettre_mecef') };
+    });
+    const t1 = await prescrire();
+    verifier('Fiche séparée (pharmacien rouvert avec le seul poste de pharmacie, caisse passée au comptable) : les détenteurs suivent ; la notification de caisse va au comptable (plus au caissier, jamais au pharmacien), celle du stock au pharmacien ; le pharmacien écrit la dispensation et pas la caisse ; la chaîne crée ENCAISSEMENT pour le comptable et DISPENSATION pour le pharmacien',
+      JSON.stringify(d1.caisse) === '["comptable"]' && JSON.stringify(d1.pharma) === '["pharmacien"]' && d1.vuCaisse.comptable === true && d1.vuCaisse.caissier === false && d1.vuCaisse.pharmacien === false
+      && d1.vuStock.pharmacien === true && d1.vuStock.stock === true && d1.vuStock.caissier === false && d1.ecrans.pharmaDisp === true && d1.ecrans.pharmaCaisse === false
+      && t1.roles.indexOf('encaissement:comptable') >= 0 && t1.roles.indexOf('dispensation:pharmacien') >= 0 && d1.retrCompta === true, JSON.stringify({ d1, t1 }));
+    /* restauration : les trois fiches rendues telles qu'elles étaient, les pièces de la sonde archivées (RG-14) */
+    await page.evaluate((o) => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      ['pharmacien', 'caissier', 'comptable'].forEach((r) => { const f = col.all().filter((x) => x.role === r)[0]; const a = o.sauve[r] ? JSON.parse(o.sauve[r]) : null;
+        if (!f) return; if (a) col.update(f.id, { statut: a.statut || (r === 'pharmacien' ? 'archive' : 'actif'), droitsGestes: a.droitsGestes }); else col.update(f.id, { droitsGestes: {} }); });
+      N.invaliderRbac();
+      S.collection('taches').active().filter((t) => o.ids.indexOf(t.id) >= 0).forEach((t) => S.collection('taches').archive(t.id, 'restauration de la sonde 212'));
+      S.collection('notifications').active().filter((n) => n.type === 'sonde212').forEach((n) => S.collection('notifications').archive(n.id, 'restauration de la sonde 212')); }, { sauve, ids: t0.ids.concat(t1.ids) });
+    await attendreEcritures();
+    const fin = await page.evaluate(() => { const N = window.SIGH.nav; return { caisse: N.rolesAvecGeste('poste_caisse').slice().sort(), pharma: N.rolesAvecGeste('poste_pharmacie').length, retr: N.rolesAvecGeste('retransmettre_mecef').slice().sort() }; });
+    verifier('État restauré : la caisse revient au caissier, la pharmacie sans détenteur (archivée), la retransmission aux trois d’origine', JSON.stringify(fin.caisse) === '["caissier"]' && fin.pharma === 0 && JSON.stringify(fin.retr) === '["admin","caissier","da"]', JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CLO-3 FIN */
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
+
 
   /* --- Restitution --------------------------------------------------------- */
   const ligne = '─'.repeat(72);

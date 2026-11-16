@@ -17,6 +17,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../droits/droit_geste.dart' show gesDroit;
 import '../format/diacritiques.dart';
 import 'fichiers_donnees.dart' show docRolesZone2;
 import 'fichiers_regles.dart' show FicheDoc, RefusFichier, docPeutVoir;
@@ -286,7 +287,9 @@ ReglageOcr ocrReglageLire(Map<String, Object?>? r) {
   );
 }
 
-bool ocrPeutRegler(String role) => ocrRolesReglage.contains(role);
+/// Lot CLO-3 : le réglage est le geste réservé [ocrGesteRegler] de la fiche RBAC ; [ocrRolesReglage] n'est que son défaut d'origine (manifeste `N.GESTES`).
+const String ocrGesteRegler = 'regler_lecture_scans';
+bool ocrPeutRegler(String role) => gesDroit(role, ocrGesteRegler, ocrRolesReglage);
 
 /// Le réglage demandé : réservé à l'administrateur et à la DAF, motivé ; ACTIVER sans moteur installé (ou avec une langue qu'il ne lit pas) est REFUSÉ en le nommant.
 /// [moteurs] : les moteurs installés sur ce poste, par identifiant. L'écriture et le journal sont à l'appelant.

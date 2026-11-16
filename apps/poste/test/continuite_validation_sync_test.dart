@@ -29,6 +29,10 @@ Magasin poste() => Magasin({
       ],
       'unitesLabo': <M>[],
       'patients': <M>[],
+      // Lot CLO-3 point 6 : la mère exige le COMPTE signataire avec ce rôle (ici, le compte du biologiste qui signe).
+      'utilisateurs': [
+        {'id': 'U-KINNOU', 'statut': 'actif', 'nom': 'Dr KINNOU', 'nomComplet': 'Dr KINNOU', 'role': 'laborantin'}
+      ],
       'audit': const [],
     });
 
@@ -236,6 +240,10 @@ void main() {
     final moteur = MoteurFileul.creer(dbChemin: '${d.path}/f.db', mere: 'http://127.0.0.1:$port', nom: 'Laboratoire', cleStockage: cleSqlite);
     final mm = Magasin({
       'variablesLabo': [for (var i = 0; i < n; i++) {'id': 'V$i', 'statut': 'actif', 'libelle': 'Variable $i', 'aValider': true}],
+      // Lot CLO-3 point 6 : le compte signataire existe à la mère avec ce rôle.
+      'utilisateurs': [
+        {'id': 'U-KINNOU', 'statut': 'actif', 'nom': 'Dr KINNOU', 'nomComplet': 'Dr KINNOU', 'role': 'laborantin'}
+      ],
       'audit': const [],
     });
     final mf = Magasin({'audit': const []});

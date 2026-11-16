@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:sigh_domaine/sigh_domaine.dart'
-    show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeBudgets, cpcGardeClotures, cpcGardeEcritures, gardePlanningPersonnaliseRh, gardePresenceValideeRh, gardeRegimeIndividuelRh, leverValeursAttenteRh, tarChampsPrixLecture, tarGardeLecture, tarGardeProduitRg02, tarGardeVersion;
+    show Agent, cpaDoublonsDuPlan, gardeCommandeRg04, cpcGardeArchives, cpcGardeBudgets, cpcGardeClotures, cpcGardeEcritures, gardePlanningPersonnaliseRh, gardePresenceValideeRh, gardeRegimeIndividuelRh, leverValeursAttenteRh, tarChampsPrixLecture, tarGardeLecture, tarGardeProduitRg02, tarGardeVersion;
 
 import 'circuit_cloture_poste.dart';
 import 'persistance.dart';
@@ -632,6 +632,9 @@ class Magasin {
         if (nom == 'parametres' || nom == 'usagesParametres') {
           c.garder((op, f) => op == 'inserer' ? null : 'Une version de paramètre ne se réécrit jamais : ajouter une version avec sa date d’effet (rien n’est supprimé, RG-14).');
         }
+        // Lot CLO-3 (RG-04) : un statut validé ne naît que du geste réservé « Valider une commande de stock gros », une validation posée ne se réécrit pas : tenu AU MOTEUR.
+        // (Une création déjà validée avec son validateur passe ici : c'est la mère qui la refuse au rejeu, lot CLO-3 point 2.)
+        if (nom == 'commandes') c.garder((op, f) => gardeCommandeRg04(op, f, c.parId(f['id'])));
         // Lot T6 (PRD-TARIFS) : une version de prix est IMMUABLE (une correction AJOUTE une version) et `actes`, `analyses`, `catalogueTarifs` ne s'éditent plus pour un prix :
         // elles reflètent le référentiel (la projection les réécrit par `appliquerDistante`, qui ne passe pas par les gardes). Tenu AU MOTEUR : masquer un bouton ne protège rien.
         if (nom == 'versionsTarif') c.garder((op, f) => tarGardeVersion(op, f, c.parId(f['id'])));

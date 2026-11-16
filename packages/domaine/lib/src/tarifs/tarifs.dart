@@ -27,13 +27,12 @@ const List<String> tarCollectionsReferentiel = [tarCollectionTarifs, tarCollecti
 
 /// Qui DÉCIDE un changement de prix (jamais le droit d'éditer l'écran) : le geste réservé [tarGesteDecider] de la fiche RBAC (lot TARIF-FIX-2, Direction du 16/11/2026 : « pas de
 /// rôle ni validation en dur dans le code »). [tarRolesValidation] n'est que le DÉFAUT D'ORIGINE du manifeste (`N.GESTES`, `rolesDefaut`), vérifié égal à `rbac.json` par un test du
-/// poste ; il ne vaut que tant qu'aucune matrice n'est installée ([tarInstallerDroitDecider]). Qui peut dater dans le passé (T6, 11/11/2026) reste une liste (lot CLO-3).
+/// poste ; il ne vaut que tant qu'aucune matrice n'est installée ([tarInstallerDroitDecider]). Qui peut dater dans le passé (T6, 11/11/2026) est le geste réservé [tarGesteDatePassee] (lot CLO-3, ex liste), lu en un point par `gesDroit`.
 const String tarGesteDecider = 'decider_prix';
 const List<String> tarRolesValidation = ['admin', 'da', 'direction'];
+const String tarGesteDatePassee = 'dater_prix_passe';
 const List<String> tarRolesDatePassee = ['da', 'direction'];
 
-/// LOT VAL : la date d'effet antérieure est le geste réservé `tarifer_date_passee` de la fiche RBAC ; [tarRolesDatePassee] n'est que le DÉFAUT d'origine du manifeste.
-const String tarGesteDatePassee = 'tarifer_date_passee';
 bool tarPeutDatePassee(String role) => gesDroit(role, tarGesteDatePassee, tarRolesDatePassee);
 
 /// La durée de validité d'une pro-forma : défaut proposé et bornes (T5, 11/11/2026 : « à valider », réglable en base).

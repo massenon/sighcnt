@@ -911,9 +911,13 @@ CpcReouverture cpcRouvrirExercice(Iterable<CpaFiche> exercices, Iterable<CpaFich
   }, [nCL, nAN]);
 }
 
-/// Le choix d'exercice par DÉFAUT : l'exercice OUVERT le plus récent, sinon le plus récent tout court.
+/// Le choix d'exercice par DÉFAUT (lot CLO-3, Direction du 15/11/2026, section AH point 5) : l'exercice qui CONTIENT la date du jour ; s'il n'existe pas encore, l'exercice ouvert le plus
+/// récent, sinon le plus récent tout court. L'exercice suivant reste choisissable (la barre le propose) ; le choix mémorisé de la session l'emporte toujours.
 int cpcExerciceParDefaut(Iterable<CpaFiche> exercices, DateTime auj) {
   final liste = cpcListeExercices(exercices);
+  for (final x in liste) {
+    if (x['annee'] == auj.year) return x['annee'] as int;
+  }
   for (final x in liste) {
     if (cpcEtatExercice(exercices, x['annee'] as int) == 'ouvert') return x['annee'] as int;
   }

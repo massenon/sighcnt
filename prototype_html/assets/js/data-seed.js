@@ -3258,9 +3258,8 @@
       .filter(function (x) { return x.statutCommande === 'attente_validation'; })
       .sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
     cmds.slice(0, Math.max(0, cmds.length - 3)).forEach(function (x) {
-      st.collection('commandes').update(x.id, {
-        statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: '2026-09-01',
-      });
+      /* La semence écrit la validation d'origine à même la fiche (comme `cmds.all().push` plus haut) : la garde RG-04 de la collection ne laisse passer que le geste réservé. */
+      Object.assign(x, { statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: '2026-09-01' });
       fait.commandes++;
     });
 

@@ -54,10 +54,10 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       const titreBouton = (b) => b.getAttribute('title') || b.getAttribute('aria-label') || b.textContent.trim();
       const saisir = (el, v) => { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
       const poserChamp = (id, v) => { const e = document.getElementById('f_' + id); if (!e) throw new Error('champ ' + id); saisir(e, v); };
-      const ligneDe = (root, ref) => [...root.querySelectorAll('tbody tr')].find((tr) => tr.children[0] && tr.children[0].textContent.trim() === ref);
+      const ligneDe = (root, ref) => [...root.querySelectorAll('tbody tr')].find((tr) => tr.querySelector('td:not([data-case-selection])') && tr.querySelector('td:not([data-case-selection])').textContent.trim() === ref);
       const onglet = async (root, debut) => { const t = [...root.querySelectorAll('[role=tab]')].find((x) => x.textContent.trim().startsWith(debut)); if (!t) throw new Error('onglet ' + debut); t.click(); await dormir(60); };
       const kpis = (root) => [...root.querySelector('.grid').children].map((k) => [...k.querySelectorAll('p')].slice(0, 2).map((p) => p.textContent.trim()));
-      const refsPage = (root) => [...root.querySelectorAll('tbody tr')].map((tr) => tr.children[0].textContent.trim());
+      const refsPage = (root) => [...root.querySelectorAll('tbody tr')].map((tr) => tr.querySelector('td:not([data-case-selection])').textContent.trim());
       const confirmer = async (libelle) => { await dormir(40); const f = fenetre(); const b = bouton(f, libelle); if (!b) throw new Error('confirmation ' + libelle); b.click(); await dormir(60); };
       /* L'amorçage des achats se fait à l'OUVERTURE de l'écran (amorcer() de m7) : on monte l'écran une fois AVANT d'injecter quoi que ce soit, sinon les bons
          injectés précèdent le jeu et l'instantané des bons est incomplet. */
@@ -66,6 +66,13 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       const ids = (col) => new Set(col.all().map((x) => x.id));
       const nouveaux = (col, avant) => col.all().filter((x) => !avant.has(x.id));
       const ligne = (pid, dem, acc, extra) => { const p = colP.get(pid); return Object.assign({ produitId: pid, produit: p.designation, unite: p.unite, quantiteDemandee: dem, quantiteAccordee: acc === undefined ? null : acc, quantiteLivree: null, prixAchat: p.prixAchat }, extra || {}); };
+      /* Lot CLO-3 (RG-04) : la garde de la collection refuse tout statut validé qu'un geste n'a pas posé. Les cas de départ d'un vecteur (une commande DÉJÀ validée, livrée…) sont posés à même la fiche,
+         comme le fait la semence : le vecteur teste l'ÉCRAN, pas la façon de fabriquer son état de départ. */
+      /* L'écran des commandes suit l'exercice de la barre supérieure : le banc pose des pièces datées de 2095 à 2099 et veut les voir toutes (le filtre d'exercice a son propre vecteur). */
+      SIGH.exercice.dansExercice = () => true;
+      const insererCommande = (o) => { const valides = {}; ['statutCommande', 'valideePar', 'dateValidation'].forEach((k) => { if (k in o) valides[k] = o[k]; });
+        const reste = Object.assign({}, o); Object.keys(valides).forEach((k) => delete reste[k]);
+        const r = colC.insert(Object.assign(reste, { statutCommande: 'brouillon' })); Object.assign(r.record, valides); return r; };
       const articles = colP.active().slice(0, 3).map((p) => p.id);   /* ABAISSE LANGUE, … : les mêmes que ceux du jeu du poste */
 
       /* ======================================================================================================================================
@@ -228,20 +235,20 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       async function validerCommande(role) {
         poserProfil(role, 'TAKI Alimatou');
         rang++;
-        const c = colC.insert({ reference: 'BC-2098-' + String(rang).padStart(4, '0'), date: '2098-02-01', fournisseur: 'CAME', fournisseurNom: 'CAME — Centrale d\'Achat des Médicaments Essentiels', lignes: [cmdLigne(articles[0], 10, 650)], montant: 6500, statutCommande: 'attente_validation', delaiLivraison: 7 }).record;
+        const c = insererCommande({ reference: 'BC-2098-' + String(rang).padStart(4, '0'), date: '2098-02-01', fournisseur: 'CAME', fournisseurNom: 'CAME — Centrale d\'Achat des Médicaments Essentiels', lignes: [cmdLigne(articles[0], 10, 650)], montant: 6500, statutCommande: 'attente_validation', delaiLivraison: 7 }).record;
         const avant = propre(net(c)); const nT = toasts.length;
         const root = await monter('m7-commandes');
         const tr = ligneDe(root, c.reference);
         const actions = [...tr.querySelectorAll('button')].map(titreBouton);
         const note = root.querySelector('.note, [class*=warning]') ? true : false;
         const kp = kpis(root);
-        const b = [...tr.querySelectorAll('button')].find((x) => titreBouton(x) === 'Valider (DA)');
+        const b = [...tr.querySelectorAll('button')].find((x) => titreBouton(x) === 'Valider la commande');
         let apres = null, message = null;
         if (b) { b.click(); await dormir(60); message = fenetre().textContent.replace(/\s+/g, ' ').trim(); await confirmer('Valider la commande'); apres = propre(net(colC.get(c.id))); }
         commandes.validations.push({ role, actions, avant, apres, message, toasts: toastsDepuis(nT), kpisAvant: kp });
         nettoyer(root);
       }
-      await validerCommande('da'); await validerCommande('comptable'); await validerCommande('stock');
+      await validerCommande('da'); await validerCommande('admin'); await validerCommande('direction'); await validerCommande('comptable'); await validerCommande('stock');
       poserProfil(profilBanc.role, profilBanc.nom);
       async function nouvelleCommande(nom, cfg) {
         const avant = ids(colC), nT = toasts.length;
@@ -266,7 +273,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       commandes.modifications = [];
       async function modifierCommande(nom, depart, statut) {
         poserProfil('da', 'TAKI Alimatou'); rang++;
-        const c = colC.insert(Object.assign({ reference: 'BC-2095-' + String(rang).padStart(4, '0'), date: '2099-06-01', fournisseur: 'CAME', fournisseurNom: 'CAME', lignes: [cmdLigne(articles[0], 10, 650)], montant: 6500, delaiLivraison: 7 }, depart)).record;
+        const c = insererCommande(Object.assign({ reference: 'BC-2095-' + String(rang).padStart(4, '0'), date: '2099-06-01', fournisseur: 'CAME', fournisseurNom: 'CAME', lignes: [cmdLigne(articles[0], 10, 650)], montant: 6500, delaiLivraison: 7 }, depart)).record;
         const avant = propre(net(c)), nT = toasts.length;
         const root = await monter('m7-commandes');
         const tr = ligneDe(root, c.reference);
@@ -302,7 +309,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         poserProfil('stock', 'MAMAN Zoukanéri');
         rang++;
         const prods = cfg.produits;
-        const cmd = colC.insert({ reference: 'BC-2096-' + String(rang).padStart(4, '0'), date: '2096-03-01', fournisseur: 'CAME', fournisseurNom: 'CAME — Centrale d\'Achat des Médicaments Essentiels', delaiLivraison: 7, statutCommande: cfg.statut || 'validee', valideePar: 'TAKI Alimatou',
+        const cmd = insererCommande({ reference: 'BC-2096-' + String(rang).padStart(4, '0'), date: '2096-03-01', fournisseur: 'CAME', fournisseurNom: 'CAME — Centrale d\'Achat des Médicaments Essentiels', delaiLivraison: 7, statutCommande: cfg.statut || 'validee', valideePar: 'TAKI Alimatou',
           lignes: prods.map((p) => cmdLigne(p.id, p.q, p.pu)), montant: prods.reduce((a, p) => a + p.q * p.pu, 0) }).record;
         const avantProduits = propre(prods.map((p) => { const x = colP.get(p.id); return x ? { id: x.id, stockGros: x.stockGros, stock: x.stock, cump: x.cump } : null; }).filter(Boolean));
         const avantL = ids(colL), avantMv = ids(colMv), nT = toasts.length;
@@ -360,7 +367,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       poserProfil(profilBanc.role, profilBanc.nom);
       /* la lecture complète du registre des écarts : chaque ligne (BL, article, commandé, livré, écart, valeur) pour pouvoir la recalculer */
       { const root = await monter('m7-ecarts');
-        lecture.ecartsLignes = [...root.querySelectorAll('tbody tr')].map((tr) => [...tr.children].map((td) => td.textContent.trim()));
+        lecture.ecartsLignes = [...root.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td:not([data-case-selection])')].map((td) => td.textContent.trim()));
         lecture.ecartsEntete = [...root.querySelectorAll('thead th')].map((th) => th.textContent.trim());
         nettoyer(root); }
       lecture.livraisons = propre(colL.active().map(net));
@@ -410,7 +417,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       colL.insert({ reference: '26LNA-X3', commandeRef: 'BC-X3', date: '2099-01-03', fournisseur: 'CAME', fournisseurNom: 'CAME — Centrale d’Achat des Médicaments Essentiels', statutReception: 'conforme', controlePar: ['A', 'B'],
         lignes: [lg('P5', 'COTON', 5, 650, 4)], montant: 3250 });
       { const root = await monter('m7-ecarts');
-        lecture.ecartsExtra = { kpis: kpis(root), lignes: [...root.querySelectorAll('tbody tr')].map((tr) => [...tr.children].map((td) => td.textContent.trim())), livraisons: propre(colL.active().map(net)) };
+        lecture.ecartsExtra = { kpis: kpis(root), lignes: [...root.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td:not([data-case-selection])')].map((td) => td.textContent.trim())), livraisons: propre(colL.active().map(net)) };
         nettoyer(root); }
       { const root = await monter('m7-livraisons'); lecture.livraisonsExtra = { kpis: kpis(root) }; nettoyer(root); }
       J.lecture = lecture;

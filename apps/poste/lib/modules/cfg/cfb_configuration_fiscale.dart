@@ -34,7 +34,7 @@ class ConfigurationFiscalePoste {
   DateTime get maintenant => c.aujourdhui;
 
   /// `peutValiderConfiguration()` : le rôle est de validation, l'agent a le droit d'écrire sur CFG, le poste n'est pas un fileul.
-  bool get peutValider => cfbRolesValidation.contains(c.role) && c.droit.editer && !fileul;
+  bool get peutValider => cfbPeutValider(c.role) && c.droit.editer && !fileul;
 
   /// Les trois collections doivent exister sur un poste : si le jeu ne les porte pas (ancien jeu, magasin vide), la SEMENCE est posée, sans journal
   /// (ce n'est pas le geste d'un agent). À appeler AVANT le premier rendu, jamais pendant.

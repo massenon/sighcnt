@@ -15,7 +15,6 @@
 ///   · E77 porté fidèlement : « DAF » = 'TAKI Alimatou', écrit en dur (validateur, signatures) quel que soit l'agent connecté.
 library;
 
-import '../droits/droit_geste.dart' show gesDroit;
 import '../format/format_fr.dart';
 import 'nombres.dart';
 
@@ -82,8 +81,10 @@ const categoriesBesoin = [
   'Autre — à préciser',
 ];
 
-/// Qui arbitre (valider, rejeter, demander un complément).
-const rolesArbitres = {'da', 'direction', 'admin'};
+/// Les gestes réservés de la fiche RBAC (lot CLO-3, Direction du 15/11/2026, section AH point 4) : qui ARBITRE un bon de besoins (valider, rejeter, demander un complément) et qui
+/// TRAITE un besoin accordé (reçoit la tâche « besoin accordé »). Défauts semés = les listes d'avant le lot ; jamais une liste de rôles dans le moteur.
+const gesteArbitrerBesoins = 'arbitrer_besoins';
+const gesteTraiterBesoinsAccordes = 'traiter_besoins_accordes';
 
 /// Qui voit les besoins validés et le registre complet (achat et logistique).
 const rolesAchat = {
@@ -95,9 +96,6 @@ const rolesAchat = {
   'aide_comptable'
 };
 
-/// LOT VAL : arbitrer est le geste réservé `arbitrer_besoins` de la fiche RBAC ; [rolesArbitres] n'est que le DÉFAUT d'origine du manifeste.
-const String gesteArbitrerBesoins = 'arbitrer_besoins';
-bool estArbitre(String role) => gesDroit(role, gesteArbitrerBesoins, rolesArbitres.toList());
 bool estAchat(String role) => rolesAchat.contains(role);
 
 /// Le formulaire s'adapte à qui l'ouvre : seul celui qui tient le circuit (droit d'écrire ET poste d'achat) choisit l'étape. Un agent qui exprime un
@@ -137,9 +135,10 @@ int bonsLivres(Iterable<_Bon> actifs) =>
 
 /// Les onglets offerts à un profil, dans l'ordre : chaque vue est gardée par CE QU'ELLE PERMET, non par un module.
 /// `droitVoir` : le droit de lecture du profil sur l'écran.
-List<String> vuesOffertes({required String role, required bool droitVoir}) => [
+/// `arbitre` : le profil détient le geste réservé [gesteArbitrerBesoins].
+List<String> vuesOffertes({required String role, required bool droitVoir, required bool arbitre}) => [
       'miennes',
-      if (estArbitre(role)) 'arbitrage',
+      if (arbitre) 'arbitrage',
       if (estAchat(role)) 'achats',
       if (droitVoir && estAchat(role)) 'tous',
     ];
@@ -263,7 +262,7 @@ class ArbitrageEnregistre {
   /// Ce qu'il faut écrire sur le bon.
   final _Bon patch;
 
-  /// Les notifications de poste à insérer (vide sauf validation) : le comptable ET le gestionnaire de stock.
+  /// Les notifications de poste à insérer (vide sauf validation) : une par poste qui détient le geste [gesteTraiterBesoinsAccordes].
   final List<_Bon> notifications;
 
   /// Le message affiché à l'agent, et son ton (`success` | `warning`).
@@ -278,7 +277,8 @@ ArbitrageEnregistre arbitrerBon(
     required Arbitrage quoi,
     String motif = '',
     required String utilisateur,
-    required String maintenant}) {
+    required String maintenant,
+    List<String> postesTraitants = const []}) {
   final m = motif.trim();
   if (quoi != Arbitrage.valider && m.isEmpty) {
     throw const RefusAchat('Le motif est obligatoire.');
@@ -308,19 +308,18 @@ ArbitrageEnregistre arbitrerBon(
   return ArbitrageEnregistre(
       patch: patch,
       notifications: [
-        for (final poste in const ['comptable', 'stock'])
+        for (final poste in postesTraitants)
           {
             'type': 'besoin_accorde',
             'poste': poste,
             'libelle': 'Besoin accordé — $ref',
-            'detail':
-                '$detail${poste == 'comptable' ? ' · engagement budgétaire et décaissement à préparer' : ' · achat à lancer ou distribution à planifier'}',
+            'detail': '$detail · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier',
             'reference': ref,
             'priorite': 'important',
           }
       ],
       message:
-          'Besoin $ref accordé — le comptable et le gestionnaire de stock sont informés.',
+          'Besoin $ref accordé : les postes qui traitent les besoins accordés sont informés.',
       type: 'success');
 }
 

@@ -242,6 +242,29 @@
        la Direction et la Directrice Administrative. Après l'adoption, le contenu du plan ne se modifie plus que par version datée ; le suivi (état, pourcentage, réalisé) reste libre. */
     { id: 'adopter_plan_annuel', libelle: 'Adopter le plan annuel de travail d’un exercice (le contenu ne change plus ensuite que par version datée)', module: 'M13', ecran: 'm13-plan-annuel',
       rolesDefaut: ['direction', 'da'] },
+    /* Lot CLO-3 (Direction, 16/11/2026, section AH point 3 et AQ point 1) : VALIDER une commande de stock gros (RG-04) est un DROIT de la fiche RBAC par rôle, jamais un nom écrit dans le
+       moteur ni dans l'écran. D'ORIGINE la Directrice Administrative SEULE (l'administrateur et la Direction ne l'ont plus : ils ne valident pas à sa place) ; la fiche l'étend à un autre
+       rôle. Le moteur revérifie (refus nommé qui cite le droit) ; la commande est ABSENTE sans le droit ; le validateur enregistré est l'agent de la session. */
+    { id: 'valider_commande_stock', libelle: 'Valider une commande de stock gros (RG-04) avant sa transmission au fournisseur', module: 'M7', ecran: 'm7-commandes',
+      rolesDefaut: ['da'] },
+    /* Lot CLO-3 point 3 (Direction, 16/11/2026, section AH point 4) : qui ARBITRE un bon de besoins et qui TRAITE un besoin accordé (engagement budgétaire, achat ou distribution) sont des droits
+       de la fiche RBAC, jamais des noms de rôles écrits dans l'écran, le moteur ou la tâche de notification. Défauts semés = les listes d'aujourd'hui (aucun changement de comportement). */
+    { id: 'arbitrer_besoins', libelle: 'Arbitrer un bon de besoins (valider, rejeter avec motif, demander un complément)', module: 'M7', ecran: 'm7-besoins',
+      rolesDefaut: ['da', 'direction', 'admin'] },
+    { id: 'traiter_besoins_accordes', libelle: 'Traiter un besoin accordé (engagement budgétaire et décaissement, achat ou distribution) : reçoit la tâche « besoin accordé »', module: 'M7', ecran: 'm7-besoins',
+      rolesDefaut: ['comptable', 'stock'] },
+    /* Lot CLO-3 point 4 (Direction, 16/11/2026, section AH point 5 et AQ point 17) : UN DROIT PROPRE PAR RÉGLAGE, jamais une liste de rôles écrite dans le moteur ou l'écran. Les trois réglages
+       réservés « administrateur et Directrice Administrative » (taille maximale des fichiers, lecture des scans OCR, mode de certification MECeF), la validation de la configuration fiscale
+       (ex `ROLES_VALIDATION`) et l'autorité de dater un prix dans le passé (ex `ROLES_DATE_PASSEE`). Défauts semés = les listes d'avant le lot ; aucun de ces droits n'ouvre d'écran. */
+    { id: 'regler_fichiers', libelle: 'Régler la taille maximale des fichiers déposés', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
+    { id: 'regler_lecture_scans', libelle: 'Régler la lecture des scans par machine (OCR) de la clinique', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
+    { id: 'dater_prix_passe', libelle: 'Dater un changement de prix dans le passé (date d\u2019effet antérieure à aujourd\u2019hui, avec un motif)', module: null, ecran: null, rolesDefaut: ['da', 'direction'] },
+    /* Lot CLO-3 point 7 (Direction, 16/11/2026, section AL point 1) : PHARMACIE ET CAISSE SÉPARABLES PAR LA SEULE FICHE RBAC. Aujourd'hui un seul rôle (`caissier`) tient la caisse et la
+       pharmacie, le rôle `pharmacien` est archivé (un rôle archivé ne détient rien : d'origine la pharmacie n'a donc aucun poste propre, ses tâches gardent le rôle déclaré `pharmacien`). Un poste de travail reçoit la tâche de sa file et les
+       notifications de son poste ; rouvrir `pharmacien` avec `poste_pharmacie` seul (et le retirer à `caissier`) sépare les deux sans toucher au code. Ils n'ouvrent aucun écran. La
+       retransmission MECeF d'une vente refusée ou expirée : `retransmettre_mecef` (une fois), `retransmettre_mecef_sans_limite` (autant de fois que nécessaire). Défauts = les listes d'avant. */
+    { id: 'poste_caisse', libelle: 'Tenir le poste de la caisse (reçoit la tâche « Encaisser la prescription » et les notifications de la caisse)', module: null, ecran: null, rolesDefaut: ['caissier'] },
+    { id: 'poste_pharmacie', libelle: 'Tenir le poste de la pharmacie (reçoit la tâche « Délivrer les médicaments » et les notifications de la pharmacie)', module: null, ecran: null, rolesDefaut: ['pharmacien'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en
@@ -299,8 +322,6 @@
     { id: 'valider_etape_surveillant', libelle: 'Signer l’étape « surveillant » du circuit de validation RH (pointages, congés, missions)', module: null, ecran: null, rolesDefaut: ['surveillant', 'admin'] },
     { id: 'valider_etape_daf', libelle: 'Signer l’étape « Directrice Administrative » du circuit de validation RH', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
     { id: 'voir_toutes_les_familles_validation', libelle: 'Voir toutes les familles de référentiels du centre des validations (sinon : celles que le rôle valide)', module: null, ecran: null, rolesDefaut: ['direction', 'da', 'admin'] },
-    { id: 'arbitrer_besoins', libelle: 'Arbitrer les besoins exprimés (écran « Besoins » du module Achats)', module: null, ecran: null, rolesDefaut: ['da', 'direction', 'admin'] },
-    { id: 'tarifer_date_passee', libelle: 'Poser une date d’effet antérieure à aujourd’hui sur un tarif (autorité motivée)', module: null, ecran: null, rolesDefaut: ['da', 'direction'] },
   ]);
   var GESTES_INDEX = {};
   GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });

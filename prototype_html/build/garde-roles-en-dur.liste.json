@@ -8,9 +8,7 @@
    "role == 'admin'": 1
   },
   "packages/domaine/lib/src/achats/besoins.dart": {
-   "{'da', 'direction', 'admin'}": 1,
    "{ 'comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable' }": 1,
-   "['comptable', 'stock']": 1,
    "nom TAKI": 1
   },
   "packages/domaine/lib/src/achats/pv_reception.dart": {
@@ -365,17 +363,14 @@
   },
   "apps/poste/lib/shell/centre_notifications.dart": {
    "['caissier']": 1,
+   "['pharmacien']": 1,
    "['comptable', 'assistant_comptable', 'aide_comptable', 'da']": 1,
    "['direction', 'da', 'dm']": 1,
    "['echographiste']": 1,
    "['laborantin']": 3,
    "['medecin', 'chirurgien', 'anesthesiste', 'dm']": 1,
-   "['stock', 'pharmacien', 'da']": 1,
    "['infirmier', 'aide_soignant', 'surveillant']": 1,
    "['infirmier', 'aide_soignant', 'surveillant', 'medecin']": 1,
-   "['stock', 'pharmacien', 'caissier', 'da']": 1,
-   "['stock', 'pharmacien', 'caissier', 'laborantin']": 1,
-   "['caissier', 'comptable', 'da', 'assistant_comptable']": 1,
    "['comptable', 'da', 'assistant_comptable', 'direction']": 1,
    "['da', 'comptable', 'direction', 'assistant_comptable', 'aide_comptable']": 1,
    "['da', 'direction']": 1,
@@ -439,12 +434,6 @@
   "js/modules/dashboards.js": {
    "nom BASSONGUI": 1,
    "nom TAKI": 2
-  },
-  "js/modules/fichiers-ocr.js": {
-   "['admin', 'da']": 1
-  },
-  "js/modules/fichiers.js": {
-   "['admin', 'da']": 1
   },
   "js/modules/ged.js": {
    "nom TAKI": 2
@@ -511,9 +500,8 @@
   },
   "js/modules/m7-achats.js": {
    "['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']": 1,
-   "['comptable', 'stock']": 1,
    "nom MAMAN": 6,
-   "nom TAKI": 4
+   "nom TAKI": 3
   },
   "js/modules/m8-facturation.js": {
    "nom TAKI": 4,
@@ -543,21 +531,15 @@
    "nom KASSA": 1
   },
   "js/notifications.js": {
-   "['caissier']": 1,
    "['comptable', 'assistant_comptable', 'aide_comptable', 'da']": 1,
    "['direction', 'da', 'dm']": 1,
    "['echographiste']": 1,
    "['laborantin']": 3,
    "['medecin', 'chirurgien', 'anesthesiste', 'dm']": 1,
-   "['stock', 'pharmacien', 'da']": 1,
    "['infirmier', 'aide_soignant', 'surveillant']": 1,
    "['infirmier', 'aide_soignant', 'surveillant', 'medecin']": 1,
-   "['stock', 'pharmacien', 'caissier', 'da']": 1,
-   "['stock', 'pharmacien', 'caissier', 'laborantin']": 1,
-   "['caissier', 'comptable', 'da', 'assistant_comptable']": 1,
    "['comptable', 'da', 'assistant_comptable', 'direction']": 2,
    "['da', 'comptable', 'direction', 'assistant_comptable', 'aide_comptable']": 1,
-   "['da', 'direction']": 1,
    "['comptable', 'da', 'aide_comptable']": 1
   },
   "js/parcours.js": {

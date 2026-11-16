@@ -92,21 +92,27 @@
    * ======================================================================== */
   /* Quels rôles tiennent un POSTE de notification. `null` = tout le monde
      (« tous » ou poste non précisé) ; un poste inconnu est lu comme un rôle. */
+  /* Lot CLO-3 point 7 : la caisse et la pharmacie sont des postes lus de la fiche RBAC (gestes `poste_caisse`, `poste_pharmacie`), jamais les noms `caissier` ni `pharmacien`. */
+  /* Les autres rôles de ces postes (hors caisse et pharmacie) restent déclarés tels quels : ils ne sont pas l'objet du point 7. */
+  function lst() { return Array.prototype.slice.call(arguments); }
+  function rolesGeste(g) { return N && N.rolesAvecGeste ? N.rolesAvecGeste(g) : []; }
   var POSTES_NOTIF = {
     tous: null,
-    caisse: ['caissier'],
+    caisse: function () { return rolesGeste('poste_caisse'); },
     comptable: ['comptable', 'assistant_comptable', 'aide_comptable', 'da'],
     direction: ['direction', 'da', 'dm'],
     imagerie: ['echographiste'],
     laboratoire: ['laborantin'],
     prescripteur: ['medecin', 'chirurgien', 'anesthesiste', 'dm'],
-    stock: ['stock', 'pharmacien', 'da'],
+    stock: function () { return lst('stock', 'da').concat(rolesGeste('poste_pharmacie')); },
     salle_soins: ['infirmier', 'aide_soignant', 'surveillant'],
     hospitalisation: ['infirmier', 'aide_soignant', 'surveillant', 'medecin'],
   };
   function rolesDuPoste(poste) {
     if (!poste || poste === 'tous') return null;
-    return POSTES_NOTIF[poste] === undefined ? [poste] : POSTES_NOTIF[poste];
+    var d = POSTES_NOTIF[poste];
+    if (d === undefined) return [poste];
+    return typeof d === 'function' ? d() : d;
   }
   /* `PR.notifier` écrit « haute » ou « normale » ; le moteur raisonne en critique, important, information. */
   function prioriteDePoste(n) {
@@ -141,7 +147,7 @@
               detail: 'Seuil d’alerte fixé à ' + C.num(p.seuilAlerte) + '. Établir un bon '
                 + 'de commande, validation de la Direction requise (RG-04).',
               lien: 'm6-alertes',
-              postes: ['stock', 'pharmacien', 'caissier', 'da'],
+              postes: lst('stock', 'da').concat(rolesGeste('poste_pharmacie'), rolesGeste('poste_caisse')),
             };
           });
       },
@@ -165,7 +171,7 @@
                 ? 'À sortir du rayon et à déclarer en perte.'
                 : 'Appliquer le principe FEFO (RG-05).',
               lien: 'm6-lots',
-              postes: ['stock', 'pharmacien', 'caissier', 'laborantin'],
+              postes: lst('stock', 'laborantin').concat(rolesGeste('poste_pharmacie'), rolesGeste('poste_caisse')),
             };
           });
       },
@@ -182,7 +188,7 @@
               titre: 'Facture ' + (f.numero || f.id) + ' rejetée par la MECeF',
               detail: 'Corriger puis réémettre auprès de l’administration fiscale.',
               lien: 'mecef-transmission',
-              postes: ['caissier', 'comptable', 'da', 'assistant_comptable'],
+              postes: rolesGeste('poste_caisse').concat(lst('comptable', 'da', 'assistant_comptable')),
             };
           });
       },
@@ -313,7 +319,8 @@
               titre: 'Bon de besoins à valider' + (b.reference ? ' : ' + b.reference : ''),
               detail: (b.service || 'Service') + (b.motif ? ' : ' + b.motif : '') + '. La validation est un geste de la DAF.',
               lien: 'm7-besoins',
-              postes: ['da', 'direction'],
+              /* ceux qui arbitrent : geste réservé `arbitrer_besoins` de la fiche RBAC (lot CLO-3), jamais une liste écrite ici */
+              postes: global.SIGH.nav && global.SIGH.nav.rolesAvecGeste ? global.SIGH.nav.rolesAvecGeste('arbitrer_besoins') : null,
             };
           });
       },

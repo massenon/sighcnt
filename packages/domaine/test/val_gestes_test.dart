@@ -23,7 +23,6 @@ void main() {
     expect(valPeut(valFamille('actes')!, 'comptable'), isFalse);
     expect(valVoitTout('direction'), isTrue);
     expect(valVoitTout('medecin'), isFalse);
-    expect(estArbitre('da'), isTrue);
     expect(tarPeutDatePassee('direction'), isTrue);
     expect(aibMotifEcriture(role: 'comptable', libelleRole: 'C'), isNull);
   });
@@ -49,7 +48,7 @@ void main() {
     expect(refus['droit'], aibGesteEcrire);
     expect('${refus['motif']}', contains(aibGesteEcrire));
     expect(cfbControleValidation(role: 'da')!.code, 'VALIDATION_RESERVEE');
-    expect(cfbControleValidation(role: 'da')!.motif, contains(cfbGesteValider));
+    expect(cfbControleValidation(role: 'da')!.motif, contains(cfbGesteValidation));
     expect(cfbControleValidation(role: 'direction'), isNull);
     expect(refusRetransmission({'statutMecef': 'rejete'}, 'caissier')!.code, 'RETRANSMISSION_INTERDITE');
     expect(refusRetransmission({'statutMecef': 'rejete', 'retransmissions': 1}, 'da'), isNull);

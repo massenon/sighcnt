@@ -37,11 +37,12 @@ class CfbRefus {
   String toString() => '$code : $motif';
 }
 
-/// Les rôles qui VALIDENT la configuration fiscale (`ROLES_VALIDATION` de parcours.js) : la Direction, la DAF, l'administrateur système.
+/// Valider la configuration fiscale est le geste réservé [cfbGesteValidation] de la fiche RBAC (lot CLO-3, ex `ROLES_VALIDATION`) ; [cfbRolesValidation] n'est que son défaut d'origine
+/// (la Direction, la DAF, l'administrateur système), lu en un point par `gesDroit`.
+const String cfbGesteValidation = 'valider_configuration_fiscale';
 const List<String> cfbRolesValidation = ['direction', 'da', 'admin'];
 
-/// LOT VAL : valider est le geste réservé `valider_configuration_fiscale` de la fiche RBAC ; [cfbRolesValidation] n'est que le DÉFAUT d'origine du manifeste.
-const String cfbGesteValider = 'valider_configuration_fiscale';
+bool cfbPeutValider(String? role) => role != null && gesDroit(role, cfbGesteValidation, cfbRolesValidation);
 
 /// `FILEUL_LECTURE_SEULE` : un fileul ne modifie jamais la configuration de la clinique (famille R, publiée par la mère seule).
 CfbRefus? cfbControleFileul(bool fileul) => fileul
@@ -53,10 +54,10 @@ CfbRefus? cfbControleFileul(bool fileul) => fileul
 CfbRefus? cfbControleValidation({required String? role, bool fileul = false, String Function(String?)? libelleRole}) {
   final f = cfbControleFileul(fileul);
   if (f != null) return f;
-  if (!gesDroit(role, cfbGesteValider, cfbRolesValidation)) {
+  if (!cfbPeutValider(role)) {
     final lib = libelleRole != null ? libelleRole(role) : (role ?? 'aucun');
     return CfbRefus('VALIDATION_RESERVEE',
-        'Valider la configuration fiscale est un droit réservé de la fiche du rôle (« $cfbGesteValider ») : « $lib » ne l’a pas.',
+        'Valider la configuration fiscale est un droit réservé de la fiche du rôle (« $cfbGesteValidation ») : « $lib » ne l’a pas.',
         'Demander à un rôle qui détient ce droit (la Direction, la DAF ou l’administrateur d’origine) de valider depuis son poste.');
   }
   return null;

@@ -625,17 +625,20 @@ void main() {
       expect(cpcReferenceArchive(2030, 2), 'ARC-2030-02');
     });
 
-    test('le choix d\'exercice : défaut = ouvert le plus récent ; voisins absents aux bornes ; dates relatives depuis le dernier jour de l\'exercice consulté', () {
+    test('le choix d\'exercice : défaut = celui qui contient la date du jour (lot CLO-3), sinon l\'ouvert le plus récent ; voisins absents aux bornes ; dates relatives depuis le dernier jour de l\'exercice consulté', () {
       final exos = [
         {'annee': 2025, 'etat': 'clos', 'statut': 'actif', 'source': 'liasse'},
         {'annee': 2026, 'etat': 'ouvert', 'statut': 'actif'},
         {'annee': 2027, 'etat': 'ouvert', 'statut': 'actif'}
       ];
       final auj = DateTime(2026, 8, 16);
-      expect(cpcExerciceParDefaut(exos, auj), 2027);
-      expect(cpcExerciceParDefaut([exos.first], auj), 2025, reason: 'aucun ouvert : le plus récent tout court');
+      // Lot CLO-3 (Direction, 15/11/2026) : l'exercice proposé est celui de la date du jour (2026), plus « le plus récent ouvert » (2027, l'ancien défaut) ; le suivant reste choisissable.
+      expect(cpcExerciceParDefaut(exos, auj), 2026);
+      expect(cpcExerciceParDefaut(exos, DateTime(2028, 1, 5)), 2027, reason: 'aucun exercice ne contient la date : l\'ouvert le plus récent');
+      expect(cpcExerciceParDefaut([exos.first], auj), 2025, reason: 'aucun ne contient la date, aucun ouvert : le plus récent tout court');
       expect(cpcExerciceChoisi(exos, 2025, auj), 2025);
-      expect(cpcExerciceChoisi(exos, 1999, auj), 2027, reason: 'un choix inconnu retombe sur le défaut');
+      expect(cpcExerciceChoisi(exos, 1999, auj), 2026, reason: 'un choix inconnu retombe sur le défaut');
+      expect(cpcExerciceChoisi(exos, 2027, auj), 2027, reason: 'l\'exercice suivant reste choisissable');
       expect(cpcExerciceVoisin(exos, 2025, -1), isNull);
       expect(cpcExerciceVoisin(exos, 2025, 1), 2026);
       expect(cpcExerciceVoisin(exos, 2027, 1), isNull);
