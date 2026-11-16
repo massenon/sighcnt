@@ -26,9 +26,9 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
 const JEUX_IMPORT_NON_PORTES = [
 ];
 const FERMETURES_PROPRES_AU_POSTE = [
-  { id: 'MODP01', module: 'M12', ecran: 'm12-calendrier-fiscal', libelle: 'Calendrier fiscal mensuel' },
+  /* MODP01 (m12-calendrier-fiscal) : PORTÉ par le lot FISC-2 (16/11/2026), retiré d'ici ; les écrans SMS restent fermés (lot SMS-R). */
   { id: 'MODP02', module: 'M13', ecran: 'm13-sms-journal', libelle: 'Journal des envois SMS' },
-  { id: 'MODP03', module: 'CFG', ecran: 'cfg-bareme-aib', libelle: 'Barème de l’AIB' },
+  /* MODP03 (cfg-bareme-aib) : PORTÉ par le lot FISC-2 (16/11/2026), retiré d'ici. */
   { id: 'MODP04', module: 'CFG', ecran: 'cfg-sms', libelle: 'Passerelle SMS' },
   /* LOT IMP-C (12/11/2026) : les JEUX D'IMPORT que le poste ne porte pas encore. Leur page `imp-<jeu>` existe au manifeste et à la maquette ; sans jeu au registre du poste elle n'aurait
      aucun widget. Elle est fermée comme les quatre ci-dessus (activité fermée par écran, jamais par un nom de rôle) ; PORTER UN JEU, c'est retirer sa ligne ici ET dans

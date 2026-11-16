@@ -138,6 +138,18 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       mot('artefact tenu ailleurs, inchangé', 'valorisation_sage', 'admin', { prixRevient: 10 }, {}, { modifie: false });
       mot('fileul', 'modeles_badge', 'direction', fiche, { libelle: 'Modèle B' }, { fileul: true, motif: 'x' });
       out.motifs = motifs;
+      /* ---------- 4. les paramètres du calendrier fiscal, datés (délais d'alerte, montant de la CCIB) : D.delaisFiscauxALaDate, D.montantCcibALaDate ---------- */
+      const D = SIGH.data;
+      const colP = S.collection('parametresFiscaux');
+      const avantP = colP.all().map((x) => x.id);
+      out.parametresFiscaux = { depart: propre(colP.all()) };
+      const m1 = CF.modifierParametreFiscal({ code: 'DELAIS-ALERTE', valeurs: { delaiAPayer: 15, delaiDeclaration: 45 }, dateEffet: '2026-12-01', motif: 'Vecteur : délais allongés' });
+      const m2 = CF.modifierParametreFiscal({ code: 'CCIB-MONTANT', valeurs: { montantTotal: 400000 }, dateEffet: '2027-01-01', motif: 'Vecteur : CCIB révisée' });
+      out.parametresFiscaux.fiches = propre(colP.all());
+      out.parametresFiscaux.creees = [m1.ok, m2.ok];
+      out.parametresFiscaux.delais = ['2026-10-30', '2026-11-30', '2026-12-01', '2027-03-01'].map((d) => { const r = D.delaisFiscauxALaDate(d); return { date: d, delaiAPayer: r.delaiAPayer, delaiDeclaration: r.delaiDeclaration }; });
+      out.parametresFiscaux.ccib = ['2026-10-30', '2026-12-31', '2027-01-01', '2027-06-01'].map((d) => { const r = D.montantCcibALaDate(d); return { date: d, total: r.total, tranches: r.tranches, tranche: r.tranche }; });
+      colP.all().filter((x) => avantP.indexOf(x.id) < 0).forEach((x) => colP.archive(x.id, 'Vecteur : restauration'));
       out.situationsParFamille = { acheteur: B.situations().map((x) => x.code), retenue: B.situations('retenue_tiers').map((x) => x.code), tous: B.situations('tous').map((x) => x.code) };
       /* restitution : les imputations posées sont archivées */
       colI.all().forEach((x) => { if (x.statut !== 'archive') colI.archive(x.id, 'Vecteur : restauration'); });

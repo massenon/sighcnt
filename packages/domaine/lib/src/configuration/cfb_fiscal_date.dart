@@ -442,7 +442,8 @@ CfaFiche cfbFicheDepuisObligation(CfbObligation o, {String? id}) => {
       'part': o.part,
       'declaration': o.declaration,
       'note': o.note,
-      'source': cfbSourceObligations,
+      'aConfirmer': o.aConfirmer,
+      'source': o.aConfirmer ? o.source : cfbSourceObligations,
       'dateEffet': null,
       'modifieLe': null,
       'modifiePar': null,
@@ -479,6 +480,24 @@ CfaFiche cfbSemenceOrtbParametres() => {
       'valideLe': null,
       'validePar': null,
     };
+
+/// Lot FISC-2 (portage du versement CNSS, Direction du 09/11/2026 puis du 16/11/2026) : le VERSEMENT des cotisations CNSS (le 15) est une obligation DISTINCTE de la
+/// déclaration (le 10), « à confirmer par la CNSS », DERNIÈRE de la liste (`FIS20`) : les identifiants déjà posés ne se décalent pas. Le bouton « Confirmer » (geste
+/// réservé `confirmer_obligation_fiscale`) la fait passer à « confirmée » (`cfbConfirmerObligation`). Elle est ajoutée par le poste à une base qui ne la porte pas.
+const cfbObligationCnssVersement = CfbObligation(
+    'CNSS-VERSEMENT',
+    'Cotisations sociales CNSS, versement',
+    'mensuelle',
+    15,
+    null,
+    100,
+    null,
+    'Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.',
+    'Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).',
+    true);
+
+/// La fiche de la semence de cette obligation (`FIS20`) : à poser quand la base ne la porte pas (ni en vigueur, ni à l'historique).
+CfaFiche cfbFicheCnssVersement() => cfbFicheDepuisObligation(cfbObligationCnssVersement, id: 'FIS${(cfbCalendrierFiscal.length + 1).toString().padLeft(2, '0')}');
 
 /// `D.semenceObligations()` : les 19 obligations du calendrier confirmé, puis la fiche des paramètres ORTB.
 List<CfaFiche> cfbSemenceObligations() => [for (final o in cfbCalendrierFiscal) cfbFicheDepuisObligation(o), cfbSemenceOrtbParametres()];

@@ -1050,7 +1050,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z4gyzmpk",
+     "id": "IAIxmvux6z4ttdrrp",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1068,9 +1068,9 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "signeeLe": "2026-10-30T12:00:00.605Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.592Z"
+     "_creeLe": "2026-10-30T12:00:00.605Z"
     }
    ],
    "sortie": {
@@ -1096,7 +1096,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z4gyzmpk",
+     "id": "IAIxmvux6z4ttdrrp",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1114,9 +1114,9 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "signeeLe": "2026-10-30T12:00:00.605Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.592Z"
+     "_creeLe": "2026-10-30T12:00:00.605Z"
     }
    ],
    "sortie": {
@@ -1153,7 +1153,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z4gyzmpk",
+     "id": "IAIxmvux6z4ttdrrp",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1171,12 +1171,12 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "signeeLe": "2026-10-30T12:00:00.605Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.592Z"
+     "_creeLe": "2026-10-30T12:00:00.605Z"
     },
     {
-     "id": "IAIxmvux6z4h3b869",
+     "id": "IAIxmvux6z4vcqanr",
      "statut": "actif",
      "operation": "reglement_assureur",
      "reference": "REG-V-2",
@@ -1187,9 +1187,9 @@
      "motif": "Cet assureur n’applique pas l’AIB à ce règlement",
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.593Z",
+     "signeeLe": "2026-10-30T12:00:00.607Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.593Z"
+     "_creeLe": "2026-10-30T12:00:00.607Z"
     }
    ],
    "sortie": {
@@ -1232,7 +1232,7 @@
    },
    "existantes": [
     {
-     "id": "IAIxmvux6z4gyzmpk",
+     "id": "IAIxmvux6z4ttdrrp",
      "statut": "actif",
      "operation": "achat_fournisseur",
      "reference": "FF-V-1",
@@ -1250,12 +1250,12 @@
      "horsProposition": false,
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "signeeLe": "2026-10-30T12:00:00.605Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.592Z"
+     "_creeLe": "2026-10-30T12:00:00.605Z"
     },
     {
-     "id": "IAIxmvux6z4h3b869",
+     "id": "IAIxmvux6z4vcqanr",
      "statut": "actif",
      "operation": "reglement_assureur",
      "reference": "REG-V-2",
@@ -1266,12 +1266,12 @@
      "motif": "Cet assureur n’applique pas l’AIB à ce règlement",
      "signeePar": "Acteur comptable",
      "signeeRole": "Comptable",
-     "signeeLe": "2026-10-30T12:00:00.593Z",
+     "signeeLe": "2026-10-30T12:00:00.607Z",
      "_creePar": "Acteur comptable",
-     "_creeLe": "2026-10-30T12:00:00.593Z"
+     "_creeLe": "2026-10-30T12:00:00.607Z"
     },
     {
-     "id": "IAIxmvux6z4jql889",
+     "id": "IAIxmvux6z4wmazmn",
      "statut": "actif",
      "operation": "reglement_prescripteur",
      "reference": "HON-V-3",
@@ -1290,9 +1290,9 @@
      "motif": "Le prescripteur a négocié 4 %",
      "signeePar": "Acteur da",
      "signeeRole": "Directrice de l’Administration et des Finances (DAF)",
-     "signeeLe": "2026-10-30T12:00:00.595Z",
+     "signeeLe": "2026-10-30T12:00:00.608Z",
      "_creePar": "Acteur da",
-     "_creeLe": "2026-10-30T12:00:00.595Z"
+     "_creeLe": "2026-10-30T12:00:00.608Z"
     }
    ],
    "sortie": {
@@ -1581,6 +1581,154 @@
    }
   }
  ],
+ "parametresFiscaux": {
+  "depart": [
+   {
+    "id": "PFI-DELAIS",
+    "statut": "actif",
+    "code": "DELAIS-ALERTE",
+    "libelle": "Délais d’alerte du calendrier fiscal",
+    "delaiAPayer": 10,
+    "delaiDeclaration": 30,
+    "source": "Valeurs d’attente de la maquette (suivi des échéances, jusqu’ici écrites dans le code) : à confirmer par la Direction",
+    "aValider": true,
+    "dateEffet": null,
+    "motif": null,
+    "modifieLe": null,
+    "modifiePar": null
+   },
+   {
+    "id": "PFI-CCIB",
+    "statut": "actif",
+    "code": "CCIB-MONTANT",
+    "libelle": "Montant annuel de la CCIB",
+    "montantTotal": 300000,
+    "tranches": 2,
+    "source": "Montant à confirmer par le cabinet comptable",
+    "aValider": true,
+    "dateEffet": null,
+    "motif": null,
+    "modifieLe": null,
+    "modifiePar": null
+   }
+  ],
+  "fiches": [
+   {
+    "id": "PFIxmvux6z53wvl4a",
+    "statut": "actif",
+    "type": "parametre",
+    "code": "CCIB-MONTANT",
+    "libelle": "Montant annuel de la CCIB",
+    "tranches": 2,
+    "source": "Saisie à l’écran (cfg-comptabilite)",
+    "aValider": false,
+    "dateEffet": "2027-01-01",
+    "modifieLe": "2026-10-30T12:00:00.615Z",
+    "modifiePar": "Admin Vecteur",
+    "motif": "Vecteur : CCIB révisée",
+    "montantTotal": 400000,
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.615Z"
+   },
+   {
+    "id": "PFIxmvux6z53dwuqo",
+    "statut": "actif",
+    "type": "parametre",
+    "code": "DELAIS-ALERTE",
+    "libelle": "Délais d’alerte du calendrier fiscal",
+    "source": "Saisie à l’écran (cfg-comptabilite)",
+    "aValider": false,
+    "dateEffet": "2026-12-01",
+    "modifieLe": "2026-10-30T12:00:00.615Z",
+    "modifiePar": "Admin Vecteur",
+    "motif": "Vecteur : délais allongés",
+    "delaiAPayer": 15,
+    "delaiDeclaration": 45,
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.615Z"
+   },
+   {
+    "id": "PFI-DELAIS",
+    "statut": "actif",
+    "code": "DELAIS-ALERTE",
+    "libelle": "Délais d’alerte du calendrier fiscal",
+    "delaiAPayer": 10,
+    "delaiDeclaration": 30,
+    "source": "Valeurs d’attente de la maquette (suivi des échéances, jusqu’ici écrites dans le code) : à confirmer par la Direction",
+    "aValider": true,
+    "dateEffet": null,
+    "motif": null,
+    "modifieLe": null,
+    "modifiePar": null
+   },
+   {
+    "id": "PFI-CCIB",
+    "statut": "actif",
+    "code": "CCIB-MONTANT",
+    "libelle": "Montant annuel de la CCIB",
+    "montantTotal": 300000,
+    "tranches": 2,
+    "source": "Montant à confirmer par le cabinet comptable",
+    "aValider": true,
+    "dateEffet": null,
+    "motif": null,
+    "modifieLe": null,
+    "modifiePar": null
+   }
+  ],
+  "creees": [
+   true,
+   true
+  ],
+  "delais": [
+   {
+    "date": "2026-10-30",
+    "delaiAPayer": 10,
+    "delaiDeclaration": 30
+   },
+   {
+    "date": "2026-11-30",
+    "delaiAPayer": 10,
+    "delaiDeclaration": 30
+   },
+   {
+    "date": "2026-12-01",
+    "delaiAPayer": 15,
+    "delaiDeclaration": 45
+   },
+   {
+    "date": "2027-03-01",
+    "delaiAPayer": 15,
+    "delaiDeclaration": 45
+   }
+  ],
+  "ccib": [
+   {
+    "date": "2026-10-30",
+    "total": 300000,
+    "tranches": 2,
+    "tranche": 150000
+   },
+   {
+    "date": "2026-12-31",
+    "total": 300000,
+    "tranches": 2,
+    "tranche": 150000
+   },
+   {
+    "date": "2027-01-01",
+    "total": 400000,
+    "tranches": 2,
+    "tranche": 200000
+   },
+   {
+    "date": "2027-06-01",
+    "total": 400000,
+    "tranches": 2,
+    "tranche": 200000
+   }
+  ]
+ },
  "situationsParFamille": {
   "acheteur": [
    "ifu_actif",

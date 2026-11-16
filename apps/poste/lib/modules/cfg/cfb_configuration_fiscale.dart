@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
@@ -46,7 +48,24 @@ class ConfigurationFiscalePoste {
         o.ajouterSansJournal(f);
       }
     }
-    m.collection('historiqueObligations');
+    final h = m.collection('historiqueObligations');
+    // Lot FISC-2 : le versement CNSS (le 15, « à confirmer par la CNSS ») s'ajoute à une base qui ne le porte pas (jamais en doublon, ni s'il est à l'historique).
+    if (![...o.toutes, ...h.toutes].any((f) => f['code'] == 'CNSS-VERSEMENT')) {
+      // DIFFÉRÉ après la construction : `amorcer` s'appelle en pleine phase de build, et la notification d'une collection réveille le centre de notifications.
+      scheduleMicrotask(() {
+        if ([...o.toutes, ...h.toutes].any((f) => f['code'] == 'CNSS-VERSEMENT')) return;
+        final cnss = cfbFicheCnssVersement();
+        o.ajouterSansJournal(cnss);
+        // Les échéances déjà engendrées pour les exercices du poste n'ont pas celles de ce versement : elles s'ajoutent (sans quittance inventée), une fois, sous un identifiant propre.
+        final ech = m.collection('echeancesFiscales');
+        final exercices = {for (final e in ech.toutes) nombreOuZero(e['exercice']).toInt()}..remove(0);
+        for (final ex in exercices) {
+          for (final f in cfbGenEcheances(ex, obligations: [cnss], sansReglement: true)) {
+            ech.ajouterSansJournal({...f, 'id': 'ECH-CNSS-VERSEMENT-${f['echeanceTheorique']}'});
+          }
+        }
+      });
+    }
   }
 
   // --- Identité ----------------------------------------------------------------------------------------------------------------------------------

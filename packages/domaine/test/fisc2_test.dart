@@ -90,6 +90,32 @@ void main() {
     }
   });
 
+  group('les paramètres du calendrier fiscal, datés (délais d’alerte, montant de la CCIB)', () {
+    final pf = obj(v['parametresFiscaux']);
+    test('la semence est celle de la maquette (10 et 30 jours, 300 000 FCFA en deux tranches), « à valider »', () {
+      expect(jsonEncode(cfbSemenceParametresFiscaux()), jsonEncode(pf['depart']));
+    });
+    final fiches = liste(pf['fiches']);
+    for (final c in liste(pf['delais'])) {
+      test('délais d’alerte au ${c['date']}', () {
+        final r = cfbDelaisFiscauxALaDate(fiches, '${c['date']}');
+        expect([r.delaiAPayer, r.delaiDeclaration], [c['delaiAPayer'], c['delaiDeclaration']]);
+      });
+    }
+    for (final c in liste(pf['ccib'])) {
+      test('CCIB au ${c['date']}', () {
+        final r = cfbMontantCcibALaDate(fiches, '${c['date']}');
+        expect([r.total, r.tranches, r.tranche], [c['total'], c['tranches'], c['tranche']]);
+      });
+    }
+    test('sans fiche, la semence répond ; le seuil « à payer » du suivi suit le paramètre à la date', () {
+      expect(cfbDelaisFiscauxALaDate(const [], '2026-10-30').delaiAPayer, 10);
+      final e = {'echeance': '2026-11-20', 'paye': false, 'declaration': null};
+      expect(cpcCalculerEtat(e, DateTime(2026, 11, 8)), 'a_venir');
+      expect(cpcCalculerEtat(e, DateTime(2026, 11, 8), delaiAPayer: 15), 'a_payer', reason: 'un délai plus long classe l’échéance plus tôt');
+    });
+  });
+
   final d = AibDonnees(
     situations: liste(v['situations']),
     bareme: liste(v['bareme']),
