@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../core/donnees_navigation.dart';
 import '../core/service_parametres.dart';
 import '../donnees/magasin.dart';
+import '../modules/m2/cs_commun.dart' show StockMagasin;
 import 'recherche_globale.dart' show ecranOuvertAuRole;
 
 /// Le MOTEUR DE NOTIFICATIONS du poste (`SIGH.notifications` de la maquette, `notifications.js`). Il AFFICHE, il ne DÉCIDE pas : chaque source lit ce que
@@ -116,6 +117,7 @@ const _libellesGroupe = <String, (String, String)>{
   'a_valider_ecritures': ('pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'),
   'pair_conflits': ('champ(s) modifié(s) en même temps sur deux postes', 'Deux valeurs coexistent, la plus récente est retenue provisoirement : la personne habilitée tranche.'),
   'poste': ('notification(s) de poste', 'À consulter dans les écrans concernés.'),
+  'prix_manquant': ('prestation(s) sans prix attendue(s) à la caisse', 'Poser le prix (« Tarifs et prix » ou « Changer le prix d’achat ») : les pièces en attente se valorisent à leur date.'),
 };
 
 bool _v(Object? x) => !(x == null || x == false || x == '' || (x is num && x == 0));
@@ -124,10 +126,13 @@ num? _num(Object? x) => x is num ? x : (x is String ? num.tryParse(x) : null);
 String _entier(num x) => x == x.roundToDouble() ? '${x.toInt()}' : '$x';
 
 class _Ligne {
-  const _Ligne(this.cle, this.priorite, this.titre, this.detail, this.lien, this.postes);
+  const _Ligne(this.cle, this.priorite, this.titre, this.detail, this.lien, this.postes, {this.ecranAEditer});
   final String cle, priorite, titre, detail;
   final String? lien;
   final List<String>? postes;
+
+  /// LOT TARIF-FIX-2 : l'alerte ne va qu'aux rôles qui peuvent MODIFIER cet écran, lu dans la fiche RBAC (jamais un nom de rôle).
+  final String? ecranAEditer;
 }
 
 class _Source {
@@ -137,6 +142,37 @@ class _Source {
 }
 
 final List<_Source> _sources = [
+  // LOT TARIF-FIX-2 (Direction, 16/11/2026) : une prescription acceptée avec une ligne SANS PRIX attend ce prix à la caisse. UNE alerte PAR CODE (jamais une par
+  // prescription), DÉRIVÉE : elle retombe d'elle-même dès qu'un prix est en vigueur à la date des pièces. Routée vers les rôles qui peuvent MODIFIER « Tarifs et prix »
+  // (acte, analyse, imagerie) ou « Référentiel produits » (prix d'achat), lus dans la fiche RBAC. Aucune donnée de santé : code, libellé, nombre de pièces.
+  _Source('prix_manquant', 'metier', 'Tarifs', (m, auj) {
+    final s = StockMagasin(m, () => auj);
+    final parCle = <String, ({Map<String, Object?> manque, Set<String> pieces})>{};
+    for (final f in m.collection('factures').actives) {
+      if (f['statutPaiement'] == 'soldee') continue;
+      for (final l in lignesPrixManquant(f)) {
+        final r = csPrixLigneEnAttente(s, f, l);
+        if (r.ok) continue;
+        final cle = '${r.manque!['nature']}:${r.manque!['code']}';
+        (parCle[cle] ??= (manque: r.manque!, pieces: <String>{})).pieces.add('${f['numero']}');
+      }
+    }
+    final cles = parCle.keys.toList()..sort();
+    return [
+      for (final k in cles)
+        () {
+          final x = parCle[k]!, achat = x.manque['nature'] == natureManquePrixAchat;
+          return _Ligne(
+              'prix:$k',
+              'important',
+              '${achat ? 'Prix à valoriser' : 'Prix à définir'} : « ${x.manque['code']} » ${x.manque['libelle']}',
+              '${nombre(x.pieces.length)} pièce(s) en attente à la caisse. ${x.manque['geste']}',
+              achat ? 'm6-produits' : 'cfg-tarifs',
+              null,
+              ecranAEditer: achat ? 'm6-produits' : 'cfg-tarifs');
+        }()
+    ];
+  }),
   _Source('stock_seuil', 'metier', 'Stock', (m, auj) => [
         for (final p in m.collection('produits').actives)
           if (p['seuilAlerte'] != null && (_num(p['stock']) ?? 0) <= (_num(p['seuilAlerte']) ?? 0))
@@ -411,6 +447,7 @@ class CentreNotifications extends ChangeNotifier {
 
   bool _pourMoi(_Ligne n, String r, DonneesNavigation nav) {
     if (n.postes != null && !n.postes!.contains(r)) return false;
+    if (n.ecranAEditer != null && !nav.matrice.droit(r, n.ecranAEditer!).editer) return false;
     if (n.lien != null) {
       final e = nav.manifeste.ecran(n.lien!);
       if (e != null && !ecranOuvertAuRole(nav, r, e.id)) return false;

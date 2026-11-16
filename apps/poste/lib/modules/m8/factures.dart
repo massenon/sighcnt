@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/parcours_caisse.dart' show titreSansPrix;
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun.dart';
@@ -82,12 +83,22 @@ final colDate = ColonneTableau(
     texte: (f) => _date(f['date']),
     valeur: (f) => f['date']);
 
+/// LOT TARIF-FIX-2 : à la place d'une commande « Encaisser » ABSENTE, le motif du refus (code, motif, geste) que le moteur opposerait.
+Widget motifSansPrix(({String code, String motif, String geste, List<Map<String, Object?>> lignes, bool partiel}) refus) => Tooltip(
+    message: '${refus.motif} ${refus.geste}',
+    child: Row(mainAxisSize: MainAxisSize.min, children: [
+      const Icon(LucideIcons.triangleAlert, size: 14, color: JetonsShell.warning700),
+      const SizedBox(width: 4),
+      Flexible(child: Text(titreSansPrix(refus), key: ValueKey('empechement-${refus.code}'), style: const TextStyle(fontSize: 12, color: JetonsShell.warning700))),
+    ]));
+
+// LOT TARIF-FIX-2 : une pièce en attente de prix a un total NON CALCULABLE (nul), jamais 0.
 final colMontant = ColonneTableau(
   cle: 'montantTTC',
   libelle: 'Montant',
   droite: true,
-  texte: (f) => _m(f['montantTTC']),
-  rendu: (_, f) => Text(_m(f['montantTTC']),
+  texte: (f) => f['enAttentePrix'] == true ? 'Non calculable' : _m(f['montantTTC']),
+  rendu: (_, f) => Text(f['enAttentePrix'] == true ? 'Non calculable : prix à définir' : _m(f['montantTTC']),
       style: const TextStyle(
           color: JetonsShell.slate700,
           fontSize: 14,
@@ -100,8 +111,10 @@ final colReliquat = ColonneTableau(
   cle: 'reliquat',
   libelle: 'Reste dû',
   droite: true,
-  texte: (f) => _m(f['reliquat']),
-  rendu: (_, f) => _n(f['reliquat']) > 0
+  texte: (f) => f['enAttentePrix'] == true ? 'Non calculable' : _m(f['reliquat']),
+  rendu: (_, f) => f['enAttentePrix'] == true
+      ? const Text('Non calculable', style: TextStyle(color: JetonsShell.warning700, fontSize: 12, fontWeight: FontWeight.w500))
+      : _n(f['reliquat']) > 0
       ? Text(_m(f['reliquat']),
           style: const TextStyle(
               color: JetonsShell.danger600,

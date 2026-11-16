@@ -540,6 +540,8 @@ class _EtatOrdonnanceNouvelle extends State<EcranOrdonnanceNouvelle> {
       if (res.demandes.isNotEmpty) '${res.demandes.length} demande(s) au laboratoire',
       if (med.isNotEmpty) 'pharmacie informée',
       'facture ${res.facture['numero']} en attente à la caisse',
+      // LOT TARIF-FIX-2 : la prescription passe toujours ; une ligne sans prix se DIT (la caisse attend le prix).
+      if (messageSansPrix(res.sansPrix) != null) messageSansPrix(res.sansPrix)!,
     ];
     ToastsSigh.afficher(context, 'Ordonnance ${res.ordonnance['numero']} transmise.',
         type: TypeToast.succes, detail: envois.join(' · '), duree: const Duration(seconds: 9));

@@ -1,8 +1,49 @@
 import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' as d;
 
+import '../core/service_parametres.dart';
+import '../modules/m2/cs_commun.dart' show StockMagasin;
 import 'magasin.dart';
 import 'normalisation_mecef.dart';
+
+/// LOT TARIF-FIX-2 : le réglage de clinique « encaisser le reste d'une pièce en attente de prix » à la date du geste (paramètre versionné, défaut semé « non »).
+bool encaissementPartielPoste(Magasin m, DateTime maintenant) =>
+    serviceParametres(m, auteur: () => m.utilisateur, horloge: () => maintenant).valeur(d.cleEncaissementPartielSansPrix, d.iso(maintenant)) == 'oui';
+
+/// VALORISE les lignes sans prix d'une pièce dont le prix est désormais en vigueur à SA date (moteur du domaine `csValoriserFacture`). Rend les lignes valorisées.
+List<Map<String, Object?>> valoriserFacturePoste(Magasin m, String factureId, DateTime maintenant) =>
+    d.csValoriserFacture(StockMagasin(m, () => maintenant), factureId).valorisees;
+
+/// Valorise toutes les pièces en attente (ouverture de la caisse, décision d'un prix). Rend le nombre de lignes valorisées.
+int valoriserEnAttentePoste(Magasin m, DateTime maintenant) {
+  var n = 0;
+  for (final f in [...m.collection('factures').actives]) {
+    if (f['statutPaiement'] == 'soldee' || d.lignesPrixManquant(f).isEmpty) continue;
+    n += valoriserFacturePoste(m, '${f['id']}', maintenant).length;
+  }
+  return n;
+}
+
+/// Le titre court dit à la place d'une commande « Encaisser » absente : « En attente de prix : « CODE » prix à définir, … ».
+String titreSansPrix(({String code, String motif, String geste, List<Map<String, Object?>> lignes, bool partiel}) refus) =>
+    'En attente de prix : ${refus.lignes.map((x) => '« ${x['code']} » ${x['nature'] == d.natureManquePrixAchat ? 'prix à valoriser' : 'prix à définir'}').join(', ')}';
+
+/// L'ÉTAT DE CAISSE d'une pièce pour l'écran : `refus` non nul quand l'encaissement serait refusé (la commande est alors ABSENTE, le motif est dit à sa place).
+({bool encaissable, bool partiel, List<Map<String, Object?>> manques, ({String code, String motif, String geste, List<Map<String, Object?>> lignes, bool partiel})? refus})
+    etatCaissePrix(Magasin m, Fiche facture, DateTime maintenant) {
+  final enAttente = d.lignesPrixManquant(facture);
+  if (enAttente.isEmpty) return (encaissable: true, partiel: false, manques: const [], refus: null);
+  final stock = StockMagasin(m, () => maintenant);
+  final manques = [
+    for (final l in enAttente)
+      if (d.csPrixLigneEnAttente(stock, facture, l) case final r when !r.ok) r.manque!
+  ];
+  if (manques.isEmpty) return (encaissable: true, partiel: false, manques: const [], refus: null);
+  final partiel = encaissementPartielPoste(m, maintenant);
+  final reste = ((facture['lignes'] as List?) ?? const []).any((x) => !d.ligneSansPrix((x as Map).cast<String, Object?>()) && x['statutPaiement'] != 'paye');
+  final refus = d.refusEncaissementPrix(facture, manques, partiel, aujourdhui: d.iso(maintenant));
+  return (encaissable: partiel && reste, partiel: partiel, manques: manques, refus: refus);
+}
 
 /// Refus NOMMÉ d'une opération de caisse : un code, un motif lisible (jamais un échec muet).
 class RefusCaisse implements Exception {
@@ -61,9 +102,14 @@ ResultatCaisse encaisserFacture(
   /// La fenêtre « Facture normalisée » : `ifu`, `nom`, `aibTaux`. Contrôlée AVANT toute écriture (E2299).
   Map<String, Object?>? acheteur,
 }) {
-  final fac = m.collection('factures').parId(factureId);
+  var fac = m.collection('factures').parId(factureId);
   if (fac == null)
     throw const RefusCaisse('FACTURE_INTROUVABLE', 'Facture introuvable.');
+  // LOT TARIF-FIX-2 : une ligne sans prix se VALORISE d'abord (prix en vigueur à la date de la pièce) ; ce qui reste sans prix est refusé par le domaine, nommé.
+  if (d.lignesPrixManquant(fac).isNotEmpty) {
+    valoriserFacturePoste(m, factureId, maintenant);
+    fac = m.collection('factures').parId(factureId)!;
+  }
   final aujourdhui = d.iso(maintenant);
   final r = d.encaisser(
     fac,
@@ -75,6 +121,7 @@ ResultatCaisse encaisserFacture(
     utilisateur: m.utilisateur,
     ecritures: m.collection('ecritures').actives,
     acheteur: acheteur,
+    encaissementPartiel: encaissementPartielPoste(m, maintenant),
   );
   // E2 (corrigé le 31/10/2026) : un versement au-delà du dû d'une pièce sans lignes est REFUSÉ en nommant le défaut ; rien n'est écrit.
   if (r.refus != null) {

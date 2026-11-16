@@ -32,7 +32,11 @@ class FileAttenteSigh extends StatelessWidget {
     this.icone = LucideIcons.check,
     this.action = 'Traiter',
     required this.surAction,
+    this.empechement,
   });
+
+  /// LOT TARIF-FIX-2 : une action que le moteur REFUSERAIT (pièce en attente de prix) est ABSENTE, et son motif est dit à sa place (code, motif, geste).
+  final ({String code, String titre, String motif, String geste})? Function(Fiche tache)? empechement;
 
   final String type;
   final String titre;
@@ -127,7 +131,8 @@ class FileAttenteSigh extends StatelessWidget {
                   cle: 'montant',
                   libelle: 'Montant',
                   droite: true,
-                  texte: (r) => money(r['montant'] ?? 0, avecDevise: false)),
+                  // LOT TARIF-FIX-2 : un montant NUL (ligne sans prix) est « Non calculable », jamais 0.
+                  texte: (r) => r.containsKey('montant') && r['montant'] == null ? 'Non calculable' : money(r['montant'] ?? 0, avecDevise: false)),
               ColonneTableau(
                   cle: 'statut',
                   libelle: 'État',
@@ -160,6 +165,21 @@ class FileAttenteSigh extends StatelessWidget {
                       onPressed: () => ToastsSigh.afficher(ctx,
                           'Votre profil consulte cette file sans pouvoir la traiter.',
                           type: TypeToast.attention))
+                ];
+              }
+              final emp = empechement?.call(r);
+              if (emp != null) {
+                return [
+                  Tooltip(
+                      message: '${emp.motif} ${emp.geste}',
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const Icon(LucideIcons.triangleAlert, size: 14, color: JetonsShell.warning700),
+                        const SizedBox(width: 4),
+                        Flexible(
+                            child: Text(emp.titre,
+                                key: ValueKey('empechement-${emp.code}'),
+                                style: const TextStyle(fontSize: 12, color: JetonsShell.warning700))),
+                      ]))
                 ];
               }
               return [

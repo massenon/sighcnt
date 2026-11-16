@@ -124,7 +124,15 @@ class _EcranCaisseState extends State<EcranCaisse> {
                   vide: 'Aucune prescription en attente de règlement.',
                   icone: LucideIcons.coins,
                   action: 'Encaisser',
-                  surAction: (ctx, t) => _encaisser(ctx, t)),
+                  surAction: (ctx, t) => _encaisser(ctx, t),
+                  // LOT TARIF-FIX-2 : une pièce qui attend un prix n'a PAS de commande « Encaisser » (le moteur la refuserait) ; le motif est dit à sa place.
+                  empechement: (t) {
+                    final fac = t['factureId'] == null ? null : c.magasin.collection('factures').parId(t['factureId']);
+                    if (fac == null) return null;
+                    final ep = etatCaissePrix(c.magasin, fac, c.aujourdhui);
+                    if (ep.encaissable) return null;
+                    return (code: ep.refus!.code, titre: titreSansPrix(ep.refus!), motif: ep.refus!.motif, geste: ep.refus!.geste);
+                  }),
               const SizedBox(height: 16),
               CarteSigh(
                   child: Row(
@@ -215,7 +223,7 @@ class _EcranCaisseState extends State<EcranCaisse> {
                           libelle: 'Réimprimer le reçu détaillé',
                           onPressed: () => imprimerRecu(ctx, r)),
                       // Reprendre l'encaissement : la demande exacte de la Direction pour le patient qui revient.
-                      if (n(r['reliquat']) > 0 && c.droit.editer)
+                      if (n(r['reliquat']) > 0 && c.droit.editer && etatCaissePrix(c.magasin, r, c.aujourdhui).encaissable)
                         BoutonSigh(
                             libelle: 'Encaisser le reste',
                             icone: LucideIcons.coins,
@@ -390,6 +398,9 @@ class _EcranCaisseState extends State<EcranCaisse> {
   void _encaisser(BuildContext ctx, Fiche tache) {
     final c = ContexteEcran.of(ctx);
     final col = c.magasin.collection('factures');
+    // LOT TARIF-FIX-2 : une ligne dont le prix est désormais en vigueur à la date de la pièce se valorise AVANT d'ouvrir l'encaissement.
+    final f0 = col.parId(tache['factureId']);
+    if (f0 != null && lignesPrixManquant(f0).isNotEmpty) valoriserFacturePoste(c.magasin, '${f0['id']}', c.aujourdhui);
     final fac = col.parId(tache['factureId']);
     if (fac == null) {
       ToastsSigh.afficher(ctx, 'Facture introuvable.', type: TypeToast.erreur);
@@ -399,9 +410,10 @@ class _EcranCaisseState extends State<EcranCaisse> {
       for (final l in (fac['lignes'] as List? ?? const []))
         (l as Map).cast<String, Object?>()
     ];
+    // LOT TARIF-FIX-2 : une ligne sans prix (encaissement du reste réglé par la clinique) ne se coche pas : elle ne s'encaisse jamais.
     final lignes = [
       for (final l in toutes)
-        if (l['statutPaiement'] != 'paye') l
+        if (l['statutPaiement'] != 'paye' && !ligneSansPrix(l)) l
     ];
     final deja = [
       for (final l in toutes)
