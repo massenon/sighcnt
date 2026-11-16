@@ -197,7 +197,7 @@ class _EtatFiscalite extends State<EcranFiscalite> {
                   ColonneMini('Format', (x) => '${x['format']}'),
                   ColonneMini('Séquence', (x) => '${x['sequence']}'),
                 ], lignes: [
-                  for (final n in cfbNumerotation) {'type': n.$1, 'prefixe': n.$2, 'format': n.$3, 'sequence': n.$4}
+                  for (final n in cfbNumerotation(c.aujourdhui.year)) {'type': n.$1, 'prefixe': n.$2, 'format': n.$3, 'sequence': n.$4}
                 ])),
             CarteSigh(
                 titre: 'Obligations déclaratives (dérivées des obligations en vigueur)',

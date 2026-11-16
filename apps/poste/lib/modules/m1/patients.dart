@@ -257,7 +257,7 @@ class EcranPatients extends StatelessWidget with EcranMaquette {
             bandeauLectureSeule(c),
             KpiGrilleSigh(kpis: [
               KpiSigh(libelle: 'Dossiers actifs', valeur: nombre(k.actifs), icone: LucideIcons.users),
-              KpiSigh(libelle: 'Créés en 2026', valeur: nombre(k.crees2026), icone: LucideIcons.userPlus, ton: TonSigh.succes),
+              KpiSigh(libelle: 'Créés en ${c.aujourdhui.year}', valeur: nombre(k.creesExercice), icone: LucideIcons.userPlus, ton: TonSigh.succes),
               KpiSigh(
                   libelle: 'Patients assurés',
                   valeur: nombre(k.assures),

@@ -228,7 +228,7 @@ class EcranReunions extends StatelessWidget with EcranMaquette {
     final col = c.magasin.collection('reunions');
     Fiche fiche(BuildContext ctx, Fiche v, Fiche? e) {
       // E531 : série du registre (archivés compris), gardée à la modification.
-      v['reference'] = e?['reference'] ?? admReferenceSuivante('RU-2026-', 3, col.toutes);
+      v['reference'] = e?['reference'] ?? referenceAnnuelle('RU-', v['date'], 3, col.toutes, maintenant: c.aujourdhui);
       v['participants'] = admNombre(v['participants']);
       v['heure'] = admHeure(v['heure']);
       return matSansNuls(v);
@@ -335,7 +335,7 @@ class EcranAmbulance extends StatelessWidget with EcranMaquette {
       v['kilometrage'] = admNombre(v['kilometrage']);
       v['tarif'] = _entier(admTarifAmbulance(v['tarif'], v['kilometrage']));
       // E534 : série du registre (archivés compris), gardée à la modification.
-      v['reference'] = e?['reference'] ?? admReferenceSuivante('AM-2026-', 4, col.toutes);
+      v['reference'] = e?['reference'] ?? referenceAnnuelle('AM-', v['dateHeure'], 4, col.toutes, maintenant: c.aujourdhui);
       return matSansNuls(v);
     }
 

@@ -219,9 +219,9 @@ class _EcranPlanAnnuelState extends State<EcranPlanAnnuel> {
 
   void _imprimer(BuildContext ctx, ContexteEcran c, List<Fiche> rows) => matImprimer(ctx,
       titre: 'Plan annuel de travail',
-      sousTitre: 'Exercice 2026',
+      sousTitre: 'Exercice ${c.aujourdhui.year}',
       cartouche: [
-        ('Exercice', '2026'),
+        ('Exercice', '${c.aujourdhui.year}'),
         ('Actions programmées', nombre(rows.length)),
         ('Réalisées', nombre(rows.where((r) => r['avancement'] == 'Réalisée').length)),
         ('Date d’édition', dateFR(c.aujourdhui)),
@@ -304,7 +304,7 @@ class _EcranPlanAnnuelState extends State<EcranPlanAnnuel> {
             admKpis(admKpisPlan(rows)),
             const SizedBox(height: 16),
             CarteSigh(
-                titre: 'Plan annuel de travail 2026',
+                titre: 'Plan annuel de travail ${c.aujourdhui.year}',
                 sansRemplissage: true,
                 actions: [BoutonSigh(libelle: 'Imprimer le plan', icone: LucideIcons.printer, taille: TailleBouton.sm, variante: VarianteBouton.secondaire, onPressed: () => _imprimer(context, c, rows))],
                 child: _gantt(rows)),

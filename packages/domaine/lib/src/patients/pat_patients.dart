@@ -142,9 +142,10 @@ bool patCarteValide(FichePat p, Iterable<FichePat> couvertures, DateTime mainten
     carteValide(p, [for (final c in couvertures) c], iso(maintenant));
 
 class PatKpisRepertoire {
-  const PatKpisRepertoire(this.actifs, this.crees2026, this.assures, this.expirees, this.partAssures);
+  const PatKpisRepertoire(this.actifs, this.creesExercice, this.assures, this.expirees, this.partAssures);
   final int actifs;
-  final int crees2026;
+  /// Les dossiers créés pendant l'EXERCICE DU JOUR (l'année de `maintenant`, lot MIL) : l'intitulé « Créés en AAAA » le dit.
+  final int creesExercice;
   final int assures;
   final int expirees;
 
@@ -155,10 +156,10 @@ class PatKpisRepertoire {
 PatKpisRepertoire patKpisRepertoire(List<FichePat> rows, Iterable<FichePat> couvertures, DateTime maintenant) {
   final assures = rows.where((p) => patVrai(p['assureur'])).toList();
   final expirees = assures.where((p) => !patCarteValide(p, couvertures, maintenant)).length;
-  // « Créés en 2026 » : l'intitulé est statique dans la maquette (l'année du jeu), pas l'année courante.
+  // « Créés en AAAA » : l'exercice du jour (lot MIL), jamais une année écrite.
   final annee = rows.where((p) {
     final d = DateTime.tryParse('${p['dateCreation'] ?? ''}');
-    return d != null && d.year == 2026;
+    return d != null && d.year == maintenant.year;
   }).length;
   return PatKpisRepertoire(rows.length, annee, assures.length, expirees,
       pourcent(rows.isNotEmpty ? assures.length / rows.length * 100 : 0));

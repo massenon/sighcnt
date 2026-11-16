@@ -53,6 +53,15 @@ void main() {
   });
 
   group('m11-calcul', () {
+    // Lot MIL (16/11/2026) : l'exercice de paie est celui du jour, plus 2026 écrit en dur.
+    cas('exercice du jour : au 01/01/2027 le calcul s\'ouvre sur 2027, au 31/12/2026 sur 2026', (t) async {
+      await ouvrir(t, magasin(), 'm11-calcul', le: DateTime(2027, 1, 1, 10));
+      expect(find.text('Détail du calcul — janvier 2027'), findsOneWidget);
+      expect(find.text('Détail du calcul — janvier 2026'), findsNothing);
+      await ouvrir(t, magasin(), 'm11-calcul', le: DateTime(2026, 12, 31, 10));
+      expect(find.text('Détail du calcul — décembre 2026'), findsOneWidget);
+    });
+
     cas('octobre : KPI, pied et première page du tableau = écran réel', (t) async {
       await ouvrir(t, magasin(), 'm11-calcul');
       final c = mm(mois(9)['calcul']);

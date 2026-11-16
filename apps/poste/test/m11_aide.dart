@@ -8,6 +8,7 @@ import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' show nombreOuZero;
 import 'package:sigh_poste/main.dart';
+import 'package:sigh_poste/modules/m11/pai_commun.dart' show paiHorloge;
 
 /// Aides communes des tests de M11 (paie). L'horloge du poste est posée au 30/10/2026 10 h — celle du pilote des vecteurs (`vecteurs-paie.js`) : les
 /// anciennetés (`Math.floor(jours / 365,25)`), le mois courant des écrans et les valeurs lues sur l'écran RÉEL de la maquette en dépendent.
@@ -31,6 +32,7 @@ Future<void> ouvrir(WidgetTester t, Magasin m, String ecran, {String role = 'adm
   t.view.physicalSize = const Size(1600, 1100);
   t.view.devicePixelRatio = 1;
   addTearDown(t.view.resetPhysicalSize);
+  paiHorloge = () => le ?? aujourdhui;   // lot MIL : l'exercice de paie suit l'horloge du poste, ici posée au 30/10/2026
   await t.pumpWidget(SighPoste(
       key: UniqueKey(),
       donnees: nav ?? donnees,

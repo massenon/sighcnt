@@ -133,13 +133,13 @@ class EcranObservation extends StatelessWidget with EcranMaquette {
     ];
   }
 
-  /// La fiche d'observation enregistrée à l'admission (`colObs().insert`) ; `reference` : « OBS-2026- » + rang (le millésime est celui de la maquette, E373).
-  static Fiche construireObservation(Map<String, Object?> v, Magasin m, int rang) {
+  /// La fiche d'observation enregistrée à l'admission (`colObs().insert`) ; `reference` : `OBS-AAAA-NNNN` de la fabrique unique (lot MIL : année de la date du jour, compteur par année).
+  static Fiche construireObservation(Map<String, Object?> v, Magasin m, String reference) {
     final p = _patient(m, v['patientCode'])!;
     final u = hosUnitesObservation.firstWhere((x) => x.id == v['unite'], orElse: () => HosUnite('${v['unite']}', '${v['unite']}', 0));
     final entree = versHorodatage(v['dateEntree'], v['heureEntree'])!;
     return {
-      'reference': 'OBS-2026-${rang.toString().padLeft(4, '0')}',
+      'reference': reference,
       'patientId': p['id'],
       'patient': '${p['nom']} ${p['prenom']}',
       'patientCode': p['code'],
@@ -182,7 +182,7 @@ class EcranObservation extends StatelessWidget with EcranMaquette {
                     final v = ctl.valider();
                     if (v == null) return;
                     fermer();
-                    final fiche = construireObservation(v, c.magasin, col.toutes.length + 1);
+                    final fiche = construireObservation(v, c.magasin, referenceAnnuelle('OBS-', c.aujourdhui, 4, col.toutes, maintenant: c.aujourdhui));
                     final r = col.inserer({
                       'statut': 'actif',
                       ...fiche,

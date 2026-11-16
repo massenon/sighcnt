@@ -332,7 +332,7 @@ class EcranCertificats extends StatelessWidget with EcranMaquette {
                       for (final e in v.entries) e.key: cfaChampsCertificat[e.key]?.type == 'nombre' ? cfaNombre(e.value) : e.value,
                     };
                     fiche['type'] = t.id;
-                    fiche['numero'] = cfaNumeroCertificat(col.toutes.length);
+                    fiche['numero'] = cfaNumeroCertificat(col.toutes, c.aujourdhui);
                     fiche['patientId'] = p?['id'];
                     fiche['patient'] = p != null ? '${p['nom']} ${p['prenom']}' : '—';
                     fiche['texte'] = cfaComposerCertificat(t.trame, fiche);

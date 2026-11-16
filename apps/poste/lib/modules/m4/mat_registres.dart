@@ -694,11 +694,11 @@ class EcranDeces extends StatelessWidget with EcranMaquette {
       filtres: [FiltreTableau(nom: 'lieu', libelle: 'Lieu', options: _opts(lieux))],
       referenceToast: (f) => '${f['reference'] ?? ''}',
       kpis: (ctx, rows) {
-        // « Sur l'année 2026 » : l'année est ÉCRITE dans la maquette (écart E406) — portée fidèlement.
-        final annee = rows.where((r) => (DateTime.tryParse('${r['dateHeure'] ?? ''}')?.toLocal().year) == 2026).length;
+        // « Sur l'année AAAA » : l'exercice du jour (écart E406 levé au lot MIL).
+        final annee = rows.where((r) => (DateTime.tryParse('${r['dateHeure'] ?? ''}')?.toLocal().year) == c.aujourdhui.year).length;
         return [
           _kpi('Décès enregistrés', matNombre(rows.length), LucideIcons.fileText, TonSigh.neutre),
-          _kpi('Sur l’année 2026', matNombre(annee), LucideIcons.calendar, TonSigh.navy),
+          _kpi('Sur l’année ${c.aujourdhui.year}', matNombre(annee), LucideIcons.calendar, TonSigh.navy),
           _kpi('À déclarer', matNombre(rows.where((r) => !matVrai(r['declare'])).length), LucideIcons.fileClock, TonSigh.attention),
           _kpi('Causes distinctes', matNombre({for (final r in rows) '${r['cause']}'}.length), LucideIcons.list, TonSigh.info),
         ];

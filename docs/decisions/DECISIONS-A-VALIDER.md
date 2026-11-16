@@ -607,3 +607,13 @@ Ce qui CHANGE par rapport au 09/11 est en gras. Le reste confirme une décision 
 30. **Plan annuel de travail (PTA)** : « rien ne doit rester en dur » ; lot PTA (exercice choisi, responsable lié au personnel, signataires paramétrés, budget, indicateur et cible, adoption par la Direction, alerte de retard, synchronisation, impression du plan et du bilan).
 31. **Inventaire de ce qui est en dur** : tout ce qui est paramétrable devient réglage ou droit ; lots dans l'ordre MIL (année des numéros et agrégats), VAL (validations et acteurs), TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT.
 32. **La liasse fiscale 2025 et ses chiffres de référence**, aujourd'hui transcrits dans le code, sont des données déposées et non des réglages : **ils passent en base, sous forme d'import daté**, dans le lot des listes de référence (REF). Accord de la Direction du 16/11/2026.
+
+## AZ. Lot MIL (16/11/2026, maquette, domaine, poste) : plus aucune année écrite (numéros, paie, agrégats), ce qui reste à trancher par la Direction
+
+Directive du 16/11/2026 (AQ 31) : rien ne reste en dur, échéance du 01/01/2027. Mesure, fabrique et limites dans `ECARTS-MAQUETTE.md` E2950 à E2956.
+
+1. **Numéros annuels** : l'année d'un numéro est celle de la DATE DE LA PIÈCE (`BEB-2027-0001` pour un bon daté de 2027), compteur par année, une pièce émise ne se réécrit jamais. Proposition à valider : une pièce rétrodatée dans un exercice passé prend la série de CET exercice (`BC-2025-0001`), pas celle de l'année en cours.
+2. **Paie** : l'exercice se choisit (les quatre derniers), l'exercice du jour par défaut. Proposition à valider : quatre exercices proposés ; les saisies d'heures supplémentaires et d'avances proposent les mois de l'exercice du jour et du précédent.
+3. **Agrégats glissants** : douze mois finissant au mois du jour. Proposition à valider : le sélecteur de fin de fenêtre (un autre mois que le jour) n'a pas d'écran, seul le paramètre existe.
+4. **Limite dite** : le poste suit l'horloge pour l'exercice de paie, sans sélecteur (à porter dans un lot propre).
+5. **Chiffres 2025 de la liasse déposée** : restent des données déposées, import daté au lot REF (AQ 32).
