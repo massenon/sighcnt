@@ -11,7 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show Parametres, codeGestionInterditeAuMobile, collectionsGestionJamaisMobile, mobPeutPrescrire, parCollectionParametres, synchroAssainirFileuls, synchroFileulPublie;
+import 'package:sigh_domaine/sigh_domaine.dart' show Parametres, codeGestionInterditeAuMobile, collectionsGestionJamaisMobile, collectionsIdentiteJamaisMobile, mobPeutPrescrire, parCollectionParametres, synchroAssainirFileuls, synchroFileulPublie;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -130,6 +130,10 @@ class Pont {
       if (collectionsGestionJamaisMobile.contains(col)) {
         throw Err(422, codeGestionInterditeAuMobile, 'la collection « $col » ne va jamais vers un téléphone (RG-13) : la comptabilité et l’assurance se consultent depuis un poste');
       }
+      // Lot IDENT : ni l'identité de la clinique, ni ses options d'impression, ni les demandes d'un fileul dans un lot de tournée (RG-13).
+      if (collectionsIdentiteJamaisMobile.contains(col)) {
+        throw Err(422, 'identite_interdite_au_mobile', 'la collection « $col » ne va jamais vers un téléphone (RG-13) : l’identité de la clinique se règle depuis un poste');
+      }
     }
     // E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
     // jamais à une infirmière ni à une réception. Ce n'est pas une donnée patient.
@@ -210,6 +214,8 @@ class Pont {
             if (collectionsFichiersJamaisMobile.contains(o['collection'])) continue;
             // Lot SYNC-CFG : ni budget, ni immobilisation, ni couverture d'assurance vers un téléphone, même dans sa portée (RG-13).
             if (collectionsGestionJamaisMobile.contains(o['collection'])) continue;
+            // Lot IDENT : ni l'identité, ni les options d'impression, ni les demandes d'identité vers un téléphone (RG-13).
+            if (collectionsIdentiteJamaisMobile.contains(o['collection'])) continue;
             final dans = await base.select('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?', [uuid, o['collection'], o['fiche']]);
             if (dans.isNotEmpty) siennes.add({...o, 'champs': champs});
           }

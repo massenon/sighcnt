@@ -205,6 +205,9 @@ bool cfbIdentiteExigeVersion(Iterable<CfaFiche> versions) => versions.any((v) =>
 class CfbEcritureIdentite {
   const CfbEcritureIdentite._({this.refus, this.mode, this.version, this.id, this.fiche, this.precedenteId, this.patchPrecedente, this.enForceAujourdhui = false});
   const CfbEcritureIdentite.refusee(CfbRefus refus) : this._(refus: refus);
+
+  /// Lot IDENT : sur un FILEUL, la version n'est pas écrite, elle est DÉPOSÉE à la mère (`demandesIdentite`), qui la revérifie et l'ajoute. `mode` vaut `deposee`.
+  const CfbEcritureIdentite.deposee() : this._(mode: 'deposee');
   final CfbRefus? refus;
   bool get ok => refus == null;
 

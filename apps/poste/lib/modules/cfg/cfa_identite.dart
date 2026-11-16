@@ -11,7 +11,6 @@ import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
-import 'cfb_commun.dart';
 import 'cfb_configuration_fiscale.dart';
 
 /// `cfg-entetes` : « Papier à en-tête officiel », l'en-tête RÉSULTANT : la version de l'identité légale EN FORCE À LA DATE DU JOUR (lue au magasin,
@@ -202,8 +201,8 @@ class _CarteIdentiteState extends State<_CarteIdentite> {
     'email': _i.email,
     'telephones': _i.telephones.join(' / '),
     'telephoneRdv': _i.telephoneRdv,
-    'doubleLogo': cfbReglage(widget.cf.m, 'impression.doubleLogo', true) != false,
-    'filigrane': '${cfbReglage(widget.cf.m, 'impression.filigrane', '') ?? ''}',
+    'doubleLogo': widget.cf.optionImpression('doubleLogo') != false,
+    'filigrane': '${widget.cf.optionImpression('filigrane') ?? ''}',
   });
 
   @override
@@ -219,12 +218,15 @@ class _CarteIdentiteState extends State<_CarteIdentite> {
       return;
     }
     final cf = widget.cf;
-    // Les options d'impression ne sont pas des champs de l'identité : des réglages, lus par l'impression. Un fileul ne les écrit pas non plus (garde du magasin).
-    if (cfbRefuseSiGarde(context, () {
-      cfbPoserReglage(cf.m, 'impression.doubleLogo', v['doubleLogo'] == true);
-      cfbPoserReglage(cf.m, 'impression.filigrane', '${v['filigrane'] ?? ''}');
-    })) {
+    // Les options d'impression ne sont pas des champs de l'identité : des réglages de CLINIQUE (collection `optionsImpression`, qui voyage avec l'identité, lot IDENT). Écrites ici sur la mère,
+    // DÉPOSÉES à la mère depuis un fileul ; le moteur refuse sans le droit de la fiche RBAC.
+    final opt = cf.poserOptionsImpression({'doubleLogo': v['doubleLogo'] == true, 'filigrane': '${v['filigrane'] ?? ''}'});
+    if (opt.refus != null) {
+      cfbToastRefus(context, opt.refus!);
       return;
+    }
+    if (opt.mode == 'deposee') {
+      ToastsSigh.afficher(context, 'Options d’impression déposées à la mère.', type: TypeToast.succes, detail: 'Signées à votre nom : la mère les applique et les propage à tous les postes.');
     }
     cfbEnregistrerIdentiteDepuis(context, cf, 'cfg-branding', {for (final k in champsBranding) k: v[k]});
   }
@@ -280,7 +282,7 @@ class _CarteApercu extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     final i = cf.identiteImprimee();
-    final doubleLogo = cfbReglage(cf.m, 'impression.doubleLogo', true) != false;
+    final doubleLogo = cf.optionImpression('doubleLogo') != false;
     const t = TextStyle(color: JetonsShell.slate700);
     return CarteSigh(
         titre: 'Aperçu du papier à en-tête (version ${i.version ?? 1} en force)',

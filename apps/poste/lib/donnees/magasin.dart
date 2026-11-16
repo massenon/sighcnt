@@ -423,6 +423,9 @@ class Magasin {
     'demandesImport': 'IMP',
     // Lot CONT : les DÉCISIONS de validation d'un fileul (signées), que la mère applique mécaniquement.
     'demandesValidation': 'CFG',
+    // Lot IDENT : les demandes d'identité d'un fileul habilité et les options d'impression de la clinique (famille R, voyagent avec l'identité).
+    'demandesIdentite': 'CFG',
+    'optionsImpression': 'CFG',
     'visitesHospi': 'M3',
     'appels': 'M2',
     'reunions': 'M13',

@@ -49,6 +49,9 @@ const Set<String> collectionsActivite = {
   // contrôles sous le rôle de l'auteur) et écrit le verdict (`etat`, `resultatCode`, `resultatMotif`) sur la même fiche, qui revient au fileul par ce chemin. Mère coupée : la décision reste au
   // journal local du fileul, rejouée à la reconnexion (jamais doublée). Jamais vers un téléphone (RG-13).
   'demandesValidation',
+  // Lot IDENT : les DEMANDES D'IDENTITÉ d'un fileul habilité (une version datée de l'identité légale et/ou des options d'impression, signées : auteur, rôle, date de SIGNATURE). Le fileul la dépose,
+  // la MÈRE revérifie le droit de la fiche RBAC sous le rôle de l'auteur, ajoute la version et la propage par la configuration, puis écrit le verdict sur la même fiche. Jamais vers un téléphone (RG-13).
+  'demandesIdentite',
   // Lot D5 (EF-SYNC-18) : les MÉTADONNÉES des fichiers numérisés. La fiche d'un courrier ou d'un document du patient porte `fichier` (empreinte, nom, nom normalisé, type, taille, pages) ;
   // le registre `fichiers` est une fiche par empreinte (AJOUT SEUL, identité commune : deux postes qui déposent le même fichier ne font qu'une fiche). Le BINAIRE ne passe jamais par
   // ici : il voyage à part, par morceaux avec reprise (`service_fichiers.dart`). Jamais vers un téléphone (RG-13).

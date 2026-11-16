@@ -607,3 +607,15 @@ Ce qui CHANGE par rapport au 09/11 est en gras. Le reste confirme une décision 
 30. **Plan annuel de travail (PTA)** : « rien ne doit rester en dur » ; lot PTA (exercice choisi, responsable lié au personnel, signataires paramétrés, budget, indicateur et cible, adoption par la Direction, alerte de retard, synchronisation, impression du plan et du bilan).
 31. **Inventaire de ce qui est en dur** : tout ce qui est paramétrable devient réglage ou droit ; lots dans l'ordre MIL (année des numéros et agrégats), VAL (validations et acteurs), TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT.
 32. **La liasse fiscale 2025 et ses chiffres de référence**, aujourd'hui transcrits dans le code, sont des données déposées et non des réglages : **ils passent en base, sous forme d'import daté**, dans le lot des listes de référence (REF). Accord de la Direction du 16/11/2026.
+
+## AT. Lot IDENT (16/11/2026, maquette, domaine, poste, synchronisation, relais) : RCCM à jour en version datée, informations de la clinique propagées, plus aucune constante d'identité
+
+Réponse de la Direction appliquée : AQ point 15. Rien ici ne remplace une décision ; ce qui suit est PROPOSITION À VALIDER.
+
+1. **Date d'effet du RCCM « NAT/2021/M02-020 » : 16/11/2026** (jour de la décision). Proposition à valider : si le numéro est en usage plus tôt, la Direction pose une version datée antérieure (la version 1 se clôt la veille) ; aucune pièce émise n'est réécrite.
+2. **Droit de poser l'identité** : l'écriture de « Paramètres fiscaux » ou de « Identité et papier à en-tête » de la fiche RBAC (aujourd'hui administrateur, Direction, DAF). Proposition à valider : un seul droit pour les deux écrans.
+3. **Poste fileul** : la modification est signée et déposée, la mère la revérifie et la propage ; le fileul ne la voit qu'une fois appliquée (« Modification déposée à la mère »). Proposition à valider : la validation de l'identité (Direction, DAF, administrateur) reste un geste distinct, déjà porté par le lot CONT pour les autres familles ; l'identité n'y est pas ajoutée.
+4. **Options d'impression** (logo de part et d'autre, filigrane) : réglage de CLINIQUE qui voyage avec l'identité ; une valeur locale d'avant le lot n'est pas reprise.
+5. **Rien vers un téléphone** : identité, options et demandes ne partent pas aux mobiles (RG-13) ; décision prise par défaut, à confirmer si un écran du téléphone devait un jour imprimer l'en-tête.
+6. **Autres réglages locaux** (`reglages` : canaux et paramètres de notification, etc.) ne voyagent toujours pas entre postes : constat du lot, à trancher (lot propre).
+7. **Postes déjà installés** : la version 2 de l'identité est à poser par la Direction sur un poste existant (pas de migration automatique).
