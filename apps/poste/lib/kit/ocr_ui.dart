@@ -339,7 +339,7 @@ Future<void> _ouvrirReglage(
     final recu = o.reglageRecu;
     final texte = !recu
         ? '${ocrRaisonReglageNonRecu[0].toUpperCase()}${ocrRaisonReglageNonRecu.substring(1)} : tant qu\u2019il n\u2019est pas arrivé, aucune lecture ne part de ce poste.'
-        : 'Réglage de la clinique, reçu de la poste mère : lecture des scans ${r.actif ? 'activée' : 'désactivée'}, moteur ${r.moteur ?? 'non choisi'}${r.moteur != null ? (o.moteurs.containsKey(r.moteur) ? ' (installé sur ce poste)' : ' (non installé sur ce poste)') : ''}, langue ${r.langue}, délai ${(r.delaiMs / 1000).round()} s. Il se règle sur la poste mère.';
+        : 'Réglage de la clinique, reçu de le poste mère : lecture des scans ${r.actif ? 'activée' : 'désactivée'}, moteur ${r.moteur ?? 'non choisi'}${r.moteur != null ? (o.moteurs.containsKey(r.moteur) ? ' (installé sur ce poste)' : ' (non installé sur ce poste)') : ''}, langue ${r.langue}, délai ${(r.delaiMs / 1000).round()} s. Il se règle sur le poste mère.';
     await afficherModale<void>(context,
         titre: 'Lecture des scans (OCR)',
         taille: TailleModale.sm,

@@ -40,7 +40,7 @@ class SourceHorsSiteHttp implements SourceHorsSite {
     try {
       rep = await http.Response.fromStream(await _c.send(req).timeout(const Duration(minutes: 30)));
     } catch (_) {
-      throw const ErreurHorsSite(RefusSauvegarde('MERE_INJOIGNABLE', 'le service de la poste mère ne répond pas', 'Vérifier que la poste mère est démarrée sur cette machine.'));
+      throw const ErreurHorsSite(RefusSauvegarde('MERE_INJOIGNABLE', 'le service de le poste mère ne répond pas', 'Vérifier que le poste mère est démarrée sur cette machine.'));
     }
     Map<String, Object?> j = {};
     try {
@@ -64,7 +64,7 @@ class SourceHorsSiteHttp implements SourceHorsSite {
   Future<Map<String, Object?>> restaurer({required String type, required String copie, required String cible}) => _appel('POST', '/admin/horssite/restaurer', {'type': type, 'copie': copie, 'cible': cible});
 }
 
-/// LA COPIE HORS SITE AU POSTE (lot 5, ADR-0007). Le RÉGLAGE est un paramètre de clinique en base (famille `horssite`, versionné par date, défaut semé : DÉSACTIVÉE), posé à la poste mère
+/// LA COPIE HORS SITE AU POSTE (lot 5, ADR-0007). Le RÉGLAGE est un paramètre de clinique en base (famille `horssite`, versionné par date, défaut semé : DÉSACTIVÉE), posé à le poste mère
 /// et reçu des fileuls par le journal ; il est réservé à l'administrateur et à la DAF, motivé, journalisé (RG-12). Un FILEUL le lit et ne le pose pas (refus nommé, commande absente de l'écran).
 /// L'ÉTAT et les gestes (copier maintenant, contrôler, restaurer) passent par le service de la mère ([SourceHorsSite]) : un fileul n'en a pas.
 class HorsSitePoste extends ChangeNotifier {
@@ -136,7 +136,7 @@ class HorsSitePoste extends ChangeNotifier {
   /// que ce qui change, comme NOUVELLE VERSION datée du jour ; journalisé (RG-12). Rend le refus ou `null`.
   RefusSauvegarde? definirReglage({required String role, required ReglageHorsSite nouveau, required String? motif}) {
     if (estFileul()) {
-      return const RefusSauvegarde('FILEUL_LECTURE_SEULE', 'la copie hors site est un réglage de la clinique, posé à la poste mère : ce poste le reçoit par le journal', 'Régler la copie hors site sur le poste mère : ce poste reçoit ce réglage par le journal.');
+      return const RefusSauvegarde('FILEUL_LECTURE_SEULE', 'la copie hors site est un réglage de la clinique, posé à le poste mère : ce poste le reçoit par le journal', 'Régler la copie hors site sur le poste mère : ce poste reçoit ce réglage par le journal.');
     }
     if (!peutRegler(role)) {
       return const RefusSauvegarde('REGLAGE_RESERVE', 'seuls l\'administrateur et la Directrice Administrative règlent la copie hors site', 'Demander à l\'administrateur ou à la Directrice Administrative.');
@@ -147,7 +147,7 @@ class HorsSitePoste extends ChangeNotifier {
     if (ctrl != null) return ctrl;
     final etat = etatMere;
     if (nouveau.actif && etat != null && etat['relaisRelie'] == false && (nouveau.magasin.destination == 'relais' || nouveau.fichiers.destination == 'relais')) {
-      return const RefusSauvegarde('RELAIS_NON_CONFIGURE', 'la poste mère n\'est pas reliée au relais web', 'Relier la mère au relais (adresse et secret de la mère), ou choisir un dossier distant.');
+      return const RefusSauvegarde('RELAIS_NON_CONFIGURE', 'le poste mère n\'est pas reliée au relais web', 'Relier la mère au relais (adresse et secret de la mère), ou choisir un dossier distant.');
     }
     final avant = reglage;
     final p = _parametres;

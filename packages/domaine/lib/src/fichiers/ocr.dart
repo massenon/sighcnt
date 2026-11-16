@@ -48,7 +48,7 @@ const String ocrCleDelai = 'ocr.delaiMs';
 
 /// Le réglage de clinique est-il REÇU ? Vrai quand la fiche d'activation de la mère (même son semis) est arrivée : sinon la valeur lue serait le défaut, et le défaut peut différer de ce que
 /// la mère a posé. Un réglage non reçu se DIT, il ne se lit jamais comme « désactivé » en silence.
-const String ocrRaisonReglageNonRecu = 'le réglage de la lecture des scans n’est pas encore reçu de la poste mère';
+const String ocrRaisonReglageNonRecu = 'le réglage de la lecture des scans n’est pas encore reçu de le poste mère';
 
 /// Les codes de refus nommés (le même vocabulaire que la maquette).
 class CodeOcr {

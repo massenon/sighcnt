@@ -41,7 +41,7 @@ RefusParametreClinique? reglerParametreClinique(Magasin m,
         'Demander à un rôle qui détient le droit « Régler les paramètres de clinique » (matrice des droits).');
   }
   if (fileul) {
-    return const RefusParametreClinique('FILEUL_LECTURE_SEULE', 'Les paramètres de clinique sont un réglage de la clinique, posé à la poste mère : ce poste le reçoit par le journal.',
+    return const RefusParametreClinique('FILEUL_LECTURE_SEULE', 'Les paramètres de clinique sont un réglage de la clinique, posé à le poste mère : ce poste le reçoit par le journal.',
         'Régler le paramètre sur le poste mère : ce poste le reçoit par le journal.');
   }
   if ((motif ?? '').trim().length < 3) {

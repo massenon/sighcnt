@@ -35,7 +35,7 @@ CpcRefusCircuit? reglerCircuitCloture(Magasin m,
       rolesConnus: rolesConnusDuCircuit(m));
   if (refus != null) return refus;
   if (fileul) {
-    return const CpcRefusCircuit('FILEUL_LECTURE_SEULE', 'Le circuit de clôture est un réglage de la clinique, posé à la poste mère : ce poste le reçoit par le journal.',
+    return const CpcRefusCircuit('FILEUL_LECTURE_SEULE', 'Le circuit de clôture est un réglage de la clinique, posé à le poste mère : ce poste le reçoit par le journal.',
         'Régler le circuit sur le poste mère : ce poste reçoit ce réglage par le journal.');
   }
   final service = serviceParametres(m, auteur: () => m.utilisateur, horloge: h);

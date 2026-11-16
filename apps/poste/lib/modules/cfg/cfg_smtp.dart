@@ -38,12 +38,12 @@ const _libellesEtapes = {
 
 /// La configuration fournie par la clinique (valeurs NON secrètes), proposée tant que rien n'est enregistré. Le mot de passe n'y figure pas : il se saisit.
 const Map<String, Object?> smtpDefauts = {
-  'serveur': 'mail.sigh.nassieratoo.com',
+  'serveur': 'mail.sighcnt.nassieratoo.com',
   'port': 587,
   'chiffrement': 'starttls',
   'delai': 20,
-  'identifiant': 'contact@sigh.nassieratoo.com',
-  'expediteur': 'contact@sigh.nassieratoo.com',
+  'identifiant': 'admin@sighcnt.nassieratoo.com',
+  'expediteur': 'admin@sighcnt.nassieratoo.com',
   'nom': 'Clinique Nassièra Too',
   'repondreA': 'cliniquenassiera@gmail.com',
   'repondreNom': 'Clinique Nassièra Too',

@@ -38,6 +38,7 @@ class PurgerAudit extends Command
             'quand' => (int) (microtime(true) * 1000), 'acteur' => 'console', 'action' => 'audit_purge', 'detail' => "$n ligne(s) de plus de $jours jours",
         ]);
         $this->info("$n ligne(s) purgée(s).");
+        $this->info(\App\Relais\Sms\Messages::purger().' ligne(s) du journal SMS purgée(s) (déjà sans numéro ni texte).');
 
         return self::SUCCESS;
     }

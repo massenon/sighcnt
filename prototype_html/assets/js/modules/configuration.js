@@ -5069,8 +5069,8 @@
       /* LA CONFIGURATION FOURNIE PAR LA CLINIQUE (valeurs NON secrètes) : proposée dans le formulaire tant que rien n'est enregistré. Le mot de passe n'a AUCUNE valeur
          par défaut : il se saisit, il n'est jamais écrit ici ni dans le dépôt. */
       var DEFAUTS = {
-        serveur: 'mail.sigh.nassieratoo.com', port: 587, chiffrement: 'starttls', delai: 20,
-        identifiant: 'contact@sigh.nassieratoo.com', expediteur: 'contact@sigh.nassieratoo.com', nom: 'Clinique Nassièra Too',
+        serveur: 'mail.sighcnt.nassieratoo.com', port: 587, chiffrement: 'starttls', delai: 20,
+        identifiant: 'admin@sighcnt.nassieratoo.com', expediteur: 'admin@sighcnt.nassieratoo.com', nom: 'Clinique Nassièra Too',
         repondreA: 'cliniquenassiera@gmail.com', repondreNom: 'Clinique Nassièra Too',
       };
       var ETAPES = { connexion: 'Connexion au serveur', salutation: 'Salutation', 'chiffrement': 'Chiffrement', authentification: 'Authentification', 'expéditeur': 'Expéditeur', destinataire: 'Destinataire', envoi: 'Envoi du message' };

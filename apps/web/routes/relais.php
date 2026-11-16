@@ -3,6 +3,7 @@
 use App\Http\Controllers\RecuperationController;
 use App\Http\Controllers\RelaisController;
 use App\Http\Controllers\SauvegardeController;
+use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,3 +44,10 @@ Route::post('/banc/sauvegarde/reglage', [SauvegardeController::class, 'bancRegla
 Route::post('/banc/sauvegarde/alterer', [SauvegardeController::class, 'bancAlterer']);
 Route::post('/banc/sauvegarde/vieillir', [SauvegardeController::class, 'bancVieillir']);
 Route::get('/banc/sauvegarde/tout', [SauvegardeController::class, 'bancTout']);
+
+/* Lot SMS-R (ADR-0008) : la passerelle SMS, RÉSERVÉE À LA MÈRE. Le relais voit numéro, texte, heure, type et un identifiant opaque, le temps de l'envoi, puis efface le clair. */
+Route::get('/sms/etat', [SmsController::class, 'etat']);
+Route::post('/sms/deposer', [SmsController::class, 'deposer']);
+Route::post('/sms/annuler', [SmsController::class, 'annuler']);
+Route::post('/sms/tester', [SmsController::class, 'tester'])->middleware('throttle:10,1');
+Route::get('/sms/journal', [SmsController::class, 'journal']);

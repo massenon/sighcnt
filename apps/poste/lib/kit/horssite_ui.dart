@@ -71,7 +71,7 @@ class _EtatCarteHorsSite extends State<CarteHorsSite> {
     final etat = s.etatMere;
     final controle = (etat?['controle'] as Map?);
     final lignes = <(String, Object?)>[
-      ('État', s.reglageRecu ? (r.actif ? 'ACTIVE' : 'Désactivée') : 'Réglage non encore reçu de la poste mère'),
+      ('État', s.reglageRecu ? (r.actif ? 'ACTIVE' : 'Désactivée') : 'Réglage non encore reçu de le poste mère'),
       _ligneType(s, 'magasin', 'Magasin (base de la mère)'),
       _ligneType(s, 'fichiers', 'Fichiers numérisés'),
       ('Fréquence des fichiers', 'toutes les ${r.frequenceMinutes} minutes ; copie et contrôle de nuit après ${r.heureControle} h'),

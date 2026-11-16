@@ -75,7 +75,7 @@ Voir `docs/guides/GUIDE-DEMARRAGE.md` (`npm install`, `npm run prototype:serveur
 
 ## Messagerie SMTP (relais et poste)
 
-Valeurs de la Clinique Nassièra Too (non secrètes, déjà dans `apps/web/.env.example` et proposées par défaut dans l'écran) : serveur `mail.sigh.nassieratoo.com`, port 587 en STARTTLS (465 en SSL), identifiant et expéditeur `contact@sigh.nassieratoo.com`, nom « Clinique Nassièra Too », réponse à `cliniquenassiera@gmail.com`, délai 20 s.
+Valeurs de la Clinique Nassièra Too (non secrètes, déjà dans `apps/web/.env.example` et proposées par défaut dans l'écran) : serveur `mail.sighcnt.nassieratoo.com`, port 587 en STARTTLS (465 en SSL), identifiant et expéditeur `admin@sighcnt.nassieratoo.com`, nom « Clinique Nassièra Too », réponse à `cliniquenassiera@gmail.com`, délai 20 s.
 
 - **Relais** : panneau superadmin, Paramètres, carte « Messagerie ». Saisir le mot de passe (chiffré, jamais relu), enregistrer, puis « Envoyer un message de test » avec votre adresse. L'étape en échec est nommée (connexion, chiffrement, authentification, expéditeur, destinataire, envoi).
 - **Poste** : Paramètres système, carte « Messagerie ». Même formulaire, même bouton de test.

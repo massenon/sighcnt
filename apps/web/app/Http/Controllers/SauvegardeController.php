@@ -23,7 +23,7 @@ class SauvegardeController extends Controller
             return;
         }
         if (preg_match('/^Bearer /', (string) $r->header('Authorization'))) {
-            Entrepot::refus(403, 'sauvegarde_reservee_mere', 'les copies de sauvegarde ne sont accessibles qu\'à la poste mère', 'Aucun appareil appairé n\'y accède : utiliser le poste mère.');
+            Entrepot::refus(403, 'sauvegarde_reservee_mere', 'les copies de sauvegarde ne sont accessibles qu\'à le poste mère', 'Aucun appareil appairé n\'y accède : utiliser le poste mère.');
         }
         Entrepot::refus(403, 'mere_requise', '', '');
     }

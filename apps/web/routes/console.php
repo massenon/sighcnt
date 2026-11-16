@@ -15,3 +15,6 @@ Illuminate\Support\Facades\Schedule::command('relais:surveiller')->everyMinute()
 
 /* Export quotidien de la base du relais. */
 Illuminate\Support\Facades\Schedule::command('relais:exporter')->dailyAt('03:00');
+
+/* Lot SMS-R (ADR-0008) : les SMS arrivés à l'heure, chaque minute, sans chevauchement (verrou de 10 minutes si un passage meurt). */
+Illuminate\Support\Facades\Schedule::command('relais:sms-envoyer')->everyMinute()->withoutOverlapping(10);

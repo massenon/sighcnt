@@ -133,7 +133,7 @@ void main() {
       await ouvrir(t, m, 'm13-courriers');
       await toucher(t, find.byKey(const Key('ocr:bouton-reglage')));
       expect(find.byKey(const Key('ocr:reglage-recu')), findsOneWidget);
-      expect(find.textContaining('pas encore reçu de la poste mère'), findsOneWidget);
+      expect(find.textContaining('pas encore reçu de le poste mère'), findsOneWidget);
       expect(find.byKey(const Key('ocr:enregistrer')), findsNothing, reason: 'commande ABSENTE sur un fileul, jamais grisée');
       expect(find.byKey(const Key('ocr:actif')), findsNothing);
     });

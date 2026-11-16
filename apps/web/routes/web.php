@@ -13,6 +13,7 @@ use App\Livewire\Panneau\Indicateurs;
 use App\Livewire\Panneau\Journal;
 use App\Livewire\Panneau\Opacite;
 use App\Livewire\Panneau\Parametres;
+use App\Livewire\Panneau\PasserelleSms;
 use App\Livewire\Panneau\Sauvegarde;
 use App\Livewire\Panneau\Superadmin;
 use App\Livewire\Panneau\Synchronisation;
@@ -40,6 +41,7 @@ Route::prefix('panneau')->group(function () {
         Route::get('/parametres', Parametres::class)->name('panneau.parametres');
         Route::get('/hebergement', Hebergement::class)->name('panneau.hebergement');
         Route::get('/sauvegarde', Sauvegarde::class)->name('panneau.sauvegarde');
+        Route::get('/sms', PasserelleSms::class)->name('panneau.sms');
         Route::get('/opacite', Opacite::class)->name('panneau.opacite');
         Route::get('/consultation', Consultation::class)->name('panneau.consultation');
         Route::get('/consultation/appareils', [ConsultationController::class, 'appareils'])->name('panneau.consultation.appareils');
