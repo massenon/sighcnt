@@ -28411,7 +28411,7 @@ async function viderMessages(page) {
     const rev = await page.evaluate(async ([jid, jeton8]) => {
       const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim();
       const S = window.SIGH.store, nRep = S.collection('reponsesEnquetes', { module: 'M13' }).active().length;
-      [...document.querySelectorAll('[role=tab]')][1].click();
+      [...document.querySelectorAll('[role=tab]')].filter((t) => /^Liens de partage/.test(norm(t.textContent)))[0].click();
       let tr = null;
       for (let i = 0; i < 40 && !tr; i++) { await new Promise((r) => setTimeout(r, 100)); tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => t.textContent.includes(jeton8)); }
       if (!tr) return { absent: true, lignes: [...document.querySelectorAll('#page-content tbody tr')].map((t) => norm(t.textContent)).slice(0, 5) };
@@ -28424,7 +28424,7 @@ async function viderMessages(page) {
       return { entetes: lignes, revoqueLe: j.revoqueLe, nRepApres: S.collection('reponsesEnquetes', { module: 'M13' }).active().length, nRep };
     }, [form.jeton.id, form.jeton.jeton.slice(0, 8)]);
     await attendreEcritures();
-    verifier('Le tableau des liens porte « Point de collecte » et « Partage » ; révoquer ferme le lien et n’efface aucune réponse', rev.entetes.indexOf('Point de collecte') >= 0 && rev.entetes.indexOf('Partage') >= 0 && !!rev.revoqueLe && rev.nRepApres === rev.nRep, JSON.stringify(rev));
+    verifier('Le tableau des liens porte « Point de collecte » et « Partage » ; révoquer ferme le lien et n’efface aucune réponse', !rev.absent && rev.entetes.indexOf('Point de collecte') >= 0 && rev.entetes.indexOf('Partage') >= 0 && !!rev.revoqueLe && rev.nRepApres === rev.nRep, JSON.stringify(rev) + ' jeton=' + form.jeton.jeton.slice(0, 8));
     /* RESTAURATION : le lien de la sonde est retiré (archivé, RG-14) */
     await page.evaluate((jid) => { window.SIGH.store.collection('jetonsEnquete', { module: 'M13' }).archive(jid, 'Sonde 252 : restauration'); }, form.jeton.id);
     await attendreEcritures();
