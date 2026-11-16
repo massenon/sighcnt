@@ -5,7 +5,7 @@
  "libelleManifeste": "Bons de commande",
  "acces": "ouvert",
  "titre": "Bons de commande",
- "description": "Commandes fournisseurs, validation par la Directrice Administrative et transmission.",
+ "description": "Commandes fournisseurs, validation (RG-04) et transmission.",
  "fil": [
   "Accueil",
   "Logistique",
@@ -18,7 +18,7 @@
   "Achats & Fournisseurs"
  ],
  "regle": [
-  "2 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04)."
+  "2 commande(s) en attente de validation (Directrice de l’Administration et des Finances (DAF)). Aucune transmission au fournisseur n’est possible avant cette validation (RG-04)."
  ],
  "onglets": [],
  "kpis": [
