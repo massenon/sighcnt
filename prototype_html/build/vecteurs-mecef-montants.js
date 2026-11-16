@@ -47,8 +47,12 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         const entree = { lignes, remiseGlobale: r() < 0.4 ? Math.floor(r() * 500) : 0, aibTaux: [0, 1, 5][Math.floor(r() * 3)], tauxTva: 0 };
         hasard.push({ entree, sortie: JSON.parse(JSON.stringify(M(entree))) });
       }
+      /* Lot FISC-2 (16/11/2026) : la facture d'un patient ne porte aucun AIB. Un taux demandé (non nul, ou une ligne du barème) est refusé AIB_FACTURE_PATIENT ; sans taux l'acheteur porte un taux nul ;
+         une pièce DÉJÀ ÉMISE avec un taux le garde (`conserve`). Seuls IFU, nom et taux sont comparés au Dart (la maquette en rend davantage : situation, version, date du barème). */
+      const reduit = (r) => { const c = JSON.parse(JSON.stringify(r)); if (c.acheteur) c.acheteur = { ifu: c.acheteur.ifu, nom: c.acheteur.nom, aibTaux: c.acheteur.aibTaux }; return c; };
       const acheteurs = [{}, { ifu: '3201642748214', nom: 'Clinique X' }, { ifu: '3201 6427 48214', nom: 'X' }, { ifu: '123', nom: 'X' }, { ifu: '32016427482AB', nom: 'X' },
-        { ifu: '3201642748214', nom: '' }, { ifu: '', nom: 'Particulier' }, { aibTaux: 5 }, { aibTaux: 7 }, { aibTaux: 0 }].map((e) => ({ entree: e, sortie: JSON.parse(JSON.stringify(A(e))) }));
+        { ifu: '3201642748214', nom: '' }, { ifu: '', nom: 'Particulier' }, { aibTaux: 5 }, { aibTaux: 7 }, { aibTaux: 0 }, { aibSituation: 'ifu_actif' }, { aibTaux: '' },
+        { aibTaux: 5, conserve: true, aibSituation: 'ifu_inactif_ou_absent' }, { aibTaux: 0, conserve: true }, { aibTaux: 101, conserve: true }, { ifu: '3201642748214', nom: 'Ancien', aibTaux: 1, conserve: true }].map((e) => ({ entree: e, sortie: reduit(A(e)) }));
       return { cas, hasard, acheteurs };
     });
     console.log('  ' + sortie.cas.length + ' cas fixes · ' + sortie.hasard.length + ' ventes au hasard · ' + sortie.acheteurs.length + ' acheteurs');

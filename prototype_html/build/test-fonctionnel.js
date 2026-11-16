@@ -351,6 +351,27 @@ async function viderMessages(page) {
   };
   const texteCorps = () => page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
 
+  /* --- Outils du lot FISC-2 (Vagues 220 à 224) : confirmations, barèmes de l'AIB, imputations, facture de patient sans AIB, motif du validateur. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const FISC2 = {
+    session: (role) => poserSessionServeur({ role, nom: 'FISC2 ' + role, nomComplet: 'FISC2 ' + role, fonction: role, identifiant: 's22x.' + role, secteur: 'DIR' }),
+    /** L'état de départ de collections entières (restitué à la fin : un scénario qui change l'état de la base la RESTAURE). */
+    sauver: (noms) => page.evaluate((n) => { const S = window.SIGH.store; const o = {}; n.forEach((k) => { S.collection(k); o[k] = JSON.stringify(S.raw()[k] || []); }); return o; }, noms),
+    /** Restitue PAR LES GESTES du magasin (jamais en réécrivant le tableau brut : l'écart du lot ne verrait pas une fiche créée par un geste) : fiches créées archivées, fiches changées rétablies champ par champ. */
+    restituer: (d) => page.evaluate((x) => { const S = window.SIGH.store; Object.keys(x).forEach((k) => { const col = S.collection(k); const saved = JSON.parse(x[k]); const ids = {}; saved.forEach((r) => { ids[r.id] = r; });
+      col.all().slice().forEach((cur) => { const r = ids[cur.id];
+        if (!r) { if (cur.statut !== 'archive') col.archive(cur.id, 'Sonde FISC-2 : restauration'); return; }
+        if (cur.statut === 'archive' && r.statut !== 'archive') col.restore(cur.id);
+        const patch = {};
+        Object.keys(cur).forEach((key) => { if (key === 'id' || key.charAt(0) === '_' || key === 'statut') return; if (!(key in r)) patch[key] = null; });
+        Object.keys(r).forEach((key) => { if (key === 'id' || key.charAt(0) === '_' || key === 'statut') return; if (JSON.stringify(r[key]) !== JSON.stringify(cur[key])) patch[key] = r[key]; });
+        if (Object.keys(patch).length) col.update(cur.id, patch); }); });
+      window.SIGH.nav.invaliderRbac(); }, d),
+    /** Pose (val vrai ou faux) ou retire (null) un geste réservé sur la fiche RBAC d'un rôle. */
+    geste: (role, id, val) => page.evaluate((o) => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === o.role)[0];
+      const g = Object.assign({}, (f && f.droitsGestes) || {}); if (o.val === null) delete g[o.id]; else g[o.id] = o.val;
+      if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: o.role, statut: 'actif', droitsGestes: g }); window.SIGH.nav.invaliderRbac(); }, { role, id, val }),
+  };
+
   /* --- Outils du lot IMP-B1 (Vagues 127 à 132) : les cinq jeux du stock. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
   const outilsB1 = (() => {
     const ENT = {
@@ -16053,8 +16074,8 @@ async function viderMessages(page) {
     verifier('Des parts qui ne totalisent pas la ligne, ou des paiements qui diffèrent de la base, sont refusés (TOTAL_INCOHERENT)', fn.partsFausses.code === 'TOTAL_INCOHERENT' && fn.payFaux.code === 'TOTAL_INCOHERENT', JSON.stringify([fn.partsFausses.code, fn.payFaux.code]));
     verifier('La base MECeF ne porte QUE la part du patient : ni part assureur (3 000), ni remise (1 000)', fn.base.base === 12000 && fn.base.total === 15000 && fn.base.partAssureur === 3000 && fn.base.remises === 1000, JSON.stringify(fn.base));
     verifier('Propriété sur 1 000 ventes tirées au hasard : aucun montant décimal, total = somme des lignes, base = somme des parts patient', fn.propriete.vus === 1000 && fn.propriete.mauvais === 0, JSON.stringify(fn.propriete));
-    verifier('IFU : 13 chiffres validé (espaces tolérés), 12 ou lettres refusés (IFU_INVALIDE), IFU sans nom refusé, particulier sans IFU accepté, AIB 7 % refusé, défaut 1 %',
-      fn.acheteur.court === 'IFU_INVALIDE' && fn.acheteur.lettres === 'IFU_INVALIDE' && fn.acheteur.treize === true && fn.acheteur.espaces === '3201642748214' && fn.acheteur.sansNom === 'NOM_ACHETEUR_ABSENT' && fn.acheteur.particulier === true && fn.acheteur.taux7 === 'AIB_TAUX_INVALIDE' && fn.acheteur.defaut === 1, JSON.stringify(fn.acheteur));
+    verifier('IFU : 13 chiffres validé (espaces tolérés), 12 ou lettres refusés (IFU_INVALIDE), IFU sans nom refusé, particulier sans IFU accepté, AIB 7 % refusé AIB_FACTURE_PATIENT (lot FISC-2), taux nul par défaut',
+      fn.acheteur.court === 'IFU_INVALIDE' && fn.acheteur.lettres === 'IFU_INVALIDE' && fn.acheteur.treize === true && fn.acheteur.espaces === '3201642748214' && fn.acheteur.sansNom === 'NOM_ACHETEUR_ABSENT' && fn.acheteur.particulier === true && fn.acheteur.taux7 === 'AIB_FACTURE_PATIENT' && fn.acheteur.defaut === 0, JSON.stringify(fn.acheteur));
     verifier('Les états sont EXACTEMENT normalisee, en_attente, a_verifier, refusee, expiree : « simple » n’existe pas', JSON.stringify(fn.etats) === '["normalisee","en_attente","a_verifier","refusee","expiree"]', JSON.stringify(fn.etats));
 
     /* --- 2. le geste : l'encaissement normalise la vente ---------------------------------------------------------------------- */
@@ -16084,13 +16105,13 @@ async function viderMessages(page) {
       refus.code === 'IFU_INVALIDE' && !!refus.geste && apresRefus.montantPaye === 0 && apresRefus.statutPaiement === 'impayee' && apresRefus.statutMecef === 'en_attente' && JSON.stringify(apresRefus.lignes) === JSON.stringify(avant.lignes), JSON.stringify(refus));
 
     const j0 = (await jr()).emissions.length;
-    const ok = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur Sonde', aibTaux: 5, date: '2026-09-10' } }); return { norm: r.normalisation }; }, ids.a);
-    /* Lot A1 (barème de l'AIB daté) : le 5 % n'existe au barème qu'à compter du 07/09/2026, alors que l'horloge du banc est au 16/08/2026 : la vente est datée du 10/09/2026. */
+    const ok = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur Sonde' } }); return { norm: r.normalisation }; }, ids.a);
+    /* Lot FISC-2 (16/11/2026) : la facture d'un patient ne porte aucun AIB ; l'IFU et le nom, s'ils sont donnés au moteur, sont rangés (le bloc de saisie est retiré des écrans). */
     const a1 = await lire(ids.a), j1 = await jr();
     verifier('Vente soldée : normalisée (état « valide » stocké = « normalisee »), numéro posé, jamais d’état « simple »', ok.norm && ok.norm.ok === true && a1.statutMecef === 'valide' && /^MECEF\d+$/.test(a1.numeroMecef || '') && a1.statutPaiement === 'soldee', JSON.stringify([ok.norm, a1.statutMecef, a1.numeroMecef]));
-    verifier('IFU, nom et AIB sont RANGÉS dans la vente ; la base MECeF vaut la part du patient (12 000), ni part assureur ni remise', a1.ifuClient === '3201642748214' && a1.acheteurNom === 'Acheteur Sonde' && a1.aibTaux === 5 && a1.baseMecef === 12000 && a1.montantPaye === 12000 && a1.baseMecef !== a1.montantTTC, JSON.stringify([a1.ifuClient, a1.acheteurNom, a1.aibTaux, a1.baseMecef]));
+    verifier('IFU et nom sont RANGÉS dans la vente, l’AIB est NUL (facture de patient) ; la base MECeF vaut la part du patient (12 000), ni part assureur ni remise', a1.ifuClient === '3201642748214' && a1.acheteurNom === 'Acheteur Sonde' && a1.aibTaux === 0 && a1.baseMecef === 12000 && a1.montantPaye === 12000 && a1.baseMecef !== a1.montantTTC, JSON.stringify([a1.ifuClient, a1.acheteurNom, a1.aibTaux, a1.baseMecef]));
     const emis = j1.emissions[j1.emissions.length - 1] || {};
-    verifier('Les mêmes données sont TRANSMISES à l’appareil (IFU, nom, AIB 5 %, base 12 000, AIB entier 600) : une seule émission', j1.emissions.length === j0 + 1 && emis.ifuAcheteur === '3201642748214' && emis.nomAcheteur === 'Acheteur Sonde' && emis.aibTaux === 5 && emis.base === 12000 && emis.aib === 600 && emis.numero === a1.numeroMecef, JSON.stringify(emis));
+    verifier('Les mêmes données sont TRANSMISES à l’appareil (IFU, nom, AIB nul, base 12 000, AIB entier 0) : une seule émission', j1.emissions.length === j0 + 1 && emis.ifuAcheteur === '3201642748214' && emis.nomAcheteur === 'Acheteur Sonde' && emis.aibTaux === 0 && emis.base === 12000 && emis.aib === 0 && emis.numero === a1.numeroMecef, JSON.stringify(emis));
 
     /* une vente déjà normalisée ne se renormalise JAMAIS, son numéro ne se réécrit jamais */
     const second = await page.evaluate((i) => { const M = window.SIGH.mecef; return { n: M.normaliser(i), r: M.retransmettre(i) }; }, ids.a);
@@ -16099,7 +16120,7 @@ async function viderMessages(page) {
     const deuxieme = await page.evaluate((i) => { window.SIGH.parcours.encaisser(i, { mode: 'especes' }); return true; }, ids.b);
     const b1 = await lire(ids.b);
     const jb = await jr();
-    verifier('Deux ventes, deux numéros DISTINCTS ; sans fenêtre remplie, l’acheteur est un particulier (IFU vide) et l’AIB prend son défaut (1 %)', b1.numeroMecef && b1.numeroMecef !== a1.numeroMecef && !b1.ifuClient && b1.aibTaux === 1 && b1.statutMecef === 'valide', JSON.stringify([b1.numeroMecef, a1.numeroMecef, b1.ifuClient, b1.aibTaux]));
+    verifier('Deux ventes, deux numéros DISTINCTS ; sans fenêtre remplie, l’acheteur est un particulier (IFU vide) et l’AIB est nul (facture de patient)', b1.numeroMecef && b1.numeroMecef !== a1.numeroMecef && !b1.ifuClient && b1.aibTaux === 0 && b1.statutMecef === 'valide', JSON.stringify([b1.numeroMecef, a1.numeroMecef, b1.ifuClient, b1.aibTaux]));
 
     /* --- 3. pannes : réponse perdue, refus, expiration -------------------------------------------------------------------------- */
     const perdu = await page.evaluate((i) => { const M = window.SIGH.mecef; M.fauxBoitier.panne = 'reponse_perdue'; const r = window.SIGH.parcours.encaisser(i, { mode: 'especes' }); M.fauxBoitier.panne = null; return { n: r.normalisation }; }, ids.c);
@@ -16166,8 +16187,8 @@ async function viderMessages(page) {
       out.normalisee = imprimer('FN-2099-S96A'); out.nonNormalisee = imprimer('FN-2099-S96E'); out.desactivee = imprimer('FN-2099-S96G');
       return out;
     }, ids.a);
-    verifier('Impression d’une pièce normalisée : NIM, code, compteurs, QR ; IFU et nom de l’acheteur au cartouche ; AIB 5 % ; mention « simulation » (numéro non fiscal)',
-      imp.normalisee && /MECeF NIM : MECEF\d+/.test(imp.normalisee.texte) && /MECeF Compteurs/.test(imp.normalisee.texte) && /QR CODE MECeF/.test(imp.normalisee.texte) && /Acheteur Sonde/.test(imp.normalisee.cartouche) && /3201642748214/.test(imp.normalisee.cartouche) && /AIB 5 %/.test(imp.normalisee.texte) && /Simulation de la maquette/.test(imp.normalisee.texte), imp.normalisee && imp.normalisee.texte.slice(0, 200));
+    verifier('Impression d’une pièce normalisée : NIM, code, compteurs, QR ; IFU et nom de l’acheteur au cartouche ; AUCUNE ligne d’AIB (facture de patient) ; mention « simulation » (numéro non fiscal)',
+      imp.normalisee && /MECeF NIM : MECEF\d+/.test(imp.normalisee.texte) && /MECeF Compteurs/.test(imp.normalisee.texte) && /QR CODE MECeF/.test(imp.normalisee.texte) && /Acheteur Sonde/.test(imp.normalisee.cartouche) && /3201642748214/.test(imp.normalisee.cartouche) && !/AIB \d+ %|AIB \(AIB/.test(imp.normalisee.texte) && /Simulation de la maquette/.test(imp.normalisee.texte), imp.normalisee && imp.normalisee.texte.slice(0, 200));
     verifier('Impression d’une pièce expirée ou non normalisée : bandeau DEMO, AUCUN NIM, AUCUN compteur, AUCUN QR', imp.nonNormalisee && imp.desactivee && [imp.nonNormalisee, imp.desactivee].every((x) => /DEMO : pièce non normalisée/.test(x.texte) && !/MECeF NIM|MECeF Compteurs|QR CODE MECeF/.test(x.texte)), JSON.stringify([imp.nonNormalisee && imp.nonNormalisee.texte.slice(-160)]));
 
     /* --- 6. registre fiscal : cinq états au filtre, jamais « simple » ----------------------------------------------------------- */
@@ -16202,27 +16223,17 @@ async function viderMessages(page) {
       if (!ligne) return out;
       [...ligne.querySelectorAll('button')].find((b) => /Encaisser/.test(b.textContent + (b.title || '') + (b.getAttribute('aria-label') || ''))).click();
       await pause(400);
+      /* Lot FISC-2 (16/11/2026) : le bloc « Facture normalisée » est retiré (la facture d'un patient ne porte ni IFU, ni nom d'acheteur, ni AIB) ; l'encaissement passe et la vente est normalisée sans acheteur. */
       const sec = document.querySelector('[data-section="facture-normalisee"]');
-      out.section = !!sec; out.texteSection = sec ? sec.textContent : '';
-      const champs = sec ? [...sec.querySelectorAll('input')] : [];
-      out.champs = champs.length;
-      if (!sec) return out;
-      champs[0].value = '999'; champs[0].dispatchEvent(new Event('input', { bubbles: true }));
-      champs[1].value = 'Acheteur UI'; champs[1].dispatchEvent(new Event('input', { bubbles: true }));
+      out.section = !!sec; out.texteSection = document.querySelector('.drawer-backdrop') ? document.querySelector('.drawer-backdrop').textContent : '';
       clic(/Valider l.encaissement/);
-      await pause(500);
-      const f = window.SIGH.store.collection('factures').get(i);
-      out.apresRefus = { montantPaye: f.montantPaye, statutMecef: f.statutMecef, toast: /IFU_INVALIDE|13 chiffres/.test(document.body.innerText) };
-      champs[0].value = '3201642748214'; champs[0].dispatchEvent(new Event('input', { bubbles: true }));
-      clic(/Valider l.encaissement/);
-      await pause(700);
+      await pause(900);
       const g = window.SIGH.store.collection('factures').get(i);
-      out.apres = { statutMecef: g.statutMecef, numero: g.numeroMecef, ifu: g.ifuClient, nom: g.acheteurNom, soldee: g.statutPaiement };
+      out.apres = { statutMecef: g.statutMecef, numero: g.numeroMecef, ifu: g.ifuClient || null, taux: g.aibTaux, soldee: g.statutPaiement };
       return out;
     }, ids.ui);
-    verifier('Fenêtre « Facture normalisée » à l’encaissement du registre : trois champs seulement (IFU, nom, AIB), aucun choix « simple »', fen.section === true && fen.champs === 2 && /IFU de l.acheteur/.test(fen.texteSection) && /Nom de l.acheteur/.test(fen.texteSection) && /Taux d.AIB/.test(fen.texteSection) && !/simple/i.test(fen.texteSection), JSON.stringify([fen.ligne, fen.section, fen.champs]));
-    verifier('IFU invalide saisi dans la fenêtre : refus nommé affiché, aucun règlement écrit', fen.apresRefus && fen.apresRefus.montantPaye === 0 && fen.apresRefus.statutMecef === 'en_attente' && fen.apresRefus.toast === true, JSON.stringify(fen.apresRefus));
-    verifier('IFU corrigé : l’encaissement passe, la vente est normalisée avec l’IFU et le nom saisis', fen.apres && fen.apres.statutMecef === 'valide' && /^MECEF\d+$/.test(fen.apres.numero || '') && fen.apres.ifu === '3201642748214' && fen.apres.nom === 'Acheteur UI' && fen.apres.soldee === 'soldee', JSON.stringify(fen.apres));
+    verifier('Fenêtre d’encaissement du registre : plus de bloc « Facture normalisée » (ni IFU de l’acheteur, ni nom, ni taux d’AIB) et aucun choix « simple »', fen.ligne === true && fen.section === false && !/IFU de l.acheteur|Nom de l.acheteur|Taux d.AIB|simple/i.test(fen.texteSection), JSON.stringify([fen.ligne, fen.section]));
+    verifier('L’encaissement passe sans acheteur : la vente est normalisée, AIB nul, IFU vide', fen.apres && fen.apres.statutMecef === 'valide' && /^MECEF\d+$/.test(fen.apres.numero || '') && fen.apres.taux === 0 && !fen.apres.ifu && fen.apres.soldee === 'soldee', JSON.stringify(fen.apres));
 
     /* --- restitution (RG-14 : on archive, on ne supprime pas) -------------------------------------------------------------------- */
     await page.evaluate((mo) => {
@@ -16454,28 +16465,18 @@ async function viderMessages(page) {
       if (!ligne) return out;
       [...ligne.querySelectorAll('button')].find((b) => /Encaisser/.test(b.textContent + (b.title || '') + (b.getAttribute('aria-label') || ''))).click();
       await pause(400);
+      /* Lot FISC-2 (16/11/2026) : la fenêtre de la caisse ne lit plus le barème de l'acheteur : plus de bloc, plus de taux. La vente est normalisée sans AIB. */
       const sec = document.querySelector('[data-section="facture-normalisee"]');
-      out.section = !!sec; if (!sec) return out;
-      const champs = [...sec.querySelectorAll('input')], sel = sec.querySelector('select');
-      out.sansIfu = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : null;
-      champs[0].value = '3201642748214'; champs[0].dispatchEvent(new Event('input', { bubbles: true }));
-      champs[1].value = 'Acheteur S97'; champs[1].dispatchEvent(new Event('input', { bubbles: true }));
-      await pause(200);
-      out.choisi = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : null;
-      out.options = [...sel.options].map((o) => o.textContent.trim());
-      out.indice = (sec.querySelector('[data-aib-indice]') || {}).textContent || '';
+      out.section = !!sec;
+      out.texte = document.querySelector('.drawer-backdrop') ? document.querySelector('.drawer-backdrop').textContent : '';
       clic(/Valider l.encaissement/);
-      await pause(800);
+      await pause(900);
       const f = window.SIGH.store.collection('factures').get(i);
-      out.vente = { aibTaux: f.aibTaux, aibSituation: f.aibSituation, aibVersion: f.aibVersion, aibArrete: f.aibArrete, statut: f.statutMecef, numero: f.numeroMecef, base: f.baseMecef, aibMontant: f.aibMontant };
+      out.vente = { aibTaux: f.aibTaux, aibSituation: f.aibSituation || null, statut: f.statutMecef, numero: f.numeroMecef, base: f.baseMecef, aibMontant: f.aibMontant };
       return out;
     }, monde.a);
-    verifier('Fenêtre de la caisse : la situation « sans IFU » donne 1 % à la date du banc (16/08/2026, avant le 07/09) et le libellé vient du barème ; en saisissant l’IFU, le choix passe d’office au NOUVEAU taux (2 %) de la situation « avec IFU »',
-      fen.section === true && /^1 % : /.test(fen.sansIfu || '') && /^2 % : /.test(fen.choisi || ''), JSON.stringify([fen.sansIfu, fen.choisi]));
-    verifier('Fenêtre de la caisse : la liste des choix est celle du barème (2 % et 3 %, plus « Aucun »), le texte d’aide dit « présumé » : la maquette ne peut pas interroger la DGI',
-      fen.options && fen.options.some((o) => /^2 % : /.test(o)) && fen.options.some((o) => /^3 % : /.test(o)) && fen.options.some((o) => /^Aucun/.test(o)) && /présumé/.test(fen.indice || ''), JSON.stringify([fen.options, fen.indice]));
-    verifier('La vente PORTE le taux, la situation et la version du barème (2 %, avec IFU, version du jour) et est normalisée sur ce taux (AIB 200 sur 10 000)',
-      fen.vente && fen.vente.aibTaux === 2 && fen.vente.aibSituation === 'ifu_actif' && fen.vente.aibVersion === apresEcran.versionId && fen.vente.aibArrete === true && fen.vente.statut === 'valide' && fen.vente.aibMontant === 200, JSON.stringify(fen.vente));
+    verifier('Le barème de l’acheteur n’est plus offert à la caisse : la fenêtre d’encaissement ne porte ni bloc, ni taux d’AIB, ni choix de situation ; la vente est normalisée SANS AIB (taux nul, aucune situation)',
+      fen.ligne === true && fen.section === false && !/Taux d.AIB|IFU de l.acheteur/.test(fen.texte) && fen.vente && fen.vente.aibTaux === 0 && !fen.vente.aibSituation && fen.vente.statut === 'valide' && fen.vente.aibMontant === 0, JSON.stringify(fen.vente));
 
     /* un choix hors défaut est journalisé ; le taux porté par la vente ne se réécrit pas quand le barème change ensuite */
     await admin();
@@ -16483,16 +16484,16 @@ async function viderMessages(page) {
       const PR = window.SIGH.parcours, S = window.SIGH.store;
       const r = PR.encaisser(i.b, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur S97 B', aibSituation: 'prestation_service' } });
       const f = S.collection('factures').get(i.b);
-      const journal = S.raw().audit.some((a) => a.action === 'AIB : taux choisi hors défaut' && a.reference === 'FN-2099-S97B');
       const nonProp = PR.mecef.validerAcheteur({ ifu: '', nom: 'x', aibTaux: 7 }).code;
       const sansBareme = PR.mecef.validerAcheteur({ ifu: '', nom: 'x', aibSituation: 'situation_inconnue' }).code;
-      return { norm: r.normalisation && r.normalisation.ok, aibTaux: f.aibTaux, aibSituation: f.aibSituation, journal, nonProp, sansBareme };
+      return { refus: r.refusNomme && r.refusNomme.code, montantPaye: f.montantPaye, aibTaux: f.aibTaux == null ? null : f.aibTaux, nonProp, sansBareme };
     }, monde);
-    verifier('Un taux choisi à la main hors du défaut (prestation de service, 3 %) est accepté, porté par la vente et JOURNALISÉ ; un taux absent du barème (7 %) et une situation sans barème sont refusés en les nommant',
-      hd.norm === true && hd.aibTaux === 3 && hd.aibSituation === 'prestation_service' && hd.journal === true && hd.nonProp === 'AIB_TAUX_INVALIDE' && hd.sansBareme === 'AIB_SANS_BAREME', JSON.stringify(hd));
+    verifier('Un taux demandé sur une facture de patient (ligne du barème « prestation de service », taux de 7 %, ligne inconnue) est refusé AIB_FACTURE_PATIENT : rien n’est écrit, le barème de l’acheteur ne sert plus à la caisse',
+      hd.refus === 'AIB_FACTURE_PATIENT' && hd.montantPaye === 0 && hd.aibTaux === null && hd.nonProp === 'AIB_FACTURE_PATIENT' && hd.sansBareme === 'AIB_FACTURE_PATIENT', JSON.stringify(hd));
     const tenu = await page.evaluate((o) => {
       const B = window.SIGH.baremeAib, S = window.SIGH.store;
-      /* le barème revient à l'ancien taux (retrait de la version du jour) : les ventes déjà émises gardent 2 % et leur version */
+      /* une pièce DÉJÀ ÉMISE (avant le lot FISC-2) porte 2 % et sa version : le barème revient à l'ancien taux (retrait de la version du jour), elle les garde */
+      S.collection('factures').update(o.a, { aibTaux: 2, aibSituation: 'ifu_actif', aibVersion: o.versionId });
       const retrait = B.retirerVersion(o.versionId, 'Sonde 97 : fin de sonde');
       const f = S.collection('factures').get(o.a);
       const r = window.SIGH.mecef.retransmettre(o.a);
@@ -17703,8 +17704,8 @@ async function viderMessages(page) {
       const fb = S.collection('factures').get(mo.b), fa = S.collection('factures').get(mo.a);
       return { ok: !!(r.normalisation && r.normalisation.ok), b: [fb.aibCharge, fb.aibChargeArretee, fb.aibTaux], a: [fa.aibCharge, fa.aibChargeArretee, fa.aibTaux] };
     }, monde);
-    verifier('La vente PORTE la charge de sa date : émise avant le changement elle reste « clinique » (réglage non arrêté) et ne se réécrit pas, émise après elle porte « acheteur » (arrêté) ; le taux et le montant de l’AIB sont les mêmes (aucun effet comptable inventé)',
-      monde.venteAvant.charge === 'clinique' && monde.venteAvant.arretee === false && vente.a[0] === 'clinique' && vente.a[1] === false && vente.b[0] === 'acheteur' && vente.b[1] === true && vente.a[2] === vente.b[2], JSON.stringify([monde.venteAvant, vente]));
+    verifier('Lot FISC-2 : la facture d’un patient ne porte plus ni taux d’AIB ni charge du prélèvement (émise avant ou après le changement du réglage) : la charge ne concerne plus que les règlements à des tiers ; aucun effet comptable inventé',
+      vente.ok && (monde.venteAvant.charge == null) && vente.a[0] == null && vente.b[0] == null && vente.a[2] === 0 && vente.b[2] === 0, JSON.stringify([monde.venteAvant, vente]));
 
     /* --- 7. activé : ce qui est listé SEULEMENT, équilibré, en brouillon, une seule fois ---------------------------------------------------------- */
     await creerFactures();
@@ -27729,6 +27730,432 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT EXP FIN */
+  /* LOT FISC-2 DEBUT (Vagues 220 à 224) : confirmation CNSS, deux barèmes de l'AIB, imputations, facture de patient sans AIB, motif du validateur (Direction, 16/11/2026, section AQ) */
+  await etape(async () => {
+    scenario('Vague 220 : lot FISC-2, « Confirmer » le versement CNSS (geste réservé, référence obligatoire, signée, journalisée, versionnée par date, version « à confirmer » gardée à l’historique, commande ABSENTE sans le droit et moteur qui refuse, jamais réécrite)');
+    erreursJS = [];
+    const depart = await FISC2.sauver(['obligationsFiscales', 'historiqueObligations', 'rbac']);
+    await FISC2.session('admin');
+    await ouvrir('cfg-comptabilite.html');
+    const e0 = await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav;
+      const f = S.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0];
+      const ligne = [...document.querySelectorAll('#page-content tr')].find((tr) => tr.querySelector('.a-confirmer[data-code="CNSS-VERSEMENT"]'));
+      return { aConfirmer: f && f.aConfirmer === true, jour: f && f.jour, geste: !!N.geste('confirmer_obligation_fiscale'), detenteurs: N.rolesAvecGeste('confirmer_obligation_fiscale').slice().sort(),
+        ligne: !!ligne, bouton: !!(ligne && [...ligne.querySelectorAll('button')].find((b) => /^Confirmer$/.test(b.textContent.trim()))),
+        autres: [...document.querySelectorAll('#page-content .a-confirmer')].map((x) => x.getAttribute('data-code')) };
+    });
+    verifier('Le versement CNSS (le 15) est « à confirmer par la CNSS » ; le geste réservé « confirmer_obligation_fiscale » est au manifeste (admin, DAF, Direction d’origine) ; l’écran montre « Confirmer » sur sa ligne et sur nulle autre',
+      e0.aConfirmer && e0.jour === 15 && e0.geste && JSON.stringify(e0.detenteurs) === JSON.stringify(['admin', 'da', 'direction']) && e0.ligne && e0.bouton && JSON.stringify(e0.autres) === JSON.stringify(['CNSS-VERSEMENT']), JSON.stringify(e0));
+
+    /* les refus se nomment et n'écrivent rien */
+    const refus = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, S = window.SIGH.store;
+      const h0 = S.collection('historiqueObligations').all().length;
+      const avant = JSON.stringify(S.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0]);
+      const r = {};
+      r.sansReference = CF.confirmerObligation({ code: 'CNSS-VERSEMENT', reference: '   ' }).code;
+      r.inconnue = CF.confirmerObligation({ code: 'NEXISTE-PAS', reference: 'R1' }).code;
+      r.dejaArretee = CF.confirmerObligation({ code: 'CNSS', reference: 'R1' }).code;
+      S.setReglage('posteFileul', true); r.fileul = CF.confirmerObligation({ code: 'CNSS-VERSEMENT', reference: 'R1' }).code; S.setReglage('posteFileul', false);
+      r.rien = S.collection('historiqueObligations').all().length === h0 && JSON.stringify(S.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0]) === avant;
+      return r;
+    });
+    verifier('Refus nommés : référence absente (CONFIRMATION_REFERENCE_ABSENTE), obligation inconnue, obligation qui n’est pas à confirmer (OBLIGATION_DEJA_CONFIRMEE), poste fileul (FILEUL_LECTURE_SEULE) ; rien n’est écrit',
+      refus.sansReference === 'CONFIRMATION_REFERENCE_ABSENTE' && refus.inconnue === 'OBLIGATION_INCONNUE' && refus.dejaArretee === 'OBLIGATION_DEJA_CONFIRMEE' && refus.fileul === 'FILEUL_LECTURE_SEULE' && refus.rien === true, JSON.stringify(refus));
+
+    /* sans le droit : commande ABSENTE et moteur qui refuse (le comptable n'a pas le geste d'origine ; la DAF le perd par sa fiche) */
+    await FISC2.geste('da', 'confirmer_obligation_fiscale', false);
+    await FISC2.session('da');
+    await ouvrir('cfg-comptabilite.html');
+    const sansDroit = await page.evaluate(() => {
+      const ligne = [...document.querySelectorAll('#page-content tr')].find((tr) => tr.querySelector('.a-confirmer[data-code="CNSS-VERSEMENT"]'));
+      const r = window.SIGH.configurationFiscale.confirmerObligation({ code: 'CNSS-VERSEMENT', reference: 'REF-DA' });
+      return { ligne: !!ligne, bouton: !!(ligne && [...ligne.querySelectorAll('button')].find((b) => /^Confirmer$/.test(b.textContent.trim()))), refus: r.code, roles: (r.roles || []).slice().sort(),
+        encore: window.SIGH.store.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0].aConfirmer === true };
+    });
+    await FISC2.geste('da', 'confirmer_obligation_fiscale', null);
+    verifier('La DAF privée du geste par sa fiche RBAC : « Confirmer » est ABSENT de la ligne et le moteur refuse CONFIRMATION_RESERVEE en nommant les détenteurs ; l’obligation reste « à confirmer »',
+      sansDroit.ligne && !sansDroit.bouton && sansDroit.refus === 'CONFIRMATION_RESERVEE' && sansDroit.roles.indexOf('admin') >= 0 && sansDroit.encore, JSON.stringify(sansDroit));
+    await FISC2.session('comptable');
+    const compt = await page.evaluate(() => window.SIGH.configurationFiscale.confirmerObligation({ code: 'CNSS-VERSEMENT', reference: 'REF-C' }).code);
+    verifier('Le comptable, qui n’a pas le geste d’origine, est refusé (CONFIRMATION_RESERVEE) : le droit est réglable par rôle, jamais un nom de rôle dans le moteur', compt === 'CONFIRMATION_RESERVEE', compt);
+
+    /* « Confirmer » à l'écran : référence obligatoire, puis signée, journalisée, versionnée par date */
+    await FISC2.session('admin');
+    await ouvrir('cfg-comptabilite.html');
+    const ui = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const out = {};
+      const ligne = () => [...document.querySelectorAll('#page-content tr')].find((tr) => tr.querySelector('.a-confirmer[data-code="CNSS-VERSEMENT"], .confirmee[data-code="CNSS-VERSEMENT"]'));
+      [...ligne().querySelectorAll('button')].find((b) => /^Confirmer$/.test(b.textContent.trim())).click();
+      await pause(400);
+      const modal = document.querySelector('.drawer-backdrop');
+      out.modal = !!modal;
+      const ref = document.getElementById('f_reference');
+      const valider = () => [...document.querySelectorAll('.drawer-backdrop button')].find((b) => /^Confirmer$/.test(b.textContent.trim()));
+      valider().click(); await pause(400);
+      out.sansRef = window.SIGH.store.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0].aConfirmer === true;
+      ref.value = 'Courrier CNSS n° 2026/118 du 12/11/2026'; ref.dispatchEvent(new Event('input', { bubbles: true }));
+      valider().click(); await pause(900);
+      return out;
+    });
+    await attendreEcritures();
+    const apres = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data, C = window.SIGH.core;
+      const f = S.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0];
+      const h = S.collection('historiqueObligations').active().filter((o) => o.code === 'CNSS-VERSEMENT');
+      const auj = C.iso(C.aujourdhui()), veille = C.iso(C.addDays(C.aujourdhui(), -1));
+      const aLaDate = (d) => D.obligationsALaDate(d).filter((o) => o.code === 'CNSS-VERSEMENT')[0];
+      const j = S.collection('audit').all().filter((a) => a.action === 'Confirmation d’obligation fiscale').length;
+      const ligne = [...document.querySelectorAll('#page-content tr')].find((tr) => tr.querySelector('.confirmee[data-code="CNSS-VERSEMENT"]'));
+      return { aConfirmer: f.aConfirmer, ref: f.confirmationReference, par: f.confirmeePar, le: !!f.confirmeeLe, dateEffet: f.dateEffet, auj, historique: h.length, hAConfirmer: h[0] && h[0].aConfirmer, hFin: h[0] && h[0].dateFin, veille,
+        hier: aLaDate(veille) && aLaDate(veille).aConfirmer, aujourdhui: aLaDate(auj) && aLaDate(auj).aConfirmer, journal: j, noteAConfirmer: /À confirmer par la CNSS/.test(f.note || ''),
+        ligne: !!ligne, mention: ligne ? ligne.textContent : '', boutonRestant: !!(ligne && [...ligne.querySelectorAll('button')].find((b) => /^Confirmer$/.test(b.textContent.trim()))) };
+    });
+    verifier('« Confirmer » à l’écran : sans référence rien n’est écrit ; avec la référence, l’obligation passe à « confirmée », signée (compte, date, heure), la note « à confirmer » tombe, la ligne dit « Confirmée (référence …) » et le bouton disparaît',
+      ui.modal && ui.sansRef && apres.aConfirmer === false && /2026\/118/.test(apres.ref) && /FISC2 admin/.test(apres.par) && apres.le && !apres.noteAConfirmer && apres.ligne && /Confirmée \(référence Courrier CNSS/.test(apres.mention) && !apres.boutonRestant, JSON.stringify({ ui, apres }));
+    verifier('Versionnée par date : la version « à confirmer » est GARDÉE à l’historique (date de fin = la veille), lue à la veille elle est « à confirmer », à la date de confirmation elle est « confirmée » ; une ligne de journal (RG-12)',
+      apres.historique === 1 && apres.hAConfirmer === true && apres.hFin === apres.veille && apres.dateEffet === apres.auj && apres.hier === true && apres.aujourdhui === false && apres.journal >= 1, JSON.stringify(apres));
+
+    /* une confirmation ne se réécrit pas */
+    const seconde = await page.evaluate(() => {
+      const S = window.SIGH.store, f0 = S.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0];
+      const r = window.SIGH.configurationFiscale.confirmerObligation({ code: 'CNSS-VERSEMENT', reference: 'AUTRE-REF' });
+      const f1 = S.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT')[0];
+      return { code: r.code, ref: f1.confirmationReference === f0.confirmationReference, historique: S.collection('historiqueObligations').active().filter((o) => o.code === 'CNSS-VERSEMENT').length };
+    });
+    verifier('Une seconde confirmation est refusée (OBLIGATION_DEJA_CONFIRMEE) : la référence signée n’est pas réécrite et l’historique ne grossit pas', seconde.code === 'OBLIGATION_DEJA_CONFIRMEE' && seconde.ref && seconde.historique === 1, JSON.stringify(seconde));
+    await FISC2.restituer(depart);
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 221 : lot FISC-2, DEUX barèmes de l’AIB datés en base (situation de l’acheteur ; retenue sur la facture d’un tiers 3 % personne physique, 5 % personne morale), lus à la date, validés par le profil de la famille (signés, journalisés), le second jamais proposé à la caisse');
+    erreursJS = [];
+    const depart = await FISC2.sauver(['situationsAib', 'baremeAib', 'validationsReferentiels']);
+    await FISC2.session('comptable');
+    await ouvrir('cfg-bareme-aib.html');
+    const s0 = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store, PR = window.SIGH.parcours;
+      const t = (s, d) => { const r = B.aLaDate(s, d); return r.ok ? r.taux : r.code; };
+      return { acheteur: B.situations().map((x) => x.code), tiers: B.situations('retenue_tiers').map((x) => x.code), tous: B.situations('tous').length,
+        physique: t('personne_physique', '2026-11-16'), morale: t('personne_morale', '2026-11-16'), ifuActif: t('ifu_actif', '2026-11-16'), sansIfu: t('ifu_inactif_ou_absent', '2026-11-16'), sansIfuAvant: t('ifu_inactif_ou_absent', '2026-09-06'), presta: t('prestation_service', '2026-11-16'),
+        avantDebut: t('personne_morale', '2025-12-31'), propose: PR.tauxAibProposes({ ifu: '', date: '2026-11-16' }).choix.map((c) => c.situation),
+        defautCaisse: window.SIGH.mecef.aibTauxDefaut('3201642748214', '2026-11-16'), familles: S.collection('situationsAib').active().map((x) => x.code + ':' + (x.famille || 'acheteur')),
+        versions: S.collection('baremeAib').active().length, sourceTiers: (S.collection('baremeAib').active().filter((v) => v.situation === 'personne_morale')[0] || {}).source };
+    });
+    verifier('Deux barèmes SEMÉS en base : situations de l’acheteur (ifu_actif, ifu_inactif_ou_absent, prestation_service) et retenue sur facture de tiers (personne_physique 3 %, personne_morale 5 %), chacune avec sa version datée et sa source ; 1 / 5 / 3 % de l’acheteur inchangés',
+      JSON.stringify(s0.acheteur) === JSON.stringify(['ifu_actif', 'ifu_inactif_ou_absent', 'prestation_service']) && JSON.stringify(s0.tiers) === JSON.stringify(['personne_physique', 'personne_morale']) && s0.tous === 5
+      && s0.physique === 3 && s0.morale === 5 && s0.ifuActif === 1 && s0.sansIfu === 5 && s0.presta === 3 && s0.versions >= 6 && /articles 132 d\) et 135/i.test(s0.sourceTiers || ''), JSON.stringify(s0));
+    verifier('Un taux se lit À LA DATE : le barème de la retenue n’a aucune version avant 2026 (AIB_SANS_BAREME, jamais zéro) ; l’acheteur sans IFU actif était à 1 % le 06/09/2026 et à 5 % ensuite ; la retenue n’est JAMAIS proposée à la caisse (ni choix, ni défaut)',
+      s0.avantDebut === 'AIB_SANS_BAREME' && s0.sansIfuAvant === 1 && s0.propose.indexOf('personne_physique') < 0 && s0.propose.indexOf('personne_morale') < 0 && s0.propose.length === 3, JSON.stringify(s0));
+
+    /* une version datée à venir pour la personne physique, lue à la date, jamais réécrite ; naît « à valider » pour un profil de la famille ? (la famille valide à l'enregistrement) */
+    const v = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, C = window.SIGH.core, S = window.SIGH.store;
+      const dans30 = C.iso(C.addDays(C.aujourdhui(), 30));
+      const r = B.nouvelleVersion({ situation: 'personne_physique', taux: 4, dateEffet: dans30, source: 'Sonde 221', motif: 'Sonde 221 : version à venir' });
+      const aujourdhui = B.aLaDate('personne_physique', C.iso(C.aujourdhui())), plusTard = B.aLaDate('personne_physique', dans30);
+      const fiche = S.collection('baremeAib').get(r.id);
+      const reecrit = S.collection('baremeAib').update(r.id, { taux: 9 });
+      return { ok: r.ok, auj: aujourdhui.taux, tard: plusTard.taux, valide: !!(fiche && fiche.valideLe), validePar: fiche && fiche.validePar, role: fiche && fiche.valideRole, aValider: fiche && fiche.aValider,
+        reecrit: reecrit === null || reecrit === undefined ? 'refusee' : 'acceptee', taux: S.collection('baremeAib').get(r.id).taux };
+    });
+    verifier('Nouvelle version du barème de la retenue : lue à sa date (3 % aujourd’hui, 4 % dans 30 jours), arrêtée à l’enregistrement par un profil de la famille (comptable : signée, datée), non réécrite (AIB_VERSION_FIGEE)',
+      v.ok && v.auj === 3 && v.tard === 4 && v.valide && /FISC2 comptable/.test(v.validePar) && v.aValider === false && v.reecrit === 'refusee' && v.taux === 4, JSON.stringify(v));
+
+    /* la validation existante : « proposition à valider » devient « validé » (signé, journalisé), réservée à la famille */
+    const val = await page.evaluate(() => {
+      const V = window.SIGH.validations, S = window.SIGH.store;
+      const cible = S.collection('baremeAib').active().filter((x) => x.aValider === true)[0];
+      const aV0 = S.collection('baremeAib').active().filter((x) => x.aValider === true).length;
+      const horsFamille = V.validerReferentiel('bareme_aib', cible.id, { role: 'caissier' });
+      const ok = V.validerReferentiel('bareme_aib', cible.id, { role: 'comptable' });
+      const apres = S.collection('baremeAib').get(cible.id);
+      const encore = V.validerReferentiel('bareme_aib', cible.id, { role: 'comptable' });
+      const j = S.collection('audit').all().filter((a) => a.action === 'Validation' && /AIB/i.test(JSON.stringify(a))).length;
+      return { aV0, horsFamille: horsFamille.code, ok: ok.ok, apresAValider: apres.aValider, validePar: apres.validePar, valideLe: !!apres.valideLe, encore: encore.code, journal: j, aV1: S.collection('baremeAib').active().filter((x) => x.aValider === true).length };
+    });
+    verifier('La validation du barème (existante) change « proposition à valider » en « validé » : signée, datée, journalisée ; refusée hors famille (VALIDATION_RESERVEE) ; refaite : DEJA_VALIDE ; une version de moins attend',
+      val.aV0 > 0 && val.horsFamille === 'VALIDATION_RESERVEE' && val.ok === true && val.apresAValider === false && /FISC2 comptable/.test(val.validePar) && val.valideLe && val.encore === 'DEJA_VALIDE' && val.journal >= 1 && val.aV1 === val.aV0 - 1, JSON.stringify(val));
+    await FISC2.restituer(depart);
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 222 : lot FISC-2, IMPUTER l’AIB opération par opération (onglet « Imputations ») : le logiciel propose le taux du barème à la date de l’opération, le comptable décide (appliquer ou non, ligne, taux, compte), geste réservé « imputer_aib », refus nommés, signée, journalisée, jamais réécrite');
+    erreursJS = [];
+    const depart = await FISC2.sauver(['imputationsAib', 'rbac']);
+    await FISC2.session('comptable');
+    await ouvrir('cfg-bareme-aib.html');
+    const compte = await page.evaluate(() => { const c = window.SIGH.store.collection('comptes').active()[0]; return String(c.num); });
+    const e0 = await page.evaluate(() => {
+      const IA = window.SIGH.imputationAib, N = window.SIGH.nav;
+      const p = IA.proposer({ situation: 'personne_morale', date: '2026-11-16' }), q = IA.proposer({ situation: 'personne_physique', date: '2026-11-16' }), x = IA.proposer({ situation: 'nexiste_pas', date: '2026-11-16' });
+      return { morale: p.ok && p.taux, physique: q.ok && q.taux, inconnue: x.code, geste: !!N.geste('imputer_aib'), detenteurs: N.rolesAvecGeste('imputer_aib').slice().sort(), operations: IA.OPERATIONS.map((o) => o.value) };
+    });
+    verifier('Le logiciel PROPOSE le taux du barème à la date de l’opération (personne morale 5 %, personne physique 3 %), refuse une ligne inconnue ; le geste « imputer_aib » est au manifeste (comptable, DAF, administrateur d’origine) ; trois opérations : achats, règlements de prescripteurs et prestataires, règlements d’assureurs',
+      e0.morale === 5 && e0.physique === 3 && e0.inconnue === 'AIB_SITUATION_INCONNUE' && e0.geste && JSON.stringify(e0.detenteurs) === JSON.stringify(['admin', 'comptable', 'da'])
+      && JSON.stringify(e0.operations) === JSON.stringify(['achat_fournisseur', 'reglement_prescripteur', 'reglement_assureur']), JSON.stringify(e0));
+
+    const refus = await page.evaluate((cpt) => {
+      const IA = window.SIGH.imputationAib, S = window.SIGH.store;
+      const base = { operation: 'achat_fournisseur', reference: 'FF-S222-1', tiers: 'Fournisseur Sonde', dateOperation: '2026-11-10', base: 100000 };
+      const n0 = IA.liste().length;
+      const r = {};
+      r.operation = IA.imputer(Object.assign({}, base, { operation: 'vente', appliquer: false, motif: 'm' })).code;
+      r.reference = IA.imputer(Object.assign({}, base, { reference: ' ', appliquer: false, motif: 'm' })).code;
+      r.date = IA.imputer(Object.assign({}, base, { dateOperation: 'demain', appliquer: false, motif: 'm' })).code;
+      r.base = IA.imputer(Object.assign({}, base, { base: 0, appliquer: false, motif: 'm' })).code;
+      r.decisionAbsente = IA.imputer(Object.assign({}, base, { situation: 'personne_morale', taux: 5, compte: cpt })).code;
+      r.nonSansMotif = IA.imputer(Object.assign({}, base, { appliquer: false })).code;
+      r.ligne = IA.imputer(Object.assign({}, base, { appliquer: true, taux: 5, compte: cpt })).code;
+      r.tauxAbsent = IA.imputer(Object.assign({}, base, { appliquer: true, situation: 'personne_morale', compte: cpt })).code;
+      r.tauxInvalide = IA.imputer(Object.assign({}, base, { appliquer: true, situation: 'personne_morale', taux: 101, compte: cpt })).code;
+      r.compteAbsent = IA.imputer(Object.assign({}, base, { appliquer: true, situation: 'personne_morale', taux: 5 })).code;
+      r.compteInconnu = IA.imputer(Object.assign({}, base, { appliquer: true, situation: 'personne_morale', taux: 5, compte: '999999999' })).code;
+      r.horsBaremeSansMotif = IA.imputer(Object.assign({}, base, { appliquer: true, situation: 'personne_morale', taux: 3, compte: cpt })).code;
+      r.rien = IA.liste().length === n0;
+      return r;
+    }, compte);
+    verifier('Refus nommés, rien n’est écrit : opération inconnue, référence absente, date illisible, base nulle, DÉCISION ABSENTE (le logiciel ne décide jamais), « ne pas appliquer » sans motif, ligne absente, taux absent ou invalide, compte absent ou inconnu (aucun numéro présélectionné), taux hors barème sans motif',
+      refus.operation === 'AIB_OPERATION_INCONNUE' && refus.reference === 'AIB_REFERENCE_ABSENTE' && refus.date === 'AIB_DATE_INVALIDE' && refus.base === 'AIB_BASE_INVALIDE' && refus.decisionAbsente === 'AIB_DECISION_ABSENTE'
+      && refus.nonSansMotif === 'AIB_MOTIF_ABSENT' && refus.ligne === 'AIB_LIGNE_ABSENTE' && refus.tauxAbsent === 'AIB_TAUX_ABSENT' && refus.tauxInvalide === 'AIB_TAUX_INVALIDE' && refus.compteAbsent === 'AIB_COMPTE_ABSENT'
+      && refus.compteInconnu === 'AIB_COMPTE_INCONNU' && refus.horsBaremeSansMotif === 'AIB_MOTIF_ABSENT' && refus.rien, JSON.stringify(refus));
+
+    const ok = await page.evaluate((cpt) => {
+      const IA = window.SIGH.imputationAib, S = window.SIGH.store;
+      const a = IA.imputer({ operation: 'achat_fournisseur', reference: 'FF-S222-A', tiers: 'Fournisseur Sonde', dateOperation: '2026-11-10', base: 100000, appliquer: true, situation: 'personne_morale', taux: 5, compte: cpt });
+      const b = IA.imputer({ operation: 'reglement_assureur', reference: 'REG-S222-B', tiers: 'Assureur Sonde', dateOperation: '2026-11-11', base: 250000, appliquer: false, motif: 'Cet assureur n’applique pas l’AIB à ce règlement' });
+      const c = IA.imputer({ operation: 'reglement_prescripteur', reference: 'HON-S222-C', tiers: 'Dr Sonde', dateOperation: '2026-11-12', base: 40000, appliquer: true, situation: 'personne_physique', taux: 4, compte: cpt, motif: 'Le prescripteur a négocié 4 %' });
+      const dbl = IA.imputer({ operation: 'achat_fournisseur', reference: 'ff-s222-a', dateOperation: '2026-11-10', base: 100000, appliquer: false, motif: 'm' });
+      const fa = a.ok && S.collection('imputationsAib').get(a.id), fb = b.ok && S.collection('imputationsAib').get(b.id), fc = c.ok && S.collection('imputationsAib').get(c.id);
+      const reecrit = a.ok ? S.collection('imputationsAib').update(a.id, { taux: 1 }) : 'x';
+      const j = S.collection('audit').all().filter((x) => x.action === 'AIB : imputation').length;
+      return { a: a.ok && { montant: fa.montant, prop: fa.propositionTaux, hors: fa.horsProposition, signe: fa.signeePar, role: fa.signeeRole, compte: fa.compte },
+        b: b.ok && { appliquer: fb.appliquer, taux: 'taux' in fb, montant: 'montant' in fb, motif: fb.motif }, c: c.ok && { montant: fc.montant, prop: fc.propositionTaux, hors: fc.horsProposition, motif: fc.motif },
+        dbl: dbl.code, reecrit: reecrit === null || reecrit === undefined ? 'refusee' : 'acceptee', taux: fa && S.collection('imputationsAib').get(a.id).taux, journal: j, ids: [a.id, b.id, c.id] };
+    }, compte);
+    verifier('Trois imputations au gré du comptable : appliquée au taux du barème (5 % de 100 000 = 5 000, signée par le compte et son rôle), NON appliquée (aucun taux ni montant écrit, motif dit), appliquée à un autre taux motivé (4 % de 40 000 = 1 600, marquée hors proposition) ; une ligne de journal chacune ; la même opération ne s’impute pas deux fois (AIB_DEJA_IMPUTEE, même écrite autrement) ; jamais réécrite (AIB_IMPUTATION_FIGEE)',
+      ok.a && ok.a.montant === 5000 && ok.a.prop === 5 && ok.a.hors === false && /FISC2 comptable/.test(ok.a.signe) && ok.a.role && ok.b && ok.b.appliquer === false && !ok.b.taux && !ok.b.montant && /n’applique pas/.test(ok.b.motif)
+      && ok.c && ok.c.montant === 1600 && ok.c.prop === 3 && ok.c.hors === true && /4 %/.test(ok.c.motif) && ok.dbl === 'AIB_DEJA_IMPUTEE' && ok.reecrit === 'refusee' && ok.taux === 5 && ok.journal >= 3, JSON.stringify(ok));
+
+    /* l'onglet « Imputations » : la liste, la commande « Imputer une opération » */
+    await ouvrir('cfg-bareme-aib.html');
+    const onglet = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const tab = [...document.querySelectorAll('#page-content button, #page-content [role="tab"]')].find((b) => /^Imputations/.test(b.textContent.trim()));
+      if (!tab) return { onglet: false };
+      tab.click(); await pause(500);
+      const texte = document.getElementById('page-content').textContent;
+      const imputer = [...document.querySelectorAll('#page-content button')].find((b) => /Imputer une opération/.test(b.textContent));
+      return { onglet: true, lignes: ['FF-S222-A', 'REG-S222-B', 'HON-S222-C'].every((r) => texte.includes(r)), appliquee: /Appliqué 5 %/.test(texte), non: /Non appliqué/.test(texte), hors: /Appliqué 4 %/.test(texte), commande: !!imputer, patient: /ne porte aucun AIB/.test(texte) };
+    });
+    verifier('L’onglet « Imputations » liste les trois opérations avec leur décision (Appliqué 5 %, Non appliqué, Appliqué 4 %) et porte « Imputer une opération » ; il rappelle que la facture du patient ne porte aucun AIB',
+      onglet.onglet && onglet.lignes && onglet.appliquee && onglet.non && onglet.hors && onglet.commande && onglet.patient, JSON.stringify(onglet));
+
+    /* formulaire : décision à prendre (aucune présélection), proposition affichée, enregistrement */
+    const form = await page.evaluate(async (cpt) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const out = {};
+      [...document.querySelectorAll('#page-content button')].find((b) => /Imputer une opération/.test(b.textContent)).click();
+      await pause(500);
+      const m = document.querySelector('.drawer-backdrop');
+      const champ = (n) => m.querySelector('[name="' + n + '"], #f_' + n);
+      const poser = (n, v) => { const c = champ(n); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      out.decisionVide = champ('appliquer').value === '';
+      out.compteVide = champ('compte') ? champ('compte').value === '' : null;
+      poser('operation', 'achat_fournisseur'); poser('reference', 'FF-S222-UI'); poser('tiers', 'Fournisseur UI'); poser('dateOperation', '2026-11-13'); poser('base', '60000'); poser('appliquer', 'oui'); await pause(200);
+      poser('situation', 'personne_morale'); await pause(200);
+      out.proposition = (m.querySelector('[data-proposition]') || {}).textContent || '';
+      poser('taux', '5'); poser('compte', cpt);
+      [...m.querySelectorAll('button')].find((b) => /Enregistrer l.imputation/.test(b.textContent)).click();
+      await pause(900);
+      const f = window.SIGH.store.collection('imputationsAib').all().filter((x) => x.reference === 'FF-S222-UI')[0];
+      out.fiche = f ? { taux: f.taux, montant: f.montant, compte: f.compte } : null;
+      return out;
+    }, compte);
+    verifier('Le formulaire ne présélectionne rien (décision et compte vides), affiche la proposition du barème à la date saisie (5 %), et enregistre l’imputation décidée (5 % de 60 000 = 3 000)',
+      form.decisionVide && form.compteVide !== false && /5 %/.test(form.proposition) && form.fiche && form.fiche.taux === 5 && form.fiche.montant === 3000 && form.fiche.compte === compte, JSON.stringify(form));
+
+    /* annulation motivée : archive (RG-14), l'opération redevient imputable */
+    const ann = await page.evaluate((cpt) => {
+      const IA = window.SIGH.imputationAib, S = window.SIGH.store;
+      const x = S.collection('imputationsAib').all().filter((f) => f.reference === 'FF-S222-A')[0];
+      const sans = IA.annuler(x.id, '  ').code;
+      const r = IA.annuler(x.id, 'Sonde 222 : erreur de saisie');
+      const refaire = IA.imputer({ operation: 'achat_fournisseur', reference: 'FF-S222-A', dateOperation: '2026-11-10', base: 100000, appliquer: true, situation: 'personne_morale', taux: 5, compte: cpt });
+      return { sans, ok: r.ok, archivee: S.collection('imputationsAib').get(x.id).statut, refaire: refaire.ok };
+    }, compte);
+    verifier('Annuler une imputation exige un motif (AIB_MOTIF_ABSENT), l’archive (RG-14, jamais supprimée) et l’opération redevient imputable', ann.sans === 'AIB_MOTIF_ABSENT' && ann.ok && ann.archivee === 'archive' && ann.refaire, JSON.stringify(ann));
+
+    /* sans le geste : commande ABSENTE, moteur refuse ; fiche restaurée */
+    await FISC2.geste('comptable', 'imputer_aib', false);
+    await FISC2.session('comptable');
+    await ouvrir('cfg-bareme-aib.html');
+    const sans = await page.evaluate(async (cpt) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const tab = [...document.querySelectorAll('#page-content button, #page-content [role="tab"]')].find((b) => /^Imputations/.test(b.textContent.trim()));
+      if (tab) { tab.click(); await pause(400); }
+      const r = window.SIGH.imputationAib.imputer({ operation: 'achat_fournisseur', reference: 'FF-S222-X', dateOperation: '2026-11-10', base: 1000, appliquer: true, situation: 'personne_morale', taux: 5, compte: cpt });
+      return { onglet: !!tab, commande: !![...document.querySelectorAll('#page-content button')].find((b) => /Imputer une opération/.test(b.textContent)), refus: r.code,
+        existe: window.SIGH.store.collection('imputationsAib').all().some((f) => f.reference === 'FF-S222-X') };
+    }, compte);
+    await FISC2.restituer(depart);
+    await attendreEcritures();
+    verifier('Sans le geste « imputer_aib » (fiche RBAC du comptable), « Imputer une opération » est ABSENTE et le moteur refuse IMPUTATION_AIB_RESERVEE : masquer ne protège rien ; fiche et imputations restaurées',
+      sans.onglet && !sans.commande && sans.refus === 'IMPUTATION_AIB_RESERVEE' && !sans.existe, JSON.stringify(sans));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 223 : lot FISC-2, la facture d’un PATIENT ne porte aucun AIB ni bloc « Facture normalisée » (Facturation, registre des paiements, file de caisse), le moteur refuse un taux demandé (AIB_FACTURE_PATIENT), la vente reste normalisée sans acheteur, une pièce déjà émise garde son taux');
+    erreursJS = [];
+    await FISC2.session('admin');
+    /* 1. aucun bloc : les trois écrans */
+    await ouvrir('m8-facturation.html');
+    const f1 = await page.evaluate(() => ({ bloc: !!document.querySelector('[data-section="facture-normalisee"]'), texte: /IFU de l.acheteur|Nom de l.acheteur|Taux d.AIB/.test(document.getElementById('page-content').textContent) }));
+    verifier('« Facturation des patients » : plus aucun bloc « Facture normalisée » (ni IFU de l’acheteur, ni nom de l’acheteur, ni taux d’AIB)', !f1.bloc && !f1.texte, JSON.stringify(f1));
+
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const sauve = { reglage: S.reglage('mecefBoitier', { compteur: 0, emissions: [] }), mode: S.reglage('mecefMode', 'boitier') };
+      const ecr0 = S.collection('ecritures').all().map((e) => e.id);
+      const L = (id, brut) => ({ id, categorie: 'acte', designation: 'Acte ' + id, quantite: 1, prixUnitaire: brut, prixUnitaireNet: brut, montantBrut: brut, remise: 0, montant: brut,
+        partAssureur: 0, partPersonnel: 0, partPatient: brut, statutPaiement: 'du', montantRegle: 0 });
+      const mk = (cle, o) => {
+        return S.collection('factures', { module: 'M8', entite: 'Facture' }).insert(Object.assign({ numero: 'FN-2099-S223' + cle, patientId: 'P223', patient: 'SONDE Sans AIB', patientCode: 'CNT/223/26', date: '2026-12-31', type: 'Consultation',
+          lignes: [L('L001', 10000), L('L002', 6000)], montantHT: 16000, montantTTC: 16000, montantRemises: 0, assureur: null, partAssurance: 0, partPatient: 16000, montantPaye: 0, reliquat: 16000, modePaiement: 'especes',
+          statutPaiement: 'impayee', statutMecef: 'en_attente', proforma: false }, o || {})).record.id;
+      };
+      return { ids: { a: mk('A'), b: mk('B'), c: mk('C'), ui: mk('UI'), ancienne: mk('OLD', { aibTaux: 5, aibSituation: 'ifu_inactif_ou_absent', aibDateBareme: '2026-09-10', ifuClient: '3201642748214', acheteurNom: 'Ancien Acheteur', montantPaye: 16000, reliquat: 0, statutPaiement: 'soldee',
+        lignes: [L('L001', 10000), L('L002', 6000)].map((l) => Object.assign({}, l, { statutPaiement: 'paye', montantRegle: l.partPatient })) }) }, sauve, ecr0 };
+    });
+    const ids = monde.ids;
+    const lire = (id) => page.evaluate((i) => JSON.parse(JSON.stringify(window.SIGH.store.collection('factures').get(i))), id);
+    const jr = () => page.evaluate(() => window.SIGH.store.reglage('mecefBoitier', { compteur: 0, emissions: [] }));
+
+    /* 2. le moteur refuse un taux demandé, avec son geste, sans rien écrire */
+    const avant = await lire(ids.a);
+    const refus = await page.evaluate((i) => {
+      const PR = window.SIGH.parcours, r = {};
+      const e1 = PR.encaisser(i, { mode: 'especes', acheteur: { ifu: '', nom: '', aibTaux: 5 } });
+      r.taux = e1.refusNomme && e1.refusNomme.code; r.geste = e1.refusNomme && e1.refusNomme.geste;
+      const e2 = PR.encaisser(i, { mode: 'especes', acheteur: { aibSituation: 'ifu_actif' } });
+      r.situation = e2.refusNomme && e2.refusNomme.code;
+      r.validerAcheteur = window.SIGH.mecef.validerAcheteur({ aibTaux: 1 }).code;
+      r.nul = window.SIGH.mecef.validerAcheteur({ aibTaux: 0 }).ok;
+      r.vide = window.SIGH.mecef.validerAcheteur({ ifu: '', nom: '' });
+      return r;
+    }, ids.a);
+    const apresRefus = await lire(ids.a);
+    verifier('Un taux d’AIB demandé sur une facture de patient (taux, ou ligne du barème) est refusé AIB_FACTURE_PATIENT, avec son geste (imputer à « Barème de l’AIB », onglet « Imputations ») ; rien n’est écrit (aucun règlement, pièce intacte) ; sans taux (ou taux nul) l’acheteur est valide, taux nul, sans situation ni défaut',
+      refus.taux === 'AIB_FACTURE_PATIENT' && /Imputations/.test(refus.geste || '') && refus.situation === 'AIB_FACTURE_PATIENT' && refus.validerAcheteur === 'AIB_FACTURE_PATIENT' && refus.nul === true
+      && refus.vide.ok && refus.vide.acheteur.aibTaux === 0 && !refus.vide.acheteur.aibSituation && refus.vide.acheteur.aibDefaut === null
+      && apresRefus.montantPaye === 0 && apresRefus.statutPaiement === 'impayee' && JSON.stringify(apresRefus.lignes) === JSON.stringify(avant.lignes), JSON.stringify(refus));
+
+    /* 3. la vente reste normalisée SANS acheteur : IFU vide, AIB nul, base = montant total */
+    const j0 = (await jr()).emissions.length;
+    const ok = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes' }); return { norm: r.normalisation }; }, ids.a);
+    const a1 = await lire(ids.a), j1 = await jr();
+    const emis = j1.emissions[j1.emissions.length - 1] || {};
+    verifier('Sans acheteur, la vente reste NORMALISÉE (numéro MECeF posé) : ni IFU ni nom d’acheteur écrits, taux d’AIB nul sans situation ni version, base = montant total, et l’appareil reçoit un AIB nul',
+      ok.norm && ok.norm.ok === true && /^MECEF\d+$/.test(a1.numeroMecef || '') && !a1.ifuClient && !a1.acheteurNom && a1.aibTaux === 0 && !a1.aibSituation && !a1.aibVersion && a1.baseMecef === 16000 && a1.statutPaiement === 'soldee'
+      && j1.emissions.length === j0 + 1 && !emis.ifuAcheteur && emis.aibTaux === 0 && emis.aib === 0 && emis.base === 16000, JSON.stringify({ a1: [a1.aibTaux, a1.ifuClient, a1.baseMecef], emis }));
+
+    /* 4. une pièce déjà émise avec un taux le GARDE (non rejugée) */
+    const j2 = (await jr()).emissions.length;
+    const anc = await page.evaluate((i) => { const M = window.SIGH.mecef; return { n: M.normaliser(i) }; }, ids.ancienne);
+    const o1 = await lire(ids.ancienne), j3 = await jr();
+    const emisA = j3.emissions[j3.emissions.length - 1] || {};
+    verifier('Une pièce déjà émise avec un taux (5 %, situation et date du barème gardées) le GARDE à la normalisation : son taux, son acheteur et sa situation ne sont ni effacés ni rejugés, et l’appareil reçoit 5 % (800 sur 16 000)',
+      anc.n.ok === true && o1.aibTaux === 5 && o1.aibSituation === 'ifu_inactif_ou_absent' && o1.ifuClient === '3201642748214' && o1.acheteurNom === 'Ancien Acheteur' && j3.emissions.length === j2 + 1 && emisA.aibTaux === 5 && emisA.aib === 800, JSON.stringify({ o1: [o1.aibTaux, o1.aibSituation], emisA }));
+
+    /* 5. l'interface : encaisser au registre des paiements, plus de bloc, la vente passe sans acheteur */
+    await ouvrir('m8-paiements.html');
+    const fen = await page.evaluate(async (i) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const clic = (re, racine) => { const b = [...(racine || document).querySelectorAll('button')].find((x) => re.test(x.textContent) && x.offsetParent !== null); if (b) b.click(); return !!b; };
+      const out = {};
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.includes('FN-2099-S223UI'));
+      out.ligne = !!ligne;
+      if (!ligne) return out;
+      [...ligne.querySelectorAll('button')].find((b) => /Encaisser/.test(b.textContent + (b.title || '') + (b.getAttribute('aria-label') || ''))).click();
+      await pause(500);
+      out.bloc = !!document.querySelector('[data-section="facture-normalisee"]');
+      out.texte = /IFU de l.acheteur|Nom de l.acheteur|Taux d.AIB/.test(document.querySelector('.drawer-backdrop') ? document.querySelector('.drawer-backdrop').textContent : '');
+      out.modal = !!document.querySelector('.drawer-backdrop');
+      clic(/Valider l.encaissement/);
+      await pause(900);
+      const g = window.SIGH.store.collection('factures').get(i);
+      out.apres = { statutMecef: g.statutMecef, numero: g.numeroMecef, taux: g.aibTaux, ifu: g.ifuClient || null, soldee: g.statutPaiement };
+      return out;
+    }, ids.ui);
+    verifier('Registre des paiements : la fenêtre d’encaissement ne porte plus le bloc (ni IFU, ni nom, ni taux d’AIB) ; l’encaissement passe et la vente est normalisée sans acheteur (AIB nul)',
+      fen.ligne && fen.modal && !fen.bloc && !fen.texte && fen.apres && fen.apres.statutMecef === 'valide' && /^MECEF\d+$/.test(fen.apres.numero || '') && fen.apres.taux === 0 && !fen.apres.ifu && fen.apres.soldee === 'soldee', JSON.stringify(fen));
+
+    /* 6. la file de caisse : plus de bloc */
+    await ouvrir('m8-caisse.html');
+    const caisse = await page.evaluate(() => ({ bloc: !!document.querySelector('[data-section="facture-normalisee"]'), texte: /IFU de l.acheteur|Taux d.AIB/.test(document.getElementById('page-content').textContent) }));
+    verifier('File de caisse : aucun bloc « Facture normalisée » (la garde du code l’a retiré avec sa fabrique)', !caisse.bloc && !caisse.texte, JSON.stringify(caisse));
+    const code = await page.evaluate(() => fetch('../assets/js/modules/m8-facturation.js').then((r) => r.text()).then((t) => ({ fabrique: /sectionAcheteur\s*\(/.test(t), champ: /Taux d.AIB/.test(t) })));
+    verifier('Le module de caisse ne contient plus la fabrique du bloc ni son libellé « Taux d’AIB »', code.fabrique === false && code.champ === false, JSON.stringify(code));
+
+    /* restitution */
+    await page.evaluate((mo) => {
+      const S = window.SIGH.store;
+      Object.values(mo.ids).forEach((id) => { try { S.collection('factures').archive(id, 'Sonde Vague 223'); } catch (e) { /* déjà archivé */ } });
+      S.collection('ecritures').all().filter((e) => mo.ecr0.indexOf(e.id) < 0 && e.statut !== 'archive').forEach((e) => { try { S.collection('ecritures').archive(e.id, 'Sonde Vague 223'); } catch (x) { /* idem */ } });
+      S.setReglage('mecefBoitier', mo.sauve.reglage); S.setReglage('mecefMode', mo.sauve.mode);
+    }, monde);
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 224 : lot FISC-2, le motif est obligatoire pour TOUTE modification faite par le validateur (PRD M13 Q4, Direction 16/11/2026), et les réponses Q1, Q2 (b), Q3, Q5 sont tenues');
+    erreursJS = [];
+    await FISC2.session('admin');
+    await ouvrir('cfg-bareme-aib.html');
+    const r = await page.evaluate(() => {
+      const PR = window.SIGH.validations, V = window.SIGH.validations, S = window.SIGH.store;
+      const avant = { libelle: 'Modèle A', description: 'texte', aValider: false, valideLe: '2026-11-01T10:00:00.000Z' };
+      const sorties = {};
+      /* le validateur de la famille (modeles_badge : direction, DAF, admin) */
+      sorties.libelleSansMotif = (PR.controlerEnregistrement('modeles_badge', { role: 'direction', avant, valeurs: { libelle: 'Modèle B' } }) || {}).code || null;
+      sorties.libelleAvecMotif = (PR.controlerEnregistrement('modeles_badge', { role: 'direction', avant, valeurs: { libelle: 'Modèle B' }, motif: 'Coquille corrigée' }) || {}).code || null;
+      sorties.chiffreSansMotif = (PR.controlerEnregistrement('labo_variables', { role: 'laborantin', avant: { min: 1, max: 5 }, valeurs: { min: 2 }, chiffres: ['min'] }) || {}).code || null;
+      sorties.sansChangement = (PR.controlerEnregistrement('modeles_badge', { role: 'direction', avant, valeurs: { libelle: 'Modèle A' } }) || {}).code || null;
+      sorties.creation = (PR.controlerEnregistrement('modeles_badge', { role: 'direction', avant: null, valeurs: { libelle: 'Neuf' } }) || {}).code || null;
+      sorties.horsFamille = (PR.controlerEnregistrement('modeles_badge', { role: 'caissier', avant, valeurs: { libelle: 'Modèle B' } }) || {}).code || null;
+      sorties.marquageTech = (PR.controlerEnregistrement('modeles_badge', { role: 'direction', avant, valeurs: { aValider: true, valideLe: null } }) || {}).code || null;
+      sorties.refusGeste = (PR.controlerEnregistrement('modeles_badge', { role: 'direction', avant, valeurs: { libelle: 'Modèle B' } }) || {}).geste || '';
+      /* Q1 : le validateur de la famille valide en enregistrant ; Q2 (b) : un autre profil qui modifie remet « à valider » ; Q5 : le validateur crée un élément VALIDÉ ; un autre profil le crée « à valider » */
+      const base = { libelle: 'Modèle A', description: 'texte', aValider: true };
+      const mq = (role, avantF, vals, motif) => PR.marquageEnregistrement('modeles_badge', { role, avant: avantF, valeurs: vals, motif });
+      const q1 = mq('direction', Object.assign({}, base), { libelle: 'Modèle A2' }, 'Relecture');
+      sorties.q1 = { valide: q1.valide, aValider: q1.patch.aValider, motif: q1.patch.motifCorrection || null };
+      const q2 = mq('caissier', { libelle: 'Modèle A', aValider: false, valideLe: '2026-11-01' }, { libelle: 'Modèle A3' });
+      sorties.q2 = { valide: q2.valide, aValider: q2.patch.aValider };
+      const q5v = mq('direction', null, { libelle: 'Neuf' }), q5n = mq('caissier', null, { libelle: 'Neuf' });
+      sorties.q5 = { validateur: q5v.valide && q5v.patch.aValider === false, autre: !q5n.valide && q5n.patch.aValider === true };
+      /* Q3 : les éléments semés (barème de l'AIB) restent « à valider » tant que la famille ne les a pas relus */
+      const semes = S.collection('baremeAib').active().filter((x) => x.creePar === 'Semence du socle' && !x.valideLe);
+      sorties.q3 = { n: semes.length, tous: semes.every((x) => x.aValider === true) };
+      return sorties;
+    });
+    verifier('Le validateur qui modifie une valeur NON chiffrée (un libellé) doit motiver : MOTIF_OBLIGATOIRE nomme la famille et le champ ; avec le motif, c’est accepté ; une valeur chiffrée sans motif reste refusée',
+      r.libelleSansMotif === 'MOTIF_OBLIGATOIRE' && r.libelleAvecMotif === null && r.chiffreSansMotif === 'MOTIF_OBLIGATOIRE' && /motif/i.test(r.refusGeste), JSON.stringify(r));
+    verifier('Le motif n’est PAS exigé d’une création (Q5 : naît validée), d’un enregistrement sans changement (la validation seule), des seuls marquages de validation, ni d’un profil hors famille (Q2 b : il remet « à valider »)',
+      r.creation === null && r.sansChangement === null && r.marquageTech === null && r.horsFamille === null, JSON.stringify(r));
+    verifier('Q1 : le validateur de la famille valide en enregistrant (marquage levé, motif gardé) ; Q2 (b) : un profil hors famille qui modifie un élément validé le remet « à valider » ; Q5 : le validateur crée un élément VALIDÉ, tout autre profil le crée « à valider » ; Q3 : les éléments semés (barème de l’AIB) restent « à valider » jusqu’à la première relecture',
+      r.q1.valide === true && r.q1.aValider === false && r.q1.motif === 'Relecture' && r.q2.valide === false && r.q2.aValider === true && r.q5.validateur && r.q5.autre && r.q3.n > 0 && r.q3.tous, JSON.stringify(r));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT FISC-2 FIN */
   /* LOT PARAM-CLINIQUE DEBUT */
   await etape(async () => {
     scenario('Vague 200 : lot PARAM-CLINIQUE, le préavis de péremption (RG-05) et les tranches de la balance âgée sont des PARAMÈTRES DE CLINIQUE datés (défauts semés 90, 30 et 90, version datée jamais réécrite, bornes et cohérence refusées nommées, motif exigé, journal RG-12, « Régler » ABSENT sans le geste réservé et moteur qui refuse, fileul en lecture seule) ; les états du stock, les alertes et la balance âgée lisent la valeur à la date');

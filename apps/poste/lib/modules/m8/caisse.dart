@@ -421,7 +421,6 @@ class _EcranCaisseState extends State<EcranCaisse> {
     ];
     final choisies = {for (final l in lignes) '${l['id']}'};
     final version = ValueNotifier(0);
-    final acheteur = ControleurFormulaire(champsAcheteurNormalise, valeursAcheteur(fac));
     final form = ControleurFormulaire([
       ChampDef(
           nom: 'mode',
@@ -661,8 +660,6 @@ class _EcranCaisseState extends State<EcranCaisse> {
                         ),
                         const SizedBox(height: 12),
                         FormulaireSigh(controleur: form),
-                        const SizedBox(height: 12),
-                        SectionAcheteur(controleur: acheteur),
                       ]);
                 })),
         pied: (fermer) => [
@@ -689,20 +686,9 @@ class _EcranCaisseState extends State<EcranCaisse> {
                           detail: 'Cocher au moins une prestation à régler.');
                       return;
                     }
-                    // La fenêtre « Facture normalisée » se contrôle AVANT toute écriture : un refus nommé n'écrit rien (E2299).
-                    final refusAcheteur = controlerAcheteur(acheteur);
-                    if (refusAcheteur != null) {
-                      ToastsSigh.afficher(ctx,
-                          '${refusAcheteur.code} : ${refusAcheteur.motif}',
-                          type: TypeToast.erreur,
-                          detail: refusAcheteur.geste,
-                          duree: const Duration(seconds: 9));
-                      return;
-                    }
                     ResultatCaisse res;
                     try {
                       res = encaisserFacture(c.magasin, '${fac['id']}',
-                          acheteur: lireAcheteur(acheteur),
                           lignes: lignes.isNotEmpty ? choisies.toList() : null,
                           montant: lignes.isEmpty ? n(fac['reliquat']) : null,
                           mode: '${form['mode']}',

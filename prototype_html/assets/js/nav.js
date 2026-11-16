@@ -234,6 +234,16 @@
        exploitation part de zéro, comme pour tout geste réservé. Le composant de tableau rend la commande ABSENTE sans le droit et le moteur de sortie refuse aussi. */
     { id: 'exporter_donnees', libelle: 'Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)', module: null, ecran: null,
       rolesDefaut: Object.keys(ROLES) },
+    /* Lot FISC-2 (16/11/2026, Direction, section AQ points 2 et 3) : CONFIRMER une obligation fiscale « à confirmer par la CNSS » (le versement du 15 : le bouton « Confirmer » la fait passer à « confirmée »,
+       référence obligatoire, signé, journalisé, versionné par date). D'ORIGINE les trois profils qui valident la configuration fiscale ; PROPOSITION À VALIDER (la Direction n'a pas nommé qui confirme).
+       Le droit n'ouvre aucun écran. */
+    { id: 'confirmer_obligation_fiscale', libelle: 'Confirmer une obligation fiscale (confirmation par la CNSS ou la DGI : référence, signature, journal)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da', 'direction'] },
+    /* Lot FISC-2 (Direction, 16/11/2026, section AQ point 8) : IMPUTER l'AIB opération par opération (appliquer ou non, quelle ligne du barème, quel compte). Laissé au comptable : le logiciel
+       propose le taux du barème à la date de l'opération, il ne décide jamais. D'ORIGINE le comptable, la Directrice Administrative et l'administrateur (les profils qui tiennent le barème) ;
+       PROPOSITION À VALIDER. Le droit n'ouvre aucun écran : l'onglet « Imputations » de « Barème de l'AIB » se lit avec l'écran. */
+    { id: 'imputer_aib', libelle: 'Imputer l\u2019AIB opération par opération (appliquer ou non, taux, compte), onglet « Imputations »', module: null, ecran: null,
+      rolesDefaut: ['comptable', 'da', 'admin'] },
   ];
   var GESTES_INDEX = {};
   GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });

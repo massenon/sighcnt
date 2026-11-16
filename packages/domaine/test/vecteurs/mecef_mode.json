@@ -81,12 +81,11 @@
    "statutMecef": "en_attente",
    "proforma": false,
    "_creePar": "BASSONGUI Chabi Séko",
-   "_creeLe": "2026-10-30T12:00:00.388Z"
+   "_creeLe": "2026-10-30T12:00:00.537Z"
   },
   "acheteur": {
    "ifu": "3201642748214",
-   "nom": "Acheteur L3",
-   "aibTaux": 1
+   "nom": "Acheteur L3"
   },
   "normalisation": {
    "ok": false,

@@ -287,27 +287,30 @@ void testsCorrections() {
           aujourdhui: '2026-11-09',
           maintenant: 'x',
           acheteur: {'aibTaux': 7});
-      expect(a.refusCode, 'AIB_TAUX_INVALIDE');
+      // Lot FISC-2 (16/11/2026) : la facture d'un patient ne porte aucun AIB, un taux demandé est refusé.
+      expect(a.refusCode, 'AIB_FACTURE_PATIENT');
+      expect(a.ecritures, isEmpty);
+      expect(identical(a.facture, f), isTrue);
     });
 
-    test('l\'acheteur validé est rangé dans la vente ; la base est la part patient', () {
+    test('l\'acheteur validé est rangé dans la vente, sans AIB ; la base est la part patient', () {
       final r = encaisser(piece(),
           aujourdhui: '2026-11-09',
           maintenant: 'x',
-          acheteur: {'ifu': '3201 6427 48214', 'nom': 'Clinique X', 'aibTaux': 5});
+          acheteur: {'ifu': '3201 6427 48214', 'nom': 'Clinique X'});
       expect(r.refus, isNull);
       expect(r.facture['ifuClient'], '3201642748214');
       expect(r.facture['acheteurNom'], 'Clinique X');
-      expect(r.facture['aibTaux'], 5);
+      expect(r.facture['aibTaux'], 0);
       expect(r.facture['baseMecef'], 12000);
       expect(r.facture['statutMecef'], 'en_attente');
     });
 
-    test('particulier sans acheteur saisi : le taux par défaut, aucun IFU', () {
+    test('particulier sans acheteur saisi : AIB nul, aucun IFU (la facture d\'un patient ne porte aucun AIB)', () {
       final r = encaisser(piece(),
           aujourdhui: '2026-11-09', maintenant: 'x', acheteur: const {});
       expect(r.facture['ifuClient'], isNull);
-      expect(r.facture['aibTaux'], 1);
+      expect(r.facture['aibTaux'], 0);
     });
 
     test('règlement partiel : la base ne porte que la part patient des lignes réglées', () {

@@ -117,6 +117,30 @@ class ConfigurationFiscalePoste {
     return r;
   }
 
+  /// Le geste réservé `confirmer_obligation_fiscale` de la fiche RBAC du rôle (lot FISC-2) : la commande est ABSENTE sans lui et le domaine refuse aussi.
+  bool get peutConfirmer => c.donnees?.matrice.droitGeste(c.role, 'confirmer_obligation_fiscale') ?? false;
+
+  /// « Confirmer » une obligation « à confirmer par la CNSS » (Direction, 16/11/2026) : référence obligatoire, signée, journalisée (RG-12), versionnée par date (la version
+  /// « à confirmer » part à l'historique avec sa fin à la veille, elle n'est pas réécrite).
+  CfbEcritureObligation confirmerObligation(Fiche o, {required String reference, required Object dateEffet}) {
+    final r = cfbConfirmerObligation(obligations.toutes,
+        id: '${o['id']}',
+        reference: reference,
+        dateEffet: dateEffet,
+        droit: peutConfirmer,
+        acteur: acteurNomme,
+        maintenant: maintenant,
+        aujourdhui: maintenant,
+        exercices: exercices,
+        fileul: fileul);
+    if (!r.ok) return r;
+    historique.inserer(r.historique!, prefixe: 'HOB');
+    obligations.mettreAJour(r.id, r.fiche!, journaliser: false);
+    m.journaliser('Confirmation d’obligation fiscale', 'CFG', 'ObligationsFiscales', '${r.id}', {'aConfirmer': true},
+        {'aConfirmer': false, 'reference': reference, 'dateEffet': r.dateEffet, 'confirmeePar': acteurNomme, 'code': r.code});
+    return r;
+  }
+
   CfbEcritureObligation creerObligation(Map<String, Object?> valeurs, {required Object dateEffet, required String motif}) {
     final r = cfbCreerObligation(obligations.toutes, historique.toutes,
         valeurs: valeurs, dateEffet: dateEffet, motif: motif, acteur: acteurNomme, maintenant: maintenant, aujourdhui: maintenant, exercices: exercices, fileul: fileul);

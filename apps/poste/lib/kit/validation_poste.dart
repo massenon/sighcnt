@@ -165,7 +165,7 @@ class ValidationPoste {
     }
     if (v.cible != null) return _ecrireSepare(v, col, avant: avant, valeurs: valeurs, motif: motif);
     final chiffres = valChiffresModifies(v.famille, avant, valeurs);
-    final refus = valControlerEnregistrement(v.famille, role: role, chiffres: chiffres, motif: motif, fileul: fileul);
+    final refus = valControlerEnregistrement(v.famille, role: role, chiffres: chiffres, motif: motif, fileul: fileul, avant: avant, valeurs: valeurs);
     if (refus != null) return EnregistrementValidable.refus(refus);
     final modifie = avant != null && v.siChange != null ? v.siChange!(avant, {...avant, ...valeurs}) : null;
     final m = valMarquageEnregistrement(v.famille,
@@ -193,7 +193,7 @@ class ValidationPoste {
   EnregistrementValidable _ecrireSepare(ValidationCrud v, CollectionMagasin col, {Fiche? avant, required Fiche valeurs, String? motif}) {
     final modifie = avant != null && (v.siChange == null || v.siChange!(avant, {...avant, ...valeurs}));
     final refus = valControlerEnregistrement(v.famille,
-        role: c.role, chiffres: modifie && v.siChange != null ? const ['valeur'] : const [], motif: motif, fileul: fileul);
+        role: c.role, chiffres: modifie && v.siChange != null ? const ['valeur'] : const [], motif: motif, fileul: fileul, modifie: modifie);
     if (refus != null) return EnregistrementValidable.refus(refus);
     try {
       final cibleId = avant == null ? null : v.cible!(avant);

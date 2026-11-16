@@ -707,20 +707,45 @@ List<String> _champsModifies(Map<String, Object?>? avant, Map<String, Object?> v
   return out;
 }
 
+/// Les champs d'une MODIFICATION (jamais d'une création) hors marquage de validation : ce que le motif du validateur doit expliquer
+/// (`modificationsDuValidateur` de la maquette).
+List<String> valModificationsDuValidateur(FamilleValidation f, Map<String, Object?>? avant, Map<String, Object?>? valeurs) {
+  if (avant == null || valeurs == null) return const [];
+  final tech = <String>{'valideLe', 'validePar', 'valideRole', 'motifCorrection', ...f.champs};
+  return _champsModifies(avant, valeurs).where((k) => !tech.contains(k)).toList();
+}
+
 /// `controlerEnregistrement` : le refus nommé AVANT toute écriture, ou `null`. [fileul] : le poste est un fileul rattaché.
+/// Direction, 16/11/2026 (section AQ point 6, PRD M13 Q4) : le motif est obligatoire pour TOUTE modification faite par le validateur
+/// ([avant] et [valeurs] ou [modifie] le disent), pas seulement pour une valeur chiffrée ; jamais pour une création, ni hors famille.
 RefusValidation? valControlerEnregistrement(String familleId,
-    {required String role, List<String> chiffres = const [], String? motif, bool fileul = false}) {
+    {required String role,
+    List<String> chiffres = const [],
+    String? motif,
+    bool fileul = false,
+    Map<String, Object?>? avant,
+    Map<String, Object?>? valeurs,
+    bool? modifie}) {
   final f = valFamille(familleId);
   if (f == null) {
     return RefusValidation('INTROUVABLE', 'Famille de référentiel inconnue : $familleId.', 'Choisir une famille du registre des validations.');
   }
   final gardeMere = _refusFileul(f, fileul);
   if (gardeMere != null) return gardeMere;
-  if (f.roles.contains(role) && chiffres.isNotEmpty && (motif ?? '').trim().isEmpty) {
-    return RefusValidation(
-        'MOTIF_OBLIGATOIRE',
-        'La valeur chiffrée « ${chiffres.join(', ')} » de « ${f.libelle} » change : le motif de la correction est obligatoire.',
-        'Saisir le motif de la correction, puis enregistrer.');
+  if (f.roles.contains(role) && (motif ?? '').trim().isEmpty) {
+    if (chiffres.isNotEmpty) {
+      return RefusValidation(
+          'MOTIF_OBLIGATOIRE',
+          'La valeur chiffrée « ${chiffres.join(', ')} » de « ${f.libelle} » change : le motif de la correction est obligatoire.',
+          'Saisir le motif de la correction, puis enregistrer.');
+    }
+    final touches = valModificationsDuValidateur(f, avant, valeurs);
+    if (touches.isNotEmpty || modifie == true) {
+      return RefusValidation(
+          'MOTIF_OBLIGATOIRE',
+          'La modification de « ${f.libelle} »${touches.isNotEmpty ? ' (${touches.take(4).join(', ')})' : ''} par un profil de validation exige un motif.',
+          'Saisir le motif de la modification, puis enregistrer.');
+    }
   }
   return null;
 }
@@ -791,7 +816,7 @@ VerdictEnregistrement valMarquageEnregistrement(
       patch['valideLe'] = quand;
       patch['validePar'] = acteur;
       patch['valideRole'] = libRole;
-      if (chiffres.isNotEmpty && (motif ?? '').isNotEmpty) patch['motifCorrection'] = motif!.trim();
+      if ((motif ?? '').isNotEmpty && avant != null && (chiffres.isNotEmpty || valModificationsDuValidateur(f, avant, valeurs).isNotEmpty)) patch['motifCorrection'] = motif!.trim();
       patch.addAll(valEpurerMentions(fusion));
       valide = true;
       if (avant != null && enAttenteAvant == true) action = 'Validation';

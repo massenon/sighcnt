@@ -13361,6 +13361,30 @@
      "aide_comptable"
     ],
     "defautSiEcritSur": null
+   },
+   {
+    "id": "confirmer_obligation_fiscale",
+    "libelle": "Confirmer une obligation fiscale (confirmation par la CNSS ou la DGI : référence, signature, journal)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da",
+     "direction"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "imputer_aib",
+    "libelle": "Imputer l’AIB opération par opération (appliquer ou non, taux, compte), onglet « Imputations »",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "comptable",
+     "da",
+     "admin"
+    ],
+    "defautSiEcritSur": null
    }
   ],
   "parRole": {
@@ -13371,7 +13395,9 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 1,
+    "imputer_aib": 1
    },
    "direction": {
     "valider_seuil_labo": 0,
@@ -13380,7 +13406,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 1,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 1,
+    "imputer_aib": 0
    },
    "dm": {
     "valider_seuil_labo": 0,
@@ -13389,7 +13417,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "da": {
     "valider_seuil_labo": 0,
@@ -13398,7 +13428,9 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 1,
+    "imputer_aib": 1
    },
    "medecin": {
     "valider_seuil_labo": 0,
@@ -13407,7 +13439,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "infirmier": {
     "valider_seuil_labo": 0,
@@ -13416,7 +13450,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "pharmacien": {
     "valider_seuil_labo": 0,
@@ -13425,7 +13461,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 0
+    "exporter_donnees": 0,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "laborantin": {
     "valider_seuil_labo": 1,
@@ -13434,7 +13472,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "stock": {
     "valider_seuil_labo": 0,
@@ -13443,7 +13483,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "caissier": {
     "valider_seuil_labo": 0,
@@ -13452,7 +13494,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "comptable": {
     "valider_seuil_labo": 0,
@@ -13461,7 +13505,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 1
    },
    "rh": {
     "valider_seuil_labo": 0,
@@ -13470,7 +13516,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 0
+    "exporter_donnees": 0,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "reception": {
     "valider_seuil_labo": 0,
@@ -13479,7 +13527,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "agentadmin": {
     "valider_seuil_labo": 0,
@@ -13488,7 +13538,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "ambulancier": {
     "valider_seuil_labo": 0,
@@ -13497,7 +13549,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "aide_soignant": {
     "valider_seuil_labo": 0,
@@ -13506,7 +13560,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "echographiste": {
     "valider_seuil_labo": 0,
@@ -13515,7 +13571,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "surveillant": {
     "valider_seuil_labo": 0,
@@ -13524,7 +13582,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "assistant_comptable": {
     "valider_seuil_labo": 0,
@@ -13533,7 +13593,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "chirurgien": {
     "valider_seuil_labo": 0,
@@ -13542,7 +13604,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "anesthesiste": {
     "valider_seuil_labo": 0,
@@ -13551,7 +13615,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    },
    "aide_comptable": {
     "valider_seuil_labo": 0,
@@ -13560,7 +13626,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
-    "exporter_donnees": 1
+    "exporter_donnees": 1,
+    "confirmer_obligation_fiscale": 0,
+    "imputer_aib": 0
    }
   }
  },

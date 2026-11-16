@@ -5245,6 +5245,49 @@
       { jour: fiche.jour, mois: fiche.mois, part: fiche.part }, { jour: apres.jour, mois: apres.mois, part: apres.part, dateEffet: d, motif: patch.motif });
     return { ok: true, fiche: colObligations().get(fiche.id), echeances: reg };
   }
+  /* --------------------------------------------------------------------------
+   * CONFIRMER UNE OBLIGATION « À CONFIRMER PAR LA CNSS » (Direction, 16/11/2026, section AQ point 2, lot FISC-2)
+   * Le bouton « Confirmer » fait passer l'obligation de « à confirmer » à « confirmée » : RÉFÉRENCE OBLIGATOIRE (la pièce de la CNSS qui la confirme), signée (compte, date, heure),
+   * journalisée (RG-12), VERSIONNÉE PAR DATE : la version « à confirmer » part à l'historique avec sa date de fin, elle n'est jamais réécrite, et reste lue aux dates qu'elle couvrait.
+   * Geste réservé `confirmer_obligation_fiscale` de la fiche RBAC (le moteur refuse aussi), un fileul ne confirme pas (configuration de la mère).
+   * -------------------------------------------------------------------------- */
+  var GESTE_CONFIRMER_OBLIGATION = 'confirmer_obligation_fiscale';
+  function peutConfirmerObligation(role) {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_CONFIRMER_OBLIGATION));
+  }
+  function confirmerObligation(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    if (!peutConfirmerObligation()) {
+      return refusCfg('CONFIRMATION_RESERVEE', 'Confirmer une obligation fiscale est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+        'Demander à un rôle qui détient le droit « Confirmer une obligation fiscale » (matrice des droits).', { roles: global.SIGH.nav.rolesAvecGeste(GESTE_CONFIRMER_OBLIGATION) });
+    }
+    var fiche = obligationActive(o);
+    if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
+    if (!fiche.aConfirmer) {
+      return refusCfg('OBLIGATION_DEJA_CONFIRMEE', 'L’obligation ' + fiche.code + ' n’est pas « à confirmer »' + (fiche.confirmationReference ? ' : elle est déjà confirmée (référence ' + fiche.confirmationReference + ').' : '.'),
+        'Rien à confirmer : une version confirmée ne se réécrit pas, une modification crée une version datée.');
+    }
+    var reference = String(o.reference == null ? '' : o.reference).trim();
+    if (!reference) {
+      return refusCfg('CONFIRMATION_REFERENCE_ABSENTE', 'La référence de la confirmation est obligatoire : sans la pièce de la CNSS qui confirme, l’obligation ne passe pas à « confirmée ».',
+        'Saisir la référence (courrier, e-mail ou page de la CNSS, avec sa date).');
+    }
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d, fiche.dateEffet, fiche); if (r) return r;
+    copieHistorique(fiche, d, 'Confirmation : ' + reference, false);
+    var quand = new Date().toISOString(), qui = acteur();
+    var note = String(fiche.note || '').replace(/\s*À confirmer par la CNSS, non arrêtée\./, '').trim();
+    var patch = { aConfirmer: false, confirmeeLe: quand, confirmeePar: qui, confirmationReference: reference, dateEffet: d,
+      note: (note ? note + ' ' : '') + 'Confirmée (référence ' + reference + ').', source: 'Confirmée le ' + C.dateFR(d) + ' (référence ' + reference + ')',
+      modifieLe: quand, modifiePar: qui, motif: 'Confirmation : ' + reference };
+    var res = colObligations().update(fiche.id, patch);
+    if (!res) return refusCfg('ECRITURE_REFUSEE', 'La fiche n’a pas pu être écrite.', 'Voir le journal.');
+    S.log('Confirmation d’obligation fiscale', 'CFG', 'ObligationsFiscales', fiche.id, { aConfirmer: true },
+      { aConfirmer: false, reference: reference, dateEffet: d, confirmeePar: qui, code: fiche.code });
+    return { ok: true, fiche: colObligations().get(fiche.id), dateEffet: d, reference: reference, confirmeePar: qui, confirmeeLe: quand };
+  }
   function creerObligation(o) {
     o = o || {};
     var r = controleEcritureCfg(); if (r) return r;
@@ -5755,6 +5798,12 @@
       return texteOuNul(a) !== texteOuNul(b);
     });
   }
+  /** Les champs d'une MODIFICATION (jamais d'une création) hors marquage de validation : ce que le motif du validateur doit expliquer. */
+  function modificationsDuValidateur(f, avant, valeurs) {
+    if (!f || !avant || !valeurs) return [];
+    var tech = ['valideLe', 'validePar', 'valideRole', 'motifCorrection'].concat(f.champs || []);
+    return champsModifies(avant, valeurs).filter(function (k) { return tech.indexOf(k) < 0; });
+  }
   function controlerEnregistrement(familleId, o) {
     o = o || {};
     var f = familleAValider(familleId);
@@ -5762,9 +5811,17 @@
     var gardeMere = refusFileulValidation(f);
     if (gardeMere) return gardeMere;
     var role = o.role || roleCourant();
-    if (f.roles.indexOf(role) >= 0 && o.chiffres && o.chiffres.length && !String(o.motif || '').trim()) {
-      return refusValidation('MOTIF_OBLIGATOIRE', 'La valeur chiffrée « ' + o.chiffres.join(', ') + ' » de « ' + f.libelle + ' » change : le motif de la correction est obligatoire.',
-        'Saisir le motif de la correction, puis enregistrer.');
+    if (f.roles.indexOf(role) >= 0 && !String(o.motif || '').trim()) {
+      if (o.chiffres && o.chiffres.length) {
+        return refusValidation('MOTIF_OBLIGATOIRE', 'La valeur chiffrée « ' + o.chiffres.join(', ') + ' » de « ' + f.libelle + ' » change : le motif de la correction est obligatoire.',
+          'Saisir le motif de la correction, puis enregistrer.');
+      }
+      /* Direction, 16/11/2026 (section AQ point 6, PRD M13 Q4) : le motif est obligatoire pour TOUTE modification faite par le validateur, pas seulement pour une valeur chiffrée. */
+      var touches = modificationsDuValidateur(f, o.avant, o.valeurs);
+      if (touches.length || o.modifie === true) {
+        return refusValidation('MOTIF_OBLIGATOIRE', 'La modification de « ' + f.libelle + ' »' + (touches.length ? ' (' + touches.slice(0, 4).join(', ') + ')' : '') + ' par un profil de validation exige un motif.',
+          'Saisir le motif de la modification, puis enregistrer.');
+      }
     }
     return null;
   }
@@ -5793,7 +5850,7 @@
       else {
         f.champs.forEach(function (c) { patch[c] = false; });
         patch.valideLe = maintenant; patch.validePar = qui; patch.valideRole = libRole;
-        if (chiffres.length && o.motif) patch.motifCorrection = String(o.motif).trim();
+        if (o.motif && avant && (chiffres.length || modificationsDuValidateur(f, avant, valeurs).length)) patch.motifCorrection = String(o.motif).trim();
         var epure = epurerMentions(fusion);
         Object.keys(epure).forEach(function (k) { patch[k] = epure[k]; });
         valide = true;
@@ -5853,6 +5910,7 @@
     ortbEnVigueur: function (date) { return D.ortbALaDate(date); },
     ficheOrtb: ficheOrtb,
     modifierObligation: modifierObligation, creerObligation: creerObligation, retirerObligation: retirerObligation,
+    confirmerObligation: confirmerObligation, peutConfirmerObligation: peutConfirmerObligation, GESTE_CONFIRMER: GESTE_CONFIRMER_OBLIGATION,
     annulerVersionAVenir: annulerVersionAVenir, versionsAVenir: versionsAVenir, versionAVenirDe: versionAVenirDe,
     parametresFiscauxEnVigueur: function (date) { return { delais: D.delaisFiscauxALaDate(date), ccib: D.montantCcibALaDate(date) }; },
     resumeParametre: resumeParametre, versionsParametresFiscaux: versionsParametresFiscaux, modifierParametreFiscal: modifierParametreFiscal, annulerParametreFiscal: annulerParametreFiscal,
@@ -6319,8 +6377,10 @@
   function refusAib(code, motif, geste, extra) { return refusCfg(code, motif, geste, extra); }
   function dateAib(d) { return d ? isoJour(d) : aujIso(); }
   function normaliserIfu(x) { return String(x == null ? '' : x).replace(/[\s  ]/g, ''); }
-  function situationsAibActives() {
-    return colSituationsAib().active().slice().sort(function (a, b) { return (a.ordre || 99) - (b.ordre || 99) || String(a.code).localeCompare(String(b.code)); });
+  /** Les situations actives d'UN barème : `acheteur` (défaut, situation de l'acheteur : celle d'une fiche sans famille), `retenue_tiers` (retenue sur la facture d'un tiers), ou `tous`. */
+  function situationsAibActives(famille) {
+    var f = famille || 'acheteur';
+    return colSituationsAib().active().filter(function (s) { return f === 'tous' || (s.famille || 'acheteur') === f; }).slice().sort(function (a, b) { return (a.ordre || 99) - (b.ordre || 99) || String(a.code).localeCompare(String(b.code)); });
   }
   function versionsAibDe(situation) {
     return colBaremeAib().active().filter(function (v) { return v.situation === situation; })
@@ -6483,12 +6543,118 @@
     aLaDate: tauxAibALaDate, pourAcheteur: tauxAibPourAcheteur, proposes: tauxAibProposes,
     nouvelleVersion: nouvelleVersionAib, retirerVersion: retirerVersionAib, aBrancher: aibABrancher,
     versionsDe: versionsAibDe, situations: situationsAibActives,
+    FAMILLES: [{ value: 'acheteur', label: 'Situation de l’acheteur' }, { value: 'retenue_tiers', label: 'Retenue sur la facture d’un tiers' }],
   };
   global.SIGH.parcours.tauxAibALaDate = tauxAibALaDate;
   global.SIGH.parcours.tauxAibPourAcheteur = tauxAibPourAcheteur;
   global.SIGH.parcours.tauxAibProposes = tauxAibProposes;
   global.SIGH.parcours.nouvelleVersionAib = nouvelleVersionAib;
   global.SIGH.parcours.retirerVersionAib = retirerVersionAib;
+
+  /* ==========================================================================
+   * L'IMPUTATION DE L'AIB, OPÉRATION PAR OPÉRATION (Direction, 16/11/2026, section AQ points 8 et 23, lot FISC-2)
+   * --------------------------------------------------------------------------
+   * L'AIB concerne les règlements de la clinique à des tiers (fournisseurs, prescripteurs et prestataires externes) et les règlements reçus des assureurs, qui tantôt l'appliquent,
+   * tantôt non. L'imputation dépend de conditions : elle est LAISSÉE AU COMPTABLE, opération par opération (appliquer ou non, quelle ligne du barème, quel taux, quel compte). Le logiciel
+   * PROPOSE le taux du barème daté (`situationsAib`, famille « retenue sur la facture d'un tiers » ou « situation de l'acheteur ») À LA DATE DE L'OPÉRATION ; il ne décide JAMAIS : le moteur
+   * refuse une imputation dont la décision (`appliquer`) ou le taux n'est pas posé par le comptable. Un taux autre que la proposition (ou sans barème) se motive. Aucune écriture comptable
+   * n'en découle (le branchement sur les écritures reste différé, section D de la Direction) : l'imputation est un enregistrement signé, journalisé (RG-12), jamais réécrit (on l'annule avec
+   * un motif, archive RG-14, puis on la refait). Geste réservé `imputer_aib` de la fiche RBAC. Aucune collection fiscale ne va vers un téléphone.
+   * ======================================================================== */
+  var GESTE_IMPUTER_AIB = 'imputer_aib';
+  var OPERATIONS_AIB = [
+    { value: 'achat_fournisseur', label: 'Achat auprès d’un fournisseur' },
+    { value: 'reglement_prescripteur', label: 'Règlement d’un prescripteur ou d’un prestataire externe' },
+    { value: 'reglement_assureur', label: 'Règlement reçu d’un assureur' },
+  ];
+  function colImputationsAib() { return S.collection('imputationsAib', { module: 'M12', entite: 'imputation de l’AIB', prefix: 'IAI' }); }
+  function peutImputerAib(role) {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_IMPUTER_AIB));
+  }
+  function refusImputationReservee() {
+    return refusAib('IMPUTATION_AIB_RESERVEE', 'Imputer l’AIB est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas. Le logiciel propose un taux, il ne décide jamais.',
+      'Demander à un rôle qui détient le droit « Imputer l’AIB » (matrice des droits), en général le comptable.', { roles: global.SIGH.nav.rolesAvecGeste(GESTE_IMPUTER_AIB) });
+  }
+  function situationAibDe(code) { return colSituationsAib().active().filter(function (x) { return x.code === code; })[0] || null; }
+  /** La PROPOSITION du barème à la date de l'opération : { ok, taux, situation, versionId, arrete, date, famille } ou le refus nommé AIB_SANS_BAREME. N'écrit rien, ne décide rien. */
+  function proposerImputationAib(o) {
+    o = o || {};
+    var sit = situationAibDe(o.situation);
+    if (!sit) return refusAib('AIB_SITUATION_INCONNUE', 'La ligne « ' + (o.situation == null ? '' : o.situation) + ' » n’existe pas au barème de l’AIB.', 'Choisir une ligne d’un des deux barèmes (écran « Barème de l’AIB »).');
+    var r = tauxAibALaDate(o.situation, o.date);
+    if (r.ok) r.famille = sit.famille || 'acheteur';
+    return r;
+  }
+  function imputerAib(o) {
+    o = o || {};
+    if (!peutImputerAib()) return refusImputationReservee();
+    if (!OPERATIONS_AIB.some(function (x) { return x.value === o.operation; })) {
+      return refusAib('AIB_OPERATION_INCONNUE', 'L’opération « ' + (o.operation == null ? '' : o.operation) + ' » n’est pas l’une des trois opérations qui s’imputent (' + OPERATIONS_AIB.map(function (x) { return x.value; }).join(', ') + ').', 'Choisir le type de l’opération.');
+    }
+    var reference = String(o.reference == null ? '' : o.reference).trim();
+    if (!reference) return refusAib('AIB_REFERENCE_ABSENTE', 'La référence de l’opération (facture, règlement, relevé) est obligatoire : une imputation se rattache à une pièce.', 'Saisir la référence de la pièce.');
+    var dateOp = o.dateOperation ? isoJour(o.dateOperation) : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOp)) return refusAib('AIB_DATE_INVALIDE', 'La date de l’opération est absente ou illisible.', 'Choisir la date de la facture ou du règlement.');
+    var clos = controleDateEffet(dateOp, null); if (clos) return clos;
+    var base = Number(o.base);
+    if (!(base > 0) || base !== Math.floor(base)) return refusAib('AIB_BASE_INVALIDE', 'La base (montant hors taxes de l’opération) est un entier strictement positif (reçu « ' + (o.base == null ? '' : o.base) + ' »).', 'Saisir le montant de la facture ou du règlement, en francs entiers.');
+    if (o.appliquer !== true && o.appliquer !== false) {
+      return refusAib('AIB_DECISION_ABSENTE', 'Le comptable n’a pas décidé : appliquer l’AIB à cette opération ou non. Le logiciel propose un taux, il ne décide jamais.', 'Répondre « appliquer » ou « ne pas appliquer ».');
+    }
+    var deja = colImputationsAib().active().filter(function (x) { return x.operation === o.operation && String(x.reference).toLowerCase() === reference.toLowerCase(); })[0];
+    if (deja) return refusAib('AIB_DEJA_IMPUTEE', 'L’opération ' + reference + ' est déjà imputée (' + (deja.appliquer ? deja.taux + ' %' : 'AIB non appliqué') + ') : une imputation ne se réécrit pas.', 'L’annuler avec un motif, puis la refaire.', { id: deja.id });
+    var motif = String(o.motif == null ? '' : o.motif).trim();
+    var fiche = { operation: o.operation, reference: reference, tiers: o.tiers ? String(o.tiers).trim() : null, dateOperation: dateOp, base: base, appliquer: o.appliquer };
+    if (o.appliquer === false) {
+      if (!motif) return refusAib('AIB_MOTIF_ABSENT', 'Ne pas appliquer l’AIB se motive (le tiers paie lui-même son AIB, l’assureur ne l’applique pas, exonération).', 'Saisir le motif de la décision.');
+      fiche.motif = motif;
+    } else {
+      if (!o.situation) return refusAib('AIB_LIGNE_ABSENTE', 'La ligne du barème n’est pas choisie : le comptable choisit la ligne à chaque opération.', 'Choisir la ligne (personne physique, personne morale, ou une situation de l’acheteur).');
+      var prop = proposerImputationAib({ situation: o.situation, date: dateOp });
+      if (!prop.ok && prop.code === 'AIB_SITUATION_INCONNUE') return prop;
+      if (o.taux == null || o.taux === '') return refusAib('AIB_TAUX_ABSENT', 'Le taux n’est pas posé : le logiciel le propose' + (prop.ok ? ' (' + prop.taux + ' % au ' + C.dateFR(dateOp) + ')' : '') + ', le comptable le retient ou le change.', 'Saisir le taux retenu pour cette opération.');
+      var taux = Number(o.taux);
+      if (!(taux >= 0 && taux <= 100) || taux !== Math.floor(taux)) return refusAib('AIB_TAUX_INVALIDE', 'Le taux (« ' + o.taux + ' ») doit être un pourcentage entier de 0 à 100.', 'Saisir un entier, par exemple 5.');
+      if (!o.compte) return refusAib('AIB_COMPTE_ABSENT', 'Le compte d’imputation n’est pas choisi : aucun numéro n’est présélectionné.', 'Choisir un compte du plan comptable.');
+      if (!compteDuPlan(o.compte)) return refusAib('AIB_COMPTE_INCONNU', 'Le compte « ' + o.compte + ' » n’est pas au plan comptable : aucun numéro n’est inventé.', 'Choisir un compte du plan comptable (ou le créer d’abord).');
+      var hors = !prop.ok || prop.taux !== taux;
+      if (hors && !motif) return refusAib('AIB_MOTIF_ABSENT', 'Le taux retenu (' + taux + ' %) n’est pas celui du barème à la date de l’opération' + (prop.ok ? ' (' + prop.taux + ' %)' : ' (aucune version du barème ne couvre cette date)') + ' : il se motive.', 'Saisir le motif du taux retenu.');
+      fiche.situation = o.situation; fiche.taux = taux; fiche.montant = Math.round(base * taux / 100); fiche.compte = String(o.compte).trim();
+      if (prop.ok) { fiche.propositionTaux = prop.taux; fiche.propositionVersion = prop.versionId; fiche.propositionArretee = prop.arrete === true; }
+      fiche.horsProposition = hors;
+      if (motif) fiche.motif = motif;
+    }
+    var role = roleCourant();
+    fiche.signeePar = acteur(); fiche.signeeRole = libelleRole(role); fiche.signeeLe = new Date().toISOString();
+    var res = colImputationsAib().insert(fiche, { journal: { action: 'AIB : imputation', module: 'M12', entite: 'imputationsAib',
+      avant: null, apres: { operation: fiche.operation, reference: reference, appliquer: fiche.appliquer, taux: fiche.taux == null ? null : fiche.taux, montant: fiche.montant == null ? null : fiche.montant,
+        compte: fiche.compte || null, horsProposition: !!fiche.horsProposition, motif: fiche.motif || null } } });
+    return { ok: true, id: res.record.id, fiche: res.record, proposition: fiche.propositionTaux == null ? null : fiche.propositionTaux, undo: res.undo };
+  }
+  function annulerImputationAib(id, motif) {
+    if (!peutImputerAib()) return refusImputationReservee();
+    var x = colImputationsAib().get(id);
+    if (!x || x.statut === 'archive') return refusAib('AIB_IMPUTATION_INTROUVABLE', 'L’imputation « ' + id + ' » n’existe pas ou est déjà annulée.', 'Choisir une imputation de la liste.');
+    if (!String(motif || '').trim()) return refusAib('AIB_MOTIF_ABSENT', 'Le motif de l’annulation est obligatoire.', 'Dire pourquoi l’imputation est annulée.');
+    colImputationsAib().archive(id, String(motif).trim());
+    S.log('AIB : imputation annulée', 'M12', 'imputationsAib', id, { appliquer: x.appliquer, taux: x.taux == null ? null : x.taux }, { statut: 'archive', motif: String(motif).trim() });
+    return { ok: true, id: id };
+  }
+  S.garder('imputationsAib', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colImputationsAib().get(rec.id) : null;
+    if (!avant) return null;
+    if (['operation', 'reference', 'base', 'appliquer', 'taux', 'montant', 'compte', 'situation', 'dateOperation'].some(function (k) { return String(avant[k]) !== String(rec[k]); })) {
+      return 'AIB_IMPUTATION_FIGEE : une imputation ne se réécrit pas ; l’annuler avec un motif, puis la refaire.';
+    }
+    return null;
+  });
+  global.SIGH.imputationAib = {
+    GESTE: GESTE_IMPUTER_AIB, OPERATIONS: OPERATIONS_AIB, peut: peutImputerAib,
+    proposer: proposerImputationAib, imputer: imputerAib, annuler: annulerImputationAib,
+    liste: function () { return colImputationsAib().active().slice(); },
+  };
 
   /* ==========================================================================
    * LES RÉGLAGES DE L'AIB (Direction, 09/11/2026, lot L2) : charge des 5 %, branchement différé sur les achats
@@ -6849,35 +7015,21 @@
     if (ifu && !nom) return refusMecef('NOM_ACHETEUR_ABSENT', 'Un IFU d’acheteur est saisi sans son nom.', 'Saisir le nom de l’acheteur qui porte cet IFU.');
     var date = dateAib(a.date);
     var vide = a.aibTaux == null || a.aibTaux === '';
-    var taux, situation = null, version = null, arrete = null, dateBareme = date, horsDefaut = false;
-    var defaut = tauxAibPourAcheteur({ ifu: ifu, date: date });
+    var taux, situation = null, version = null, arrete = null, dateBareme = null;
     if (a.conserve && !vide) {
+      /* Pièce DÉJÀ ÉMISE avec un taux (avant le lot FISC-2) : elle le garde tel quel, il n'est pas rejugé. */
       taux = Number(a.aibTaux);
       if (!entierPositif(taux) || taux > 100) return refusMecef('AIB_TAUX_INVALIDE', 'Le taux d’AIB (' + a.aibTaux + ') n’est pas un pourcentage entier.', 'Reprendre la pièce.');
       situation = a.aibSituation || null; version = a.aibVersion || null; arrete = a.aibArrete == null ? null : a.aibArrete; dateBareme = a.date ? date : (a.aibDateBareme || null);
-    } else if (a.aibSituation) {
-      var rs = tauxAibALaDate(a.aibSituation, date);
-      if (!rs.ok) return refusMecef(rs.code, rs.motif, rs.geste);
-      taux = rs.taux; situation = rs.situation; version = rs.versionId; arrete = rs.arrete;
-      horsDefaut = !defaut.ok || defaut.situation !== rs.situation;
-    } else if (vide) {
-      if (!defaut.ok) return refusMecef(defaut.code, defaut.motif, defaut.geste);
-      taux = defaut.taux; situation = defaut.situation; version = defaut.versionId; arrete = defaut.arrete;
+    } else if ((!vide && Number(a.aibTaux) !== 0) || a.aibSituation) {
+      /* Direction, 16/11/2026 : la facture d'un PATIENT ne porte aucun AIB (le patient paie le montant total). Le moteur refuse un taux demandé, quel que soit l'écran qui l'envoie. */
+      return refusMecef('AIB_FACTURE_PATIENT', 'Une facture de patient ne porte aucun AIB : le patient paie le montant total, seul affiché sur sa facture de caisse (taux demandé : ' + (a.aibSituation || a.aibTaux) + ').',
+        'Retirer le taux. L’AIB concerne les règlements de la clinique à des tiers et les règlements reçus des assureurs : il s’impute à l’écran « Barème de l’AIB », onglet « Imputations ».');
     } else {
-      taux = Number(a.aibTaux);
-      var prop = tauxAibProposes({ ifu: ifu, date: date });
-      var retenus = prop.choix.filter(function (c) { return c.taux === taux; });
-      if (taux !== 0 && !retenus.length) {
-        return refusMecef('AIB_TAUX_INVALIDE', 'Le taux d’AIB (' + a.aibTaux + ') n’est pas l’un des taux du barème au ' + C.dateFR(date) + ' ('
-          + (prop.choix.map(function (c) { return c.taux + ' %'; }).filter(function (x, i, t) { return t.indexOf(x) === i; }).concat(['aucun']).join(', ')) + ').',
-        'Choisir un taux proposé, ou le faire ajouter au barème par le comptable.');
-      }
-      var choisi = defaut.ok && retenus.filter(function (c) { return c.situation === defaut.situation; })[0] || retenus[0] || null;
-      if (choisi) { situation = choisi.situation; version = choisi.versionId; arrete = choisi.arrete; }
-      horsDefaut = !defaut.ok || defaut.taux !== taux;
+      taux = 0;
     }
     return { ok: true, acheteur: { ifu: ifu || null, nom: nom || null, aibTaux: taux, aibSituation: situation, aibVersion: version, aibArrete: arrete,
-      aibDateBareme: dateBareme, aibDefaut: defaut.ok ? defaut.taux : null, aibHorsDefaut: horsDefaut } };
+      aibDateBareme: dateBareme, aibDefaut: null, aibHorsDefaut: false } };
   }
 
   /* --- Le mode : réglage d'exploitation (le réglage se fait à « Configuration fiscale », lot L3) -------------------------------------------------- */

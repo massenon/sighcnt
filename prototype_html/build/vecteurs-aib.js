@@ -54,7 +54,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       /* ---------- 1. le barème : taux à la date, situation d'après l'IFU, taux proposés ------------------------------------------------- */
       const nettoyer = (r) => { const c = propre(r); delete c.undo; return c; };
       out.tauxALaDate = [];
-      ['ifu_actif', 'ifu_inactif_ou_absent', 'prestation_service', 'situation_inconnue'].forEach((s) => {
+      ['ifu_actif', 'ifu_inactif_ou_absent', 'prestation_service', 'personne_physique', 'personne_morale', 'situation_inconnue'].forEach((s) => {
         ['2025-12-31', '2026-01-01', '2026-09-06', '2026-09-07', '2026-11-09'].forEach((d) => { out.tauxALaDate.push({ situation: s, date: d, sortie: nettoyer(B.aLaDate(s, d)) }); });
       });
       out.pourAcheteur = [];

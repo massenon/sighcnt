@@ -27,14 +27,17 @@ class AibPoste {
   /// manquent : le barème est « à valider » tant qu'aucun texte réglementaire n'est au dépôt. Idempotent.
   static void amorcer(Magasin m) {
     final s = m.collection('situationsAib');
-    if (s.toutes.isEmpty) {
-      for (final f in aibSituationsSemees) {
+    final codes = {for (final f in s.toutes) f['code']};
+    // Lot FISC-2 : le SECOND barème (retenue sur la facture d'un tiers) s'ajoute à un poste qui n'a que les trois situations de l'acheteur : par code, jamais en doublon.
+    for (final f in aibSituationsSemees) {
+      if (!codes.contains(f['code'])) {
         s.ajouterSansJournal({...f, 'statut': 'actif', 'creeLe': '2026-11-09', 'creePar': 'Semence du socle'});
       }
     }
     final b = m.collection('baremeAib');
-    if (b.toutes.isEmpty) {
-      for (final f in aibBaremeSeme) {
+    final avecVersion = {for (final f in b.toutes) f['situation']};
+    for (final f in aibBaremeSeme) {
+      if (!avecVersion.contains(f['situation'])) {
         b.ajouterSansJournal({...f, 'statut': 'actif', 'aValider': true, 'creeLe': '2026-11-09', 'creePar': 'Semence du socle'});
       }
     }
@@ -89,5 +92,52 @@ class AibPoste {
     m.journaliser('AIB sur achats écrit', 'M12', 'Ecriture', 'AIB-achats', null,
         {'pieces': posees.length, 'du': r['du'], 'au': r['au'], 'compteAcompte': (lignes.isEmpty ? null : lignes.first['compte'])});
     return {'ok': true, 'pieces': (r['pieces'] as List).where((p) => posees.contains('${(p as Map)['numero']}')).toList(), 'refusees': refusees, 'du': r['du'], 'au': r['au']};
+  }
+
+  // --- L'imputation de l'AIB, opération par opération (lot FISC-2, Direction, 16/11/2026) -------------------------------------------------------
+
+  CollectionMagasin get imputations => m.collection('imputationsAib');
+
+  /// La proposition du barème à la date de l'opération (n'écrit rien, ne décide rien).
+  Map<String, Object?> proposer(Object? situation, String date) => aibProposerImputation(donnees(), situation: situation, date: date);
+
+  /// Imputer : le domaine décide du refus nommé ou rend la fiche signée ; ICI on l'écrit et on journalise (RG-12). [droit] : le geste réservé `imputer_aib` de la fiche RBAC.
+  Map<String, Object?> imputer(Map<String, Object?> saisie, {required bool droit}) {
+    final maintenant = _horloge();
+    final r = aibImputer(donnees(), imputations.actives,
+        droit: droit,
+        saisie: saisie,
+        acteur: auteur(),
+        libelleRole: libelleRole,
+        maintenant: maintenant,
+        aujourdhui: maintenant,
+        exercices: m.collection('exercices').toutes);
+    if (r['ok'] != true) return r;
+    final fiche = (r['fiche'] as Map).cast<String, Object?>();
+    final ins = imputations.inserer({...fiche, 'statut': 'actif'}, prefixe: 'IAI');
+    m.journaliser('AIB : imputation', 'M12', 'imputationsAib', '${ins.fiche['id']}', null, {
+      'operation': fiche['operation'],
+      'reference': fiche['reference'],
+      'appliquer': fiche['appliquer'],
+      'taux': fiche['taux'],
+      'montant': fiche['montant'],
+      'compte': fiche['compte'],
+      'horsProposition': fiche['horsProposition'] == true,
+      'motif': fiche['motif'],
+    });
+    return {'ok': true, 'id': ins.fiche['id'], 'fiche': ins.fiche};
+  }
+
+  /// Annuler une imputation : un motif, l'archive (RG-14, jamais une suppression), l'opération redevient imputable.
+  Map<String, Object?> annuler(String id, String? motif, {required bool droit}) {
+    if (!droit) {
+      return aibRefus('IMPUTATION_AIB_RESERVEE', 'Imputer l’AIB est un droit réservé de la fiche du rôle : « $libelleRole » ne l’a pas.', 'Demander à un rôle qui détient le droit « Imputer l’AIB » (matrice des droits).');
+    }
+    final x = imputations.parId(id);
+    if (x == null || x['statut'] == 'archive') return aibRefus('AIB_IMPUTATION_INTROUVABLE', 'L’imputation « $id » n’existe pas ou est déjà annulée.', 'Choisir une imputation de la liste.');
+    if ((motif ?? '').trim().isEmpty) return aibRefus('AIB_MOTIF_ABSENT', 'Le motif de l’annulation est obligatoire.', 'Dire pourquoi l’imputation est annulée.');
+    imputations.archiver(id, journaliser: false);
+    m.journaliser('AIB : imputation annulée', 'M12', 'imputationsAib', id, {'appliquer': x['appliquer'], 'taux': x['taux']}, {'statut': 'archive', 'motif': motif!.trim()});
+    return {'ok': true, 'id': id};
   }
 }

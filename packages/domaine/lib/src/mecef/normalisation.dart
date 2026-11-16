@@ -32,17 +32,19 @@ class PreparationNormalisation {
 
 num _num(Object? v) => v is num ? v : (num.tryParse('${v ?? ''}') ?? 0);
 
-/// L'acheteur d'une pièce : ce que la fenêtre a saisi, sinon ce que la pièce porte déjà, sinon les défauts (particulier, AIB par défaut).
+/// L'acheteur d'une pièce : ce qui est demandé, sinon ce que la pièce porte déjà. Une pièce DÉJÀ ÉMISE avec un taux le GARDE (non rejugé) ; une vente neuve n'en porte
+/// aucun (lot FISC-2 : la facture d'un patient ne porte aucun AIB, un taux demandé est refusé `AIB_FACTURE_PATIENT`).
 ({AcheteurMecef? acheteur, RefusMecef? refus}) acheteurDePiece(
     Map<String, Object?> fac,
-    {Map<String, Object?>? saisi,
-    int aibParDefaut = aibTauxParDefaut}) {
+    {Map<String, Object?>? saisi}) {
   final s = saisi ?? const {};
+  final garde = !s.containsKey('aibTaux') && !s.containsKey('aibSituation') && fac['aibTaux'] != null;
   return validerAcheteurMecef(
     ifu: s.containsKey('ifu') ? s['ifu'] : fac['ifuClient'],
     nom: s.containsKey('nom') ? s['nom'] : fac['acheteurNom'],
     aibTaux: s.containsKey('aibTaux') ? s['aibTaux'] : fac['aibTaux'],
-    aibParDefaut: aibParDefaut,
+    aibSituation: s['aibSituation'],
+    conserve: garde,
   );
 }
 
@@ -70,7 +72,6 @@ PreparationNormalisation preparerNormalisation(
   Map<String, Object?> fac, {
   Map<String, Object?>? acheteurSaisi,
   bool modeDesactive = false,
-  int aibParDefaut = aibTauxParDefaut,
   num tauxTvaCourant = 0,
 }) {
   final num_ = '${fac['numero'] ?? fac['id']}';
@@ -93,7 +94,7 @@ PreparationNormalisation preparerNormalisation(
         'La facture $num_ est déjà normalisée (${fac['numeroMecef']}) : elle ne se renormalise jamais.',
         'La corriger par un avoir.'));
   }
-  final ach = acheteurDePiece(fac, saisi: acheteurSaisi, aibParDefaut: aibParDefaut);
+  final ach = acheteurDePiece(fac, saisi: acheteurSaisi);
   if (ach.refus != null) return PreparationNormalisation.refus(ach.refus!);
   final m = mecefMontants(
     lignes: lignesMontantsPiece(fac),

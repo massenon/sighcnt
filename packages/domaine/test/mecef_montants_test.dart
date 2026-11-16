@@ -113,7 +113,7 @@ void main() {
       final e = m(c['entree']);
       test('${jsonEncode(e)}', () {
         final r = validerAcheteurMecef(
-            ifu: e['ifu'], nom: e['nom'], aibTaux: e['aibTaux']);
+            ifu: e['ifu'], nom: e['nom'], aibTaux: e['aibTaux'], aibSituation: e['aibSituation'], conserve: e['conserve'] == true);
         final att = m(c['sortie']);
         if (att['ok'] == true) {
           expect(r.refus, isNull);

@@ -1,0 +1,1602 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-fisc2.js : SIGH.configurationFiscale.confirmerObligation et SIGH.imputationAib pilotés dans Chrome, ne pas éditer. Horloge : 30/10/2026 midi.",
+ "aujourdhui": "2026-10-30",
+ "gestes": {
+  "confirmer": "confirmer_obligation_fiscale",
+  "imputer": "imputer_aib"
+ },
+ "detenteurs": {
+  "confirmer": [
+   "admin",
+   "da",
+   "direction"
+  ],
+  "imputer": [
+   "admin",
+   "comptable",
+   "da"
+  ]
+ },
+ "obligations": [
+  {
+   "id": "FIS04",
+   "statut": "actif",
+   "type": "obligation",
+   "code": "CNSS",
+   "libelle": "Cotisations sociales CNSS",
+   "famille": "CNSS",
+   "periodicite": "mensuelle",
+   "jour": 10,
+   "mois": null,
+   "part": 100,
+   "declaration": "Déclaration mensuelle avant paiement",
+   "note": "Pour le mois précédent. Part patronale 16.4 %, part ouvrière 3.6 %.",
+   "aConfirmer": false,
+   "source": "Précisions du comptable (réunion du 19/08/2026) ; calendrier confirmé par la Direction le 25/08/2026",
+   "dateEffet": null,
+   "modifieLe": null,
+   "modifiePar": null,
+   "motif": null,
+   "valideLe": null,
+   "validePar": null
+  },
+  {
+   "id": "FIS20",
+   "statut": "actif",
+   "type": "obligation",
+   "code": "CNSS-VERSEMENT",
+   "libelle": "Cotisations sociales CNSS, versement",
+   "famille": "CNSS",
+   "periodicite": "mensuelle",
+   "jour": 15,
+   "mois": null,
+   "part": 100,
+   "declaration": null,
+   "note": "Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.",
+   "aConfirmer": true,
+   "source": "Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).",
+   "dateEffet": null,
+   "modifieLe": null,
+   "modifiePar": null,
+   "motif": null,
+   "valideLe": null,
+   "validePar": null
+  }
+ ],
+ "exercices": [],
+ "confirmations": [
+  {
+   "nom": "fileul",
+   "role": "admin",
+   "fileul": true,
+   "droit": true,
+   "entree": {
+    "code": "CNSS-VERSEMENT",
+    "reference": "R1"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "FILEUL_LECTURE_SEULE",
+    "motif": "Cette configuration est tenue par la mère ; modifiez-la sur le poste mère.",
+    "geste": "Ouvrir le même écran sur le poste mère : la modification arrivera ici par la synchronisation."
+   }
+  },
+  {
+   "nom": "sans droit (comptable)",
+   "role": "comptable",
+   "fileul": false,
+   "droit": false,
+   "entree": {
+    "code": "CNSS-VERSEMENT",
+    "reference": "R1"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "CONFIRMATION_RESERVEE",
+    "motif": "Confirmer une obligation fiscale est un droit réservé de la fiche du rôle : « Comptable » ne l’a pas.",
+    "geste": "Demander à un rôle qui détient le droit « Confirmer une obligation fiscale » (matrice des droits)."
+   }
+  },
+  {
+   "nom": "obligation inconnue",
+   "role": "admin",
+   "fileul": false,
+   "droit": true,
+   "entree": {
+    "code": "NEXISTE-PAS",
+    "reference": "R1"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "OBLIGATION_INCONNUE",
+    "motif": "Aucune obligation en vigueur ne porte cette référence.",
+    "geste": "Choisir une obligation du tableau."
+   }
+  },
+  {
+   "nom": "obligation déjà arrêtée",
+   "role": "admin",
+   "fileul": false,
+   "droit": true,
+   "entree": {
+    "code": "CNSS",
+    "reference": "R1"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "OBLIGATION_DEJA_CONFIRMEE",
+    "motif": "L’obligation CNSS n’est pas « à confirmer ».",
+    "geste": "Rien à confirmer : une version confirmée ne se réécrit pas, une modification crée une version datée."
+   }
+  },
+  {
+   "nom": "référence absente",
+   "role": "admin",
+   "fileul": false,
+   "droit": true,
+   "entree": {
+    "code": "CNSS-VERSEMENT",
+    "reference": "   "
+   },
+   "sortie": {
+    "ok": false,
+    "code": "CONFIRMATION_REFERENCE_ABSENTE",
+    "motif": "La référence de la confirmation est obligatoire : sans la pièce de la CNSS qui confirme, l’obligation ne passe pas à « confirmée ».",
+    "geste": "Saisir la référence (courrier, e-mail ou page de la CNSS, avec sa date)."
+   }
+  },
+  {
+   "nom": "référence manquante",
+   "role": "admin",
+   "fileul": false,
+   "droit": true,
+   "entree": {
+    "code": "CNSS-VERSEMENT"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "CONFIRMATION_REFERENCE_ABSENTE",
+    "motif": "La référence de la confirmation est obligatoire : sans la pièce de la CNSS qui confirme, l’obligation ne passe pas à « confirmée ».",
+    "geste": "Saisir la référence (courrier, e-mail ou page de la CNSS, avec sa date)."
+   }
+  },
+  {
+   "nom": "confirmée ce jour",
+   "role": "admin",
+   "fileul": false,
+   "droit": true,
+   "entree": {
+    "code": "CNSS-VERSEMENT",
+    "reference": "Courrier CNSS n° 2026/118 du 12/11/2026"
+   },
+   "sortie": {
+    "ok": true,
+    "fiche": {
+     "statut": "actif",
+     "type": "obligation",
+     "code": "CNSS-VERSEMENT",
+     "libelle": "Cotisations sociales CNSS, versement",
+     "famille": "CNSS",
+     "periodicite": "mensuelle",
+     "jour": 15,
+     "mois": null,
+     "part": 100,
+     "declaration": null,
+     "note": "Versement des cotisations, distinct de la déclaration CNSS. Confirmée (référence Courrier CNSS n° 2026/118 du 12/11/2026).",
+     "aConfirmer": false,
+     "source": "Confirmée le 30/10/2026 (référence Courrier CNSS n° 2026/118 du 12/11/2026)",
+     "dateEffet": "2026-10-30",
+     "modifiePar": "Acteur admin",
+     "motif": "Confirmation : Courrier CNSS n° 2026/118 du 12/11/2026",
+     "valideLe": null,
+     "validePar": null,
+     "confirmeePar": "Acteur admin",
+     "confirmationReference": "Courrier CNSS n° 2026/118 du 12/11/2026"
+    },
+    "dateEffet": "2026-10-30",
+    "reference": "Courrier CNSS n° 2026/118 du 12/11/2026",
+    "historique": {
+     "statut": "actif",
+     "type": "obligation",
+     "code": "CNSS-VERSEMENT",
+     "libelle": "Cotisations sociales CNSS, versement",
+     "famille": "CNSS",
+     "periodicite": "mensuelle",
+     "jour": 15,
+     "mois": null,
+     "part": 100,
+     "declaration": null,
+     "note": "Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.",
+     "aConfirmer": true,
+     "source": "Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).",
+     "dateEffet": null,
+     "modifiePar": null,
+     "motif": null,
+     "valideLe": null,
+     "validePar": null,
+     "dateFin": "2026-10-29",
+     "memeDate": false,
+     "remplaceePar": "Acteur admin",
+     "motifRemplacement": "Confirmation : Courrier CNSS n° 2026/118 du 12/11/2026",
+     "retiree": false
+    },
+    "nbHistorique": 1
+   }
+  },
+  {
+   "nom": "confirmée à une date à venir",
+   "role": "da",
+   "fileul": false,
+   "droit": true,
+   "entree": {
+    "code": "CNSS-VERSEMENT",
+    "reference": "E-mail CNSS du 15/11/2026",
+    "dateEffet": "2026-12-01"
+   },
+   "sortie": {
+    "ok": true,
+    "fiche": {
+     "statut": "actif",
+     "type": "obligation",
+     "code": "CNSS-VERSEMENT",
+     "libelle": "Cotisations sociales CNSS, versement",
+     "famille": "CNSS",
+     "periodicite": "mensuelle",
+     "jour": 15,
+     "mois": null,
+     "part": 100,
+     "declaration": null,
+     "note": "Versement des cotisations, distinct de la déclaration CNSS. Confirmée (référence E-mail CNSS du 15/11/2026).",
+     "aConfirmer": false,
+     "source": "Confirmée le 01/12/2026 (référence E-mail CNSS du 15/11/2026)",
+     "dateEffet": "2026-12-01",
+     "modifiePar": "Acteur da",
+     "motif": "Confirmation : E-mail CNSS du 15/11/2026",
+     "valideLe": null,
+     "validePar": null,
+     "confirmeePar": "Acteur da",
+     "confirmationReference": "E-mail CNSS du 15/11/2026"
+    },
+    "dateEffet": "2026-12-01",
+    "reference": "E-mail CNSS du 15/11/2026",
+    "historique": {
+     "statut": "actif",
+     "type": "obligation",
+     "code": "CNSS-VERSEMENT",
+     "libelle": "Cotisations sociales CNSS, versement",
+     "famille": "CNSS",
+     "periodicite": "mensuelle",
+     "jour": 15,
+     "mois": null,
+     "part": 100,
+     "declaration": null,
+     "note": "Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.",
+     "aConfirmer": true,
+     "source": "Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).",
+     "dateEffet": null,
+     "modifiePar": null,
+     "motif": null,
+     "valideLe": null,
+     "validePar": null,
+     "confirmeePar": null,
+     "confirmationReference": null,
+     "dateFin": "2026-11-30",
+     "memeDate": false,
+     "remplaceePar": "Acteur da",
+     "motifRemplacement": "Confirmation : E-mail CNSS du 15/11/2026",
+     "retiree": false
+    },
+    "nbHistorique": 1
+   }
+  },
+  {
+   "nom": "confirmée par la Direction",
+   "role": "direction",
+   "fileul": false,
+   "droit": true,
+   "entree": {
+    "code": "CNSS-VERSEMENT",
+    "reference": "Page CNSS « Déclaration et paiement », relevée le 16/11/2026",
+    "dateEffet": "2026-11-16"
+   },
+   "sortie": {
+    "ok": true,
+    "fiche": {
+     "statut": "actif",
+     "type": "obligation",
+     "code": "CNSS-VERSEMENT",
+     "libelle": "Cotisations sociales CNSS, versement",
+     "famille": "CNSS",
+     "periodicite": "mensuelle",
+     "jour": 15,
+     "mois": null,
+     "part": 100,
+     "declaration": null,
+     "note": "Versement des cotisations, distinct de la déclaration CNSS. Confirmée (référence Page CNSS « Déclaration et paiement », relevée le 16/11/2026).",
+     "aConfirmer": false,
+     "source": "Confirmée le 16/11/2026 (référence Page CNSS « Déclaration et paiement », relevée le 16/11/2026)",
+     "dateEffet": "2026-11-16",
+     "modifiePar": "Acteur direction",
+     "motif": "Confirmation : Page CNSS « Déclaration et paiement », relevée le 16/11/2026",
+     "valideLe": null,
+     "validePar": null,
+     "confirmeePar": "Acteur direction",
+     "confirmationReference": "Page CNSS « Déclaration et paiement », relevée le 16/11/2026"
+    },
+    "dateEffet": "2026-11-16",
+    "reference": "Page CNSS « Déclaration et paiement », relevée le 16/11/2026",
+    "historique": {
+     "statut": "actif",
+     "type": "obligation",
+     "code": "CNSS-VERSEMENT",
+     "libelle": "Cotisations sociales CNSS, versement",
+     "famille": "CNSS",
+     "periodicite": "mensuelle",
+     "jour": 15,
+     "mois": null,
+     "part": 100,
+     "declaration": null,
+     "note": "Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.",
+     "aConfirmer": true,
+     "source": "Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).",
+     "dateEffet": null,
+     "modifiePar": null,
+     "motif": null,
+     "valideLe": null,
+     "validePar": null,
+     "confirmeePar": null,
+     "confirmationReference": null,
+     "dateFin": "2026-11-15",
+     "memeDate": false,
+     "remplaceePar": "Acteur direction",
+     "motifRemplacement": "Confirmation : Page CNSS « Déclaration et paiement », relevée le 16/11/2026",
+     "retiree": false
+    },
+    "nbHistorique": 1
+   }
+  }
+ ],
+ "situations": [
+  {
+   "id": "SAI01",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "ifu_actif",
+   "libelle": "Acheteur avec IFU actif",
+   "declencheur": "ifu_renseigne",
+   "ordre": 1,
+   "description": "L’acheteur présente un IFU de 13 chiffres. L’activité de l’IFU n’est pas vérifiée auprès de la DGI (la maquette ne peut pas l’interroger) : elle est présumée."
+  },
+  {
+   "id": "SAI02",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "ifu_inactif_ou_absent",
+   "libelle": "Acheteur sans IFU actif",
+   "declencheur": "ifu_absent",
+   "ordre": 2,
+   "description": "Aucun IFU renseigné (particulier) ou IFU désactivé : contribuable non conforme ou non immatriculé."
+  },
+  {
+   "id": "SAI03",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "prestation_service",
+   "libelle": "Prestation de service retenue par le payeur",
+   "declencheur": "choix",
+   "ordre": 3,
+   "description": "Prestation de service dont l’organisme payeur retient l’AIB sur le prix hors taxe. Choisie par le caissier, jamais d’office."
+  },
+  {
+   "id": "SAI04",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "personne_physique",
+   "libelle": "Tiers, personne physique (retenue sur sa facture)",
+   "declencheur": "choix",
+   "ordre": 4,
+   "famille": "retenue_tiers",
+   "description": "Tiers personne physique dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
+  },
+  {
+   "id": "SAI05",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "personne_morale",
+   "libelle": "Tiers, personne morale (retenue sur sa facture)",
+   "declencheur": "choix",
+   "ordre": 5,
+   "famille": "retenue_tiers",
+   "description": "Tiers personne morale dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
+  }
+ ],
+ "bareme": [
+  {
+   "id": "BAI001",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_inactif_ou_absent",
+   "taux": 1,
+   "dateEffet": "2026-01-01",
+   "dateFin": "2026-09-06",
+   "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+   "motif": "Taux appliqué avant le communiqué de septembre 2026 : défaut historique de la maquette (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI002",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_inactif_ou_absent",
+   "taux": 5,
+   "dateEffet": "2026-09-07",
+   "dateFin": null,
+   "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+   "motif": "Généralisation du prélèvement de 5 % à l’émission des factures normalisées, à compter du 07/09/2026."
+  },
+  {
+   "id": "BAI003",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_actif",
+   "taux": 1,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+   "motif": "Défaut de la fenêtre MECeF quand l’acheteur a un IFU actif (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI004",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "prestation_service",
+   "taux": 3,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+   "motif": "Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI005",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "personne_physique",
+   "taux": 3,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+   "motif": "Retenue sur la facture d’un tiers personne physique (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI006",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "personne_morale",
+   "taux": 5,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+   "motif": "Retenue sur la facture d’un tiers personne morale (date d’effet d’attente : début de l’exercice 2026)."
+  }
+ ],
+ "comptes": [
+  {
+   "id": "CPT001",
+   "num": "101100",
+   "libelle": "Capital souscrit, non appelé",
+   "statut": "actif"
+  },
+  {
+   "id": "CPT002",
+   "num": "104100",
+   "libelle": "Apports temporaires",
+   "statut": "actif"
+  },
+  {
+   "id": "CPT003",
+   "num": "162000",
+   "libelle": "Emprunt et dette aupres des établissements de crédits",
+   "statut": "actif"
+  }
+ ],
+ "compte": "101100",
+ "propositions": [
+  {
+   "situation": "personne_physique",
+   "date": "2026-11-16",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-11-16",
+    "famille": "retenue_tiers"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-11-16",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-11-16",
+    "famille": "retenue_tiers"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Tiers, personne morale (retenue sur sa facture) » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "personne_morale",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "ifu_actif",
+   "date": "2026-11-16",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-11-16",
+    "famille": "acheteur"
+   }
+  },
+  {
+   "situation": "ifu_inactif_ou_absent",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": "2026-09-06",
+    "version": 1,
+    "versionId": "BAI001",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-06",
+    "famille": "acheteur"
+   }
+  },
+  {
+   "situation": "ifu_inactif_ou_absent",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-09-07",
+    "dateFin": null,
+    "version": 2,
+    "versionId": "BAI002",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-07",
+    "famille": "acheteur"
+   }
+  },
+  {
+   "situation": "nexiste_pas",
+   "date": "2026-11-16",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SITUATION_INCONNUE",
+    "motif": "La ligne « nexiste_pas » n’existe pas au barème de l’AIB.",
+    "geste": "Choisir une ligne d’un des deux barèmes (écran « Barème de l’AIB »)."
+   }
+  }
+ ],
+ "imputations": [
+  {
+   "nom": "sans droit (caissier)",
+   "role": "caissier",
+   "droit": false,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": false,
+    "motif": "m"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "IMPUTATION_AIB_RESERVEE",
+    "motif": "Imputer l’AIB est un droit réservé de la fiche du rôle : « Caissier — Dispensaire (Pharmacie) » ne l’a pas. Le logiciel propose un taux, il ne décide jamais.",
+    "geste": "Demander à un rôle qui détient le droit « Imputer l’AIB » (matrice des droits), en général le comptable."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "opération inconnue",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "vente",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": false,
+    "motif": "m"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_OPERATION_INCONNUE",
+    "motif": "L’opération « vente » n’est pas l’une des trois opérations qui s’imputent (achat_fournisseur, reglement_prescripteur, reglement_assureur).",
+    "geste": "Choisir le type de l’opération."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "référence absente",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": " ",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": false,
+    "motif": "m"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_REFERENCE_ABSENTE",
+    "motif": "La référence de l’opération (facture, règlement, relevé) est obligatoire : une imputation se rattache à une pièce.",
+    "geste": "Saisir la référence de la pièce."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "date illisible",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "demain",
+    "base": 100000,
+    "appliquer": false,
+    "motif": "m"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DATE_INVALIDE",
+    "motif": "La date de l’opération est absente ou illisible.",
+    "geste": "Choisir la date de la facture ou du règlement."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "base nulle",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 0,
+    "appliquer": false,
+    "motif": "m"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_BASE_INVALIDE",
+    "motif": "La base (montant hors taxes de l’opération) est un entier strictement positif (reçu « 0 »).",
+    "geste": "Saisir le montant de la facture ou du règlement, en francs entiers."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "base décimale",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100.5,
+    "appliquer": false,
+    "motif": "m"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_BASE_INVALIDE",
+    "motif": "La base (montant hors taxes de l’opération) est un entier strictement positif (reçu « 100.5 »).",
+    "geste": "Saisir le montant de la facture ou du règlement, en francs entiers."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "décision absente",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "situation": "personne_morale",
+    "taux": 5,
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DECISION_ABSENTE",
+    "motif": "Le comptable n’a pas décidé : appliquer l’AIB à cette opération ou non. Le logiciel propose un taux, il ne décide jamais.",
+    "geste": "Répondre « appliquer » ou « ne pas appliquer »."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "non appliqué sans motif",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": false
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_MOTIF_ABSENT",
+    "motif": "Ne pas appliquer l’AIB se motive (le tiers paie lui-même son AIB, l’assureur ne l’applique pas, exonération).",
+    "geste": "Saisir le motif de la décision."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "ligne absente",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "taux": 5,
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_LIGNE_ABSENTE",
+    "motif": "La ligne du barème n’est pas choisie : le comptable choisit la ligne à chaque opération.",
+    "geste": "Choisir la ligne (personne physique, personne morale, ou une situation de l’acheteur)."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "ligne inconnue",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "nexiste_pas",
+    "taux": 5,
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SITUATION_INCONNUE",
+    "motif": "La ligne « nexiste_pas » n’existe pas au barème de l’AIB.",
+    "geste": "Choisir une ligne d’un des deux barèmes (écran « Barème de l’AIB »)."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "taux absent",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "personne_morale",
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_ABSENT",
+    "motif": "Le taux n’est pas posé : le logiciel le propose (5 % au 10/10/2026), le comptable le retient ou le change.",
+    "geste": "Saisir le taux retenu pour cette opération."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "taux invalide",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "personne_morale",
+    "taux": 101,
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE",
+    "motif": "Le taux (« 101 ») doit être un pourcentage entier de 0 à 100.",
+    "geste": "Saisir un entier, par exemple 5."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "taux décimal",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "personne_morale",
+    "taux": 2.5,
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE",
+    "motif": "Le taux (« 2.5 ») doit être un pourcentage entier de 0 à 100.",
+    "geste": "Saisir un entier, par exemple 5."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "compte absent",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "personne_morale",
+    "taux": 5
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_COMPTE_ABSENT",
+    "motif": "Le compte d’imputation n’est pas choisi : aucun numéro n’est présélectionné.",
+    "geste": "Choisir un compte du plan comptable."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "compte inconnu",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "personne_morale",
+    "taux": 5,
+    "compte": "999999999"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_COMPTE_INCONNU",
+    "motif": "Le compte « 999999999 » n’est pas au plan comptable : aucun numéro n’est inventé.",
+    "geste": "Choisir un compte du plan comptable (ou le créer d’abord)."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "taux hors barème sans motif",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "personne_morale",
+    "taux": 3,
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_MOTIF_ABSENT",
+    "motif": "Le taux retenu (3 %) n’est pas celui du barème à la date de l’opération (5 %) : il se motive.",
+    "geste": "Saisir le motif du taux retenu."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "appliquée au taux du barème (5 % de 100 000)",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": true,
+    "situation": "personne_morale",
+    "taux": 5,
+    "compte": "101100"
+   },
+   "existantes": [],
+   "sortie": {
+    "ok": true,
+    "fiche": {
+     "operation": "achat_fournisseur",
+     "reference": "FF-V-1",
+     "tiers": "Fournisseur Vecteur",
+     "dateOperation": "2026-10-10",
+     "base": 100000,
+     "appliquer": true,
+     "situation": "personne_morale",
+     "taux": 5,
+     "montant": 5000,
+     "compte": "101100",
+     "propositionTaux": 5,
+     "propositionVersion": "BAI006",
+     "propositionArretee": false,
+     "horsProposition": false,
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable"
+    }
+   },
+   "nb": 1
+  },
+  {
+   "nom": "déjà imputée (même écrite autrement)",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "ff-v-1",
+    "tiers": "Fournisseur Vecteur",
+    "dateOperation": "2026-10-10",
+    "base": 100000,
+    "appliquer": false,
+    "motif": "m"
+   },
+   "existantes": [
+    {
+     "id": "IAIxmvux6z4gyzmpk",
+     "statut": "actif",
+     "operation": "achat_fournisseur",
+     "reference": "FF-V-1",
+     "tiers": "Fournisseur Vecteur",
+     "dateOperation": "2026-10-10",
+     "base": 100000,
+     "appliquer": true,
+     "situation": "personne_morale",
+     "taux": 5,
+     "montant": 5000,
+     "compte": "101100",
+     "propositionTaux": 5,
+     "propositionVersion": "BAI006",
+     "propositionArretee": false,
+     "horsProposition": false,
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable",
+     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "_creePar": "Acteur comptable",
+     "_creeLe": "2026-10-30T12:00:00.592Z"
+    }
+   ],
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DEJA_IMPUTEE",
+    "motif": "L’opération ff-v-1 est déjà imputée (5 %) : une imputation ne se réécrit pas.",
+    "geste": "L’annuler avec un motif, puis la refaire."
+   },
+   "nb": 0
+  },
+  {
+   "nom": "non appliquée (assureur)",
+   "role": "comptable",
+   "droit": true,
+   "entree": {
+    "operation": "reglement_assureur",
+    "reference": "REG-V-2",
+    "tiers": "Assureur Vecteur",
+    "dateOperation": "2026-10-11",
+    "base": 250000,
+    "appliquer": false,
+    "motif": "Cet assureur n’applique pas l’AIB à ce règlement"
+   },
+   "existantes": [
+    {
+     "id": "IAIxmvux6z4gyzmpk",
+     "statut": "actif",
+     "operation": "achat_fournisseur",
+     "reference": "FF-V-1",
+     "tiers": "Fournisseur Vecteur",
+     "dateOperation": "2026-10-10",
+     "base": 100000,
+     "appliquer": true,
+     "situation": "personne_morale",
+     "taux": 5,
+     "montant": 5000,
+     "compte": "101100",
+     "propositionTaux": 5,
+     "propositionVersion": "BAI006",
+     "propositionArretee": false,
+     "horsProposition": false,
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable",
+     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "_creePar": "Acteur comptable",
+     "_creeLe": "2026-10-30T12:00:00.592Z"
+    }
+   ],
+   "sortie": {
+    "ok": true,
+    "fiche": {
+     "operation": "reglement_assureur",
+     "reference": "REG-V-2",
+     "tiers": "Assureur Vecteur",
+     "dateOperation": "2026-10-11",
+     "base": 250000,
+     "appliquer": false,
+     "motif": "Cet assureur n’applique pas l’AIB à ce règlement",
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable"
+    }
+   },
+   "nb": 1
+  },
+  {
+   "nom": "hors proposition motivée (4 % de 40 000)",
+   "role": "da",
+   "droit": true,
+   "entree": {
+    "operation": "reglement_prescripteur",
+    "reference": "HON-V-3",
+    "tiers": "Dr Vecteur",
+    "dateOperation": "2026-10-12",
+    "base": 40000,
+    "appliquer": true,
+    "situation": "personne_physique",
+    "taux": 4,
+    "compte": "101100",
+    "motif": "Le prescripteur a négocié 4 %"
+   },
+   "existantes": [
+    {
+     "id": "IAIxmvux6z4gyzmpk",
+     "statut": "actif",
+     "operation": "achat_fournisseur",
+     "reference": "FF-V-1",
+     "tiers": "Fournisseur Vecteur",
+     "dateOperation": "2026-10-10",
+     "base": 100000,
+     "appliquer": true,
+     "situation": "personne_morale",
+     "taux": 5,
+     "montant": 5000,
+     "compte": "101100",
+     "propositionTaux": 5,
+     "propositionVersion": "BAI006",
+     "propositionArretee": false,
+     "horsProposition": false,
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable",
+     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "_creePar": "Acteur comptable",
+     "_creeLe": "2026-10-30T12:00:00.592Z"
+    },
+    {
+     "id": "IAIxmvux6z4h3b869",
+     "statut": "actif",
+     "operation": "reglement_assureur",
+     "reference": "REG-V-2",
+     "tiers": "Assureur Vecteur",
+     "dateOperation": "2026-10-11",
+     "base": 250000,
+     "appliquer": false,
+     "motif": "Cet assureur n’applique pas l’AIB à ce règlement",
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable",
+     "signeeLe": "2026-10-30T12:00:00.593Z",
+     "_creePar": "Acteur comptable",
+     "_creeLe": "2026-10-30T12:00:00.593Z"
+    }
+   ],
+   "sortie": {
+    "ok": true,
+    "fiche": {
+     "operation": "reglement_prescripteur",
+     "reference": "HON-V-3",
+     "tiers": "Dr Vecteur",
+     "dateOperation": "2026-10-12",
+     "base": 40000,
+     "appliquer": true,
+     "situation": "personne_physique",
+     "taux": 4,
+     "montant": 1600,
+     "compte": "101100",
+     "propositionTaux": 3,
+     "propositionVersion": "BAI005",
+     "propositionArretee": false,
+     "horsProposition": true,
+     "motif": "Le prescripteur a négocié 4 %",
+     "signeePar": "Acteur da",
+     "signeeRole": "Directrice de l’Administration et des Finances (DAF)"
+    }
+   },
+   "nb": 1
+  },
+  {
+   "nom": "ligne de l’acheteur (prestation de service, 3 % de 33 333)",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "operation": "achat_fournisseur",
+    "reference": "FF-V-4",
+    "dateOperation": "2026-10-13",
+    "base": 33333,
+    "appliquer": true,
+    "situation": "prestation_service",
+    "taux": 3,
+    "compte": "101100"
+   },
+   "existantes": [
+    {
+     "id": "IAIxmvux6z4gyzmpk",
+     "statut": "actif",
+     "operation": "achat_fournisseur",
+     "reference": "FF-V-1",
+     "tiers": "Fournisseur Vecteur",
+     "dateOperation": "2026-10-10",
+     "base": 100000,
+     "appliquer": true,
+     "situation": "personne_morale",
+     "taux": 5,
+     "montant": 5000,
+     "compte": "101100",
+     "propositionTaux": 5,
+     "propositionVersion": "BAI006",
+     "propositionArretee": false,
+     "horsProposition": false,
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable",
+     "signeeLe": "2026-10-30T12:00:00.592Z",
+     "_creePar": "Acteur comptable",
+     "_creeLe": "2026-10-30T12:00:00.592Z"
+    },
+    {
+     "id": "IAIxmvux6z4h3b869",
+     "statut": "actif",
+     "operation": "reglement_assureur",
+     "reference": "REG-V-2",
+     "tiers": "Assureur Vecteur",
+     "dateOperation": "2026-10-11",
+     "base": 250000,
+     "appliquer": false,
+     "motif": "Cet assureur n’applique pas l’AIB à ce règlement",
+     "signeePar": "Acteur comptable",
+     "signeeRole": "Comptable",
+     "signeeLe": "2026-10-30T12:00:00.593Z",
+     "_creePar": "Acteur comptable",
+     "_creeLe": "2026-10-30T12:00:00.593Z"
+    },
+    {
+     "id": "IAIxmvux6z4jql889",
+     "statut": "actif",
+     "operation": "reglement_prescripteur",
+     "reference": "HON-V-3",
+     "tiers": "Dr Vecteur",
+     "dateOperation": "2026-10-12",
+     "base": 40000,
+     "appliquer": true,
+     "situation": "personne_physique",
+     "taux": 4,
+     "montant": 1600,
+     "compte": "101100",
+     "propositionTaux": 3,
+     "propositionVersion": "BAI005",
+     "propositionArretee": false,
+     "horsProposition": true,
+     "motif": "Le prescripteur a négocié 4 %",
+     "signeePar": "Acteur da",
+     "signeeRole": "Directrice de l’Administration et des Finances (DAF)",
+     "signeeLe": "2026-10-30T12:00:00.595Z",
+     "_creePar": "Acteur da",
+     "_creeLe": "2026-10-30T12:00:00.595Z"
+    }
+   ],
+   "sortie": {
+    "ok": true,
+    "fiche": {
+     "operation": "achat_fournisseur",
+     "reference": "FF-V-4",
+     "tiers": null,
+     "dateOperation": "2026-10-13",
+     "base": 33333,
+     "appliquer": true,
+     "situation": "prestation_service",
+     "taux": 3,
+     "montant": 1000,
+     "compte": "101100",
+     "propositionTaux": 3,
+     "propositionVersion": "BAI004",
+     "propositionArretee": false,
+     "horsProposition": false,
+     "signeePar": "Acteur admin",
+     "signeeRole": "Administrateur système"
+    }
+   },
+   "nb": 1
+  }
+ ],
+ "motifs": [
+  {
+   "nom": "libellé modifié sans motif",
+   "famille": "modeles_badge",
+   "role": "direction",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "libelle": "Modèle B"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": {
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La modification de « Modèles de badge » (libelle) par un profil de validation exige un motif.",
+    "geste": "Saisir le motif de la modification, puis enregistrer."
+   }
+  },
+  {
+   "nom": "libellé modifié avec motif",
+   "famille": "modeles_badge",
+   "role": "direction",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "libelle": "Modèle B"
+   },
+   "motif": "Coquille corrigée",
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": null
+  },
+  {
+   "nom": "plusieurs champs sans motif",
+   "famille": "modeles_badge",
+   "role": "da",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "libelle": "B",
+    "description": "autre"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": {
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La modification de « Modèles de badge » (libelle, description) par un profil de validation exige un motif.",
+    "geste": "Saisir le motif de la modification, puis enregistrer."
+   }
+  },
+  {
+   "nom": "motif d’espaces",
+   "famille": "modeles_badge",
+   "role": "admin",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "libelle": "Modèle B"
+   },
+   "motif": "   ",
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": {
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La modification de « Modèles de badge » (libelle) par un profil de validation exige un motif.",
+    "geste": "Saisir le motif de la modification, puis enregistrer."
+   }
+  },
+  {
+   "nom": "valeur chiffrée sans motif",
+   "famille": "labo_variables",
+   "role": "laborantin",
+   "avant": {
+    "min": 1,
+    "max": 5,
+    "aValider": false
+   },
+   "valeurs": {
+    "min": 2
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "min"
+   ],
+   "sortie": {
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La valeur chiffrée « min » de « Variables et unités du laboratoire (bornes suppléées) » change : le motif de la correction est obligatoire.",
+    "geste": "Saisir le motif de la correction, puis enregistrer."
+   }
+  },
+  {
+   "nom": "valeur chiffrée avec motif",
+   "famille": "labo_variables",
+   "role": "laborantin",
+   "avant": {
+    "min": 1,
+    "max": 5,
+    "aValider": false
+   },
+   "valeurs": {
+    "min": 2
+   },
+   "motif": "Notice du réactif",
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "min"
+   ],
+   "sortie": null
+  },
+  {
+   "nom": "aucun changement",
+   "famille": "modeles_badge",
+   "role": "direction",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "libelle": "Modèle A"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": null
+  },
+  {
+   "nom": "création par le validateur",
+   "famille": "modeles_badge",
+   "role": "direction",
+   "avant": null,
+   "valeurs": {
+    "libelle": "Neuf"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": null
+  },
+  {
+   "nom": "profil hors famille (caissier)",
+   "famille": "modeles_badge",
+   "role": "caissier",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "libelle": "Modèle B"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": null
+  },
+  {
+   "nom": "seuls les marquages de validation",
+   "famille": "modeles_badge",
+   "role": "direction",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "aValider": true,
+    "valideLe": null
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": null
+  },
+  {
+   "nom": "artefact tenu ailleurs, modifié",
+   "famille": "valorisation_sage",
+   "role": "admin",
+   "avant": {
+    "prixRevient": 10
+   },
+   "valeurs": {},
+   "motif": null,
+   "modifie": true,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": {
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La modification de « Valorisation des références de l’inventaire initial » par un profil de validation exige un motif.",
+    "geste": "Saisir le motif de la modification, puis enregistrer."
+   }
+  },
+  {
+   "nom": "artefact tenu ailleurs, inchangé",
+   "famille": "valorisation_sage",
+   "role": "admin",
+   "avant": {
+    "prixRevient": 10
+   },
+   "valeurs": {},
+   "motif": null,
+   "modifie": false,
+   "fileul": false,
+   "chiffres": [],
+   "sortie": null
+  },
+  {
+   "nom": "fileul",
+   "famille": "modeles_badge",
+   "role": "direction",
+   "avant": {
+    "libelle": "Modèle A",
+    "description": "texte",
+    "aValider": false,
+    "valideLe": "2026-11-01T10:00:00.000Z"
+   },
+   "valeurs": {
+    "libelle": "Modèle B"
+   },
+   "motif": "x",
+   "modifie": null,
+   "fileul": true,
+   "chiffres": [],
+   "sortie": {
+    "code": "CONFIGURATION_DE_LA_MERE",
+    "motif": "Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.",
+    "geste": "Valider depuis le poste principal : la validation est reprise ici ensuite."
+   }
+  }
+ ],
+ "situationsParFamille": {
+  "acheteur": [
+   "ifu_actif",
+   "ifu_inactif_ou_absent",
+   "prestation_service"
+  ],
+  "retenue": [
+   "personne_physique",
+   "personne_morale"
+  ],
+  "tous": [
+   "ifu_actif",
+   "ifu_inactif_ou_absent",
+   "prestation_service",
+   "personne_physique",
+   "personne_morale"
+  ]
+ }
+}

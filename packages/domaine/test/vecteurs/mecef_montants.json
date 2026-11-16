@@ -24856,7 +24856,7 @@
     "acheteur": {
      "ifu": null,
      "nom": null,
-     "aibTaux": 1
+     "aibTaux": 0
     }
    }
   },
@@ -24870,7 +24870,7 @@
     "acheteur": {
      "ifu": "3201642748214",
      "nom": "Clinique X",
-     "aibTaux": 1
+     "aibTaux": 0
     }
    }
   },
@@ -24884,7 +24884,7 @@
     "acheteur": {
      "ifu": "3201642748214",
      "nom": "X",
-     "aibTaux": 1
+     "aibTaux": 0
     }
    }
   },
@@ -24934,7 +24934,7 @@
     "acheteur": {
      "ifu": null,
      "nom": "Particulier",
-     "aibTaux": 1
+     "aibTaux": 0
     }
    }
   },
@@ -24943,12 +24943,10 @@
     "aibTaux": 5
    },
    "sortie": {
-    "ok": true,
-    "acheteur": {
-     "ifu": null,
-     "nom": null,
-     "aibTaux": 5
-    }
+    "ok": false,
+    "code": "AIB_FACTURE_PATIENT",
+    "motif": "Une facture de patient ne porte aucun AIB : le patient paie le montant total, seul affiché sur sa facture de caisse (taux demandé : 5).",
+    "geste": "Retirer le taux. L’AIB concerne les règlements de la clinique à des tiers et les règlements reçus des assureurs : il s’impute à l’écran « Barème de l’AIB », onglet « Imputations »."
    }
   },
   {
@@ -24957,9 +24955,9 @@
    },
    "sortie": {
     "ok": false,
-    "code": "AIB_TAUX_INVALIDE",
-    "motif": "Le taux d’AIB (7) n’est pas l’un des choix admis (0, 1 ou 5 %).",
-    "geste": "Choisir 0, 1 ou 5 %."
+    "code": "AIB_FACTURE_PATIENT",
+    "motif": "Une facture de patient ne porte aucun AIB : le patient paie le montant total, seul affiché sur sa facture de caisse (taux demandé : 7).",
+    "geste": "Retirer le taux. L’AIB concerne les règlements de la clinique à des tiers et les règlements reçus des assureurs : il s’impute à l’écran « Barème de l’AIB », onglet « Imputations »."
    }
   },
   {
@@ -24972,6 +24970,87 @@
      "ifu": null,
      "nom": null,
      "aibTaux": 0
+    }
+   }
+  },
+  {
+   "entree": {
+    "aibSituation": "ifu_actif"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_FACTURE_PATIENT",
+    "motif": "Une facture de patient ne porte aucun AIB : le patient paie le montant total, seul affiché sur sa facture de caisse (taux demandé : ifu_actif).",
+    "geste": "Retirer le taux. L’AIB concerne les règlements de la clinique à des tiers et les règlements reçus des assureurs : il s’impute à l’écran « Barème de l’AIB », onglet « Imputations »."
+   }
+  },
+  {
+   "entree": {
+    "aibTaux": ""
+   },
+   "sortie": {
+    "ok": true,
+    "acheteur": {
+     "ifu": null,
+     "nom": null,
+     "aibTaux": 0
+    }
+   }
+  },
+  {
+   "entree": {
+    "aibTaux": 5,
+    "conserve": true,
+    "aibSituation": "ifu_inactif_ou_absent"
+   },
+   "sortie": {
+    "ok": true,
+    "acheteur": {
+     "ifu": null,
+     "nom": null,
+     "aibTaux": 5
+    }
+   }
+  },
+  {
+   "entree": {
+    "aibTaux": 0,
+    "conserve": true
+   },
+   "sortie": {
+    "ok": true,
+    "acheteur": {
+     "ifu": null,
+     "nom": null,
+     "aibTaux": 0
+    }
+   }
+  },
+  {
+   "entree": {
+    "aibTaux": 101,
+    "conserve": true
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE",
+    "motif": "Le taux d’AIB (101) n’est pas un pourcentage entier.",
+    "geste": "Reprendre la pièce."
+   }
+  },
+  {
+   "entree": {
+    "ifu": "3201642748214",
+    "nom": "Ancien",
+    "aibTaux": 1,
+    "conserve": true
+   },
+   "sortie": {
+    "ok": true,
+    "acheteur": {
+     "ifu": "3201642748214",
+     "nom": "Ancien",
+     "aibTaux": 1
     }
    }
   }

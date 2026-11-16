@@ -150,70 +150,10 @@
     return wrap;
   }
 
-  /* --- La fenêtre « Facture normalisée » (MECeF, lot M1, 08/11/2026) ----------------------------------------------------------------
-     TOUTE VENTE EST NORMALISÉE à la clinique (Direction, 07/11/2026) : il n'y a pas de « facture simple » à choisir. La fenêtre ne sert qu'à
-     saisir l'IFU et le nom de l'acheteur et le taux d'AIB ; ces données sont rangées dans la vente, imprimées, transmises. Une seule
-     fabrique pour les trois portes d'encaissement (registre, file de caisse, émission) : trois copies divergeraient. En mode « Désactivé »
-     (démonstration), la section est ABSENTE : il n'y a rien à normaliser. Le contrôle est celui du socle (`PR.mecef.validerAcheteur`). */
-  function sectionAcheteur(fac) {
-    if (!PR.mecef || PR.mecef.mode() === 'desactive') return null;
-    var f = fac || {};
-    var ifu = el('input.input', { type: 'text', inputmode: 'numeric', placeholder: '13 chiffres (facultatif pour un particulier)', value: f.ifuClient || '' });
-    var nom = el('input.input', { type: 'text', placeholder: 'Nom de l’acheteur (le patient, par défaut)', value: f.acheteurNom || '' });
-    var aib = el('select.select');
-    var indice = el('p.text-xs.text-slate-500', { 'data-aib-indice': '' });
-    /* Le taux par défaut et les choix viennent du BARÈME DE L’AIB DATÉ (cfg-bareme-aib) selon l'IFU saisi : aucune liste n'est écrite ici. Le caissier garde la main, mais un choix
-       autre que le défaut est journalisé par le moteur. */
-    var touche = false, ifuInitial = f.ifuClient || '', piecePorteTaux = f.aibTaux != null;
-    function peindre() {
-      var prop = PR.mecef.tauxPropose({ ifu: ifu.value });
-      var garde = aib.value;
-      C.clear(aib);
-      prop.choix.forEach(function (c) {
-        aib.appendChild(el('option', { value: 'sit:' + c.situation, 'data-taux': String(c.taux) },
-          c.taux + ' % : ' + c.libelle + (c.arrete ? '' : ' (proposition à valider)')));
-      });
-      aib.appendChild(el('option', { value: 'aucun', 'data-taux': '0' }, 'Aucun (choix journalisé)'));
-      var voulu = null;
-      if (touche && garde && Array.prototype.some.call(aib.options, function (o) { return o.value === garde; })) voulu = garde;
-      else if (!touche && piecePorteTaux && f.aibSituation && ifu.value === ifuInitial) voulu = 'sit:' + f.aibSituation;
-      else if (prop.defaut) voulu = 'sit:' + prop.defaut.situation;
-      if (voulu && Array.prototype.some.call(aib.options, function (o) { return o.value === voulu; })) aib.value = voulu;
-      else if (!prop.defaut) aib.selectedIndex = -1;
-      var texte;
-      if (prop.defaut) {
-        texte = 'Situation retenue : ' + prop.defaut.libelle + ', ' + prop.defaut.taux + ' % au ' + C.dateFR(prop.defaut.date)
-          + (prop.defaut.arrete ? '' : ' (taux proposé, pas encore arrêté)') + '.' + (prop.defaut.presomption ? ' ' + prop.defaut.avertissement : '');
-      } else {
-        texte = 'Aucun taux par défaut : ' + (prop.defautRefus ? prop.defautRefus.motif + ' ' + prop.defautRefus.geste : 'le barème ne dit rien.') + ' Choisir le taux à la main.';
-      }
-      indice.textContent = texte;
-    }
-    ifu.addEventListener('input', peindre);
-    aib.addEventListener('change', function () { touche = true; });
-    var node = el('div.space-y-2.rounded-lg.border.border-slate-200.p-3', { 'data-section': 'facture-normalisee' }, [
-      el('p.text-xs.font-semibold.uppercase.tracking-wide.text-navy-900', { text: 'Facture normalisée' }),
-      el('div.grid.gap-3.sm\\:grid-cols-3', null, [
-        el('div', null, [el('label.label', { text: 'IFU de l’acheteur' }), ifu]),
-        el('div', null, [el('label.label', { text: 'Nom de l’acheteur' }), nom]),
-        el('div', null, [el('label.label', { text: 'Taux d’AIB' }), aib]),
-      ]),
-      indice,
-      el('p.text-xs.text-slate-500', { text: 'Toute vente est normalisée : ces trois champs sont les seuls à saisir. L’IFU, s’il est renseigné, compte 13 chiffres.' }),
-    ]);
-    peindre();
-    return {
-      el: node, champs: { ifu: ifu, nom: nom, aib: aib },
-      lire: function () {
-        var v = aib.value || '';
-        var base = { ifu: ifu.value, nom: nom.value };
-        if (piecePorteTaux && !touche && ifu.value === ifuInitial) return Object.assign(base, { aibTaux: f.aibTaux, aibSituation: f.aibSituation, aibVersion: f.aibVersion, aibArrete: f.aibArrete, aibDateBareme: f.aibDateBareme, conserve: true });
-        if (v.indexOf('sit:') === 0) return Object.assign(base, { aibSituation: v.slice(4), aibTaux: Number(aib.options[aib.selectedIndex].getAttribute('data-taux')) });
-        if (v === 'aucun') return Object.assign(base, { aibTaux: 0 });
-        return base;
-      },
-    };
-  }
+  /* --- Plus de bloc « Facture normalisée » (Direction, 16/11/2026, lot FISC-2) ----------------------------------------------------
+     La facture d'un PATIENT ne porte ni IFU de l'acheteur, ni nom de l'acheteur, ni taux d'AIB : le patient paie le montant total, seul affiché
+     sur sa facture de caisse. La vente reste NORMALISÉE (sans acheteur : particulier, AIB nul). Le moteur refuse aussi un taux demandé
+     (`AIB_FACTURE_PATIENT`). L'AIB concerne les règlements de la clinique à des tiers : il s'impute à « Barème de l'AIB », onglet « Imputations ». */
   /** Ce que la normalisation a rendu, dit au guichet : une pièce refusée ou à vérifier se DIT, avec son code, son motif et son geste. */
   /** LOT TARIF-FIX-2 : à la place d'une commande « Encaisser » ABSENTE, le motif du refus (code, motif, geste) que le moteur opposerait. */
   function motifSansPrix(refus) {
@@ -780,7 +720,6 @@
       /* Le cahier de charge le demande expressément : « dissocier l'opération de
          caisse du numéro de dossier du patient » — vente au comptoir. */
       var dissocier = el('input.checkbox', { type: 'checkbox', id: 'f_dissocier' });
-      var acheteurEmission = sectionAcheteur(null);
 
       lateral.appendChild(U.card('Récapitulatif', el('div.space-y-3', null, [
         totauxHost,
@@ -790,7 +729,6 @@
           dissocier,
           el('span.text-xs.text-slate-600', { text: 'Opération de caisse détachée du dossier patient (vente au comptoir)' }),
         ]),
-        acheteurEmission ? acheteurEmission.el : null,
       ].filter(Boolean))));
 
       /* La répartition n'est plus un taux unique appliqué au total : le moteur
@@ -917,12 +855,6 @@
 
       function enregistrer(proforma) {
         if (!lignes.length) { U.toast('Ajouter au moins une prestation.', { type: 'error' }); return; }
-        /* La fenêtre « Facture normalisée » se contrôle AVANT toute écriture : un refus nommé n'écrit rien. */
-        var acheteurSaisi = null;
-        if (!proforma && acheteurEmission) {
-          acheteurSaisi = PR.mecef.validerAcheteur(acheteurEmission.lire());
-          if (!acheteurSaisi.ok) { U.toast(acheteurSaisi.code + ' : ' + acheteurSaisi.motif, { type: 'error', detail: acheteurSaisi.geste, duration: 9000 }); return; }
-        }
         var t = totaux();
         var couvre = t.partAssurance > 0;
 
@@ -1014,7 +946,6 @@
             statutMecef: 'en_attente',
             proforma: !!proforma,
           };
-          if (acheteurSaisi) { f.ifuClient = acheteurSaisi.acheteur.ifu; f.acheteurNom = acheteurSaisi.acheteur.nom; Object.assign(f, PR.mecef.traceAibAcheteur(acheteurSaisi.acheteur)); }
           var res = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert(f);
           creees.push(res.record);
           annulations.push(res.undo);
@@ -1026,7 +957,7 @@
             annulations.push(function () { posees.forEach(function (e) { S.collection('ecritures').archive(e.id); }); });
             /* TOUTE VENTE SOLDÉE EST NORMALISÉE ; une pièce à la charge de l'assureur seul (part patient nulle) n'a rien à normaliser. */
             if (res.record.statutPaiement === 'soldee' && patPiece > 0) {
-              var norm = PR.mecef.normaliser(res.record.id, { acheteur: acheteurSaisi ? acheteurSaisi.acheteur : undefined });
+              var norm = PR.mecef.normaliser(res.record.id, {});
               annonceNormalisation(norm);
               creees[creees.length - 1] = S.collection('factures').get(res.record.id);
             }
@@ -1740,13 +1671,11 @@
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
         ], { montant: f.reliquat, modePaiement: f.modePaiement });
 
-        var acheteurFen = sectionAcheteur(f);
         var body = el('div.space-y-3', null, [
           U.descList([['Facture', f.numero], ['Patient', f.patient],
             ['Montant total', C.money(f.montantTTC)], ['Part patient', C.money(f.partPatient)],
             ['Déjà réglé', C.money(f.montantPaye)], ['Reste à payer', C.money(f.reliquat)]], 'grid-cols-2'),
           form,
-          acheteurFen ? acheteurFen.el : null,
         ].filter(Boolean));
 
         var m = U.modal({
@@ -1762,7 +1691,7 @@
                 /* L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval ouvertes, base MECeF et
                    ÉCRITURE comptable. Il écrivait la facture seule : ni journal, ni déblocage, ni créance de l'assureur. Un versement refusé
                    (au-delà du dû) l'est en le disant. Un encaissement ne s'annule pas : la correction passe par un remboursement ou un avoir. */
-                var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement, acheteur: acheteurFen ? acheteurFen.lire() : undefined });
+                var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement });
                 if (r.refus) { U.toast(r.refus, { type: 'error', duration: 9000 }); return; }
                 if (!(r.montantRegle > 0)) { U.toast('Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.', { type: 'error' }); return; }
                 /* La référence et l'observation du versement s'ÉCRIVENT sur la facture (même champ que m8-caisse) : sans cela elles
@@ -2359,7 +2288,6 @@
           if (sansPrix.length) resteLigne.textContent = (reste > 0 ? resteLigne.textContent + ' ' : '') + C.num(sansPrix.length) + ' prestation(s) sans prix restent dues (reste non calculable).';
         }
 
-        var acheteurFen = sectionAcheteur(fac);
         var corps = el('div.space-y-3', null, [
           U.descList([
             ['Patient', fac.patient], ['Dossier', fac.patientCode],
@@ -2385,7 +2313,6 @@
             el('div', null, [el('label.label', { text: 'Mode de règlement' }), selMode]),
             el('div', null, [el('label.label', { text: 'Référence de transaction' }), champRef]),
           ]),
-          acheteurFen ? acheteurFen.el : null,
         ].filter(Boolean));
 
         recalculer();
@@ -2418,7 +2345,6 @@
                     lignes: sel.map(function (l) { return l.id; }),
                     montant: lignes.length ? undefined : fac.reliquat,
                     mode: selMode.value, utilisateur: S.currentUser(),
-                    acheteur: acheteurFen ? acheteurFen.lire() : undefined,
                   });
                 } catch (e) { U.toast('Encaissement impossible : ' + e.message, { type: 'error' }); return; }
                 if (res.refus) { U.toast('Encaissement refusé.', { type: 'error', detail: res.refus, duration: 9000 }); return; }
