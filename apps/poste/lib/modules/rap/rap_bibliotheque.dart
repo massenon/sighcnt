@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
+import '../../impression/identite_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'rap_commun.dart';
 
@@ -56,7 +57,9 @@ class EcranRapBibliotheque extends StatelessWidget with EcranMaquette {
       ]),
       const SizedBox(height: 16),
       LayoutBuilder(builder: (context, k) {
+        final c = ContexteEcran.of(context);
         final mentions = _Mentions(
+            identite: identiteImprimeeDe(c.magasin, c.aujourdhui),
             onModifier: () => rapOuvrir(context, 'cfg-branding',
                 libelle: 'Paramètres d’identité'));
         final pied = CarteSigh(
@@ -110,8 +113,9 @@ class EcranRapBibliotheque extends StatelessWidget with EcranMaquette {
 }
 
 class _Mentions extends StatelessWidget {
-  const _Mentions({required this.onModifier});
+  const _Mentions({required this.onModifier, required this.identite});
   final VoidCallback onModifier;
+  final IdentiteImprimee identite;
 
   @override
   Widget build(BuildContext context) => CarteSigh(
@@ -125,14 +129,14 @@ class _Mentions extends StatelessWidget {
             onPressed: onModifier),
       ],
       child: DescListeSigh([
-        ('Dénomination', IdentiteClinique.nom),
-        ('Adresse postale', IdentiteClinique.bp),
-        ('Téléphones', IdentiteClinique.telephones.join('  /  ')),
-        ('Adresse électronique', IdentiteClinique.email),
-        ('Autorisation d’ouverture', IdentiteClinique.autorisation),
+        ('Dénomination', identite.nom),
+        ('Adresse postale', identite.bp),
+        ('Téléphones', identite.telephones.join('  /  ')),
+        ('Adresse électronique', identite.email),
+        ('Autorisation d’ouverture', identite.autorisation),
         (
           'IFU',
-          Text(IdentiteClinique.ifu,
+          Text(identite.ifu,
               style: rapMono.copyWith(
                   fontSize: 14,
                   height: 20 / 14,
@@ -141,7 +145,7 @@ class _Mentions extends StatelessWidget {
         ),
         (
           'RCCM',
-          Text(IdentiteClinique.rccm,
+          Text(identite.rccm,
               style: rapMono.copyWith(
                   fontSize: 14,
                   height: 20 / 14,

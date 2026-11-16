@@ -7,6 +7,7 @@ import '../../core/service_installation.dart';
 import '../../core/service_parametres.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
+import '../../impression/identite_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -336,6 +337,7 @@ class EcranMecefFactures extends StatelessWidget with EcranMaquette {
   }
 
   void _consulter(BuildContext ctx, Fiche f, ParamFiscal p) {
+    final c = ContexteEcran.of(ctx);
     final ttc = n(f['montantTTC']);
     final ht = htRegistre(ttc, p);
     final tva = ttc - ht;
@@ -372,8 +374,8 @@ class EcranMecefFactures extends StatelessWidget with EcranMaquette {
             ('TVA (${p.tauxTva} %)', money(tva)),
             ('Montant TTC', money(ttc)),
             ('Statut de transmission', badgeStatut(f['statutMecef'])),
-            ('IFU émetteur', IdentiteClinique.ifu),
-            ('RCCM', IdentiteClinique.rccm),
+            ('IFU émetteur', identiteImprimeeDe(c.magasin, datePiece(f, c.aujourdhui)).ifu),
+            ('RCCM', identiteImprimeeDe(c.magasin, datePiece(f, c.aujourdhui)).rccm),
           ]),
           if (f['statutMecef'] == 'rejete') ...[
             const SizedBox(height: 16),
@@ -1278,6 +1280,7 @@ class _EtatConfig extends State<EcranMecefConfig> {
     final c = ContexteEcran.of(context);
     final mag = c.magasin;
     final p = paramFiscal(mag);
+    final idJour = identiteImprimeeDe(mag, c.aujourdhui);
     if (!_pret) {
       _pret = true;
       _f = ControleurFormulaire([
@@ -1341,13 +1344,13 @@ class _EtatConfig extends State<EcranMecefConfig> {
             type: TypeChamp.case_,
             col: ColChamp.plein),
       ], {
-        'raisonSociale': IdentiteClinique.nom,
-        'ifu': IdentiteClinique.ifu,
-        'rccm': IdentiteClinique.rccm,
-        'autorisation': IdentiteClinique.autorisation,
-        'adresse': IdentiteClinique.bp,
-        'telephone': IdentiteClinique.telephones.join(' / '),
-        'email': IdentiteClinique.email,
+        'raisonSociale': idJour.nom,
+        'ifu': idJour.ifu,
+        'rccm': idJour.rccm,
+        'autorisation': idJour.autorisation,
+        'adresse': idJour.bp,
+        'telephone': idJour.telephones.join(' / '),
+        'email': idJour.email,
         'prefixeFacture': 'FN-2026-',
         'prefixeAvoir': 'AV-2026-',
         'prefixeProforma': 'PRO-2026-',
@@ -1417,13 +1420,13 @@ class _EtatConfig extends State<EcranMecefConfig> {
             CarteSigh(
                 titre: 'Mentions portées sur chaque facture',
                 child: DescListeSigh([
-                  ('Dénomination', IdentiteClinique.nom),
-                  ('Adresse', IdentiteClinique.bp),
-                  ('Téléphones', IdentiteClinique.telephones.join(' / ')),
-                  ('Adresse électronique', IdentiteClinique.email),
-                  ('IFU', IdentiteClinique.ifu),
-                  ('RCCM', IdentiteClinique.rccm),
-                  ('Autorisation d’ouverture', IdentiteClinique.autorisation),
+                  ('Dénomination', idJour.nom),
+                  ('Adresse', idJour.bp),
+                  ('Téléphones', idJour.telephones.join(' / ')),
+                  ('Adresse électronique', idJour.email),
+                  ('IFU', idJour.ifu),
+                  ('RCCM', idJour.rccm),
+                  ('Autorisation d’ouverture', idJour.autorisation),
                   ('Devise', 'FCFA'),
                   ('Régime de TVA', p.regime.libelle),
                   ('Taux de TVA appliqué', '${p.tauxTva} %'),

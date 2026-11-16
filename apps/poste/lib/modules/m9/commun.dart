@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
+import '../../impression/identite_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -96,8 +97,11 @@ PieceA4 pieceM9(ContexteEcran c,
         List<TableauEtat> tableaux = const [],
         List<BlocPiece> blocs = const [],
         List<(String, String)> filtres = const [],
-        List<Signature> signatures = const []}) =>
+        List<Signature> signatures = const [],
+        DateTime? date}) =>
     PieceA4(
+        /* L'en-tête lit l'identité de la DATE de la pièce (lot IDENT), la date d'édition à défaut. */
+        identite: identiteImprimeeDe(c.magasin, date ?? c.aujourdhui),
         titre: titre,
         sousTitre: sousTitre,
         reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),

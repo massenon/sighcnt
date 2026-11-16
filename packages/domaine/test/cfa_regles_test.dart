@@ -321,15 +321,17 @@ void main() {
   });
 
   group('cfg-entetes et cfg-branding : UNE identité légale', () {
+    // Le vecteur est tiré de la maquette à la date de l'horloge du jeu (avant le 16/11/2026) : l'identité en force est la version 1 datée.
+    final v1 = IdentiteImprimee.depuisFiche({'rccm': IdentiteClinique.rccmVersion1});
     final e = obj(v['entetes']);
     final b = obj(v['branding']);
     test('indicateurs : un IFU, un RCCM, une autorisation, tous les états', () {
-      kpis(cfaKpisEntetes(), e['kpis']);
+      kpis(cfaKpisEntetes(v1), e['kpis']);
     });
     test('la grille de l’identité est celle que l’écran affiche, ligne à ligne', () {
       final texte = s(e['texte']);
       var pos = 0;
-      for (final p in cfaGrilleIdentite()) {
+      for (final p in cfaGrilleIdentite(v1)) {
         final i = texte.indexOf(s('${p.$1}${p.$2}'), pos);
         expect(i, greaterThanOrEqualTo(0), reason: '${p.$1} : ${p.$2}');
         pos = i;
@@ -338,7 +340,7 @@ void main() {
     });
     test('les valeurs du formulaire d’identité sont celles de C.BRAND de la maquette', () {
       final champs = obj(b['champs']);
-      final v0 = cfaValeursIdentite();
+      final v0 = cfaValeursIdentite(v1);
       expect(v0.keys.toSet(), champs.keys.toSet());
       for (final k in champs.keys) {
         expect(v0[k], champs[k], reason: k);
@@ -349,7 +351,7 @@ void main() {
       // L'heure est celle du tirage du vecteur (l'horloge de la page) : on la relit sur l'aperçu.
       final h = RegExp(r'le (\d\d)/(\d\d)/(\d{4}) à (\d\d)h(\d\d)').firstMatch(ap)!;
       final quand = DateTime(int.parse(h.group(3)!), int.parse(h.group(2)!), int.parse(h.group(1)!), int.parse(h.group(4)!), int.parse(h.group(5)!));
-      final pied = cfaPiedApercu('BASSONGUI Chabi Séko', quand);
+      final pied = cfaPiedApercu('BASSONGUI Chabi Séko', quand, v1);
       expect(s(ap).contains(s(pied)), isTrue, reason: pied);
     });
     test('ressources attendues = celles de l’écran', () {

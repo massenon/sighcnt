@@ -160,8 +160,10 @@
      `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
      Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
      `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
+     Version 92 (lot IDENT, 16/11/2026) : l'identité légale est semée en DEUX versions datées (la 1, RCCM d'origine, close au 15/11/2026 ; la 2, RCCM à jour, depuis
+     le 16/11/2026), et `demandesIdentite` (dépôts d'un fileul habilité, appliqués par la mère) entre au socle.
   */
-  var VERSION = 91;
+  var VERSION = 92;
   var db = null;
   var listeners = {};
 
@@ -1641,11 +1643,20 @@
        légale (copie de C.BRAND d'origine, depuis l'ouverture du dossier) et les
        obligations du calendrier confirmé. Aucune n'est validée : la Direction
        valide À L'ÉCRAN, à la première configuration. */
-    var identiteSemee = Object.assign({
-      id: 'IDL001', statut: 'actif', version: 1, debut: null, fin: null,
+    /* Deux versions DATÉES (lot IDENT, 16/11/2026) : la 1 close au 15/11, jamais réécrite ; la 2 (RCCM à jour,
+       défaut semé de C.BRAND) prend effet le 16/11/2026 (date à confirmer par la Direction). Une pièce émise avant garde l'ancien numéro. */
+    var identiteV1 = Object.assign({
+      id: 'IDL001', statut: 'actif', version: 1, debut: null, fin: '2026-11-15',
       creeLe: '2026-08-31', creePar: 'core.js (semence)', motif: null,
       valideLe: null, validePar: null,
       source: 'core.js, arbitrage du 31/08/2026',
+    }, C.champsIdentite(C.BRAND_ORIGINE), { rccm: 'RB/NAT/2016-B-268' });
+    var identiteV2 = Object.assign({
+      id: 'IDL002', statut: 'actif', version: 2, debut: '2026-11-16', fin: null,
+      creeLe: '2026-11-16', creePar: 'core.js (semence)',
+      motif: 'RCCM à jour NAT/2021/M02-020 (Direction, 16/11/2026, date d’effet à confirmer)',
+      valideLe: null, validePar: null,
+      source: 'core.js, décision de la Direction du 16/11/2026 (DECISIONS-A-VALIDER, section AQ point 15)',
     }, C.champsIdentite(C.BRAND_ORIGINE));
     var obligationsSemees = D.semenceObligations();
 
@@ -1757,7 +1768,7 @@
       /* L'IDENTITÉ LÉGALE, par versions datées : C.BRAND n'est plus qu'un
          MIROIR de la version en force (S.appliquerIdentite). Lue par CFG,
          print.js (toutes les pièces), M8, MECeF : au socle. */
-      identiteLegale: [identiteSemee],
+      identiteLegale: [identiteV1, identiteV2],
       /* Les OBLIGATIONS FISCALES et les paramètres ORTB, version en vigueur ;
          les versions antérieures vont dans historiqueObligations (le modèle
          grillePrimes / historiquePrimes). Lues par CFG, M11 (ORTB), M12
@@ -1968,7 +1979,7 @@
        * Le référentiel des variantes d'en-tête est RETIRÉ sur décision de la
        * Direction (Bugs 7/8/13 des Instructions) : toutes les pièces portent
        * désormais l'unique identité légale de C.BRAND — IFU 3201642748214,
-       * RCCM RB/NAT/2016-B-268. Les trois IFU / trois RCCM relevés sur les
+       * RCCM de l’identité légale datée (lot IDENT). Les trois IFU / trois RCCM relevés sur les
        * pièces anciennes restent documentés dans les scans de docs/ ; le
        * logiciel, lui, n'imprime plus qu'un en-tête.
        * ==================================================================== */

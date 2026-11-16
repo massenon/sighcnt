@@ -55,7 +55,7 @@ String _date(Object? v) {
 String _ou(Object? a, Object? b) => '${a ?? ''}'.isNotEmpty ? '$a' : ('${b ?? ''}'.isNotEmpty ? '$b' : '—');
 
 /// Une face de carte.
-pw.Widget _carte(Fiche badge, RhcModele modele, Fiche? agent, PolicesPdf p, pw.MemoryImage? logo, {required bool verso}) {
+pw.Widget _carte(Fiche badge, RhcModele modele, Fiche? agent, PolicesPdf p, pw.MemoryImage? logo, {required bool verso, IdentiteImprimee identite = IdentiteImprimee.semence}) {
   final l = modele.portrait ? rhcHauteurCr80Pdf : rhcLargeurCr80Pdf, h = modele.portrait ? rhcLargeurCr80Pdf : rhcHauteurCr80Pdf;
   pw.TextStyle s(double t, {pw.Font? f, PdfColor? c}) => pw.TextStyle(font: f ?? p.sans, fontSize: t, color: c ?? PdfColors.black);
   final cadre = pw.BoxDecoration(color: PdfColors.white, border: pw.Border.all(color: _slate300, width: 0.5), borderRadius: pw.BorderRadius.circular(2.5 * _mm));
@@ -66,7 +66,7 @@ pw.Widget _carte(Fiche badge, RhcModele modele, Fiche? agent, PolicesPdf p, pw.M
         decoration: cadre,
         padding: const pw.EdgeInsets.symmetric(horizontal: 9, vertical: 6),
         child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
-          pw.Text(IdentiteClinique.nom, style: s(5, f: p.gras, c: _navy900)),
+          pw.Text(identite.nom, style: s(5, f: p.gras, c: _navy900)),
           pw.Container(margin: const pw.EdgeInsets.only(top: 3), height: 0.5, color: _slate200),
           pw.Expanded(
               child: pw.Padding(
@@ -84,7 +84,7 @@ pw.Widget _carte(Fiche badge, RhcModele modele, Fiche? agent, PolicesPdf p, pw.M
               pw.Text('${badge['expireLe'] ?? ''}'.isNotEmpty ? _date(badge['expireLe']) : 'non fixée', style: s(5, f: p.gras)),
             ]),
           ]),
-          pw.Padding(padding: const pw.EdgeInsets.only(top: 3), child: pw.Center(child: pw.Text(IdentiteClinique.slogan, style: s(4.5, f: p.italique, c: _navy700)))),
+          pw.Padding(padding: const pw.EdgeInsets.only(top: 3), child: pw.Center(child: pw.Text(identite.slogan, style: s(4.5, f: p.italique, c: _navy700)))),
         ]));
   }
   final z = modele.zones;
@@ -116,7 +116,7 @@ pw.Widget _carte(Fiche badge, RhcModele modele, Fiche? agent, PolicesPdf p, pw.M
                   pw.Expanded(
                       child: pw.Column(mainAxisAlignment: pw.MainAxisAlignment.center, crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
                     pw.Text('CLINIQUE NASSIERA TOO', style: s(6, f: p.gras, c: PdfColors.white)),
-                    pw.Text(IdentiteClinique.slogan, style: s(4.5, f: p.italique, c: _navy100)),
+                    pw.Text(identite.slogan, style: s(4.5, f: p.italique, c: _navy100)),
                   ])),
                 ])),
             pw.Expanded(
@@ -165,20 +165,20 @@ Future<pw.MemoryImage?> _logo() async {
 }
 
 /// UNE carte : deux pages CR80, le recto puis le verso.
-Future<Uint8List> pdfBadge({required Fiche badge, required RhcModele modele, Fiche? agent, required String reference, required PolicesPdf polices, bool compresser = true}) async {
-  final doc = pw.Document(compress: compresser, title: 'Badge ${badge['numero']}', author: IdentiteClinique.nom, subject: reference);
+Future<Uint8List> pdfBadge({required Fiche badge, required RhcModele modele, Fiche? agent, required String reference, required PolicesPdf polices, bool compresser = true, IdentiteImprimee identite = IdentiteImprimee.semence}) async {
+  final doc = pw.Document(compress: compresser, title: 'Badge ${badge['numero']}', author: identite.nom, subject: reference);
   final logo = await _logo();
   final l = modele.portrait ? rhcHauteurCr80Pdf : rhcLargeurCr80Pdf, h = modele.portrait ? rhcLargeurCr80Pdf : rhcHauteurCr80Pdf;
   for (final verso in [false, true]) {
-    doc.addPage(pw.Page(pageFormat: PdfPageFormat(l * _mm, h * _mm), margin: pw.EdgeInsets.zero, build: (_) => _carte(badge, modele, agent, polices, logo, verso: verso)));
+    doc.addPage(pw.Page(pageFormat: PdfPageFormat(l * _mm, h * _mm), margin: pw.EdgeInsets.zero, build: (_) => _carte(badge, modele, agent, polices, logo, verso: verso, identite: identite)));
   }
   return doc.save();
 }
 
 /// La PLANCHE : feuille A4, dix cartes par page (2 × 5), repères de découpe aux angles, pied normalisé (utilisateur, date, identifiant) sur la feuille.
 Future<Uint8List> pdfPlanche(
-    {required RhcModele modele, required List<({Fiche badge, Fiche? agent})> badges, required String reference, required String utilisateur, required DateTime edite, required PolicesPdf polices, bool compresser = true}) async {
-  final doc = pw.Document(compress: compresser, title: 'Planche de badges', author: IdentiteClinique.nom, subject: reference);
+    {required RhcModele modele, required List<({Fiche badge, Fiche? agent})> badges, required String reference, required String utilisateur, required DateTime edite, required PolicesPdf polices, bool compresser = true, IdentiteImprimee identite = IdentiteImprimee.semence}) async {
+  final doc = pw.Document(compress: compresser, title: 'Planche de badges', author: identite.nom, subject: reference);
   final logo = await _logo();
   pw.TextStyle s(double t, {pw.Font? f, PdfColor? c}) => pw.TextStyle(font: f ?? polices.sans, fontSize: t, color: c ?? PdfColors.black);
   pw.Widget coin(bool haut, bool gauche) => pw.Positioned(
@@ -207,7 +207,7 @@ Future<Uint8List> pdfPlanche(
                   pw.Padding(
                       padding: const pw.EdgeInsets.all(1.5 * _mm),
                       child: pw.Stack(children: [
-                        pw.Padding(padding: const pw.EdgeInsets.all(0.1 * _mm), child: _carte(b.badge, modele, b.agent, polices, logo, verso: false)),
+                        pw.Padding(padding: const pw.EdgeInsets.all(0.1 * _mm), child: _carte(b.badge, modele, b.agent, polices, logo, verso: false, identite: identite)),
                         coin(true, true),
                         coin(true, false),
                         coin(false, true),
@@ -220,7 +220,7 @@ Future<Uint8List> pdfPlanche(
                   decoration: const pw.BoxDecoration(border: pw.Border(top: pw.BorderSide(color: PdfColors.grey500, width: 0.5))),
                   child: pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, crossAxisAlignment: pw.CrossAxisAlignment.end, children: [
                     pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-                      pw.Text('${IdentiteClinique.nom} — ${IdentiteClinique.rccm} — IFU ${IdentiteClinique.ifu}', style: s(6, c: _slate)),
+                      pw.Text(identite.mentionPied, style: s(6, c: _slate)),
                       pw.Text('Document généré par $utilisateur le ${dateHeure(edite)}', style: s(6, c: _slate)),
                     ]),
                     pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.end, children: [

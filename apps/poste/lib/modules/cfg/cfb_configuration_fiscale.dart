@@ -39,7 +39,11 @@ class ConfigurationFiscalePoste {
   /// (ce n'est pas le geste d'un agent). À appeler AVANT le premier rendu, jamais pendant.
   static void amorcer(Magasin m) {
     final v = m.collection('identiteLegale');
-    if (v.toutes.isEmpty) v.ajouterSansJournal(cfbSemenceIdentite());
+    if (v.toutes.isEmpty) {
+      for (final f in cfbSemencesIdentite()) {
+        v.ajouterSansJournal(f);
+      }
+    }
     final o = m.collection('obligationsFiscales');
     if (o.toutes.isEmpty) {
       for (final f in cfbSemenceObligations()) {

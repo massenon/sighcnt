@@ -14,6 +14,7 @@ import 'package:sigh_poste/shell/fenetre_poste.dart';
 
 import 'aide_polices.dart';
 
+// Les écrans montent à l'horloge du 01/11/2026 : l'identité EN FORCE est la VERSION 1 datée (RCCM d'origine, close au 15/11/2026).
 const _mention = 'CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268.';
 
 void main() {
@@ -128,12 +129,13 @@ void main() {
 
   group('3. pied de page légal', () {
     test('le texte exact de la Direction, lu de l\'identité unique', () {
-      expect(IdentiteClinique.mentionLegale, _mention);
+      expect(IdentiteImprimee.depuisFiche({'rccm': IdentiteClinique.rccmVersion1}).mentionLegale, _mention, reason: 'la version 1 datée');
+      expect(IdentiteClinique.mentionLegale, 'CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM NAT/2021/M02-020.', reason: 'le défaut semé à jour');
     });
 
     test('la maquette porte le même pied (core.js : C.mentionLegale, lu de C.BRAND), sur la coque et les pages autonomes', () {
       final core = File('../../prototype_html/assets/js/core.js').readAsStringSync();
-      expect(core, contains("BRAND.nom + ' — IFU ' + BRAND.ifu + ' — RCCM ' + BRAND.rccm + '.'"));
+      expect(core, contains("I.nom + ' — IFU ' + I.ifu + ' — RCCM ' + I.rccm + '.'"));
       final app = File('../../prototype_html/assets/js/app.js').readAsStringSync();
       expect(RegExp(r"C\.mentionLegale\(\)").allMatches(app).length, 2, reason: 'une fois dans la coque, une fois sur les pages autonomes');
       expect(app, isNot(contains('Prototype SIGH-CNT, jeu de données')));

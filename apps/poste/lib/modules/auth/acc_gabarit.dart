@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../impression/identite_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
 import '../../shell/logo_clinique.dart';
@@ -25,6 +26,12 @@ class SceneAcces extends StatelessWidget {
     (LucideIcons.bookOpenCheck, 'Comptabilité SYSCOHADA alimentée automatiquement'),
   ];
 
+  /// L'identité légale À LA DATE du jour (lot IDENT) : lue au magasin du poste, la semence sans magasin (page montée hors coque).
+  IdentiteImprimee _identite(BuildContext context) {
+    final c = ContexteAutonome.maybeOf(context);
+    return c == null ? IdentiteImprimee.semence : identiteImprimeeDe(c.magasin, c.maintenant);
+  }
+
   Widget _logo(double cote, Color fond, double interieur) => Container(
       width: cote,
       height: cote,
@@ -32,7 +39,7 @@ class SceneAcces extends StatelessWidget {
       alignment: Alignment.center,
       child: LogoClinique(largeur: interieur, hauteur: interieur, fondSombre: fond != Colors.white));
 
-  Widget _panneau() => Padding(
+  Widget _panneau(IdentiteImprimee id) => Padding(
       padding: const EdgeInsets.all(40),
       child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -74,11 +81,11 @@ class SceneAcces extends StatelessWidget {
                   child: const Text('« ${IdentiteClinique.slogan} »',
                       style: TextStyle(color: Colors.white, fontSize: 16, height: 24 / 16, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic))),
             ])),
-        const Text('${IdentiteClinique.nom} — IFU ${IdentiteClinique.ifu} — RCCM ${IdentiteClinique.rccm}',
-            style: TextStyle(color: JetonsShell.navy300, fontSize: 12, height: 16 / 12)),
+        Text('${id.nom} — IFU ${id.ifu} — RCCM ${id.rccm}',
+            style: const TextStyle(color: JetonsShell.navy300, fontSize: 12, height: 16 / 12)),
       ]));
 
-  Widget _carte(bool large) => Padding(
+  Widget _carte(bool large, IdentiteImprimee id) => Padding(
       padding: EdgeInsets.all(large ? 40 : 24),
       child: Center(
           child: ConstrainedBox(
@@ -124,10 +131,10 @@ class SceneAcces extends StatelessWidget {
                       if (pied != null) Padding(padding: const EdgeInsets.only(top: 24), child: Center(child: pied)),
                     ])),
                 if (!large)
-                  const Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: Text('${IdentiteClinique.nom} — IFU ${IdentiteClinique.ifu}',
-                          textAlign: TextAlign.center, style: TextStyle(color: JetonsShell.navy200, fontSize: 12, height: 16 / 12))),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text('${id.nom} — IFU ${id.ifu}',
+                          textAlign: TextAlign.center, style: const TextStyle(color: JetonsShell.navy200, fontSize: 12, height: 16 / 12))),
               ]))));
 
   Widget _halo(double d, Color c) => Container(
@@ -159,11 +166,11 @@ class SceneAcces extends StatelessWidget {
                               constraints: const BoxConstraints(minHeight: 640),
                               child: Stack(children: [
                                 // Le panneau remplit la hauteur que la carte de saisie donne à la scène (la carte seule détermine la taille).
-                                Positioned(left: 0, top: 0, bottom: 0, width: k.maxWidth / 2, child: _panneau()),
-                                Padding(padding: EdgeInsets.only(left: k.maxWidth / 2), child: _carte(true)),
+                                Positioned(left: 0, top: 0, bottom: 0, width: k.maxWidth / 2, child: _panneau(_identite(context))),
+                                Padding(padding: EdgeInsets.only(left: k.maxWidth / 2), child: _carte(true, _identite(context))),
                               ])))
                     else
-                      _carte(false),
+                      _carte(false, _identite(context)),
                   ])));
           return SingleChildScrollView(
               child: ConstrainedBox(

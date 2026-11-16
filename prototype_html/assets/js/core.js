@@ -26,12 +26,10 @@
     telephoneRdv: '60 33 92 92',
     email: 'cliniquenassiera@gmail.com',
     ifu: '3201642748214',
-    /* UN SEUL RCCM — arbitrage de la Direction du 31/08/2026 (Bugs 7/8/13 des
-       Instructions) : toutes les pièces, caisse comprise, portent la même
-       identité légale. Les pièces anciennes qui portaient NAT/2021/M02-020
-       restent documentées dans les scans de docs/, mais le logiciel n'imprime
-       plus que celui-ci. */
-    rccm: 'RB/NAT/2016-B-268',
+    /* RCCM À JOUR (Direction, 16/11/2026, lot IDENT) : NAT/2021/M02-020, relevé sur l'exemplaire de facture de caisse.
+       L’ancien numéro n’est plus un défaut : il est la VERSION 1 DATÉE de l'identité légale,
+       close au 15/11/2026 et jamais réécrite (store.js, `identiteLegale`). Une pièce émise avant le 16/11/2026 le garde. */
+    rccm: 'NAT/2021/M02-020',
     /* L'AUTORISATION D'EXERCICE N'EST PLUS IMPRIMÉE : elle n'est plus valable,
        l'inscription à l'ordre suffisant depuis la loi 2025-1 de juin 2026.
        Continuer à l'imprimer ferait état d'un titre caduc. */
@@ -223,7 +221,7 @@
      l'horloge sur la date du jeu (build/_banc.js), jamais le code livré. */
   function aujourdhui() { return new Date(); }
   /** LA MENTION LÉGALE DU PIED DE PAGE (Direction, 01/11/2026) : dénomination, IFU, RCCM, lus de l'identité unique C.BRAND. Les séparateurs sont une identité imprimée, pas de la ponctuation rédigée. */
-  function mentionLegale() { return BRAND.nom + ' — IFU ' + BRAND.ifu + ' — RCCM ' + BRAND.rccm + '.'; }
+  function mentionLegale() { var I = identiteALaDate(iso(aujourdhui())); return I.nom + ' — IFU ' + I.ifu + ' — RCCM ' + I.rccm + '.'; }
   /** Valeur d'un champ `datetime-local` à l'heure LOCALE — `toISOString()` rend
    *  l'heure UTC, et le Bénin est à UTC+1 : l'heure proposée était fausse d'une heure. */
   function isoLocal(d) {

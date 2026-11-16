@@ -9,6 +9,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../impression/feuilles.dart' show mm;
+import '../../impression/identite_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../impression/pdf.dart' show PolicesPdf;
@@ -48,6 +49,9 @@ class CarteBadgeSigh extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /* Le badge lit l'identité À LA DATE (lot IDENT), jamais la constante de la semence. */
+    final ce = ContexteEcran.maybeOf(context);
+    final i = ce == null ? IdentiteImprimee.semence : identiteImprimeeDe(ce.magasin, ce.aujourdhui);
     final portrait = modele.portrait;
     final l = portrait ? rhcHauteurCr80 : rhcLargeurCr80, h = portrait ? rhcLargeurCr80 : rhcHauteurCr80;
     return Container(
@@ -56,14 +60,14 @@ class CarteBadgeSigh extends StatelessWidget {
       height: mm(h),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(mm(2.5)), border: Border.all(color: JetonsShell.slate300, width: mm(0.2))),
-      child: DefaultTextStyle.merge(style: const TextStyle(fontFamily: 'Inter', color: JetonsShell.slate900), child: verso ? _verso() : _recto(h)),
+      child: DefaultTextStyle.merge(style: const TextStyle(fontFamily: 'Inter', color: JetonsShell.slate900), child: verso ? _verso(i) : _recto(h, i)),
     );
   }
 
-  Widget _verso() => Padding(
+  Widget _verso(IdentiteImprimee i) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text(IdentiteClinique.nom, style: TextStyle(fontSize: 7, fontWeight: FontWeight.w700, letterSpacing: 0.5, color: JetonsShell.navy900)),
+          Text(i.nom, style: const TextStyle(fontSize: 7, fontWeight: FontWeight.w700, letterSpacing: 0.5, color: JetonsShell.navy900)),
           Container(margin: const EdgeInsets.only(top: 4), height: 1, color: JetonsShell.slate200),
           Expanded(
               child: Padding(
@@ -83,9 +87,9 @@ class CarteBadgeSigh extends StatelessWidget {
                   style: const TextStyle(fontSize: 7, fontWeight: FontWeight.w700, color: JetonsShell.slate800)),
             ]),
           ]),
-          const Padding(
-              padding: EdgeInsets.only(top: 4),
-              child: Text(IdentiteClinique.slogan, textAlign: TextAlign.center, style: TextStyle(fontSize: 6, fontStyle: FontStyle.italic, color: JetonsShell.navy800))),
+          Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(i.slogan, textAlign: TextAlign.center, style: const TextStyle(fontSize: 6, fontStyle: FontStyle.italic, color: JetonsShell.navy800))),
         ]),
       );
 
@@ -94,7 +98,7 @@ class CarteBadgeSigh extends StatelessWidget {
     return d == null ? '$v' : dateFR(d);
   }
 
-  Widget _recto(double h) {
+  Widget _recto(double h, IdentiteImprimee i) {
     final z = modele.zones;
     final photo = rhcPhoto(badge['photo']);
     final charge = rhcBadgeQR(badge);
@@ -110,11 +114,11 @@ class CarteBadgeSigh extends StatelessWidget {
               decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
               child: Image.asset('assets/img/logo.jpeg', fit: BoxFit.contain, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
           const SizedBox(width: 6),
-          const Expanded(
+          Expanded(
               child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('CLINIQUE NASSIERA TOO',
+            Text(i.nomCourt,
                 overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 8, height: 1.25, fontWeight: FontWeight.w700, color: Colors.white)),
-            Text(IdentiteClinique.slogan, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 6, height: 1.25, fontStyle: FontStyle.italic, color: JetonsShell.navy100)),
+            Text(i.slogan, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 6, height: 1.25, fontStyle: FontStyle.italic, color: JetonsShell.navy100)),
           ])),
         ]),
       ),
@@ -216,7 +220,7 @@ Future<void> afficherApercuBadge(BuildContext ctx, ContexteEcran c, {required Fi
                 icone: LucideIcons.fileDown,
                 variante: VarianteBouton.secondaire,
                 onPressed: () async {
-                  final octets = await pdfBadge(badge: badge, modele: modele, agent: agent, reference: ref, polices: await PolicesPdf.charger());
+                  final octets = await pdfBadge(badge: badge, modele: modele, agent: agent, reference: ref, polices: await PolicesPdf.charger(), identite: identiteImprimeeDe(c.magasin, c.aujourdhui));
                   final chemin = await ImpressionPoste.enregistrer(octets, ref);
                   if (ctx.mounted) ToastsSigh.afficher(ctx, 'PDF enregistré.', type: TypeToast.succes, detail: chemin);
                 }),
@@ -278,7 +282,7 @@ Future<void> afficherApercuPlanche(BuildContext ctx, ContexteEcran c, {required 
                 style: const TextStyle(fontSize: 8, height: 1.4, color: JetonsShell.slate500),
                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    const Text('${IdentiteClinique.nom} — ${IdentiteClinique.rccm} — IFU ${IdentiteClinique.ifu}'),
+                    Text(identiteImprimeeDe(c.magasin, c.aujourdhui).mentionPied),
                     Text('Document généré par ${acteur(c).nom} le ${dateHeure(c.aujourdhui)}'),
                   ]),
                   Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
@@ -306,7 +310,7 @@ Future<void> afficherApercuPlanche(BuildContext ctx, ContexteEcran c, {required 
                 variante: VarianteBouton.secondaire,
                 onPressed: () async {
                   final ref = PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero());
-                  final octets = await pdfPlanche(modele: modele, badges: badges, reference: ref, utilisateur: acteur(c).nom, edite: c.aujourdhui, polices: await PolicesPdf.charger());
+                  final octets = await pdfPlanche(modele: modele, badges: badges, reference: ref, utilisateur: acteur(c).nom, edite: c.aujourdhui, polices: await PolicesPdf.charger(), identite: identiteImprimeeDe(c.magasin, c.aujourdhui));
                   final chemin = await ImpressionPoste.enregistrer(octets, ref);
                   if (ctx.mounted) ToastsSigh.afficher(ctx, 'PDF enregistré.', type: TypeToast.succes, detail: chemin);
                 }),

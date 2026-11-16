@@ -6,7 +6,7 @@
    "statut": "actif",
    "version": 1,
    "debut": null,
-   "fin": null,
+   "fin": "2026-11-15",
    "motif": null,
    "valideLe": null,
    "validePar": null,
@@ -38,14 +38,14 @@
   },
   "creation": {
    "ok": true,
-   "version": 2,
+   "version": 3,
    "enForceAujourdhui": false
   },
   "versions": [
    {
-    "version": 2,
+    "version": 3,
     "debut": "2026-09-01",
-    "fin": null,
+    "fin": "2026-11-15",
     "rccm": "RB/NAT/2026-B-999",
     "bp": "BP : 999 NATITINGOU (Rép. du Bénin)",
     "ifu": "3201642748214",
@@ -56,6 +56,15 @@
     "debut": null,
     "fin": "2026-08-31",
     "rccm": "RB/NAT/2016-B-268",
+    "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "valideLe": null
+   },
+   {
+    "version": 2,
+    "debut": "2026-11-16",
+    "fin": null,
+    "rccm": "NAT/2021/M02-020",
     "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
     "ifu": "3201642748214",
     "valideLe": null
@@ -88,7 +97,7 @@
    },
    {
     "date": "2026-09-01",
-    "version": 2,
+    "version": 3,
     "rccm": "RB/NAT/2026-B-999",
     "bp": "BP : 999 NATITINGOU (Rép. du Bénin)",
     "ifu": "3201642748214",
@@ -97,8 +106,8 @@
    {
     "date": "2026-12-31",
     "version": 2,
-    "rccm": "RB/NAT/2026-B-999",
-    "bp": "BP : 999 NATITINGOU (Rép. du Bénin)",
+    "rccm": "NAT/2021/M02-020",
+    "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
     "ifu": "3201642748214",
     "nom": "CLINIQUE NASSIERA TOO SARL"
    }
@@ -115,12 +124,12 @@
   },
   "etat": {
    "etat": "a_valider",
-   "nombre": 2,
-   "nonValidees": 2,
+   "nombre": 3,
+   "nonValidees": 3,
    "valideLe": null,
    "validePar": null,
-   "modifieLe": "2026-08-16T10:00:00.000Z",
-   "modifiePar": "BASSONGUI Chabi Séko",
+   "modifieLe": "2026-11-16",
+   "modifiePar": "core.js (semence)",
    "validationAnterieure": null
   }
  },

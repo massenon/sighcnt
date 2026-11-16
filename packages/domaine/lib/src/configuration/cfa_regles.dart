@@ -630,24 +630,24 @@ List<CfaKpi> cfaKpisImagerie({required int examens, required int variables, requ
 // =============================================================================================================================================
 
 /// Les quatre indicateurs de l'écran des en-têtes : UN IFU, UN RCCM, UNE autorisation imprimés, sur tous les états.
-List<CfaKpi> cfaKpisEntetes() => [
-      CfaKpi('IFU imprimé', '1', 'hash', 'success', IdentiteClinique.ifu),
-      CfaKpi('RCCM imprimé', '1', 'scale', 'success', IdentiteClinique.rccm),
+List<CfaKpi> cfaKpisEntetes([IdentiteImprimee identite = IdentiteImprimee.semence]) => [
+      CfaKpi('IFU imprimé', '1', 'hash', 'success', identite.ifu),
+      CfaKpi('RCCM imprimé', '1', 'scale', 'success', identite.rccm),
       const CfaKpi('Autorisation d’ouverture', '1', 'stamp', 'success'),
       const CfaKpi('États alimentés', 'Tous', 'printer', 'navy'),
     ];
 
 /// La grille « Identité légale imprimée sur chaque état ».
-List<(String, String)> cfaGrilleIdentite() => [
-      ('Dénomination', '${IdentiteClinique.nom} — ${CfaIdentite.forme}'),
-      ('Devise de l’établissement', IdentiteClinique.slogan),
-      ('Adresse', '${CfaIdentite.adresse} · ${IdentiteClinique.bp}'),
-      ('Téléphones', IdentiteClinique.telephones.join(' / ')),
+List<(String, String)> cfaGrilleIdentite([IdentiteImprimee identite = IdentiteImprimee.semence]) => [
+      ('Dénomination', '${identite.nom} — ${CfaIdentite.forme}'),
+      ('Devise de l’établissement', identite.slogan),
+      ('Adresse', '${CfaIdentite.adresse} · ${identite.bp}'),
+      ('Téléphones', identite.telephones.join(' / ')),
       ('Ligne rendez-vous', CfaIdentite.telephoneRdv),
-      ('Courriel', IdentiteClinique.email),
-      ('IFU', IdentiteClinique.ifu),
-      ('RCCM', IdentiteClinique.rccm),
-      ('Autorisation d’ouverture', IdentiteClinique.autorisation),
+      ('Courriel', identite.email),
+      ('IFU', identite.ifu),
+      ('RCCM', identite.rccm),
+      ('Autorisation d’ouverture', identite.autorisation),
       ('Autorisation d’exercice', 'Non imprimée — ${CfaIdentite.autorisationExerciceMotif}'),
     ];
 
@@ -655,26 +655,26 @@ const cfaNoteAnciennesPieces =
     'Les pièces émises AVANT l’unification portent d’autres identités — trois IFU, trois RCCM et deux autorisations relevés sur les 37 documents collectés (certificats médico-légaux, rapport médical, comptes rendus de laboratoire et d’imagerie). Ces pièces restent valables et documentées par leurs scans dans docs/ ; elles ne sont simplement plus reproduites. Un document ancien qui diverge du présent en-tête n’est donc pas un faux.';
 
 /// Les valeurs initiales du formulaire d'identité : ce que la maquette lit dans `C.BRAND`.
-Map<String, Object?> cfaValeursIdentite() => {
-      'nom': IdentiteClinique.nom,
-      'sigle': IdentiteClinique.sigle,
+Map<String, Object?> cfaValeursIdentite([IdentiteImprimee identite = IdentiteImprimee.semence]) => {
+      'nom': identite.nom,
+      'sigle': identite.sigle,
       'forme': CfaIdentite.forme,
-      'slogan': IdentiteClinique.slogan,
+      'slogan': identite.slogan,
       'adresse': CfaIdentite.adresse,
-      'bp': IdentiteClinique.bp,
-      'telephones': IdentiteClinique.telephones.join(' / '),
-      'email': IdentiteClinique.email,
-      'ifu': IdentiteClinique.ifu,
-      'rccm': IdentiteClinique.rccm,
-      'autorisation': IdentiteClinique.autorisation,
+      'bp': identite.bp,
+      'telephones': identite.telephones.join(' / '),
+      'email': identite.email,
+      'ifu': identite.ifu,
+      'rccm': identite.rccm,
+      'autorisation': identite.autorisation,
       'doubleLogo': true,
       'piedPage': true,
       'filigrane': '',
     };
 
 /// Le pied du papier à en-tête, tel que l'aperçu le montre.
-String cfaPiedApercu(String utilisateur, DateTime quand) =>
-    '${IdentiteClinique.nom} — ${IdentiteClinique.rccm} — IFU ${IdentiteClinique.ifu} · Document généré par $utilisateur le ${dateHeure(quand)} · Réf. CNT-XXXXXXXX-0001';
+String cfaPiedApercu(String utilisateur, DateTime quand, [IdentiteImprimee identite = IdentiteImprimee.semence]) =>
+    '${identite.nom} — ${identite.rccm} — IFU ${identite.ifu} · Document généré par $utilisateur le ${dateHeure(quand)} · Réf. CNT-XXXXXXXX-0001';
 
 /// Le message de la bascule d'une variable : l'état se lit AVANT l'écriture (écart E845, corrigé dans la maquette).
 ({String message, String? detail}) cfaMessageBascule({required bool etaitFermee}) => etaitFermee

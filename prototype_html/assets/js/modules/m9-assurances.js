@@ -1514,12 +1514,13 @@
         P.etat({
           titre: 'Facture — prestations de santé',
           sousTitre: numero + ' — ' + assureurNom(selAssureur.value),
+          date: C.iso(AUJ),
           cartouche: [['Facture n°', numero],
             ['Compagnie', assureurNom(selAssureur.value)],
             ['Période', C.MOIS[mois] + ' ' + ANNEE],
             ['Souscripteurs', C.num(groupes.length)],
             ['Assurés concernés', C.num(C.sum(groupes, function (g) { return g.patients.length; }))],
-            ['RCCM', C.BRAND.rccm]],
+            ['RCCM', C.identiteALaDate(C.iso(AUJ)).rccm]],
           contenu: el('div.space-y-3', null, [
             P.tableau([
               { label: 'Souscripteur', key: 'nom' },
@@ -2625,6 +2626,7 @@
         P.etat({
           titre: 'FACTURE MÈRE — ' + (r ? r.compagnie : comp.nom).toUpperCase(),
           sousTitre: r ? r.numero : 'Aperçu — pièce non émise',
+          date: r ? r.dateEmission : C.iso(AUJ),
           cartouche: [
             ['Compagnie', r ? r.compagnie : comp.nom],
             ['Périodicité', r ? r.periodeLabel : pe().label],
@@ -2632,7 +2634,7 @@
             ['Souscripteurs consolidés', C.num(lignes.length)],
             ['Pièces filles', C.num(r ? r.nbFactures : rap.nbFactures)],
             ['Émise le', r ? C.dateFR(r.dateEmission) : '— aperçu —'],
-            ['RCCM', C.BRAND.rccm],
+            ['RCCM', C.identiteALaDate(r ? r.dateEmission : C.iso(AUJ)).rccm],
           ],
           contenu: el('div', null, [
             el('p.mb-2.text-\\[10px\\].font-bold.uppercase', { text: 'Consolidation par souscripteur' }),
