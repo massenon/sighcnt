@@ -607,3 +607,14 @@ Ce qui CHANGE par rapport au 09/11 est en gras. Le reste confirme une décision 
 30. **Plan annuel de travail (PTA)** : « rien ne doit rester en dur » ; lot PTA (exercice choisi, responsable lié au personnel, signataires paramétrés, budget, indicateur et cible, adoption par la Direction, alerte de retard, synchronisation, impression du plan et du bilan).
 31. **Inventaire de ce qui est en dur** : tout ce qui est paramétrable devient réglage ou droit ; lots dans l'ordre MIL (année des numéros et agrégats), VAL (validations et acteurs), TAUX, RH, DROITS, NOMS, NOTIF, SEUILS, REF, IDENT.
 32. **La liasse fiscale 2025 et ses chiffres de référence**, aujourd'hui transcrits dans le code, sont des données déposées et non des réglages : **ils passent en base, sous forme d'import daté**, dans le lot des listes de référence (REF). Accord de la Direction du 16/11/2026.
+
+## AX. Lot MECEF-M (16/11/2026, maquette, domaine, poste) : écran des modes MECeF et réglage de l'imprimante de caisse, ce qui reste à trancher par la Direction
+
+Appliqué : aucun numéro simulé ne se présente comme fiscal ; le mode (boîtier ou e-MECeF, défaut boîtier) se règle par le geste réservé `regler_mode_mecef` ; le mode boîtier dit « en attente des réponses du fournisseur », e-MECeF « non configuré : dossier d'interface DGI requis » ; l'imprimante de caisse (Xprinter XP-Q800, thermique 80 mm, liaison semée « à vérifier à l'arrière de l'appareil ») est un réglage daté en base, par le geste réservé `regler_imprimante_caisse`. `ECARTS-MAQUETTE.md` E2910 à E2916. Hypothèses écrites plutôt qu'inventées :
+
+- **Qui règle l'imprimante.** Un droit propre de la fiche RBAC, détenu d'origine par l'administrateur et la Directrice Administrative (comme le mode). ☐ Accepter ☐ L'ouvrir aussi à : ________
+- **La liaison de l'imprimante** est inconnue : à constater à l'arrière de l'appareil (USB ou Ethernet), puis à régler. Aucun autre type de liaison n'est proposé. ☐ Accepter ☐ Ajouter : ________
+- **Un réglage ne s'insère pas dans le passé** : la date d'effet est aujourd'hui ou à venir (des tickets sont déjà imprimés). ☐ Accepter ☐ Autoriser une date passée avec motif.
+- **État de la caisse.** Une vente encaissée est une vente dont le montant payé est positif ; elle compte tant que sa facture n'est pas normalisée ; les avoirs en attente se comptent à part ; un montant inconnu rend le total « Non calculable ». ☐ Accepter ☐ Autre définition : ________
+- **Le mode « Désactivé »** (démonstration) n'est plus proposé à l'écran. ☐ Accepter ☐ Le rétablir.
+- **Ce qui attend la Direction et le fournisseur** (inchangé) : modèle, interface et protocole du boîtier, dossier d'interface e-MECeF de la DGI. Tant qu'ils manquent, aucun numéro n'est fabriqué (lot M3).
