@@ -4,7 +4,6 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../core/service_installation.dart';
-import '../../core/service_parametres.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/identite_poste.dart';
@@ -12,7 +11,9 @@ import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../sync/configuration_sync.dart' show ApplicateurConfiguration;
+import '../../donnees/mecef_caisse_poste.dart';
 import '../../donnees/mecef_poste.dart';
+import '../m14/commun_m14.dart' show libelleRole;
 import '../../donnees/normalisation_mecef.dart';
 import '../m8/commun.dart' show ecrireAvoirEmis, idAvoirSuivant;
 import 'commun.dart';
@@ -1194,41 +1195,39 @@ class EcranMecefConfig extends StatefulWidget with EcranMaquette {
 
 class _EtatConfig extends State<EcranMecefConfig> {
   ControleurFormulaire? _f;
-  ControleurFormulaire? _mode;
   bool _pret = false;
 
   @override
   void dispose() {
     _f?.dispose();
-    _mode?.dispose();
     super.dispose();
   }
 
-  /// LE MODE DE CERTIFICATION (lot L3, décision de la Direction du 09/11/2026) : boîtier physique (défaut) ou e-MECeF, paramètre `mecef.mode` du registre du
-  /// lot L0 (en base, versionné par date, synchronisé par le journal). Réglé par l'administrateur ou la Directrice Administrative, sur la mère ; un fileul le
-  /// reçoit. Aucun adaptateur n'est branché : le mode e-MECeF est « non configuré, dossier d'interface DGI requis » et le boîtier attend son adaptateur (lot M3).
+  /// Les rôles qui détiennent un geste réservé, nommés (liste DÉRIVÉE de la fiche RBAC, jamais recopiée).
+  String _detenteurs(ContexteEcran c, String geste) {
+    final ids = c.donnees?.matrice.matriceGestes.rolesAvec(geste) ?? const <String>[];
+    return ids.isEmpty ? 'aucun rôle ne le détient' : ids.map((r) => libelleRole(c.magasin, r)).join(', ');
+  }
+
+  /// LE MODE DE CERTIFICATION (lot L3, décision de la Direction du 09/11/2026 ; lot MECEF-M) : boîtier physique (défaut) ou e-MECeF, paramètre `mecef.mode` du registre du
+  /// lot L0 (en base, versionné par date, synchronisé par le journal). Réglé par le GESTE réservé `regler_mode_mecef` de la fiche RBAC (plus de liste de rôles), sur la
+  /// mère ; un fileul le reçoit. Le moteur refuse aussi. Aucun adaptateur n'est branché : e-MECeF est « non configuré, dossier d'interface DGI requis » et le boîtier
+  /// est « en attente des réponses du fournisseur » (lot M3).
   Widget _carteMode(ContexteEcran c) {
     final mag = c.magasin;
     final fileul = ServiceInstallation.de(mag).rattache;
-    final peut = !fileul && c.droit.editer && (c.role == 'admin' || c.role == 'da');
-    final service = serviceParametres(mag, auteur: () => acteur(c).nom, horloge: () => c.aujourdhui);
+    final peut = c.donnees?.matrice.droitGeste(c.role, mecefGesteMode) ?? false;
     return ListenableBuilder(
         listenable: mag.collection(parCollectionParametres),
         builder: (ctx, _) {
           final actuel = modeMecefDuPoste(mag, c.aujourdhui);
-          _mode ??= ControleurFormulaire([
-            ChampDef(
-                nom: 'mode',
-                libelle: 'Mode de certification des factures',
-                type: TypeChamp.select,
-                requis: true,
-                col: ColChamp.plein,
-                options: [for (final k in mecefModes) OptionChamp(k, mecefLibellesModes[k])]),
-          ], {'mode': actuel});
           return CarteSigh(
               titre: 'Mode de certification',
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                FormulaireSigh(controleur: _mode!),
+                Text.rich(TextSpan(children: [
+                  const TextSpan(text: 'Mode en vigueur : '),
+                  TextSpan(text: mecefLibellesModes[actuel] ?? actuel, style: const TextStyle(fontWeight: FontWeight.w600)),
+                ])),
                 const SizedBox(height: 12),
                 if (actuel == 'emecef')
                   const NoteSigh(
@@ -1237,31 +1236,167 @@ class _EtatConfig extends State<EcranMecefConfig> {
                       icone: LucideIcons.plugZap)
                 else
                   const NoteSigh(
-                      'Boîtier physique. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.'),
+                      'Boîtier physique : en attente des réponses du fournisseur. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.'),
                 const SizedBox(height: 12),
                 if (fileul)
                   const NoteSigh(ApplicateurConfiguration.motifGarde, icone: LucideIcons.lock)
                 else if (!peut)
-                  const NoteSigh('Le mode se règle par l’administrateur ou la Directrice Administrative.', icone: LucideIcons.lock)
+                  NoteSigh('Le mode se règle par un rôle qui détient le droit « Régler le mode de facturation normalisée » : ${_detenteurs(c, mecefGesteMode)}.', icone: LucideIcons.lock)
                 else
                   Align(
                       alignment: Alignment.centerLeft,
-                      child: BoutonSigh(
-                          libelle: 'Enregistrer le mode',
-                          icone: LucideIcons.save,
-                          onPressed: () {
-                            final v = _mode!.valider();
-                            if (v == null) return;
-                            final r = service.regler(mecefCleMode, v['mode'], parametreDateIso(c.aujourdhui), motif: 'Réglé à « Configuration fiscale ».');
-                            if (!r.ok) {
-                              ToastsSigh.afficher(context, '${r.refus!.code} : ${r.refus!.motif}',
-                                  type: TypeToast.erreur, detail: r.refus!.geste, duree: const Duration(seconds: 9));
-                              return;
-                            }
-                            ToastsSigh.afficher(context, 'Mode enregistré : ${mecefLibellesModes[v['mode']] ?? v['mode']}.', type: TypeToast.succes);
-                          })),
+                      child: BoutonSigh(libelle: 'Régler le mode', icone: LucideIcons.settings, onPressed: () => _ouvrirMode(ctx, c, actuel))),
               ]));
         });
+  }
+
+  void _ouvrirMode(BuildContext ctx, ContexteEcran c, String actuel) {
+    final mag = c.magasin;
+    final form = ControleurFormulaire([
+      ChampDef(
+          nom: 'mode',
+          libelle: 'Mode de certification des factures',
+          type: TypeChamp.select,
+          requis: true,
+          col: ColChamp.plein,
+          options: [for (final k in mecefModes) OptionChamp(k, mecefLibellesModes[k])]),
+    ], {'mode': actuel});
+    afficherModale<void>(ctx,
+        titre: 'Mode de certification',
+        sousTitre: 'Boîtier physique ou e-MECeF',
+        corps: FormulaireSigh(controleur: form),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Enregistrer le mode',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final v = form.valider();
+                    if (v == null) return;
+                    final refus = reglerModeMecefDuPoste(mag,
+                        mode: v['mode'],
+                        gesteAccorde: c.donnees?.matrice.droitGeste(c.role, mecefGesteMode) ?? false,
+                        fileul: ServiceInstallation.de(mag).rattache,
+                        libelleRole: libelleRole(mag, c.role),
+                        rolesQuiLeDetiennent: _detenteurs(c, mecefGesteMode),
+                        horloge: () => c.aujourdhui);
+                    if (refus != null) {
+                      ToastsSigh.afficher(ctx, '${refus.code} : ${refus.motif}', type: TypeToast.erreur, detail: refus.geste, duree: const Duration(seconds: 9));
+                      return;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Mode enregistré : ${mecefLibellesModes[v['mode']] ?? v['mode']}.', type: TypeToast.succes);
+                  }),
+            ]);
+  }
+
+  /// L'ÉTAT DE LA CAISSE (lot MECEF-M) : ce qui est encaissé sans être normalisé, les avoirs en attente À PART ; un montant qui ne se calcule pas se DIT (jamais zéro).
+  Widget _carteEtatCaisse(ContexteEcran c) {
+    final mag = c.magasin;
+    return ListenableBuilder(
+        listenable: Listenable.merge([mag.collection('factures'), mag.collection('avoirs')]),
+        builder: (ctx, _) {
+          final e = etatCaissePoste(mag);
+          String montant(num? v, int nb) => nb == 0 ? money(0) : (v == null ? 'Non calculable' : money(v));
+          return CarteSigh(
+              titre: 'État de la caisse',
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                DescListeSigh([
+                  ('Ventes encaissées non normalisées', '${e.ventes}'),
+                  ('Montant encaissé non normalisé', montant(e.ventesMontant, e.ventes)),
+                  ('Avoirs en attente de certification (à part)', '${e.avoirs}'),
+                  ('Montant des avoirs en attente', montant(e.avoirsMontant, e.avoirs)),
+                ]),
+                if ((e.ventes > 0 && e.ventesMontant == null) || (e.avoirs > 0 && e.avoirsMontant == null)) ...[
+                  const SizedBox(height: 12),
+                  const NoteSigh('Non calculable : au moins une pièce n’a pas de montant connu. Le total n’est pas zéro, il n’est pas affirmé.',
+                      ton: TonSigh.attention, icone: LucideIcons.circleHelp),
+                ],
+                const SizedBox(height: 12),
+                Align(alignment: Alignment.centerLeft, child: BoutonSigh(libelle: 'Voir la file', icone: LucideIcons.list, variante: VarianteBouton.secondaire, onPressed: () => c.aller('mecef-transmission'))),
+              ]));
+        });
+  }
+
+  /// L'IMPRIMANTE DE CAISSE (lot MECEF-M) : réglage daté du registre (famille `mecef`), par le geste réservé `regler_imprimante_caisse` ; commande ABSENTE sans le droit,
+  /// fileul en lecture seule ; le moteur refuse aussi (six refus nommés).
+  Widget _carteImprimante(ContexteEcran c) {
+    final mag = c.magasin;
+    final fileul = ServiceInstallation.de(mag).rattache;
+    final peut = c.donnees?.matrice.droitGeste(c.role, mecefGesteImprimante) ?? false;
+    return ListenableBuilder(
+        listenable: mag.collection(parCollectionParametres),
+        builder: (ctx, _) {
+          final v = imprimanteDuPoste(mag, c.aujourdhui);
+          return CarteSigh(
+              titre: 'Imprimante de caisse',
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                DescListeSigh([
+                  ('Nom', v.nom),
+                  ('Modèle', v.modele),
+                  ('Type', 'Thermique, rouleau ${v.largeurMm} mm'),
+                  ('Liaison', v.liaisonLibelle),
+                  ('En vigueur', v.dateEffet == null ? 'réglage semé par défaut' : 'depuis le ${dateFR(DateTime.parse(v.dateEffet!))}'),
+                ]),
+                if (v.liaison == 'a_verifier') ...[
+                  const SizedBox(height: 12),
+                  const NoteSigh('La liaison réelle n’est pas connue : à vérifier à l’arrière de l’appareil (USB ou Ethernet), puis à régler ici.',
+                      ton: TonSigh.attention, icone: LucideIcons.cable),
+                ],
+                const SizedBox(height: 12),
+                const NoteSigh('Cette imprimante sort les tickets de caisse (rouleau 80 mm). Elle ne remplace pas le boîtier de certification.', icone: LucideIcons.printer),
+                const SizedBox(height: 12),
+                if (fileul)
+                  const NoteSigh(ApplicateurConfiguration.motifGarde, icone: LucideIcons.lock)
+                else if (!peut)
+                  NoteSigh('L’imprimante se règle par un rôle qui détient le droit « Régler l’imprimante de caisse » : ${_detenteurs(c, mecefGesteImprimante)}.', icone: LucideIcons.lock)
+                else
+                  Align(alignment: Alignment.centerLeft, child: BoutonSigh(libelle: 'Régler l’imprimante', icone: LucideIcons.settings, onPressed: () => _ouvrirImprimante(ctx, c, v))),
+              ]));
+        });
+  }
+
+  void _ouvrirImprimante(BuildContext ctx, ContexteEcran c, ImprimanteALaDate v) {
+    final mag = c.magasin;
+    final form = ControleurFormulaire([
+      const ChampDef(nom: 'nom', libelle: 'Nom', requis: true),
+      ChampDef(
+          nom: 'liaison',
+          libelle: 'Liaison',
+          type: TypeChamp.select,
+          options: [for (final l in liaisonsImprimante) if (l.choisissable) OptionChamp(l.id, l.libelle)]),
+      const ChampDef(nom: 'dateEffet', libelle: 'Date d’effet', type: TypeChamp.date, requis: true),
+      const ChampDef(nom: 'motif', libelle: 'Motif', type: TypeChamp.textarea, col: ColChamp.plein, lignes: 2),
+    ], {'nom': v.nom, 'liaison': v.liaison == 'usb' || v.liaison == 'ethernet' ? v.liaison : '', 'dateEffet': parametreDateIso(c.aujourdhui)});
+    afficherModale<void>(ctx,
+        titre: 'Imprimante de caisse',
+        sousTitre: '${v.modele}, thermique 80 mm',
+        corps: FormulaireSigh(controleur: form),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Enregistrer l’imprimante',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final date = '${form['dateEffet'] ?? ''}';
+                    final refus = reglerImprimanteDuPoste(mag,
+                        gesteAccorde: c.donnees?.matrice.droitGeste(c.role, mecefGesteImprimante) ?? false,
+                        fileul: ServiceInstallation.de(mag).rattache,
+                        libelleRole: libelleRole(mag, c.role),
+                        rolesQuiLeDetiennent: _detenteurs(c, mecefGesteImprimante),
+                        nom: '${form['nom'] ?? ''}',
+                        liaison: '${form['liaison'] ?? ''}',
+                        dateEffet: date.length >= 10 ? date.substring(0, 10) : date,
+                        motif: '${form['motif'] ?? ''}',
+                        horloge: () => c.aujourdhui);
+                    if (refus != null) {
+                      ToastsSigh.afficher(ctx, '${refus.code} : ${refus.motif}', type: TypeToast.erreur, detail: refus.geste, duree: const Duration(seconds: 9));
+                      return;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Imprimante enregistrée : ${form['nom']}, ${libelleLiaisonImprimante('${form['liaison']}')}.', type: TypeToast.succes);
+                  }),
+            ]);
   }
 
   Widget _controle(String libelle) => Padding(
@@ -1411,6 +1546,10 @@ class _EtatConfig extends State<EcranMecefConfig> {
       );
       final gauche = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         _carteMode(c),
+        const SizedBox(height: 16),
+        _carteEtatCaisse(c),
+        const SizedBox(height: 16),
+        _carteImprimante(c),
         const SizedBox(height: 16),
         carteConfig,
       ]);

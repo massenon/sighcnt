@@ -670,3 +670,13 @@ Le principe est VALIDÉ (section AQ points 14 et 16) : formulaire public sur une
 - **Navigateurs anciens** : la page exige WebCrypto X25519 (Chrome 133, Firefox 130, Safari 17) et le dit sinon ; aucun repli. Un téléphone plus ancien ne peut pas répondre. ☐ Accepter ☐ Demander un repli en JavaScript (lot à venir, à mesurer d'abord sur les téléphones du terrain)
 - **Réponse reçue après la révocation du lien** : refusée (`lien_revoque`) si reçue un jour après la révocation, acceptée le jour même (le relais refuse déjà les suivantes). ☐ Accepter
 - **Mode kiosque hors ligne, langues, alertes SMS, modération des commentaires** : hors lot (restent au PRD). ☐ Prioriser : ____
+## AX. Lot MECEF-M (16/11/2026, maquette, domaine, poste) : écran des modes MECeF et réglage de l'imprimante de caisse, ce qui reste à trancher par la Direction
+
+Appliqué : aucun numéro simulé ne se présente comme fiscal ; le mode (boîtier ou e-MECeF, défaut boîtier) se règle par le geste réservé `regler_mode_mecef` ; le mode boîtier dit « en attente des réponses du fournisseur », e-MECeF « non configuré : dossier d'interface DGI requis » ; l'imprimante de caisse (Xprinter XP-Q800, thermique 80 mm, liaison semée « à vérifier à l'arrière de l'appareil ») est un réglage daté en base, par le geste réservé `regler_imprimante_caisse`. `ECARTS-MAQUETTE.md` E2910 à E2916. Hypothèses écrites plutôt qu'inventées :
+
+- **Qui règle l'imprimante.** Un droit propre de la fiche RBAC, détenu d'origine par l'administrateur et la Directrice Administrative (comme le mode). ☐ Accepter ☐ L'ouvrir aussi à : ________
+- **La liaison de l'imprimante** est inconnue : à constater à l'arrière de l'appareil (USB ou Ethernet), puis à régler. Aucun autre type de liaison n'est proposé. ☐ Accepter ☐ Ajouter : ________
+- **Un réglage ne s'insère pas dans le passé** : la date d'effet est aujourd'hui ou à venir (des tickets sont déjà imprimés). ☐ Accepter ☐ Autoriser une date passée avec motif.
+- **État de la caisse.** Une vente encaissée est une vente dont le montant payé est positif ; elle compte tant que sa facture n'est pas normalisée ; les avoirs en attente se comptent à part ; un montant inconnu rend le total « Non calculable ». ☐ Accepter ☐ Autre définition : ________
+- **Le mode « Désactivé »** (démonstration) n'est plus proposé à l'écran. ☐ Accepter ☐ Le rétablir.
+- **Ce qui attend la Direction et le fournisseur** (inchangé) : modèle, interface et protocole du boîtier, dossier d'interface e-MECeF de la DGI. Tant qu'ils manquent, aucun numéro n'est fabriqué (lot M3).

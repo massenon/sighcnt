@@ -21,6 +21,7 @@ import '../tableaux/sortie_tableau.dart' show tabCleLimiteLignes, tabLimiteDefau
 import '../caisse/prix_manquant.dart' show cleEncaissementPartielSansPrix;
 import '../sms/sms_definitions.dart';
 import '../qualite/qual_en_ligne.dart' show qualDefinitionsEnLigne;
+import '../mecef/caisse.dart' show mecefCleImprimante, mecefImprimanteDefautJson;
 import 'parametres.dart';
 import 'parametres_clinique.dart' show pcDefinitions;
 
@@ -40,6 +41,19 @@ final List<DefinitionParametre> definitionsParametres = [
     source: _decisions,
     branche: true,
     appliquePar: 'Lot L3 (MECeF)',
+  ),
+  // Lot MECEF-M (16/11/2026) : l'imprimante de caisse (Xprinter XP-Q800, thermique 80 mm, liaison semée « à vérifier à l'arrière de l'appareil »). Valeur JSON, versionnée par date. Réglage de
+  // clinique posé à la mère, jamais vers un téléphone (famille `mecef`) ; son écran est « Configuration fiscale » (geste réservé `regler_imprimante_caisse`), pas le panneau générique.
+  DefinitionParametre(
+    cle: mecefCleImprimante,
+    famille: 'mecef',
+    type: TypeParametre.texte,
+    defaut: mecefImprimanteDefautJson,
+    libelle: 'Imprimante de caisse',
+    aide: 'Modèle, type, largeur du rouleau, liaison (USB ou Ethernet) et nom de l\'imprimante de caisse. Réglé à « Configuration fiscale » par le droit « Régler l\'imprimante de caisse ». La liaison semée est « à vérifier à l\'arrière de l\'appareil » : rien n\'est supposé.',
+    source: 'Proposition à valider (lot MECEF-M) : Xprinter XP-Q800, thermique, rouleau 80 mm, liaison à vérifier',
+    branche: true,
+    appliquePar: 'Lot MECEF-M',
   ),
   DefinitionParametre(
     cle: 'bareme_aib.chargePrelevement',

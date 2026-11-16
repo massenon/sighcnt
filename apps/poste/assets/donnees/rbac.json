@@ -13343,6 +13343,28 @@
     "defautSiEcritSur": null
    },
    {
+    "id": "regler_mode_mecef",
+    "libelle": "Régler le mode de facturation normalisée (boîtier physique ou e-MECeF)",
+    "module": "M8",
+    "ecran": "mecef-config",
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "regler_imprimante_caisse",
+    "libelle": "Régler l’imprimante de caisse (modèle, liaison, nom)",
+    "module": "M8",
+    "ecran": "mecef-config",
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
     "id": "exporter_donnees",
     "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
     "module": null,
@@ -13407,6 +13429,8 @@
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
     "regler_passerelle_sms": 1,
+    "regler_mode_mecef": 1,
+    "regler_imprimante_caisse": 1,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 1,
     "imputer_aib": 1
@@ -13419,6 +13443,8 @@
     "decider_prix": 1,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 1,
     "imputer_aib": 0
@@ -13431,6 +13457,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13443,6 +13471,8 @@
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
     "regler_passerelle_sms": 1,
+    "regler_mode_mecef": 1,
+    "regler_imprimante_caisse": 1,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 1,
     "imputer_aib": 1
@@ -13455,6 +13485,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13467,6 +13499,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13479,6 +13513,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 0,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13491,6 +13527,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13503,6 +13541,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13515,6 +13555,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13527,6 +13569,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 1
@@ -13539,6 +13583,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 0,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13551,6 +13597,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13563,6 +13611,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13575,6 +13625,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13587,6 +13639,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13599,6 +13653,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13611,6 +13667,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13623,6 +13681,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13635,6 +13695,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13647,6 +13709,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0
@@ -13659,6 +13723,8 @@
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
     "regler_passerelle_sms": 0,
+    "regler_mode_mecef": 0,
+    "regler_imprimante_caisse": 0,
     "exporter_donnees": 1,
     "confirmer_obligation_fiscale": 0,
     "imputer_aib": 0

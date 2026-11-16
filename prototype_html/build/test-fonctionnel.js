@@ -18024,7 +18024,7 @@ async function viderMessages(page) {
         const tb = [...document.querySelectorAll('button')].map((b) => b.textContent.replace(/\s+/g, ' ').trim());
         return { ouverte: !!pc && /Mode de certification/.test(pc.textContent), regler: tb.some((t) => /Régler le mode|Enregistrer le mode/.test(t)),
           actifs: [...document.querySelectorAll('#page-content select[data-mecef-mode], #page-content input:not([type="search"])')].filter((e) => !e.disabled).length,
-          dit: /administrateur ou la Directrice Administrative/.test(pc ? pc.textContent : '') };
+          dit: /droit « Régler le mode de facturation normalisée »/.test(pc ? pc.textContent : '') };
       });
     }
     await page.evaluate((s) => window.SIGH.store.setSession(s), baseSession105);
@@ -28754,6 +28754,166 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT TARIF-FIX-2 FIN */
+  /* LOT MECEF-M DEBUT */
+  await etape(async () => {
+    scenario('Vague 270 : lot MECEF-M, l’écran « Configuration fiscale » porte l’ÉTAT DE LA CAISSE (ventes encaissées non normalisées, avoirs en attente à part, montant non calculable dit et jamais zéro, « Voir la file ») et l’IMPRIMANTE DE CAISSE (Xprinter XP-Q800 semée, liaison « à vérifier », réglage daté par le geste réservé, six refus nommés, journal RG-12, commande ABSENTE sans le droit) ; le mode se règle par le geste réservé et non par une liste de rôles');
+    erreursJS = [];
+    const ADM270 = { role: 'admin', nom: 'ADMIN270', nomComplet: 'ADMIN270', fonction: 'admin', identifiant: 's270.admin', secteur: 'DIR' };
+    await poserSessionServeur(ADM270);
+    await ouvrir('mecef-config.html');
+    const lireEcran = () => page.evaluate(() => {
+      const t = (sel) => { const e = document.querySelector(sel); return e ? e.textContent.trim() : null; };
+      const boutons = [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.replace(/\s+/g, ' ').trim());
+      return { ventes: t('[data-etat-ventes]'), montant: t('[data-etat-ventes-montant]'), avoirs: t('[data-etat-avoirs]'), montantAvoirs: t('[data-etat-avoirs-montant]'),
+        nom: t('[data-imprimante-nom]'), modele: t('[data-imprimante-modele]'), liaison: t('[data-imprimante-liaison]'), carteImp: (document.querySelector('[data-imprimante]') || {}).textContent || '',
+        carteCaisse: (document.querySelector('[data-etat-caisse]') || {}).textContent || '', boutons, mode: t('[data-mecef-mode-etat]') };
+    });
+    const sauve = await page.evaluate(() => { const S = window.SIGH.store; return { mode: S.reglage('mecefMode', undefined), imp: S.reglage('imprimanteCaisse', null), fileul: S.reglage('posteFileul', false) }; });
+    const d0 = await lireEcran();
+    const g0 = await page.evaluate(() => { const N = window.SIGH.nav; return { mode: N.rolesAvecGeste('regler_mode_mecef').slice().sort(), imp: N.rolesAvecGeste('regler_imprimante_caisse').slice().sort(), g1: !!N.geste('regler_mode_mecef'), g2: !!N.geste('regler_imprimante_caisse') }; });
+    verifier('Départ : l’imprimante est SEMÉE (Xprinter XP-Q800, thermique, rouleau 80 mm, liaison « à vérifier à l’arrière de l’appareil »), jamais une liaison supposée ; les deux gestes réservés sont au manifeste, détenus d’origine par l’administrateur et la Directrice Administrative',
+      d0.modele === 'Xprinter XP-Q800' && /Thermique, rouleau 80 mm/.test(d0.carteImp) && /À vérifier à l’arrière de l’appareil/.test(d0.liaison || '') && /réglage semé par défaut/.test(d0.carteImp)
+      && g0.g1 && g0.g2 && JSON.stringify(g0.mode) === '["admin","da"]' && JSON.stringify(g0.imp) === '["admin","da"]', JSON.stringify({ d0: { modele: d0.modele, liaison: d0.liaison }, g0 }));
+    verifier('Le mode boîtier dit « en attente des réponses du fournisseur » (rien n’est supposé du boîtier) et la carte de l’imprimante dit qu’elle ne remplace pas le boîtier de certification',
+      /en attente des réponses du fournisseur/.test(d0.mode || '') && /ne remplace pas le boîtier de certification/.test(d0.carteImp), (d0.mode || '').slice(0, 200));
+
+    /* --- l'état de la caisse : des pièces de SONDE (FN-2099-S270x, AV-2099-S270x), archivées à la fin ------------------------------------------------ */
+    const mesure = await page.evaluate(() => window.SIGH.mecef.etatCaisse());
+    const sondes = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const fac = S.collection('factures', { module: 'M8', entite: 'Facture' }), av = S.collection('avoirs', { module: 'M8', entite: 'Avoir' });
+      const mk = (n, o) => fac.insert(Object.assign({ numero: 'FN-2099-S270' + n, patientId: 'P270', patient: 'SONDE Mecef-M', date: '2026-12-30', type: 'Consultation', lignes: [], montantTTC: 5000, proforma: false }, o)).record.id;
+      const ids = [
+        mk('A', { montantPaye: 5000, statutPaiement: 'soldee', statutMecef: 'en_attente' }),
+        mk('B', { montantPaye: 3000, statutPaiement: 'soldee', statutMecef: 'a_verifier' }),
+        mk('C', { montantPaye: 0, statutPaiement: 'impayee', statutMecef: 'en_attente' }),
+        mk('D', { montantPaye: 7000, statutPaiement: 'soldee', statutMecef: 'valide' }),
+        mk('E', { montantPaye: 9000, statutPaiement: 'soldee', statutMecef: 'en_attente', proforma: true }),
+      ];
+      const a1 = av.insert({ reference: 'AV-2099-S270A', montant: 2000, statutMecef: 'en_attente', date: '2026-12-30' }).record.id;
+      const a2 = av.insert({ reference: 'AV-2099-S270B', montant: 1500, statutMecef: 'valide', date: '2026-12-30' }).record.id;
+      return { ids, avoirs: [a1, a2] };
+    });
+    await attendreEcritures();
+    await ouvrir('mecef-config.html');
+    const d1 = await lireEcran();
+    const attendu1 = { ventes: mesure.ventes.nombre + 2, montant: mesure.ventes.montant + 8000, avoirs: mesure.avoirs.nombre + 1, montantAvoirs: mesure.avoirs.montant + 2000 };
+    const fmt = (n) => String(n).replace(/\D/g, '');
+    verifier('État de la caisse : seules les ventes ENCAISSÉES (montant payé > 0), non normalisées (en attente, à vérifier), hors pro-forma, comptent ; une vente normalisée, une vente non encaissée et un pro-forma n’y sont pas ; les avoirs en attente se comptent À PART',
+      d1.ventes === String(attendu1.ventes) && fmt(d1.montant) === String(attendu1.montant) && d1.avoirs === String(attendu1.avoirs) && fmt(d1.montantAvoirs) === String(attendu1.montantAvoirs),
+      JSON.stringify({ d1: { v: d1.ventes, m: d1.montant, a: d1.avoirs, ma: d1.montantAvoirs }, attendu1 }));
+    verifier('Aucun montant « Non calculable » tant que chaque pièce a son montant', !/Non calculable/.test(d1.carteCaisse), d1.carteCaisse.slice(0, 200));
+
+    /* une vente encaissée sans montant connu : le montant est NULL et l'écran le DIT (jamais zéro) */
+    const inconnue = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const id = S.collection('factures').insert({ numero: 'FN-2099-S270F', patientId: 'P270', patient: 'SONDE Mecef-M', date: '2026-12-30', type: 'Consultation', lignes: [], proforma: false, statutPaiement: 'soldee', statutMecef: 'en_attente' }).record.id;
+      return { id, etat: window.SIGH.mecef.etatCaisse().ventes };
+    });
+    await attendreEcritures();
+    await ouvrir('mecef-config.html');
+    const d2 = await lireEcran();
+    verifier('Une vente encaissée sans montant connu : le montant de l’état vaut NULL (jamais 0), l’écran dit « Non calculable », le nombre de ventes reste compté',
+      inconnue.etat.montant === null && inconnue.etat.incalculables === 1 && d2.montant === 'Non calculable' && /Non calculable/.test(d2.carteCaisse) && d2.ventes === String(attendu1.ventes + 1), JSON.stringify({ e: inconnue.etat.montant, m: d2.montant, v: d2.ventes }));
+
+    /* « Voir la file » ouvre la file de transmission */
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Voir la file').click(); });
+    await pause(1200);
+    const suite = await page.evaluate(() => ({ url: location.pathname + location.hash, titre: (document.querySelector('h1') || {}).textContent || '' }));
+    verifier('« Voir la file » ouvre la file de transmission MECeF', /mecef-transmission/.test(suite.url) || /Transmission/.test(suite.titre), JSON.stringify(suite));
+
+    /* --- l'imprimante : réglage à l'écran, daté, journalisé -------------------------------------------------------------------------------------------- */
+    await ouvrir('mecef-config.html');
+    const ouvrirModale = async () => {
+      await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Régler l’imprimante').click(); });
+      await pause(300);
+    };
+    const saisir270 = (champ, val) => page.evaluate((o) => { const f = document.querySelector('[role="dialog"] [data-imprimante-champ="' + o.champ + '"]'); f.value = o.val; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true })); }, { champ, val });
+    const enregistrer270 = async () => { await page.evaluate(() => { [...document.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent.trim() === 'Enregistrer l’imprimante').click(); }); await pause(500); };
+    const toasts = () => page.evaluate(() => [...document.querySelectorAll('.toast, [role="status"]')].map((t) => t.textContent.trim()).join(' | '));
+    await ouvrirModale();
+    await saisir270('liaison', 'usb'); await saisir270('motif', '');
+    await enregistrer270();
+    const t1 = await toasts();
+    const vide = await page.evaluate(() => window.SIGH.mecef.imprimante.versions().length);
+    verifier('Sans motif, « Enregistrer l’imprimante » refuse en nommant (IMPRIMANTE_MOTIF_OBLIGATOIRE) et n’écrit rien', /IMPRIMANTE_MOTIF_OBLIGATOIRE/.test(t1) && vide === 0, t1.slice(0, 200) + ' / ' + vide);
+    await saisir270('motif', 'Sonde 270 : câble USB constaté à l’arrière'); await saisir270('nom', 'Caisse principale');
+    await enregistrer270();
+    const d3 = await lireEcran();
+    const jr = await page.evaluate(() => (window.SIGH.store.raw().audit || []).filter((x) => /Imprimante de caisse : nouvelle version/.test(x.action || '') && /a_verifier/.test(String(x.ancienneValeur)) && /usb/.test(String(x.nouvelleValeur)) && /Sonde 270/.test(String(x.nouvelleValeur))).length);
+    verifier('Réglée à l’écran (USB, « Caisse principale », motif) : l’écran dit USB et le nom, la version est datée d’aujourd’hui, l’ancienne valeur (liaison à vérifier) et la nouvelle sont JOURNALISÉES (RG-12)',
+      d3.liaison === 'USB' && d3.nom === 'Caisse principale' && d3.modele === 'Xprinter XP-Q800' && !/réglage semé par défaut/.test(d3.carteImp) && jr >= 1, JSON.stringify({ l: d3.liaison, n: d3.nom, jr }));
+
+    /* les six refus nommés, dans l'ordre du moteur */
+    const refus = await page.evaluate(() => {
+      const M = window.SIGH.mecef, S = window.SIGH.store, I = M.imprimante, base = S.session(), C = window.SIGH.core;
+      const auj = C.iso(C.aujourdhui());
+      const ok0 = { liaison: 'ethernet', nom: 'Caisse réseau', dateEffet: C.iso(C.addDays(C.aujourdhui(), 30)), motif: 'Sonde 270 refus' };
+      const n0 = I.versions().length, r = {};
+      S.setSession(Object.assign({}, base, { role: 'caissier' })); r.reserve = I.definir(ok0).code; r.modeReserve = M.definirMode('emecef').code; S.setSession(base);
+      S.setReglage('posteFileul', true); r.fileul = I.definir(ok0).code; r.modeFileul = M.definirMode('emecef').code; S.setReglage('posteFileul', false);
+      r.motif = I.definir(Object.assign({}, ok0, { motif: ' ' })).code;
+      r.passee = I.definir(Object.assign({}, ok0, { dateEffet: C.iso(C.addDays(C.aujourdhui(), -1)) })).code;
+      r.nom = I.definir(Object.assign({}, ok0, { nom: '' })).code;
+      r.liaison = I.definir(Object.assign({}, ok0, { liaison: 'bluetooth' })).code;
+      r.verifier = I.definir(Object.assign({}, ok0, { liaison: 'a_verifier' })).code;
+      r.rien = I.versions().length === n0 && M.mode() === S.reglage('mecefMode', 'boitier');
+      return r;
+    });
+    verifier('Six refus NOMMÉS (code, motif, geste), le moteur refuse aussi : réservé (caissier), fileul en lecture seule, motif obligatoire, date passée, nom requis, liaison inconnue ; « a_verifier » n’est pas une liaison choisissable ; rien n’est écrit, le mode ne bouge pas',
+      refus.reserve === 'IMPRIMANTE_RESERVE' && refus.modeReserve === 'MODE_RESERVE' && refus.fileul === 'FILEUL_LECTURE_SEULE' && refus.modeFileul === 'FILEUL_LECTURE_SEULE' && refus.motif === 'IMPRIMANTE_MOTIF_OBLIGATOIRE'
+      && refus.passee === 'IMPRIMANTE_DATE_PASSEE' && refus.nom === 'IMPRIMANTE_NOM_REQUIS' && refus.liaison === 'IMPRIMANTE_LIAISON_INCONNUE' && refus.verifier === 'IMPRIMANTE_LIAISON_INCONNUE' && refus.rien, JSON.stringify(refus));
+
+    /* une version À VENIR ne change rien aujourd'hui (versionnée par date, jamais réécrite) */
+    const futur = await page.evaluate(() => {
+      const M = window.SIGH.mecef, C = window.SIGH.core, I = M.imprimante;
+      const dans = C.iso(C.addDays(C.aujourdhui(), 5));
+      const r = I.definir({ liaison: 'ethernet', nom: 'Caisse réseau', dateEffet: dans, motif: 'Sonde 270 version à venir' });
+      const hier = I.aLaDate(C.iso(C.addDays(C.aujourdhui(), 4))), jour = I.aLaDate(dans), auj = I.aLaDate();
+      return { ok: r.ok, auj: auj.liaison + '/' + auj.nom, hier: hier.liaison, jour: jour.liaison + '/' + jour.nom, versions: I.versions().length };
+    });
+    verifier('Une version à venir ne change rien avant sa date : la lecture d’aujourd’hui rend toujours USB, celle du jour d’effet rend Ethernet ; deux versions sont conservées, aucune réécrite',
+      futur.ok && futur.auj === 'usb/Caisse principale' && futur.hier === 'usb' && futur.jour === 'ethernet/Caisse réseau' && futur.versions === 2, JSON.stringify(futur));
+
+    /* --- sans le droit : la commande est ABSENTE (jamais grisée), les cartes se lisent, l'écran dit qui règle ----------------------------------------------- */
+    const base270 = await page.evaluate(() => JSON.parse(JSON.stringify(window.SIGH.store.session())));
+    const sansDroit = {};
+    for (const r of ['comptable', 'caissier']) {
+      await page.evaluate((s, role) => window.SIGH.store.setSession(Object.assign({}, s, { role })), base270, r);
+      await ouvrir('mecef-config.html');
+      sansDroit[r] = await page.evaluate(() => {
+        const pc = document.querySelector('#page-content');
+        const tb = [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.replace(/\s+/g, ' ').trim());
+        return { ouverte: !!pc && /Imprimante de caisse/.test(pc.textContent), regler: tb.filter((t) => /Régler l’imprimante|Régler le mode|Enregistrer/.test(t)).length, voirFile: tb.includes('Voir la file'),
+          dit: /droit « Régler l’imprimante de caisse »/.test(pc ? pc.textContent : ''), lit: !!document.querySelector('[data-imprimante-nom]') && !!document.querySelector('[data-etat-ventes]') };
+      });
+    }
+    await page.evaluate((s) => window.SIGH.store.setSession(s), base270);
+    await ouvrir('mecef-config.html');
+    verifier('Sans le geste réservé (comptable, caissier) : l’écran s’ouvre et se lit (état de la caisse, imprimante), « Voir la file » reste, mais « Régler l’imprimante » et « Régler le mode » sont ABSENTS et l’écran dit quel droit manque',
+      Object.keys(sansDroit).every((r) => !sansDroit[r].ouverte || (sansDroit[r].regler === 0 && sansDroit[r].voirFile && sansDroit[r].dit && sansDroit[r].lit)) && Object.keys(sansDroit).some((r) => sansDroit[r].ouverte), JSON.stringify(sansDroit));
+
+    /* le mode est un GESTE : plus aucune liste de rôles écrite dans le moteur ni l'écran */
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/parcours.js'), 'utf8') + fs.readFileSync(path.join(ROOT, 'assets/js/modules/mecef.js'), 'utf8');
+    const debut = src.indexOf('function definirModeMecef'); const corps = src.slice(debut, debut + 1400);
+    verifier('Le droit de régler le mode est lu du geste réservé (`regler_mode_mecef`) : aucune liste de rôles (admin, da) n’est écrite dans le moteur du mode ni dans l’écran',
+      debut > 0 && /peutGeste\(GESTE_MODE_MECEF\)/.test(corps) && !/\['admin', 'da'\]/.test(corps) && !/\['admin', 'da'\]\.indexOf/.test(fs.readFileSync(path.join(ROOT, 'assets/js/modules/mecef.js'), 'utf8')), corps.slice(0, 200));
+
+    /* --- restitution : sondes archivées, réglages remis ---------------------------------------------------------------------------------------------------- */
+    const fin = await page.evaluate((x) => {
+      const S = window.SIGH.store;
+      x.ids.concat([x.fid]).forEach((id) => { try { S.collection('factures').archive(id, 'Sonde 270'); } catch (e) { /* déjà archivée */ } });
+      x.avoirs.forEach((id) => { try { S.collection('avoirs').archive(id, 'Sonde 270'); } catch (e) { /* déjà archivé */ } });
+      S.setReglage('imprimanteCaisse', x.sauve.imp === null ? { versions: [] } : x.sauve.imp);
+      S.setReglage('mecefMode', x.sauve.mode === undefined ? 'boitier' : x.sauve.mode);
+      S.setReglage('posteFileul', x.sauve.fileul);
+      return { versions: window.SIGH.mecef.imprimante.versions().length, mode: window.SIGH.mecef.mode(), imp: window.SIGH.mecef.imprimante.aLaDate().source };
+    }, { ids: sondes.ids, fid: inconnue.id, avoirs: sondes.avoirs, sauve });
+    await attendreEcritures();
+    verifier('Restitution : pièces de sonde archivées, imprimante remise au défaut semé, mode au boîtier', fin.versions === 0 && fin.mode === 'boitier' && fin.imp === 'defaut', JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT MECEF-M FIN */
 
   /* LOT MIL DEBUT (Vagues 290 à 292) : plus aucune année écrite (numéros, paie, agrégats), horloge posée au 31/12/2026 puis au 01/01/2027 */
   await etape(async () => {

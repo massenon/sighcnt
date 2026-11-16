@@ -297,8 +297,9 @@ void main() {
     final m = magasin();
     await ouvrir(t, m, 'mecef-config');
     expect(find.text('Mode de certification'), findsWidgets);
-    expect(find.textContaining('Boîtier physique. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis'), findsOneWidget);
+    expect(find.textContaining('Boîtier physique : en attente des réponses du fournisseur. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis'), findsOneWidget);
     expect(modeMecefDuPoste(m, aujourdhui), 'boitier');
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Régler le mode'));
     await toucher(t, find.text('Boîtier physique').first);
     await toucher(t, find.text('e-MECeF').last);
     await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer le mode'));

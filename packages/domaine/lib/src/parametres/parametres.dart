@@ -18,7 +18,7 @@ const String parCollectionUsages = 'usagesParametres';
 const List<String> parFamillesJamaisMobile = ['paie', 'rh', 'fiscal', 'bareme_aib', 'comptabilite', 'mecef', 'securite', 'relais', 'courriel', 'sms', 'ocr', 'horssite', 'exercice', 'clinique', 'satisfaction'];
 
 /// Les familles dont le réglage a son PROPRE écran (règles de réglage propres : droit, motif, refus nommés) : le panneau générique des paramètres ne les montre pas, il contournerait ces règles.
-const Set<String> parFamillesReglageDedie = {'ocr', 'horssite', 'clinique', 'sms'};
+const Set<String> parFamillesReglageDedie = {'ocr', 'horssite', 'clinique', 'sms', 'mecef'};
 
 enum TypeParametre {
   booleen,

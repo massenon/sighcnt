@@ -7142,14 +7142,116 @@
 
   /* --- Le mode : réglage d'exploitation (le réglage se fait à « Configuration fiscale », lot L3) -------------------------------------------------- */
   var MODES_MECEF = ['desactive', 'boitier', 'emecef'];
+  /* Lot MECEF-M (16/11/2026) : DEUX gestes réservés de la fiche RBAC (nav.js, `N.GESTES`) remplacent la liste de rôles qui était écrite ici. */
+  var GESTE_MODE_MECEF = 'regler_mode_mecef';
+  var GESTE_IMPRIMANTE_CAISSE = 'regler_imprimante_caisse';
+  function peutGeste(geste, role) {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, geste));
+  }
+  function nomsRolesGeste(geste) {
+    var N = global.SIGH.nav;
+    var l = N && N.rolesAvecGeste ? N.rolesAvecGeste(geste).map(libelleRole) : [];
+    return l.length ? l.join(', ') : 'aucun rôle ne le détient';
+  }
   function modeMecef() { var m = S.reglage('mecefMode', 'boitier'); return MODES_MECEF.indexOf(m) >= 0 ? m : 'boitier'; }
   function definirModeMecef(m) {
     if (MODES_MECEF.indexOf(m) < 0) return refusMecef('MODE_INCONNU', 'Le mode « ' + m + ' » n’existe pas.', 'Choisir boîtier physique ou e-MECeF.');
-    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusMecef('MODE_RESERVE', 'Le mode de facturation normalisée se règle par l’administrateur ou la Directrice Administrative.', 'Demander le changement à la DA.');
+    if (!peutGeste(GESTE_MODE_MECEF)) {
+      return refusMecef('MODE_RESERVE', 'Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+        'Demander le changement à un rôle qui détient le droit « Régler le mode de facturation normalisée » (' + nomsRolesGeste(GESTE_MODE_MECEF) + ').');
+    }
+    var fileul = controleEcritureCfg();
+    if (fileul) return refusMecef(fileul.code, fileul.motif, fileul.geste);
     var avant = modeMecef();
     S.setReglage('mecefMode', m);
     S.log('Mode de facturation normalisée', 'MECEF', 'reglage', 'mecefMode', { mode: avant }, { mode: m });
     return { ok: true, mode: m };
+  }
+
+  /* --- L'IMPRIMANTE DE CAISSE (lot MECEF-M, 16/11/2026) ----------------------------------------------------------------------------
+     Un RÉGLAGE de clinique daté, en base (`reglages.imprimanteCaisse`, liste de versions), jamais une constante lue par un écran : le défaut SEMÉ est
+     la Xprinter XP-Q800 (thermique, rouleau 80 mm), liaison « à vérifier à l'arrière de l'appareil » (la liaison réelle n'est pas connue : rien n'est
+     supposé). Régler pose une NOUVELLE version datée (jamais une réécriture), motivée, journalisée (RG-12), par le geste réservé de la fiche RBAC
+     `regler_imprimante_caisse` ; un fileul est en lecture seule (le réglage est tenu par la mère). Cette imprimante ne parle pas au boîtier fiscal. */
+  var IMPRIMANTE_SEMEE = { modele: 'Xprinter XP-Q800', type: 'thermique', largeurMm: 80, liaison: 'a_verifier', nom: 'Imprimante de caisse' };
+  var LIAISONS_IMPRIMANTE = [
+    { id: 'usb', libelle: 'USB', choisissable: true },
+    { id: 'ethernet', libelle: 'Ethernet (réseau)', choisissable: true },
+    { id: 'a_verifier', libelle: 'À vérifier à l’arrière de l’appareil', choisissable: false },
+  ];
+  function libelleLiaison(id) { var l = LIAISONS_IMPRIMANTE.filter(function (x) { return x.id === id; })[0]; return l ? l.libelle : String(id); }
+  function versionsImprimante() {
+    var r = S.reglage('imprimanteCaisse', null);
+    var v = r && Array.isArray(r.versions) ? r.versions : [];
+    return v.filter(function (x) { return x && x.dateEffet; }).sort(function (a, b) { return String(a.dateEffet) < String(b.dateEffet) ? -1 : String(a.dateEffet) > String(b.dateEffet) ? 1 : 0; });
+  }
+  /** La version en vigueur à une date (AAAA-MM-JJ, défaut aujourd'hui), ou le défaut semé (`source: 'defaut'`). */
+  function imprimanteALaDate(date) {
+    var d = isoJour(date || aujIso());
+    var vig = versionsImprimante().filter(function (x) { return String(x.dateEffet).slice(0, 10) <= d; });
+    var v = vig[vig.length - 1];
+    if (!v) return Object.assign({ source: 'defaut', dateEffet: null, motif: null }, IMPRIMANTE_SEMEE, { liaisonLibelle: libelleLiaison(IMPRIMANTE_SEMEE.liaison) });
+    return Object.assign({ source: 'version' }, IMPRIMANTE_SEMEE, v, { dateEffet: String(v.dateEffet).slice(0, 10), liaisonLibelle: libelleLiaison(v.liaison) });
+  }
+  /** Régler : { liaison: 'usb'|'ethernet', nom, modele?, dateEffet?, motif }. Rend { ok, version, avant } ou le refus nommé (code, motif, geste). */
+  function definirImprimante(o) {
+    o = o || {};
+    if (!peutGeste(GESTE_IMPRIMANTE_CAISSE)) {
+      return refusMecef('IMPRIMANTE_RESERVE', 'Régler l’imprimante de caisse est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+        'Demander le réglage à un rôle qui détient le droit « Régler l’imprimante de caisse » (' + nomsRolesGeste(GESTE_IMPRIMANTE_CAISSE) + ').');
+    }
+    var fileul = controleEcritureCfg();
+    if (fileul) return refusMecef(fileul.code, fileul.motif, fileul.geste);
+    var motif = String(o.motif == null ? '' : o.motif).trim();
+    if (motif.length < 3) return refusMecef('IMPRIMANTE_MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour régler l’imprimante de caisse.', 'Saisir le motif du réglage.');
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : aujIso();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusMecef('IMPRIMANTE_DATE_ILLISIBLE', 'Date d’effet illisible : attendu AAAA-MM-JJ.', 'Choisir la date d’effet.');
+    if (dateEffet < aujIso()) {
+      return refusMecef('IMPRIMANTE_DATE_PASSEE', 'La date d’effet ' + C.dateFR(dateEffet) + ' est passée : un réglage ne s’insère pas dans le passé (des tickets sont déjà imprimés).',
+        'Choisir aujourd’hui ou une date à venir.');
+    }
+    var nom = String(o.nom == null ? '' : o.nom).trim();
+    if (!nom) return refusMecef('IMPRIMANTE_NOM_REQUIS', 'Le nom de l’imprimante est obligatoire.', 'Saisir le nom sous lequel le poste connaît l’imprimante.');
+    var liaison = String(o.liaison == null ? '' : o.liaison);
+    if (!LIAISONS_IMPRIMANTE.some(function (l) { return l.choisissable && l.id === liaison; })) {
+      return refusMecef('IMPRIMANTE_LIAISON_INCONNUE', 'La liaison « ' + liaison + ' » n’est pas l’une des liaisons proposées (' + LIAISONS_IMPRIMANTE.filter(function (l) { return l.choisissable; }).map(function (l) { return l.libelle; }).join(', ') + ').',
+        'Choisir USB ou Ethernet, après avoir vérifié à l’arrière de l’appareil.');
+    }
+    var avant = imprimanteALaDate(dateEffet);
+    var modele = String(o.modele == null || String(o.modele).trim() === '' ? avant.modele : o.modele).trim();
+    var version = { dateEffet: dateEffet, modele: modele, type: avant.type, largeurMm: avant.largeurMm, liaison: liaison, nom: nom, motif: motif, creeLe: new Date().toISOString(), creePar: acteur() };
+    var autres = versionsImprimante().filter(function (x) { return String(x.dateEffet).slice(0, 10) !== dateEffet; });
+    S.setReglage('imprimanteCaisse', { versions: autres.concat([version]) });
+    S.log('Imprimante de caisse : nouvelle version', 'MECEF', 'reglage', 'imprimanteCaisse',
+      { liaison: avant.liaison, nom: avant.nom, dateEffet: avant.dateEffet }, { liaison: liaison, nom: nom, dateEffet: dateEffet, motif: motif });
+    return { ok: true, version: version, avant: avant };
+  }
+
+  /* --- L'ÉTAT DE LA CAISSE (lot MECEF-M) : ce qui est encaissé sans être normalisé --------------------------------------------------
+     Une vente ENCAISSÉE (montant payé strictement positif, hors pro-forma) dont la facture n'est pas normalisée ; les avoirs en attente de
+     certification se comptent À PART. Un montant qui ne se calcule pas (une pièce sans prix valorisé, un montant absent) vaut NULL et se DIT
+     (« Non calculable »), jamais zéro. Pure lecture : aucune écriture, aucun numéro. */
+  function montantOuNul(x) { return typeof x === 'number' && isFinite(x) ? x : null; }
+  function etatCaisse() {
+    var ventes = col('factures').active().filter(function (f) {
+      var encaissee = montantOuNul(f.montantPaye) !== null ? f.montantPaye > 0 : f.statutPaiement === 'soldee';
+      return !f.proforma && encaissee && f.statutMecef !== 'valide' && f.statutMecef !== 'sans_objet';
+    });
+    var parEtat = {};
+    ventes.forEach(function (f) { var e = etatMecef(f) || 'en_attente'; parEtat[e] = (parEtat[e] || 0) + 1; });
+    var incalculables = ventes.filter(function (f) { return montantOuNul(f.montantPaye) === null; });
+    var avoirs = col('avoirs').active().filter(function (a) { return a.statutMecef === 'en_attente'; });
+    var avoirsIncalculables = avoirs.filter(function (a) { return montantOuNul(a.montant) === null; });
+    return {
+      ventes: { nombre: ventes.length, parEtat: parEtat, incalculables: incalculables.length,
+        montant: ventes.length === 0 ? 0 : (incalculables.length ? null : ventes.reduce(function (t, f) { return t + Number(f.montantPaye); }, 0)),
+        references: ventes.map(function (f) { return f.numero; }) },
+      avoirs: { nombre: avoirs.length, incalculables: avoirsIncalculables.length,
+        montant: avoirs.length === 0 ? 0 : (avoirsIncalculables.length ? null : avoirs.reduce(function (t, a) { return t + Number(a.montant); }, 0)),
+        references: avoirs.map(function (a) { return a.reference || a.numero || a.id; }) },
+      mode: modeMecef(), adaptateur: adaptateurMecef(),
+    };
   }
 
   /* --- L'ADAPTATEUR du mode en vigueur (lot L3, Direction 09/11/2026) ------------------------------------------------------------
@@ -7340,6 +7442,9 @@
     etat: etatMecef, fiche: etatMecefFiche,
     montants: mecefMontants, validerAcheteur: validerAcheteurMecef, aibTauxDefaut: aibTauxDefaut, tauxPropose: tauxAibProposes, traceAibAcheteur: traceAibAcheteur,
     mode: modeMecef, definirMode: definirModeMecef, adaptateur: adaptateurMecef, CODE_NON_CONFIGURE: CODE_NON_CONFIGURE,
+    GESTE_MODE: GESTE_MODE_MECEF, GESTE_IMPRIMANTE: GESTE_IMPRIMANTE_CAISSE, peutGeste: peutGeste, nomsRolesGeste: nomsRolesGeste,
+    imprimante: { aLaDate: imprimanteALaDate, definir: definirImprimante, versions: versionsImprimante, semee: IMPRIMANTE_SEMEE, liaisons: LIAISONS_IMPRIMANTE },
+    etatCaisse: etatCaisse,
     MODES_PROPOSES: ['boitier', 'emecef'],
     normaliser: normaliserVente, reprendre: reprendreMecef, retransmettre: retransmettreMecef,
     fauxBoitier: fauxBoitier, numeroSuivant: function () { return fauxBoitier.numeroSuivant(); },
