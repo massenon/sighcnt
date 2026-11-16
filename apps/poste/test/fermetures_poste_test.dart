@@ -63,8 +63,10 @@ void main() {
   /// Le jeu livré d'une version FUTURE du poste qui fermerait encore un écran : le jeu réel plus la fiche d'essai.
   Magasin jeuLivre() {
     final m = Magasin.depuisDossier(['rbac', 'modulesActifs']);
-    m.collection('modulesActifs').inserer({...ficheEssai});
-    return m;
+    return Magasin({
+      'rbac': m.collection('rbac').toutes,
+      'modulesActifs': [...m.collection('modulesActifs').toutes, {...ficheEssai}],
+    });
   }
 
   Set<String> fermesPour(Magasin m, String role) => {

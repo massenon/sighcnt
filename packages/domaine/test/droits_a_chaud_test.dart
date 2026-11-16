@@ -432,10 +432,15 @@ void main() {
     // Lot IMP-C : les pages de jeux d'import que le poste ne porte pas encore sont fermées de la même façon (liste NOMMÉE : porter un jeu retire sa page d'ici).
     const impNonPortes = <String>{
     };
-    // Lots FISC-2 et SMS-R (16/11/2026) : les quatre écrans d'abord fermés sont PORTÉS au poste ; plus aucune fermeture du jeu livré.
-    const quatre = <String>{...impNonPortes};
+    // Lots FISC-2 et SMS-R (16/11/2026) : les quatre écrans d'abord fermés sont PORTÉS au poste ; plus aucune fermeture dans le jeu livré. Le MÉCANISME (une fiche `proprePoste` ferme un écran
+    // à tous les rôles, rien d'autre ne change, une fiche archivée rouvre) reste éprouvé avec une fiche d'ESSAI posée par le test sur un écran qui existe au manifeste.
+    const ecranEssai = 'm13-sms-journal';
+    const quatre = <String>{ecranEssai, ...impNonPortes};
+    final essai = <Fiche>[
+      {'id': 'MODPX', 'code': 'ESSAI', 'libelle': 'Écran d\'essai', 'module': 'M13', 'ecrans': [ecranEssai], 'actif': false, 'motif': 'Non porté au poste, à porter (fiche d\'essai du test).', 'fermeLe': '2026-11-11', 'fermePar': 'Direction', 'proprePoste': true}
+    ];
     MatriceDroits chaud({List<Fiche>? modules, List<Fiche>? reference}) => superposerDroits(base, manifeste,
-        rbac: jeuRbac, modulesActifs: modules ?? [...jeuModules, ...fermeturesPoste], referenceRbac: jeuRbac, referenceModules: reference ?? jeuModules);
+        rbac: jeuRbac, modulesActifs: modules ?? [...jeuModules, ...fermeturesPoste, ...essai], referenceRbac: jeuRbac, referenceModules: reference ?? jeuModules);
     String cases(MatriceDroits m, String role) {
       final l = [for (final e in manifeste.tousLesEcrans.where((e) => !e.hub && !quatre.contains(e.id))) '${e.id}=${m.peutVoir(role, e.id) ? d(m, role, e.id) : '-'}']..sort();
       return l.join(',');
@@ -443,9 +448,9 @@ void main() {
 
     final roles = [for (final r in base.rolesBruts) '${r['id']}'];
 
-    test('le jeu porte une fiche fermée par écran de la liste, rien d\'autre n\'est marqué proprePoste', () {
-      expect([for (final f in fermeturesPoste) ...(f['ecrans'] as List)].toSet(), quatre);
-      expect(fermeturesPoste.every((f) => f['actif'] == false && f['statut'] != 'archive'), isTrue);
+    test('le jeu livré ne ferme plus aucun écran (FISC-2, SMS-R, TFIN-2) : rien n\'est marqué proprePoste', () {
+      expect(fermeturesPoste, isEmpty);
+      expect(essai.every((f) => f['actif'] == false && f['statut'] != 'archive'), isTrue);
     });
 
     test('hors fermeture, la matrice engendrée ouvre au moins un rôle sur chacun des quatre (sinon la fermeture ne prouverait rien)', () {
@@ -483,7 +488,7 @@ void main() {
     });
 
     test('réouverture (fiche archivée, RG-14) : l\'écran revient, case pour case, comme avant la fermeture', () {
-      final rouvertes = [for (final f in fermeturesPoste) {...f, 'statut': 'archive'}];
+      final rouvertes = [for (final f in [...fermeturesPoste, ...essai]) {...f, 'statut': 'archive'}];
       final m = chaud(modules: [...jeuModules, ...rouvertes]);
       for (final role in roles) {
         for (final id in quatre) {
@@ -493,7 +498,7 @@ void main() {
     });
 
     test('PIÈGE nommé : si les fermetures du poste étaient dans la RÉFÉRENCE, elles seraient crues déjà cuites dans la matrice engendrée et ne fermeraient rien', () {
-      final m = chaud(reference: [...jeuModules, ...fermeturesPoste]);
+      final m = chaud(reference: [...jeuModules, ...fermeturesPoste, ...essai]);
       expect(quatre.where((id) => m.peutVoir('admin', id)), isNotEmpty);
     });
   });

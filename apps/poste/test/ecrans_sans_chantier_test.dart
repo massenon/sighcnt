@@ -160,7 +160,7 @@ void main() {
         for (final g in rechercheGlobale(requete: l, role: 'admin', nav: donnees, magasin: magasinDuJeu, aujourdhui: DateTime(2026, 11, 11)))
           for (final r in g.resultats) r.ecran
     };
-    expect(trouves.intersection(nonPortesNommes), isNotEmpty, reason: 'la recherche globale doit pouvoir les trouver sans la fermeture');
+    if (nonPortesNommes.isNotEmpty) expect(trouves.intersection(nonPortesNommes), isNotEmpty, reason: 'la recherche globale doit pouvoir les trouver sans la fermeture');
   });
 
   for (final mode in [ModePoste.fileul, ModePoste.mere]) {
