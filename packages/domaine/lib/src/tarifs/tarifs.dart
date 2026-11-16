@@ -853,6 +853,8 @@ List<Map<String, Object?>> tarUsages(FicheTarif p, String dateEffet, PiecesTarif
     if (jour == null || jour.compareTo(dateEffet) < 0) continue;
     final porte = ((f['lignes'] as List?) ?? const []).any((l) {
       final x = (l as Map).cast<String, Object?>();
+      // LOT TARIF-FIX-2 : une ligne SANS PRIX ne dit aucun prix ; poser son prix ne change rien de ce que la pièce dit (elle attend ce prix pour s'encaisser).
+      if (x['prixManquant'] != null) return false;
       return (x['acteCode'] != null && codes.contains('${x['acteCode']}')) ||
           (x['demandeId'] != null && codes.contains(analyses['${x['demandeId']}'])) ||
           (x['demandeImagerieId'] != null && codes.contains(imageries['${x['demandeImagerieId']}'])) ||

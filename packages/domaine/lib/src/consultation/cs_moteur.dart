@@ -12,6 +12,7 @@
 library;
 
 import '../caisse/prise_en_charge.dart' show carteValide;
+import '../caisse/prix_manquant.dart';
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../imagerie/img_demandes_etats.dart' show modaliteDemandeDeExamen;
@@ -460,9 +461,12 @@ FicheCs csNotifier(StockCs s, Map<String, Object?> o) =>
 /// Ce que `PR.prescrire` écrit.
 class ResultatPrescription {
   const ResultatPrescription(this.ordonnance, this.demandes,
-      this.demandesImagerie, this.facture, this.taches);
+      this.demandesImagerie, this.facture, this.taches, [this.sansPrix = const []]);
   final FicheCs ordonnance, facture;
   final List<FicheCs> demandes, demandesImagerie, taches;
+
+  /// LOT TARIF-FIX-2 : les lignes sans prix de la pièce (`prixManquant`), NOMMÉES pour l'écran ; vide quand tout est tarifé.
+  final List<FicheCs> sansPrix;
 }
 
 /// Les tâches d'aval (`TACHES` de `parcours.js`) : poste, module, écran, titre, pictogramme.
@@ -546,6 +550,34 @@ List<FicheCs> csConstruireLignes(
   var n = 0;
   void ajouter(FicheCs o) {
     n++;
+    // LOT TARIF-FIX-2 : une ligne sans prix garde prix, montant et parts NULS (jamais 0) et porte ce qui lui manque.
+    if (o['prixManquant'] != null) {
+      lignes.add({
+        'id': 'L${_pad(n, 3)}',
+        'categorie': o['categorie'],
+        'designation': o['designation'],
+        'quantite': o['quantite'] ?? 1,
+        'prixUnitaire': null,
+        'prixUnitaireNet': null,
+        'montantBrut': null,
+        'remise': 0,
+        'motifRemise': null,
+        'montant': null,
+        'partAssureur': null,
+        'partPersonnel': null,
+        'partPatient': null,
+        'prixManquant': o['prixManquant'],
+        'demandeId': _ou(o['demandeId'], null),
+        'produitId': _ou(o['produitId'], null),
+        'acteCode': _ou(o['acteCode'], null),
+        'demandeImagerieId': _ou(o['demandeImagerieId'], null),
+        'statutPaiement': 'du',
+        'montantRegle': 0,
+        'payeLe': null,
+        'payePar': null,
+      });
+      return;
+    }
     final brut = arrondiJs(_n(o['montant'])).toInt();
     var remise = arrondiJs(_n(o['remise'])).toInt();
     if (o['categorie'] == 'medicament') remise = 0;
@@ -588,6 +620,7 @@ List<FicheCs> csConstruireLignes(
       'prixUnitaire': m['prix'],
       'montant': m['total'],
       'produitId': m['produitId'],
+      'prixManquant': m['prixManquant'],
     });
   }
   for (var i = 0; i < analyses.length; i++) {
@@ -599,6 +632,7 @@ List<FicheCs> csConstruireLignes(
       'prixUnitaire': analyses[i]['prix'],
       'montant': analyses[i]['prix'],
       'demandeId': dem?['id'],
+      'prixManquant': analyses[i]['prixManquant'],
     });
   }
   for (final a in actes) {
@@ -606,9 +640,10 @@ List<FicheCs> csConstruireLignes(
       'categorie': 'acte',
       'designation': a['libelle'],
       'quantite': 1,
-      'prixUnitaire': a['prix'] ?? 0,
-      'montant': a['prix'] ?? 0,
+      'prixUnitaire': a['prix'],
+      'montant': a['prix'],
       'acteCode': a['code'],
+      'prixManquant': a['prixManquant'] ?? (a['prix'] == null ? manqueDePrix(natureManqueTarif, a['code'], a['libelle'], voie: 'acte') : null),
     });
   }
   autres.forEach(ajouter);
@@ -629,6 +664,11 @@ ResultatPrescription csPrescrire(
   final annee = DateTime.parse(date).toLocal().year;
   final numero = 'ORD-$annee-${_pad(s.toutes('ordonnances').length + 1, 5)}';
 
+  // RG-02 : prix d'achat, sans marge, celui de la version EN VIGUEUR à la date de la PIÈCE (`prixProduitALaDate`) ; un produit sans prestation de prix lit sa
+  // fiche (la reprise de la maquette en ferait sa version 1). LOT TARIF-FIX-2 (E2677 point 2) : un prix d'achat absent n'est plus un 0 ; la ligne dit « prix à
+  // valoriser » et seule la caisse l'attend.
+  final hProduits = csReferentielTarifs(s);
+  final jourProduits = tarJourDe(date, tarIso(s.maintenant));
   final medicaments = <FicheCs>[
     for (final l in _liste(v['medicaments']))
       () {
@@ -637,9 +677,10 @@ ResultatPrescription csPrescrire(
                 .where((x) => x['id'] == l['produitId'])
                 .firstOrNull ??
             const <String, Object?>{};
-        final pu = prod['prixAchat'] != null ? prod['prixAchat'] as num : 0;
+        final px = csPrixProduitALaDate(hProduits, prod, jourProduits);
         final q = _n(l['quantite']);
-        return <String, Object?>{
+        final num? pu = px.absent ? null : px.achat;
+        final ligne = <String, Object?>{
           'produitId': l['produitId'],
           'produit': _ou(prod['designation'], _ou(l['produit'], '—')),
           'unite': _ou(prod['unite'], ''),
@@ -647,8 +688,12 @@ ResultatPrescription csPrescrire(
           'posologie': _ou(l['posologie'], ''),
           'duree': _ou(l['duree'], ''),
           'prix': pu,
-          'total': pu * q == (pu * q).truncateToDouble() ? (pu * q).toInt() : pu * q,
+          'total': pu == null ? null : (pu * q == (pu * q).truncateToDouble() ? (pu * q).toInt() : pu * q),
         };
+        if (px.absent) {
+          ligne['prixManquant'] = manqueDePrix(natureManquePrixAchat, _ou(prod['code'], l['produitId']), _ou(prod['designation'], l['produit']), motif: px.motif);
+        }
+        return ligne;
       }()
   ].where((l) => _n(l['quantite']) > 0).toList();
 
@@ -659,16 +704,14 @@ ResultatPrescription csPrescrire(
   final referentielAnalyses = s.referentiel('analyses');
   final assureAnalyses = csVrai(p['assureur']) && _carteValide(s, p, date);
   // LOT TARIF-FIX : « non calculable n'est pas zéro ». Chaque ligne d'analyse et d'acte lit le référentiel à la date de la PIÈCE (`prixDeLigne`) ; une ligne sans prix
-  // strictement positif est « prix à définir » : elle est NOMMÉE (cause, motif, geste) et la prescription est refusée AVANT toute écriture.
-  final aDefinir = <LignePrix>[];
+  // strictement positif est « prix à définir », NOMMÉE (cause, motif, geste). LOT TARIF-FIX-2 : elle ne refuse plus la prescription ; seule la caisse l'attend.
   final analyses = <FicheCs>[
     for (final code in (v['analyses'] as List? ?? const []))
       () {
         final a = referentielAnalyses.where((x) => x['code'] == code).firstOrNull ??
             const <String, Object?>{};
         final pr = h.prixDeLigne(code, jourPiece, assureAnalyses, voie: 'analyse', aujourdhui: jourPiece);
-        if (!pr.ok) aDefinir.add(pr);
-        return <String, Object?>{
+        final ligne = <String, Object?>{
           'code': code,
           'designation': _ou(a['designation'], pr.libelle),
           'categorie': _ou(a['categorie'], ''),
@@ -676,6 +719,8 @@ ResultatPrescription csPrescrire(
           'delai': _ou(a['delai'], ''),
           'prix': pr.montant,
         };
+        if (!pr.ok) ligne['prixManquant'] = manqueDepuisLignePrix(pr, code, ligne['designation'], voie: 'analyse');
+        return ligne;
       }()
   ];
 
@@ -689,23 +734,22 @@ ResultatPrescription csPrescrire(
         // Le libellé et le secteur sont ceux de la prestation ; la colonne ASSURÉE ne s'applique que si l'acte est assurable ET porte un montant assuré (la règle historique).
         final a = h.parActe['$code'] ?? const <String, Object?>{};
         final pr = h.prixDeLigne(code, jourPiece, assureActes, voie: 'acte', aujourdhui: jourPiece);
-        if (!pr.ok) aDefinir.add(pr);
-        return <String, Object?>{
+        final ligne = <String, Object?>{
           'code': code,
           'libelle': _ou(a['libelle'], pr.libelle),
           'secteur': _ou(a['secteur'], ''),
           'prix': pr.montant,
           'tarifValide': pr.ok,
         };
+        if (!pr.ok) ligne['prixManquant'] = manqueDepuisLignePrix(pr, code, ligne['libelle'], voie: 'acte');
+        return ligne;
       }()
   ];
-  if (aDefinir.isNotEmpty) {
-    throw RefusCs('Prix à définir : ${aDefinir.map((x) => x.motif).join(' ; ')}. ${aDefinir.first.geste} Une ligne sans prix ne se facture jamais à zéro.', 'PRIX_A_DEFINIR');
-  }
 
-  final mMed = _somme(medicaments, 'total');
-  final mAna = _somme(analyses, 'prix');
-  final mAct = _somme(actes, 'prix');
+  // Un total qui porte une ligne sans prix est NON CALCULABLE (nul), jamais la somme des seules lignes tarifées.
+  final mMed = _sommeOuNul(medicaments, 'total');
+  final mAna = _sommeOuNul(analyses, 'prix');
+  final mAct = _sommeOuNul(actes, 'prix');
 
   // L'imagerie est prescrite DANS LE MÊME GESTE : UNE facture globale. Les demandes sont créées AVANT l'ordonnance.
   final secteurDemandeur = _ou(v['secteurDemandeur'], session.secteur);
@@ -728,9 +772,11 @@ ResultatPrescription csPrescrire(
         'modalite': d['modalite'],
         'prix': d['prix'],
         'demandeImagerieId': d['id'],
+        if (d['prixManquant'] != null) 'prixManquant': d['prixManquant'],
       }
   ];
-  final mImg = _somme(imagerie, 'prix');
+  final mImg = _sommeOuNul(imagerie, 'prix');
+  final montantOrd = (mMed == null || mAna == null || mAct == null || mImg == null) ? null : mMed + mAna + mAct + mImg;
 
   final ord = s.inserer('ordonnances', {
     'numero': numero,
@@ -750,7 +796,7 @@ ResultatPrescription csPrescrire(
     'montantAnalyses': mAna,
     'montantActes': mAct,
     'montantImagerie': mImg,
-    'montant': mMed + mAna + mAct + mImg,
+    'montant': montantOrd,
     'urgent': csVrai(v['urgent']),
     'statutPaiement': 'impayee',
     'statutDispensation': medicaments.isNotEmpty ? 'en_attente' : 'sans_objet',
@@ -797,7 +843,7 @@ ResultatPrescription csPrescrire(
   final taux = (csVrai(p['assureur']) && _carteValide(s, p, date))
       ? _ou(p['tauxPriseEnCharge'], 0) as num
       : 0;
-  final montant = mMed + mAna + mAct + mImg;
+  final montant = montantOrd;
   final lignesFacture = csConstruireLignes(
       medicaments: medicaments,
       analyses: analyses,
@@ -806,11 +852,9 @@ ResultatPrescription csPrescrire(
       autres: imagerieCree.lignes,
       taux: taux,
       personnelId: p['personnelId']);
-  final totalLignes = _somme(lignesFacture, 'montant');
-  final totalAssureur = _somme(lignesFacture, 'partAssureur');
-  final totalPersonnel = _somme(lignesFacture, 'partPersonnel');
+  // LOT TARIF-FIX-2 : une ligne sans prix rend les totaux NON CALCULABLES (nuls) et marque la pièce `enAttentePrix` (`totauxPiece`).
   final totalRemise = _somme(lignesFacture, 'remise');
-  final duPatient = totalLignes - totalAssureur - totalPersonnel;
+  final tot = totauxPiece(lignesFacture);
 
   final facture = s.inserer('factures', {
     'lignes': lignesFacture,
@@ -822,25 +866,26 @@ ResultatPrescription csPrescrire(
     'patientCode': p['code'],
     'date': iso(DateTime.parse(date).toLocal()),
     'type': 'Prescription',
-    'montantHT': totalLignes,
-    'montantTTC': totalLignes,
-    'montantBrut': _somme(lignesFacture, 'montantBrut'),
+    'montantHT': tot['montantHT'],
+    'montantTTC': tot['montantTTC'],
+    'montantBrut': tot['montantBrut'],
     'totalRemise': totalRemise,
-    'partPersonnel': totalPersonnel,
+    'partPersonnel': tot['partPersonnel'],
     'priseEnChargePersonnel': csVrai(p['personnelId']),
     'personnelId': _ou(p['personnelId'], null),
     'assureur': _ou(p['assureur'], null),
     'tauxPriseEnCharge': taux,
-    'partAssurance': totalAssureur,
-    'partPatient': duPatient,
+    'partAssurance': tot['partAssurance'],
+    'partPatient': tot['partPatient'],
     'montantPaye': 0,
-    'reliquat': duPatient,
+    'reliquat': tot['reliquat'],
     'modePaiement': null,
     'statutPaiement': 'impayee',
     'statutMecef': 'en_attente',
     'ordonnanceId': ord['id'],
     'ordonnanceNumero': numero,
     'dossierConsultationId': _ou(v['dossierConsultationId'], null),
+    if (tot['enAttentePrix'] == true) 'enAttentePrix': true,
   });
   s.mettreAJour('ordonnances', ord['id'],
       {'factureId': facture['id'], 'factureNumero': facture['numero']});
@@ -883,7 +928,7 @@ ResultatPrescription csPrescrire(
   }
   if (medicaments.isNotEmpty) {
     taches.add(_creerTache(s, 'dispensation', ordFiche, facture, {
-      'detail': '${medicaments.length} médicament(s) — ${money(mMed, avecDevise: false)}',
+      'detail': '${medicaments.length} médicament(s) — ${moneyOu(mMed, 'prix à valoriser', false)}',
       'montant': mMed,
       'statut': 'bloque',
     }));
@@ -936,7 +981,8 @@ ResultatPrescription csPrescrire(
                 : 1,
           }
       ],
-      'montant': _ou(ordFiche['montantMedicaments'], 0),
+      // LOT TARIF-FIX-2 : un montant NUL (médicament à prix à valoriser) reste nul au registre, jamais 0.
+      'montant': ordFiche['montantMedicaments'],
       'statut': 'en_cours',
       'statutPaiement': _ou(ordFiche['statutPaiement'], 'impayee'),
     });
@@ -947,7 +993,20 @@ ResultatPrescription csPrescrire(
       demandes,
       [for (final d in demandesImagerie) s.parId('demandesImagerie', d['id'])!],
       facture,
-      taches);
+      taches,
+      [for (final l in lignesPrixManquant(facture)) (l['prixManquant'] as Map).cast<String, Object?>()]);
+}
+
+num? _sommeOuNul(List<FicheCs> l, String cle) => l.any((x) => x[cle] == null) ? null : _somme(l, cle);
+
+/// Le prix d'achat d'un produit à la date de la pièce (`prixProduitALaDate`) : la version en vigueur quand le produit a sa prestation de prix ; sinon la fiche
+/// (la maquette en ferait sa version 1 de reprise), un prix absent ou nul étant « absent », jamais 0.
+PrixProduit csPrixProduitALaDate(ReferentielTarifs h, FicheCs prod, String jour) {
+  if (prod['code'] == null || '${prod['code']}'.isEmpty) return const PrixProduit(absent: true, motif: 'Produit inconnu.');
+  if (!h.vide && tarEstProduit(h, '${prod['code']}')) return tarPrixProduit(h, prod, jour, aujourdhui: jour);
+  final a = prod['prixAchat'];
+  if (a is num && a > 0) return PrixProduit(absent: false, achat: a);
+  return PrixProduit(absent: true, motif: 'Le prix d’achat de « ${prod['designation'] ?? prod['code']} » n’est pas renseigné (à valider) : l’article ne se facture jamais à zéro.');
 }
 
 /// `creerDemandesImagerie(p, codes, date, v)` : une demande par examen, BLOQUÉE par le paiement ; un examen sans tarif est refusé en le nommant
@@ -957,10 +1016,26 @@ ResultatPrescription csPrescrire(
   final assure = _carteValide(s, p, date);
   final catalogue = s.actives('examensImagerie');
   final h = csReferentielTarifs(s);
+  // Un examen ABSENT du catalogue n'est pas une ligne sans prix : refusé en le nommant, avant toute écriture. Un examen du catalogue SANS TARIF se prescrit (lot
+  // TARIF-FIX-2) : la ligne dit « prix à définir » et seule la caisse l'attend.
+  final inconnus = codes.where((c) => !catalogue.any((x) => x['code'] == c)).toList();
+  if (inconnus.isNotEmpty) {
+    throw RefusCs('Examen absent du catalogue d’imagerie : ${inconnus.join(', ')}. Choisir l’examen dans le catalogue d’imagerie (ou l’y créer).', 'EXAMEN_INCONNU');
+  }
   final demandes = <FicheCs>[];
   for (final code in codes) {
     final ex = catalogue.where((x) => x['code'] == code).firstOrNull;
-    final pr = csTarifPrix(s, _ou(ex?['tarifCode'], code), assure, date: date, referentiel: h);
+    final tarifCode = '${_ou(ex?['tarifCode'], code)}';
+    final pr = csTarifPrix(s, tarifCode, assure, date: date, referentiel: h);
+    final sansTarif = !(pr.montant != null && pr.montant! > 0);
+    Map<String, Object?>? manque;
+    if (sansTarif) {
+      final lib = ex != null ? ex['label'] : code;
+      final ri = h.prixDeLigne(tarifCode, tarJourDe(date, tarIso(s.maintenant)), assure, voie: 'acte', aujourdhui: tarJourDe(date, tarIso(s.maintenant)));
+      manque = ri.ok
+          ? manqueDePrix(natureManqueTarif, code, lib, cause: 'sans-version', motif: '« $code » $lib : prix à définir (examen sans tarif)', voie: 'imagerie', tarifCode: tarifCode)
+          : manqueDepuisLignePrix(ri, code, lib, voie: 'imagerie', tarifCode: tarifCode);
+    }
     demandes.add(s.inserer('demandesImagerie', {
       'reference': referenceSerie('IME-', 5, s.toutes('demandesImagerie')),
       'dateHeure': date,
@@ -978,19 +1053,12 @@ ResultatPrescription csPrescrire(
       'ordonnanceId': _ou(v['ordonnanceId'], null),
       'ordonnanceNumero': _ou(v['ordonnanceNumero'], null),
       'dossierConsultationId': _ou(v['dossierConsultationId'], null),
-      'prix': pr.montant,
+      'prix': sansTarif ? null : pr.montant,
       'motifTarif': pr.motif,
       'statut': 'demandee',
       'bloqueParPaiement': true,
+      if (manque != null) 'prixManquant': manque,
     }));
-  }
-  final sansPrix = demandes.where((d) => d['prix'] == null).toList();
-  if (sansPrix.isNotEmpty) {
-    for (final d in demandes) {
-      s.archiver('demandesImagerie', d['id']);
-    }
-    throw RefusCs(
-        'Tarif non renseigné pour : ${sansPrix.map((d) => d['examen']).join(', ')}. Le renseigner au référentiel tarifaire avant de facturer.');
   }
   return (
     demandes: demandes,
@@ -1003,6 +1071,7 @@ ResultatPrescription csPrescrire(
           'prixUnitaire': d['prix'],
           'montant': d['prix'],
           'demandeImagerieId': d['id'],
+          'prixManquant': d['prixManquant'],
         }
     ]
   );
@@ -1033,6 +1102,10 @@ FicheCs csPrescrireSoins(StockCs s, Map<String, Object?> v) {
         final code = obj != null ? obj['code'] : a;
         final t = h.parGrille['$code'];
         final pr = csTarifPrix(s, code, assure, date: date, referentiel: h);
+        // LOT TARIF-FIX-2 (E2677 point 1) : un soin sans prix dit « prix à définir » avec sa cause et son geste ; il n'est jamais compté pour 0.
+        final sansPrix = !(pr.montant != null && pr.montant! > 0);
+        final lib = t != null ? _ou(t['libelleGrille'], t['libelle']) : code;
+        final jourSoin = tarJourDe(date, tarIso(s.maintenant));
         return <String, Object?>{
           'acteCode': code,
           // Le libellé de la GRILLE (celui que la ligne de soins a toujours porté), le libellé de facturation à défaut.
@@ -1043,10 +1116,11 @@ FicheCs csPrescrireSoins(StockCs s, Map<String, Object?> v) {
           'duree': _ou(obj?['duree'], ''),
           // Le NOMBRE d'administrations fait vivre le relais : une administration unique ne quitte jamais la salle de soins.
           'nbAdministrations': csVrai(obj?['nbAdministrations']) ? obj!['nbAdministrations'] : 1,
-          'prix': pr.montant,
+          'prix': sansPrix ? null : pr.montant,
           'tarif': pr.tarif,
           'motifTarif': pr.motif,
-          'prixAValider': pr.montant == null,
+          'prixAValider': sansPrix,
+          if (sansPrix) 'prixManquant': manqueDepuisLignePrix(h.prixDeLigne(code, jourSoin, assure, voie: 'acte', aujourdhui: jourSoin), code, lib, voie: 'acte'),
         };
       }()
   ];
@@ -1067,8 +1141,10 @@ FicheCs csPrescrireSoins(StockCs s, Map<String, Object?> v) {
     'admissionId': _ou(v['admissionId'], null),
     'indication': _ou(v['indication'], ''),
     'lignes': lignes,
-    'montant': lignes.fold<num>(
-        0, (t, l) => t + _n(l['prix']) * _n(l['quantite'])),
+    // Non calculable (nul) dès qu'une ligne est sans prix, jamais la somme des seules lignes tarifées.
+    'montant': lignes.any((l) => l['prix'] == null)
+        ? null
+        : lignes.fold<num>(0, (t, l) => t + _n(l['prix']) * _n(l['quantite'])),
     'assure': assure,
     'statut': 'en_cours',
     'statutPaiement': 'impayee',
@@ -1206,4 +1282,109 @@ List<({FicheCs prescription, List<SoinDu> lignes})> csSoinsDuSecteur(
     if (lignes.isNotEmpty) sortie.add((prescription: pres, lignes: lignes));
   }
   return sortie;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// LOT TARIF-FIX-2 : la VALORISATION d'une pièce en attente de prix (`valoriserFacture` de la maquette)
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Le prix d'une ligne de facture en attente, lu à la DATE DE LA PIÈCE (jamais aujourd'hui), colonne décidée par la carte à cette date (RG-09) : le prix,
+/// ou le manque mis à jour (`prixLigneEnAttente`).
+PrixEnAttente csPrixLigneEnAttente(StockCs s, FicheCs facture, FicheCs ligne, {ReferentielTarifs? referentiel}) {
+  final h = referentiel ?? csReferentielTarifs(s);
+  final m = (ligne['prixManquant'] as Map).cast<String, Object?>();
+  final date = '${facture['date'] ?? _iso(s.maintenant)}';
+  final jour = tarJourDe(date, tarIso(s.maintenant));
+  final p = csPatientParCode(s, facture['patientCode']) ?? (facture['patientId'] != null ? s.parId('patients', facture['patientId']) : null);
+  final assure = p != null && csVrai(p['assureur']) && _carteValide(s, p, date);
+  final q = ligne['quantite'] != null ? _n(ligne['quantite']) : 1.0;
+  if (m['nature'] == natureManquePrixAchat) {
+    final prod = s.actives('produits').where((x) => x['id'] == ligne['produitId']).firstOrNull ??
+        s.actives('produits').where((x) => x['code'] == m['code']).firstOrNull ??
+        const <String, Object?>{};
+    final px = csPrixProduitALaDate(h, prod, jour);
+    if (px.absent) return (ok: false, prixUnitaire: null, montant: null, version: null, manque: manqueDePrix(natureManquePrixAchat, m['code'], m['libelle'], motif: px.motif));
+    return (ok: true, prixUnitaire: px.achat, montant: px.achat! * q, version: px.version, manque: null);
+  }
+  if (m['voie'] == 'imagerie') {
+    final tarifCode = '${m['tarifCode'] ?? m['code']}';
+    final pi = csTarifPrix(s, tarifCode, assure, date: date, referentiel: h);
+    if (pi.montant != null && pi.montant! > 0) return (ok: true, prixUnitaire: pi.montant, montant: pi.montant, version: null, manque: null);
+    final ri = h.prixDeLigne(tarifCode, jour, assure, voie: 'acte', aujourdhui: jour);
+    return (
+      ok: false,
+      prixUnitaire: null,
+      montant: null,
+      version: null,
+      manque: ri.ok
+          ? manqueDePrix(natureManqueTarif, m['code'], m['libelle'], cause: 'sans-version', motif: '« ${m['code']} » ${m['libelle']} : prix à définir (examen sans tarif)', voie: 'imagerie', tarifCode: tarifCode)
+          : manqueDepuisLignePrix(ri, m['code'], m['libelle'], voie: 'imagerie', tarifCode: tarifCode)
+    );
+  }
+  final voie = m['voie'] == 'analyse' ? 'analyse' : 'acte';
+  final r = h.prixDeLigne(m['code'], jour, assure, voie: voie, aujourdhui: jour);
+  if (!r.ok) return (ok: false, prixUnitaire: null, montant: null, version: null, manque: manqueDepuisLignePrix(r, m['code'], m['libelle'], voie: '${m['voie'] ?? voie}'));
+  return (ok: true, prixUnitaire: r.montant, montant: r.montant! * q, version: r.version, manque: null);
+}
+
+/// VALORISE les lignes sans prix d'une pièce dont le prix est désormais en vigueur à SA date : écrit la pièce (lignes, totaux), les copies de prix des
+/// demandes et de l'ordonnance, la tâche de caisse. Une ligne réglée n'est jamais touchée. Rend les lignes valorisées et les manques restants.
+({List<Map<String, Object?>> valorisees, List<Map<String, Object?>> restantes}) csValoriserFacture(StockCs s, Object? factureId) {
+  final fac = s.parId('factures', factureId);
+  if (fac == null || fac['statut'] == 'archive' || !_liste(fac['lignes']).any(ligneSansPrix)) return (valorisees: const [], restantes: const []);
+  final h = csReferentielTarifs(s);
+  final r = valoriserLignes(fac, (l) => csPrixLigneEnAttente(s, fac, l, referentiel: h), maintenant: _iso(s.maintenant), aujourdhui: tarIso(s.maintenant));
+  if (!r.change) return (valorisees: r.valorisees, restantes: r.restantes);
+  final f = r.facture;
+  s.mettreAJour('factures', factureId, {
+    for (final k in ['lignes', 'montantHT', 'montantTTC', 'montantBrut', 'partAssurance', 'partPersonnel', 'partPatient', 'reliquat', 'enAttentePrix'])
+      if (f.containsKey(k)) k: f[k],
+  });
+  if (r.valorisees.isEmpty) return (valorisees: r.valorisees, restantes: r.restantes);
+  final lignes = _liste(f['lignes']);
+  for (final v in r.valorisees) {
+    final l = lignes.firstWhere((x) => x['id'] == v['id']);
+    if (l['demandeId'] != null) s.mettreAJour('demandesAnalyses', l['demandeId'], {'prix': v['montant']});
+    if (l['demandeImagerieId'] != null) s.mettreAJour('demandesImagerie', l['demandeImagerieId'], {'prix': v['montant']});
+  }
+  if (fac['ordonnanceId'] != null) _valoriserOrdonnance(s, fac['ordonnanceId'], r.valorisees);
+  final enAttente = f['enAttentePrix'] == true;
+  for (final t in s.toutes('taches')) {
+    if (t['factureId'] == factureId && t['type'] == 'encaissement' && t['statut'] != 'termine') {
+      s.mettreAJour('taches', t['id'], {'montant': enAttente ? null : f['montantTTC']});
+    }
+  }
+  return (valorisees: r.valorisees, restantes: r.restantes);
+}
+
+void _valoriserOrdonnance(StockCs s, Object? ordId, List<Map<String, Object?>> valorisees) {
+  final ord = s.parId('ordonnances', ordId);
+  if (ord == null) return;
+  num? prixDe(String nature, Object? code) => valorisees.where((v) => v['nature'] == nature && v['code'] == code).firstOrNull?['prixUnitaire'] as num?;
+  FicheCs sans(FicheCs x, FicheCs patch) => {...x, ...patch}..remove('prixManquant');
+  final med = [
+    for (final m in _liste(ord['medicaments']))
+      () {
+        final prod = s.parId('produits', m['produitId']) ?? const <String, Object?>{};
+        final pu = m['prix'] == null ? prixDe(natureManquePrixAchat, prod['code']) : null;
+        return pu == null ? m : sans(m, {'prix': pu, 'total': pu * _n(m['quantite'])});
+      }()
+  ];
+  final ana = [for (final a in _liste(ord['analyses'])) (a['prix'] == null && prixDe(natureManqueTarif, a['code']) != null) ? sans(a, {'prix': prixDe(natureManqueTarif, a['code'])}) : a];
+  final act = [
+    for (final a in _liste(ord['actes'])) (a['prix'] == null && prixDe(natureManqueTarif, a['code']) != null) ? sans(a, {'prix': prixDe(natureManqueTarif, a['code']), 'tarifValide': true}) : a
+  ];
+  final img = [for (final i in _liste(ord['imagerie'])) (i['prix'] == null && prixDe(natureManqueTarif, i['code']) != null) ? sans(i, {'prix': prixDe(natureManqueTarif, i['code'])}) : i];
+  final mMed = _sommeOuNul(med, 'total'), mAna = _sommeOuNul(ana, 'prix'), mAct = _sommeOuNul(act, 'prix'), mImg = _sommeOuNul(img, 'prix');
+  s.mettreAJour('ordonnances', ordId, {
+    'medicaments': med,
+    'analyses': ana,
+    'actes': act,
+    'imagerie': img,
+    'montantMedicaments': mMed,
+    'montantAnalyses': mAna,
+    'montantActes': mAct,
+    'montantImagerie': mImg,
+    'montant': (mMed == null || mAna == null || mAct == null || mImg == null) ? null : mMed + mAna + mAct + mImg,
+  });
 }

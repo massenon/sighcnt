@@ -1,0 +1,1444 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-prix-manquant.js : lot TARIF-FIX-2 (maquette dans Chrome). Ne pas éditer.",
+ "manque": [
+  {
+   "nom": "prix d’achat absent (motif de l’accesseur)",
+   "entree": {
+    "nature": "prix_achat",
+    "code": "MED-1",
+    "libelle": "Paracétamol 500",
+    "r": {
+     "motif": "Le prix d’achat de « Paracétamol 500 » n’est pas renseigné (à valider) : l’article ne se facture jamais à zéro."
+    }
+   },
+   "sortie": {
+    "nature": "prix_achat",
+    "code": "MED-1",
+    "libelle": "Paracétamol 500",
+    "cause": "prix-achat-absent",
+    "motif": "« MED-1 » Paracétamol 500 : prix à valoriser (Le prix d’achat de « Paracétamol 500 » n’est pas renseigné (à valider))",
+    "geste": "Changer le prix d’achat au « Référentiel produits » (ou proposer le premier prix dans « Tarifs et prix », liste « Produits à valoriser »), puis le faire décider (Oui)."
+   }
+  },
+  {
+   "nom": "prix d’achat : produit inconnu",
+   "entree": {
+    "nature": "prix_achat",
+    "code": "MED-2",
+    "libelle": "Article",
+    "r": {
+     "motif": "Produit inconnu."
+    }
+   },
+   "sortie": {
+    "nature": "prix_achat",
+    "code": "MED-2",
+    "libelle": "Article",
+    "cause": "prix-achat-absent",
+    "motif": "« MED-2 » Article : prix à valoriser (Produit inconnu)",
+    "geste": "Changer le prix d’achat au « Référentiel produits » (ou proposer le premier prix dans « Tarifs et prix », liste « Produits à valoriser »), puis le faire décider (Oui)."
+   }
+  },
+  {
+   "nom": "prix d’achat sans motif",
+   "entree": {
+    "nature": "prix_achat",
+    "code": "MED-3",
+    "libelle": null,
+    "r": null
+   },
+   "sortie": {
+    "nature": "prix_achat",
+    "code": "MED-3",
+    "libelle": "MED-3",
+    "cause": "prix-achat-absent",
+    "motif": "« MED-3 » MED-3 : prix à valoriser (prix d’achat non renseigné)",
+    "geste": "Changer le prix d’achat au « Référentiel produits » (ou proposer le premier prix dans « Tarifs et prix », liste « Produits à valoriser »), puis le faire décider (Oui)."
+   }
+  },
+  {
+   "nom": "tarif lu au référentiel (cause, motif, geste, effectif le)",
+   "entree": {
+    "nature": "tarif",
+    "code": "ACT-1",
+    "libelle": "Acte",
+    "r": {
+     "cause": "version-future",
+     "motif": "« ACT-1 » Acte : prix à définir, effectif le 20/08/2026",
+     "geste": "Attendre.",
+     "effectifLe": "2026-08-20"
+    }
+   },
+   "sortie": {
+    "nature": "tarif",
+    "code": "ACT-1",
+    "libelle": "Acte",
+    "cause": "version-future",
+    "motif": "« ACT-1 » Acte : prix à définir, effectif le 20/08/2026",
+    "geste": "Attendre.",
+    "effectifLe": "2026-08-20"
+   }
+  },
+  {
+   "nom": "tarif sans lecture",
+   "entree": {
+    "nature": "tarif",
+    "code": "ACT-2",
+    "libelle": "Acte deux",
+    "r": null
+   },
+   "sortie": {
+    "nature": "tarif",
+    "code": "ACT-2",
+    "libelle": "Acte deux",
+    "cause": "sans-version",
+    "motif": "« ACT-2 » Acte deux : prix à définir",
+    "geste": "Proposer le prix dans « Tarifs et prix », puis le faire décider (Oui)."
+   }
+  }
+ ],
+ "totaux": [
+  {
+   "nom": "toutes tarifées, une réglée",
+   "lignes": [
+    {
+     "id": "L001",
+     "montant": 5000,
+     "montantBrut": 5000,
+     "partAssureur": 4000,
+     "partPersonnel": 0,
+     "partPatient": 1000,
+     "statutPaiement": "paye"
+    },
+    {
+     "id": "L002",
+     "montant": 3000,
+     "montantBrut": 3000,
+     "partAssureur": 0,
+     "partPersonnel": 0,
+     "partPatient": 3000,
+     "statutPaiement": "du"
+    }
+   ],
+   "sortie": {
+    "montantHT": 8000,
+    "montantTTC": 8000,
+    "montantBrut": 8000,
+    "partAssurance": 4000,
+    "partPersonnel": 0,
+    "partPatient": 4000,
+    "reliquat": 3000
+   }
+  },
+  {
+   "nom": "une ligne sans prix : totaux nuls",
+   "lignes": [
+    {
+     "id": "L001",
+     "montant": 5000,
+     "montantBrut": 5000,
+     "partAssureur": 0,
+     "partPersonnel": 0,
+     "partPatient": 5000,
+     "statutPaiement": "du"
+    },
+    {
+     "id": "L002",
+     "montant": null,
+     "montantBrut": null,
+     "partAssureur": null,
+     "partPersonnel": 0,
+     "partPatient": null,
+     "statutPaiement": "du",
+     "prixManquant": {
+      "nature": "tarif",
+      "code": "ZZ1",
+      "libelle": "Acte sans prix",
+      "cause": "sans-version",
+      "motif": "« ZZ1 » Acte sans prix : prix à définir",
+      "geste": "Proposer le prix dans « Tarifs et prix », puis le faire décider (Oui)."
+     }
+    }
+   ],
+   "sortie": {
+    "montantHT": null,
+    "montantTTC": null,
+    "montantBrut": null,
+    "partAssurance": null,
+    "partPersonnel": null,
+    "partPatient": null,
+    "reliquat": null,
+    "enAttentePrix": true
+   }
+  },
+  {
+   "nom": "aucune ligne",
+   "lignes": [],
+   "sortie": {
+    "montantHT": 0,
+    "montantTTC": 0,
+    "montantBrut": 0,
+    "partAssurance": 0,
+    "partPersonnel": 0,
+    "partPatient": 0,
+    "reliquat": 0
+   }
+  }
+ ],
+ "reglage": [
+  {
+   "nom": "aucune version écrite : défaut semé « non »",
+   "versions": null,
+   "jour": "2026-08-16",
+   "sortie": {
+    "valeur": "non",
+    "partiel": false,
+    "dateEffet": "2026-01-01",
+    "version": 1,
+    "source": "Défaut semé : la pièce entière attend le prix (proposition à valider, section AM)",
+    "date": "2026-08-16"
+   }
+  },
+  {
+   "nom": "une version « oui » datée du 10/08 : lue le 16/08",
+   "versions": [
+    {
+     "valeur": "non",
+     "dateEffet": "2026-01-01",
+     "source": "s",
+     "par": "semence"
+    },
+    {
+     "valeur": "oui",
+     "dateEffet": "2026-08-10",
+     "source": "motif"
+    }
+   ],
+   "jour": "2026-08-16",
+   "sortie": {
+    "valeur": "oui",
+    "partiel": true,
+    "dateEffet": "2026-08-10",
+    "version": 2,
+    "source": "motif",
+    "date": "2026-08-16"
+   }
+  },
+  {
+   "nom": "une version « oui » future : la précédente fait foi",
+   "versions": [
+    {
+     "valeur": "non",
+     "dateEffet": "2026-01-01",
+     "source": "s",
+     "par": "semence"
+    },
+    {
+     "valeur": "oui",
+     "dateEffet": "2026-09-01",
+     "source": "motif"
+    }
+   ],
+   "jour": "2026-08-16",
+   "sortie": {
+    "valeur": "non",
+    "partiel": false,
+    "dateEffet": "2026-01-01",
+    "version": 1,
+    "source": "s",
+    "date": "2026-08-16"
+   }
+  }
+ ],
+ "mecef": [
+  {
+   "nom": "ligne marquée sans prix",
+   "lignes": [
+    {
+     "designation": "Acte sans prix",
+     "quantite": 1,
+     "prixUnitaire": null,
+     "prixManquant": true
+    }
+   ],
+   "sortie": {
+    "ok": false,
+    "code": "PRIX_MANQUANT",
+    "motif": "La ligne « Acte sans prix » n’a pas de prix : rien n’est normalisé tant que son prix n’est pas posé.",
+    "geste": "Poser le prix de la ligne (« Tarifs et prix » ou « Changer le prix d’achat »), puis encaisser la pièce."
+   }
+  },
+  {
+   "nom": "prix unitaire nul sans montant",
+   "lignes": [
+    {
+     "designation": "Ligne nulle",
+     "quantite": 1,
+     "prixUnitaire": null
+    }
+   ],
+   "sortie": {
+    "ok": false,
+    "code": "PRIX_MANQUANT",
+    "motif": "La ligne « Ligne nulle » n’a pas de prix : rien n’est normalisé tant que son prix n’est pas posé.",
+    "geste": "Poser le prix de la ligne (« Tarifs et prix » ou « Changer le prix d’achat »), puis encaisser la pièce."
+   }
+  },
+  {
+   "nom": "ligne tarifée : passe",
+   "lignes": [
+    {
+     "designation": "Consultation",
+     "quantite": 1,
+     "prixUnitaire": 5000
+    }
+   ],
+   "sortie": {
+    "ok": true,
+    "lignes": [
+     {
+      "id": null,
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaireEnvoye": 5000,
+      "brut": 5000,
+      "remise": 0,
+      "net": 5000,
+      "partAssureur": 0,
+      "partPersonnel": 0,
+      "partPatient": 5000
+     }
+    ],
+    "brut": 5000,
+    "remises": 0,
+    "total": 5000,
+    "partAssureur": 0,
+    "partPersonnel": 0,
+    "partPatient": 5000,
+    "base": 5000,
+    "ht": 5000,
+    "tva": 0,
+    "aib": 0,
+    "net": 5000
+   }
+  }
+ ],
+ "encaisser": [
+  {
+   "nom": "réglage « non » : par lignes, la pièce entière attend (refus nommé)",
+   "partiel": false,
+   "facture": {
+    "id": "FACxmvux6yzsn0fsg",
+    "numero": "FP-2026-00951",
+    "date": "2026-08-14",
+    "patient": "TEST Patient",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "prixUnitaireNet": 5000,
+      "montantBrut": 5000,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": 5000,
+      "partAssureur": 0,
+      "partPersonnel": 0,
+      "partPatient": 5000,
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "CONS-X",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte sonde",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2A",
+       "libelle": "Acte sonde",
+       "cause": "absent-du-referentiel",
+       "motif": "« ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code)",
+       "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2A",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantTTC": null,
+    "partPatient": null,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L001",
+       "L002"
+      ]
+     },
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00951 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Elle ne s’encaisse pas tant que ce prix n’est pas posé : la pièce entière attend le prix (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "impayee",
+      "reliquat": null,
+      "montantPaye": 0,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    },
+    {
+     "opts": {
+      "lignes": [
+       "L001"
+      ]
+     },
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00951 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Elle ne s’encaisse pas tant que ce prix n’est pas posé : la pièce entière attend le prix (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "impayee",
+      "reliquat": null,
+      "montantPaye": 0,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    },
+    {
+     "opts": {
+      "montant": 5000
+     },
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00951 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Elle ne s’encaisse pas tant que ce prix n’est pas posé : la pièce entière attend le prix (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "impayee",
+      "reliquat": null,
+      "montantPaye": 0,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    },
+    {
+     "opts": {},
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00951 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Elle ne s’encaisse pas tant que ce prix n’est pas posé : la pièce entière attend le prix (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "impayee",
+      "reliquat": null,
+      "montantPaye": 0,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "nom": "réglage « non » : deux lignes sans prix (acte et médicament) nommées",
+   "partiel": false,
+   "facture": {
+    "id": "FACxmvux6yzuztjya",
+    "numero": "FP-2026-00952",
+    "date": "2026-08-14",
+    "patient": "TEST Patient",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte sonde",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2A",
+       "libelle": "Acte sonde",
+       "cause": "absent-du-referentiel",
+       "motif": "« ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code)",
+       "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2A",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L002",
+      "categorie": "medicament",
+      "designation": "Médicament sonde",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "prix_achat",
+       "code": "ZZTF2M",
+       "libelle": "Médicament sonde",
+       "cause": "prix-achat-absent",
+       "motif": "« ZZTF2M » Médicament sonde : prix à valoriser (Produit inconnu)",
+       "geste": "Changer le prix d’achat au « Référentiel produits » (ou proposer le premier prix dans « Tarifs et prix », liste « Produits à valoriser »), puis le faire décider (Oui)."
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": null,
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L003",
+      "categorie": "acte",
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "prixUnitaireNet": 2000,
+      "montantBrut": 2000,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": 2000,
+      "partAssureur": 0,
+      "partPersonnel": 0,
+      "partPatient": 2000,
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "CONS-X",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantTTC": null,
+    "partPatient": null,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L003"
+      ]
+     },
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00952 porte 2 lignes sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code) ; « ZZTF2M » Médicament sonde : prix à valoriser (Produit inconnu). Elle ne s’encaisse pas tant que ce prix n’est pas posé : la pièce entière attend le prix (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "impayee",
+      "reliquat": null,
+      "montantPaye": 0,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L003",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "nom": "réglage « oui » : la ligne sans prix refusée, la tarifée réglée seule (pièce partielle, reste non calculable)",
+   "partiel": true,
+   "facture": {
+    "id": "FACxmvux6yzvygxz9",
+    "numero": "FP-2026-00953",
+    "date": "2026-08-14",
+    "patient": "TEST Patient",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "prixUnitaireNet": 5000,
+      "montantBrut": 5000,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": 5000,
+      "partAssureur": 0,
+      "partPersonnel": 0,
+      "partPatient": 5000,
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "CONS-X",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte sonde",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2A",
+       "libelle": "Acte sonde",
+       "cause": "absent-du-referentiel",
+       "motif": "« ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code)",
+       "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2A",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantTTC": null,
+    "partPatient": null,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L002"
+      ]
+     },
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00953 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Une ligne sans prix ne s’encaisse pas ; le reste de la pièce peut s’encaisser (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "impayee",
+      "reliquat": null,
+      "montantPaye": 0,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    },
+    {
+     "opts": {
+      "lignes": [
+       "L001"
+      ]
+     },
+     "refusCode": null,
+     "refus": null,
+     "lignesReglees": [
+      "L001"
+     ],
+     "montantRegle": 5000,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "partielle",
+      "reliquat": null,
+      "montantPaye": 5000,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "paye"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    },
+    {
+     "opts": {
+      "lignes": [
+       "L002"
+      ]
+     },
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00953 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Une ligne sans prix ne s’encaisse pas ; le reste de la pièce peut s’encaisser (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "partielle",
+      "reliquat": null,
+      "montantPaye": 5000,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "paye"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "nom": "réglage « oui » : par montant, seules les lignes tarifées sont allouées",
+   "partiel": true,
+   "facture": {
+    "id": "FACxmvux6yzynvtg0",
+    "numero": "FP-2026-00954",
+    "date": "2026-08-14",
+    "patient": "TEST Patient",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "prixUnitaireNet": 5000,
+      "montantBrut": 5000,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": 5000,
+      "partAssureur": 0,
+      "partPersonnel": 0,
+      "partPatient": 5000,
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "CONS-X",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte sonde",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2A",
+       "libelle": "Acte sonde",
+       "cause": "absent-du-referentiel",
+       "motif": "« ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code)",
+       "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2A",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L003",
+      "categorie": "acte",
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 1500,
+      "prixUnitaireNet": 1500,
+      "montantBrut": 1500,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": 1500,
+      "partAssureur": 0,
+      "partPersonnel": 0,
+      "partPatient": 1500,
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "CONS-X",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantTTC": null,
+    "partPatient": null,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "montant": 99999
+     },
+     "refusCode": null,
+     "refus": null,
+     "lignesReglees": [
+      "L001",
+      "L003"
+     ],
+     "montantRegle": 6500,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "partielle",
+      "reliquat": null,
+      "montantPaye": 6500,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "paye"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L003",
+        "statutPaiement": "paye"
+       }
+      ]
+     }
+    },
+    {
+     "opts": {},
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00954 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Une ligne sans prix ne s’encaisse pas ; le reste de la pièce peut s’encaisser (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "partielle",
+      "reliquat": null,
+      "montantPaye": 6500,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "paye"
+       },
+       {
+        "id": "L002",
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L003",
+        "statutPaiement": "paye"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "nom": "réglage « oui » : il ne reste que des lignes sans prix (refus nommé)",
+   "partiel": true,
+   "facture": {
+    "id": "FACxmvux6yzy2dshz",
+    "numero": "FP-2026-00955",
+    "date": "2026-08-14",
+    "patient": "TEST Patient",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte sonde",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2A",
+       "libelle": "Acte sonde",
+       "cause": "absent-du-referentiel",
+       "motif": "« ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code)",
+       "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2A",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantTTC": null,
+    "partPatient": null,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {},
+     "refusCode": "ENCAISSEMENT_PRIX_MANQUANT",
+     "refus": "ENCAISSEMENT_PRIX_MANQUANT : La pièce FP-2026-00955 porte une ligne sans prix : « ZZTF2A » ZZTF2A : prix à définir (aucune prestation de prix ne porte ce code). Une ligne sans prix ne s’encaisse pas ; le reste de la pièce peut s’encaisser (réglage de la clinique). Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription. La ligne se lit à la date de la pièce (14/08/2026) : il faut un prix en vigueur ce jour-là (date d’effet du 14/08/2026 au plus tard), puis rouvrir l’encaissement.",
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": null,
+     "facture": {
+      "statutPaiement": "impayee",
+      "reliquat": null,
+      "montantPaye": 0,
+      "lignes": [
+       {
+        "id": "L001",
+        "statutPaiement": "du"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ],
+ "valoriser": [
+  {
+   "nom": "prix en vigueur à la date de la pièce : valorisée, totaux calculés, part assureur au taux de la pièce",
+   "facture": {
+    "id": "FACxmvux6yzz7iol4",
+    "numero": "FP-2026-00956",
+    "date": "2026-08-14",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "prixUnitaireNet": 2000,
+      "montantBrut": 2000,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": 2000,
+      "partAssureur": 0,
+      "partPersonnel": 0,
+      "partPatient": 2000,
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "CONS-X",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte à valoriser",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2V",
+       "libelle": "Acte à valoriser",
+       "cause": "sans-version",
+       "motif": "« ZZTF2V » Acte à valoriser : prix à définir",
+       "geste": "Proposer le prix dans « Tarifs et prix », puis le faire décider (Oui).",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2V",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantPaye": 0,
+    "tauxPriseEnCharge": 80,
+    "personnelId": null
+   },
+   "prix": {
+    "ZZTF2V": 3700
+   },
+   "sortie": {
+    "valorisees": [
+     {
+      "id": "L002",
+      "code": "ZZTF2V",
+      "nature": "tarif",
+      "prixUnitaire": 3700,
+      "montant": 3700
+     }
+    ],
+    "restantes": [],
+    "facture": {
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "acte",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "prixUnitaireNet": 2000,
+       "montantBrut": 2000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 2000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "CONS-X",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      },
+      {
+       "id": "L002",
+       "categorie": "acte",
+       "designation": "Acte à valoriser",
+       "quantite": 1,
+       "prixUnitaire": 3700,
+       "prixUnitaireNet": 3700,
+       "montantBrut": 3700,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 3700,
+       "partAssureur": 2960,
+       "partPersonnel": 0,
+       "partPatient": 740,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "ZZTF2V",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null,
+       "valorisation": {
+        "code": "ZZTF2V",
+        "nature": "tarif",
+        "jour": "2026-08-14",
+        "version": 1
+       }
+      }
+     ],
+     "montantTTC": 5700,
+     "montantHT": 5700,
+     "montantBrut": 5700,
+     "partAssurance": 2960,
+     "partPersonnel": 0,
+     "partPatient": 2740,
+     "reliquat": 2740,
+     "enAttentePrix": false
+    }
+   }
+  },
+  {
+   "nom": "un acte reste sans prix : la valorisation garde la pièce en attente",
+   "facture": {
+    "id": "FACxmvux6z003f5rp",
+    "numero": "FP-2026-00957",
+    "date": "2026-08-14",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte à valoriser",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2V",
+       "libelle": "Acte à valoriser",
+       "cause": "sans-version",
+       "motif": "« ZZTF2V » Acte à valoriser : prix à définir",
+       "geste": "Proposer le prix dans « Tarifs et prix », puis le faire décider (Oui).",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2V",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte toujours sans prix",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2N",
+       "libelle": "Acte toujours sans prix",
+       "cause": "sans-version",
+       "motif": "« ZZTF2N » Acte toujours sans prix : prix à définir",
+       "geste": "Proposer le prix dans « Tarifs et prix », puis le faire décider (Oui).",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2N",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantPaye": 0,
+    "tauxPriseEnCharge": null,
+    "personnelId": null
+   },
+   "prix": {
+    "ZZTF2V": 3700
+   },
+   "sortie": {
+    "valorisees": [
+     {
+      "id": "L001",
+      "code": "ZZTF2V",
+      "nature": "tarif",
+      "prixUnitaire": 3700,
+      "montant": 3700
+     }
+    ],
+    "restantes": [
+     {
+      "nature": "tarif",
+      "code": "ZZTF2N",
+      "libelle": "Acte toujours sans prix",
+      "cause": "absent-du-referentiel",
+      "motif": "« ZZTF2N » ZZTF2N : prix à définir (aucune prestation de prix ne porte ce code)",
+      "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+      "voie": "acte"
+     }
+    ],
+    "facture": {
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "acte",
+       "designation": "Acte à valoriser",
+       "quantite": 1,
+       "prixUnitaire": 3700,
+       "prixUnitaireNet": 3700,
+       "montantBrut": 3700,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 3700,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 3700,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "ZZTF2V",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null,
+       "valorisation": {
+        "code": "ZZTF2V",
+        "nature": "tarif",
+        "jour": "2026-08-14",
+        "version": 1
+       }
+      },
+      {
+       "id": "L002",
+       "categorie": "acte",
+       "designation": "Acte toujours sans prix",
+       "quantite": 1,
+       "prixUnitaire": null,
+       "prixUnitaireNet": null,
+       "montantBrut": null,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": null,
+       "partAssureur": null,
+       "partPersonnel": null,
+       "partPatient": null,
+       "prixManquant": {
+        "nature": "tarif",
+        "code": "ZZTF2N",
+        "libelle": "Acte toujours sans prix",
+        "cause": "absent-du-referentiel",
+        "motif": "« ZZTF2N » ZZTF2N : prix à définir (aucune prestation de prix ne porte ce code)",
+        "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+        "voie": "acte"
+       },
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "ZZTF2N",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "montantTTC": null,
+     "montantHT": null,
+     "montantBrut": null,
+     "partAssurance": null,
+     "partPersonnel": null,
+     "partPatient": null,
+     "reliquat": null,
+     "enAttentePrix": true
+    }
+   }
+  },
+  {
+   "nom": "agent de la clinique : la ligne valorisée va au personnel",
+   "facture": {
+    "id": "FACxmvux6z005fmes",
+    "numero": "FP-2026-00958",
+    "date": "2026-08-14",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte à valoriser",
+      "quantite": 1,
+      "prixUnitaire": null,
+      "prixUnitaireNet": null,
+      "montantBrut": null,
+      "remise": 0,
+      "motifRemise": null,
+      "montant": null,
+      "partAssureur": null,
+      "partPersonnel": null,
+      "partPatient": null,
+      "prixManquant": {
+       "nature": "tarif",
+       "code": "ZZTF2V",
+       "libelle": "Acte à valoriser",
+       "cause": "sans-version",
+       "motif": "« ZZTF2V » Acte à valoriser : prix à définir",
+       "geste": "Proposer le prix dans « Tarifs et prix », puis le faire décider (Oui).",
+       "voie": "acte"
+      },
+      "demandeId": null,
+      "produitId": null,
+      "acteCode": "ZZTF2V",
+      "demandeImagerieId": null,
+      "statutPaiement": "du",
+      "montantRegle": 0,
+      "payeLe": null,
+      "payePar": null
+     }
+    ],
+    "montantPaye": 0,
+    "tauxPriseEnCharge": null,
+    "personnelId": "EMP01"
+   },
+   "prix": {
+    "ZZTF2V": 3700
+   },
+   "sortie": {
+    "valorisees": [
+     {
+      "id": "L001",
+      "code": "ZZTF2V",
+      "nature": "tarif",
+      "prixUnitaire": 3700,
+      "montant": 3700
+     }
+    ],
+    "restantes": [],
+    "facture": {
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "acte",
+       "designation": "Acte à valoriser",
+       "quantite": 1,
+       "prixUnitaire": 3700,
+       "prixUnitaireNet": 3700,
+       "montantBrut": 3700,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 3700,
+       "partAssureur": 0,
+       "partPersonnel": 3700,
+       "partPatient": 0,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "ZZTF2V",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null,
+       "valorisation": {
+        "code": "ZZTF2V",
+        "nature": "tarif",
+        "jour": "2026-08-14",
+        "version": 1
+       }
+      }
+     ],
+     "montantTTC": 3700,
+     "montantHT": 3700,
+     "montantBrut": 3700,
+     "partAssurance": 0,
+     "partPersonnel": 3700,
+     "partPatient": 0,
+     "reliquat": 0,
+     "enAttentePrix": false
+    }
+   }
+  }
+ ]
+}

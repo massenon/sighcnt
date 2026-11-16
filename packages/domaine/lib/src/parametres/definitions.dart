@@ -18,6 +18,7 @@ import '../validation/demande_validation.dart' show valCleDelaiAlerteHeures, val
 import '../fichiers/ocr.dart' show ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrCleDelai, ocrLangueDefaut, ocrDelaiDefautMs;
 import '../sauvegarde/sauvegarde_horssite.dart';
 import '../tableaux/sortie_tableau.dart' show tabCleLimiteLignes, tabLimiteDefaut;
+import '../caisse/prix_manquant.dart' show cleEncaissementPartielSansPrix;
 import 'parametres.dart';
 
 const String _decisions = 'Décision de la Direction du 09/11/2026 (DECISIONS-A-VALIDER, section D)';
@@ -432,6 +433,21 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot EXP (sortie des tableaux)',
   ),
+  // Lot TARIF-FIX-2 (16/11/2026, Direction, section AL point 2) : une pièce qui porte une ligne SANS PRIX s'encaisse-t-elle pour le reste ? Par défaut non (la pièce
+  // entière attend le prix). Réglage de clinique posé à la mère, jamais vers un téléphone. Défaut semé : proposition à valider (section AM).
+  DefinitionParametre(
+    cle: cleEncaissementPartielSansPrix,
+    famille: 'caisse',
+    type: TypeParametre.choix,
+    choix: ['non', 'oui'],
+    libellesChoix: {'non': 'La pièce entière attend le prix (rien ne s’encaisse)', 'oui': 'Le reste de la pièce s’encaisse (la ligne sans prix attend)'},
+    defaut: 'non',
+    libelle: 'Encaisser le reste d’une pièce en attente de prix',
+    aide: 'Une ligne sans prix (prix à valoriser, prix à définir) ne s’encaisse jamais. Par défaut la pièce entière attend le prix ; « oui » permet d’encaisser les autres lignes. Proposition à valider : non.',
+    source: 'Proposition à valider (lot TARIF-FIX-2, DECISIONS-A-VALIDER section AM) : la Direction a dit « par défaut la pièce attend le prix » (section AL, point 2)',
+    branche: true,
+    appliquePar: 'Lot TARIF-FIX-2 (prescrire toujours, bloquer seulement l’encaissement)',
+  ),
 ];
 
 /// Le libellé d'une famille de paramètres, pour les onglets de l'écran des paramètres. Une famille absente de la table s'affiche sous son identifiant.
@@ -445,6 +461,7 @@ const Map<String, String> libellesFamillesParametres = {
   'ocr': 'Lecture des scans (OCR)',
   'horssite': 'Sauvegarde hors site',
   'exercice': 'Clôture annuelle',
+  'caisse': 'Caisse',
 };
 
 /// La définition d'une clé, ou `null`.

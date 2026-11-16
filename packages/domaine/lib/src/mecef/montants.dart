@@ -195,6 +195,14 @@ ResultatMontants mecefMontants({
   for (var i = 0; i < lignes.length; i++) {
     final l = lignes[i];
     final nom = _nomLigne(l, i);
+    // LOT TARIF-FIX-2 : une ligne SANS PRIX ne part jamais au boîtier (ni à 0, ni à un prix supposé).
+    if (l['prixManquant'] != null && l['prixManquant'] != false ||
+        (l['montantBrut'] == null && l.containsKey('prixUnitaire') && (l['prixUnitaire'] == null || l['prixUnitaire'] == ''))) {
+      return ResultatMontants.refus(_refus(
+          'PRIX_MANQUANT',
+          'La ligne « $nom » n’a pas de prix : rien n’est normalisé tant que son prix n’est pas posé.',
+          'Poser le prix de la ligne (« Tarifs et prix » ou « Changer le prix d’achat »), puis encaisser la pièce.'));
+    }
     final q = l['quantite'] == null ? 1.0 : _nombre(l['quantite']);
     final qmD = q.isFinite ? (q * 1000 + 0.5).floorToDouble() : double.nan;
     if (!(q.isFinite && q > 0) || (qmD / 1000 - q).abs() > 1e-9) {
@@ -442,6 +450,7 @@ Map<String, Object?> ligneVersMecef(Map<String, Object?> l) {
     'partPersonnel': _faux(l['partPersonnel']) ? 0 : l['partPersonnel'],
     'statutPaiement': l['statutPaiement'],
   };
+  if (l['prixManquant'] != null) o['prixManquant'] = true;
   if (l['montantBrut'] != null) {
     o['montantBrut'] = l['montantBrut'];
     o['remise'] = _faux(l['remise']) ? 0 : l['remise'];

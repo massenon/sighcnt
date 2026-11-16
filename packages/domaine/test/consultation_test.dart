@@ -292,26 +292,34 @@ void main() {
       expect(apres - avant, 1110, reason: 'la prescription du 20/08 garde les anciens prix, celle du 01/10 prend les versions du 15/09, alors que le jour courant est le 31/10');
     });
 
-    test('LOT TARIF-FIX : une ligne sans prix n’est JAMAIS facturée à zéro. Refus nommé (PRIX_A_DEFINIR, code, « prix à définir », geste) AVANT toute écriture ; après la version décidée, la prescription suivante lit le prix ; un certificat hors de l’espace des actes prend son prix', () {
+    test('LOT TARIF-FIX puis TARIF-FIX-2 : une ligne sans prix n’est JAMAIS facturée à zéro. La prescription est ACCEPTÉE (Direction, 16/11/2026) : ligne « prix à définir » nommée (cause, code, geste), prix et totaux NULS, pièce en attente ; après la version décidée, la ligne se VALORISE à la date de la pièce et la prescription suivante lit le prix ; un certificat hors de l’espace des actes prend son prix', () {
       final c = liste((v['cas'] as Map)['prescrire']).firstWhere((x) => '${x['nom']}'.startsWith('patient non assuré'));
       final entree = (c['entree'] as Map).cast<String, Object?>();
       final params = (c['params'] as Map).cast<String, Object?>();
       final m = memoire(entree);
       m.inserer(tarCollectionTarifs, {'id': 'TFX1', 'code': 'TFX1', 'codeActe': 'TFX1', 'libelle': 'Acte sonde', 'famille': 'ACTE', 'statut': 'actif'});
       m.inserer(tarCollectionVersions, {'id': 'TFX1@2026-08-20@1', 'code': 'TFX1', 'version': 1, 'dateEffet': '2026-08-20', 'statut': 'propose', 'etatAssure': 'unique', 'prixNonAssure': 4200});
-      final avant = m.instantane();
       final base = {'patientCode': params['patientCode'], 'medecin': 'Test', 'diagnostic': 'sonde', 'date': '2026-08-20T09:00:00.000Z'};
-      RefusCs? refus;
-      try {
-        csPrescrire(m, {...base, 'actes': ['TFX1']}, const SessionCs(role: 'admin', fonction: 'direction'));
-      } on RefusCs catch (e) {
-        refus = e;
-      }
-      expect(refus?.code, 'PRIX_A_DEFINIR');
-      expect(refus!.message, allOf(contains('TFX1'), contains('prix à définir'), contains('Tarifs et prix')));
-      String nonVides(Map<String, List<Map<String, Object?>>> x) => jsonEncode({for (final e in x.entries) if (e.value.isNotEmpty) e.key: e.value});
-      expect(nonVides(m.instantane()), nonVides(avant), reason: 'un refus n’écrit rien');
+      final r = csPrescrire(m, {...base, 'actes': ['TFX1']}, const SessionCs(role: 'admin', fonction: 'direction'));
+      final f0 = r.facture, l0 = liste(f0['lignes']).first;
+      expect(l0['prixUnitaire'], isNull, reason: 'jamais 0');
+      expect(l0['montant'], isNull);
+      expect(f0['montantTTC'], isNull, reason: 'total non calculable');
+      expect(f0['enAttentePrix'], isTrue);
+      final mq = (l0['prixManquant'] as Map).cast<String, Object?>();
+      expect(mq['cause'], 'proposition-en-attente');
+      expect('${mq['motif']}', allOf(contains('TFX1'), contains('prix à définir')));
+      expect('${mq['geste']}', contains('Tarifs et prix'));
+      expect(r.sansPrix.single['code'], 'TFX1');
+      expect(messageSansPrix(r.sansPrix), contains('total non calculable, la caisse attend le prix'));
       m.mettreAJour(tarCollectionVersions, 'TFX1@2026-08-20@1', {'statut': 'valide'});
+      final val = csValoriserFacture(m, f0['id']);
+      expect(val.valorisees.single['prixUnitaire'], 4200);
+      final f1 = m.parId('factures', f0['id'])!;
+      expect((liste(f1['lignes']).first)['prixUnitaire'], 4200);
+      expect(f1['montantTTC'], 4200);
+      expect(f1['enAttentePrix'], isFalse);
+      expect((liste(f1['lignes']).first)['valorisation'], containsPair('jour', '2026-08-20'));
       csPrescrire(m, {...base, 'actes': ['TFX1']}, const SessionCs(role: 'admin', fonction: 'direction'));
       expect(liste(m.toutes('factures').first['lignes']).first['prixUnitaire'], 4200);
       final cert = migration.tarifs.where((t) => t['famille'] == 'CERTIFICAT').first;
