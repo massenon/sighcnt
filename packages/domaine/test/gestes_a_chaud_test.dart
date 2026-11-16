@@ -7,6 +7,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:test/test.dart';
 
 void main() {
+  _retransmission();
   final brut = (jsonDecode(File('../rbac/data/rbac.json').readAsStringSync()) as Map).cast<String, Object?>();
   final decl = {for (final d in ((brut['gestes'] as Map)['jeux'] as List).cast<Map>()) '${d['id']}': (d['rolesDefaut'] as List).cast<String>()};
   tearDown(() => gesInstaller());
@@ -20,6 +21,10 @@ void main() {
       gesteValiderCommandeStock: const ['da'],
       gesteArbitrerBesoins: const ['da', 'direction', 'admin'],
       gesteTraiterBesoinsAccordes: const ['comptable', 'stock'],
+      'poste_caisse': const ['caissier'],
+      'poste_pharmacie': const ['pharmacien'],
+      mecefGesteRetransmettre: const ['caissier', 'da', 'admin'],
+      mecefGesteRetransmettreSansLimite: const ['da', 'admin'],
     };
     attendus.forEach((geste, defaut) {
       expect(decl.containsKey(geste), isTrue, reason: '$geste est déclaré au manifeste');
@@ -45,5 +50,18 @@ void main() {
     gesInstaller(lecture: (role, geste) => role == 'comptable' && geste == tarGesteDatePassee || matrice.droitGeste(role, geste), roles: (g) => [...matrice.matriceGestes.rolesAvec(g), if (g == tarGesteDatePassee) 'comptable']);
     expect(fichierPeutRegler('admin'), isTrue);
     expect(tarProfilsDatePassee(const {'comptable': 'Comptable'}), contains('Comptable'));
+  });
+}
+
+void _retransmission() {
+  group('retransmission MECeF par gestes (lot CLO-3 point 7)', () {
+    tearDown(() => gesInstaller());
+    final fac = {'numero': 'F1', 'retransmissions': 1, 'statutMecef': 'refusee'};
+    test('défauts : la caisse une fois, la DA et l\'administrateur sans limite, les autres jamais', () {
+      expect(gesDroit('caissier', mecefGesteRetransmettre, const ['caissier', 'da', 'admin']), isTrue);
+      expect(gesDroit('caissier', mecefGesteRetransmettreSansLimite, const ['da', 'admin']), isFalse);
+      expect(gesDroit('comptable', mecefGesteRetransmettre, const ['caissier', 'da', 'admin']), isFalse);
+      expect(fac['retransmissions'], 1);
+    });
   });
 }

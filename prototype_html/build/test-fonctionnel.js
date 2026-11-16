@@ -28461,6 +28461,68 @@ async function viderMessages(page) {
     verifier('État restauré : détenteurs d’origine (comptable et stock ; admin, da et direction)', JSON.stringify(fin211.det) === JSON.stringify(['comptable', 'stock']) && JSON.stringify(fin211.arb) === JSON.stringify(['admin', 'da', 'direction']), JSON.stringify(fin211));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
+  await etape(async () => {
+    scenario('Vague 212 : lot CLO-3 point 7, pharmacie et caisse SÉPARABLES par la seule fiche RBAC : les tâches de la chaîne et les postes de notification ne citent plus caissier ni pharmacien (gestes poste_caisse et poste_pharmacie), la retransmission MECeF est deux gestes ; défaut = aujourd’hui, fiche restaurée');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN212', nomComplet: 'ADMIN212', fonction: 'direction', identifiant: 's212.admin', secteur: 'DIR' });
+    await ouvrir('m8-caisse.html');
+    const d0 = await page.evaluate(() => {
+      const N = window.SIGH.nav, PR = window.SIGH.parcours, S = window.SIGH.store, NT = window.SIGH.notifications;
+      const R = (g) => N.rolesAvecGeste(g).slice().sort();
+      const vu = (role, titre) => { try { return NT.collecter({ poste: role }).some((a) => (a.titre || '').indexOf(titre) >= 0); } catch (e) { return 'ERR ' + e.message; } };
+      PR.notifier({ type: 'sonde212', poste: 'caisse', libelle: 'Sonde212 caisse', detail: 'x', reference: 'S212C', priorite: 'important' });
+      PR.notifier({ type: 'sonde212', poste: 'stock', libelle: 'Sonde212 stock', detail: 'x', reference: 'S212S', priorite: 'important' });
+      return { caisse: R('poste_caisse'), pharma: R('poste_pharmacie'), retr: R('retransmettre_mecef'), illim: R('retransmettre_mecef_sans_limite'),
+        vuCaisse: { caissier: vu('caissier', 'Sonde212 caisse'), stock: vu('stock', 'Sonde212 caisse') }, vuStock: { stock: vu('stock', 'Sonde212 stock'), da: vu('da', 'Sonde212 stock'), caissier: vu('caissier', 'Sonde212 stock') } };
+    });
+    verifier('Défauts = aujourd’hui : la caisse est tenue par le caissier, la pharmacie n’a aucun poste propre (rôle pharmacien archivé), retransmission MECeF caissier, DA, administrateur (sans limite : DA, administrateur) ; la notification de caisse va au caissier seul, celle du stock au stock et à la DA, pas au caissier',
+      JSON.stringify(d0.caisse) === '["caissier"]' && d0.pharma.length === 0 && JSON.stringify(d0.retr) === '["admin","caissier","da"]' && JSON.stringify(d0.illim) === '["admin","da"]'
+      && d0.vuCaisse.caissier === true && d0.vuCaisse.stock === false && d0.vuStock.stock === true && d0.vuStock.da === true && d0.vuStock.caissier === false, JSON.stringify(d0));
+    const prescrire = () => page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur && !p.personnelId)[0];
+      const prod = S.collection('produits').active().filter((p) => p.categorie === 'medicament' && p.prixAchat > 0 && (p.stock || 0) > 5)[0];
+      const res = PR.prescrire({ patientCode: pt.code, medecin: 'S212', diagnostic: 'sonde 212', medicaments: [{ produitId: prod.id, quantite: 1 }] });
+      return { roles: res.taches.map((t) => t.type + ':' + t.role).sort(), ids: res.taches.map((t) => t.id), ord: res.ordonnance.id, fac: res.facture && res.facture.id };
+    });
+    const t0 = await prescrire();
+    verifier('Défaut : la chaîne crée « encaissement » pour le caissier et « dispensation » pour le rôle d’origine de la pharmacie (pharmacien, archivé)', t0.roles.indexOf('encaissement:caissier') >= 0 && t0.roles.indexOf('dispensation:pharmacien') >= 0, JSON.stringify(t0));
+    /* séparation par la seule fiche : pharmacien rouvert avec le poste de pharmacie, la caisse passée au comptable */
+    const poser = (role, g, extra) => page.evaluate((o) => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === o.role)[0];
+      const gg = Object.assign({}, (f && f.droitsGestes) || {}, o.g); const patch = Object.assign({ droitsGestes: gg }, o.extra || {});
+      if (f) col.update(f.id, patch); else col.insert(Object.assign({ role: o.role, libelleOrigine: o.role }, patch)); N.invaliderRbac(); }, { role, g, extra });
+    const sauve = await page.evaluate(() => { const col = window.SIGH.store.collection('rbac'); const o = {}; ['pharmacien', 'caissier', 'comptable'].forEach((r) => { const f = col.all().filter((x) => x.role === r)[0]; o[r] = f ? JSON.stringify({ id: f.id, statut: f.statut || null, droitsGestes: f.droitsGestes || null }) : null; }); return o; });
+    await poser('pharmacien', { poste_pharmacie: true }, { statut: 'actif' });
+    await poser('comptable', { poste_caisse: true, retransmettre_mecef: true });
+    await poser('caissier', { poste_caisse: false });
+    const d1 = await page.evaluate(() => {
+      const N = window.SIGH.nav, NT = window.SIGH.notifications, PR = window.SIGH.parcours;
+      const R = (g) => N.rolesAvecGeste(g).slice().sort();
+      const vu = (role, titre) => NT.collecter({ poste: role }).some((a) => (a.titre || '').indexOf(titre) >= 0);
+      const e = (role, ecran, mod) => { const d = N.droitsEcran(role, ecran, mod); return !!(d && d.editer); };
+      return { caisse: R('poste_caisse'), pharma: R('poste_pharmacie'), retr: R('retransmettre_mecef'),
+        vuCaisse: { comptable: vu('comptable', 'Sonde212 caisse'), caissier: vu('caissier', 'Sonde212 caisse'), pharmacien: vu('pharmacien', 'Sonde212 caisse') },
+        vuStock: { pharmacien: vu('pharmacien', 'Sonde212 stock'), stock: vu('stock', 'Sonde212 stock'), caissier: vu('caissier', 'Sonde212 stock'), comptable: vu('comptable', 'Sonde212 stock') },
+        ecrans: { pharmaDisp: e('pharmacien', 'm6-dispensation', 'M6'), pharmaCaisse: e('pharmacien', 'm8-caisse', 'M8'), caissierCaisse: e('caissier', 'm8-caisse', 'M8') },
+        retrCaissier: N.droitGeste('caissier', 'retransmettre_mecef'), retrCompta: N.droitGeste('comptable', 'retransmettre_mecef') };
+    });
+    const t1 = await prescrire();
+    verifier('Fiche séparée (pharmacien rouvert avec le seul poste de pharmacie, caisse passée au comptable) : les détenteurs suivent ; la notification de caisse va au comptable (plus au caissier, jamais au pharmacien), celle du stock au pharmacien ; le pharmacien écrit la dispensation et pas la caisse ; la chaîne crée ENCAISSEMENT pour le comptable et DISPENSATION pour le pharmacien',
+      JSON.stringify(d1.caisse) === '["comptable"]' && JSON.stringify(d1.pharma) === '["pharmacien"]' && d1.vuCaisse.comptable === true && d1.vuCaisse.caissier === false && d1.vuCaisse.pharmacien === false
+      && d1.vuStock.pharmacien === true && d1.vuStock.stock === true && d1.vuStock.caissier === false && d1.ecrans.pharmaDisp === true && d1.ecrans.pharmaCaisse === false
+      && t1.roles.indexOf('encaissement:comptable') >= 0 && t1.roles.indexOf('dispensation:pharmacien') >= 0 && d1.retrCompta === true, JSON.stringify({ d1, t1 }));
+    /* restauration : les trois fiches rendues telles qu'elles étaient, les pièces de la sonde archivées (RG-14) */
+    await page.evaluate((o) => { const S = window.SIGH.store, N = window.SIGH.nav, col = S.collection('rbac');
+      ['pharmacien', 'caissier', 'comptable'].forEach((r) => { const f = col.all().filter((x) => x.role === r)[0]; const a = o.sauve[r] ? JSON.parse(o.sauve[r]) : null;
+        if (!f) return; if (a) col.update(f.id, { statut: a.statut || (r === 'pharmacien' ? 'archive' : 'actif'), droitsGestes: a.droitsGestes }); else col.update(f.id, { droitsGestes: {} }); });
+      N.invaliderRbac();
+      S.collection('taches').active().filter((t) => o.ids.indexOf(t.id) >= 0).forEach((t) => S.collection('taches').archive(t.id, 'restauration de la sonde 212'));
+      S.collection('notifications').active().filter((n) => n.type === 'sonde212').forEach((n) => S.collection('notifications').archive(n.id, 'restauration de la sonde 212')); }, { sauve, ids: t0.ids.concat(t1.ids) });
+    await attendreEcritures();
+    const fin = await page.evaluate(() => { const N = window.SIGH.nav; return { caisse: N.rolesAvecGeste('poste_caisse').slice().sort(), pharma: N.rolesAvecGeste('poste_pharmacie').length, retr: N.rolesAvecGeste('retransmettre_mecef').slice().sort() }; });
+    verifier('État restauré : la caisse revient au caissier, la pharmacie sans détenteur (archivée), la retransmission aux trois d’origine', JSON.stringify(fin.caisse) === '["caissier"]' && fin.pharma === 0 && JSON.stringify(fin.retr) === '["admin","caissier","da"]', JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
   /* LOT CLO-3 FIN */
 
   await browser.close();

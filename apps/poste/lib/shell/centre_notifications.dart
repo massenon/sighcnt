@@ -67,16 +67,19 @@ String libellePriorite(String p) => switch (p) { 'critique' => 'Critique', 'impo
 /// Au-delà de trois alertes de même nature et de même priorité, c'est le NOMBRE qui informe : en dessous, nommer l'article rend service.
 const seuilRegroupement = 3;
 
+List<String> _posteCaisse() => gesRoles('poste_caisse', const ['caissier']);
+List<String> _postePharmacie() => gesRoles('poste_pharmacie', const ['pharmacien']);
+
 /// Quels rôles tiennent un POSTE de notification (`POSTES_NOTIF`). `null` = tout le monde (« tous » ou poste non précisé) ; un poste inconnu est lu comme un rôle.
 const _postesNotif = <String, List<String>?>{
   'tous': null,
-  'caisse': ['caissier'],
+  'caisse': null, // lu de la fiche RBAC (`poste_caisse`), voir [_rolesDuPoste]
   'comptable': ['comptable', 'assistant_comptable', 'aide_comptable', 'da'],
   'direction': ['direction', 'da', 'dm'],
   'imagerie': ['echographiste'],
   'laboratoire': ['laborantin'],
   'prescripteur': ['medecin', 'chirurgien', 'anesthesiste', 'dm'],
-  'stock': ['stock', 'pharmacien', 'da'],
+  'stock': null, // lu de la fiche RBAC (`poste_pharmacie`), voir [_rolesDuPoste]
   'salle_soins': ['infirmier', 'aide_soignant', 'surveillant'],
   'hospitalisation': ['infirmier', 'aide_soignant', 'surveillant', 'medecin'],
 };
@@ -84,6 +87,9 @@ const _postesNotif = <String, List<String>?>{
 List<String>? _rolesDuPoste(Object? poste) {
   if (!_v(poste) || poste == 'tous') return null;
   final p = '$poste';
+  // Lot CLO-3 point 7 : la caisse et la pharmacie sont des postes lus de la fiche RBAC (`poste_caisse`, `poste_pharmacie`, à chaud), jamais les noms `caissier` ni `pharmacien` écrits ici.
+  if (p == 'caisse') return _posteCaisse();
+  if (p == 'stock') return ['stock', 'da', ..._postePharmacie()];
   return _postesNotif.containsKey(p) ? _postesNotif[p] : [p];
 }
 
@@ -186,7 +192,7 @@ final List<_Source> _sources = [
                 '${p['designation']} : ${nombre(p['stock'])} en stock',
                 'Seuil d’alerte fixé à ${nombre(p['seuilAlerte'])}. Établir un bon de commande, validation de la Direction requise (RG-04).',
                 'm6-alertes',
-                const ['stock', 'pharmacien', 'caissier', 'da']),
+                ['stock', 'da', ..._postePharmacie(), ..._posteCaisse()]),
       ]),
   // Lot PARAM-CLINIQUE : le statut se LIT au jour, selon le préavis de péremption en vigueur (paramètre de clinique daté, RG-05), jamais le statut écrit à la saisie.
   _Source('lots_peremption', 'metier', 'Pharmacie', (m, auj) => [
@@ -198,13 +204,13 @@ final List<_Source> _sources = [
                 statutLotPoste(m, l, auj) == 'perime' ? 'Lot périmé : ${_ou(l['produit'], l['numero'])}' : 'Péremption proche : ${_ou(l['produit'], l['numero'])}',
                 statutLotPoste(m, l, auj) == 'perime' ? 'À sortir du rayon et à déclarer en perte.' : 'Appliquer le principe FEFO (RG-05).',
                 'm6-lots',
-                const ['stock', 'pharmacien', 'caissier', 'laborantin']),
+                ['stock', 'laborantin', ..._postePharmacie(), ..._posteCaisse()]),
       ]),
   _Source('mecef_rejet', 'metier', 'Facturation', (m, auj) => [
         for (final f in m.collection('factures').actives)
           if (f['statutMecef'] == 'rejete')
             _Ligne('mecef:${f['id']}', 'important', 'Facture ${_ou(f['numero'], f['id'])} rejetée par la MECeF',
-                'Corriger puis réémettre auprès de l’administration fiscale.', 'mecef-transmission', const ['caissier', 'comptable', 'da', 'assistant_comptable']),
+                'Corriger puis réémettre auprès de l’administration fiscale.', 'mecef-transmission', [..._posteCaisse(), 'comptable', 'da', 'assistant_comptable']),
       ]),
   _Source('echeance_fiscale', 'metier', 'Comptabilité', (m, auj) {
     // Le calendrier fiscal est un référentiel : le moteur ne recalcule aucune date, il lit ce qui est déjà dépassé.

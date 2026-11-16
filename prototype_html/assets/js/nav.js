@@ -247,6 +247,14 @@
     { id: 'regler_mode_mecef', libelle: 'Régler le mode de certification MECeF (boîtier physique ou e-MECeF)', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
     { id: 'valider_configuration_fiscale', libelle: 'Valider la configuration fiscale (obligations, taux, entêtes, rubriques)', module: null, ecran: null, rolesDefaut: ['direction', 'da', 'admin'] },
     { id: 'dater_prix_passe', libelle: 'Dater un changement de prix dans le passé (date d\u2019effet antérieure à aujourd\u2019hui, avec un motif)', module: null, ecran: null, rolesDefaut: ['da', 'direction'] },
+    /* Lot CLO-3 point 7 (Direction, 16/11/2026, section AL point 1) : PHARMACIE ET CAISSE SÉPARABLES PAR LA SEULE FICHE RBAC. Aujourd'hui un seul rôle (`caissier`) tient la caisse et la
+       pharmacie, le rôle `pharmacien` est archivé (un rôle archivé ne détient rien : d'origine la pharmacie n'a donc aucun poste propre, ses tâches gardent le rôle déclaré `pharmacien`). Un poste de travail reçoit la tâche de sa file et les
+       notifications de son poste ; rouvrir `pharmacien` avec `poste_pharmacie` seul (et le retirer à `caissier`) sépare les deux sans toucher au code. Ils n'ouvrent aucun écran. La
+       retransmission MECeF d'une vente refusée ou expirée : `retransmettre_mecef` (une fois), `retransmettre_mecef_sans_limite` (autant de fois que nécessaire). Défauts = les listes d'avant. */
+    { id: 'poste_caisse', libelle: 'Tenir le poste de la caisse (reçoit la tâche « Encaisser la prescription » et les notifications de la caisse)', module: null, ecran: null, rolesDefaut: ['caissier'] },
+    { id: 'poste_pharmacie', libelle: 'Tenir le poste de la pharmacie (reçoit la tâche « Délivrer les médicaments » et les notifications de la pharmacie)', module: null, ecran: null, rolesDefaut: ['pharmacien'] },
+    { id: 'retransmettre_mecef', libelle: 'Retransmettre une vente refusée ou expirée au MECeF (une fois)', module: null, ecran: null, rolesDefaut: ['caissier', 'da', 'admin'] },
+    { id: 'retransmettre_mecef_sans_limite', libelle: 'Retransmettre une vente au MECeF sans limite d\u2019essais', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

@@ -13421,6 +13421,49 @@
     "defautSiEcritSur": null
    },
    {
+    "id": "poste_caisse",
+    "libelle": "Tenir le poste de la caisse (reçoit la tâche « Encaisser la prescription » et les notifications de la caisse)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "caissier"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "poste_pharmacie",
+    "libelle": "Tenir le poste de la pharmacie (reçoit la tâche « Délivrer les médicaments » et les notifications de la pharmacie)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "pharmacien"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "retransmettre_mecef",
+    "libelle": "Retransmettre une vente refusée ou expirée au MECeF (une fois)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "caissier",
+     "da",
+     "admin"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "retransmettre_mecef_sans_limite",
+    "libelle": "Retransmettre une vente au MECeF sans limite d’essais",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "da",
+     "admin"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
     "id": "exporter_donnees",
     "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
     "module": null,
@@ -13468,6 +13511,10 @@
     "regler_mode_mecef": 1,
     "valider_configuration_fiscale": 1,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 1,
+    "retransmettre_mecef_sans_limite": 1,
     "exporter_donnees": 1
    },
    "direction": {
@@ -13485,6 +13532,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 1,
     "dater_prix_passe": 1,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "dm": {
@@ -13502,6 +13553,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "da": {
@@ -13519,6 +13574,10 @@
     "regler_mode_mecef": 1,
     "valider_configuration_fiscale": 1,
     "dater_prix_passe": 1,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 1,
+    "retransmettre_mecef_sans_limite": 1,
     "exporter_donnees": 1
    },
    "medecin": {
@@ -13536,6 +13595,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "infirmier": {
@@ -13553,6 +13616,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "pharmacien": {
@@ -13570,6 +13637,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 0
    },
    "laborantin": {
@@ -13587,6 +13658,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "stock": {
@@ -13604,6 +13679,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "caissier": {
@@ -13621,6 +13700,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 1,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 1,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "comptable": {
@@ -13638,6 +13721,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "rh": {
@@ -13655,6 +13742,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 0
    },
    "reception": {
@@ -13672,6 +13763,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "agentadmin": {
@@ -13689,6 +13784,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "ambulancier": {
@@ -13706,6 +13805,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "aide_soignant": {
@@ -13723,6 +13826,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "echographiste": {
@@ -13740,6 +13847,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "surveillant": {
@@ -13757,6 +13868,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "assistant_comptable": {
@@ -13774,6 +13889,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "chirurgien": {
@@ -13791,6 +13910,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "anesthesiste": {
@@ -13808,6 +13931,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    },
    "aide_comptable": {
@@ -13825,6 +13952,10 @@
     "regler_mode_mecef": 0,
     "valider_configuration_fiscale": 0,
     "dater_prix_passe": 0,
+    "poste_caisse": 0,
+    "poste_pharmacie": 0,
+    "retransmettre_mecef": 0,
+    "retransmettre_mecef_sans_limite": 0,
     "exporter_donnees": 1
    }
   }

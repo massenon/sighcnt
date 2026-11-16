@@ -6,8 +6,13 @@
 /// Les fonctions de montants et d'acheteur sont rejouées sur `mecef_montants.json` ; celles-ci sont éprouvées par `mecef_normalisation_test.dart`.
 library;
 
+import '../droits/gestes_a_chaud.dart';
 import 'etats.dart';
 import 'montants.dart';
+
+/// Les gestes réservés de la retransmission (lot CLO-3 point 7) : défauts d'origine `caissier`, `da`, `admin` (une fois), `da`, `admin` (sans limite).
+const String mecefGesteRetransmettre = 'retransmettre_mecef';
+const String mecefGesteRetransmettreSansLimite = 'retransmettre_mecef_sans_limite';
 
 /// Ce que la normalisation retient d'une pièce, ou le refus nommé.
 class PreparationNormalisation {
@@ -132,17 +137,18 @@ RefusMecef? refusRetransmission(Map<String, Object?> fac, String role) {
         'Utiliser « Reprendre sans doubler ».');
   }
   final deja = _num(fac['retransmissions']).toInt();
-  if (role == 'caissier' && deja >= 1) {
-    return RefusMecef(
-        'RETRANSMISSION_RESERVEE',
-        'Le caissier ne retransmet qu’une fois : la facture $num_ l’a déjà été.',
-        'Demander la retransmission à la Directrice Administrative.');
-  }
-  if (!const ['caissier', 'da', 'admin'].contains(role)) {
+  // Lot CLO-3 point 7 : deux gestes de la fiche RBAC, lus à chaud (`gesDroit`), jamais une liste de rôles. Sans le premier : interdit ; avec lui seul : une fois.
+  if (!gesDroit(role, mecefGesteRetransmettre, const ['caissier', 'da', 'admin'])) {
     return const RefusMecef(
         'RETRANSMISSION_INTERDITE',
-        'La retransmission est réservée au caissier (une fois) et à la Directrice Administrative.',
+        'La retransmission est réservée aux profils qui détiennent le droit « Retransmettre une vente au MECeF » (la caisse une fois, la Directrice Administrative sans limite d’origine).',
         'Demander à la caisse ou à la DA.');
+  }
+  if (!gesDroit(role, mecefGesteRetransmettreSansLimite, const ['da', 'admin']) && deja >= 1) {
+    return RefusMecef(
+        'RETRANSMISSION_RESERVEE',
+        'Ce profil ne retransmet qu’une fois : la facture $num_ l’a déjà été.',
+        'Demander la retransmission à la Directrice Administrative.');
   }
   return null;
 }

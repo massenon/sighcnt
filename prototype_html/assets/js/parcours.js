@@ -30,11 +30,11 @@
   /* --- Files d'attente : à qui l'information est adressée ------------------ */
   var TACHES = {
     encaissement: {
-      role: 'caissier', module: 'M8', ecran: 'm8-caisse',
+      module: 'M8', ecran: 'm8-caisse',
       titre: 'Encaisser la prescription', icon: 'coins',
     },
     dispensation: {
-      role: 'pharmacien', module: 'M6', ecran: 'm6-dispensation',
+      module: 'M6', ecran: 'm6-dispensation',
       titre: 'Délivrer les médicaments', icon: 'pill',
     },
     prelevement: {
@@ -1322,10 +1322,19 @@
     return t.join(' · ') || 'Prescription sans ligne';
   }
 
+  /* Lot CLO-3 point 7 : le poste visé par la tâche de caisse et celle de pharmacie est lu de la fiche RBAC (gestes `poste_caisse`, `poste_pharmacie`), jamais un nom de rôle écrit ici ;
+     les autres tâches gardent leur rôle déclaré. Seul change QUI est visé, jamais la chaîne. Sans détenteur (rôle archivé, cas d'origine de la pharmacie), le rôle d'origine du manifeste est écrit. */
+  var GESTE_POSTE_TACHE = { encaissement: 'poste_caisse', dispensation: 'poste_pharmacie' };
+  function roleDeLaTache(type, def) {
+    var g = GESTE_POSTE_TACHE[type], N = global.SIGH.nav;
+    if (!g) return def.role;
+    var r = N && N.rolesAvecGeste ? N.rolesAvecGeste(g) : [];
+    return r[0] || (N && N.geste(g) ? N.geste(g).rolesDefaut[0] : null) || null;
+  }
   function creerTache(type, ord, facture, extra) {
     var def = TACHES[type];
     return col('taches').insert(Object.assign({
-      type: type, role: def.role, module: def.module, ecran: def.ecran,
+      type: type, role: roleDeLaTache(type, def), module: def.module, ecran: def.ecran,
       titre: def.titre, icon: def.icon,
       reference: ord.numero, ordonnanceId: ord.id,
       factureId: facture ? facture.id : null, factureNumero: facture ? facture.numero : null,
@@ -7141,8 +7150,10 @@
     if (['refusee', 'expiree', 'en_attente'].indexOf(etat) < 0) return refusMecef('PAS_RETRANSMISSIBLE', 'La facture ' + fac.numero + ' est à vérifier : elle se reprend sans doubler, elle ne se retransmet pas.', 'Utiliser « Reprendre sans doubler ».');
     var role = roleCourant();
     var deja = fac.retransmissions || 0;
-    if (role === 'caissier' && deja >= 1) return refusMecef('RETRANSMISSION_RESERVEE', 'Le caissier ne retransmet qu’une fois : la facture ' + fac.numero + ' l’a déjà été.', 'Demander la retransmission à la Directrice Administrative.');
-    if (['caissier', 'da', 'admin'].indexOf(role) < 0) return refusMecef('RETRANSMISSION_INTERDITE', 'La retransmission est réservée au caissier (une fois) et à la Directrice Administrative.', 'Demander à la caisse ou à la DA.');
+    /* Lot CLO-3 point 7 : deux gestes de la fiche RBAC (`retransmettre_mecef`, `retransmettre_mecef_sans_limite`), jamais une liste de rôles. Sans le premier : interdit ; avec lui seul : une fois. */
+    var Nv = global.SIGH.nav;
+    if (!Nv.droitGeste(role, 'retransmettre_mecef')) return refusMecef('RETRANSMISSION_INTERDITE', 'La retransmission est réservée aux profils qui détiennent le droit « Retransmettre une vente au MECeF » (la caisse une fois, la Directrice Administrative sans limite d’origine).', 'Demander à la caisse ou à la DA.');
+    if (!Nv.droitGeste(role, 'retransmettre_mecef_sans_limite') && deja >= 1) return refusMecef('RETRANSMISSION_RESERVEE', 'Ce profil ne retransmet qu’une fois : la facture ' + fac.numero + ' l’a déjà été.', 'Demander la retransmission à la Directrice Administrative.');
     /* Lot L3 : sans adaptateur configuré, la retransmission n'émet rien et ne consomme PAS l'unique essai du caissier. */
     if (etat !== 'en_attente' && adaptateurMecef().configure) col('factures').update(factureId, { retransmissions: deja + 1 });
     return normaliserVente(factureId, opts);

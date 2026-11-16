@@ -13,6 +13,7 @@ library;
 
 import '../caisse/prise_en_charge.dart' show carteValide;
 import '../caisse/prix_manquant.dart';
+import '../droits/gestes_a_chaud.dart';
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../imagerie/img_demandes_etats.dart' show modaliteDemandeDeExamen;
@@ -478,12 +479,21 @@ const _tachesDef = <String, ({String role, String module, String ecran, String t
   'imagerie': (role: 'echographiste', module: 'M2', ecran: 'm2-dashboard-imagerie', titre: 'Réaliser l’examen d’imagerie', icon: 'scan-line'),
 };
 
+/// Lot CLO-3 point 7 : le poste visé par la tâche de caisse et celle de pharmacie est lu de la fiche RBAC (`poste_caisse`, `poste_pharmacie`, à chaud), jamais écrit ; sans détenteur
+/// (rôle archivé : cas d'origine de la pharmacie), le rôle d'origine du manifeste. Seul change QUI est visé, jamais la chaîne.
+String _roleDeLaTache(String type, String defaut) {
+  final geste = switch (type) { 'encaissement' => 'poste_caisse', 'dispensation' => 'poste_pharmacie', _ => null };
+  if (geste == null) return defaut;
+  final r = gesRoles(geste, [defaut]);
+  return r.isEmpty ? defaut : r.first;
+}
+
 FicheCs _creerTache(StockCs s, String type, FicheCs ord, FicheCs? facture,
     FicheCs extra) {
   final def = _tachesDef[type]!;
   return s.inserer('taches', {
     'type': type,
-    'role': def.role,
+    'role': _roleDeLaTache(type, def.role),
     'module': def.module,
     'ecran': def.ecran,
     'titre': def.titre,
