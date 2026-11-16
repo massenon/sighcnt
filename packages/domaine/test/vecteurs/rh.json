@@ -84,7 +84,9 @@
     }
    ],
    "notes": [],
-   "boutons": []
+   "boutons": [
+    "Exporter"
+   ]
   },
   "graphes": [
    {
@@ -154,7 +156,7 @@
    "Répartition par service",
    "Masse salariale par service",
    "Planning du jour",
-   "Règles métier en vigueur RÉFÉRENCE OBJET VERSION DATE D’EFFET STATUT SIGNATAIRE NS 131/07/DM/DA/CNT/2026 Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale v1 13/07/2026 ACTIVE BASSONGUI C. Séko Y., Directeur Médical NS n° 132/07/DM/DA/CNT/2026 Primes diverses v1 13/07/2026 ACTIVE BASSONGUI Chabi Séko, Directeur Médical"
+   "Règles métier en vigueur Exporter RÉFÉRENCE OBJET VERSION DATE D’EFFET STATUT SIGNATAIRE NS 131/07/DM/DA/CNT/2026 Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale v1 13/07/2026 ACTIVE BASSONGUI C. Séko Y., Directeur Médical NS n° 132/07/DM/DA/CNT/2026 Primes diverses v1 13/07/2026 ACTIVE BASSONGUI Chabi Séko, Directeur Médical"
   ],
   "liens": [
    [
@@ -808,6 +810,9 @@
     "Colonnes",
     "Exporter",
     "Nouvelle fiche de poste",
+    "Cocher les 28 lignes filtrées",
+    "Exporter la sélection",
+    "Imprimer la sélection",
     "Tout désélectionner",
     "Imprimer la fiche de poste",
     "Consulter",
@@ -815,14 +820,12 @@
     "Archiver",
     "Imprimer la fiche de poste",
     "Consulter",
-    "Modifier",
-    "Archiver",
-    "Imprimer la fiche de poste",
-    "Consulter"
+    "Modifier"
    ]
   },
   "lignes": [
    [
+    "",
     "Agent d’Entretien",
     "Direction",
     "—",
@@ -831,6 +834,7 @@
     ""
    ],
    [
+    "",
     "Agent d’Entretien — Chef de service",
     "Direction",
     "—",
@@ -839,6 +843,7 @@
     ""
    ],
    [
+    "",
     "Agent de Sécurité",
     "Direction",
     "—",
@@ -847,6 +852,7 @@
     ""
    ],
    [
+    "",
     "Agent de Sécurité — Chef de service",
     "Direction",
     "—",
@@ -855,6 +861,7 @@
     ""
    ],
    [
+    "",
     "Aide-soignante",
     "Soins infirmiers",
     "—",
@@ -863,6 +870,7 @@
     ""
    ],
    [
+    "",
     "Aide-soignante — Chef de service",
     "Soins infirmiers",
     "—",
@@ -871,6 +879,7 @@
     ""
    ],
    [
+    "",
     "Assistant de Direction",
     "Direction",
     "—",
@@ -879,6 +888,7 @@
     ""
    ],
    [
+    "",
     "Assistant(e) de Direction",
     "Administration de la CNT",
     "245",
@@ -887,6 +897,7 @@
     ""
    ],
    [
+    "",
     "Biologiste médical",
     "Laboratoire",
     "—",
@@ -895,6 +906,7 @@
     ""
    ],
    [
+    "",
     "Biologiste médical — Chef de service",
     "Laboratoire",
     "—",
@@ -903,6 +915,7 @@
     ""
    ],
    [
+    "",
     "Caissière",
     "Accueil",
     "—",
@@ -911,6 +924,7 @@
     ""
    ],
    [
+    "",
     "Caissière-Dispensatrice",
     "Pharmacie",
     "—",
@@ -929,6 +943,9 @@
    "Colonnes",
    "Exporter",
    "Nouvelle fiche de poste",
+   "Cocher les 1 ligne filtrée",
+   "Exporter la sélection",
+   "Imprimer la sélection",
    "Tout désélectionner",
    "Imprimer la fiche de poste",
    "Consulter",
@@ -936,21 +953,39 @@
    "Archiver"
   ],
   "detailIG": {
-   "texte": "Infirmier Général (IG) INTITULÉ DU POSTE Infirmier Général (IG) NUMÉRO D’ARCHIVAGE 213/10/CNT/DA/2023 ÉLABORATION 26/10/2023 MISE À JOUR — STRUCTURE DE RATTACHEMENT Soins médico-infirmiers et obstétricaux NIVEAU N Exécutant NIVEAU N+1 Médecin, DA NIVEAU N−1 Infirmiers, sages-femmes STATUT DU TITULAIRE Employé SOURCE Description de poste du 26/10/2023 Résumé succinct du poste Contrôler le personnel, superviser les soins, produire les statistiques, régler les conflits. Mission 1 — Contrôler le personnel ACTIVITÉS ET TÂCHES Contrôler et superviser l’exécution des soins prescrits par les médecins et sages-femmes Vérifier le bon remplissage des documents de transfusion sanguine Veiller au bon remplissage des différents registres en vigueur Contrôler la bonne tenue des documents médicaux Veiller au port des tenues réglementaires Veiller à l’exécution des programmes nationaux Surveiller les retards, les sorties et les absences non autorisées Surveiller l’utilisation du portable durant le service RÉSULTATS ATTENDUS ET INDICATEURS INDICATEUR 100 % des documents de transfusion sanguine vérifiés et corrigés par mois 100 % des registres contrôlés par mois 100 % des agents en tenue réglementaire 95 % des retards constatés et notifiés Mission 2 — Participer aux soins ACTIVITÉS ET TÂCHES Faire la visite des patients avec les médecins Superviser les soins infirmiers aux patients Informer les médecins et le chirurgien des cas réputés graves Aucun indicateur chiffré au document. Mission 3 — Commander les registres à mettre à la disposition du personnel ACTIVITÉS ET TÂCHES Collecter les données pour les statistiques Transmettre les statistiques à la zone sanitaire à bonne date RÉSULTATS ATTENDUS ET INDICATEURS INDICATEUR 100 % des statistiques mensuelles transmises à bonne date Mission 4 — Régler les conflits entre agents et avec les usagers ACTIVITÉS ET TÂCHES Écouter les agents en conflit et faire la réconciliation Faire la médiation entre usagers en conflit RÉSULTATS ATTENDUS ET INDICATEURS INDICATEUR Au moins 75 % des conflits réglés Mission 5 — Représenter la clinique et faire le planning du personnel paramédical ACTIVITÉS ET TÂCHES Conseiller l’administration sur les améliorations à apporter Servir d’intermédiaire entre l’administration et le personnel Signaler les pannes et défectuosités constatées sur les matériels Participer aux réunions et aux prises de décisions Participer à l’élaboration des protocoles de soins Faire des staffs cliniques avec les infirmiers et sages-femmes Veiller à l’hygiène RÉSULTATS ATTENDUS ET INDICATEURS INDICATEUR 80 % de suggestions faites à l’administration 100 % des pannes signalées Au moins 12 staffs cliniques par an Relations fonctionnelles et compétences RUBRIQUE CONTENU Relations internes Clinique Nassièra Too · tous les secteurs de la CNT — contacts physiques, corporate, mails, courriers Relations externes DDS · Zone Sanitaire de Natitingou · Ministère de la Santé · usagers Environnement et moyens Mobilier de bureau, armoire, brasseur, PC, imprimante, connexion internet, corporate, oxymètre de pouls, stéthoscope, tensiomètre Diplômes attendus Diplôme d’Infirmier d’État Savoir-faire Expérience professionnelle d’au moins 2 ans · maîtrise de la déontologie médicale · connaissance des textes réglementaires · facilité à communiquer et habileté diplomatique · travail en équipe et sous pression · maîtrise minimale de l’outil informatique et d’internet Savoir-être Respect de la hiérarchie · courtoisie avec les collègues · courtoisie avec les usagers · éviction des actes immoraux (ivresse, propos déplacés, vol)",
+   "texte": "Infirmier Général (IG) INTITULÉ DU POSTE Infirmier Général (IG) NUMÉRO D’ARCHIVAGE 213/10/CNT/DA/2023 ÉLABORATION 26/10/2023 MISE À JOUR — STRUCTURE DE RATTACHEMENT Soins médico-infirmiers et obstétricaux NIVEAU N Exécutant NIVEAU N+1 Médecin, DA NIVEAU N−1 Infirmiers, sages-femmes STATUT DU TITULAIRE Employé SOURCE Description de poste du 26/10/2023 Résumé succinct du poste Contrôler le personnel, superviser les soins, produire les statistiques, régler les conflits. Mission 1 — Contrôler le personnel Exporter ACTIVITÉS ET TÂCHES Contrôler et superviser l’exécution des soins prescrits par les médecins et sages-femmes Vérifier le bon remplissage des documents de transfusion sanguine Veiller au bon remplissage des différents registres en vigueur Contrôler la bonne tenue des documents médicaux Veiller au port des tenues réglementaires Veiller à l’exécution des programmes nationaux Surveiller les retards, les sorties et les absences non autorisées Surveiller l’utilisation du portable durant le service RÉSULTATS ATTENDUS ET INDICATEURS Exporter INDICATEUR 100 % des documents de transfusion sanguine vérifiés et corrigés par mois 100 % des registres contrôlés par mois 100 % des agents en tenue réglementaire 95 % des retards constatés et notifiés Mission 2 — Participer aux soins Exporter ACTIVITÉS ET TÂCHES Faire la visite des patients avec les médecins Superviser les soins infirmiers aux patients Informer les médecins et le chirurgien des cas réputés graves Aucun indicateur chiffré au document. Mission 3 — Commander les registres à mettre à la disposition du personnel Exporter ACTIVITÉS ET TÂCHES Collecter les données pour les statistiques Transmettre les statistiques à la zone sanitaire à bonne date RÉSULTATS ATTENDUS ET INDICATEURS Exporter INDICATEUR 100 % des statistiques mensuelles transmises à bonne date Mission 4 — Régler les conflits entre agents et avec les usagers Exporter ACTIVITÉS ET TÂCHES Écouter les agents en conflit et faire la réconciliation Faire la médiation entre usagers en conflit RÉSULTATS ATTENDUS ET INDICATEURS Exporter INDICATEUR Au moins 75 % des conflits réglés Mission 5 — Représenter la clinique et faire le planning du personnel paramédical Exporter ACTIVITÉS ET TÂCHES Conseiller l’administration sur les améliorations à apporter Servir d’intermédiaire entre l’administration et le personnel Signaler les pannes et défectuosités constatées sur les matériels Participer aux réunions et aux prises de décisions Participer à l’élaboration des protocoles de soins Faire des staffs cliniques avec les infirmiers et sages-femmes Veiller à l’hygiène RÉSULTATS ATTENDUS ET INDICATEURS Exporter INDICATEUR 80 % de suggestions faites à l’administration 100 % des pannes signalées Au moins 12 staffs cliniques par an Relations fonctionnelles et compétences Exporter RUBRIQUE CONTENU Relations internes Clinique Nassièra Too · tous les secteurs de la CNT — contacts physiques, corporate, mails, courriers Relations externes DDS · Zone Sanitaire de Natitingou · Ministère de la Santé · usagers Environnement et moyens Mobilier de bureau, armoire, brasseur, PC, imprimante, connexion internet, corporate, oxymètre de pouls, stéthoscope, tensiomètre Diplômes attendus Diplôme d’Infirmier d’État Savoir-faire Expérience professionnelle d’au moins 2 ans · maîtrise de la déontologie médicale · connaissance des textes réglementaires · facilité à communiquer et habileté diplomatique · travail en équipe et sous pression · maîtrise minimale de l’outil informatique et d’internet Savoir-être Respect de la hiérarchie · courtoisie avec les collègues · courtoisie avec les usagers · éviction des actes immoraux (ivresse, propos déplacés, vol)",
    "boutons": [
-    "Fermer"
+    "Fermer",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter"
    ]
   },
   "detailVide": {
-   "texte": "Comptable INTITULÉ DU POSTE Comptable NUMÉRO D’ARCHIVAGE — ÉLABORATION — MISE À JOUR — STRUCTURE DE RATTACHEMENT Comptabilité NIVEAU N — NIVEAU N+1 — NIVEAU N−1 — STATUT DU TITULAIRE Employé(e) SOURCE Poste relevé à l’organigramme — fiche à rédiger Cette fiche n’a pas encore été rédigée : la clinique n’a remis de description de poste que pour l’Infirmier Général et l’Assistant de Direction. Relations fonctionnelles et compétences RUBRIQUE CONTENU Relations internes — Relations externes — Environnement et moyens — Diplômes attendus — Savoir-faire — Savoir-être —",
+   "texte": "Comptable INTITULÉ DU POSTE Comptable NUMÉRO D’ARCHIVAGE — ÉLABORATION — MISE À JOUR — STRUCTURE DE RATTACHEMENT Comptabilité NIVEAU N — NIVEAU N+1 — NIVEAU N−1 — STATUT DU TITULAIRE Employé(e) SOURCE Poste relevé à l’organigramme — fiche à rédiger Cette fiche n’a pas encore été rédigée : la clinique n’a remis de description de poste que pour l’Infirmier Général et l’Assistant de Direction. Relations fonctionnelles et compétences Exporter RUBRIQUE CONTENU Relations internes — Relations externes — Environnement et moyens — Diplômes attendus — Savoir-faire — Savoir-être —",
    "boutons": [
-    "Fermer"
+    "Fermer",
+    "Exporter"
    ]
   },
   "detailAssistant": {
-   "texte": "Assistant(e) de Direction INTITULÉ DU POSTE Assistant(e) de Direction NUMÉRO D’ARCHIVAGE 245 ÉLABORATION 01/12/2023 MISE À JOUR — STRUCTURE DE RATTACHEMENT Administration de la CNT NIVEAU N Décideur NIVEAU N+1 Directeur Médical NIVEAU N−1 DAF STATUT DU TITULAIRE Employé(e) SOURCE Description de poste du 01/12/2023 Le document s’intitule « DIRECTRICE ADMINISTRATIVE (DA) » mais son corps décrit son ADJOINT : mission 2 « assister la Directrice Administrative », activité 28 « assurer l’intérim de la DA ». Un poste ne peut pas être à la fois la DA et son assistant. L’intitulé retenu est donc « Assistant(e) de Direction », conformément à la liste de comptes du 25/08/2026 — et l’écart avec le titre du document est signalé plutôt que corrigé en silence. Résumé succinct du poste Tenir la comptabilité, assister la DA, représenter la clinique à diverses occasions, sous l’autorité de la DA. Mission 1 — Tenir la comptabilité ACTIVITÉS ET TÂCHES Mettre à jour les différents livres de compte Réclamer les factures normalisées après chaque achat Enregistrer les recettes et les dépenses Suivre les versements des recettes à la banque Suivre le compte de la banque à la clinique et de la clinique à la banque Faire les rapprochements bancaires Faire le recouvrement des créances chez les débiteurs particuliers et les compagnies d’assurance Suivre le règlement des créances par les débiteurs et surtout les assureurs Exécuter les achats et les dépenses budgétisés Faire les dépôts de recettes, remises de chèque, ordres de virement et retraits Traiter les salaires des employés et les rémunérations des prestataires, sur avis de la DA Faire le point des recettes et dépenses autorisées à la caisse en l’absence de la DA Déclarer et payer à bonne date les obligations fiscales et sociales (Impôts, CNSS, CCIB) Suivre et rembourser les emprunts de la clinique à bonne date Calculer chaque mois le bénéfice comptable et le bénéfice fiscal Suivre les décaissements et les recouvrements des prêts-études Faire un compte rendu mensuel de la comptabilité à la hiérarchie Analyser et commenter l’évolution des recettes et des dépenses RÉSULTATS ATTENDUS ET INDICATEURS INDICATEUR 100 % des livres de compte à jour 100 % des factures d’achats normalisées 100 % des irrégularités et écarts à la banque constatés et réglés 100 % des traitements salariaux et rémunérations prêts à bonne date 100 % des déclarations fiscales et sociales faites à bonne date Mission 2 — Assister la Directrice Administrative ACTIVITÉS ET TÂCHES Faire des suggestions pour améliorer le climat des affaires Anticiper par proactivité sur les événements susceptibles de susciter des déconvenues Veiller au bon fonctionnement du groupe électrogène avec les agents de sécurité Assister la DA dans la gestion du personnel médical, paramédical et non soignant Faire l’inventaire périodique et annuel des médicaments d’urgence et des réactifs de laboratoire Faire l’inventaire périodique et annuel des matériels avec le Directeur Médical Faire le point journalier de la caisse en l’absence de la DA Faire appel aux réparateurs pour les pannes, sur avis de la DA Établir un plan de maintenance des appareils et matériels Faire les petites commandes et les petites dépenses urgentes sur avis de la DA Assurer l’intérim de la DA RÉSULTATS ATTENDUS ET INDICATEURS INDICATEUR Proportion de bonnes suggestions faites Proportion des inventaires faits à bonne date Mission 3 — Représenter la clinique à diverses occasions ACTIVITÉS ET TÂCHES Être le porte-parole de la clinique Faire les courses administratives RÉSULTATS ATTENDUS ET INDICATEURS INDICATEUR Pourcentage de courses administratives réussies Relations fonctionnelles et compétences RUBRIQUE CONTENU Relations internes Direction · comptabilité · caisse · tous les secteurs Relations externes Banques · administration fiscale · CNSS · CCIB · compagnies d’assurance · fournisseurs Environnement et moyens Mobilier de bureau, PC, imprimante, connexion internet, logiciels de gestion Diplômes attendus À préciser par la Direction Savoir-faire À préciser par la Direction Savoir-être À préciser par la Direction",
+   "texte": "Assistant(e) de Direction INTITULÉ DU POSTE Assistant(e) de Direction NUMÉRO D’ARCHIVAGE 245 ÉLABORATION 01/12/2023 MISE À JOUR — STRUCTURE DE RATTACHEMENT Administration de la CNT NIVEAU N Décideur NIVEAU N+1 Directeur Médical NIVEAU N−1 DAF STATUT DU TITULAIRE Employé(e) SOURCE Description de poste du 01/12/2023 Le document s’intitule « DIRECTRICE ADMINISTRATIVE (DA) » mais son corps décrit son ADJOINT : mission 2 « assister la Directrice Administrative », activité 28 « assurer l’intérim de la DA ». Un poste ne peut pas être à la fois la DA et son assistant. L’intitulé retenu est donc « Assistant(e) de Direction », conformément à la liste de comptes du 25/08/2026 — et l’écart avec le titre du document est signalé plutôt que corrigé en silence. Résumé succinct du poste Tenir la comptabilité, assister la DA, représenter la clinique à diverses occasions, sous l’autorité de la DA. Mission 1 — Tenir la comptabilité Exporter ACTIVITÉS ET TÂCHES Mettre à jour les différents livres de compte Réclamer les factures normalisées après chaque achat Enregistrer les recettes et les dépenses Suivre les versements des recettes à la banque Suivre le compte de la banque à la clinique et de la clinique à la banque Faire les rapprochements bancaires Faire le recouvrement des créances chez les débiteurs particuliers et les compagnies d’assurance Suivre le règlement des créances par les débiteurs et surtout les assureurs Exécuter les achats et les dépenses budgétisés Faire les dépôts de recettes, remises de chèque, ordres de virement et retraits Traiter les salaires des employés et les rémunérations des prestataires, sur avis de la DA Faire le point des recettes et dépenses autorisées à la caisse en l’absence de la DA Déclarer et payer à bonne date les obligations fiscales et sociales (Impôts, CNSS, CCIB) Suivre et rembourser les emprunts de la clinique à bonne date Calculer chaque mois le bénéfice comptable et le bénéfice fiscal Suivre les décaissements et les recouvrements des prêts-études Faire un compte rendu mensuel de la comptabilité à la hiérarchie Analyser et commenter l’évolution des recettes et des dépenses RÉSULTATS ATTENDUS ET INDICATEURS Exporter INDICATEUR 100 % des livres de compte à jour 100 % des factures d’achats normalisées 100 % des irrégularités et écarts à la banque constatés et réglés 100 % des traitements salariaux et rémunérations prêts à bonne date 100 % des déclarations fiscales et sociales faites à bonne date Mission 2 — Assister la Directrice Administrative Exporter ACTIVITÉS ET TÂCHES Faire des suggestions pour améliorer le climat des affaires Anticiper par proactivité sur les événements susceptibles de susciter des déconvenues Veiller au bon fonctionnement du groupe électrogène avec les agents de sécurité Assister la DA dans la gestion du personnel médical, paramédical et non soignant Faire l’inventaire périodique et annuel des médicaments d’urgence et des réactifs de laboratoire Faire l’inventaire périodique et annuel des matériels avec le Directeur Médical Faire le point journalier de la caisse en l’absence de la DA Faire appel aux réparateurs pour les pannes, sur avis de la DA Établir un plan de maintenance des appareils et matériels Faire les petites commandes et les petites dépenses urgentes sur avis de la DA Assurer l’intérim de la DA RÉSULTATS ATTENDUS ET INDICATEURS Exporter INDICATEUR Proportion de bonnes suggestions faites Proportion des inventaires faits à bonne date Mission 3 — Représenter la clinique à diverses occasions Exporter ACTIVITÉS ET TÂCHES Être le porte-parole de la clinique Faire les courses administratives RÉSULTATS ATTENDUS ET INDICATEURS Exporter INDICATEUR Pourcentage de courses administratives réussies Relations fonctionnelles et compétences Exporter RUBRIQUE CONTENU Relations internes Direction · comptabilité · caisse · tous les secteurs Relations externes Banques · administration fiscale · CNSS · CCIB · compagnies d’assurance · fournisseurs Environnement et moyens Mobilier de bureau, PC, imprimante, connexion internet, logiciels de gestion Diplômes attendus À préciser par la Direction Savoir-faire À préciser par la Direction Savoir-être À préciser par la Direction",
    "boutons": [
-    "Fermer"
+    "Fermer",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter",
+    "Exporter"
    ]
   },
   "etatIG": {
@@ -1566,6 +1601,9 @@
      "Colonnes",
      "Exporter",
      "Nouvelle fiche de poste",
+     "Cocher les 29 lignes filtrées",
+     "Exporter la sélection",
+     "Imprimer la sélection",
      "Tout désélectionner",
      "Imprimer la fiche de poste",
      "Consulter",
@@ -1573,14 +1611,12 @@
      "Archiver",
      "Imprimer la fiche de poste",
      "Consulter",
-     "Modifier",
-     "Archiver",
-     "Imprimer la fiche de poste",
-     "Consulter"
+     "Modifier"
     ]
    },
    "lignes": [
     [
+     "",
      "Agent d’Entretien",
      "Direction",
      "—",
@@ -1589,6 +1625,7 @@
      ""
     ],
     [
+     "",
      "Agent d’Entretien — Chef de service",
      "Direction",
      "—",
@@ -1597,6 +1634,7 @@
      ""
     ],
     [
+     "",
      "Agent de Sécurité",
      "Direction",
      "—",
@@ -1605,6 +1643,7 @@
      ""
     ],
     [
+     "",
      "Agent de Sécurité — Chef de service",
      "Direction",
      "—",
@@ -1613,6 +1652,7 @@
      ""
     ],
     [
+     "",
      "Aide-soignante",
      "Soins infirmiers",
      "—",
@@ -1621,6 +1661,7 @@
      ""
     ],
     [
+     "",
      "Aide-soignante — Chef de service",
      "Soins infirmiers",
      "—",
@@ -1629,6 +1670,7 @@
      ""
     ],
     [
+     "",
      "Assistant de Direction",
      "Direction",
      "—",
@@ -1637,6 +1679,7 @@
      ""
     ],
     [
+     "",
      "Assistant(e) de Direction",
      "Administration de la CNT",
      "245",
@@ -1645,6 +1688,7 @@
      ""
     ],
     [
+     "",
      "Biologiste médical",
      "Laboratoire",
      "—",
@@ -1653,6 +1697,7 @@
      ""
     ],
     [
+     "",
      "Biologiste médical — Chef de service",
      "Laboratoire",
      "—",
@@ -1661,6 +1706,7 @@
      ""
     ],
     [
+     "",
      "Caissière",
      "Accueil",
      "—",
@@ -1669,6 +1715,7 @@
      ""
     ],
     [
+     "",
      "Caissière-Dispensatrice",
      "Pharmacie",
      "—",
@@ -1719,7 +1766,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "FDPxmvuswn40yxc8m",
+    "id": "FDPxmvuswn40nu86a",
     "statut": "archive",
     "missions": [],
     "redigee": true,
@@ -1744,6 +1791,7 @@
    },
    "lignes": [
     [
+     "",
      "Agent d’Entretien",
      "Direction",
      "—",
@@ -1752,6 +1800,7 @@
      ""
     ],
     [
+     "",
      "Agent d’Entretien — Chef de service",
      "Direction",
      "—",
@@ -1760,6 +1809,7 @@
      ""
     ],
     [
+     "",
      "Agent de Sécurité",
      "Direction",
      "—",
@@ -1768,6 +1818,7 @@
      ""
     ],
     [
+     "",
      "Agent de Sécurité — Chef de service",
      "Direction",
      "—",
@@ -1776,6 +1827,7 @@
      ""
     ],
     [
+     "",
      "Aide-soignante",
      "Soins infirmiers",
      "—",
@@ -1784,6 +1836,7 @@
      ""
     ],
     [
+     "",
      "Aide-soignante — Chef de service",
      "Soins infirmiers",
      "—",
@@ -1792,6 +1845,7 @@
      ""
     ],
     [
+     "",
      "Assistant de Direction",
      "Direction",
      "—",
@@ -1800,6 +1854,7 @@
      ""
     ],
     [
+     "",
      "Assistant(e) de Direction",
      "Administration de la CNT",
      "245",
@@ -1808,6 +1863,7 @@
      ""
     ],
     [
+     "",
      "Biologiste médical",
      "Laboratoire",
      "—",
@@ -1816,6 +1872,7 @@
      ""
     ],
     [
+     "",
      "Biologiste médical — Chef de service",
      "Laboratoire",
      "—",
@@ -1824,6 +1881,7 @@
      ""
     ],
     [
+     "",
      "Caissière",
      "Accueil",
      "—",
@@ -1832,6 +1890,7 @@
      ""
     ],
     [
+     "",
      "Caissière-Dispensatrice",
      "Pharmacie",
      "—",
@@ -2091,15 +2150,15 @@
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Importer les données",
+    "Cocher les 44 lignes filtrées",
+    "Exporter la sélection",
     "Imprimer la sélection",
     "Archiver",
     "Tout désélectionner",
     "Consulter",
     "Imprimer l’état",
-    "Modifier",
-    "Archiver",
-    "Consulter",
-    "Imprimer l’état"
+    "Modifier"
    ]
   },
   "lignes": [
@@ -2428,9 +2487,10 @@
    "Archiver"
   ],
   "tiroir": {
-   "entete": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 1 Nom ",
+   "entete": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assur",
    "onglets": [
     "Informations",
+    "Planning personnalisé",
     "Planning du mois",
     "Primes (NS 132)",
     "Présences & congés",
@@ -2439,25 +2499,33 @@
    ],
    "parOnglet": {
     "Informations": {
-     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 1 Nom et prénoms BASSONGUI Chabi Séko Sexe Masculin Fonction Médecin Poste Directeur Médical Service Direction Catégorie / échelon E5-2 Date d’embauche 27/06/2018 Ancienneté 8 an(s) 4 mois Numéro CNSS 294011540 Téléphone 0741137731 Situation matrimoniale Célibataire Salaire de base 450 000 FCFA Imprimer Modifier Archiver",
+     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 1 Nom et prénoms BASSONGUI Chabi Séko Sexe Masculin Fonction Médecin Poste Directeur Médical Service Direction Catégorie / échelon E5-2 Date d’embauche 27/06/2018 Ancienneté 8 an(s) 4 mois Numéro CNSS 294011540 Téléphone 0741137731 Situation matrimoniale Célibataire Salaire de base 450 000 FCFA Imprimer Modifier Archiver",
      "kpis": [],
      "tableaux": [],
      "notes": []
     },
+    "Planning personnalisé": {
+     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime. Imprimer Modifier Archiver",
+     "kpis": [],
+     "tableaux": [],
+     "notes": [
+      "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+     ]
+    },
     "Planning du mois": {
-     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci. Imprimer Modifier Archiver",
+     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci. Imprimer Modifier Archiver",
      "kpis": [],
      "tableaux": [],
      "notes": []
     },
     "Primes (NS 132)": {
-     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132. Imprimer Modifier Archiver",
+     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132. Imprimer Modifier Archiver",
      "kpis": [],
      "tableaux": [],
      "notes": []
     },
     "Présences & congés": {
-     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:55 — 15/08/2026 present 07:48 — 14/08/2026 present 07:43 — 13/08/2026 absent — — 12/08/2026 present 07:55 — 11/08/2026 retard 08:28 — 10/08/2026 present 07:53 — 09/08/2026 present 07:52 — 08/08/2026 present 07:59 — 07/08/2026 absent — — 06/08/2026 present 07:52 — 05/08/2026 present 07:56 — 04/08/2026 present 07:59 — 03/08/2026 present 07:45 — 02/08/2026 present 07:42 — Congés TYPE DU AU JOURS ÉTAT Congé de maternité 21/12/2026 24/12/2026 3 En attente Imprimer Modifier Archiver",
+     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:55 — 15/08/2026 present 07:48 — 14/08/2026 present 07:43 — 13/08/2026 absent — — 12/08/2026 present 07:55 — 11/08/2026 retard 08:28 — 10/08/2026 present 07:53 — 09/08/2026 present 07:52 — 08/08/2026 present 07:59 — 07/08/2026 absent — — 06/08/2026 present 07:52 — 05/08/2026 present 07:56 — 04/08/2026 present 07:59 — 03/08/2026 present 07:45 — 02/08/2026 present 07:42 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé de maternité 21/12/2026 24/12/2026 3 En attente Imprimer Modifier Archiver",
      "kpis": [],
      "tableaux": [
       {
@@ -2582,7 +2650,7 @@
      "notes": []
     },
     "Évaluations & sanctions": {
-     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 10 % TAKI Alimatou Imprimer Modifier Archiver",
+     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 10 % TAKI Alimatou Imprimer Modifier Archiver",
      "kpis": [],
      "tableaux": [
       {
@@ -2607,7 +2675,7 @@
      ]
     },
     "Assurances": {
-     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement Imprimer Modifier Archiver",
+     "texte": "BASSONGUI Chabi Séko BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement Imprimer Modifier Archiver",
      "kpis": [],
      "tableaux": [],
      "notes": [
@@ -2618,6 +2686,7 @@
    "boutons": [
     "Fermer",
     "Informations",
+    "Planning personnalisé",
     "Planning du mois",
     "Primes (NS 132)",
     "Présences & congés",
@@ -2626,6 +2695,9 @@
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Cocher les 0 ligne filtrée",
+    "Exporter la sélection",
+    "Imprimer la sélection",
     "Tout désélectionner",
     "Imprimer",
     "Modifier",
@@ -2687,8 +2759,8 @@
     "Poste occupé",
     "Service *",
     "Catégorie / échelon",
-    "Date d’embauche *",
-    "Salaire de base (FCFA) *",
+    "Date d’embauche",
+    "Salaire de base (FCFA)",
     "Numéro CNSS"
    ],
    "defauts": {
@@ -2701,9 +2773,9 @@
     "fonction": "aide_soignant",
     "poste": "",
     "service": "Médecine générale",
-    "categorie": "E1-1",
-    "dateEmbauche": "2026-10-30",
-    "salaireBase": "60000",
+    "categorie": "",
+    "dateEmbauche": "",
+    "salaireBase": "",
     "cnss": ""
    },
    "options": {
@@ -2859,7 +2931,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40e1g2c",
+     "id": "PERxmvuswn40nrw3z",
      "statut": "actif",
      "matricule": "99",
      "nom": "AGBO",
@@ -2870,8 +2942,8 @@
      "fonction": "infirmier",
      "poste": "Infirmière",
      "service": "Soins infirmiers",
-     "categorie": "E1-1",
-     "dateEmbauche": "2026-10-30",
+     "categorie": "",
+     "dateEmbauche": "",
      "salaireBase": 120000,
      "cnss": "",
      "nomComplet": "AGBO Rosine"
@@ -2908,8 +2980,8 @@
       "AR AGBO Rosine Infirmière",
       "Infirmier(ère)",
       "Soins infirmiers",
-      "E1-1",
-      "0 a. 0 m.",
+      "—",
+      "Non calculable",
       "",
       "120 000",
       ""
@@ -2932,8 +3004,8 @@
     "fonction": "infirmier",
     "poste": "Infirmière",
     "service": "Soins infirmiers",
-    "categorie": "E1-1",
-    "dateEmbauche": "2026-10-30",
+    "categorie": "",
+    "dateEmbauche": "",
     "salaireBase": "120000",
     "cnss": ""
    },
@@ -2944,7 +3016,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40e1g2c",
+     "id": "PERxmvuswn40nrw3z",
      "statut": "actif",
      "matricule": "99",
      "nom": "AGBO",
@@ -2955,8 +3027,8 @@
      "fonction": "infirmier",
      "poste": "Infirmière",
      "service": "Soins infirmiers",
-     "categorie": "E1-1",
-     "dateEmbauche": "2026-10-30",
+     "categorie": "",
+     "dateEmbauche": "",
      "salaireBase": 120000,
      "cnss": "",
      "nomComplet": "AGBO Rosine-Marie"
@@ -2965,7 +3037,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "PERxmvuswn40e1g2c",
+    "id": "PERxmvuswn40nrw3z",
     "statut": "archive",
     "matricule": "99",
     "nom": "AGBO",
@@ -2976,8 +3048,8 @@
     "fonction": "infirmier",
     "poste": "Infirmière",
     "service": "Soins infirmiers",
-    "categorie": "E1-1",
-    "dateEmbauche": "2026-10-30",
+    "categorie": "",
+    "dateEmbauche": "",
     "salaireBase": 120000,
     "cnss": "",
     "nomComplet": "AGBO Rosine-Marie",
@@ -3028,6 +3100,7 @@
      "bandeau": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -3036,25 +3109,33 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 1 Nom et prénoms BASSONGUI Chabi Séko Sexe Masculin Fonction Médecin Poste Directeur Médical Service Direction Catégorie / échelon E5-2 Date d’embauche 27/06/2018 Ancienneté 8 an(s) 4 mois Numéro CNSS 294011540 Téléphone 0741137731 Situation matrimoniale Célibataire Salaire de base 450 000 FCFA",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 1 Nom et prénoms BASSONGUI Chabi Séko Sexe Masculin Fonction Médecin Poste Directeur Médical Service Direction Catégorie / échelon E5-2 Date d’embauche 27/06/2018 Ancienneté 8 an(s) 4 mois Numéro CNSS 294011540 Téléphone 0741137731 Situation matrimoniale Célibataire Salaire de base 450 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Présences & congés": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:55 — 15/08/2026 present 07:48 — 14/08/2026 present 07:43 — 13/08/2026 absent — — 12/08/2026 present 07:55 — 11/08/2026 retard 08:28 — 10/08/2026 present 07:53 — 09/08/2026 present 07:52 — 08/08/2026 present 07:59 — 07/08/2026 absent — — 06/08/2026 present 07:52 — 05/08/2026 present 07:56 — 04/08/2026 present 07:59 — 03/08/2026 present 07:45 — 02/08/2026 present 07:42 — Congés TYPE DU AU JOURS ÉTAT Congé de maternité 21/12/2026 24/12/2026 3 En attente",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:55 — 15/08/2026 present 07:48 — 14/08/2026 present 07:43 — 13/08/2026 absent — — 12/08/2026 present 07:55 — 11/08/2026 retard 08:28 — 10/08/2026 present 07:53 — 09/08/2026 present 07:52 — 08/08/2026 present 07:59 — 07/08/2026 absent — — 06/08/2026 present 07:52 — 05/08/2026 present 07:56 — 04/08/2026 present 07:59 — 03/08/2026 present 07:45 — 02/08/2026 present 07:42 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé de maternité 21/12/2026 24/12/2026 3 En attente",
        "kpis": [],
        "tableaux": [
         {
@@ -3179,7 +3260,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 10 % TAKI Alimatou",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 10 % TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -3204,7 +3285,7 @@
        ]
       },
       "Assurances": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -3217,6 +3298,7 @@
      "bandeau": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -3225,19 +3307,27 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 10 Nom et prénoms GARBA Yahouza Sexe Masculin Fonction Infirmier(ère) Poste Surveillant Service Soins infirmiers Catégorie / échelon E2-2 Date d’embauche 05/03/2018 Ancienneté 8 an(s) 7 mois Numéro CNSS 263385840 Téléphone 0569817515 Situation matrimoniale Célibataire Salaire de base 130 000 FCFA",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 10 Nom et prénoms GARBA Yahouza Sexe Masculin Fonction Infirmier(ère) Poste Surveillant Service Soins infirmiers Catégorie / échelon E2-2 Date d’embauche 05/03/2018 Ancienneté 8 an(s) 7 mois Numéro CNSS 263385840 Téléphone 0569817515 Situation matrimoniale Célibataire Salaire de base 130 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 0 0 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Hydrotubation Par occurrence 1 300 0 0",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 0 0 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Hydrotubation Par occurrence 1 300 0 0",
        "kpis": [],
        "tableaux": [
         {
@@ -3292,7 +3382,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:43 — 15/08/2026 present 07:40 — 14/08/2026 present 07:46 — 13/08/2026 present 07:58 — 12/08/2026 present 07:56 — 11/08/2026 retard 08:38 — 10/08/2026 present 07:59 — 09/08/2026 present 07:42 — 08/08/2026 present 07:41 — 07/08/2026 present 07:59 — 06/08/2026 present 07:53 — 05/08/2026 present 07:54 — 04/08/2026 present 07:52 — 03/08/2026 absent — — 02/08/2026 present 07:45 — Congés TYPE DU AU JOURS ÉTAT Congé annuel 13/12/2026 17/12/2026 4 En attente",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:43 — 15/08/2026 present 07:40 — 14/08/2026 present 07:46 — 13/08/2026 present 07:58 — 12/08/2026 present 07:56 — 11/08/2026 retard 08:38 — 10/08/2026 present 07:59 — 09/08/2026 present 07:42 — 08/08/2026 present 07:41 — 07/08/2026 present 07:59 — 06/08/2026 present 07:53 — 05/08/2026 present 07:54 — 04/08/2026 present 07:52 — 03/08/2026 absent — — 02/08/2026 present 07:45 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé annuel 13/12/2026 17/12/2026 4 En attente",
        "kpis": [],
        "tableaux": [
         {
@@ -3417,7 +3507,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 6 % TAKI Alimatou",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 6 % TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -3442,7 +3532,7 @@
        ]
       },
       "Assurances": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -3455,6 +3545,7 @@
      "bandeau": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -3463,19 +3554,27 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 18 Nom et prénoms BADO BANI A. B. Zoulehath Sexe Féminin Fonction Sage-femme Poste Sage-femme Service Maternité Catégorie / échelon E1-3 Date d’embauche 13/12/2024 Ancienneté 1 an(s) 10 mois Numéro CNSS 219375015 Téléphone 0391084490 Situation matrimoniale Veuf(ve) Salaire de base 105 000 FCFA",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 18 Nom et prénoms BADO BANI A. B. Zoulehath Sexe Féminin Fonction Sage-femme Poste Sage-femme Service Maternité Catégorie / échelon E1-3 Date d’embauche 13/12/2024 Ancienneté 1 an(s) 10 mois Numéro CNSS 219375015 Téléphone 0391084490 Situation matrimoniale Veuf(ve) Salaire de base 105 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 0 0 Aide bloc Par occurrence 500 0 0 Accouchement Par occurrence 1 000 0 0 Circoncision Par occurrence 1 000 0 0",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 0 0 Aide bloc Par occurrence 500 0 0 Accouchement Par occurrence 1 000 0 0 Circoncision Par occurrence 1 000 0 0",
        "kpis": [],
        "tableaux": [
         {
@@ -3530,7 +3629,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 present 07:56 — 12/08/2026 present 07:58 — 11/08/2026 present 07:49 — 10/08/2026 present 07:42 — 09/08/2026 present 07:44 — 08/08/2026 present 07:50 — 07/08/2026 present 07:43 — 06/08/2026 absent — — 05/08/2026 present 07:44 — 04/08/2026 present 07:59 — 03/08/2026 present 07:40 — 02/08/2026 present 07:57 — Congés TYPE DU AU JOURS ÉTAT Congé annuel 08/08/2026 14/08/2026 6 refuse",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 present 07:56 — 12/08/2026 present 07:58 — 11/08/2026 present 07:49 — 10/08/2026 present 07:42 — 09/08/2026 present 07:44 — 08/08/2026 present 07:50 — 07/08/2026 present 07:43 — 06/08/2026 absent — — 05/08/2026 present 07:44 — 04/08/2026 present 07:59 — 03/08/2026 present 07:40 — 02/08/2026 present 07:57 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé annuel 08/08/2026 14/08/2026 6 refuse",
        "kpis": [],
        "tableaux": [
         {
@@ -3655,7 +3754,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 20 % TAKI Alimatou",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 20 % TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -3680,7 +3779,7 @@
        ]
       },
       "Assurances": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -3693,6 +3792,7 @@
      "bandeau": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -3701,19 +3801,27 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 29 Nom et prénoms DIEYABIDI Aïssatou Sexe Féminin Fonction Caissière Poste Caissière-Dispensatrice Service Pharmacie Catégorie / échelon E3-3 Date d’embauche 08/01/2023 Ancienneté 3 an(s) 9 mois Numéro CNSS 284124258 Téléphone 0157639274 Situation matrimoniale Marié(e) Salaire de base 90 000 FCFA",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 29 Nom et prénoms DIEYABIDI Aïssatou Sexe Féminin Fonction Caissière Poste Caissière-Dispensatrice Service Pharmacie Catégorie / échelon E3-3 Date d’embauche 08/01/2023 Ancienneté 3 an(s) 9 mois Numéro CNSS 284124258 Téléphone 0157639274 Situation matrimoniale Marié(e) Salaire de base 90 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 0 0 Garde Par occurrence 900 0 0 Aide bloc Par occurrence 500 0 0 Caisse Forfait mensuel 10 000 1 10 000",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 0 0 Garde Par occurrence 900 0 0 Aide bloc Par occurrence 500 0 0 Caisse Forfait mensuel 10 000 1 10 000",
        "kpis": [],
        "tableaux": [
         {
@@ -3761,7 +3869,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:59 — 13/08/2026 present 07:58 — 12/08/2026 present 07:46 — 11/08/2026 present 07:47 — 10/08/2026 present 07:41 — 09/08/2026 present 07:52 — 08/08/2026 present 07:46 — 07/08/2026 present 07:51 — 06/08/2026 retard 08:52 — 05/08/2026 present 07:49 — 04/08/2026 absent — — 03/08/2026 present 07:43 — 02/08/2026 present 07:59 — Congés Aucun congé enregistré.",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:59 — 13/08/2026 present 07:58 — 12/08/2026 present 07:46 — 11/08/2026 present 07:47 — 10/08/2026 present 07:41 — 09/08/2026 present 07:52 — 08/08/2026 present 07:46 — 07/08/2026 present 07:51 — 06/08/2026 retard 08:52 — 05/08/2026 present 07:49 — 04/08/2026 absent — — 03/08/2026 present 07:43 — 02/08/2026 present 07:59 — Congés Aucun congé enregistré.",
        "kpis": [],
        "tableaux": [
         {
@@ -3868,13 +3976,13 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Assurances": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -3887,6 +3995,7 @@
      "bandeau": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -3895,19 +4004,27 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 21 Nom et prénoms TEPA Séraphine Sexe Féminin Fonction Aide-soignant(e) Poste Aide-soignante — Chef de service Service Soins infirmiers Catégorie / échelon E4-1 Date d’embauche 09/05/2025 Ancienneté 1 an(s) 5 mois Numéro CNSS 241138831 Téléphone 0635348379 Situation matrimoniale Veuf(ve) Salaire de base 65 000 FCFA",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 21 Nom et prénoms TEPA Séraphine Sexe Féminin Fonction Aide-soignant(e) Poste Aide-soignante — Chef de service Service Soins infirmiers Catégorie / échelon E4-1 Date d’embauche 09/05/2025 Ancienneté 1 an(s) 5 mois Numéro CNSS 241138831 Téléphone 0635348379 Situation matrimoniale Veuf(ve) Salaire de base 65 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 0 0 Garde Par occurrence 900 0 0 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Incinération Forfait mensuel 5 000 1 5 000",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 0 0 Garde Par occurrence 900 0 0 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Incinération Forfait mensuel 5 000 1 5 000",
        "kpis": [],
        "tableaux": [
         {
@@ -3962,7 +4079,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:49 — 15/08/2026 present 07:46 — 14/08/2026 present 07:40 — 13/08/2026 present 07:54 — 12/08/2026 present 07:42 — 11/08/2026 present 07:54 — 10/08/2026 present 07:47 — 09/08/2026 absent — — 08/08/2026 present 07:43 — 07/08/2026 present 07:50 — 06/08/2026 present 07:44 — 05/08/2026 present 07:48 — 04/08/2026 retard 08:27 — 03/08/2026 retard 08:35 — 02/08/2026 present 07:54 — Congés TYPE DU AU JOURS ÉTAT Congé annuel 26/12/2026 03/01/2027 8 refuse",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:49 — 15/08/2026 present 07:46 — 14/08/2026 present 07:40 — 13/08/2026 present 07:54 — 12/08/2026 present 07:42 — 11/08/2026 present 07:54 — 10/08/2026 present 07:47 — 09/08/2026 absent — — 08/08/2026 present 07:43 — 07/08/2026 present 07:50 — 06/08/2026 present 07:44 — 05/08/2026 present 07:48 — 04/08/2026 retard 08:27 — 03/08/2026 retard 08:35 — 02/08/2026 present 07:54 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé annuel 26/12/2026 03/01/2027 8 refuse",
        "kpis": [],
        "tableaux": [
         {
@@ -4087,7 +4204,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune retenue sur la période — évaluations conformes au barème NS 131. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 Aucune TAKI Alimatou",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune retenue sur la période — évaluations conformes au barème NS 131. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 Aucune TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -4112,7 +4229,7 @@
        ]
       },
       "Assurances": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -4125,6 +4242,7 @@
      "bandeau": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -4133,25 +4251,33 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 44 Nom et prénoms TCHANE Nourou Sexe Masculin Fonction Chauffeur coursier Poste Chauffeur Coursier Service Direction Catégorie / échelon E4-3 Date d’embauche 07/07/2023 Ancienneté 3 an(s) 3 mois Numéro CNSS 284074041 Téléphone 0419950231 Situation matrimoniale Marié(e) Salaire de base 60 000 FCFA",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 44 Nom et prénoms TCHANE Nourou Sexe Masculin Fonction Chauffeur coursier Poste Chauffeur Coursier Service Direction Catégorie / échelon E4-3 Date d’embauche 07/07/2023 Ancienneté 3 an(s) 3 mois Numéro CNSS 284074041 Téléphone 0419950231 Situation matrimoniale Marié(e) Salaire de base 60 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Présences & congés": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:45 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 retard 08:35 — 12/08/2026 present 07:53 — 11/08/2026 present 07:43 — 10/08/2026 retard 08:48 — 09/08/2026 present 07:42 — 08/08/2026 present 07:53 — 07/08/2026 present 07:59 — 06/08/2026 present 07:47 — 05/08/2026 present 07:48 — 04/08/2026 present 07:54 — 03/08/2026 present 07:40 — 02/08/2026 present 07:43 — Congés Aucun congé enregistré.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:45 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 retard 08:35 — 12/08/2026 present 07:53 — 11/08/2026 present 07:43 — 10/08/2026 retard 08:48 — 09/08/2026 present 07:42 — 08/08/2026 present 07:53 — 07/08/2026 present 07:59 — 06/08/2026 present 07:47 — 05/08/2026 present 07:48 — 04/08/2026 present 07:54 — 03/08/2026 present 07:40 — 02/08/2026 present 07:43 — Congés Aucun congé enregistré.",
        "kpis": [],
        "tableaux": [
         {
@@ -4258,13 +4384,13 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Assurances": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -4280,6 +4406,7 @@
     "boutons": [
      "BASSONGUI Chabi Séko",
      "Informations",
+     "Planning personnalisé",
      "Planning du mois",
      "Primes (NS 132)",
      "Présences & congés",
@@ -4302,6 +4429,7 @@
      "bandeau": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -4310,13 +4438,21 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 1 Nom et prénoms BASSONGUI Chabi Séko Sexe Masculin Fonction Médecin Poste Directeur Médical Service Direction Catégorie / échelon E5-2 Date d’embauche 27/06/2018 Ancienneté 8 an(s) 1 mois Numéro CNSS 294011540 Téléphone 0741137731 Situation matrimoniale Célibataire Salaire de base 450 000 FCFA",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 1 Nom et prénoms BASSONGUI Chabi Séko Sexe Masculin Fonction Médecin Poste Directeur Médical Service Direction Catégorie / échelon E5-2 Date d’embauche 27/06/2018 Ancienneté 8 an(s) 1 mois Numéro CNSS 294011540 Téléphone 0741137731 Situation matrimoniale Célibataire Salaire de base 450 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 15 Permanences 0 DATE VACATION STATUT samedi 1 août 2026 Repos 48h Validée dimanche 2 août 2026 Garde 24h Validée lundi 3 août 2026 Repos 48h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Repos 48h Validée jeudi 6 août 2026 Garde 24h Validée vendredi 7 août 2026 Repos 48h Validée samedi 8 août 2026 Garde 24h Validée dimanche 9 août 2026 Repos 48h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Repos 48h Validée mercredi 12 août 2026 Garde 24h Validée jeudi 13 août 2026 Repos 48h Validée vendredi 14 août 2026 Garde 24h Validée samedi 15 août 2026 Repos 48h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Repos 48h Validée mardi 18 août 2026 Garde 24h Validée mercredi 19 août 2026 Repos 48h Validée jeudi 20 août 2026 Garde 24h Validée vendredi 21 août 2026 Repos 48h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 48h Validée lundi 24 août 2026 Garde 24h Validée mardi 25 août 2026 Repos 48h Validée mercredi 26 août 2026 Garde 24h Validée jeudi 27 août 2026 Repos 48h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Repos 48h Validée dimanche 30 août 2026 Garde 24h Validée lundi 31 août 2026 Repos 48h Validée",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 15 Permanences 0 Exporter DATE VACATION STATUT samedi 1 août 2026 Repos 48h Validée dimanche 2 août 2026 Garde 24h Validée lundi 3 août 2026 Repos 48h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Repos 48h Validée jeudi 6 août 2026 Garde 24h Validée vendredi 7 août 2026 Repos 48h Validée samedi 8 août 2026 Garde 24h Validée dimanche 9 août 2026 Repos 48h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Repos 48h Validée mercredi 12 août 2026 Garde 24h Validée jeudi 13 août 2026 Repos 48h Validée vendredi 14 août 2026 Garde 24h Validée samedi 15 août 2026 Repos 48h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Repos 48h Validée mardi 18 août 2026 Garde 24h Validée mercredi 19 août 2026 Repos 48h Validée jeudi 20 août 2026 Garde 24h Validée vendredi 21 août 2026 Repos 48h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 48h Validée lundi 24 août 2026 Garde 24h Validée mardi 25 août 2026 Repos 48h Validée mercredi 26 août 2026 Garde 24h Validée jeudi 27 août 2026 Repos 48h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Repos 48h Validée dimanche 30 août 2026 Garde 24h Validée lundi 31 août 2026 Repos 48h Validée",
        "kpis": [
         {
          "libelle": "Gardes",
@@ -4498,13 +4634,13 @@
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Présences & congés": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:55 — 15/08/2026 present 07:48 — 14/08/2026 present 07:43 — 13/08/2026 absent — — 12/08/2026 present 07:55 — 11/08/2026 retard 08:28 — 10/08/2026 present 07:53 — 09/08/2026 present 07:52 — 08/08/2026 present 07:59 — 07/08/2026 absent — — 06/08/2026 present 07:52 — 05/08/2026 present 07:56 — 04/08/2026 present 07:59 — 03/08/2026 present 07:45 — 02/08/2026 present 07:42 — Congés TYPE DU AU JOURS ÉTAT Congé de maternité 21/12/2026 24/12/2026 3 En attente",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:55 — 15/08/2026 present 07:48 — 14/08/2026 present 07:43 — 13/08/2026 absent — — 12/08/2026 present 07:55 — 11/08/2026 retard 08:28 — 10/08/2026 present 07:53 — 09/08/2026 present 07:52 — 08/08/2026 present 07:59 — 07/08/2026 absent — — 06/08/2026 present 07:52 — 05/08/2026 present 07:56 — 04/08/2026 present 07:59 — 03/08/2026 present 07:45 — 02/08/2026 present 07:42 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé de maternité 21/12/2026 24/12/2026 3 En attente",
        "kpis": [],
        "tableaux": [
         {
@@ -4629,7 +4765,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 10 % TAKI Alimatou",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 10 % TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -4654,7 +4790,7 @@
        ]
       },
       "Assurances": {
-       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "BC BASSONGUI Chabi Séko Directeur Médical Matricule 1 — Direction — catégorie E5-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -4667,6 +4803,7 @@
      "bandeau": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -4675,13 +4812,21 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 10 Nom et prénoms GARBA Yahouza Sexe Masculin Fonction Infirmier(ère) Poste Surveillant Service Soins infirmiers Catégorie / échelon E2-2 Date d’embauche 05/03/2018 Ancienneté 8 an(s) 5 mois Numéro CNSS 263385840 Téléphone 0569817515 Situation matrimoniale Célibataire Salaire de base 130 000 FCFA",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 10 Nom et prénoms GARBA Yahouza Sexe Masculin Fonction Infirmier(ère) Poste Surveillant Service Soins infirmiers Catégorie / échelon E2-2 Date d’embauche 05/03/2018 Ancienneté 8 an(s) 5 mois Numéro CNSS 263385840 Téléphone 0569817515 Situation matrimoniale Célibataire Salaire de base 130 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 0 Permanences 0 DATE VACATION STATUT samedi 1 août 2026 Garde soins Validée dimanche 2 août 2026 Garde hospitalisation Validée lundi 3 août 2026 Repos 48h Validée mardi 4 août 2026 Garde soins Validée mercredi 5 août 2026 Garde hospitalisation Validée jeudi 6 août 2026 Repos 48h Validée vendredi 7 août 2026 Garde soins Validée samedi 8 août 2026 Garde hospitalisation Validée dimanche 9 août 2026 Repos 48h Validée lundi 10 août 2026 Garde soins Validée mardi 11 août 2026 Garde hospitalisation Validée mercredi 12 août 2026 Repos 48h Validée jeudi 13 août 2026 Garde soins Validée vendredi 14 août 2026 Garde hospitalisation Validée samedi 15 août 2026 Repos 48h Validée dimanche 16 août 2026 Garde soins Validée lundi 17 août 2026 Garde hospitalisation Validée mardi 18 août 2026 Repos 48h Validée mercredi 19 août 2026 Garde soins Validée jeudi 20 août 2026 Garde hospitalisation Validée vendredi 21 août 2026 Repos 48h Validée samedi 22 août 2026 Garde soins Validée dimanche 23 août 2026 Garde hospitalisation Validée lundi 24 août 2026 Repos 48h Validée mardi 25 août 2026 Garde soins Validée mercredi 26 août 2026 Garde hospitalisation Validée jeudi 27 août 2026 Repos 48h Validée vendredi 28 août 2026 Garde soins Validée samedi 29 août 2026 Garde hospitalisation Validée dimanche 30 août 2026 Repos 48h Validée lundi 31 août 2026 Garde soins Validée",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 0 Permanences 0 Exporter DATE VACATION STATUT samedi 1 août 2026 Garde soins Validée dimanche 2 août 2026 Garde hospitalisation Validée lundi 3 août 2026 Repos 48h Validée mardi 4 août 2026 Garde soins Validée mercredi 5 août 2026 Garde hospitalisation Validée jeudi 6 août 2026 Repos 48h Validée vendredi 7 août 2026 Garde soins Validée samedi 8 août 2026 Garde hospitalisation Validée dimanche 9 août 2026 Repos 48h Validée lundi 10 août 2026 Garde soins Validée mardi 11 août 2026 Garde hospitalisation Validée mercredi 12 août 2026 Repos 48h Validée jeudi 13 août 2026 Garde soins Validée vendredi 14 août 2026 Garde hospitalisation Validée samedi 15 août 2026 Repos 48h Validée dimanche 16 août 2026 Garde soins Validée lundi 17 août 2026 Garde hospitalisation Validée mardi 18 août 2026 Repos 48h Validée mercredi 19 août 2026 Garde soins Validée jeudi 20 août 2026 Garde hospitalisation Validée vendredi 21 août 2026 Repos 48h Validée samedi 22 août 2026 Garde soins Validée dimanche 23 août 2026 Garde hospitalisation Validée lundi 24 août 2026 Repos 48h Validée mardi 25 août 2026 Garde soins Validée mercredi 26 août 2026 Garde hospitalisation Validée jeudi 27 août 2026 Repos 48h Validée vendredi 28 août 2026 Garde soins Validée samedi 29 août 2026 Garde hospitalisation Validée dimanche 30 août 2026 Repos 48h Validée lundi 31 août 2026 Garde soins Validée",
        "kpis": [
         {
          "libelle": "Gardes",
@@ -4863,7 +5008,7 @@
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 0 0 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Hydrotubation Par occurrence 1 300 0 0",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 0 0 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Hydrotubation Par occurrence 1 300 0 0",
        "kpis": [],
        "tableaux": [
         {
@@ -4918,7 +5063,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:43 — 15/08/2026 present 07:40 — 14/08/2026 present 07:46 — 13/08/2026 present 07:58 — 12/08/2026 present 07:56 — 11/08/2026 retard 08:38 — 10/08/2026 present 07:59 — 09/08/2026 present 07:42 — 08/08/2026 present 07:41 — 07/08/2026 present 07:59 — 06/08/2026 present 07:53 — 05/08/2026 present 07:54 — 04/08/2026 present 07:52 — 03/08/2026 absent — — 02/08/2026 present 07:45 — Congés TYPE DU AU JOURS ÉTAT Congé annuel 13/12/2026 17/12/2026 4 En attente",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:43 — 15/08/2026 present 07:40 — 14/08/2026 present 07:46 — 13/08/2026 present 07:58 — 12/08/2026 present 07:56 — 11/08/2026 retard 08:38 — 10/08/2026 present 07:59 — 09/08/2026 present 07:42 — 08/08/2026 present 07:41 — 07/08/2026 present 07:59 — 06/08/2026 present 07:53 — 05/08/2026 present 07:54 — 04/08/2026 present 07:52 — 03/08/2026 absent — — 02/08/2026 present 07:45 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé annuel 13/12/2026 17/12/2026 4 En attente",
        "kpis": [],
        "tableaux": [
         {
@@ -5043,7 +5188,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 6 % TAKI Alimatou",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 6 % TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -5068,7 +5213,7 @@
        ]
       },
       "Assurances": {
-       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "GY GARBA Yahouza Surveillant Matricule 10 — Soins infirmiers — catégorie E2-2 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -5081,6 +5226,7 @@
      "bandeau": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -5089,13 +5235,21 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 18 Nom et prénoms BADO BANI A. B. Zoulehath Sexe Féminin Fonction Sage-femme Poste Sage-femme Service Maternité Catégorie / échelon E1-3 Date d’embauche 13/12/2024 Ancienneté 1 an(s) 8 mois Numéro CNSS 219375015 Téléphone 0391084490 Situation matrimoniale Veuf(ve) Salaire de base 105 000 FCFA",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 18 Nom et prénoms BADO BANI A. B. Zoulehath Sexe Féminin Fonction Sage-femme Poste Sage-femme Service Maternité Catégorie / échelon E1-3 Date d’embauche 13/12/2024 Ancienneté 1 an(s) 8 mois Numéro CNSS 219375015 Téléphone 0391084490 Situation matrimoniale Veuf(ve) Salaire de base 105 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 15 Permanences 0 DATE VACATION STATUT samedi 1 août 2026 Repos 24h Validée dimanche 2 août 2026 Garde 24h Validée lundi 3 août 2026 Repos 24h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Repos 24h Validée jeudi 6 août 2026 Garde 24h Validée vendredi 7 août 2026 Repos 24h Validée samedi 8 août 2026 Garde 24h Validée dimanche 9 août 2026 Repos 24h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Repos 24h Validée mercredi 12 août 2026 Garde 24h Validée jeudi 13 août 2026 Repos 24h Validée vendredi 14 août 2026 Garde 24h Validée samedi 15 août 2026 Repos 24h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Repos 24h Validée mardi 18 août 2026 Garde 24h Validée mercredi 19 août 2026 Repos 24h Validée jeudi 20 août 2026 Garde 24h Validée vendredi 21 août 2026 Repos 24h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 24h Validée lundi 24 août 2026 Garde 24h Validée mardi 25 août 2026 Repos 24h Validée mercredi 26 août 2026 Garde 24h Validée jeudi 27 août 2026 Repos 24h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Repos 24h Validée dimanche 30 août 2026 Garde 24h Validée lundi 31 août 2026 Repos 24h Validée",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 15 Permanences 0 Exporter DATE VACATION STATUT samedi 1 août 2026 Repos 24h Validée dimanche 2 août 2026 Garde 24h Validée lundi 3 août 2026 Repos 24h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Repos 24h Validée jeudi 6 août 2026 Garde 24h Validée vendredi 7 août 2026 Repos 24h Validée samedi 8 août 2026 Garde 24h Validée dimanche 9 août 2026 Repos 24h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Repos 24h Validée mercredi 12 août 2026 Garde 24h Validée jeudi 13 août 2026 Repos 24h Validée vendredi 14 août 2026 Garde 24h Validée samedi 15 août 2026 Repos 24h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Repos 24h Validée mardi 18 août 2026 Garde 24h Validée mercredi 19 août 2026 Repos 24h Validée jeudi 20 août 2026 Garde 24h Validée vendredi 21 août 2026 Repos 24h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 24h Validée lundi 24 août 2026 Garde 24h Validée mardi 25 août 2026 Repos 24h Validée mercredi 26 août 2026 Garde 24h Validée jeudi 27 août 2026 Repos 24h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Repos 24h Validée dimanche 30 août 2026 Garde 24h Validée lundi 31 août 2026 Repos 24h Validée",
        "kpis": [
         {
          "libelle": "Gardes",
@@ -5277,7 +5431,7 @@
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 15 22 500 Aide bloc Par occurrence 500 0 0 Accouchement Par occurrence 1 000 0 0 Circoncision Par occurrence 1 000 0 0",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 800 0 0 Garde Par occurrence 1 500 15 22 500 Aide bloc Par occurrence 500 0 0 Accouchement Par occurrence 1 000 0 0 Circoncision Par occurrence 1 000 0 0",
        "kpis": [],
        "tableaux": [
         {
@@ -5332,7 +5486,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 present 07:56 — 12/08/2026 present 07:58 — 11/08/2026 present 07:49 — 10/08/2026 present 07:42 — 09/08/2026 present 07:44 — 08/08/2026 present 07:50 — 07/08/2026 present 07:43 — 06/08/2026 absent — — 05/08/2026 present 07:44 — 04/08/2026 present 07:59 — 03/08/2026 present 07:40 — 02/08/2026 present 07:57 — Congés TYPE DU AU JOURS ÉTAT Congé annuel 08/08/2026 14/08/2026 6 refuse",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 present 07:56 — 12/08/2026 present 07:58 — 11/08/2026 present 07:49 — 10/08/2026 present 07:42 — 09/08/2026 present 07:44 — 08/08/2026 present 07:50 — 07/08/2026 present 07:43 — 06/08/2026 absent — — 05/08/2026 present 07:44 — 04/08/2026 present 07:59 — 03/08/2026 present 07:40 — 02/08/2026 present 07:57 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé annuel 08/08/2026 14/08/2026 6 refuse",
        "kpis": [],
        "tableaux": [
         {
@@ -5457,7 +5611,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 20 % TAKI Alimatou",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances 1 évaluation(s) ayant entraîné une retenue. La retenue découle du barème NS 131 ; elle se corrige en modifiant l’évaluation. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 20 % TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -5482,7 +5636,7 @@
        ]
       },
       "Assurances": {
-       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "BB BADO BANI A. B. Zoulehath Sage-femme Matricule 18 — Maternité — catégorie E1-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -5495,6 +5649,7 @@
      "bandeau": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -5503,13 +5658,21 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 29 Nom et prénoms DIEYABIDI Aïssatou Sexe Féminin Fonction Caissière Poste Caissière-Dispensatrice Service Pharmacie Catégorie / échelon E3-3 Date d’embauche 08/01/2023 Ancienneté 3 an(s) 7 mois Numéro CNSS 284124258 Téléphone 0157639274 Situation matrimoniale Marié(e) Salaire de base 90 000 FCFA",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 29 Nom et prénoms DIEYABIDI Aïssatou Sexe Féminin Fonction Caissière Poste Caissière-Dispensatrice Service Pharmacie Catégorie / échelon E3-3 Date d’embauche 08/01/2023 Ancienneté 3 an(s) 7 mois Numéro CNSS 284124258 Téléphone 0157639274 Situation matrimoniale Marié(e) Salaire de base 90 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 11 Permanences 8 DATE VACATION STATUT samedi 1 août 2026 Garde 24h Validée dimanche 2 août 2026 Repos 24h Validée lundi 3 août 2026 Repos 24h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Permanence Validée jeudi 6 août 2026 Repos 24h Validée vendredi 7 août 2026 Garde 24h Validée samedi 8 août 2026 Permanence Validée dimanche 9 août 2026 Repos 24h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Permanence Validée mercredi 12 août 2026 Repos 24h Validée jeudi 13 août 2026 Garde 24h Validée vendredi 14 août 2026 Permanence Validée samedi 15 août 2026 Repos 24h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Permanence Validée mardi 18 août 2026 Repos 24h Validée mercredi 19 août 2026 Garde 24h Validée jeudi 20 août 2026 Permanence Validée vendredi 21 août 2026 Repos 24h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 24h Validée lundi 24 août 2026 Repos 24h Validée mardi 25 août 2026 Garde 24h Validée mercredi 26 août 2026 Permanence Validée jeudi 27 août 2026 Repos 24h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Permanence Validée dimanche 30 août 2026 Repos 24h Validée lundi 31 août 2026 Garde 24h Validée",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 11 Permanences 8 Exporter DATE VACATION STATUT samedi 1 août 2026 Garde 24h Validée dimanche 2 août 2026 Repos 24h Validée lundi 3 août 2026 Repos 24h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Permanence Validée jeudi 6 août 2026 Repos 24h Validée vendredi 7 août 2026 Garde 24h Validée samedi 8 août 2026 Permanence Validée dimanche 9 août 2026 Repos 24h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Permanence Validée mercredi 12 août 2026 Repos 24h Validée jeudi 13 août 2026 Garde 24h Validée vendredi 14 août 2026 Permanence Validée samedi 15 août 2026 Repos 24h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Permanence Validée mardi 18 août 2026 Repos 24h Validée mercredi 19 août 2026 Garde 24h Validée jeudi 20 août 2026 Permanence Validée vendredi 21 août 2026 Repos 24h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 24h Validée lundi 24 août 2026 Repos 24h Validée mardi 25 août 2026 Garde 24h Validée mercredi 26 août 2026 Permanence Validée jeudi 27 août 2026 Repos 24h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Permanence Validée dimanche 30 août 2026 Repos 24h Validée lundi 31 août 2026 Garde 24h Validée",
        "kpis": [
         {
          "libelle": "Gardes",
@@ -5691,7 +5854,7 @@
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 8 4 800 Garde Par occurrence 900 11 9 900 Aide bloc Par occurrence 500 0 0 Caisse Forfait mensuel 10 000 1 10 000",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 8 4 800 Garde Par occurrence 900 11 9 900 Aide bloc Par occurrence 500 0 0 Caisse Forfait mensuel 10 000 1 10 000",
        "kpis": [],
        "tableaux": [
         {
@@ -5739,7 +5902,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:59 — 13/08/2026 present 07:58 — 12/08/2026 present 07:46 — 11/08/2026 present 07:47 — 10/08/2026 present 07:41 — 09/08/2026 present 07:52 — 08/08/2026 present 07:46 — 07/08/2026 present 07:51 — 06/08/2026 retard 08:52 — 05/08/2026 present 07:49 — 04/08/2026 absent — — 03/08/2026 present 07:43 — 02/08/2026 present 07:59 — Congés Aucun congé enregistré.",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:51 — 15/08/2026 present 07:45 — 14/08/2026 present 07:59 — 13/08/2026 present 07:58 — 12/08/2026 present 07:46 — 11/08/2026 present 07:47 — 10/08/2026 present 07:41 — 09/08/2026 present 07:52 — 08/08/2026 present 07:46 — 07/08/2026 present 07:51 — 06/08/2026 retard 08:52 — 05/08/2026 present 07:49 — 04/08/2026 absent — — 03/08/2026 present 07:43 — 02/08/2026 present 07:59 — Congés Aucun congé enregistré.",
        "kpis": [],
        "tableaux": [
         {
@@ -5846,13 +6009,13 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Assurances": {
-       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "DA DIEYABIDI Aïssatou Caissière-Dispensatrice Matricule 29 — Pharmacie — catégorie E3-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -5865,6 +6028,7 @@
      "bandeau": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -5873,13 +6037,21 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 21 Nom et prénoms TEPA Séraphine Sexe Féminin Fonction Aide-soignant(e) Poste Aide-soignante — Chef de service Service Soins infirmiers Catégorie / échelon E4-1 Date d’embauche 09/05/2025 Ancienneté 1 an(s) 3 mois Numéro CNSS 241138831 Téléphone 0635348379 Situation matrimoniale Veuf(ve) Salaire de base 65 000 FCFA",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 21 Nom et prénoms TEPA Séraphine Sexe Féminin Fonction Aide-soignant(e) Poste Aide-soignante — Chef de service Service Soins infirmiers Catégorie / échelon E4-1 Date d’embauche 09/05/2025 Ancienneté 1 an(s) 3 mois Numéro CNSS 241138831 Téléphone 0635348379 Situation matrimoniale Veuf(ve) Salaire de base 65 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 11 Permanences 0 DATE VACATION STATUT samedi 1 août 2026 Garde 24h Validée dimanche 2 août 2026 Repos 48h Validée lundi 3 août 2026 Repos 48h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Repos 48h Validée jeudi 6 août 2026 Repos 48h Validée vendredi 7 août 2026 Garde 24h Validée samedi 8 août 2026 Repos 48h Validée dimanche 9 août 2026 Repos 48h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Repos 48h Validée mercredi 12 août 2026 Repos 48h Validée jeudi 13 août 2026 Garde 24h Validée vendredi 14 août 2026 Repos 48h Validée samedi 15 août 2026 Repos 48h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Repos 48h Validée mardi 18 août 2026 Repos 48h Validée mercredi 19 août 2026 Garde 24h Validée jeudi 20 août 2026 Repos 48h Validée vendredi 21 août 2026 Repos 48h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 48h Validée lundi 24 août 2026 Repos 48h Validée mardi 25 août 2026 Garde 24h Validée mercredi 26 août 2026 Repos 48h Validée jeudi 27 août 2026 Repos 48h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Repos 48h Validée dimanche 30 août 2026 Repos 48h Validée lundi 31 août 2026 Garde 24h Validée",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Gardes 11 Permanences 0 Exporter DATE VACATION STATUT samedi 1 août 2026 Garde 24h Validée dimanche 2 août 2026 Repos 48h Validée lundi 3 août 2026 Repos 48h Validée mardi 4 août 2026 Garde 24h Validée mercredi 5 août 2026 Repos 48h Validée jeudi 6 août 2026 Repos 48h Validée vendredi 7 août 2026 Garde 24h Validée samedi 8 août 2026 Repos 48h Validée dimanche 9 août 2026 Repos 48h Validée lundi 10 août 2026 Garde 24h Validée mardi 11 août 2026 Repos 48h Validée mercredi 12 août 2026 Repos 48h Validée jeudi 13 août 2026 Garde 24h Validée vendredi 14 août 2026 Repos 48h Validée samedi 15 août 2026 Repos 48h Validée dimanche 16 août 2026 Garde 24h Validée lundi 17 août 2026 Repos 48h Validée mardi 18 août 2026 Repos 48h Validée mercredi 19 août 2026 Garde 24h Validée jeudi 20 août 2026 Repos 48h Validée vendredi 21 août 2026 Repos 48h Validée samedi 22 août 2026 Garde 24h Validée dimanche 23 août 2026 Repos 48h Validée lundi 24 août 2026 Repos 48h Validée mardi 25 août 2026 Garde 24h Validée mercredi 26 août 2026 Repos 48h Validée jeudi 27 août 2026 Repos 48h Validée vendredi 28 août 2026 Garde 24h Validée samedi 29 août 2026 Repos 48h Validée dimanche 30 août 2026 Repos 48h Validée lundi 31 août 2026 Garde 24h Validée",
        "kpis": [
         {
          "libelle": "Gardes",
@@ -6061,7 +6233,7 @@
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 0 0 Garde Par occurrence 900 11 9 900 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Incinération Forfait mensuel 5 000 1 5 000",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Grille issue de la note de service NS n° 132/07/DM/DA/CNT/2026, en vigueur depuis le 13/07/2026. Exporter PRIME MODE MONTANT UNITAIRE NOMBRE TOTAL DU MOIS Permanence Par occurrence 600 0 0 Garde Par occurrence 900 11 9 900 Aide bloc Par occurrence 500 0 0 Prime de bloc fixe Forfait mensuel 10 000 1 10 000 Incinération Forfait mensuel 5 000 1 5 000",
        "kpis": [],
        "tableaux": [
         {
@@ -6116,7 +6288,7 @@
        ]
       },
       "Présences & congés": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:49 — 15/08/2026 present 07:46 — 14/08/2026 present 07:40 — 13/08/2026 present 07:54 — 12/08/2026 present 07:42 — 11/08/2026 present 07:54 — 10/08/2026 present 07:47 — 09/08/2026 absent — — 08/08/2026 present 07:43 — 07/08/2026 present 07:50 — 06/08/2026 present 07:44 — 05/08/2026 present 07:48 — 04/08/2026 retard 08:27 — 03/08/2026 retard 08:35 — 02/08/2026 present 07:54 — Congés TYPE DU AU JOURS ÉTAT Congé annuel 26/12/2026 03/01/2027 8 refuse",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:49 — 15/08/2026 present 07:46 — 14/08/2026 present 07:40 — 13/08/2026 present 07:54 — 12/08/2026 present 07:42 — 11/08/2026 present 07:54 — 10/08/2026 present 07:47 — 09/08/2026 absent — — 08/08/2026 present 07:43 — 07/08/2026 present 07:50 — 06/08/2026 present 07:44 — 05/08/2026 present 07:48 — 04/08/2026 retard 08:27 — 03/08/2026 retard 08:35 — 02/08/2026 present 07:54 — Congés Exporter TYPE DU AU JOURS ÉTAT Congé annuel 26/12/2026 03/01/2027 8 refuse",
        "kpis": [],
        "tableaux": [
         {
@@ -6241,7 +6413,7 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune retenue sur la période — évaluations conformes au barème NS 131. PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 Aucune TAKI Alimatou",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune retenue sur la période — évaluations conformes au barème NS 131. Exporter PÉRIODE NOTE RETENUE ÉVALUATEUR Septembre 2026 — / 20 Aucune TAKI Alimatou",
        "kpis": [],
        "tableaux": [
         {
@@ -6266,7 +6438,7 @@
        ]
       },
       "Assurances": {
-       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "TS TEPA Séraphine Aide-soignante — Chef de service Matricule 21 — Soins infirmiers — catégorie E4-1 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -6279,6 +6451,7 @@
      "bandeau": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3",
      "onglets": [
       "Informations",
+      "Planning personnalisé",
       "Planning du mois",
       "Primes (NS 132)",
       "Présences & congés",
@@ -6287,25 +6460,33 @@
      ],
      "parOnglet": {
       "Informations": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 44 Nom et prénoms TCHANE Nourou Sexe Masculin Fonction Chauffeur coursier Poste Chauffeur Coursier Service Direction Catégorie / échelon E4-3 Date d’embauche 07/07/2023 Ancienneté 3 an(s) 1 mois Numéro CNSS 284074041 Téléphone 0419950231 Situation matrimoniale Marié(e) Salaire de base 60 000 FCFA",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Matricule 44 Nom et prénoms TCHANE Nourou Sexe Masculin Fonction Chauffeur coursier Poste Chauffeur Coursier Service Direction Catégorie / échelon E4-3 Date d’embauche 07/07/2023 Ancienneté 3 an(s) 1 mois Numéro CNSS 284074041 Téléphone 0419950231 Situation matrimoniale Marié(e) Salaire de base 60 000 FCFA",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
+      "Planning personnalisé": {
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé. Définir une version Aucun planning personnalisé : cet agent suit la grille de son régime.",
+       "kpis": [],
+       "tableaux": [],
+       "notes": [
+        "Le planning personnalisé est un modèle (une semaine type ou un mois type). Il ne compte pour aucune prime : seules les vacations validées du planning comptent (RG-11). « Appliquer à une période » pose des vacations, jamais sur un jour occupé."
+       ]
+      },
       "Planning du mois": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune vacation programmée ce mois-ci.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Primes (NS 132)": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune prime prévue pour cette fonction par la note NS 132.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Présences & congés": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:45 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 retard 08:35 — 12/08/2026 present 07:53 — 11/08/2026 present 07:43 — 10/08/2026 retard 08:48 — 09/08/2026 present 07:42 — 08/08/2026 present 07:53 — 07/08/2026 present 07:59 — 06/08/2026 present 07:47 — 05/08/2026 present 07:48 — 04/08/2026 present 07:54 — 03/08/2026 present 07:40 — 02/08/2026 present 07:43 — Congés Aucun congé enregistré.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Présences et absences Exporter DATE ÉTAT ARRIVÉE OBSERVATION 16/08/2026 present 07:45 — 15/08/2026 present 07:45 — 14/08/2026 present 07:46 — 13/08/2026 retard 08:35 — 12/08/2026 present 07:53 — 11/08/2026 present 07:43 — 10/08/2026 retard 08:48 — 09/08/2026 present 07:42 — 08/08/2026 present 07:53 — 07/08/2026 present 07:59 — 06/08/2026 present 07:47 — 05/08/2026 present 07:48 — 04/08/2026 present 07:54 — 03/08/2026 present 07:40 — 02/08/2026 present 07:43 — Congés Aucun congé enregistré.",
        "kpis": [],
        "tableaux": [
         {
@@ -6412,13 +6593,13 @@
        "notes": []
       },
       "Évaluations & sanctions": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Aucune évaluation NS 131 enregistrée.",
        "kpis": [],
        "tableaux": [],
        "notes": []
       },
       "Assurances": {
-       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
+       "texte": "TN TCHANE Nourou Chauffeur Coursier Matricule 44 — Direction — catégorie E4-3 Informations Planning personnalisé Planning du mois Primes (NS 132) Présences & congés Évaluations & sanctions Assurances Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique. Colonnes Exporter Nouveau Aucune couverture enregistrée pour cet agent. Aucun enregistrement",
        "kpis": [],
        "tableaux": [],
        "notes": [
@@ -6434,6 +6615,7 @@
     "boutons": [
      "BASSONGUI Chabi Séko",
      "Informations",
+     "Planning personnalisé",
      "Planning du mois",
      "Primes (NS 132)",
      "Présences & congés",
@@ -6456,13 +6638,13 @@
     "Couvertures de l’agent — dossier RH. Elles ne figurent pas dans les recettes de la clinique."
    ],
    "boutons": [
-    "Primes (NS 132)",
-    "Présences & congés",
-    "Évaluations & sanctions",
     "Assurances",
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Cocher les 0 ligne filtrée",
+    "Exporter la sélection",
+    "Imprimer la sélection",
     "Tout désélectionner"
    ]
   },
@@ -6531,7 +6713,7 @@
      ]
     ],
     "fiche": {
-     "id": "ASSxmvuswn40cssri",
+     "id": "ASSxmvuswn401wgy0",
      "statut": "actif",
      "type": "CNSS — régime général",
      "organisme": "CNSS Bénin",
@@ -6658,7 +6840,9 @@
     }
    ],
    "notes": [],
-   "boutons": []
+   "boutons": [
+    "Exporter"
+   ]
   },
   "graphes": [
    {
@@ -6746,7 +6930,7 @@
    "Répartition par service",
    "Masse salariale par service",
    "Planning du jour",
-   "Règles métier en vigueur RÉFÉRENCE OBJET VERSION DATE D’EFFET STATUT SIGNATAIRE NS 131/07/DM/DA/CNT/2026 Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale v1 13/07/2026 ACTIVE BASSONGUI C. Séko Y., Directeur Médical NS n° 132/07/DM/DA/CNT/2026 Primes diverses v1 13/07/2026 ACTIVE BASSONGUI Chabi Séko, Directeur Médical"
+   "Règles métier en vigueur Exporter RÉFÉRENCE OBJET VERSION DATE D’EFFET STATUT SIGNATAIRE NS 131/07/DM/DA/CNT/2026 Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale v1 13/07/2026 ACTIVE BASSONGUI C. Séko Y., Directeur Médical NS n° 132/07/DM/DA/CNT/2026 Primes diverses v1 13/07/2026 ACTIVE BASSONGUI Chabi Séko, Directeur Médical"
   ]
  },
  "contrats": {
@@ -6984,15 +7168,15 @@
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Cocher les 44 lignes filtrées",
+    "Exporter la sélection",
     "Imprimer la sélection",
     "Archiver",
     "Tout désélectionner",
     "Consulter",
     "Imprimer l’état",
     "Modifier",
-    "Archiver",
-    "Consulter",
-    "Imprimer l’état"
+    "Archiver"
    ]
   },
   "lignes": [
@@ -7640,7 +7824,7 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn400niof",
+     "id": "CONxmvuswn40r37u1",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "CDD",
@@ -7714,7 +7898,7 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn400niof",
+     "id": "CONxmvuswn40r37u1",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "CDI",
@@ -7734,7 +7918,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "CONxmvuswn400niof",
+    "id": "CONxmvuswn40r37u1",
     "statut": "archive",
     "employeId": "EMP10",
     "nature": "CDI",
@@ -8022,14 +8206,14 @@
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Cocher les 22 lignes filtrées",
+    "Exporter la sélection",
     "Imprimer la sélection",
     "Archiver",
     "Tout désélectionner",
     "Consulter",
     "Imprimer l’état",
-    "Modifier",
-    "Archiver",
-    "Consulter"
+    "Modifier"
    ]
   },
   "graphes": [
@@ -8946,7 +9130,7 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn40wv03d",
+     "id": "CONxmvuswn40jikhz",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "Congé annuel",
@@ -9024,7 +9208,7 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn40wv03d",
+     "id": "CONxmvuswn40jikhz",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "Congé annuel",
@@ -9062,7 +9246,7 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn40wv03d",
+     "id": "CONxmvuswn40jikhz",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "Congé annuel",
@@ -9143,7 +9327,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "CONxmvuswn40wv03d",
+    "id": "CONxmvuswn40jikhz",
     "statut": "archive",
     "employeId": "EMP10",
     "nature": "Congé annuel",
@@ -9397,20 +9581,21 @@
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Cocher les 14 lignes filtrées",
+    "Exporter la sélection",
+    "Imprimer la sélection",
     "Tout désélectionner",
     "Valider cet ordre de mission",
     "Refuser cet ordre de mission",
     "Imprimer l’ordre",
     "Modifier",
     "Archiver",
-    "Avis du chef de service",
-    "Valider cet ordre de mission",
-    "Refuser cet ordre de mission",
-    "Imprimer l’ordre"
+    "Avis du chef de service"
    ]
   },
   "lignes": [
    [
+    "",
     "OM-2026-0009",
     "Atelier de gestion des déchets biomédicaux Formation · Porto-Novo",
     "OURTCHA Bertine Infirmier(ère)",
@@ -9421,6 +9606,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0004",
     "Formation en hygiène hospitalière Formation · Parakou",
     "NKOUÉ Jean Infirmier",
@@ -9431,6 +9617,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0013",
     "Négociation de convention avec un assureur Mission · Kandi",
     "TCHANE Sylvie Dispensatrice",
@@ -9441,6 +9628,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0012",
     "Retrait de commande pharmaceutique Mission · Parakou",
     "KINNOU A. Ganiou Biologiste médical — Chef de service",
@@ -9451,6 +9639,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0002",
     "Retrait de commande pharmaceutique Mission · Kandi",
     "BAKO Chantal Agent d’Entretien",
@@ -9461,6 +9650,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0008",
     "Recyclage en soins obstétricaux d’urgence Formation · Djougou",
     "BASSONGUI Chabi Séko Directeur Médical",
@@ -9471,6 +9661,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0005",
     "Représentation à la réunion départementale Mission · Porto-Novo",
     "TCHANE Nourou Chauffeur Coursier",
@@ -9481,6 +9672,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0007",
     "Formation au logiciel SIGH-CNT Formation · Porto-Novo",
     "KINNOU A. Ganiou Biologiste médical — Chef de service",
@@ -9491,6 +9683,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0001",
     "Recyclage en soins obstétricaux d’urgence Formation · Kandi",
     "ADAM Alimatou Dispensatrice",
@@ -9501,6 +9694,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0006",
     "Retrait de commande pharmaceutique Mission · Parakou",
     "OROU YO Edmond Secrétaire Médical — Chef de service",
@@ -9511,6 +9705,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0011",
     "Atelier de gestion des déchets biomédicaux Formation · Cotonou",
     "OROU YO Bertine Agent d’Entretien",
@@ -9521,6 +9716,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0003",
     "Recyclage en soins obstétricaux d’urgence Formation · Kandi",
     "BOUKARI Nadège Sage-femme",
@@ -9531,6 +9727,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0014",
     "Recyclage en soins obstétricaux d’urgence Formation · Kandi",
     "OROU YO Edmond Secrétaire Médical — Chef de service",
@@ -9541,6 +9738,7 @@
     ""
    ],
    [
+    "",
     "OM-2026-0010",
     "Retrait de commande pharmaceutique Mission · Parakou",
     "OURTCHA Bertine Infirmier(ère)",
@@ -10039,16 +10237,16 @@
      "Colonnes",
      "Exporter",
      "Nouveau",
+     "Cocher les 14 lignes filtrées",
+     "Exporter la sélection",
+     "Imprimer la sélection",
      "Tout désélectionner",
      "Valider cet ordre de mission",
      "Refuser cet ordre de mission",
      "Imprimer l’ordre",
      "Modifier",
      "Archiver",
-     "Marquer terminée",
-     "Reporter",
-     "Imprimer l’ordre",
-     "Modifier"
+     "Marquer terminée"
     ]
    }
   },
@@ -10446,7 +10644,7 @@
      ]
     ],
     "fiche": {
-     "id": "OMxmvuswn40ruhm0",
+     "id": "OMxmvuswn403qspg",
      "statut": "actif",
      "libelle": "Formation en gestion de stock",
      "nature": "Mission",
@@ -10517,7 +10715,7 @@
      ]
     ],
     "fiche": {
-     "id": "OMxmvuswn40ruhm0",
+     "id": "OMxmvuswn403qspg",
      "statut": "actif",
      "libelle": "Formation en gestion de stock",
      "nature": "Mission",
@@ -10542,7 +10740,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "OMxmvuswn40ruhm0",
+    "id": "OMxmvuswn403qspg",
     "statut": "archive",
     "libelle": "Formation en gestion de stock",
     "nature": "Mission",
@@ -10818,15 +11016,15 @@
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Importer les données",
+    "Cocher les 14 lignes filtrées",
+    "Exporter la sélection",
     "Imprimer la sélection",
     "Archiver",
     "Tout désélectionner",
     "Consulter",
     "Imprimer l’état",
-    "Modifier",
-    "Archiver",
-    "Consulter",
-    "Imprimer l’état"
+    "Modifier"
    ]
   },
   "graphes": [
@@ -10887,7 +11085,7 @@
    }
   ],
   "cartes": [
-   "Spécialité Circoncision Hydrotubation Accouchement Analyses spécialisées Chirurgie Échographie Anesthésie Colonnes Exporter Nouveau N° PRESTATAIRE SPÉCIALITÉ / ACTE TÉLÉPHONE TARIF PAR ACTE ACTES RÉALISÉS MONTANT DÛ IFU FACTURE NORMALISÉE ACTIONS PE-0003 Dr BANI Colette Circoncision 0344101080 25 000 19 475 000 Non renseigné Fournie PE-0014 Dr BANI Colette Anesthésie 0920974151 23 000 4 92 000 Non renseigné Manquante PE-0010 Dr BANI Salifou Échographie 0520962191 10 000 6 60 000 3250972993827 Fournie PE-0008 Dr DAOUDA Idrissou Échographie 0454241512 23 000 20 460 000 Non renseigné Fournie PE-0002 Dr KORA Colette Circoncision 0414675925 29 000 23 667 000 Non renseigné Fournie PE-0013 Dr KORA Salifou Circoncision 0287344907 26 000 5 130 000 3254392746913 Fournie PE-0001 Dr PARAISO Moussa Anesthésie 0594495756 26 000 19 494 000 3298117669753 Fournie PE-0006 Dr SANNI Salifou Hydrotubation 0963817129 56 000 3 168 000 Non renseigné Fournie PE-0012 M. DAOUDA Idrissou Anesthésie 0469771604 20 000 13 260 000 Non renseigné Manquante PE-0005 M. ZIME Salifou Chirurgie 0738498070 23 000 21 483 000 3298231095679 Fournie PE-0011 Mme DAOUDA Salifou Accouchement 0151628472 20 000 5 100 000 3222287422839 Manquante PE-0007 Mme HOUNKPATIN Idrissou Échographie 0870186728 14 000 23 322 000 Non renseigné Fournie PE-0009 Mme KORA Colette Accouchement 0348203703 24 000 20 480 000 Non renseigné Fournie PE-0004 Mme SANNI Colette Échographie 0857878086 13 000 3 39 000 3239185185185 Manquante Affichage de 1 à 14 sur 14 enregistrements",
+   "Spécialité Circoncision Hydrotubation Accouchement Analyses spécialisées Chirurgie Échographie Anesthésie Colonnes Exporter Nouveau Importer les données N° PRESTATAIRE SPÉCIALITÉ / ACTE TÉLÉPHONE TARIF PAR ACTE ACTES RÉALISÉS MONTANT DÛ IFU FACTURE NORMALISÉE ACTIONS PE-0003 Dr BANI Colette Circoncision 0344101080 25 000 19 475 000 Non renseigné Fournie PE-0014 Dr BANI Colette Anesthésie 0920974151 23 000 4 92 000 Non renseigné Manquante PE-0010 Dr BANI Salifou Échographie 0520962191 10 000 6 60 000 3250972993827 Fournie PE-0008 Dr DAOUDA Idrissou Échographie 0454241512 23 000 20 460 000 Non renseigné Fournie PE-0002 Dr KORA Colette Circoncision 0414675925 29 000 23 667 000 Non renseigné Fournie PE-0013 Dr KORA Salifou Circoncision 0287344907 26 000 5 130 000 3254392746913 Fournie PE-0001 Dr PARAISO Moussa Anesthésie 0594495756 26 000 19 494 000 3298117669753 Fournie PE-0006 Dr SANNI Salifou Hydrotubation 0963817129 56 000 3 168 000 Non renseigné Fournie PE-0012 M. DAOUDA Idrissou Anesthésie 0469771604 20 000 13 260 000 Non renseigné Manquante PE-0005 M. ZIME Salifou Chirurgie 0738498070 23 000 21 483 000 3298231095679 Fournie PE-0011 Mme DAOUDA Salifou Accouchement 0151628472 20 000 5 100 000 3222287422839 Manquante PE-0007 Mme HOUNKPATIN Idrissou Échographie 0870186728 14 000 23 322 000 Non renseigné Fournie PE-0009 Mme KORA Colette Accouchement 0348203703 24 000 20 480 000 Non renseigné Fournie PE-0004 Mme SANNI Colette Échographie 0857878086 13 000 3 39 000 3239185185185 Manquante Affichage de 1 à 14 sur 14 enregistrements",
    "Montant dû par spécialité",
    "Actes réalisés par spécialité",
    "Facture normalisée",
@@ -11303,7 +11501,7 @@
      ]
     ],
     "fiche": {
-     "id": "PRExmvuswn40jl79x",
+     "id": "PRExmvuswn40e0cbx",
      "statut": "actif",
      "nom": "Dr ZOUMAROU Ali",
      "specialite": "Échographie",
@@ -11374,7 +11572,7 @@
      ]
     ],
     "fiche": {
-     "id": "PRExmvuswn40jl79x",
+     "id": "PRExmvuswn40e0cbx",
      "statut": "actif",
      "nom": "Dr ZOUMAROU Ali",
      "specialite": "Échographie",
@@ -11389,7 +11587,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "PRExmvuswn40jl79x",
+    "id": "PRExmvuswn40e0cbx",
     "statut": "archive",
     "nom": "Dr ZOUMAROU Ali",
     "specialite": "Échographie",

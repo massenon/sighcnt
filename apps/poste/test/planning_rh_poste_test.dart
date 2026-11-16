@@ -13,12 +13,13 @@ Magasin _magasin() {
     'utilisateurs': <M>[],
     'audit': <M>[],
     'personnel': <M>[
-      {'id': 'A', 'statut': 'actif', 'nomComplet': 'Dr Aaa', 'matricule': 'M1', 'fonction': 'medecin', 'service': 'Médecine générale'},
+      {'id': 'A', 'statut': 'actif', 'nomComplet': 'Dr Aaa', 'matricule': 'M1', 'fonction': 'medecin', 'service': 'Médecine générale', 'salaireBase': 120000, 'categorie': 'E3-1', 'cnss': '2123456', 'valeursAttente': {'salaireBase': true, 'categorie': true, 'cnss': true}},
       {'id': 'B', 'statut': 'actif', 'nomComplet': 'Dr Bbb', 'matricule': 'M2', 'fonction': 'medecin', 'service': 'Médecine générale'},
     ],
     'regimesTravail': <M>[],
     'regimesIndividuels': <M>[],
     'planning': <M>[],
+    'planningsPersonnalises': <M>[],
     'presences': <M>[
       {'id': 'PR1', 'statut': 'actif', 'employeId': 'B', 'date': '2026-11-09', 'etat': 'retard', 'validationEtat': 'a_valider', 'etapesFaites': <M>[]},
     ],
@@ -32,9 +33,78 @@ Magasin _magasin() {
 }
 
 PlanningRhPoste _p(Magasin m, {String role = 'surveillant', String nom = 'Surveillant de test', String jour = '2026-11-09'}) =>
-    PlanningRhPoste(m, auteur: () => nom, role: role, horloge: () => DateTime.parse(jour));
+    PlanningRhPoste(m, auteur: () => nom, role: role, droitGeste: (g) => const {'admin', 'da'}.contains(role), horloge: () => DateTime.parse(jour));
 
 void main() {
+  group('lot PLAN-INDIV : régime individuel en deux modes, planning personnalisé, valeurs d\'attente (branchement au magasin du poste)', () {
+    test('le mode « remplace » exige vacations et repos (refus nommés), s\'écrit comme version figée, et le régime résolu n\'hérite de rien', () {
+      final m = _magasin();
+      final da = _p(m, role: 'da', nom: 'DAF');
+      expect(da.deroger(employeId: 'A', dateEffet: '2026-11-09', champs: {'repos': 'repos24'}, motif: 'S', mode: 'remplace')['code'], 'REMPLACEMENT_INCOMPLET');
+      expect(da.deroger(employeId: 'A', dateEffet: '2026-11-09', champs: {'repos': 'repos24'}, motif: 'S', mode: 'fusionne')['code'], 'MODE_INCONNU');
+      expect(m.collection('regimesIndividuels').actives, isEmpty);
+      final r = da.deroger(employeId: 'A', dateEffet: '2026-11-09', champs: {'vacations': ['permanence'], 'repos': 'repos24'}, motif: 'S', mode: 'remplace');
+      expect(r['ok'], isTrue);
+      final a = m.collection('personnel').actives.firstWhere((e) => e['id'] == 'A');
+      final reg = da.regimeALaDate(a, '2026-11-09');
+      expect([reg.mode, reg.vacations, reg.repos, reg.cycle, reg.honoraire], ['remplace', ['permanence'], 'repos24', null, null]);
+      expect(da.historique('A').single['mode'], 'remplace');
+      expect(() => m.collection('regimesIndividuels').mettreAJour(r['id'], {'motif': 'réécrit'}), throwsA(isA<EcritureRefusee>()));
+    });
+
+    test('sans le geste réservé, aucune des trois commandes n\'aboutit (le moteur refuse, quel que soit le rôle nommé)', () {
+      final m = _magasin();
+      final sans = PlanningRhPoste(m, auteur: () => 'x', role: 'admin', droitGeste: (g) => false, horloge: () => DateTime.parse('2026-11-09'));
+      expect(sans.deroger(employeId: 'A', dateEffet: '2026-11-09', champs: {'repos': 'repos24'}, motif: 'S')['code'], 'DEROGATION_RESERVEE');
+      expect(sans.definirPlanningPerso(employeId: 'A', periodicite: 'hebdomadaire', dateEffet: '2026-11-09', motif: 'S', jours: [{'jour': 1, 'type': 'garde'}])['code'], 'PLANNING_PERSO_RESERVE');
+      expect(sans.confirmerValeurAttente(employeId: 'A', champ: 'salaireBase', motif: 'S')['code'], 'CONFIRMATION_RESERVEE');
+    });
+
+    test('le planning personnalisé : contrôlé comme la grille, version figée, aperçu sans écriture, jour occupé jamais écrasé, application validée', () {
+      final m = _magasin();
+      final da = _p(m, role: 'da', nom: 'DAF');
+      expect(da.definirPlanningPerso(employeId: 'A', periodicite: 'hebdomadaire', dateEffet: '2026-11-09', motif: 'S', jours: [{'jour': 7, 'type': 'garde'}, {'jour': 1, 'type': 'garde'}])['code'],
+          'INCOMPATIBILITE_REPOS');
+      expect(da.definirPlanningPerso(employeId: 'A', periodicite: 'hebdomadaire', dateEffet: '2026-11-09', motif: 'S', jours: [{'jour': 2, 'type': 'permanence'}])['code'], 'TYPE_NON_PERMIS');
+      final r = da.definirPlanningPerso(employeId: 'A', periodicite: 'hebdomadaire', dateEffet: '2026-11-09', motif: 'S', jours: [{'jour': 4, 'type': 'garde'}, {'jour': 1, 'type': 'garde'}]);
+      expect(r['ok'], isTrue);
+      expect(da.historiquePlanningPerso('A').single['jours'], [{'jour': 1, 'type': 'garde'}, {'jour': 4, 'type': 'garde'}]);
+      expect(() => m.collection('planningsPersonnalises').mettreAJour(r['id'], {'motif': 'réécrit'}), throwsA(isA<EcritureRefusee>()));
+      expect(() => m.collection('planningsPersonnalises').archiver(r['id']), throwsA(isA<EcritureRefusee>()));
+      // un jour occupé (le lundi 09/11/2026) : conservé
+      final surv = _p(m);
+      expect(surv.poserVacation(employeId: 'A', date: '2026-11-09', type: 'conge')['ok'], isTrue);
+      final avant = m.collection('planning').actives.length;
+      final ap = surv.appliquerPlanningPerso(employeId: 'A', du: '2026-11-09', au: '2026-11-15');
+      expect([ap['ok'], ap['apercu'], ap['aPoser'], ap['occupes']], [true, true, 1, 1]);
+      expect(m.collection('planning').actives.length, avant, reason: 'l\'aperçu n\'écrit rien');
+      final fait = surv.appliquerPlanningPerso(employeId: 'A', du: '2026-11-09', au: '2026-11-15', ecrire: true);
+      expect(fait['poses'], 1);
+      final posee = m.collection('planning').actives.where((p) => p['origine'] == 'modele').single;
+      expect([posee['date'], posee['type'], posee['validationEtat']], ['2026-11-12', 'garde', 'validee']);
+      expect(m.collection('planning').actives.firstWhere((p) => p['date'] == '2026-11-09')['type'], 'conge');
+      // sans le droit de poser le planning : refus nommé
+      expect(_p(m, role: 'medecin').appliquerPlanningPerso(employeId: 'A', du: '2026-11-09', au: '2026-11-15')['code'], 'PLANNING_RESERVE');
+    });
+
+    test('valeurs d\'attente : « Confirmer » lève la seule mention du champ (motif, journal), une modification lève la sienne seule', () {
+      final m = _magasin();
+      final da = _p(m, role: 'da', nom: 'DAF');
+      expect(da.valeursAttente('A'), ['salaireBase', 'categorie', 'cnss']);
+      expect(da.confirmerValeurAttente(employeId: 'A', champ: 'salaireBase', motif: '  ')['code'], 'MOTIF_OBLIGATOIRE');
+      expect(da.confirmerValeurAttente(employeId: 'A', champ: 'telephone', motif: 'S')['code'], 'CHAMP_INCONNU');
+      expect(da.confirmerValeurAttente(employeId: 'A', champ: 'salaireBase', motif: 'Contrat du 02/04/2018')['ok'], isTrue);
+      expect(da.valeursAttente('A'), ['categorie', 'cnss']);
+      expect(da.confirmerValeurAttente(employeId: 'A', champ: 'salaireBase', motif: 'S')['code'], 'PAS_UNE_VALEUR_ATTENTE');
+      expect(m.collection('audit').toutes.where((l) => l['action'] == 'Valeur d’attente confirmée').length, 1);
+      final col = m.collection('personnel');
+      col.mettreAJour('A', {'cnss': '2123456', 'telephone': '0100000000'});
+      expect(da.valeursAttente('A'), ['categorie', 'cnss'], reason: 'écrire la CNSS à l\'identique ne lève rien');
+      col.mettreAJour('A', {'cnss': '999'});
+      expect(da.valeursAttente('A'), ['categorie']);
+    });
+  });
+
   test('les défauts de la Direction : surveillant seul, l\'agent ne modifie pas directement', () {
     final p = _p(_magasin());
     expect(p.circuit(), 'surveillant');

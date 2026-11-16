@@ -35,10 +35,22 @@ void main() {
       expect(identiteSyncGestion('couverturesAssurance', {'debut': '2026-11-01'}), isNull);
     });
 
+    test('lot PLAN-INDIV : un planning personnalisé a l\'identité de l\'agent et de la date d\'effet (le motif, le numéro de version et les jours n\'y entrent pas)', () {
+      final a = identiteSyncGestion('planningsPersonnalises', {'matricule': '1', 'employeId': 'EMP01', 'dateEffet': '2026-12-01', 'motif': 'x', 'version': 1});
+      final b = identiteSyncGestion('planningsPersonnalises', {'matricule': ' 1 ', 'employeId': 'EMPX', 'dateEffet': '2026-12-01T00:00:00.000', 'motif': 'autre', 'version': 2});
+      expect(a, isNotNull);
+      expect(a, startsWith('PPE-'));
+      expect(b, a);
+      expect(identiteSyncGestion('planningsPersonnalises', {'matricule': '1', 'dateEffet': '2026-12-02'}), isNot(a));
+      expect(identiteSyncGestion('planningsPersonnalises', {'matricule': '2', 'dateEffet': '2026-12-01'}), isNot(a));
+      expect(identiteSyncGestion('planningsPersonnalises', {'dateEffet': '2026-12-01'}), isNull, reason: 'agent absent : identité propre au poste');
+      expect(collectionsGestionJamaisMobile, contains('planningsPersonnalises'));
+    });
+
     test('une autre collection n\'a pas d\'identité par le contenu', () {
       expect(identiteSyncGestion('patients', {'code': 'CNT/1/26'}), isNull);
-      expect(collectionsGestionSynchronisees, {'budgets', 'immobilisations', 'couverturesAssurance'});
-      expect(collectionsGestionJamaisMobile, containsAll(collectionsGestionSynchronisees), reason: 'RG-13 : aucune des trois vers un téléphone');
+      expect(collectionsGestionSynchronisees, {'budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises'});
+      expect(collectionsGestionJamaisMobile, containsAll(collectionsGestionSynchronisees), reason: 'RG-13 : aucune des quatre vers un téléphone');
     });
   });
 

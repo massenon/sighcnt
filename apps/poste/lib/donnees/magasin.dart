@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:sigh_domaine/sigh_domaine.dart'
-    show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeBudgets, cpcGardeClotures, cpcGardeEcritures, gardePresenceValideeRh, gardeRegimeIndividuelRh, tarChampsPrixLecture, tarGardeLecture, tarGardeProduitRg02, tarGardeVersion;
+    show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeBudgets, cpcGardeClotures, cpcGardeEcritures, gardePlanningPersonnaliseRh, gardePresenceValideeRh, gardeRegimeIndividuelRh, leverValeursAttenteRh, tarChampsPrixLecture, tarGardeLecture, tarGardeProduitRg02, tarGardeVersion;
 
 import 'circuit_cloture_poste.dart';
 import 'persistance.dart';
@@ -49,6 +49,10 @@ class CollectionMagasin extends ChangeNotifier {
   final List<String? Function(String operation, Fiche fiche)> _gardes = [];
   void garder(String? Function(String operation, Fiche fiche) garde) =>
       _gardes.add(garde);
+
+  /// Un correctif posé SUR la collection avant toute modification (lot PLAN-INDIV, `S.avantModifier` de la maquette) : rend le patch à écrire, complété. La mention
+  /// « valeur d'attente » d'un champ du personnel tombe avec la modification de ce champ, d'où que vienne l'écriture. La réception d'une fiche de la mère ne passe pas par là.
+  Fiche Function(Fiche avant, Fiche patch)? avantModifier;
 
   void _controler(String operation, Fiche fiche) {
     for (final g in _gardes) {
@@ -144,6 +148,7 @@ class CollectionMagasin extends ChangeNotifier {
   VoidCallback mettreAJour(Object? id, Fiche patch, {bool journaliser = true}) {
     final f = parId(id);
     if (f == null) return () {};
+    if (avantModifier != null) patch = avantModifier!(f, patch);
     if (_gardes.isNotEmpty) _controler('modifier', {...f, ...patch});
     final avant = <String, Object?>{for (final k in patch.keys) k: f[k]};
     final existait = {for (final k in patch.keys) k: f.containsKey(k)};
@@ -500,6 +505,8 @@ class Magasin {
     'historiquePrimes': 'M10',
     'beneficiairesPrimes': 'M10',
     'regimesTravail': 'M10',
+    'regimesIndividuels': 'M10',
+    'planningsPersonnalises': 'M10',
     'baremeNS131': 'M10',
     'historiqueBareme': 'M10',
     'examensImagerie': 'M2',
@@ -604,6 +611,9 @@ class Magasin {
         // Lots L4 et L5 (planning individuel, circuit de validation) : une version de régime individuel est FIGÉE (elle explique des vacations déjà posées) et un
         // pointage validé ne se modifie pas directement, il se régularise. Tenus AU MOTEUR (`S.garder` de la maquette) : masquer un bouton ne protège rien.
         if (nom == 'regimesIndividuels') c.garder((op, f) => gardeRegimeIndividuelRh(op));
+        // Lot PLAN-INDIV : une version de planning personnalisé est figée comme une version de régime ; la mention « valeur d'attente » du personnel tombe avec le champ modifié.
+        if (nom == 'planningsPersonnalises') c.garder((op, f) => gardePlanningPersonnaliseRh(op));
+        if (nom == 'personnel') c.avantModifier = (avant, patch) => leverValeursAttenteRh(avant, patch) ?? patch;
         if (nom == 'presences') c.garder((op, f) => gardePresenceValideeRh(op, collection('presences').parId(f['id']), f));
         // Lot L0 : une version de paramètre ne se réécrit jamais (on en ajoute une, avec sa date d'effet) et un usage est un journal : seule l'insertion passe, tenue
         // AU MOTEUR (masquer un bouton ne protège rien). La réception d'une fiche de la mère (`appliquerDistante`) ne passe pas par les gardes.

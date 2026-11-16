@@ -13332,6 +13332,39 @@
     "defautSiEcritSur": null
    },
    {
+    "id": "regler_regime_individuel",
+    "libelle": "Régler le régime individuel d’un agent (déroge à sa catégorie ou la remplace)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "regler_planning_personnalise",
+    "libelle": "Définir le planning personnalisé d’un agent (hebdomadaire ou mensuel, versions datées)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "confirmer_valeur_attente_personnel",
+    "libelle": "Confirmer une valeur d’attente de la fiche du personnel (salaire, catégorie, date d’embauche, numéro CNSS)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
     "id": "exporter_donnees",
     "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
     "module": null,
@@ -13371,6 +13404,9 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
+    "regler_regime_individuel": 1,
+    "regler_planning_personnalise": 1,
+    "confirmer_valeur_attente_personnel": 1,
     "exporter_donnees": 1
    },
    "direction": {
@@ -13380,6 +13416,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 1,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "dm": {
@@ -13389,6 +13428,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "da": {
@@ -13398,6 +13440,9 @@
     "regler_circuit_cloture": 1,
     "decider_prix": 1,
     "regler_parametres_clinique": 1,
+    "regler_regime_individuel": 1,
+    "regler_planning_personnalise": 1,
+    "confirmer_valeur_attente_personnel": 1,
     "exporter_donnees": 1
    },
    "medecin": {
@@ -13407,6 +13452,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "infirmier": {
@@ -13416,6 +13464,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "pharmacien": {
@@ -13425,6 +13476,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 0
    },
    "laborantin": {
@@ -13434,6 +13488,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "stock": {
@@ -13443,6 +13500,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "caissier": {
@@ -13452,6 +13512,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "comptable": {
@@ -13461,6 +13524,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "rh": {
@@ -13470,6 +13536,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 0
    },
    "reception": {
@@ -13479,6 +13548,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "agentadmin": {
@@ -13488,6 +13560,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "ambulancier": {
@@ -13497,6 +13572,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "aide_soignant": {
@@ -13506,6 +13584,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "echographiste": {
@@ -13515,6 +13596,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "surveillant": {
@@ -13524,6 +13608,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "assistant_comptable": {
@@ -13533,6 +13620,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "chirurgien": {
@@ -13542,6 +13632,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "anesthesiste": {
@@ -13551,6 +13644,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    },
    "aide_comptable": {
@@ -13560,6 +13656,9 @@
     "regler_circuit_cloture": 0,
     "decider_prix": 0,
     "regler_parametres_clinique": 0,
+    "regler_regime_individuel": 0,
+    "regler_planning_personnalise": 0,
+    "confirmer_valeur_attente_personnel": 0,
     "exporter_donnees": 1
    }
   }

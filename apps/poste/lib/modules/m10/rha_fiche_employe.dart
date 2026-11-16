@@ -8,6 +8,7 @@ import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m13/adm_commun.dart';
 import '../m4/mat_commun.dart';
+import 'plan_indiv.dart';
 import 'rha_commun.dart';
 
 /// `ficheEmploye(e)` de la maquette : le bandeau de l'agent puis SIX onglets — informations, planning du mois, primes NS 132, présences & congés,
@@ -55,6 +56,7 @@ class FicheEmploye extends StatelessWidget {
       const SizedBox(height: 16),
       OngletsSigh(onglets: [
         OngletDef(id: 'infos', libelle: 'Informations', construire: (_) => _infos(e, auj)),
+        OngletDef(id: 'planning-perso', libelle: 'Planning personnalisé', construire: (_) => planOngletPlanningPerso(ctx, c, e)),
         OngletDef(id: 'planning', libelle: 'Planning du mois', construire: (_) => _planning(vac, gardes, permanences)),
         OngletDef(id: 'primes', libelle: 'Primes (NS 132)', construire: (_) => _primes(e, gardes, permanences)),
         OngletDef(id: 'presences', libelle: 'Présences & congés', construire: (_) => _presences(e)),
@@ -64,24 +66,31 @@ class FicheEmploye extends StatelessWidget {
     ]);
   }
 
-  Widget _infos(Fiche e, DateTime auj) => Padding(
-        padding: const EdgeInsets.only(top: 16),
-        child: DescListeSigh([
-          ('Matricule', '${e['matricule']}'),
-          ('Nom et prénoms', '${e['nomComplet']}'),
-          ('Sexe', e['sexe'] == 'F' ? 'Féminin' : 'Masculin'),
-          ('Fonction', rhaFonctionLabel(e['fonction'])),
-          ('Poste', e['poste'] as String?),
-          ('Service', e['service'] as String?),
-          ('Catégorie / échelon', e['categorie'] as String?),
-          ('Date d’embauche', rhaDateFR(e['dateEmbauche'])),
-          ('Ancienneté', rhaAncienneteLongue(e['dateEmbauche'], auj)),
-          ('Numéro CNSS', e['cnss'] as String?),
-          ('Téléphone', e['telephone'] as String?),
-          ('Situation matrimoniale', e['situation'] as String?),
-          ('Salaire de base', moneyOu(e['salaireBase'])),
-        ]),
-      );
+  /// Les quatre valeurs d'attente (catégorie, date d'embauche, CNSS, salaire) portent leur mention et, avec le geste réservé, « Confirmer » (lot PLAN-INDIV).
+  Widget _infos(Fiche agent0, DateTime auj) => ListenableBuilder(
+      listenable: c.magasin.collection('personnel'),
+      builder: (context, _) {
+        final e = c.magasin.collection('personnel').parId(agent0['id']) ?? agent0;
+        final absente = e['dateEmbauche'] == null || e['dateEmbauche'] == '';
+        return Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: DescListeSigh([
+            ('Matricule', '${e['matricule']}'),
+            ('Nom et prénoms', '${e['nomComplet']}'),
+            ('Sexe', e['sexe'] == 'F' ? 'Féminin' : 'Masculin'),
+            ('Fonction', rhaFonctionLabel(e['fonction'])),
+            ('Poste', e['poste'] as String?),
+            ('Service', e['service'] as String?),
+            ('Catégorie / échelon', planValeurAttente(ctx, c, e, 'categorie', e['categorie'] as String?)),
+            ('Date d’embauche', planValeurAttente(ctx, c, e, 'dateEmbauche', absente ? null : rhaDateFR(e['dateEmbauche']))),
+            ('Ancienneté', absente ? 'Non calculable (date d’embauche absente)' : rhaAncienneteLongue(e['dateEmbauche'], auj)),
+            ('Numéro CNSS', planValeurAttente(ctx, c, e, 'cnss', e['cnss'] as String?)),
+            ('Téléphone', e['telephone'] as String?),
+            ('Situation matrimoniale', e['situation'] as String?),
+            ('Salaire de base', planValeurAttente(ctx, c, e, 'salaireBase', moneyOu(e['salaireBase']))),
+          ]),
+        );
+      });
 
   Widget _planning(List<Fiche> vac, int gardes, int permanences) {
     if (vac.isEmpty) return const Padding(padding: EdgeInsets.only(top: 16), child: VideSigh('Aucune vacation programmée ce mois-ci.', icone: LucideIcons.calendar));

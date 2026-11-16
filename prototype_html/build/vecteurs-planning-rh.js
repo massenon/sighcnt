@@ -29,7 +29,7 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       Decalee.prototype = Reel.prototype; Decalee.now = maintenant; Decalee.UTC = Reel.UTC; Decalee.parse = Reel.parse;
       window.Date = Decalee;
 
-      const S = SIGH.store, R = SIGH.planningRh, C = SIGH.core;
+      const S = SIGH.store, R = SIGH.planningRh, C = SIGH.core, N = SIGH.nav;
       const propre = (x) => JSON.parse(JSON.stringify(x === undefined ? null : x));
       const sess0 = S.session();
       const seConnecter = (role, nom) => S.setSession(Object.assign({}, sess0, { role: role, nom: nom, nomComplet: nom }));
@@ -46,8 +46,9 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       raw.regimesIndividuels = [];
       raw.planning = raw.planning.filter((p) => agents.every((a) => a.id !== p.employeId));
       raw.propositionsPlanning = [];
+      raw.planningsPersonnalises = [];
       const AUJ = '2026-10-30';
-      const V = (employeId, dateEffet, champs, retour) => ({ id: 'RGI-' + employeId + '-' + dateEffet, statut: 'actif', employeId: employeId, dateEffet: dateEffet, champs: champs || {}, retourCategorie: retour === true, motif: 'vecteur', creePar: 'vecteur', creeLe: AUJ });
+      const V = (employeId, dateEffet, champs, retour, mode) => ({ id: 'RGI-' + employeId + '-' + dateEffet, statut: 'actif', employeId: employeId, dateEffet: dateEffet, champs: champs || {}, mode: mode || undefined, retourCategorie: retour === true, motif: 'vecteur', creePar: 'vecteur', creeLe: AUJ });
       const poserVersions = (versions) => { raw.regimesIndividuels = propre(versions); };
       const vac = (id, agent, date, type) => ({ id: id, statut: 'actif', employeId: agent.id, employe: agent.nomComplet, fonction: agent.fonction, service: agent.service, date: date, type: type });
       const poserPlanning = (liste) => { raw.planning = raw.planning.filter((p) => agents.every((a) => a.id !== p.employeId)).concat(propre(liste)); };
@@ -63,6 +64,11 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         { nom: 'vacations et cycle dérogés, honoraire de la catégorie conservé', agent: A, versions: [V(A.id, '2026-11-05', { vacations: ['garde', 'permanence'], cycle: 4, honorairePeriodicite: 'occurrence' })], date: '2026-11-06' },
         { nom: 'une version pose les champs dérogés, la suivante les REMPLACE (pas de cumul)', agent: A, versions: [V(A.id, '2026-11-05', { repos: 'repos24', honoraire: 20000 }), V(A.id, '2026-11-20', { cycle: 5 })], date: '2026-11-21' },
         { nom: 'les versions d’un autre agent ne comptent pas', agent: B, versions: [V(A.id, '2026-11-05', { repos: 'repos24' })], date: '2026-11-10' },
+        { nom: 'mode REMPLACE : rien n’est hérité (cycle et honoraire de la catégorie disparaissent)', agent: A, versions: [V(A.id, '2026-11-05', { vacations: ['garde', 'permanence'], repos: 'repos24' }, false, 'remplace')], date: '2026-11-06' },
+        { nom: 'mode REMPLACE avec cycle et honoraire propres', agent: A, versions: [V(A.id, '2026-11-05', { vacations: ['permanence'], repos: 'aucun', cycle: 6, honoraire: 15000, honorairePeriodicite: 'mensuelle' }, false, 'remplace')], date: '2026-11-06' },
+        { nom: 'mode REMPLACE pas encore en vigueur : la catégorie', agent: A, versions: [V(A.id, '2026-11-05', { vacations: ['permanence'], repos: 'repos24' }, false, 'remplace')], date: '2026-11-04' },
+        { nom: 'déroge puis remplace : la dernière version fait foi, sans cumul', agent: A, versions: [V(A.id, '2026-11-05', { honoraire: 20000 }), V(A.id, '2026-11-20', { vacations: ['garde'], repos: 'repos24' }, false, 'remplace')], date: '2026-11-21' },
+        { nom: 'remplace puis retour à la catégorie', agent: A, versions: [V(A.id, '2026-11-05', { vacations: ['garde'], repos: 'repos24' }, false, 'remplace'), V(A.id, '2026-12-01', {}, true)], date: '2026-12-02' },
         { nom: 'infirmier sans dérogation', agent: I, versions: [], date: '2026-11-10' },
         { nom: 'sage-femme sans dérogation (repos 24 h de la catégorie)', agent: F, versions: [], date: '2026-11-10' },
       ].map((c) => {
@@ -79,12 +85,12 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         seConnecter(o.role || 'admin', 'Vecteur ' + (o.role || 'admin'));
         poserVersions(o.versions || []);
         const n0 = raw.regimesIndividuels.length;
-        const r = R.deroger({ employeId: o.employeId || A.id, dateEffet: o.dateEffet, champs: o.champs, retourCategorie: o.retour === true, motif: o.motif });
-        const cas = { nom: o.nom, role: o.role || 'admin', versions: propre(o.versions || []), dateEffet: o.dateEffet === undefined ? null : o.dateEffet, champs: propre(o.champs || {}), retour: o.retour === true, motif: o.motif === undefined ? null : o.motif,
+        const r = R.deroger({ employeId: o.employeId || A.id, dateEffet: o.dateEffet, champs: o.champs, retourCategorie: o.retour === true, motif: o.motif, mode: o.mode });
+        const cas = { nom: o.nom, role: o.role || 'admin', droit: N.droitGeste(o.role || 'admin', 'regler_regime_individuel'), mode: o.mode === undefined ? null : o.mode, versions: propre(o.versions || []), dateEffet: o.dateEffet === undefined ? null : o.dateEffet, champs: propre(o.champs || {}), retour: o.retour === true, motif: o.motif === undefined ? null : o.motif,
           agentExiste: (o.employeId || A.id) === A.id };
         if (r.ok) {
           const f = raw.regimesIndividuels[0];
-          cas.attendu = { ok: true, champs: propre(f.champs), retourCategorie: f.retourCategorie, version: f.version };
+          cas.attendu = { ok: true, champs: propre(f.champs), retourCategorie: f.retourCategorie, version: f.version, mode: f.mode === undefined ? null : f.mode };
         } else {
           cas.attendu = { ok: false, code: r.code, motif: r.motif, geste: r.geste };
         }
@@ -99,6 +105,14 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         derog({ nom: 'rôle caissier', role: 'caissier', dateEffet: AUJ, champs: { repos: 'repos24' }, motif: 'Vecteur' }),
         derog({ nom: 'rôle surveillant', role: 'surveillant', dateEffet: AUJ, champs: { repos: 'repos24' }, motif: 'Vecteur' }),
         derog({ nom: 'rôle DAF', role: 'da', dateEffet: AUJ, champs: { repos: 'repos48' }, motif: 'Vecteur' }),
+        derog({ nom: 'mode REMPLACE complet : vacations et repos dits', mode: 'remplace', dateEffet: AUJ, champs: { vacations: ['garde'], repos: 'repos24', cycle: 4 }, motif: 'Vecteur' }),
+        derog({ nom: 'mode REMPLACE avec « aucun repos » (un choix)', mode: 'remplace', dateEffet: AUJ, champs: { vacations: ['permanence'], repos: 'aucun' }, motif: 'Vecteur' }),
+        derog({ nom: 'mode REMPLACE sans repos : incomplet', mode: 'remplace', dateEffet: AUJ, champs: { vacations: ['garde'] }, motif: 'Vecteur' }),
+        derog({ nom: 'mode REMPLACE sans vacations : incomplet', mode: 'remplace', dateEffet: AUJ, champs: { repos: 'repos24' }, motif: 'Vecteur' }),
+        derog({ nom: 'mode REMPLACE sans rien : incomplet (les deux manques nommés)', mode: 'remplace', dateEffet: AUJ, champs: { honoraire: 5000 }, motif: 'Vecteur' }),
+        derog({ nom: 'mode inconnu', mode: 'fusionne', dateEffet: AUJ, champs: { repos: 'repos24' }, motif: 'Vecteur' }),
+        derog({ nom: 'mode DEROGE explicite', mode: 'deroge', dateEffet: AUJ, champs: { repos: 'repos24' }, motif: 'Vecteur' }),
+        derog({ nom: 'mode REMPLACE par un rôle sans le droit', mode: 'remplace', role: 'surveillant', dateEffet: AUJ, champs: { vacations: ['garde'], repos: 'repos24' }, motif: 'Vecteur' }),
         derog({ nom: 'date illisible', dateEffet: '30/10/2026', champs: { repos: 'repos24' }, motif: 'Vecteur' }),
         derog({ nom: 'date absente', dateEffet: '', champs: { repos: 'repos24' }, motif: 'Vecteur' }),
         derog({ nom: 'motif absent', dateEffet: AUJ, champs: { repos: 'repos24' }, motif: '   ' }),
@@ -394,11 +408,155 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       ];
       S.setReglage('planningCircuitPresences', 'surveillant'); S.setReglage('planningAgentModifieDirectement', false);
 
+      /* ===== 4. LE PLANNING PERSONNALISÉ : définition (refus nommés), application à une période (aperçu), valeurs d'attente ======================================== */
+      const PV = (agent, dateEffet, periodicite, jours) => ({ id: 'PPE-' + agent.id + '-' + dateEffet, statut: 'actif', employeId: agent.id, employe: agent.nomComplet, periodicite: periodicite, dateEffet: dateEffet, jours: propre(jours), motif: 'vecteur', creePar: 'vecteur', creeLe: AUJ, version: 1 });
+      const J = (jour, type) => ({ jour: jour, type: type });
+      const perso = (o) => {
+        const role = o.role || 'admin', agent = o.agent || A;
+        seConnecter(role, 'Vecteur ' + role);
+        poserVersions(o.versions || []);
+        raw.planningsPersonnalises = propre(o.persoVersions || []);
+        const r = R.definirPlanningPerso({ employeId: agent.id, periodicite: o.periodicite, dateEffet: o.dateEffet, motif: o.motif, jours: o.jours });
+        const cas = { nom: o.nom, role: role, droit: N.droitGeste(role, 'regler_planning_personnalise'), agent: agent, versions: propre(o.versions || []), persoVersions: propre(o.persoVersions || []),
+          periodicite: o.periodicite === undefined ? null : o.periodicite, dateEffet: o.dateEffet === undefined ? null : o.dateEffet, motif: o.motif === undefined ? null : o.motif, jours: propre(o.jours === undefined ? null : o.jours) };
+        if (r.ok) { const f = raw.planningsPersonnalises[0]; cas.attendu = { ok: true, jours: propre(f.jours), version: f.version, periodicite: f.periodicite }; }
+        else cas.attendu = { ok: false, code: r.code, motif: r.motif, geste: r.geste };
+        raw.planningsPersonnalises = [];
+        return cas;
+      };
+      const casPersoDefinir = [
+        perso({ nom: 'hebdomadaire du médecin : garde le lundi et le jeudi', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(4, 'garde'), J(1, 'garde')] }),
+        perso({ nom: 'mensuel de la sage-femme : gardes espacées de 3 jours', agent: F, periodicite: 'mensuel', dateEffet: '2026-11-15', motif: 'Vecteur', jours: [J(1, 'garde'), J(4, 'garde'), J(10, 'conge')] }),
+        perso({ nom: 'dérogation de repos 24 h : gardes à J et J+2 permises', versions: [V(A.id, '2026-11-01', { repos: 'repos24' })], periodicite: 'hebdomadaire', dateEffet: '2026-11-10', motif: 'Vecteur', jours: [J(1, 'garde'), J(3, 'garde')] }),
+        perso({ nom: 'régime REMPLACÉ : la permanence devient permise au médecin', versions: [V(A.id, '2026-11-01', { vacations: ['permanence'], repos: 'repos24' }, false, 'remplace')], periodicite: 'hebdomadaire', dateEffet: '2026-11-10', motif: 'Vecteur', jours: [J(2, 'permanence')] }),
+        perso({ nom: 'rôle caissier', role: 'caissier', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde')] }),
+        perso({ nom: 'rôle surveillant (le droit n’est pas celui de poser le planning)', role: 'surveillant', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde')] }),
+        perso({ nom: 'rôle DAF', role: 'da', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde')] }),
+        perso({ nom: 'périodicité inconnue', periodicite: 'annuel', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde')] }),
+        perso({ nom: 'date illisible', periodicite: 'hebdomadaire', dateEffet: '30/10/2026', motif: 'Vecteur', jours: [J(1, 'garde')] }),
+        perso({ nom: 'motif absent', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: '  ', jours: [J(1, 'garde')] }),
+        perso({ nom: 'date passée', periodicite: 'hebdomadaire', dateEffet: '2026-10-29', motif: 'Vecteur', jours: [J(1, 'garde')] }),
+        perso({ nom: 'modèle vide', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [] }),
+        perso({ nom: 'jour 8 dans une semaine', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(8, 'garde')] }),
+        perso({ nom: 'jour 32 dans un mois', periodicite: 'mensuel', dateEffet: AUJ, motif: 'Vecteur', jours: [J(32, 'garde')] }),
+        perso({ nom: 'jour 0', periodicite: 'mensuel', dateEffet: AUJ, motif: 'Vecteur', jours: [J(0, 'garde')] }),
+        perso({ nom: 'jour donné deux fois', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde'), J(1, 'garde')] }),
+        perso({ nom: 'type inconnu', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'sieste')] }),
+        perso({ nom: 'type non permis par le régime (la permanence n’est pas au médecin)', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(2, 'permanence')] }),
+        perso({ nom: 'repos 48 h : gardes le lundi et le mercredi', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde'), J(3, 'garde')] }),
+        perso({ nom: 'repos 48 h : gardes à la suite', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde'), J(2, 'garde')] }),
+        perso({ nom: 'semaine lue en BOUCLE : garde le dimanche et le lundi', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(7, 'garde'), J(1, 'garde')] }),
+        perso({ nom: 'semaine lue en BOUCLE : garde le samedi et le lundi, repos 48 h entamé', periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(6, 'garde'), J(1, 'garde')] }),
+        perso({ nom: 'sage-femme, repos 24 h : garde le dimanche et le mardi, la boucle est respectée', agent: F, periodicite: 'hebdomadaire', dateEffet: AUJ, motif: 'Vecteur', jours: [J(7, 'garde'), J(2, 'garde')] }),
+        perso({ nom: 'mensuel : gardes les jours 1 et 2', periodicite: 'mensuel', dateEffet: AUJ, motif: 'Vecteur', jours: [J(1, 'garde'), J(2, 'garde')] }),
+        perso({ nom: 'mensuel : le 31 puis le 1er ne se heurtent pas (le mois n’est pas lu en boucle)', periodicite: 'mensuel', dateEffet: AUJ, motif: 'Vecteur', jours: [J(31, 'garde'), J(1, 'garde')] }),
+        perso({ nom: 'date déjà prise par une version', persoVersions: [PV(A, '2026-11-05', 'hebdomadaire', [J(1, 'garde')])], periodicite: 'hebdomadaire', dateEffet: '2026-11-05', motif: 'Vecteur', jours: [J(2, 'garde')] }),
+        perso({ nom: 'version insérée avant la plus récente', persoVersions: [PV(A, '2026-12-01', 'hebdomadaire', [J(1, 'garde')])], periodicite: 'hebdomadaire', dateEffet: '2026-11-10', motif: 'Vecteur', jours: [J(2, 'garde')] }),
+        perso({ nom: 'nouvelle version à une date postérieure', persoVersions: [PV(A, '2026-11-05', 'hebdomadaire', [J(1, 'garde')])], periodicite: 'mensuel', dateEffet: '2026-12-01', motif: 'Vecteur', jours: [J(2, 'garde')] }),
+      ];
+
+      const appli = (o) => {
+        const role = o.role || 'surveillant', agent = o.agent || A;
+        seConnecter(role, 'Vecteur ' + role);
+        poserVersions(o.versions || []);
+        raw.planningsPersonnalises = propre(o.persoVersions || []);
+        poserPlanning(o.planning || []);
+        const r = R.appliquerPlanningPerso({ employeId: agent.id, du: o.du, au: o.au });
+        const cas = { nom: o.nom, role: role, agent: agent, versions: propre(o.versions || []), persoVersions: propre(o.persoVersions || []), planning: propre(o.planning || []),
+          du: o.du === undefined ? null : o.du, au: o.au === undefined ? null : o.au };
+        cas.attendu = r.ok ? { ok: true, lignes: propre(r.lignes), aPoser: r.aPoser, occupes: r.occupes, refuses: r.refuses, libres: r.libres, sansModele: r.sansModele }
+          : { ok: false, code: r.code, motif: r.motif, geste: r.geste };
+        raw.planningsPersonnalises = [];
+        return cas;
+      };
+      const HEB = [PV(A, '2026-11-02', 'hebdomadaire', [J(1, 'garde'), J(4, 'garde')])];
+      const casPersoApplication = [
+        appli({ nom: 'une semaine du modèle hebdomadaire : deux gardes à poser', persoVersions: HEB, du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'jour occupé : conservé, jamais écrasé', persoVersions: HEB, planning: [vac('P1', A, '2026-11-05', 'permanence')], du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'jour occupé par une garde le même jour : conservé', persoVersions: HEB, planning: [vac('P1', A, '2026-11-02', 'garde')], du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'repos après une garde déjà posée : le jour est refusé, nommé', persoVersions: HEB, planning: [vac('P1', A, '2026-11-03', 'garde')], du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'période avant la date d’effet : rien à poser', persoVersions: [PV(A, '2026-11-09', 'hebdomadaire', [J(1, 'garde')])], du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'la période chevauche deux versions', persoVersions: [PV(A, '2026-11-02', 'hebdomadaire', [J(1, 'garde')]), Object.assign(PV(A, '2026-11-09', 'hebdomadaire', [J(2, 'garde')]), { id: 'PPE-V2' })], du: '2026-11-02', au: '2026-11-15' }),
+        appli({ nom: 'modèle mensuel sur un mois', persoVersions: [PV(A, '2026-11-02', 'mensuel', [J(3, 'garde'), J(10, 'garde'), J(11, 'garde'), J(20, 'conge')])], du: '2026-11-01', au: '2026-11-30' }),
+        appli({ nom: 'les gardes posées dans la période comptent dans le repos (modèle de gardes serrées sous dérogation)', versions: [V(A.id, '2026-11-01', { repos: 'repos24' })], persoVersions: [PV(A, '2026-11-02', 'hebdomadaire', [J(1, 'garde'), J(2, 'garde')])], du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'les vacations d’un autre agent ne comptent pas', persoVersions: HEB, planning: [vac('P1', B, '2026-11-02', 'garde')], du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'rôle médecin : planning réservé', role: 'medecin', persoVersions: HEB, du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'rôle DAF', role: 'da', persoVersions: HEB, du: '2026-11-02', au: '2026-11-04' }),
+        appli({ nom: 'agent sans modèle', du: '2026-11-02', au: '2026-11-08' }),
+        appli({ nom: 'période inversée', persoVersions: HEB, du: '2026-11-08', au: '2026-11-02' }),
+        appli({ nom: 'période illisible', persoVersions: HEB, du: '02/11/2026', au: '2026-11-02' }),
+        appli({ nom: 'période de 93 jours', persoVersions: HEB, du: '2026-11-01', au: '2027-02-01' }),
+        appli({ nom: 'période de 92 jours', persoVersions: HEB, du: '2026-11-01', au: '2027-01-31' }),
+      ];
+
+      /* --- les valeurs d'attente du personnel --- */
+      const agentAtt = (extra) => Object.assign({ id: A.id, nomComplet: A.nomComplet, salaireBase: 120000, categorie: 'E3-1', dateEmbauche: '2018-04-02', cnss: '2123456', valeursAttente: { salaireBase: true, categorie: true, dateEmbauche: true, cnss: true } }, extra || {});
+      const attente = (o) => {
+        const role = o.role || 'admin';
+        seConnecter(role, 'Vecteur ' + role);
+        const e = S.collection('personnel').get(A.id);
+        const sauve = JSON.parse(JSON.stringify(e));
+        Object.assign(e, propre(o.fiche || agentAtt()));
+        if (o.sansMarques) delete e.valeursAttente;
+        const r = R.confirmerValeurAttente({ employeId: o.inconnu ? 'ABSENT' : A.id, champ: o.champ, motif: o.motif });
+        const apres = propre(S.collection('personnel').get(A.id));
+        const cas = { nom: o.nom, role: role, droit: N.droitGeste(role, 'confirmer_valeur_attente_personnel'), agentExiste: !o.inconnu, fiche: propre(Object.assign({}, o.fiche || agentAtt(), o.sansMarques ? { valeursAttente: null } : {})), champ: o.champ === undefined ? null : o.champ, motif: o.motif === undefined ? null : o.motif };
+        cas.attendu = r.ok ? { ok: true, valeursAttente: apres.valeursAttente, restantes: r.restantes } : { ok: false, code: r.code, motif: r.motif, geste: r.geste };
+        Object.keys(e).forEach((k) => { delete e[k]; }); Object.assign(e, sauve);
+        return cas;
+      };
+      const casAttente = [
+        attente({ nom: 'confirmer le salaire : sa seule mention tombe', champ: 'salaireBase', motif: 'Contrat signé du 02/04/2018' }),
+        attente({ nom: 'confirmer la CNSS', champ: 'cnss', motif: 'Carnet CNSS vérifié' }),
+        attente({ nom: 'rôle DAF', role: 'da', champ: 'categorie', motif: 'Grille vérifiée' }),
+        attente({ nom: 'rôle surveillant : sans le droit', role: 'surveillant', champ: 'salaireBase', motif: 'x' }),
+        attente({ nom: 'rôle médecin : sans le droit', role: 'medecin', champ: 'salaireBase', motif: 'x' }),
+        attente({ nom: 'agent introuvable', inconnu: true, champ: 'salaireBase', motif: 'x' }),
+        attente({ nom: 'champ sans valeur d’attente (téléphone)', champ: 'telephone', motif: 'x' }),
+        attente({ nom: 'champ déjà confirmé', fiche: agentAtt({ valeursAttente: { categorie: true } }), champ: 'salaireBase', motif: 'x' }),
+        attente({ nom: 'fiche sans aucune mention', sansMarques: true, champ: 'salaireBase', motif: 'x' }),
+        attente({ nom: 'mention sur une valeur absente : rien à confirmer', fiche: agentAtt({ salaireBase: null }), champ: 'salaireBase', motif: 'x' }),
+        attente({ nom: 'motif absent', champ: 'salaireBase', motif: '   ' }),
+        attente({ nom: 'les autres mentions restent', champ: 'dateEmbauche', motif: 'Registre du personnel' }),
+      ];
+      /* La levée par modification : ce que le MAGASIN fait d'un patch (l'écriture passe par `collection.update`). */
+      const leve = (nom, avantFiche, patch) => {
+        const e = S.collection('personnel').get(A.id);
+        const sauve = JSON.parse(JSON.stringify(e));
+        Object.assign(e, propre(avantFiche));
+        if (avantFiche.valeursAttente === undefined) delete e.valeursAttente;
+        const res = S.collection('personnel').update(A.id, propre(patch));
+        const apres = propre(S.collection('personnel').get(A.id));
+        Object.keys(e).forEach((k) => { delete e[k]; }); Object.assign(e, sauve);
+        void res;
+        return { nom: nom, fiche: propre(avantFiche), patch: propre(patch), attendu: { valeursAttente: apres.valeursAttente === undefined ? null : apres.valeursAttente } };
+      };
+      const casLevee = [
+        leve('modifier le salaire lève la mention du salaire seule', agentAtt(), { salaireBase: 130000 }),
+        leve('réécrire le salaire à l’identique ne lève rien', agentAtt(), { salaireBase: 120000 }),
+        leve('modifier le salaire et la CNSS lève les deux mentions', agentAtt(), { salaireBase: 130000, cnss: '999' }),
+        leve('modifier le téléphone ne lève aucune mention', agentAtt(), { telephone: '0100000000' }),
+        leve('modifier la date d’embauche', agentAtt(), { dateEmbauche: '2019-01-01' }),
+        leve('fiche sans mention : aucune mention créée', agentAtt({ valeursAttente: undefined }), { salaireBase: 130000 }),
+        leve('mention déjà levée : modifier le champ ne la recrée pas', agentAtt({ valeursAttente: { cnss: true } }), { salaireBase: 130000 }),
+      ];
+      /* RG-11 : le modèle ne compte pour aucune prime ; les vacations « à valider » non plus (paie du domaine, vecteur par la paie de la maquette). */
+      const gardesDuMois = (agent, annee, mois) => S.collection('planning').active().filter((p) => p.employeId === agent.id && p.type === 'garde' && (!p.validationEtat || p.validationEtat === 'validee') && new Date(p.date).getFullYear() === annee && new Date(p.date).getMonth() === mois).length;
+      const rg11 = (() => {
+        const lignes = [vac('V1', A, '2026-10-05', 'garde'), Object.assign(vac('V2', A, '2026-10-12', 'garde'), { validationEtat: 'a_valider' }), Object.assign(vac('V3', A, '2026-10-19', 'garde'), { validationEtat: 'validee' }), Object.assign(vac('V4', A, '2026-10-26', 'garde'), { validationEtat: 'refuse' })];
+        poserPlanning(lignes);
+        raw.planningsPersonnalises = propre([PV(A, '2026-10-01', 'mensuel', [J(1, 'garde'), J(8, 'garde'), J(15, 'garde')])]);
+        const attendu = gardesDuMois(A, 2026, 9);
+        raw.planningsPersonnalises = [];
+        return { planning: propre(lignes), agentId: A.id, annee: 2026, mois: 9, attendu: attendu };
+      })();
+
       seConnecter(sess0.role, sess0.nom);
-      return { regimesActifs, agents, regime: casRegime, deroger: casDeroger, controle: casControle, etats: cEtat, circuit: casCircuit, propositions: casProposition, decisions: casDecision, visibles, reglages: casReglage, poses: casPose, regularisations: casRegul, avis: casAvis, retraits: casRetrait };
+      return { regimesActifs, agents, regime: casRegime, deroger: casDeroger, controle: casControle, etats: cEtat, circuit: casCircuit, propositions: casProposition, decisions: casDecision, visibles, reglages: casReglage, poses: casPose, regularisations: casRegul, avis: casAvis, retraits: casRetrait,
+        persoDefinir: casPersoDefinir, persoApplication: casPersoApplication, attente: casAttente, levee: casLevee, rg11: rg11 };
     });
     ecrire('packages/domaine/test/vecteurs/planning_rh.json', Object.assign({ _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-planning-rh.js : planning RH (régime individuel, circuit de validation, propositions), le moteur de la maquette piloté dans Chrome. Ne pas éditer.' }, sortie));
-    ['regime', 'deroger', 'controle', 'etats', 'circuit', 'propositions', 'decisions', 'visibles', 'reglages', 'poses', 'regularisations', 'avis', 'retraits'].forEach((k) => console.log('  ' + k + ' : ' + sortie[k].length + ' cas'));
+    ['regime', 'deroger', 'controle', 'etats', 'circuit', 'propositions', 'decisions', 'visibles', 'reglages', 'poses', 'regularisations', 'avis', 'retraits', 'persoDefinir', 'persoApplication', 'attente', 'levee'].forEach((k) => console.log('  ' + k + ' : ' + sortie[k].length + ' cas'));
     if (m.erreurs.length) console.log('  avertissements : ' + m.erreurs.slice(0, 3).join(' | '));
   } finally { await m.fermer(); }
 })().catch((e) => { console.error(e); process.exit(1); });

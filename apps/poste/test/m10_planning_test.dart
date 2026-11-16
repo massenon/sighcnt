@@ -10,7 +10,7 @@ import 'rhb_aide.dart';
 
 /// Le repos individuel gouverne le contrôle de l'agent : 24 h pour lui (dérogation), 48 h pour son collègue de la même catégorie.
 bool rhbPlanningPoste24(Magasin m) {
-  final p = PlanningRhPoste(m, auteur: () => 'x', role: 'surveillant', horloge: () => auj16);
+  final p = PlanningRhPoste(m, auteur: () => 'x', role: 'surveillant', droitGeste: (g) => false, horloge: () => auj16);
   final a = m.collection('personnel').actives.firstWhere((e) => e['id'] == 'EMP01');
   final autre = m.collection('personnel').actives.firstWhere((e) => e['id'] != 'EMP01' && e['fonction'] == 'medecin');
   return p.regimeALaDate(a, '2026-08-16').repos == 'repos24' && p.regimeALaDate(autre, '2026-08-16').repos == 'repos48';
@@ -61,7 +61,7 @@ void main() {
       }
       expect(find.widgetWithText(BoutonSigh, 'Effacer les filtres'), findsOneWidget);
       expect(find.widgetWithText(BoutonSigh, 'Déroger pour un agent'), findsOneWidget);
-      expect(find.text('Aucun agent n’a de régime individuel : tous suivent le régime de leur catégorie.'), findsOneWidget);
+      expect(find.text('Aucun agent n’a de régime individuel ni de planning personnalisé : tous suivent le régime de leur catégorie.'), findsOneWidget);
       // La grille : un agent de la semaine, sa case du 16/08 porte sa garde.
       expect(find.byKey(const Key('rhb:cellule:EMP01:2026-08-16')), findsOneWidget);
       expect(find.descendant(of: find.byKey(const Key('rhb:cellule:EMP01:2026-08-16')), matching: find.text('Garde 24h')), findsOneWidget);
@@ -327,7 +327,7 @@ void main() {
       expect(find.text('Réglages enregistrés.'), findsOneWidget);
       expect(find.text('Surveillant puis directrice administrative'), findsWidgets);
       expect(find.text('Oui'), findsOneWidget);
-      final p = PlanningRhPoste(m, auteur: () => 'x', role: 'admin', horloge: () => auj16);
+      final p = PlanningRhPoste(m, auteur: () => 'x', role: 'admin', droitGeste: (g) => true, horloge: () => auj16);
       expect([p.circuit(), p.agentModifieDirectement()], ['surveillant_puis_daf', true]);
       expect(m.collection('audit').toutes.where((l) => l['action'] == 'Circuit de validation des présences').length, 1);
     });

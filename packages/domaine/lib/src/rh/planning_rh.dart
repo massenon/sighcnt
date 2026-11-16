@@ -20,6 +20,14 @@ const List<String> champsDerogeablesRh = ['vacations', 'repos', 'cycle', 'honora
 
 const List<String> vacationsGardeRh = ['garde', 'garde_hospi'];
 
+/// Lot PLAN-INDIV (16/11/2026) : les deux modes d'une version de régime individuel (déroge : le reste suit la catégorie ; remplace : rien n'est hérité).
+const List<String> modesRegimeIndividuelRh = ['deroge', 'remplace'];
+
+/// Les gestes réservés du lot (droits de la fiche RBAC par rôle, jamais un nom de rôle dans le moteur).
+const String gesteRegimeIndividuelRh = 'regler_regime_individuel';
+const String gestePlanningPersonnaliseRh = 'regler_planning_personnalise';
+const String gesteValeurAttenteRh = 'confirmer_valeur_attente_personnel';
+
 /// Un refus nommé : code, motif, geste (et le détail utile à l'écran).
 class RefusRh {
   const RefusRh(this.code, this.motif, this.geste, [this.extra = const {}]);
@@ -62,8 +70,12 @@ class RegimeRhResolu {
     this.derogations = const [],
     this.versionId,
     this.dateEffet,
+    this.mode = 'categorie',
+    this.remplace = false,
   });
   final String date;
+  String mode;
+  bool remplace;
   String? categorie, libelle, repos, honorairePeriodicite, source, mention, versionId, dateEffet;
   List<String> fonctions, vacations, derogations;
   num? cycle, honoraire;
@@ -72,7 +84,7 @@ class RegimeRhResolu {
   Map<String, Object?> toJson() => {
         'date': date, 'categorie': categorie, 'libelle': libelle, 'fonctions': fonctions, 'vacations': vacations, 'repos': repos, 'cycle': cycle,
         'honoraire': honoraire, 'honorairePeriodicite': honorairePeriodicite, 'source': source, 'mention': mention, 'individuel': individuel,
-        'derogations': derogations, 'versionId': versionId, 'dateEffet': dateEffet,
+        'derogations': derogations, 'versionId': versionId, 'dateEffet': dateEffet, 'mode': mode, 'remplace': remplace,
       };
 }
 
@@ -120,6 +132,22 @@ RegimeRhResolu regimeRhALaDate({
   out.dateEffet = '${v['dateEffet']}';
   if (v['retourCategorie'] == true) return out;
   final champs = (v['champs'] as Map?)?.cast<String, Object?>() ?? const {};
+  if (v['mode'] == 'remplace') {
+    // MODE « REMPLACE » : rien n'est hérité de la catégorie ; ce que la version ne dit pas est ABSENT.
+    out.mode = 'remplace';
+    out.remplace = true;
+    out.vacations = _liste(champs['vacations']);
+    out.repos = champs['repos'] == 'aucun' || !_renseigne(champs['repos']) ? null : '${champs['repos']}';
+    out.cycle = _renseigne(champs['cycle']) ? champs['cycle'] as num : null;
+    out.honoraire = _renseigne(champs['honoraire']) ? champs['honoraire'] as num : null;
+    out.honorairePeriodicite = _renseigne(champs['honorairePeriodicite']) ? '${champs['honorairePeriodicite']}' : null;
+    out.source = null;
+    out.mention = null;
+    out.derogations = [...champsDerogeablesRh];
+    out.individuel = true;
+    return out;
+  }
+  out.mode = 'deroge';
   final derog = <String>[];
   for (final c in champsDerogeablesRh) {
     final x = champs[c];
@@ -151,7 +179,8 @@ List<String> typesAutorisesRh(RegimeRhResolu r) {
 
 /// La pose d'une dérogation : le refus nommé, ou la fiche normalisée à écrire (champs retenus). [versions] : les versions actives de l'agent.
 ({RefusRh? refus, Map<String, Object?>? champs}) validerDerogationRh({
-  required String role,
+  required bool droit,
+  String? mode,
   required bool agentExiste,
   required String? dateEffet,
   required String? motif,
@@ -160,8 +189,20 @@ List<String> typesAutorisesRh(RegimeRhResolu r) {
   required List<FichePlanning> versions,
   required String aujourdhui,
 }) {
-  if (role != 'admin' && role != 'da') {
-    return (refus: const RefusRh('DEROGATION_RESERVEE', 'Le régime individuel se règle par la Directrice Administrative ou l’administrateur.', 'Demander à la Directrice Administrative de poser la dérogation.'), champs: null);
+  if (!droit) {
+    return (
+      refus: const RefusRh('DEROGATION_RESERVEE', 'Le régime individuel se règle par un rôle qui détient le droit « Régler le régime individuel d’un agent » (fiche de droits du rôle).',
+          'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur) de poser la dérogation.'),
+      champs: null
+    );
+  }
+  final modeRetenu = mode == null || mode == '' ? 'deroge' : mode;
+  if (!modesRegimeIndividuelRh.contains(modeRetenu)) {
+    return (
+      refus: RefusRh('MODE_INCONNU', 'Le mode « $modeRetenu » n’existe pas : un régime individuel déroge à la catégorie ou la remplace.',
+          'Choisir « déroge » (le reste suit la catégorie) ou « remplace » (rien n’est hérité).', {'mode': modeRetenu}),
+      champs: null
+    );
   }
   if (!agentExiste) {
     return (refus: const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.'), champs: null);
@@ -219,6 +260,20 @@ List<String> typesAutorisesRh(RegimeRhResolu r) {
         return (refus: const RefusRh('CHAMP_INVALIDE', 'La périodicité de l’honoraire est mensuelle ou par occurrence.', 'Corriger la périodicité.', {'champ': 'honorairePeriodicite'}), champs: null);
       }
       retenus['honorairePeriodicite'] = per;
+    }
+    if (modeRetenu == 'remplace') {
+      final manquants = <String>[
+        if (retenus['vacations'] == null || (retenus['vacations'] as List).isEmpty) 'vacations',
+        if (retenus['repos'] == null) 'repos',
+      ];
+      if (manquants.isNotEmpty) {
+        return (
+          refus: RefusRh('REMPLACEMENT_INCOMPLET',
+              'Un régime qui REMPLACE celui de la catégorie n’hérite de rien : il doit dire ses vacations et son repos (manque : ${manquants.join(', ')}).',
+              'Renseigner les vacations et le repos (« aucun repos codifié » est un choix), ou choisir le mode « déroge » pour que le reste suive la catégorie.', {'manquants': manquants}),
+          champs: null
+        );
+      }
     }
     if (retenus.isEmpty) {
       return (refus: const RefusRh('AUCUNE_DEROGATION', 'Aucun champ n’est dérogé : le régime de l’agent suit déjà celui de sa catégorie.', 'Renseigner au moins un champ, ou choisir « revenir au régime de la catégorie ».'), champs: null);
@@ -711,6 +766,11 @@ String? gardeRegimeIndividuelRh(String operation) => operation == 'modifier' || 
     ? 'REGIME_INDIVIDUEL_FIGE : une version de régime individuel ne se réécrit ni ne s’archive (elle explique des vacations déjà posées). Ajouter une nouvelle version à une date d’effet postérieure, ou « revenir au régime de la catégorie ».'
     : null;
 
+/// Une version de planning personnalisé ne se réécrit ni ne s'archive (lot PLAN-INDIV) : elle explique des vacations déjà posées.
+String? gardePlanningPersonnaliseRh(String operation) => operation == 'modifier' || operation == 'archiver'
+    ? 'PLANNING_PERSO_FIGE : une version de planning personnalisé ne se réécrit ni ne s’archive (elle explique des vacations déjà posées). Définir une nouvelle version à une date d’effet postérieure.'
+    : null;
+
 /// Un pointage validé ne se modifie pas directement : il se régularise (motif, date et auteur consignés). [avant] : la fiche telle qu'elle est ; [apres] : telle
 /// qu'elle serait après la mise à jour. Une pièce d'avant le circuit (sans état validé) reste éditable ; une régularisation (la trace s'allonge) passe.
 String? gardePresenceValideeRh(String operation, FichePlanning? avant, FichePlanning apres) {
@@ -719,4 +779,264 @@ String? gardePresenceValideeRh(String operation, FichePlanning? avant, FichePlan
   final change = ['etat', 'date', 'employeId', 'heureArrivee', 'heureDepart', 'motifCode'].any((k) => v(avant, k) != v(apres, k));
   final regularise = ((apres['regularisations'] as List?)?.length ?? 0) > ((avant['regularisations'] as List?)?.length ?? 0);
   return change && !regularise ? 'PRESENCE_VALIDEE : un pointage validé ne se modifie pas directement ; le régulariser (motif, date et auteur consignés).' : null;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Lot PLAN-INDIV (16/11/2026) : le planning personnalisé, son application à une période, les valeurs d'attente du personnel
+// ---------------------------------------------------------------------------------------------------------------------
+
+const List<({String id, String libelle, int jours})> periodicitesPersoRh = [
+  (id: 'hebdomadaire', libelle: 'Hebdomadaire', jours: 7),
+  (id: 'mensuel', libelle: 'Mensuel', jours: 31),
+];
+const List<String> joursSemaineRh = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+const int periodeMaxJoursRh = 92;
+
+({String id, String libelle, int jours})? _periodicite(Object? id) {
+  for (final p in periodicitesPersoRh) {
+    if (p.id == id) return p;
+  }
+  return null;
+}
+
+String _libelleJourPerso(String periodicite, int n) => periodicite == 'hebdomadaire' ? joursSemaineRh[n - 1] : 'le $n';
+
+/// La version du modèle en vigueur pour un agent à une date : la dernière dont la date d'effet est atteinte (collection `planningsPersonnalises`, versions ACTIVES de l'agent).
+FichePlanning? planningPersoRhALaDate(List<FichePlanning> versions, String date) {
+  final triees = [...versions]..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
+  FichePlanning? v;
+  for (final x in triees) {
+    if ('${x['dateEffet']}'.compareTo(date) <= 0) v = x;
+  }
+  return v;
+}
+
+/// Le numéro d'un jour dans le modèle : jour du mois (mensuel), 1 (lundi) à 7 (dimanche) (hebdomadaire).
+int numeroDuJourPersoRh(String periodicite, String jourIso) {
+  final p = jourIso.split('-').map(int.parse).toList();
+  if (periodicite == 'mensuel') return p[2];
+  return DateTime.utc(p[0], p[1], p[2]).weekday;
+}
+
+/// Le type que le modèle prévoit pour un jour (`null` : jour libre).
+String? typeDuModelePersoRh(FichePlanning version, String jourIso) {
+  final n = numeroDuJourPersoRh('${version['periodicite']}', jourIso);
+  for (final j in (version['jours'] as List? ?? const [])) {
+    final m = (j as Map).cast<String, Object?>();
+    if ((m['jour'] as num).toInt() == n) return '${m['type']}';
+  }
+  return null;
+}
+
+/// DÉFINIR une version de planning personnalisé : le refus nommé, ou les jours normalisés (triés). [regime] : celui de l'agent À LA DATE D'EFFET.
+({RefusRh? refus, List<Map<String, Object?>>? jours}) validerPlanningPersoRh({
+  required bool droit,
+  required bool agentExiste,
+  required String? periodicite,
+  required String? dateEffet,
+  required String? motif,
+  required Object? jours,
+  required RegimeRhResolu regime,
+  required String nomAgent,
+  required List<FichePlanning> versions,
+  required String aujourdhui,
+}) {
+  ({RefusRh? refus, List<Map<String, Object?>>? jours}) non(RefusRh r) => (refus: r, jours: null);
+  if (!droit) {
+    return non(const RefusRh('PLANNING_PERSO_RESERVE', 'Le planning personnalisé se définit par un rôle qui détient le droit « Définir le planning personnalisé d’un agent » (fiche de droits du rôle).',
+        'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur).'));
+  }
+  if (!agentExiste) return non(const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.'));
+  final per = _periodicite(periodicite);
+  if (per == null) {
+    return non(RefusRh('PERIODICITE_INCONNUE', 'La périodicité « ${periodicite ?? ''} » n’existe pas : un planning personnalisé est hebdomadaire ou mensuel.', 'Choisir hebdomadaire ou mensuel.'));
+  }
+  final d = dateEffet ?? '';
+  if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(d)) return non(const RefusRh('DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle le modèle s’applique.'));
+  if ((motif ?? '').trim().isEmpty) return non(const RefusRh('MOTIF_OBLIGATOIRE', 'Le motif est obligatoire.', 'Dire pourquoi cet agent a un planning propre.'));
+  if (d.compareTo(aujourdhui) < 0) {
+    return non(RefusRh('DATE_PASSEE', 'La date d’effet (${_dateFr(d)}) est antérieure à aujourd’hui : un modèle ne s’applique jamais rétroactivement.', 'Choisir aujourd’hui ou une date à venir.'));
+  }
+  if (jours is! List || jours.isEmpty) return non(const RefusRh('MODELE_VIDE', 'Le modèle ne contient aucun jour.', 'Renseigner au moins un jour du modèle.'));
+  final vus = <int>{};
+  final propre = <Map<String, Object?>>[];
+  for (final x in jours) {
+    final m = x is Map ? x.cast<String, Object?>() : const <String, Object?>{};
+    final brut = m['jour'];
+    final n = brut is num ? brut : num.tryParse('$brut');
+    if (n == null || !(n >= 1 && n <= per.jours) || n.floor() != n) {
+      return non(RefusRh('JOUR_INVALIDE', 'Le jour « ${brut ?? ''} » n’existe pas dans un modèle ${per.libelle.toLowerCase()} (1 à ${per.jours}).', 'Corriger le numéro du jour.', {'jour': brut}));
+    }
+    final ni = n.toInt();
+    if (!vus.add(ni)) return non(RefusRh('JOUR_EN_DOUBLE', 'Le jour $ni est donné deux fois dans le modèle.', 'Une seule vacation par jour.', {'jour': ni}));
+    final t = m['type'];
+    if (rhbTypePlanning(t as String?) == null) return non(RefusRh('TYPE_INCONNU', 'Le type de vacation « $t » n’existe pas.', 'Choisir un type du référentiel.', {'jour': ni}));
+    propre.add({'jour': ni, 'type': t});
+  }
+  propre.sort((a, b) => (a['jour'] as int).compareTo(b['jour'] as int));
+  final permis = typesAutorisesRh(regime);
+  for (final j in propre) {
+    if (!permis.contains(j['type'])) {
+      return non(RefusRh('TYPE_NON_PERMIS',
+          'Le type « ${rhbTypePlanningLabel(j['type'])} » n’est pas permis par le régime de $nomAgent à la date d’effet (${_dateFr(d)}).',
+          'Choisir un type de son régime (vacations, repos, congé, absence, remplacement), ou régler d’abord son régime individuel.', {'jour': j['jour'], 'type': j['type']}));
+    }
+  }
+  final reposJours = regime.repos == 'repos48' ? 2 : 1;
+  final gardes = [for (final j in propre) if (vacationsGardeRh.contains(j['type'])) j['jour'] as int];
+  for (final g in gardes) {
+    for (var r = 1; r <= reposJours; r++) {
+      var suivant = g + r;
+      if (per.id == 'hebdomadaire') suivant = ((suivant - 1) % 7) + 1; // la semaine se lit en BOUCLE
+      if (suivant != g && gardes.contains(suivant)) {
+        return non(RefusRh('INCOMPATIBILITE_REPOS',
+            'Incompatibilité : le repos de ${reposJours * 24} h qui suit une garde n’est pas respecté (garde ${_libelleJourPerso(per.id, g)} puis garde ${_libelleJourPerso(per.id, suivant)}${per.id == 'hebdomadaire' ? ', la semaine étant lue en boucle' : ''}).',
+            'Espacer les gardes d’au moins ${reposJours * 24} h, ou régler d’abord le repos du régime de cet agent.', {'jour': g, 'autre': suivant, 'reposHeures': reposJours * 24}));
+      }
+    }
+  }
+  final triees = [...versions]..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
+  if (triees.any((v) => '${v['dateEffet']}' == d)) {
+    return non(RefusRh('DATE_EXISTANTE', 'Une version commence déjà le ${_dateFr(d)} pour cet agent : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure.'));
+  }
+  if (triees.isNotEmpty && '${triees.last['dateEffet']}'.compareTo(d) > 0) {
+    return non(RefusRh('VERSION_ANTERIEURE',
+        'La version la plus récente de cet agent commence le ${_dateFr('${triees.last['dateEffet']}')} : une version insérée avant elle masquerait l’historique.', 'Choisir une date d’effet postérieure à la dernière version.'));
+  }
+  return (refus: null, jours: propre);
+}
+
+/// Une ligne de l'aperçu (ou du bilan) d'une application de modèle.
+class LigneApplicationRh {
+  LigneApplicationRh(this.date, this.etat, this.type, {this.code, this.versionId, this.regime, this.motif});
+  final String date, etat;
+  final String? type, code, versionId, motif;
+  final RegimeRhResolu? regime;
+  Map<String, Object?> toJson() => {'date': date, 'etat': etat, 'type': type, 'code': code};
+}
+
+/// APPLIQUER le modèle d'un agent à une période : l'aperçu (aucune écriture) ; le poste écrit ensuite les lignes `a_poser`. Un jour occupé n'est JAMAIS écrasé ;
+/// chaque jour passe par le contrôle unique (`controlerVacationRh`), les gardes déjà retenues de la période comptant dans le repos.
+({RefusRh? refus, List<LigneApplicationRh> lignes}) apercuApplicationPersoRh({
+  required String role,
+  required Map<String, Object?>? agent,
+  required String? du,
+  required String? au,
+  required List<FichePlanning> versions,
+  required List<FichePlanning> planningActif,
+  required RegimeRhResolu Function(String date) regimeALaDate,
+}) {
+  ({RefusRh? refus, List<LigneApplicationRh> lignes}) non(RefusRh r) => (refus: r, lignes: const <LigneApplicationRh>[]);
+  final r0 = peutPoserPlanningRh(role);
+  if (r0 != null) return non(r0);
+  if (agent == null) return non(const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.'));
+  final d1 = du ?? '', d2 = au ?? '';
+  final iso = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+  if (!iso.hasMatch(d1) || !iso.hasMatch(d2)) return non(const RefusRh('DATE_INVALIDE', 'La période est absente ou illisible.', 'Choisir un premier et un dernier jour.'));
+  if (d2.compareTo(d1) < 0) return non(RefusRh('PERIODE_INVERSEE', 'Le dernier jour (${_dateFr(d2)}) précède le premier (${_dateFr(d1)}).', 'Corriger la période.'));
+  final a = d1.split('-').map(int.parse).toList(), b = d2.split('-').map(int.parse).toList();
+  final nb = DateTime.utc(b[0], b[1], b[2]).difference(DateTime.utc(a[0], a[1], a[2])).inDays + 1;
+  if (nb > periodeMaxJoursRh) {
+    return non(RefusRh('PERIODE_TROP_LONGUE', 'La période couvre $nb jours : au plus $periodeMaxJoursRh jours d’un coup.', 'Appliquer le modèle par périodes plus courtes.', {'jours': nb}));
+  }
+  if (versions.isEmpty) return non(RefusRh('AUCUN_MODELE', '${agent['nomComplet']} n’a pas de planning personnalisé.', 'Définir son planning personnalisé sur sa fiche.'));
+  final occupes = [for (final p in planningActif) if (p['employeId'] == agent['id']) p];
+  final simules = <FichePlanning>[];
+  final lignes = <LigneApplicationRh>[];
+  for (var i = 0; i < nb; i++) {
+    final jour = _ajouteJours(d1, i);
+    final v = planningPersoRhALaDate(versions, jour);
+    if (v == null) {
+      lignes.add(LigneApplicationRh(jour, 'sans_modele', null));
+      continue;
+    }
+    final type = typeDuModelePersoRh(v, jour);
+    if (type == null) {
+      lignes.add(LigneApplicationRh(jour, 'libre', null, versionId: v['id'] as String?));
+      continue;
+    }
+    if (occupes.any((p) => p['date'] == jour)) {
+      lignes.add(LigneApplicationRh(jour, 'occupe', type, code: 'JOUR_OCCUPE', versionId: v['id'] as String?));
+      continue;
+    }
+    final regime = regimeALaDate(jour);
+    final refus = controlerVacationRh(agent: agent, planningActif: [...occupes, ...simules], regime: regime, date: jour, type: type);
+    if (refus != null) {
+      lignes.add(LigneApplicationRh(jour, 'refuse', type, code: refus.code, versionId: v['id'] as String?, motif: refus.motif));
+      continue;
+    }
+    simules.add({'id': 'SIM$i', 'employeId': agent['id'], 'date': jour, 'type': type});
+    lignes.add(LigneApplicationRh(jour, 'a_poser', type, versionId: v['id'] as String?, regime: regime));
+  }
+  return (refus: null, lignes: lignes);
+}
+
+// --- Les valeurs d'attente du personnel ---
+
+const List<({String cle, String libelle})> champsAttenteRh = [
+  (cle: 'salaireBase', libelle: 'Salaire de base'),
+  (cle: 'categorie', libelle: 'Catégorie / échelon'),
+  (cle: 'dateEmbauche', libelle: 'Date d’embauche'),
+  (cle: 'cnss', libelle: 'Numéro CNSS'),
+];
+
+String libelleChampAttenteRh(String cle) {
+  for (final c in champsAttenteRh) {
+    if (c.cle == cle) return c.libelle;
+  }
+  return cle;
+}
+
+/// Les champs d'une fiche qui portent encore la mention « valeur d'attente » (une mention sur un champ SANS valeur ne compte pas).
+List<String> valeursAttenteRh(Map<String, Object?>? agent) {
+  final m = (agent?['valeursAttente'] as Map?) ?? const {};
+  return [for (final c in champsAttenteRh) if (m[c.cle] == true && _renseigne(agent?[c.cle])) c.cle];
+}
+
+/// La modification d'un champ LÈVE sa mention, et seulement la sienne : le patch complété, ou `null` si aucune mention ne tombe. [fiche] : la fiche avant ; [patch] : ce qui s'écrit.
+Map<String, Object?>? leverValeursAttenteRh(Map<String, Object?> fiche, Map<String, Object?> patch) {
+  final marques = (fiche['valeursAttente'] as Map?)?.cast<String, Object?>();
+  if (marques == null || patch.containsKey('valeursAttente')) return null;
+  String t(Object? x) => x == null ? '' : '$x';
+  final restant = <String, Object?>{};
+  var change = false;
+  marques.forEach((k, v) {
+    if (v != true) return;
+    if (patch.containsKey(k) && t(patch[k]) != t(fiche[k])) {
+      change = true;
+      return;
+    }
+    restant[k] = true;
+  });
+  return change ? {...patch, 'valeursAttente': restant} : null;
+}
+
+/// CONFIRMER une valeur d'attente telle quelle : le refus nommé, ou le patch à écrire (la mention de CE champ tombe).
+({RefusRh? refus, Map<String, Object?>? patch}) controlerConfirmationAttenteRh({
+  required bool droit,
+  required Map<String, Object?>? agent,
+  required String? champ,
+  required String? motif,
+}) {
+  ({RefusRh? refus, Map<String, Object?>? patch}) non(RefusRh r) => (refus: r, patch: null);
+  if (!droit) {
+    return non(const RefusRh('CONFIRMATION_RESERVEE', 'Confirmer une valeur d’attente se fait par un rôle qui détient le droit « Confirmer une valeur d’attente du personnel » (fiche de droits du rôle).',
+        'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur).'));
+  }
+  if (agent == null) return non(const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.'));
+  if (!champsAttenteRh.any((c) => c.cle == champ)) {
+    return non(RefusRh('CHAMP_INCONNU', 'Le champ « ${champ ?? ''} » n’a pas de valeur d’attente.', 'Choisir le salaire, la catégorie, la date d’embauche ou le numéro CNSS.'));
+  }
+  final marques = (agent['valeursAttente'] as Map?) ?? const {};
+  if (marques[champ] != true) {
+    return non(RefusRh('PAS_UNE_VALEUR_ATTENTE', 'Le champ « ${libelleChampAttenteRh(champ!)} » de ${agent['nomComplet']} n’est pas une valeur d’attente.', 'Rien à confirmer.'));
+  }
+  if (!_renseigne(agent[champ])) {
+    return non(RefusRh('VALEUR_ABSENTE', 'Le champ « ${libelleChampAttenteRh(champ!)} » de ${agent['nomComplet']} n’a pas de valeur : il n’y a rien à confirmer.', 'Renseigner la valeur sur la fiche.'));
+  }
+  if ((motif ?? '').trim().isEmpty) {
+    return non(const RefusRh('MOTIF_OBLIGATOIRE', 'Le motif de la confirmation est obligatoire.', 'Dire sur quel document ou quelle décision la valeur est arrêtée.'));
+  }
+  final restant = {...marques.cast<String, Object?>()}..remove(champ);
+  return (refus: null, patch: {'valeursAttente': restant});
 }

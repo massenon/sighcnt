@@ -989,6 +989,7 @@ CREATE TABLE IF NOT EXISTS "m10"."personnel" (
   "salaire_base" integer,
   "date_embauche" date,
   "titre_organigramme" text,
+  "valeurs_attente" jsonb,
   "extra" jsonb
 );
 COMMENT ON TABLE "m10"."personnel" IS 'Collection « personnel » — M10 Ressources humaines';
@@ -1010,6 +1011,27 @@ CREATE INDEX IF NOT EXISTS "ix_planning_date" ON "m10"."planning" ("date");
 CREATE INDEX IF NOT EXISTS "ix_planning_type" ON "m10"."planning" ("type");
 CREATE INDEX IF NOT EXISTS "ix_planning_statut" ON "m10"."planning" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_planning_employe_id" ON "m10"."planning" ("employe_id");
+CREATE TABLE IF NOT EXISTS "m10"."plannings_personnalises" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "employe_id" text,
+  "employe" text,
+  "matricule" text,
+  "fonction" text,
+  "periodicite" text,
+  "jours" jsonb,
+  "date_effet" date,
+  "motif" text,
+  "version" integer,
+  "cree_le" date,
+  "cree_par" text,
+  "cree_le_2" timestamptz,
+  "cree_par_2" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m10"."plannings_personnalises" IS 'Collection « planningsPersonnalises » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_plannings_personnalises_statut" ON "m10"."plannings_personnalises" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_plannings_personnalises_employe_id" ON "m10"."plannings_personnalises" ("employe_id");
 CREATE TABLE IF NOT EXISTS "m10"."presences" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -1092,6 +1114,7 @@ CREATE TABLE IF NOT EXISTS "m10"."regimes_individuels" (
   "fonction" text,
   "categorie" text,
   "champs" jsonb,
+  "mode" text,
   "retour_categorie" boolean,
   "date_effet" date,
   "motif" text,

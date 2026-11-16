@@ -34,7 +34,8 @@ void main() {
     for (final c in liste(j['deroger'])) {
       test(c['nom'] as String, () {
         final r = validerDerogationRh(
-          role: c['role'] as String,
+          droit: c['droit'] as bool,
+          mode: c['mode'] as String?,
           agentExiste: c['agentExiste'] as bool,
           dateEffet: c['dateEffet'] as String?,
           motif: c['motif'] as String?,
@@ -289,6 +290,122 @@ void main() {
         expect(sans, [for (final x in (c['sansAgent'] as List)) if (x != 'X3') x]);
       });
     }
+  });
+
+  group('lot PLAN-INDIV : le planning personnalisé, défini sous le contrôle de la grille (vecteurs de la maquette)', () {
+    for (final c in liste(j['persoDefinir'])) {
+      test(c['nom'] as String, () {
+        final agent = m(c['agent']);
+        final versions = liste(c['versions']);
+        final dateEffet = c['dateEffet'] as String?;
+        final dateRegime = dateEffet != null && RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dateEffet) ? dateEffet : '2026-10-30';
+        final r = validerPlanningPersoRh(
+          droit: c['droit'] as bool,
+          agentExiste: true,
+          periodicite: c['periodicite'] as String?,
+          dateEffet: dateEffet,
+          motif: c['motif'] as String?,
+          jours: c['jours'],
+          regime: regimeDe(agent, versions, dateRegime),
+          nomAgent: '${agent['nomComplet']}',
+          versions: liste(c['persoVersions']),
+          aujourdhui: '2026-10-30',
+        );
+        final a = m(c['attendu']);
+        if (a['ok'] == true) {
+          expect(r.refus, isNull, reason: 'attendu accepté');
+          memes(r.jours, a['jours'], 'jours');
+        } else {
+          expect(r.refus, isNotNull, reason: 'attendu refusé : ${a['code']}');
+          expect(r.refus!.code, a['code']);
+          expect(r.refus!.motif, a['motif']);
+          expect(r.refus!.geste, a['geste']);
+        }
+      });
+    }
+  });
+
+  group('lot PLAN-INDIV : appliquer le modèle à une période (aperçu, jamais d\'écrasement, contrôle unique de la grille)', () {
+    for (final c in liste(j['persoApplication'])) {
+      test(c['nom'] as String, () {
+        final agent = m(c['agent']);
+        final versions = liste(c['versions']);
+        final r = apercuApplicationPersoRh(
+          role: c['role'] as String,
+          agent: agent,
+          du: c['du'] as String?,
+          au: c['au'] as String?,
+          versions: liste(c['persoVersions']),
+          planningActif: liste(c['planning']),
+          regimeALaDate: (d) => regimeDe(agent, versions, d),
+        );
+        final a = m(c['attendu']);
+        if (a['ok'] == true) {
+          expect(r.refus, isNull, reason: 'attendu accepté');
+          memes([for (final l in r.lignes) l.toJson()], a['lignes'], 'lignes');
+          int n(String etat) => r.lignes.where((l) => l.etat == etat).length;
+          expect(n('a_poser'), a['aPoser']);
+          expect(n('occupe'), a['occupes']);
+          expect(n('refuse'), a['refuses']);
+          expect(n('libre'), a['libres']);
+          expect(n('sans_modele'), a['sansModele']);
+        } else {
+          expect(r.refus, isNotNull, reason: 'attendu refusé : ${a['code']}');
+          expect(r.refus!.code, a['code']);
+          expect(r.refus!.motif, a['motif']);
+          expect(r.refus!.geste, a['geste']);
+        }
+      });
+    }
+  });
+
+  group('lot PLAN-INDIV : les valeurs d\'attente du personnel (confirmation signée, levée par la modification du champ seul)', () {
+    for (final c in liste(j['attente'])) {
+      test(c['nom'] as String, () {
+        final fiche = m(c['fiche']);
+        final r = controlerConfirmationAttenteRh(
+          droit: c['droit'] as bool,
+          agent: c['agentExiste'] == true ? fiche : null,
+          champ: c['champ'] as String?,
+          motif: c['motif'] as String?,
+        );
+        final a = m(c['attendu']);
+        if (a['ok'] == true) {
+          expect(r.refus, isNull, reason: 'attendu accepté');
+          memes(r.patch!['valeursAttente'], a['valeursAttente'], 'valeursAttente');
+        } else {
+          expect(r.refus, isNotNull, reason: 'attendu refusé : ${a['code']}');
+          expect(r.refus!.code, a['code']);
+          expect(r.refus!.motif, a['motif']);
+          expect(r.refus!.geste, a['geste']);
+        }
+      });
+    }
+    for (final c in liste(j['levee'])) {
+      test(c['nom'] as String, () {
+        final fiche = m(c['fiche']);
+        final patch = m(c['patch']);
+        final r = leverValeursAttenteRh(fiche, patch);
+        final obtenu = r != null ? r['valeursAttente'] : fiche['valeursAttente'];
+        memes(obtenu, m(c['attendu'])['valeursAttente'], 'valeursAttente');
+      });
+    }
+    test('les quatre champs d\'attente sont ceux de la décision (salaire, catégorie, date d\'embauche, CNSS)', () {
+      expect(champsAttenteRh.map((c) => c.cle), ['salaireBase', 'categorie', 'dateEmbauche', 'cnss']);
+      expect(gardePlanningPersonnaliseRh('modifier'), startsWith('PLANNING_PERSO_FIGE'));
+      expect(gardePlanningPersonnaliseRh('archiver'), startsWith('PLANNING_PERSO_FIGE'));
+      expect(gardePlanningPersonnaliseRh('inserer'), isNull);
+    });
+  });
+
+  group('lot PLAN-INDIV, RG-11 : seules les vacations VALIDÉES comptent pour les primes (le moteur de paie du domaine)', () {
+    test('une vacation « à valider » ou « refusée » ne compte pas, un modèle non plus (vecteur de la maquette)', () {
+      final c = m(j['rg11']);
+      final id = c['agentId'] as String;
+      final employe = <String, Object?>{'id': id, 'matricule': '1', 'nomComplet': 'TEST Agent', 'fonction': 'medecin', 'salaireBase': 100000, 'statut': 'actif', 'dateEmbauche': '2026-01-15'};
+      final calc = paiCalculer(employe, c['annee'] as int, c['mois'] as int, PaiEntrees(planning: liste(c['planning'])), DateTime.parse('2026-10-30T10:00:00'));
+      expect(calc.gardes, c['attendu'], reason: 'la maquette compte 2 gardes (sans état et validée) sur les 4 posées');
+    });
   });
 
   group('les libellés du circuit', () {

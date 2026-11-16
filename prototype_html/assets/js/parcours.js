@@ -7107,6 +7107,10 @@
     { cle: 'honorairePeriodicite', libelle: 'Périodicité de l’honoraire' },
   ];
   var VACATIONS_GARDE_RH = ['garde', 'garde_hospi'];
+  var MODES_REGIME_INDIVIDUEL = ['deroge', 'remplace'];
+  var GESTE_REGIME_INDIVIDUEL = 'regler_regime_individuel', GESTE_PLANNING_PERSONNALISE = 'regler_planning_personnalise', GESTE_VALEUR_ATTENTE = 'confirmer_valeur_attente_personnel';
+  /** Un geste réservé du lot PLAN-INDIV : un DROIT de la fiche RBAC du rôle courant, jamais un nom de rôle dans le moteur. */
+  function peutGestePlan(geste, role) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, geste)); }
   function refusRh(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste }, extra || {}); }
   function colRegimesInd() { return S.collection('regimesIndividuels', { module: 'M10', entite: 'régime individuel', prefix: 'RGI' }); }
   function colPlanningRh() { return S.collection('planning', { module: 'M10', entite: 'Planning' }); }
@@ -7139,12 +7143,25 @@
       vacations: base ? (base.vacations || []).slice() : [], repos: base ? (base.repos || null) : null, cycle: base ? base.cycle : null,
       honoraire: base ? (base.honoraire || null) : null, honorairePeriodicite: base ? (base.honorairePeriodicite || null) : null,
       source: base ? (base.source || null) : null, mention: base ? (base.mention || null) : null,
-      individuel: false, derogations: [], versionId: null, dateEffet: null,
+      individuel: false, derogations: [], versionId: null, dateEffet: null, mode: 'categorie', remplace: false,
     };
     var v = versionsRegimeInd(employeId).filter(function (x) { return String(x.dateEffet) <= d; }).pop();
     if (!v) return out;
     out.versionId = v.id; out.dateEffet = v.dateEffet;
     if (v.retourCategorie) return out;
+    if (v.mode === 'remplace') {
+      /* MODE « REMPLACE » : rien n'est hérité de la catégorie. Ce que la version ne dit pas est ABSENT (cycle, honoraire, périodicité : nuls), jamais repris de la catégorie. */
+      var cr = v.champs || {};
+      out.mode = 'remplace'; out.remplace = true;
+      out.vacations = (cr.vacations || []).slice(); out.repos = (cr.repos === 'aucun' || !champRenseigne(cr.repos)) ? null : cr.repos;
+      out.cycle = champRenseigne(cr.cycle) ? cr.cycle : null; out.honoraire = champRenseigne(cr.honoraire) ? cr.honoraire : null;
+      out.honorairePeriodicite = champRenseigne(cr.honorairePeriodicite) ? cr.honorairePeriodicite : null;
+      out.source = null; out.mention = null;
+      out.derogations = CHAMPS_DEROGEABLES.map(function (c) { return c.cle; });
+      out.individuel = true;
+      return out;
+    }
+    out.mode = 'deroge';
     CHAMPS_DEROGEABLES.forEach(function (c) {
       var x = v.champs ? v.champs[c.cle] : undefined;
       if (!champRenseigne(x)) return;
@@ -7157,7 +7174,7 @@
   /** L'historique d'un agent, version par version, avec le motif et l'auteur. */
   function historiqueRegimeInd(employeId) {
     return versionsRegimeInd(employeId).map(function (v, i) {
-      return { id: v.id, version: i + 1, dateEffet: v.dateEffet, retourCategorie: v.retourCategorie === true, champs: JSON.parse(JSON.stringify(v.champs || {})),
+      return { id: v.id, version: i + 1, dateEffet: v.dateEffet, mode: v.retourCategorie === true ? null : (v.mode || 'deroge'), retourCategorie: v.retourCategorie === true, champs: JSON.parse(JSON.stringify(v.champs || {})),
         motif: v.motif, creePar: v.creePar, creeLe: v.creeLe };
     });
   }
@@ -7172,7 +7189,9 @@
    *  engagent la paie et la santé de l'agent. */
   function derogerRegime(o) {
     o = o || {};
-    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusRh('DEROGATION_RESERVEE', 'Le régime individuel se règle par la Directrice Administrative ou l’administrateur.', 'Demander à la Directrice Administrative de poser la dérogation.');
+    if (!peutGestePlan(GESTE_REGIME_INDIVIDUEL)) return refusRh('DEROGATION_RESERVEE', 'Le régime individuel se règle par un rôle qui détient le droit « Régler le régime individuel d’un agent » (fiche de droits du rôle).', 'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur) de poser la dérogation.');
+    var mode = (o.mode === undefined || o.mode === null || o.mode === '') ? 'deroge' : o.mode;
+    if (MODES_REGIME_INDIVIDUEL.indexOf(mode) < 0) return refusRh('MODE_INCONNU', 'Le mode « ' + mode + ' » n’existe pas : un régime individuel déroge à la catégorie ou la remplace.', 'Choisir « déroge » (le reste suit la catégorie) ou « remplace » (rien n’est hérité).', { mode: mode });
     var e = employeRh(o.employeId);
     if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
     var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
@@ -7208,6 +7227,13 @@
         if (['mensuelle', 'occurrence'].indexOf(c.honorairePeriodicite) < 0) return refusRh('CHAMP_INVALIDE', 'La périodicité de l’honoraire est mensuelle ou par occurrence.', 'Corriger la périodicité.', { champ: 'honorairePeriodicite' });
         champs.honorairePeriodicite = c.honorairePeriodicite;
       }
+      if (mode === 'remplace') {
+        var manquants = [];
+        if (!champs.vacations || !champs.vacations.length) manquants.push('vacations');
+        if (champs.repos === undefined) manquants.push('repos');
+        if (manquants.length) return refusRh('REMPLACEMENT_INCOMPLET', 'Un régime qui REMPLACE celui de la catégorie n’hérite de rien : il doit dire ses vacations et son repos (manque : ' + manquants.join(', ') + ').',
+          'Renseigner les vacations et le repos (« aucun repos codifié » est un choix), ou choisir le mode « déroge » pour que le reste suive la catégorie.', { manquants: manquants });
+      }
       if (!Object.keys(champs).length) return refusRh('AUCUNE_DEROGATION', 'Aucun champ n’est dérogé : le régime de l’agent suit déjà celui de sa catégorie.', 'Renseigner au moins un champ, ou choisir « revenir au régime de la catégorie ».');
     }
     var existantes = versionsRegimeInd(e.id);
@@ -7217,11 +7243,11 @@
     var avant = regimeALaDate(e.id, e.fonction, dateEffet);
     var res = colRegimesInd().insert({
       employeId: e.id, employe: e.nomComplet, matricule: e.matricule, fonction: e.fonction, categorie: avant.categorie,
-      champs: champs, retourCategorie: retour, dateEffet: dateEffet, motif: String(o.motif).trim(), version: existantes.length + 1, creeLe: aujIso(), creePar: acteur(),
+      champs: champs, mode: retour ? null : mode, retourCategorie: retour, dateEffet: dateEffet, motif: String(o.motif).trim(), version: existantes.length + 1, creeLe: aujIso(), creePar: acteur(),
     }, { journal: { action: retour ? 'Régime individuel : retour à la catégorie' : 'Régime individuel : dérogation posée', module: 'M10', entite: 'regimesIndividuels',
-      avant: { derogations: avant.derogations, dateEffet: avant.dateEffet }, apres: { champs: champs, retourCategorie: retour, dateEffet: dateEffet, motif: String(o.motif).trim() } } });
+      avant: { derogations: avant.derogations, dateEffet: avant.dateEffet }, apres: { champs: champs, mode: retour ? null : mode, retourCategorie: retour, dateEffet: dateEffet, motif: String(o.motif).trim() } } });
     if (!res) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
-    return { ok: true, id: res.record.id, version: existantes.length + 1, dateEffet: dateEffet, derogations: Object.keys(champs), retourCategorie: retour, undo: res.undo };
+    return { ok: true, id: res.record.id, version: existantes.length + 1, dateEffet: dateEffet, mode: retour ? null : mode, derogations: Object.keys(champs), retourCategorie: retour, undo: res.undo };
   }
   S.garder('regimesIndividuels', function (op) {
     if (op === 'modifier' || op === 'archiver') return 'REGIME_INDIVIDUEL_FIGE : une version de régime individuel ne se réécrit ni ne s’archive (elle explique des vacations déjà posées). Ajouter une nouvelle version à une date d’effet postérieure, ou « revenir au régime de la catégorie ».';
@@ -7237,7 +7263,7 @@
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return refusRh('DATE_INVALIDE', 'La date de la vacation est absente ou illisible.', 'Choisir une date.');
     if (!typePlanning(o.type)) return refusRh('TYPE_INCONNU', 'Le type de vacation « ' + o.type + ' » n’existe pas.', 'Choisir un type du référentiel.');
     var regime = regimeALaDate(e.id, e.fonction, d);
-    var autres = colPlanningRh().active().filter(function (p) { return p.employeId === e.id && p.id !== o.ignoreId; });
+    var autres = colPlanningRh().active().filter(function (p) { return p.employeId === e.id && p.id !== o.ignoreId; }).concat((o.simules || []).filter(function (p) { return p.employeId === e.id; }));
     var memeJour = autres.filter(function (p) { return p.date === d; })[0];
     if (memeJour) return refusRh('DOUBLE_AFFECTATION', e.nomComplet + ' a déjà une vacation le ' + C.dateFR(d) + ' (' + libelleType(memeJour.type) + ').', 'Modifier la vacation existante, ou choisir un autre jour.', { date: d, existante: memeJour.id });
     if (VACATIONS_GARDE_RH.indexOf(o.type) >= 0) {
@@ -7260,10 +7286,12 @@
       statut: 'validee', regimeLibelle: regime.categorie || null, regimeIndividuelId: regime.versionId, derogations: regime.derogations.slice(),
     }, extra || {});
   }
+  /** Le planning du personnel se pose et se retire par le surveillant, la Directrice Administrative ou l'administrateur (UNE seule liste, ici : un agent PROPOSE). Décroissant au `garde-roles-en-dur`. */
+  function peutPoserPlanningRh(role) { return ['admin', 'da', 'surveillant'].indexOf(role == null ? roleCourant() : role) >= 0; }
   /** POSER OU REMPLACER une vacation depuis le poste : DAF, surveillant (ou administrateur). Écrite VALIDÉE (celui qui la pose est celui qui valide). */
   function poserVacationRh(o) {
     o = o || {};
-    if (['admin', 'da', 'surveillant'].indexOf(roleCourant()) < 0) return refusRh('PLANNING_RESERVE', 'Le planning du personnel se pose par le surveillant ou la Directrice Administrative.', 'Un agent propose ses vacations (propositions de planning) ; le surveillant valide.');
+    if (!peutPoserPlanningRh()) return refusRh('PLANNING_RESERVE', 'Le planning du personnel se pose par le surveillant ou la Directrice Administrative.', 'Un agent propose ses vacations (propositions de planning) ; le surveillant valide.');
     var ctrl = controlerVacationRh({ employeId: o.employeId, date: o.date, type: o.type, ignoreId: o.existantId });
     if (!ctrl.ok) return ctrl;
     var e = employeRh(o.employeId);
@@ -7273,11 +7301,197 @@
     return { ok: true, id: o.existantId || res.record.id, regime: ctrl.regime, undo: res.undo };
   }
   function retirerVacationRh(id, motif) {
-    if (['admin', 'da', 'surveillant'].indexOf(roleCourant()) < 0) return refusRh('PLANNING_RESERVE', 'Le planning du personnel se retire par le surveillant ou la Directrice Administrative.', 'Demander au surveillant.');
+    if (!peutPoserPlanningRh()) return refusRh('PLANNING_RESERVE', 'Le planning du personnel se retire par le surveillant ou la Directrice Administrative.', 'Demander au surveillant.');
     var v = colPlanningRh().get(id);
     if (!v || v.statut === 'archive') return refusRh('VACATION_INTROUVABLE', 'La vacation ' + id + ' n’existe pas ou est déjà retirée.', 'Choisir une vacation du registre.');
     var res = colPlanningRh().archive(id, motif || 'Vacation retirée');
     return { ok: true, id: id, undo: res && res.undo };
+  }
+
+  /* ==========================================================================
+   * RH, LOT PLAN-INDIV (16/11/2026, Direction section AQ points 9 et 10) : DEUX MODES DE RÉGIME INDIVIDUEL, PLANNING PERSONNALISÉ, VALEURS D'ATTENTE
+   * --------------------------------------------------------------------------
+   * 1. Une version de régime individuel est « déroge » (le reste suit la catégorie) OU « remplace » (rien n'est hérité : vacations et repos exigés, refus REMPLACEMENT_INCOMPLET,
+   *    MODE_INCONNU). Le mode est un champ de la version datée, jamais réécrit.
+   * 2. Le PLANNING PERSONNALISÉ d'un agent (collection `planningsPersonnalises`) est un MODÈLE hebdomadaire (jours 1 à 7, lundi à dimanche) ou mensuel (jours 1 à 31), une fiche
+   *    IMMUABLE par version datée. Il est contrôlé contre la grille dès sa définition (type permis par le régime à la date d'effet, repos entre deux gardes, la semaine lue en BOUCLE : une
+   *    garde le dimanche et une le lundi se heurtent). « Appliquer à une période » : aperçu sans écriture, un jour occupé n'est JAMAIS écrasé, chaque jour passe par le contrôle unique
+   *    (`controlerVacationRh`). LE MODÈLE NE COMPTE POUR AUCUNE PRIME (RG-11) : la paie ne lit que les vacations VALIDÉES de `planning`.
+   * 3. Les VALEURS D'ATTENTE du personnel (salaire, catégorie, date d'embauche, numéro CNSS) : une mention PAR CHAMP (`valeursAttente`), levée par la modification de ce champ seul, ou par
+   *    « Confirmer » (motif obligatoire, journal RG-12). Aucune valeur n'est pré-remplie à la création.
+   * ======================================================================== */
+  var CHAMPS_ATTENTE = [
+    { cle: 'salaireBase', libelle: 'Salaire de base' },
+    { cle: 'categorie', libelle: 'Catégorie / échelon' },
+    { cle: 'dateEmbauche', libelle: 'Date d’embauche' },
+    { cle: 'cnss', libelle: 'Numéro CNSS' },
+  ];
+  var PERIODICITES_PERSO = [{ id: 'hebdomadaire', libelle: 'Hebdomadaire', jours: 7 }, { id: 'mensuel', libelle: 'Mensuel', jours: 31 }];
+  var JOURS_SEMAINE = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+  var PERIODE_MAX_JOURS = 92;
+  function colPlanningsPerso() { return S.collection('planningsPersonnalises', { module: 'M10', entite: 'planning personnalisé', prefix: 'PPE' }); }
+  S.garder('planningsPersonnalises', function (op) {
+    if (op === 'modifier' || op === 'archiver') return 'PLANNING_PERSO_FIGE : une version de planning personnalisé ne se réécrit ni ne s’archive (elle explique des vacations déjà posées). Définir une nouvelle version à une date d’effet postérieure.';
+    return null;
+  });
+  function periodicitePerso(id) { return PERIODICITES_PERSO.filter(function (p) { return p.id === id; })[0] || null; }
+  function versionsPerso(employeId) {
+    return colPlanningsPerso().active().filter(function (v) { return v.employeId === employeId; })
+      .sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); });
+  }
+  /** La version du modèle en vigueur pour un agent à une date : la dernière dont la date d'effet est atteinte. */
+  function planningPersoALaDate(employeId, date) {
+    var d = date ? isoJour(date) : aujIso();
+    return versionsPerso(employeId).filter(function (v) { return String(v.dateEffet) <= d; }).pop() || null;
+  }
+  function historiquePlanningPerso(employeId) {
+    return versionsPerso(employeId).map(function (v, i) {
+      return { id: v.id, version: i + 1, periodicite: v.periodicite, dateEffet: v.dateEffet, jours: JSON.parse(JSON.stringify(v.jours || [])), motif: v.motif, creePar: v.creePar, creeLe: v.creeLe };
+    });
+  }
+  function numeroDuJour(periodicite, jourIso) {
+    var p = String(jourIso).split('-').map(Number);
+    if (periodicite === 'mensuel') return p[2];
+    var wd = new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay();
+    return ((wd + 6) % 7) + 1;
+  }
+  /** Le type que le modèle prévoit pour un jour (null : jour libre). */
+  function typeDuModele(version, jourIso) {
+    var n = numeroDuJour(version.periodicite, jourIso);
+    var l = (version.jours || []).filter(function (j) { return Number(j.jour) === n; })[0];
+    return l ? l.type : null;
+  }
+  function libelleJourPerso(periodicite, n) { return periodicite === 'hebdomadaire' ? JOURS_SEMAINE[n - 1] : 'le ' + n; }
+
+  /** DÉFINIR une version de planning personnalisé (geste réservé). Le contrôle est celui de la grille, appliqué au modèle. */
+  function definirPlanningPerso(o) {
+    o = o || {};
+    if (!peutGestePlan(GESTE_PLANNING_PERSONNALISE)) return refusRh('PLANNING_PERSO_RESERVE', 'Le planning personnalisé se définit par un rôle qui détient le droit « Définir le planning personnalisé d’un agent » (fiche de droits du rôle).', 'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur).');
+    var e = employeRh(o.employeId);
+    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    var per = periodicitePerso(o.periodicite);
+    if (!per) return refusRh('PERIODICITE_INCONNUE', 'La périodicité « ' + (o.periodicite || '') + ' » n’existe pas : un planning personnalisé est hebdomadaire ou mensuel.', 'Choisir hebdomadaire ou mensuel.');
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusRh('DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle le modèle s’applique.');
+    if (!String(o.motif || '').trim()) return refusRh('MOTIF_OBLIGATOIRE', 'Le motif est obligatoire.', 'Dire pourquoi cet agent a un planning propre.');
+    if (dateEffet < aujIso()) return refusRh('DATE_PASSEE', 'La date d’effet (' + C.dateFR(dateEffet) + ') est antérieure à aujourd’hui : un modèle ne s’applique jamais rétroactivement.', 'Choisir aujourd’hui ou une date à venir.');
+    var jours = o.jours;
+    if (!Array.isArray(jours) || !jours.length) return refusRh('MODELE_VIDE', 'Le modèle ne contient aucun jour.', 'Renseigner au moins un jour du modèle.');
+    var vus = {}, propre = [];
+    for (var i = 0; i < jours.length; i++) {
+      var n = Number(jours[i] && jours[i].jour), t = jours[i] && jours[i].type;
+      if (!(n >= 1 && n <= per.jours) || Math.floor(n) !== n) return refusRh('JOUR_INVALIDE', 'Le jour « ' + (jours[i] && jours[i].jour) + ' » n’existe pas dans un modèle ' + per.libelle.toLowerCase() + ' (1 à ' + per.jours + ').', 'Corriger le numéro du jour.', { jour: jours[i] && jours[i].jour });
+      if (vus[n]) return refusRh('JOUR_EN_DOUBLE', 'Le jour ' + n + ' est donné deux fois dans le modèle.', 'Une seule vacation par jour.', { jour: n });
+      vus[n] = true;
+      if (!typePlanning(t)) return refusRh('TYPE_INCONNU', 'Le type de vacation « ' + t + ' » n’existe pas.', 'Choisir un type du référentiel.', { jour: n });
+      propre.push({ jour: n, type: t });
+    }
+    propre.sort(function (a, b) { return a.jour - b.jour; });
+    var permis = typesAutorisesRh(e.id, e.fonction, dateEffet);
+    for (var k = 0; k < propre.length; k++) {
+      if (permis.indexOf(propre[k].type) < 0) return refusRh('TYPE_NON_PERMIS', 'Le type « ' + libelleType(propre[k].type) + ' » n’est pas permis par le régime de ' + e.nomComplet + ' à la date d’effet (' + C.dateFR(dateEffet) + ').',
+        'Choisir un type de son régime (vacations, repos, congé, absence, remplacement), ou régler d’abord son régime individuel.', { jour: propre[k].jour, type: propre[k].type });
+    }
+    var regime = regimeALaDate(e.id, e.fonction, dateEffet);
+    var reposJours = regime.repos === 'repos48' ? 2 : 1;
+    var gardes = propre.filter(function (j) { return VACATIONS_GARDE_RH.indexOf(j.type) >= 0; }).map(function (j) { return j.jour; });
+    for (var g = 0; g < gardes.length; g++) {
+      for (var r = 1; r <= reposJours; r++) {
+        var suivant = gardes[g] + r;
+        if (per.id === 'hebdomadaire') suivant = ((suivant - 1) % 7) + 1;          /* la semaine se lit en BOUCLE */
+        if (suivant !== gardes[g] && gardes.indexOf(suivant) >= 0) return refusRh('INCOMPATIBILITE_REPOS', 'Incompatibilité : le repos de ' + (reposJours * 24) + ' h qui suit une garde n’est pas respecté (garde ' + libelleJourPerso(per.id, gardes[g]) + ' puis garde ' + libelleJourPerso(per.id, suivant) + (per.id === 'hebdomadaire' ? ', la semaine étant lue en boucle' : '') + ').',
+          'Espacer les gardes d’au moins ' + (reposJours * 24) + ' h, ou régler d’abord le repos du régime de cet agent.', { jour: gardes[g], autre: suivant, reposHeures: reposJours * 24 });
+      }
+    }
+    var existantes = versionsPerso(e.id);
+    var derniere = existantes[existantes.length - 1] || null;
+    if (existantes.some(function (v) { return String(v.dateEffet) === dateEffet; })) return refusRh('DATE_EXISTANTE', 'Une version commence déjà le ' + C.dateFR(dateEffet) + ' pour cet agent : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure.');
+    if (derniere && String(derniere.dateEffet) > dateEffet) return refusRh('VERSION_ANTERIEURE', 'La version la plus récente de cet agent commence le ' + C.dateFR(derniere.dateEffet) + ' : une version insérée avant elle masquerait l’historique.', 'Choisir une date d’effet postérieure à la dernière version.');
+    var res = colPlanningsPerso().insert({
+      employeId: e.id, employe: e.nomComplet, matricule: e.matricule, fonction: e.fonction, periodicite: per.id, jours: propre,
+      dateEffet: dateEffet, motif: String(o.motif).trim(), version: existantes.length + 1, creeLe: aujIso(), creePar: acteur(),
+    }, { journal: { action: 'Planning personnalisé : version définie', module: 'M10', entite: 'planningsPersonnalises',
+      avant: derniere ? { version: derniere.version, dateEffet: derniere.dateEffet } : null, apres: { periodicite: per.id, jours: propre.length, dateEffet: dateEffet, motif: String(o.motif).trim() } } });
+    if (!res) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
+    return { ok: true, id: res.record.id, version: existantes.length + 1, periodicite: per.id, dateEffet: dateEffet, jours: propre.length, undo: res.undo };
+  }
+
+  /** APPLIQUER le modèle d'un agent à une période : `ecrire` faux = APERÇU (aucune écriture). Un jour occupé n'est jamais écrasé ; chaque jour passe par le contrôle unique. */
+  function appliquerPlanningPerso(o) {
+    o = o || {};
+    if (!peutPoserPlanningRh()) return refusRh('PLANNING_RESERVE', 'Le planning du personnel se pose par le surveillant ou la Directrice Administrative.', 'Un agent propose ses vacations (propositions de planning) ; le surveillant valide.');
+    var e = employeRh(o.employeId);
+    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    var du = o.du ? isoJour(o.du) : '', au = o.au ? isoJour(o.au) : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(du) || !/^\d{4}-\d{2}-\d{2}$/.test(au)) return refusRh('DATE_INVALIDE', 'La période est absente ou illisible.', 'Choisir un premier et un dernier jour.');
+    if (au < du) return refusRh('PERIODE_INVERSEE', 'Le dernier jour (' + C.dateFR(au) + ') précède le premier (' + C.dateFR(du) + ').', 'Corriger la période.');
+    var nbJours = Math.round((C.toDate(au).getTime() - C.toDate(du).getTime()) / 86400000) + 1;
+    if (nbJours > PERIODE_MAX_JOURS) return refusRh('PERIODE_TROP_LONGUE', 'La période couvre ' + nbJours + ' jours : au plus ' + PERIODE_MAX_JOURS + ' jours d’un coup.', 'Appliquer le modèle par périodes plus courtes.', { jours: nbJours });
+    if (!versionsPerso(e.id).length) return refusRh('AUCUN_MODELE', e.nomComplet + ' n’a pas de planning personnalisé.', 'Définir son planning personnalisé sur sa fiche.');
+    var occupes = colPlanningRh().active().filter(function (p) { return p.employeId === e.id; });
+    var simules = [], lignes = [];
+    for (var i = 0; i < nbJours; i++) {
+      var jour = C.iso(C.addDays(du, i));
+      var v = planningPersoALaDate(e.id, jour);
+      if (!v) { lignes.push({ date: jour, etat: 'sans_modele', type: null }); continue; }
+      var type = typeDuModele(v, jour);
+      if (!type) { lignes.push({ date: jour, etat: 'libre', type: null, versionId: v.id }); continue; }
+      var deja = occupes.filter(function (p) { return p.date === jour; })[0];
+      if (deja) { lignes.push({ date: jour, etat: 'occupe', type: type, code: 'JOUR_OCCUPE', existante: deja.id, existanteType: deja.type, versionId: v.id }); continue; }
+      var ctrl = controlerVacationRh({ employeId: e.id, date: jour, type: type, simules: simules });
+      if (!ctrl.ok) { lignes.push({ date: jour, etat: 'refuse', type: type, code: ctrl.code, motif: ctrl.motif, versionId: v.id }); continue; }
+      simules.push({ id: 'SIM' + i, employeId: e.id, date: jour, type: type });
+      lignes.push({ date: jour, etat: 'a_poser', type: type, versionId: v.id, regime: ctrl.regime });
+    }
+    var compte = function (etat) { return lignes.filter(function (l) { return l.etat === etat; }).length; };
+    var out = { ok: true, apercu: o.ecrire !== true, agent: e.id, du: du, au: au, lignes: lignes.map(function (l) { return { date: l.date, etat: l.etat, type: l.type, code: l.code || null }; }),
+      aPoser: compte('a_poser'), occupes: compte('occupe'), refuses: compte('refuse'), libres: compte('libre'), sansModele: compte('sans_modele'), ids: [], poses: 0 };
+    if (o.ecrire !== true) return out;
+    var undos = [];
+    lignes.filter(function (l) { return l.etat === 'a_poser'; }).forEach(function (l) {
+      var rec = fabriquerVacationRh({ date: l.date, type: l.type }, l.regime, e, { validationEtat: 'validee', validePar: acteur(), valideLe: aujIso(), origine: 'modele', planningPersonnaliseId: l.versionId });
+      var res = colPlanningRh().insert(rec);
+      if (res) { out.ids.push(res.record.id); undos.push(res.undo); }
+    });
+    out.poses = out.ids.length;
+    S.log('Planning personnalisé : modèle appliqué à une période', 'M10', 'planning', e.id, null, { du: du, au: au, poses: out.poses, occupes: out.occupes, refuses: out.refuses });
+    out.undo = function () { undos.forEach(function (u) { u(); }); };
+    return out;
+  }
+
+  /* ---- LES VALEURS D'ATTENTE DU PERSONNEL ---- */
+  function valeursAttenteDe(e) {
+    var m = (e && e.valeursAttente) || {};
+    return CHAMPS_ATTENTE.filter(function (c) { return m[c.cle] === true && champRenseigne(e[c.cle]); }).map(function (c) { return c.cle; });
+  }
+  function libelleChampAttente(cle) { var c = CHAMPS_ATTENTE.filter(function (x) { return x.cle === cle; })[0]; return c ? c.libelle : cle; }
+  /** La modification d'un champ LÈVE sa mention, et seulement la sienne (appelée par le magasin avant toute écriture de la fiche). */
+  S.avantModifier('personnel', function (rec, patch) {
+    if (!patch || patch.valeursAttente !== undefined || !rec.valeursAttente) return patch;
+    var restant = {}, change = false;
+    Object.keys(rec.valeursAttente).forEach(function (k) {
+      if (rec.valeursAttente[k] !== true) return;
+      if (Object.prototype.hasOwnProperty.call(patch, k) && String(patch[k] === null || patch[k] === undefined ? '' : patch[k]) !== String(rec[k] === null || rec[k] === undefined ? '' : rec[k])) { change = true; return; }
+      restant[k] = true;
+    });
+    return change ? Object.assign({}, patch, { valeursAttente: restant }) : patch;
+  });
+  /** CONFIRMER une valeur d'attente telle quelle : motif obligatoire, journal RG-12, la mention de CE champ tombe. */
+  function confirmerValeurAttente(o) {
+    o = o || {};
+    if (!peutGestePlan(GESTE_VALEUR_ATTENTE)) return refusRh('CONFIRMATION_RESERVEE', 'Confirmer une valeur d’attente se fait par un rôle qui détient le droit « Confirmer une valeur d’attente du personnel » (fiche de droits du rôle).', 'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur).');
+    var e = employeRh(o.employeId);
+    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    if (!CHAMPS_ATTENTE.some(function (c) { return c.cle === o.champ; })) return refusRh('CHAMP_INCONNU', 'Le champ « ' + o.champ + ' » n’a pas de valeur d’attente.', 'Choisir le salaire, la catégorie, la date d’embauche ou le numéro CNSS.');
+    if (!(e.valeursAttente && e.valeursAttente[o.champ] === true)) return refusRh('PAS_UNE_VALEUR_ATTENTE', 'Le champ « ' + libelleChampAttente(o.champ) + ' » de ' + e.nomComplet + ' n’est pas une valeur d’attente.', 'Rien à confirmer.');
+    if (!champRenseigne(e[o.champ])) return refusRh('VALEUR_ABSENTE', 'Le champ « ' + libelleChampAttente(o.champ) + ' » de ' + e.nomComplet + ' n’a pas de valeur : il n’y a rien à confirmer.', 'Renseigner la valeur sur la fiche.');
+    var motif = String(o.motif || '').trim();
+    if (!motif) return refusRh('MOTIF_OBLIGATOIRE', 'Le motif de la confirmation est obligatoire.', 'Dire sur quel document ou quelle décision la valeur est arrêtée.');
+    var restant = Object.assign({}, e.valeursAttente); delete restant[o.champ];
+    var res = S.collection('personnel').update(e.id, { valeursAttente: restant },
+      { journal: { action: 'Valeur d’attente confirmée', module: 'M10', entite: 'personnel', avant: { champ: o.champ, valeur: e[o.champ], attente: true }, apres: { champ: o.champ, attente: false, motif: motif } } });
+    if (!res) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
+    return { ok: true, id: e.id, champ: o.champ, restantes: valeursAttenteDe(e), undo: res.undo };
   }
 
   /* ==========================================================================
@@ -7748,7 +7962,10 @@
     circuit: circuitPresencesRh, etapesDuCircuit: etapesDuCircuitRh, definirCircuit: definirCircuitRh, agentModifieDirectement: agentModifieDirectementRh, definirAgentDirect: definirAgentDirectRh,
     etatValidation: etatValidationRh, compte: compteRh, peutTrancher: peutTrancherRh, trancher: trancherPieceRh, avisMission: avisMissionRh, naissance: naissanceRh, regulariser: regulariserPresenceRh,
     proposer: proposerPlanningRh, annulerProposition: annulerPropositionRh, trancherProposition: trancherPropositionRh, propositionsVisibles: propositionsVisiblesRh, controlerProposition: controlerPropositionRh,
-    employeDeSession: employeDeSession,
+    employeDeSession: employeDeSession, peutPoserPlanning: peutPoserPlanningRh,
+    MODES_REGIME: MODES_REGIME_INDIVIDUEL, CHAMPS_ATTENTE: CHAMPS_ATTENTE, PERIODICITES_PERSO: PERIODICITES_PERSO, JOURS_SEMAINE: JOURS_SEMAINE,
+    definirPlanningPerso: definirPlanningPerso, planningPersoALaDate: planningPersoALaDate, historiquePlanningPerso: historiquePlanningPerso, appliquerPlanningPerso: appliquerPlanningPerso,
+    typeDuModele: typeDuModele, valeursAttente: valeursAttenteDe, libelleChampAttente: libelleChampAttente, confirmerValeurAttente: confirmerValeurAttente,
   };
   /* ==========================================================================
    * L'ORGANIGRAMME, SES POSTES ET LE TITRE DE L'AGENT (11/11/2026, lot ORG2)

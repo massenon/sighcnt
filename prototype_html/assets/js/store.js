@@ -160,8 +160,11 @@
      `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
      Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
      `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
+     92 (16/11/2026, lot PLAN-INDIV) : la collection `planningsPersonnalises` (une fiche par version datée), le MODE d'une version de régime individuel (`mode` : déroge ou remplace), la
+     fiche du personnel porte `valeursAttente` (une mention par champ : salaire, catégorie, date d'embauche, numéro CNSS) et les trois gestes réservés `regler_regime_individuel`,
+     `regler_planning_personnalise`, `confirmer_valeur_attente_personnel` entrent au manifeste. Sans incrément, un poste n'aurait ni la collection ni les mentions.
   */
-  var VERSION = 91;
+  var VERSION = 92;
   var db = null;
   var listeners = {};
 
@@ -681,6 +684,8 @@
         categorie: ech, salaireBase: salaire,
         dateEmbauche: C.iso(embauche),
         cnss: '2' + C.between(rnd, 100000, 999999) + C.between(rnd, 10, 99),
+        /* Lot PLAN-INDIV : ces quatre valeurs sont TIRÉES pour le jeu, aucune n'est arrêtée par la Direction : chacune porte sa mention « valeur d'attente » (levée par la modification du champ seul, ou par « Confirmer »). */
+        valeursAttente: { salaireBase: true, categorie: true, dateEmbauche: true, cnss: true },
         telephone: '0' + C.between(rnd, 1, 9) + C.between(rnd, 10000000, 99999999),
         situation: C.pick(rnd, ['Célibataire', 'Marié(e)', 'Marié(e)', 'Veuf(ve)']),
         statut: 'actif',
@@ -4210,7 +4215,7 @@
     /* Comptes, droits et activation des modules */
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
-    'regimesTravail', 'regimesIndividuels', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
+    'regimesTravail', 'regimesIndividuels', 'planningsPersonnalises', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
     'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux', 'parametresClinique',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
@@ -4352,6 +4357,9 @@
      rend un MOTIF (refus nommé) ou rien. */
   var GARDES = {};
   function garder(nom, fn) { GARDES[nom] = fn; }
+  /** Un correctif posé SUR la collection avant toute modification (lot PLAN-INDIV) : rend le patch à écrire (le même, complété). */
+  var AVANT_MODIFIER = {};
+  function avantModifier(nom, fn) { AVANT_MODIFIER[nom] = fn; }
   function refuse(nom, op, rec) {
     var g = GARDES[nom];
     if (!g) return null;
@@ -4412,6 +4420,7 @@
 
       update: function (id, patch, opts) {
         var rec = api.get(id); if (!rec) return null;
+        if (AVANT_MODIFIER[name]) patch = AVANT_MODIFIER[name](rec, patch) || patch;   /* lot PLAN-INDIV : la mention d'attente tombe avec le champ modifié, d'où que vienne l'écriture */
         if (refuse(name, 'modifier', Object.assign({}, rec, patch))) return null;
         var avant = Object.assign({}, rec);
         Object.assign(rec, patch);
@@ -4547,7 +4556,8 @@
     historiqueObligations: 'CFG|Versions antérieures des obligations fiscales',
     parametresFiscaux: 'CFG|Paramètres du calendrier fiscal (délais d’alerte, montant de la CCIB)',
     regimesTravail: 'M10|Régimes de travail par catégorie',
-    regimesIndividuels: 'M10|Régimes individuels (dérogations datées, une fiche par version)',
+    regimesIndividuels: 'M10|Régimes individuels (dérogations ou remplacements datés, une fiche par version)',
+    planningsPersonnalises: 'M10|Plannings personnalisés (hebdomadaires ou mensuels, une fiche par version datée)',
     propositionsPlanning: 'M10|Propositions de planning des agents',
     modulesActifs: 'CFG|Activité des modules', notifications: 'M14|Notifications',
     emplacements: 'M6|Emplacements de rangement',
@@ -4782,7 +4792,7 @@
     etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db, sansMagasin: SRV.sansMagasin }; },
     log: log, on: on, emit: emit,
     projeterTarifs: projeterTarifs, paritesTarifs: paritesTarifs, migrerTarifsDepuis: migrerTarifsDepuis, assurerTarifProduit: assurerTarifProduit,
-    session: session, setSession: setSession, currentUser: currentUser, garder: garder,
+    session: session, setSession: setSession, currentUser: currentUser, garder: garder, avantModifier: avantModifier,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
     reglage: reglage, setReglage: setReglage,
     valeurUnitaire: valeurUnitaire,

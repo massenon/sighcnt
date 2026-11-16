@@ -427,8 +427,15 @@ List<String> _textesDerogations(List<String> derog, {List<String> vacations = co
       if (derog.contains('honorairePeriodicite')) 'Périodicité : ${_textePeriodicite(periodicite)}',
     ];
 
-List<String> _textesRegime(RegimeRhResolu r) =>
-    _textesDerogations(r.derogations, vacations: r.vacations, repos: r.repos, cycle: r.cycle, honoraire: r.honoraire, periodicite: r.honorairePeriodicite);
+List<String> _textesRegime(RegimeRhResolu r) => r.remplace
+    ? [
+        'Remplace la catégorie (rien n’est hérité)',
+        'Vacations : ${r.vacations.map(rhbTypePlanningLabel).join(', ')}',
+        'Repos : ${r.repos != null && r.repos != '' ? rhbTypePlanningLabel(r.repos!) : 'aucun codifié'}',
+        'Cycle : ${r.cycle != null ? '${r.cycle} jours' : 'non défini'}',
+        'Honoraire : ${r.honoraire != null ? money(r.honoraire, avecDevise: false) : 'non défini'}',
+      ]
+    : _textesDerogations(r.derogations, vacations: r.vacations, repos: r.repos, cycle: r.cycle, honoraire: r.honoraire, periodicite: r.honorairePeriodicite);
 
 /// `affecter` : l'affectation d'une vacation à un agent, un jour donné. Les vacations proposées sont celles du régime EN VIGUEUR À LA DATE (dérogation
 /// individuelle comprise) ; le contrôle de repos et de double affectation est celui du domaine (une règle, une voie), refusé EN LE NOMMANT.
@@ -570,17 +577,18 @@ class _Individuels extends StatelessWidget {
   final BuildContext contexte;
   final PlanningRhPoste p;
 
-  bool _peutDeroger(ContexteEcran c) => (c.role == 'admin' || c.role == 'da') && c.droit.editer;
+  /// Geste réservé de la fiche RBAC (lot PLAN-INDIV), plus un nom de rôle.
+  bool _peutDeroger(ContexteEcran c) => (c.donnees?.matrice.droitGeste(c.role, gesteRegimeIndividuelRh) ?? false) && c.droit.editer;
 
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
-    final ids = <Object?>{for (final v in rhbActives(c, 'regimesIndividuels')) v['employeId']};
+    final ids = <Object?>{for (final v in rhbActives(c, 'regimesIndividuels')) v['employeId'], for (final v in rhbActives(c, 'planningsPersonnalises')) v['employeId']};
     final personnel = {for (final e in rhbActives(c, 'personnel')) e['id']: e};
     final lignes = <Fiche>[
       for (final id in ids)
         if (personnel[id] != null)
-          {'e': personnel[id], 'r': p.regimeALaDate(personnel[id]!, iso(c.aujourdhui)), 'versions': p.historique(id).length, 'id': id}
+          {'e': personnel[id], 'r': p.regimeALaDate(personnel[id]!, iso(c.aujourdhui)), 'versions': p.historique(id).length, 'perso': p.historiquePlanningPerso(id), 'id': id}
     ];
     return CarteSigh(
       titre: 'Régimes individuels (dérogations champ par champ)',
@@ -589,10 +597,10 @@ class _Individuels extends StatelessWidget {
       ],
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const NoteSigh(
-            'Le régime de la catégorie reste la règle. Une dérogation individuelle ne change que les champs renseignés (vacations, repos, cycle, honoraire) : le reste suit la catégorie. Chaque dérogation est une version datée qui ne se réécrit pas ; les vacations déjà posées gardent le régime sous lequel elles l’ont été.'),
+            'Le régime de la catégorie reste la règle. Une version individuelle est au choix « déroge » (seuls les champs renseignés changent, le reste suit la catégorie) ou « remplace » (rien n’est hérité : vacations et repos exigés). Chaque version est une version datée qui ne se réécrit pas ; les vacations déjà posées gardent le régime sous lequel elles l’ont été.'),
         const SizedBox(height: 12),
         MiniTableauSigh(
-            vide: 'Aucun agent n’a de régime individuel : tous suivent le régime de leur catégorie.',
+            vide: 'Aucun agent n’a de régime individuel ni de planning personnalisé : tous suivent le régime de leur catégorie.',
             colonnes: [
               ColonneMini('Agent', (l) => '', rendu: (l) {
                 final e = l['e'] as Fiche;
@@ -607,9 +615,19 @@ class _Individuels extends StatelessWidget {
                       ])
                     : const Text('Suit sa catégorie', style: TextStyle(color: JetonsShell.slate400, fontSize: 12));
               }),
+              ColonneMini('Mode', (l) {
+                final r = l['r'] as RegimeRhResolu;
+                return r.mode == 'remplace' ? 'Remplace' : (r.mode == 'deroge' ? 'Déroge' : '—');
+              }),
               ColonneMini('Depuis', (l) {
                 final d = (l['r'] as RegimeRhResolu).dateEffet;
                 return d == null ? '—' : dateFR(DateTime.parse(d));
+              }),
+              ColonneMini('Planning personnalisé', (l) {
+                final h = l['perso'] as List<Map<String, Object?>>;
+                if (h.isEmpty) return 'Aucun';
+                final d = h.last;
+                return '${d['periodicite'] == 'mensuel' ? 'Mensuel' : 'Hebdomadaire'} depuis le ${dateFR(DateTime.parse('${d['dateEffet']}'))} (${h.length} version${h.length > 1 ? 's' : ''})';
               }),
               ColonneMini('Versions', (l) => '${l['versions']}', droite: true),
               ColonneMini('', (l) => '', droite: true, rendu: (l) {
@@ -634,10 +652,18 @@ class _Individuels extends StatelessWidget {
         corps: MiniTableauSigh(vide: 'Aucune version.', colonnes: [
           ColonneMini('Version', (x) => '${x['version']}', droite: true),
           ColonneMini('Date d’effet', (x) => dateFR(DateTime.parse('${x['dateEffet']}'))),
+          ColonneMini('Mode', (x) => x['retourCategorie'] == true ? '—' : (x['mode'] == 'remplace' ? 'Remplace' : 'Déroge')),
           ColonneMini('Contenu', (x) => '', rendu: (x) {
             if (x['retourCategorie'] == true) return const Text('Retour au régime de la catégorie', style: TextStyle(color: JetonsShell.slate500, fontSize: 12));
             final ch = (x['champs'] as Map).cast<String, Object?>();
             final repos = ch['repos'] == 'aucun' ? null : ch['repos'] as String?;
+            if (x['mode'] == 'remplace') {
+              final r = RegimeRhResolu(date: '', vacations: [for (final v in (ch['vacations'] as List? ?? const [])) '$v'], repos: repos, cycle: ch['cycle'] as num?, honoraire: ch['honoraire'] as num?)
+                ..remplace = true;
+              return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                for (final t in _textesRegime(r)) Text(t, style: const TextStyle(color: JetonsShell.slate700, fontSize: 12, height: 16 / 12)),
+              ]);
+            }
             final textes = _textesDerogations(ch.keys.toList(),
                 vacations: [for (final v in (ch['vacations'] as List? ?? const [])) '$v'], repos: repos, cycle: ch['cycle'], honoraire: ch['honoraire'], periodicite: ch['honorairePeriodicite'] as String?);
             return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
@@ -656,6 +682,10 @@ class _Individuels extends StatelessWidget {
         for (final e in rhbPersonnelTrie(c)) OptionChamp('${e['id']}', '${e['matricule']} — ${e['nomComplet']} (${e['poste']})')
       ]),
       const ChampDef(nom: 'dateEffet', libelle: 'Date d’effet', type: TypeChamp.date, requis: true),
+      const ChampDef(nom: 'mode', libelle: 'Mode', type: TypeChamp.select, col: ColChamp.plein, options: [
+        OptionChamp('deroge', 'Déroge : seuls les champs renseignés changent, le reste suit la catégorie'),
+        OptionChamp('remplace', 'Remplace : rien n’est hérité (vacations et repos exigés)'),
+      ]),
       const ChampDef(nom: 'retourCategorie', libelle: 'Revenir au régime de la catégorie (retire la dérogation)', type: TypeChamp.case_, col: ColChamp.plein),
       const ChampDef.section('Champs dérogés (laisser vide pour suivre la catégorie)'),
       ChampDef(nom: 'vacations', libelle: 'Vacations', type: TypeChamp.multiselect, col: ColChamp.plein, options: [
@@ -676,7 +706,7 @@ class _Individuels extends StatelessWidget {
         OptionChamp('occurrence', 'Par occurrence'),
       ]),
       const ChampDef(nom: 'motif', libelle: 'Motif', type: TypeChamp.textarea, lignes: 2, requis: true, col: ColChamp.plein),
-    ], {'employeId': agent == null ? '' : agent['id'], 'dateEffet': iso(c.aujourdhui), 'vacations': <String>[], 'repos': '', 'honorairePeriodicite': ''});
+    ], {'employeId': agent == null ? '' : agent['id'], 'dateEffet': iso(c.aujourdhui), 'mode': 'deroge', 'vacations': <String>[], 'repos': '', 'honorairePeriodicite': ''});
     afficherModale<void>(ctx,
         titre: 'Régime individuel',
         sousTitre: 'Une version datée : elle ne se réécrit pas.',
@@ -698,6 +728,7 @@ class _Individuels extends StatelessWidget {
                         employeId: v['employeId'],
                         dateEffet: v['dateEffet'] as String?,
                         retourCategorie: v['retourCategorie'] == true,
+                        mode: v['mode'] as String?,
                         motif: v['motif'] as String?,
                         champs: {
                           'vacations': v['vacations'],

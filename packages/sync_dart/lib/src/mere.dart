@@ -87,6 +87,8 @@ const familleDeBase = <String, String>{
   // Lot SYNC-CFG (décision 26) : budgets, immobilisations et couvertures d'assurance, écrits à n'importe quel poste. Famille A (champ à champ) : une couverture se CLÔT sur sa propre
   // fiche quand la suivante prend effet, un budget se corrige, un bien se cède ; l'identité est commune par le contenu (`identiteSyncGestion`). Jamais vers un téléphone (RG-13).
   'budgets': 'A', 'immobilisations': 'A', 'couverturesAssurance': 'A',
+  // Lot PLAN-INDIV : le planning personnalisé d'un agent (une version datée figée par fiche, identité commune par le contenu). Jamais vers un téléphone (RG-13).
+  'planningsPersonnalises': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 

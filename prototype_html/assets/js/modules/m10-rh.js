@@ -48,6 +48,7 @@
     return t ? t.couleur : 'neutral';
   }
   function anciennete(e) {
+    if (!e.dateEmbauche) return { ans: 0, mois: 0, absente: true };   /* « non calculable » n'est pas zéro : les écrans le disent */
     var mois = Math.floor(C.daysBetween(e.dateEmbauche, AUJ) / 30.44);
     return { ans: Math.floor(mois / 12), mois: mois % 12 };
   }
@@ -167,6 +168,166 @@
   /* ==========================================================================
    * PERSONNEL
    * ======================================================================== */
+  /* ==========================================================================
+   * Lot PLAN-INDIV (16/11/2026) : valeurs d'attente de la fiche et onglet « Planning personnalisé » (moteur : SIGH.planningRh, parcours.js)
+   * ======================================================================== */
+  function peutGeste(g) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleCourant(), g)); }
+  function etatLigneApplication(etat) {
+    return { a_poser: 'À poser', occupe: 'Jour occupé (conservé)', refuse: 'Refusé', libre: 'Libre (hors modèle)', sans_modele: 'Avant le modèle' }[etat] || etat;
+  }
+  /** La valeur d'une fiche, avec sa mention « valeur d'attente » et le bouton « Confirmer » (geste réservé) si elle en porte une. */
+  function valeurAvecAttente(e, cle, texte, redessiner) {
+    if (PRH().valeursAttente(e).indexOf(cle) < 0) return texte;
+    var noeuds = [el('span', { text: texte && texte !== '' ? String(texte) : '—' }), el('span.ml-2', { dataset: { attente: cle } }, U.badge('Valeur d’attente', 'warning'))];
+    if (peutGeste('confirmer_valeur_attente_personnel')) {
+      noeuds.push(el('span.ml-2', null, K.btn('Confirmer', { size: 'sm', onclick: function () { confirmerAttente(e, cle, redessiner); } })));
+    }
+    return noeuds;
+  }
+  function confirmerAttente(e, cle, redessiner) {
+    var f = U.form([{ name: 'motif', label: 'Motif (document ou décision qui arrête la valeur)', type: 'textarea', rows: 2, required: true, col: 'full' }], {});
+    var m = U.modal({
+      title: 'Confirmer : ' + PRH().libelleChampAttente(cle), subtitle: e.nomComplet + ' · ' + e.matricule, size: 'md',
+      body: el('div.space-y-3', null, [K.note('La valeur est gardée telle quelle et ne porte plus la mention « valeur d’attente ». Le geste est journalisé (RG-12).', { tone: 'info' }), f]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Confirmer la valeur', { variant: 'primary', icon: 'check', onclick: function () {
+          var v = f.collect(); if (!v) return;
+          var r = PRH().confirmerValeurAttente({ employeId: e.id, champ: cle, motif: v.motif });
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          m.close(); U.toast('Valeur confirmée.', { type: 'success', detail: PRH().libelleChampAttente(cle), undo: function () { r.undo(); if (redessiner) redessiner(); } });
+          if (redessiner) redessiner();
+        } }),
+      ],
+    });
+  }
+  function ongletInfos(e0) {
+    var panel = el('div');
+    function dessiner() {
+      var e = S.collection('personnel').get(e0.id) || e0;
+      var a = anciennete(e);
+      var rd = dessiner;
+      C.clear(panel);
+      panel.appendChild(U.descList([
+        ['Matricule', e.matricule], ['Nom et prénoms', e.nomComplet],
+        ['Sexe', e.sexe === 'F' ? 'Féminin' : 'Masculin'],
+        ['Fonction', fonctionLabel(e.fonction)], ['Poste', e.poste],
+        ['Service', e.service], ['Catégorie / échelon', valeurAvecAttente(e, 'categorie', e.categorie, rd)],
+        ['Date d’embauche', valeurAvecAttente(e, 'dateEmbauche', e.dateEmbauche ? C.dateFR(e.dateEmbauche) : '', rd)],
+        ['Ancienneté', a.absente ? 'Non calculable (date d’embauche absente)' : a.ans + ' an(s) ' + a.mois + ' mois'],
+        ['Numéro CNSS', valeurAvecAttente(e, 'cnss', e.cnss, rd)], ['Téléphone', e.telephone],
+        ['Situation matrimoniale', e.situation],
+        ['Salaire de base', valeurAvecAttente(e, 'salaireBase', C.moneyOu(e.salaireBase, 'Non renseigné'), rd)],
+      ]));
+      U.icons(panel);
+    }
+    dessiner();
+    return panel;
+  }
+  function ongletPlanningPerso(e) {
+    var panel = el('div.space-y-4', { dataset: { planningPerso: e.id } });
+    function dessiner() {
+      C.clear(panel);
+      var h = PRH().historiquePlanningPerso(e.id);
+      var cour = PRH().planningPersoALaDate(e.id, C.iso(AUJ));
+      var actions = [];
+      if (peutGeste('regler_planning_personnalise')) actions.push(K.btn('Définir une version', { variant: 'primary', size: 'sm', icon: 'calendar-plus', onclick: function () { definirPerso(e, dessiner); } }));
+      if (PRH().peutPoserPlanning() && h.length) actions.push(K.btn('Appliquer à une période', { size: 'sm', icon: 'calendar-check', onclick: function () { appliquerPerso(e, dessiner); } }));
+      panel.appendChild(K.note('Le planning personnalisé est un <strong>modèle</strong> (une semaine type ou un mois type). Il ne compte pour <strong>aucune prime</strong> : seules les vacations <strong>validées</strong> du planning comptent (RG-11). '
+        + '« Appliquer à une période » pose des vacations, jamais sur un jour occupé.', { tone: 'info' }));
+      if (actions.length) panel.appendChild(el('div.flex.flex-wrap.gap-2', null, actions));
+      if (!h.length) { panel.appendChild(U.empty('Aucun planning personnalisé : cet agent suit la grille de son régime.', { icon: 'calendar' })); return; }
+      var v = h[h.length - 1];
+      panel.appendChild(el('p.text-sm.font-medium.text-slate-800', { dataset: { modele: 'courant' }, text: 'Version ' + v.version + ' (' + (v.periodicite === 'mensuel' ? 'mensuel' : 'hebdomadaire') + ') à compter du ' + C.dateFR(v.dateEffet) + (cour && cour.id !== v.id ? ' · en vigueur aujourd’hui : version ' + (h.filter(function (x) { return x.id === cour.id; })[0] || {}).version : '') }));
+      panel.appendChild(K.miniTable([
+        { label: v.periodicite === 'mensuel' ? 'Jour du mois' : 'Jour', render: function (j) { return v.periodicite === 'mensuel' ? String(j.jour) : PRH().JOURS_SEMAINE[j.jour - 1]; } },
+        { label: 'Vacation', render: function (j) { return U.badge(typePlanningLabel(j.type), typePlanningTone(j.type)); } },
+      ], v.jours, { empty: 'Aucun jour.' }));
+      panel.appendChild(el('p.text-xs.font-medium.text-slate-500.pt-2', { text: 'Historique des versions' }));
+      panel.appendChild(K.miniTable([
+        { label: 'Version', align: 'right', render: function (x) { return String(x.version); } },
+        { label: 'Date d’effet', render: function (x) { return C.dateFR(x.dateEffet); } },
+        { label: 'Périodicité', render: function (x) { return x.periodicite === 'mensuel' ? 'Mensuel' : 'Hebdomadaire'; } },
+        { label: 'Jours', align: 'right', render: function (x) { return String(x.jours.length); } },
+        { label: 'Motif', render: function (x) { return x.motif || '—'; } },
+        { label: 'Défini par', render: function (x) { return (x.creePar || '—') + (x.creeLe ? ' le ' + C.dateFR(x.creeLe) : ''); } },
+      ], h, { empty: 'Aucune version.' }));
+      U.icons(panel);
+    }
+    dessiner();
+    return panel;
+  }
+  function definirPerso(e, apres) {
+    var perSel = el('select.input#ppe_periodicite', null, PRH().PERIODICITES_PERSO.map(function (p) { return el('option', { value: p.id, text: p.libelle }); }));
+    var dateIn = el('input.input#ppe_date', { type: 'date', value: C.iso(AUJ) });
+    var motifIn = el('textarea.input#ppe_motif', { rows: 2 });
+    var grille = el('div.grid.gap-2', { class: 'grid-cols-2 sm:grid-cols-4' });
+    var selects = [];
+    function dessinerGrille() {
+      C.clear(grille); selects = [];
+      var mensuel = perSel.value === 'mensuel', n = mensuel ? 31 : 7;
+      for (var i = 1; i <= n; i++) {
+        (function (i) {
+          var s = el('select.input', { dataset: { jour: String(i) } }, [el('option', { value: '', text: 'Libre' })].concat(D.TYPES_PLANNING.map(function (t) { return el('option', { value: t.id, text: t.label }); })));
+          selects.push({ jour: i, s: s });
+          grille.appendChild(el('label.text-xs.text-slate-600', null, [el('span.block', { text: mensuel ? 'Jour ' + i : PRH().JOURS_SEMAINE[i - 1] }), s]));
+        })(i);
+      }
+    }
+    perSel.addEventListener('change', dessinerGrille);
+    dessinerGrille();
+    var m = U.modal({
+      title: 'Planning personnalisé', subtitle: e.nomComplet + ' · une version datée : elle ne se réécrit pas.', size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('Le modèle est contrôlé comme la grille : type permis par le régime de l’agent à la date d’effet, repos entre deux gardes (la semaine est lue en boucle).', { tone: 'info' }),
+        el('div.grid.gap-3', { class: 'sm:grid-cols-2' }, [el('label', null, [el('span.label', { text: 'Périodicité' }), perSel]), el('label', null, [el('span.label', { text: 'Date d’effet' }), dateIn])]),
+        grille,
+        el('label', null, [el('span.label', { text: 'Motif' }), motifIn]),
+      ]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Enregistrer la version', { variant: 'primary', icon: 'save', onclick: function () {
+          var jours = selects.filter(function (x) { return x.s.value; }).map(function (x) { return { jour: x.jour, type: x.s.value }; });
+          var r = PRH().definirPlanningPerso({ employeId: e.id, periodicite: perSel.value, dateEffet: dateIn.value, motif: motifIn.value, jours: jours });
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          m.close(); U.toast('Planning personnalisé enregistré.', { type: 'success', detail: 'Version ' + r.version + ' à compter du ' + C.dateFR(r.dateEffet) }); if (apres) apres();
+        } }),
+      ],
+    });
+  }
+  function appliquerPerso(e, apres) {
+    var du = el('input.input#ppa_du', { type: 'date', value: C.iso(AUJ) });
+    var au = el('input.input#ppa_au', { type: 'date', value: C.iso(C.addDays(AUJ, 27)) });
+    var zone = el('div#ppa_apercu');
+    var m;
+    function montrer(r) {
+      C.clear(zone);
+      if (!r.ok) { zone.appendChild(K.note(r.motif + ' ' + r.geste, { tone: 'danger' })); return; }
+      zone.appendChild(el('p.text-xs.text-slate-600.mb-2', { dataset: { bilan: 'apercu' }, text: (r.apercu ? 'Aperçu : ' : 'Appliqué : ') + r.aPoser + ' à poser, ' + r.occupes + ' jour(s) occupé(s) conservé(s), ' + r.refuses + ' refusé(s), ' + r.libres + ' libre(s).' }));
+      zone.appendChild(K.miniTable([
+        { label: 'Date', render: function (l) { return C.dateFR(l.date); } },
+        { label: 'État', render: function (l) { return etatLigneApplication(l.etat) + (l.code ? ' (' + l.code + ')' : ''); } },
+        { label: 'Vacation', render: function (l) { return l.type ? typePlanningLabel(l.type) : '—'; } },
+      ], r.lignes.filter(function (l) { return l.etat !== 'libre'; }), { empty: 'Rien à poser sur cette période.' }));
+    }
+    m = U.modal({
+      title: 'Appliquer le planning personnalisé', subtitle: e.nomComplet, size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('L’aperçu n’écrit rien. Un jour déjà occupé n’est jamais écrasé ; chaque jour passe par le contrôle de la grille (repos, double affectation).', { tone: 'info' }),
+        el('div.grid.gap-3', { class: 'sm:grid-cols-2' }, [el('label', null, [el('span.label', { text: 'Du' }), du]), el('label', null, [el('span.label', { text: 'Au' }), au])]),
+        zone,
+      ]),
+      footer: [
+        K.btn('Fermer', { onclick: function () { m.close(); } }),
+        K.btn('Aperçu', { icon: 'eye', onclick: function () { montrer(PRH().appliquerPlanningPerso({ employeId: e.id, du: du.value, au: au.value })); } }),
+        K.btn('Appliquer', { variant: 'primary', icon: 'check', onclick: function () {
+          var r = PRH().appliquerPlanningPerso({ employeId: e.id, du: du.value, au: au.value, ecrire: true });
+          montrer(r); if (r.ok) { U.toast(r.poses + ' vacation(s) posée(s).', { type: 'success', detail: r.occupes + ' jour(s) occupé(s) conservé(s)', undo: r.undo }); if (apres) apres(); }
+        } }),
+      ],
+    });
+  }
+
   function ficheEmploye(e) {
     var a = anciennete(e);
     var wrap = el('div.space-y-4');
@@ -187,19 +348,11 @@
     wrap.appendChild(U.tabs([
       {
         id: 'infos', label: 'Informations',
-        render: function () {
-          return U.descList([
-            ['Matricule', e.matricule], ['Nom et prénoms', e.nomComplet],
-            ['Sexe', e.sexe === 'F' ? 'Féminin' : 'Masculin'],
-            ['Fonction', fonctionLabel(e.fonction)], ['Poste', e.poste],
-            ['Service', e.service], ['Catégorie / échelon', e.categorie],
-            ['Date d’embauche', C.dateFR(e.dateEmbauche)],
-            ['Ancienneté', a.ans + ' an(s) ' + a.mois + ' mois'],
-            ['Numéro CNSS', e.cnss], ['Téléphone', e.telephone],
-            ['Situation matrimoniale', e.situation],
-            ['Salaire de base', C.moneyOu(e.salaireBase, 'Non renseigné')],
-          ]);
-        },
+        render: function () { return ongletInfos(e); },
+      },
+      {
+        id: 'planning-perso', label: 'Planning personnalisé',
+        render: function () { return ongletPlanningPerso(e); },
       },
       {
         id: 'planning', label: 'Planning du mois',
@@ -389,8 +542,8 @@
         {
           key: 'anciennete', label: 'Ancienneté', align: 'right',
           value: function (e) { return C.daysBetween(e.dateEmbauche, AUJ); },
-          text: function (e) { var a = anciennete(e); return a.ans + ' ans ' + a.mois + ' mois'; },
-          render: function (e) { var a = anciennete(e); return a.ans + ' a. ' + a.mois + ' m.'; },
+          text: function (e) { var a = anciennete(e); return a.absente ? 'Non calculable' : a.ans + ' ans ' + a.mois + ' mois'; },
+          render: function (e) { var a = anciennete(e); return a.absente ? 'Non calculable' : a.ans + ' a. ' + a.mois + ' m.'; },
         },
         { key: 'cnss', label: 'N° CNSS', nowrap: true, render: function (e) { return el('span.font-mono.text-xs.text-slate-500', { text: e.cnss }); } },
         {
@@ -412,13 +565,13 @@
         { name: 'poste', label: 'Poste occupé', col: 'full' },
         { name: 'service', label: 'Service', type: 'select', required: true, options: D.SERVICES },
         { name: 'categorie', label: 'Catégorie / échelon', placeholder: 'ex. E3-1' },
-        { name: 'dateEmbauche', label: 'Date d’embauche', type: 'date', required: true },
+        { name: 'dateEmbauche', label: 'Date d’embauche', type: 'date' },
         { type: 'section', label: 'Rémunération et couverture sociale' },
-        { name: 'salaireBase', label: 'Salaire de base (FCFA)', type: 'money', required: true, min: 0 },
+        { name: 'salaireBase', label: 'Salaire de base (FCFA)', type: 'money', min: 0 },
         { name: 'cnss', label: 'Numéro CNSS' },
       ],
       transform: function (v) { v.nomComplet = v.nom + ' ' + v.prenom; return v; },
-      onCreate: function () { return { dateEmbauche: C.iso(AUJ), salaireBase: 60000, categorie: 'E1-1', sexe: 'F' }; },
+      onCreate: function () { return { sexe: 'F' }; },   /* lot PLAN-INDIV : plus aucune valeur pré-remplie (salaire, catégorie, date d'embauche inventés) */
       filters: [
         { name: 'fonction', label: 'Fonction', options: optionsFonctions() },
         { name: 'service', label: 'Service', options: D.SERVICES },
@@ -440,7 +593,7 @@
           sousTitre: e.nomComplet + ' — matricule ' + e.matricule,
           cartouche: [['Matricule', e.matricule], ['Nom et prénoms', e.nomComplet],
             ['Fonction', fonctionLabel(e.fonction)], ['Service', e.service],
-            ['Catégorie / échelon', e.categorie], ['Ancienneté', a.ans + ' an(s) ' + a.mois + ' mois']],
+            ['Catégorie / échelon', e.categorie], ['Ancienneté', a.absente ? 'Non calculable' : a.ans + ' an(s) ' + a.mois + ' mois']],
           contenu: P.tableau([{ label: 'Rubrique', key: 'k' }, { label: 'Information', key: 'v' }], [
             { k: 'Sexe', v: e.sexe === 'F' ? 'Féminin' : 'Masculin' },
             { k: 'Situation matrimoniale', v: e.situation },
@@ -933,6 +1086,14 @@
        * ------------------------------------------------------------------ */
       function texteDerogations(r) {
         var morceaux = [];
+        if (r.remplace) {
+          morceaux.push('Remplace la catégorie (rien n’est hérité)');
+          morceaux.push('Vacations : ' + r.vacations.map(typePlanningLabel).join(', '));
+          morceaux.push('Repos : ' + (r.repos ? typePlanningLabel(r.repos) : 'aucun codifié'));
+          morceaux.push('Cycle : ' + (r.cycle ? r.cycle + ' jours' : 'non défini'));
+          morceaux.push('Honoraire : ' + (r.honoraire != null ? C.money(r.honoraire, false) : 'non défini'));
+          return morceaux;
+        }
         if (r.derogations.indexOf('vacations') >= 0) morceaux.push('Vacations : ' + r.vacations.map(typePlanningLabel).join(', '));
         if (r.derogations.indexOf('repos') >= 0) morceaux.push('Repos : ' + (r.repos ? typePlanningLabel(r.repos) : 'aucun codifié'));
         if (r.derogations.indexOf('cycle') >= 0) morceaux.push('Cycle : ' + r.cycle + ' jours');
@@ -940,16 +1101,17 @@
         if (r.derogations.indexOf('honorairePeriodicite') >= 0) morceaux.push('Périodicité : ' + (r.honorairePeriodicite === 'occurrence' ? 'par occurrence' : 'mensuelle'));
         return morceaux;
       }
-      function peutDeroger() { return ['admin', 'da'].indexOf(roleCourant()) >= 0 && K.droits('M10').editer; }
+      function peutDeroger() { return peutGeste('regler_regime_individuel') && K.droits('M10').editer; }   /* geste réservé (lot PLAN-INDIV), plus un nom de rôle */
       function rendreIndividuels() {
         C.clear(blocIndividuels);
         var ids = {};
         S.collection('regimesIndividuels').active().forEach(function (v) { ids[v.employeId] = true; });
+        S.collection('planningsPersonnalises').active().forEach(function (v) { ids[v.employeId] = true; });
         var lignes = Object.keys(ids).map(function (id) {
           var e = S.collection('personnel').get(id);
           if (!e) return null;
           var r = PRH().regimeALaDate(e.id, e.fonction, C.iso(AUJ));
-          return { e: e, r: r, versions: PRH().historique(e.id).length };
+          return { e: e, r: r, versions: PRH().historique(e.id).length, perso: PRH().historiquePlanningPerso(e.id) };
         }).filter(Boolean);
         var actions = [];
         if (peutDeroger()) actions.push(K.btn('Déroger pour un agent', { variant: 'primary', size: 'sm', icon: 'user-cog', onclick: function () { deroger(null); } }));
@@ -961,17 +1123,22 @@
               ? el('div.space-y-0\\.5', null, texteDerogations(l.r).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }))
               : el('span.text-xs.text-slate-400', { text: 'Suit sa catégorie' });
           } },
+          { label: 'Mode', render: function (l) { return l.r.mode === 'remplace' ? 'Remplace' : (l.r.mode === 'deroge' ? 'Déroge' : '—'); } },
           { label: 'Depuis', render: function (l) { return l.r.dateEffet ? C.dateFR(l.r.dateEffet) : '—'; } },
+          { label: 'Planning personnalisé', render: function (l) {
+            var d = l.perso[l.perso.length - 1];
+            return d ? el('span.text-xs.text-slate-700', { dataset: { persoAgent: l.e.id }, text: (d.periodicite === 'mensuel' ? 'Mensuel' : 'Hebdomadaire') + ' depuis le ' + C.dateFR(d.dateEffet) + ' (' + l.perso.length + ' version' + (l.perso.length > 1 ? 's' : '') + ')' }) : el('span.text-xs.text-slate-400', { text: 'Aucun' });
+          } },
           { label: 'Versions', align: 'right', render: function (l) { return String(l.versions); } },
           { label: '', align: 'right', render: function (l) {
             var a = [K.iconBtn('history', 'Historique des versions', function () { historique(l.e); }, 'ghost')];
             if (peutDeroger()) a.push(K.iconBtn('pencil', 'Nouvelle version pour cet agent', function () { deroger(l.e); }));
             return el('div.flex.justify-end.gap-1', null, a);
           } },
-        ], lignes, { empty: 'Aucun agent n’a de régime individuel : tous suivent le régime de leur catégorie.' });
+        ], lignes, { empty: 'Aucun agent n’a de régime individuel ni de planning personnalisé : tous suivent le régime de leur catégorie.' });
         blocIndividuels.appendChild(U.card('Régimes individuels (dérogations champ par champ)', el('div.space-y-3', null, [
-          K.note('Le régime de la <strong>catégorie</strong> reste la règle. Une dérogation individuelle ne change que les champs renseignés (vacations, repos, cycle, honoraire) : '
-            + 'le reste suit la catégorie. Chaque dérogation est une <strong>version datée</strong> qui ne se réécrit pas ; les vacations déjà posées gardent le régime sous lequel '
+          K.note('Le régime de la <strong>catégorie</strong> reste la règle. Une version individuelle est au choix « <strong>déroge</strong> » (seuls les champs renseignés changent, le reste suit la catégorie) '
+            + 'ou « <strong>remplace</strong> » (rien n’est hérité : vacations et repos exigés). Chaque version est une <strong>version datée</strong> qui ne se réécrit pas ; les vacations déjà posées gardent le régime sous lequel '
             + 'elles l’ont été.', { tone: 'info' }),
           corps,
         ]), actions));
@@ -985,8 +1152,10 @@
           body: K.miniTable([
             { label: 'Version', align: 'right', render: function (x) { return String(x.version); } },
             { label: 'Date d’effet', render: function (x) { return C.dateFR(x.dateEffet); } },
+            { label: 'Mode', render: function (x) { return x.retourCategorie ? '—' : (x.mode === 'remplace' ? 'Remplace' : 'Déroge'); } },
             { label: 'Contenu', render: function (x) {
               if (x.retourCategorie) return el('span.text-xs.text-slate-500', { text: 'Retour au régime de la catégorie' });
+              if (x.mode === 'remplace') return el('div', null, texteDerogations({ remplace: true, derogations: Object.keys(x.champs), vacations: x.champs.vacations || [], repos: x.champs.repos === 'aucun' ? null : x.champs.repos, cycle: x.champs.cycle, honoraire: x.champs.honoraire === undefined ? null : x.champs.honoraire }).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }));
               var r = { derogations: Object.keys(x.champs), vacations: x.champs.vacations || [], repos: x.champs.repos === 'aucun' ? null : x.champs.repos, cycle: x.champs.cycle, honoraire: x.champs.honoraire, honorairePeriodicite: x.champs.honorairePeriodicite };
               return el('div', null, texteDerogations(r).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }));
             } },
@@ -1001,6 +1170,7 @@
         var f = U.form([
           { name: 'employeId', label: 'Agent', type: 'select', required: true, options: optionsEmployes(), col: 'full' },
           { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true },
+          { name: 'mode', label: 'Mode', type: 'select', options: [{ value: 'deroge', label: 'Déroge : seuls les champs renseignés changent, le reste suit la catégorie' }, { value: 'remplace', label: 'Remplace : rien n’est hérité (vacations et repos exigés)' }], col: 'full' },
           { name: 'retourCategorie', label: 'Revenir au régime de la catégorie (retire la dérogation)', type: 'checkbox', col: 'full' },
           { type: 'section', label: 'Champs dérogés (laisser vide pour suivre la catégorie)' },
           { name: 'vacations', label: 'Vacations', type: 'multiselect', col: 'full',
@@ -1010,7 +1180,7 @@
           { name: 'honoraire', label: 'Honoraire (FCFA)', type: 'number', min: 0 },
           { name: 'honorairePeriodicite', label: 'Périodicité de l’honoraire', type: 'select', options: [{ value: '', label: 'Suit la catégorie' }, { value: 'mensuelle', label: 'Mensuelle' }, { value: 'occurrence', label: 'Par occurrence' }] },
           { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full' },
-        ], { employeId: agent ? agent.id : '', dateEffet: C.iso(AUJ), vacations: [], repos: '', honorairePeriodicite: '' });
+        ], { employeId: agent ? agent.id : '', dateEffet: C.iso(AUJ), mode: 'deroge', vacations: [], repos: '', honorairePeriodicite: '' });
         var m = U.modal({
           title: 'Régime individuel', subtitle: 'Une version datée : elle ne se réécrit pas.', size: 'lg',
           body: el('div.space-y-3', null, [K.note('Seuls les champs renseignés dérogent à la catégorie. La date d’effet est aujourd’hui ou à venir : les vacations passées gardent leur régime.', { tone: 'info' }), f]),
@@ -1018,7 +1188,7 @@
             K.btn('Annuler', { onclick: function () { m.close(); } }),
             K.btn('Enregistrer la version', { variant: 'primary', icon: 'save', onclick: function () {
               var v = f.collect(); if (!v) return;
-              var r = PRH().deroger({ employeId: v.employeId, dateEffet: v.dateEffet, retourCategorie: v.retourCategorie === true, motif: v.motif,
+              var r = PRH().deroger({ employeId: v.employeId, dateEffet: v.dateEffet, mode: v.mode, retourCategorie: v.retourCategorie === true, motif: v.motif,
                 champs: { vacations: v.vacations, repos: v.repos, cycle: v.cycle, honoraire: v.honoraire, honorairePeriodicite: v.honorairePeriodicite } });
               if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
               m.close(); rendreIndividuels(); rafraichirVue();

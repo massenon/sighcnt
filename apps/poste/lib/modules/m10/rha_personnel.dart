@@ -82,13 +82,19 @@ class EcranPersonnel extends StatelessWidget with EcranMaquette {
         const ChampDef(nom: 'poste', libelle: 'Poste occupé', col: ColChamp.plein),
         ChampDef(nom: 'service', libelle: 'Service', type: TypeChamp.select, requis: true, options: rhaOptions(rhaServices)),
         const ChampDef(nom: 'categorie', libelle: 'Catégorie / échelon', indicatif: 'ex. E3-1'),
-        const ChampDef(nom: 'dateEmbauche', libelle: 'Date d’embauche', type: TypeChamp.date, requis: true),
+        const ChampDef(nom: 'dateEmbauche', libelle: 'Date d’embauche', type: TypeChamp.date),
         const ChampDef.section('Rémunération et couverture sociale'),
-        const ChampDef(nom: 'salaireBase', libelle: 'Salaire de base (FCFA)', type: TypeChamp.nombre, requis: true),
+        const ChampDef(nom: 'salaireBase', libelle: 'Salaire de base (FCFA)', type: TypeChamp.nombre),
         const ChampDef(nom: 'cnss', libelle: 'Numéro CNSS'),
       ],
-      valeursInitiales: () => {'dateEmbauche': iso(c.aujourdhui), 'salaireBase': '60000', 'categorie': 'E1-1', 'sexe': 'F'},
-      transformer: (ctx, v) => rhaAgentEnregistrable({...v, 'salaireBase': rhaNum(v['salaireBase'])}),
+      valeursInitiales: () => {'sexe': 'F'}, // lot PLAN-INDIV : plus aucune valeur inventée (salaire, catégorie, date d'embauche)
+      transformer: (ctx, v) {
+        // Un salaire laissé vide reste « non renseigné » (jamais zéro) ; une date d'embauche vide aussi (lot PLAN-INDIV).
+        final vide = '${v['salaireBase'] ?? ''}'.trim().isEmpty;
+        final f = rhaAgentEnregistrable({...v, 'salaireBase': vide ? null : rhaNum(v['salaireBase'])});
+        if (vide) f.remove('salaireBase');
+        return f;
+      },
       filtres: [
         FiltreTableau(nom: 'fonction', libelle: 'Fonction', options: rhaOptionsFonctions()),
         FiltreTableau(nom: 'service', libelle: 'Service', options: rhaOptions(rhaServices)),

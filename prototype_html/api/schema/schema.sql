@@ -1618,6 +1618,7 @@ CREATE TABLE IF NOT EXISTS "m10"."personnel" (
   "salaire_base" integer,
   "date_embauche" date,
   "titre_organigramme" text,
+  "valeurs_attente" jsonb,
   "extra" jsonb
 );
 ALTER TABLE "m10"."personnel" ADD COLUMN IF NOT EXISTS "nom" text; -- @montee
@@ -1636,6 +1637,7 @@ ALTER TABLE "m10"."personnel" ADD COLUMN IF NOT EXISTS "nom_complet" text; -- @m
 ALTER TABLE "m10"."personnel" ADD COLUMN IF NOT EXISTS "salaire_base" integer; -- @montee
 ALTER TABLE "m10"."personnel" ADD COLUMN IF NOT EXISTS "date_embauche" date; -- @montee
 ALTER TABLE "m10"."personnel" ADD COLUMN IF NOT EXISTS "titre_organigramme" text; -- @montee
+ALTER TABLE "m10"."personnel" ADD COLUMN IF NOT EXISTS "valeurs_attente" jsonb; -- @montee
 ALTER TABLE "m10"."personnel" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m10"."personnel" IS 'Collection « personnel » — M10 Ressources humaines';
 CREATE INDEX IF NOT EXISTS "ix_personnel_statut" ON "m10"."personnel" ("statut");
@@ -1665,6 +1667,42 @@ CREATE INDEX IF NOT EXISTS "ix_planning_date" ON "m10"."planning" ("date");
 CREATE INDEX IF NOT EXISTS "ix_planning_type" ON "m10"."planning" ("type");
 CREATE INDEX IF NOT EXISTS "ix_planning_statut" ON "m10"."planning" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_planning_employe_id" ON "m10"."planning" ("employe_id");
+CREATE TABLE IF NOT EXISTS "m10"."plannings_personnalises" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "employe_id" text,
+  "employe" text,
+  "matricule" text,
+  "fonction" text,
+  "periodicite" text,
+  "jours" jsonb,
+  "date_effet" date,
+  "motif" text,
+  "version" integer,
+  "cree_le" date,
+  "cree_par" text,
+  "cree_le_2" timestamptz,
+  "cree_par_2" text,
+  "extra" jsonb
+);
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "employe_id" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "employe" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "matricule" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "fonction" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "periodicite" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "jours" jsonb; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "cree_le" date; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "cree_le_2" timestamptz; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "cree_par_2" text; -- @montee
+ALTER TABLE "m10"."plannings_personnalises" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m10"."plannings_personnalises" IS 'Collection « planningsPersonnalises » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_plannings_personnalises_statut" ON "m10"."plannings_personnalises" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_plannings_personnalises_employe_id" ON "m10"."plannings_personnalises" ("employe_id");
 CREATE TABLE IF NOT EXISTS "m10"."presences" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -1795,6 +1833,7 @@ CREATE TABLE IF NOT EXISTS "m10"."regimes_individuels" (
   "fonction" text,
   "categorie" text,
   "champs" jsonb,
+  "mode" text,
   "retour_categorie" boolean,
   "date_effet" date,
   "motif" text,
@@ -1812,6 +1851,7 @@ ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "matricule" tex
 ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "fonction" text; -- @montee
 ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "categorie" text; -- @montee
 ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "champs" jsonb; -- @montee
+ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "mode" text; -- @montee
 ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "retour_categorie" boolean; -- @montee
 ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
 ALTER TABLE "m10"."regimes_individuels" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
