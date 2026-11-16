@@ -1,0 +1,93 @@
+/* Manuel administrateur SIGH-CNT : feuille imprimable (A4). Couleurs tirées de docs/design/design-tokens.json (navy). */
+@page { size: A4; margin: 17mm 17mm 19mm 17mm; }
+@page :first { margin: 0; }
+
+:root {
+  --navy: #12315e; --navy-clair: #f1f5fb; --navy-bord: #c7daf0;
+  --texte: #1e293b; --gris: #475569;
+}
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: Arial, "Liberation Sans", Helvetica, sans-serif; font-size: 11.5pt; line-height: 1.5; color: var(--texte); margin: 0; }
+p { margin: 0 0 7pt; }
+ul, ol { margin: 0 0 9pt; padding-left: 20pt; }
+li { margin: 0 0 3pt; }
+code, pre { font-family: "Liberation Mono", "DejaVu Sans Mono", monospace; font-size: 9.6pt; }
+code { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 3px; padding: 0 3px; word-break: break-word; }
+pre { background: #0b1e3d; color: #e0eaf6; padding: 9pt 11pt; border-radius: 6px; white-space: pre-wrap; margin: 0 0 10pt; }
+strong { color: #0b1e3d; }
+.rouge { color: #E30613; font-weight: 700; }
+
+/* Titres */
+h1 { break-before: page; font-size: 24pt; line-height: 1.2; color: #fff; background: var(--navy); margin: 0 0 16pt; padding: 16pt 18pt; border-radius: 8px; }
+h1.sans-saut { break-before: avoid; }
+h2 { font-size: 15.5pt; color: var(--navy); margin: 20pt 0 8pt; padding-bottom: 4pt; border-bottom: 2px solid var(--navy-bord); break-after: avoid; }
+h3 { font-size: 12.5pt; color: var(--navy); margin: 14pt 0 6pt; break-after: avoid; }
+h2 + p, h3 + p, h3 + ol, h2 + ol { break-before: avoid; }
+
+/* Étapes numérotées : pastilles */
+ol.etapes { list-style: none; counter-reset: etape; padding-left: 0; }
+ol.etapes > li { counter-increment: etape; position: relative; padding-left: 30pt; margin-bottom: 6pt; min-height: 18pt; }
+ol.etapes > li::before { content: counter(etape); position: absolute; left: 0; top: 0; width: 19pt; height: 19pt; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 700; font-size: 10pt; text-align: center; line-height: 19pt; }
+ul.cases { list-style: none; padding-left: 0; }
+ul.cases li { padding-left: 24pt; position: relative; }
+ul.cases li::before { content: ""; position: absolute; left: 2pt; top: 3pt; width: 11pt; height: 11pt; border: 1.6px solid var(--navy); border-radius: 2px; }
+
+/* Figures */
+figure { margin: 8pt 0 14pt; break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; max-height: 150mm; border: 1px solid #cbd5e1; border-radius: 6px; box-shadow: 0 1px 4px rgba(15, 23, 42, .12); }
+figure img.haute { max-height: 190mm; }
+figure img.moyenne { max-width: 72%; }
+figure.schema svg { width: 100%; height: auto; }
+body { counter-reset: figure; }
+figcaption { counter-increment: figure; font-size: 10pt; color: var(--gris); margin-top: 5pt; text-align: left; }
+figcaption::before { content: "Figure " counter(figure) " : "; font-weight: 700; color: var(--navy); }
+
+/* Tableaux */
+table.tab { width: 100%; border-collapse: collapse; margin: 4pt 0 12pt; font-size: 10.5pt; break-inside: avoid; }
+table.tab th { background: var(--navy-clair); color: var(--navy); text-align: left; padding: 5pt 7pt; border: 1px solid var(--navy-bord); }
+table.tab td { padding: 5pt 7pt; border: 1px solid #dbe3ee; vertical-align: top; }
+table.tab tr { break-inside: avoid; }
+table.tab td ul { margin: 0; padding-left: 14pt; }
+table.petite { font-size: 9.6pt; margin: 6pt 0 2pt; background: #fff; }
+
+/* Encadrés */
+.enc { display: flex; gap: 10pt; border-left: 5px solid; border-radius: 6px; padding: 9pt 12pt 6pt 10pt; margin: 8pt 0 12pt; break-inside: avoid; font-size: 10.8pt; }
+.enc .ico { font-size: 17pt; line-height: 1; padding-top: 1pt; font-family: "Noto Color Emoji", sans-serif; }
+.enc > div:last-child { flex: 1; min-width: 0; }
+.enc .t { font-weight: 700; margin-bottom: 3pt; }
+.enc ul, .enc ol { margin-bottom: 4pt; }
+.enc.info { background: #eef5fd; border-color: #2563eb; } .enc.info .t { color: #1d4ed8; }
+.enc.attention { background: #fff7e6; border-color: #f59e0b; } .enc.attention .t { color: #b45309; }
+.enc.alerte { background: #fdeeee; border-color: #dc2626; } .enc.alerte .t { color: #b91c1c; }
+.enc.astuce { background: #ecf8f1; border-color: #16a34a; } .enc.astuce .t { color: #15803d; }
+.enc.regarder { background: #f3effc; border-color: #7c3aed; } .enc.regarder .t { color: #6d28d9; }
+.enc.param { background: #eef1f5; border-color: #475569; } .enc.param .t { color: #334155; }
+
+/* Couverture */
+.couverture { height: 297mm; width: 210mm; display: flex; flex-direction: column; justify-content: space-between; padding: 22mm 20mm 20mm; background: linear-gradient(160deg, #0b1e3d 0%, #12315e 55%, #2e5187 100%); color: #fff; break-after: page; }
+.couv-haut { display: flex; align-items: center; gap: 14pt; }
+.couv-logo { width: 34mm; background: #fff; border-radius: 8px; padding: 3mm; }
+.couv-clinique { font-size: 14pt; font-weight: 700; letter-spacing: .5pt; }
+.couv-clinique span { font-weight: 400; font-size: 11pt; color: #c7daf0; }
+.couv-produit { font-size: 15pt; letter-spacing: 6pt; color: #9dc0e4; font-weight: 700; }
+.couv-titre { break-before: avoid; background: none; padding: 0; margin: 6pt 0 12pt; font-size: 40pt; color: #fff; }
+.couv-sous { font-size: 15pt; color: #e0eaf6; line-height: 1.45; }
+.couv-devise { font-style: italic; color: #c7daf0; font-size: 12pt; margin-bottom: 12pt; }
+.couv-meta { border-collapse: collapse; font-size: 10.5pt; width: 100%; }
+.couv-meta td { padding: 4pt 0; border-top: 1px solid rgba(255,255,255,.2); vertical-align: top; color: #e0eaf6; }
+.couv-meta td:first-child { width: 42mm; color: #9dc0e4; }
+.couv-meta code { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); color: #fff; }
+
+/* Sommaire */
+.sommaire { break-after: page; }
+ol.toc { list-style: none; padding: 0; margin: 0; }
+ol.toc li { margin: 0; }
+ol.toc a { display: flex; align-items: baseline; text-decoration: none; color: var(--texte); padding: 2.2pt 0; }
+ol.toc a .tt { flex: 0 1 auto; }
+ol.toc a .pts { flex: 1 1 auto; border-bottom: 1px dotted #94a3b8; margin: 0 5pt; transform: translateY(-3pt); }
+ol.toc a .pn { flex: 0 0 auto; min-width: 16pt; text-align: right; font-weight: 700; color: var(--navy); }
+ol.toc li.n1 > a { font-weight: 700; color: var(--navy); font-size: 12.5pt; margin-top: 7pt; }
+ol.toc li.n2 > a { padding-left: 16pt; font-size: 10.8pt; }
+
+.fin { margin-top: 18pt; font-size: 9.5pt; color: var(--gris); border-top: 1px solid #e2e8f0; padding-top: 6pt; }
