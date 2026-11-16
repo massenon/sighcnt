@@ -161,6 +161,25 @@ SyntheseDecisionsEnAttente valSyntheseEnAttente(List<Map<String, Object?>> deman
   return SyntheseDecisionsEnAttente(nombre: en.length, plusAncienne: max);
 }
 
+/// TOUTES les décisions et demandes de ce poste qui attendent la mère, pour la pastille de la barre : les décisions de validation (`demandesValidation`, « déposée »), les demandes de prix
+/// (`propositionsTarif`, « déposée ») et les demandes d'import (`demandesImport`, « en_attente »). Les noms de collection et d'état sont ceux des moteurs qui les écrivent. L'âge ne se calcule
+/// que sur une date AVEC heure (une demande datée du seul jour compte, mais ne donne pas d'âge : jamais un âge inventé).
+SyntheseDecisionsEnAttente valSyntheseToutesAttentes(Map<String, List<Map<String, Object?>>> collections, DateTime maintenant) {
+  const etats = {valCollectionDemandes: valEtatDeposee, 'propositionsTarif': 'deposee', 'demandesImport': 'en_attente'};
+  var n = 0;
+  Duration? max;
+  etats.forEach((nom, etat) {
+    for (final d in collections[nom] ?? const <Map<String, Object?>>[]) {
+      if (d['statut'] == 'archive' || d['etat'] != etat) continue;
+      n++;
+      if (!'${d['demandeLe']}'.contains('T')) continue;
+      final a = valAgeDemande(d, maintenant);
+      if (a != null && (max == null || a > max!)) max = a;
+    }
+  });
+  return SyntheseDecisionsEnAttente(nombre: n, plusAncienne: max);
+}
+
 /// Les demandes dont l'attente dépasse le délai d'alerte (en HEURES, lu de la base). Un délai absent ou nul n'alerte pas (jamais un délai inventé). Aucune de ces demandes
 /// n'est validée, ni bloquée, ni refusée pour autant : l'alerte est un avertissement.
 List<Map<String, Object?>> valDemandesEnRetard(List<Map<String, Object?>> demandes, DateTime maintenant, int? delaiHeures) {

@@ -146,6 +146,22 @@ void main() {
       expect(valDemandesEnRetard(demandes(), t, 0), isEmpty);
     });
 
+    test('la pastille compte AUSSI les demandes de prix et d\'import qui attendent la mère ; une date sans heure compte sans donner d\'âge', () {
+      final s = valSyntheseToutesAttentes({
+        valCollectionDemandes: demandes(),
+        'propositionsTarif': [
+          {'id': 'DT1', 'statut': 'actif', 'etat': 'deposee', 'demandeLe': valInstant(signe.subtract(const Duration(hours: 2)))},
+          {'id': 'DT2', 'statut': 'actif', 'etat': 'appliquee', 'demandeLe': valInstant(signe)},
+        ],
+        'demandesImport': [
+          {'id': 'DI1', 'statut': 'actif', 'etat': 'en_attente', 'demandeLe': '2026-11-01'},
+          {'id': 'DI2', 'statut': 'actif', 'etat': 'refusee', 'demandeLe': '2026-11-01'},
+        ],
+      }, signe.add(const Duration(hours: 1)));
+      expect(s.nombre, 4, reason: 'deux décisions, une demande de prix, une demande d\'import');
+      expect(s.plusAncienne, const Duration(hours: 3), reason: 'la demande de prix est la plus ancienne datée à l\'heure ; l\'import daté du seul jour ne donne pas d\'âge');
+    });
+
     test('le délai d\'alerte est un paramètre déclaré, semé à 24, fermé au téléphone', () {
       final d = definitionDeParametre(valCleDelaiAlerteHeures)!;
       expect([d.defaut, d.type, d.mobile], [24, TypeParametre.entier, false]);
