@@ -87,7 +87,7 @@
   },
   "cfg-sms": {
    "titre": "Passerelle SMS",
-   "description": "Fournisseur de SMS de la clinique (Twilio ou Vonage), plafond, heures calmes et test d’envoi : seuls les patients reçoivent des SMS."
+   "description": "Fournisseur de SMS de la clinique (Twilio ou Vonage), plafond, heures calmes et test d’envoi : les patients, et le personnel qui y consent, reçoivent des SMS."
   },
   "cfg-smtp": {
    "titre": "Messagerie (SMTP)",
