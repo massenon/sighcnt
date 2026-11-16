@@ -428,7 +428,7 @@ RegularisationImportee regulariserInventaireImporte({
   final champ = magasin == 'detail' ? 'stockDetail' : 'stockGros';
   final ecarts = [
     for (final l in (inventaire['lignes'] as List? ?? const []).cast<Map>())
-      if (l['ecart'] != null && _n(l['ecart']) != 0) l.cast<String, Object?>()
+      if (l['nonCompte'] != true && l['ecart'] != null && _n(l['ecart']) != 0) l.cast<String, Object?>()
   ];
   for (final x in ecarts) {
     final pr = _produitDe(produits, x['produitId']);
@@ -473,7 +473,15 @@ RegularisationImportee regulariserInventaireImporte({
   return RegularisationImportee._ok(mvts, maj, avant);
 }
 
-/// « Valider l'inventaire ». [physiques] : le stock compté par identifiant de produit (un article non saisi garde son théorique, écart nul).
+/// LOT INVENT-NC (décision 12 de la Direction du 15/11/2026) : un article dont rien n'a été saisi est NON COMPTÉ. Il n'est jamais « compté, écart zéro » :
+/// la ligne porte `nonCompte: true` et ni physique, ni écart, ni valeur ; la régularisation ne le touche pas (RG-03 : aucune sortie sans justificatif).
+bool comptageVide(Object? saisi) => saisi == null || (saisi is String && saisi.trim().isEmpty);
+
+/// La ligne d'un article NON COMPTÉ de la feuille (le théorique est gardé pour l'état imprimé).
+FicheStock ligneNonComptee(FicheStock produit, String magasin) => {'produit': produit, 'theorique': stockTheorique(produit, magasin), 'nonCompte': true};
+
+/// « Valider l'inventaire ». [physiques] : le stock compté par identifiant de produit. Un article ABSENT de [physiques] (ou dont la saisie est vide) est NON
+/// COMPTÉ : enregistré comme tel, stock inchangé ; la validation reste possible (non bloquante, le registre et l'état le disent). Saisir 0 est un comptage.
 InventaireValide validerInventaire({
   required Map<String, Object?> entete,
   required List<FicheStock> cible,
@@ -483,8 +491,11 @@ InventaireValide validerInventaire({
 }) {
   final magasin = '${entete['magasin']}' == 'detail' ? 'detail' : 'gros';
   final label = magasinLabelInventaire(magasin);
-  final vals = [for (final p in cible) ligneComptage(p, magasin, physiques.containsKey('${p['id']}') ? physiques['${p['id']}'] : stockTheorique(p, magasin))];
-  final ecarts = [for (final x in vals) if (_n(x['ecart']) != 0) x];
+  final vals = [
+    for (final p in cible) comptageVide(physiques['${p['id']}']) ? ligneNonComptee(p, magasin) : ligneComptage(p, magasin, physiques['${p['id']}'])
+  ];
+  final comptes = [for (final x in vals) if (x['nonCompte'] != true) x];
+  final ecarts = [for (final x in comptes) if (_n(x['ecart']) != 0) x];
   final valeurEcart = ecarts.fold(0.0, (n, x) => n + _n(x['valeur']));
   final inventaire = <String, Object?>{
     'reference': referenceSuivante('INV-', 4, inventaires),
@@ -496,11 +507,25 @@ InventaireValide validerInventaire({
     'operateur': entete['operateur'],
     'statutInv': 'valide',
     'nbArticles': vals.length,
+    'nbComptes': comptes.length,
+    'nbNonComptes': vals.length - comptes.length,
     'nbEcarts': ecarts.length,
     'valeurEcart': valeurEcart,
     'lignes': [
       for (final x in vals)
+        if (x['nonCompte'] == true)
+          {
+            'produitId': (x['produit'] as Map)['id'],
+            'code': (x['produit'] as Map)['code'],
+            'designation': (x['produit'] as Map)['designation'],
+            'unite': (x['produit'] as Map)['unite'],
+            'theorique': x['theorique'],
+            'nonCompte': true,
+            'cump': (x['produit'] as Map)['cump'],
+          }
+        else
         {
+          'produitId': (x['produit'] as Map)['id'],
           'code': (x['produit'] as Map)['code'],
           'designation': (x['produit'] as Map)['designation'],
           'unite': (x['produit'] as Map)['unite'],

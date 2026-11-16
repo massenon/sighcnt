@@ -7975,7 +7975,8 @@
   function regulariserInventaire(inv, opts) {
     opts = opts || {};
     var magasin = inv.magasin === 'detail' ? 'detail' : 'gros', champ = magasin === 'detail' ? 'stockDetail' : 'stockGros';
-    var ecarts = (inv.lignes || []).filter(function (l) { return l.ecart !== 0 && l.ecart != null; });
+    /* Lot INVENT-NC : une ligne NON COMPTÉE ne se régularise jamais (RG-03 : aucune sortie sans justificatif, et un non compté n'est pas un écart zéro). */
+    var ecarts = (inv.lignes || []).filter(function (l) { return !l.nonCompte && l.ecart !== 0 && l.ecart != null; });
     if (opts.strict) {
       for (var i = 0; i < ecarts.length; i++) {
         var pr0 = produitParId(ecarts[i].produitId);

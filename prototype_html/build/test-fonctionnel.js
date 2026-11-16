@@ -27842,6 +27842,71 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT PARAM-CLINIQUE FIN */
+  /* LOT INVENT-NC DEBUT */
+  await etape(async () => {
+    scenario('Vague 201 : lot INVENT-NC, un article NON COMPTÉ est enregistré « non compté » sur la ligne d’inventaire (case laissée vide, distinct de « compté, écart zéro »), son stock n’est jamais touché ni régularisé (RG-03), la validation reste possible, le registre et l’état imprimé le disent');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'stock', nom: 'STOCK201', nomComplet: 'STOCK201', fonction: 'stock', identifiant: 's201.stock', secteur: 'PHA' });
+    await ouvrir('m6-inventaire.html');
+    const prod = await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('produits');
+      const p = (code, gros, cump) => col.insert({ code, designation: 'ZZ Sonde ' + code, unite: 'Boîte', categorie: 'immobilisation', prixAchat: cump, prixVente: cump, cump, seuilAlerte: 1, stockGros: gros, stockDetail: 4, stock: gros + 4, statut: 'actif' }).record.id;
+      return { a: p('NC201A', 20, 500), b: p('NC201B', 5, 1200), c: p('NC201C', 12, 80) };
+    });
+    await attendreEcritures();
+    const mvAvant = await page.evaluate(() => window.SIGH.store.collection('mouvements').all().length);
+    await page.evaluate(() => window.SIGH.app.go('m6-inventaire-feuille', { magasin: 'gros', type: 'Mensuel', date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), perimetre: 'Immobilisations', operateur: 'Sonde 201' }));
+    await page.waitForFunction((id) => !!document.querySelector('#page-content [data-comptage="' + id + '"]'), { timeout: 20000 }, prod.a).catch(() => null);
+    const avant = await page.evaluate((p) => {
+      const champ = (id) => document.querySelector('#page-content [data-comptage="' + id + '"]');
+      const ligne = (id) => champ(id).closest('tr');
+      return { vides: [p.a, p.b, p.c].every((id) => champ(id) && champ(id).value === ''), nonCompte: [p.a, p.b, p.c].every((id) => /non compté/.test(ligne(id).textContent)) };
+    }, prod);
+    await page.evaluate((p) => {
+      const poser = (id, v) => { const f = document.querySelector('#page-content [data-comptage="' + id + '"]'); f.value = v; f.dispatchEvent(new Event('input', { bubbles: true })); };
+      poser(p.a, '23'); poser(p.c, '12');
+    }, prod);
+    const resume = await page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '));
+    verifier('La feuille part VIDE : chaque article est « non compté » tant que rien n’est saisi (le théorique n’est plus recopié dans le physique) ; deux articles comptés, le troisième laissé vide : « Articles non comptés 1 »',
+      avant.vides && avant.nonCompte && /Articles non comptés\s*1/.test(resume) && /Articles comptés\s*2/.test(resume), JSON.stringify({ avant, extrait: (resume.match(/Articles au périmètre.{0,160}/) || [''])[0] }));
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].filter((x) => x.textContent.trim() === 'Valider l’inventaire').pop(); b.click(); });
+    await attendreEcritures();
+    const apres = await page.evaluate((p) => {
+      const S = window.SIGH.store;
+      const inv = S.collection('inventaires').active().filter((i) => i.operateur === 'Sonde 201').pop();
+      const L = {}; (inv ? inv.lignes : []).forEach((l) => { L[l.code] = l; });
+      const st = (id) => S.collection('produits').get(id).stockGros;
+      const mv = S.collection('mouvements').all().filter((m) => inv && m.justificatif === 'Inventaire ' + inv.reference);
+      return { ref: inv && inv.reference, nb: inv && [inv.nbArticles, inv.nbComptes, inv.nbNonComptes, inv.nbEcarts], b: L.NC201B, c: L.NC201C, a: L.NC201A,
+        stocks: [st(p.a), st(p.b), st(p.c)], mvProduits: mv.map((m) => m.produitId), detail: S.collection('produits').get(p.b).stockDetail };
+    }, prod);
+    verifier('Validée malgré le non compté (non bloquant) : la ligne de B porte « nonCompte » SANS physique, écart ni valeur ; C compté juste est un écart zéro ENREGISTRÉ comme comptage ; compteurs 3 au périmètre, 2 comptés, 1 non compté, 1 écart',
+      !!apres.ref && JSON.stringify(apres.nb) === '[3,2,1,1]' && apres.b && apres.b.nonCompte === true && !('physique' in apres.b) && !('ecart' in apres.b) && !('valeur' in apres.b) && apres.b.theorique === 5
+      && apres.c && !apres.c.nonCompte && apres.c.physique === 12 && apres.c.ecart === 0 && apres.a && apres.a.ecart === 3, JSON.stringify(apres));
+    verifier('RG-03 : le stock du non compté n’est JAMAIS touché ni régularisé (B reste à 5, aucun mouvement pour lui) ; seul A, compté avec écart, a son mouvement de régularisation',
+      JSON.stringify(apres.stocks) === '[23,5,12]' && apres.detail === 4 && JSON.stringify(apres.mvProduits) === JSON.stringify([prod.a]), JSON.stringify(apres));
+    await ouvrir('m6-inventaire.html');
+    const registre = await page.evaluate((ref) => {
+      const c = document.querySelector('#page-content [data-non-comptes="' + ref + '"]');
+      const P = window.SIGH.print; let t = '', cart = '';
+      P.etat = (o) => { t = o.contenu.textContent; cart = JSON.stringify(o.cartouche); };
+      const i = window.SIGH.store.collection('inventaires').active().filter((x) => x.reference === ref)[0];
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(ref) >= 0);
+      const imp = tr && [...tr.querySelectorAll('button')].find((b) => /Imprimer/.test(b.getAttribute('title') || b.getAttribute('aria-label') || ''));
+      if (imp) imp.click();
+      return { colonne: !!c && c.textContent.trim(), entete: [...document.querySelectorAll('#page-content thead th')].some((th) => /Non comptés/.test(th.textContent)), etat: t, cartouche: cart, bouton: !!imp, ligne: !!i };
+    }, apres.ref);
+    verifier('Le REGISTRE des inventaires a une colonne « Non comptés » (1 pour cette feuille) et l’ÉTAT imprimé le dit : « Non compté » sur la ligne de B, « Articles non comptés : 1 (stock inchangé) » au cartouche',
+      registre.entete && registre.colonne === '1' && registre.bouton && /Non compté/.test(registre.etat) && /Articles non comptés/.test(registre.cartouche) && /1 \(stock inchangé\)/.test(registre.cartouche), JSON.stringify(registre).slice(0, 400));
+    /* restauration : la feuille, ses mouvements et les articles de la sonde sont archivés (RG-14) */
+    await page.evaluate((o) => { const S = window.SIGH.store;
+      S.collection('inventaires').active().filter((i) => i.reference === o.ref).forEach((i) => S.collection('inventaires').archive(i.id, 'restauration de la sonde 201'));
+      S.collection('mouvements').active().filter((m) => m.justificatif === 'Inventaire ' + o.ref).forEach((m) => S.collection('mouvements').archive(m.id, 'restauration de la sonde 201'));
+      [o.p.a, o.p.b, o.p.c].forEach((id) => S.collection('produits').archive(id, 'restauration de la sonde 201')); }, { ref: apres.ref, p: prod });
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT INVENT-NC FIN */
 
 
 

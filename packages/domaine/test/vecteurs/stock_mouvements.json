@@ -3278,7 +3278,7 @@
       "stockDetail": 8,
       "stock": 28,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.575Z"
      },
      {
       "id": "PRD-ZT2",
@@ -3295,7 +3295,7 @@
       "stockDetail": 0,
       "stock": 5,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.576Z"
      },
      {
       "id": "PRD-ZT3",
@@ -3312,7 +3312,7 @@
       "stockDetail": 6,
       "stock": 18,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.576Z"
      },
      {
       "id": "PRD-ZT4",
@@ -3329,7 +3329,7 @@
       "stockDetail": 8,
       "stock": 2,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.577Z"
      }
     ],
     "comptes": {
@@ -3356,9 +3356,15 @@
      }
     ],
     "resume": [
-     "Articles inventoriés4",
-     "Articles inventoriés",
+     "Articles au périmètre4",
+     "Articles au périmètre",
      "4",
+     "Articles comptés2",
+     "Articles comptés",
+     "2",
+     "Articles non comptés2Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
+     "2",
      "Écarts constatés2",
      "Écarts constatés",
      "2",
@@ -3378,10 +3384,13 @@
       "operateur": "Testeur Inventaire",
       "statutInv": "valide",
       "nbArticles": 4,
+      "nbComptes": 2,
+      "nbNonComptes": 2,
       "nbEcarts": 2,
       "valeurEcart": -2100,
       "lignes": [
        {
+        "produitId": "PRD-ZT1",
         "code": "ZT1",
         "designation": "ZZ Test 1",
         "unite": "Boîte",
@@ -3392,6 +3401,7 @@
         "valeur": 1500
        },
        {
+        "produitId": "PRD-ZT2",
         "code": "ZT2",
         "designation": "ZZ Test 2",
         "unite": "Boîte",
@@ -3402,24 +3412,22 @@
         "valeur": -3600
        },
        {
+        "produitId": "PRD-ZT3",
         "code": "ZT3",
         "designation": "ZZ Test 3",
         "unite": "Boîte",
         "theorique": 12,
-        "physique": 12,
-        "ecart": 0,
-        "cump": 80,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 80
        },
        {
+        "produitId": "PRD-ZT4",
         "code": "ZT4",
         "designation": "ZZ Test 4",
         "unite": "Boîte",
         "theorique": 10,
-        "physique": 10,
-        "ecart": 0,
-        "cump": 300,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 300
        }
       ]
      }
@@ -3482,7 +3490,7 @@
      {
       "message": "Inventaire INV-0001 validé — 2 écart(s) régularisé(s) sur le stock gros (magasin central).",
       "type": "success",
-      "detail": null
+      "detail": "2 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
      }
     ]
    }
@@ -3513,9 +3521,9 @@
       "stockDetail": 8,
       "stock": 31,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:24.998Z"
+      "_modifieLe": "2026-10-30T12:00:00.746Z"
      },
      {
       "id": "PRD-ZT2",
@@ -3532,9 +3540,9 @@
       "stockDetail": 0,
       "stock": 2,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:24.998Z"
+      "_modifieLe": "2026-10-30T12:00:00.747Z"
      },
      {
       "id": "PRD-ZT3",
@@ -3551,7 +3559,7 @@
       "stockDetail": 6,
       "stock": 18,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.576Z"
      },
      {
       "id": "PRD-ZT4",
@@ -3568,7 +3576,7 @@
       "stockDetail": 8,
       "stock": 2,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.577Z"
      }
     ],
     "comptes": {
@@ -3597,9 +3605,15 @@
      }
     ],
     "resume": [
-     "Articles inventoriés4",
-     "Articles inventoriés",
+     "Articles au périmètre4",
+     "Articles au périmètre",
      "4",
+     "Articles comptés2",
+     "Articles comptés",
+     "2",
+     "Articles non comptés2Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
+     "2",
      "Écarts constatés2",
      "Écarts constatés",
      "2",
@@ -3619,10 +3633,13 @@
       "operateur": "Testeur Inventaire",
       "statutInv": "valide",
       "nbArticles": 4,
+      "nbComptes": 2,
+      "nbNonComptes": 2,
       "nbEcarts": 2,
       "valeurEcart": -1260,
       "lignes": [
        {
+        "produitId": "PRD-ZT1",
         "code": "ZT1",
         "designation": "ZZ Test 1",
         "unite": "Boîte",
@@ -3633,16 +3650,16 @@
         "valeur": -1500
        },
        {
+        "produitId": "PRD-ZT2",
         "code": "ZT2",
         "designation": "ZZ Test 2",
         "unite": "Boîte",
         "theorique": 0,
-        "physique": 0,
-        "ecart": 0,
-        "cump": 1200,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 1200
        },
        {
+        "produitId": "PRD-ZT3",
         "code": "ZT3",
         "designation": "ZZ Test 3",
         "unite": "Boîte",
@@ -3653,14 +3670,13 @@
         "valeur": 240
        },
        {
+        "produitId": "PRD-ZT4",
         "code": "ZT4",
         "designation": "ZZ Test 4",
         "unite": "Boîte",
         "theorique": 8,
-        "physique": 8,
-        "ecart": 0,
-        "cump": 300,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 300
        }
       ]
      }
@@ -3723,14 +3739,14 @@
      {
       "message": "Inventaire INV-0002 validé — 2 écart(s) régularisé(s) sur le stock détail (pharmacie d’urgence).",
       "type": "success",
-      "detail": null
+      "detail": "2 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
      }
     ]
    }
   },
   {
    "entree": {
-    "nom": "aucun écart : inventaire enregistré, aucun mouvement",
+    "nom": "aucun article compté : quatre lignes « non compté », aucun mouvement, stocks inchangés",
     "entete": {
      "magasin": "gros",
      "type": "Mensuel",
@@ -3754,9 +3770,9 @@
       "stockDetail": 5,
       "stock": 28,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.365Z"
+      "_modifieLe": "2026-10-30T12:00:00.991Z"
      },
      {
       "id": "PRD-ZT2",
@@ -3773,9 +3789,9 @@
       "stockDetail": 0,
       "stock": 2,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:24.998Z"
+      "_modifieLe": "2026-10-30T12:00:00.747Z"
      },
      {
       "id": "PRD-ZT3",
@@ -3792,9 +3808,9 @@
       "stockDetail": 9,
       "stock": 21,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.366Z"
+      "_modifieLe": "2026-10-30T12:00:00.992Z"
      },
      {
       "id": "PRD-ZT4",
@@ -3811,7 +3827,7 @@
       "stockDetail": 8,
       "stock": 2,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.577Z"
      }
     ],
     "comptes": {},
@@ -3827,8 +3843,14 @@
     "lignesAffichees": 4,
     "enDirect": [],
     "resume": [
-     "Articles inventoriés4",
-     "Articles inventoriés",
+     "Articles au périmètre4",
+     "Articles au périmètre",
+     "4",
+     "Articles comptés0",
+     "Articles comptés",
+     "0",
+     "Articles non comptés4Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
      "4",
      "Écarts constatés0",
      "Écarts constatés",
@@ -3849,10 +3871,247 @@
       "operateur": "Testeur Inventaire",
       "statutInv": "valide",
       "nbArticles": 4,
+      "nbComptes": 0,
+      "nbNonComptes": 4,
       "nbEcarts": 0,
       "valeurEcart": 0,
       "lignes": [
        {
+        "produitId": "PRD-ZT1",
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 23,
+        "nonCompte": true,
+        "cump": 500
+       },
+       {
+        "produitId": "PRD-ZT2",
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 2,
+        "nonCompte": true,
+        "cump": 1200
+       },
+       {
+        "produitId": "PRD-ZT3",
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 12,
+        "nonCompte": true,
+        "cump": 80
+       },
+       {
+        "produitId": "PRD-ZT4",
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 10,
+        "nonCompte": true,
+        "cump": 300
+       }
+      ]
+     }
+    ],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0003 validé — 0 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "type": "success",
+      "detail": "4 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "aucun écart : les quatre articles comptés à leur théorique, inventaire enregistré, aucun mouvement",
+    "entete": {
+     "magasin": "gros",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.991Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.747Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.992Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.577Z"
+     }
+    ],
+    "comptes": {
+     "ZT1": 23,
+     "ZT2": 2,
+     "ZT3": 12,
+     "ZT4": 10
+    },
+    "inventairesExistants": [
+     "INV-0003",
+     "INV-0002",
+     "INV-0001"
+    ],
+    "rangMax": 404,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT1",
+      "ecart": "0",
+      "valeur": "0"
+     },
+     {
+      "code": "ZT2",
+      "ecart": "0",
+      "valeur": "0"
+     },
+     {
+      "code": "ZT3",
+      "ecart": "0",
+      "valeur": "0"
+     },
+     {
+      "code": "ZT4",
+      "ecart": "0",
+      "valeur": "0"
+     }
+    ],
+    "resume": [
+     "Articles au périmètre4",
+     "Articles au périmètre",
+     "4",
+     "Articles comptés4",
+     "Articles comptés",
+     "4",
+     "Articles non comptés0",
+     "Articles non comptés",
+     "0",
+     "Écarts constatés0",
+     "Écarts constatés",
+     "0",
+     "Valeur des écarts0 FCFA",
+     "Valeur des écarts",
+     "0 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0004",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbComptes": 4,
+      "nbNonComptes": 0,
+      "nbEcarts": 0,
+      "valeurEcart": 0,
+      "lignes": [
+       {
+        "produitId": "PRD-ZT1",
         "code": "ZT1",
         "designation": "ZZ Test 1",
         "unite": "Boîte",
@@ -3863,6 +4122,7 @@
         "valeur": 0
        },
        {
+        "produitId": "PRD-ZT2",
         "code": "ZT2",
         "designation": "ZZ Test 2",
         "unite": "Boîte",
@@ -3873,6 +4133,7 @@
         "valeur": 0
        },
        {
+        "produitId": "PRD-ZT3",
         "code": "ZT3",
         "designation": "ZZ Test 3",
         "unite": "Boîte",
@@ -3883,6 +4144,7 @@
         "valeur": 0
        },
        {
+        "produitId": "PRD-ZT4",
         "code": "ZT4",
         "designation": "ZZ Test 4",
         "unite": "Boîte",
@@ -3924,9 +4186,484 @@
     ],
     "messages": [
      {
-      "message": "Inventaire INV-0003 validé — 0 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "message": "Inventaire INV-0004 validé — 0 écart(s) régularisé(s) sur le stock gros (magasin central).",
       "type": "success",
       "detail": null
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "non comptés mêlés : A compté avec écart, Cc compté juste, B et Dd non comptés (stock inchangé, aucun mouvement pour eux)",
+    "entete": {
+     "magasin": "gros",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.991Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.747Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.992Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.577Z"
+     }
+    ],
+    "comptes": {
+     "ZT1": 25,
+     "ZT3": 12
+    },
+    "inventairesExistants": [
+     "INV-0004",
+     "INV-0003",
+     "INV-0002",
+     "INV-0001"
+    ],
+    "rangMax": 404,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT1",
+      "ecart": "+2",
+      "valeur": "1 000"
+     },
+     {
+      "code": "ZT3",
+      "ecart": "0",
+      "valeur": "0"
+     }
+    ],
+    "resume": [
+     "Articles au périmètre4",
+     "Articles au périmètre",
+     "4",
+     "Articles comptés2",
+     "Articles comptés",
+     "2",
+     "Articles non comptés2Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
+     "2",
+     "Écarts constatés1",
+     "Écarts constatés",
+     "1",
+     "Valeur des écarts1 000 FCFA",
+     "Valeur des écarts",
+     "1 000 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0005",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbComptes": 2,
+      "nbNonComptes": 2,
+      "nbEcarts": 1,
+      "valeurEcart": 1000,
+      "lignes": [
+       {
+        "produitId": "PRD-ZT1",
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 23,
+        "physique": 25,
+        "ecart": 2,
+        "cump": 500,
+        "valeur": 1000
+       },
+       {
+        "produitId": "PRD-ZT2",
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 2,
+        "nonCompte": true,
+        "cump": 1200
+       },
+       {
+        "produitId": "PRD-ZT3",
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 12,
+        "physique": 12,
+        "ecart": 0,
+        "cump": 80,
+        "valeur": 0
+       },
+       {
+        "produitId": "PRD-ZT4",
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 10,
+        "nonCompte": true,
+        "cump": 300
+       }
+      ]
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "M000405",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT1",
+      "produit": "ZZ Test 1",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 2,
+      "stockType": "gros",
+      "justificatif": "Inventaire INV-0005",
+      "utilisateur": "Testeur Inventaire"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 25,
+      "stockDetail": 5,
+      "stock": 30
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0005 validé — 1 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "type": "success",
+      "detail": "2 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "compté zéro n’est pas non compté : B compté 0 (écart régularisé), les autres non comptés",
+    "entete": {
+     "magasin": "gros",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 25,
+      "stockDetail": 5,
+      "stock": 30,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:01.719Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.747Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T12:00:00.992Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:00:00.577Z"
+     }
+    ],
+    "comptes": {
+     "ZT2": 0
+    },
+    "inventairesExistants": [
+     "INV-0005",
+     "INV-0004",
+     "INV-0003",
+     "INV-0002",
+     "INV-0001"
+    ],
+    "rangMax": 405,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT2",
+      "ecart": "-2",
+      "valeur": "-2 400"
+     }
+    ],
+    "resume": [
+     "Articles au périmètre4",
+     "Articles au périmètre",
+     "4",
+     "Articles comptés1",
+     "Articles comptés",
+     "1",
+     "Articles non comptés3Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
+     "3",
+     "Écarts constatés1",
+     "Écarts constatés",
+     "1",
+     "Valeur des écarts-2 400 FCFA",
+     "Valeur des écarts",
+     "-2 400 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0006",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbComptes": 1,
+      "nbNonComptes": 3,
+      "nbEcarts": 1,
+      "valeurEcart": -2400,
+      "lignes": [
+       {
+        "produitId": "PRD-ZT1",
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 25,
+        "nonCompte": true,
+        "cump": 500
+       },
+       {
+        "produitId": "PRD-ZT2",
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 2,
+        "physique": 0,
+        "ecart": -2,
+        "cump": 1200,
+        "valeur": -2400
+       },
+       {
+        "produitId": "PRD-ZT3",
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 12,
+        "nonCompte": true,
+        "cump": 80
+       },
+       {
+        "produitId": "PRD-ZT4",
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 10,
+        "nonCompte": true,
+        "cump": 300
+       }
+      ]
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "M000406",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT2",
+      "produit": "ZZ Test 2",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 2,
+      "stockType": "gros",
+      "justificatif": "Inventaire INV-0006",
+      "utilisateur": "Testeur Inventaire"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 25,
+      "stockDetail": 5,
+      "stock": 30
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 0,
+      "stockDetail": 0,
+      "stock": 0
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0006 validé — 1 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "type": "success",
+      "detail": "3 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
      }
     ]
    }
@@ -3953,13 +4690,13 @@
       "prixVente": 100,
       "cump": 500,
       "seuilAlerte": 5,
-      "stockGros": 23,
+      "stockGros": 25,
       "stockDetail": 5,
-      "stock": 28,
+      "stock": 30,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.365Z"
+      "_modifieLe": "2026-10-30T12:00:01.719Z"
      },
      {
       "id": "PRD-ZT2",
@@ -3972,13 +4709,13 @@
       "prixVente": 100,
       "cump": 1200,
       "seuilAlerte": 5,
-      "stockGros": 2,
+      "stockGros": 0,
       "stockDetail": 0,
-      "stock": 2,
+      "stock": 0,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:24.998Z"
+      "_modifieLe": "2026-10-30T12:00:01.960Z"
      },
      {
       "id": "PRD-ZT3",
@@ -3995,9 +4732,9 @@
       "stockDetail": 9,
       "stock": 21,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.366Z"
+      "_modifieLe": "2026-10-30T12:00:00.992Z"
      },
      {
       "id": "PRD-ZT4",
@@ -4014,18 +4751,21 @@
       "stockDetail": 8,
       "stock": 2,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z"
+      "_creeLe": "2026-10-30T12:00:00.577Z"
      }
     ],
     "comptes": {
      "ZT4": 0
     },
     "inventairesExistants": [
+     "INV-0006",
+     "INV-0005",
+     "INV-0004",
      "INV-0003",
      "INV-0002",
      "INV-0001"
     ],
-    "rangMax": 404,
+    "rangMax": 406,
     "jour": "2026-10-30",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
@@ -4039,9 +4779,15 @@
      }
     ],
     "resume": [
-     "Articles inventoriés4",
-     "Articles inventoriés",
+     "Articles au périmètre4",
+     "Articles au périmètre",
      "4",
+     "Articles comptés1",
+     "Articles comptés",
+     "1",
+     "Articles non comptés3Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
+     "3",
      "Écarts constatés1",
      "Écarts constatés",
      "1",
@@ -4052,7 +4798,7 @@
     "inventaires": [
      {
       "statut": "actif",
-      "reference": "INV-0004",
+      "reference": "INV-0007",
       "date": "2026-10-30",
       "type": "Mensuel",
       "perimetre": "Immobilisations",
@@ -4061,40 +4807,40 @@
       "operateur": "Testeur Inventaire",
       "statutInv": "valide",
       "nbArticles": 4,
+      "nbComptes": 1,
+      "nbNonComptes": 3,
       "nbEcarts": 1,
       "valeurEcart": -2400,
       "lignes": [
        {
+        "produitId": "PRD-ZT1",
         "code": "ZT1",
         "designation": "ZZ Test 1",
         "unite": "Boîte",
         "theorique": 5,
-        "physique": 5,
-        "ecart": 0,
-        "cump": 500,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 500
        },
        {
+        "produitId": "PRD-ZT2",
         "code": "ZT2",
         "designation": "ZZ Test 2",
         "unite": "Boîte",
         "theorique": 0,
-        "physique": 0,
-        "ecart": 0,
-        "cump": 1200,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 1200
        },
        {
+        "produitId": "PRD-ZT3",
         "code": "ZT3",
         "designation": "ZZ Test 3",
         "unite": "Boîte",
         "theorique": 9,
-        "physique": 9,
-        "ecart": 0,
-        "cump": 80,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 80
        },
        {
+        "produitId": "PRD-ZT4",
         "code": "ZT4",
         "designation": "ZZ Test 4",
         "unite": "Boîte",
@@ -4110,7 +4856,7 @@
     "mouvements": [
      {
       "statut": "actif",
-      "reference": "M000405",
+      "reference": "M000407",
       "date": "2026-10-30",
       "produitId": "PRD-ZT4",
       "produit": "ZZ Test 4",
@@ -4118,22 +4864,22 @@
       "typeLabel": "Régularisation inventaire",
       "quantite": 8,
       "stockType": "detail",
-      "justificatif": "Inventaire INV-0004",
+      "justificatif": "Inventaire INV-0007",
       "utilisateur": "Testeur Inventaire"
      }
     ],
     "produits": [
      {
       "id": "PRD-ZT1",
-      "stockGros": 23,
+      "stockGros": 25,
       "stockDetail": 5,
-      "stock": 28
+      "stock": 30
      },
      {
       "id": "PRD-ZT2",
-      "stockGros": 2,
+      "stockGros": 0,
       "stockDetail": 0,
-      "stock": 2
+      "stock": 0
      },
      {
       "id": "PRD-ZT3",
@@ -4150,9 +4896,9 @@
     ],
     "messages": [
      {
-      "message": "Inventaire INV-0004 validé — 1 écart(s) régularisé(s) sur le stock détail (pharmacie d’urgence).",
+      "message": "Inventaire INV-0007 validé — 1 écart(s) régularisé(s) sur le stock détail (pharmacie d’urgence).",
       "type": "success",
-      "detail": null
+      "detail": "3 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
      }
     ]
    }
@@ -4179,13 +4925,13 @@
       "prixVente": 100,
       "cump": 500,
       "seuilAlerte": 5,
-      "stockGros": 23,
+      "stockGros": 25,
       "stockDetail": 5,
-      "stock": 28,
+      "stock": 30,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.365Z"
+      "_modifieLe": "2026-10-30T12:00:01.719Z"
      },
      {
       "id": "PRD-ZT2",
@@ -4198,13 +4944,13 @@
       "prixVente": 100,
       "cump": 1200,
       "seuilAlerte": 5,
-      "stockGros": 2,
+      "stockGros": 0,
       "stockDetail": 0,
-      "stock": 2,
+      "stock": 0,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:24.998Z"
+      "_modifieLe": "2026-10-30T12:00:01.960Z"
      },
      {
       "id": "PRD-ZT3",
@@ -4221,9 +4967,9 @@
       "stockDetail": 9,
       "stock": 21,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.366Z"
+      "_modifieLe": "2026-10-30T12:00:00.992Z"
      },
      {
       "id": "PRD-ZT4",
@@ -4240,9 +4986,9 @@
       "stockDetail": 0,
       "stock": 0,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.577Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.863Z"
+      "_modifieLe": "2026-10-30T12:00:02.205Z"
      }
     ],
     "comptes": {
@@ -4250,12 +4996,15 @@
      "ZT2": 9
     },
     "inventairesExistants": [
+     "INV-0007",
+     "INV-0006",
+     "INV-0005",
      "INV-0004",
      "INV-0003",
      "INV-0002",
      "INV-0001"
     ],
-    "rangMax": 405,
+    "rangMax": 407,
     "jour": "2026-10-30",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
@@ -4264,30 +5013,36 @@
     "enDirect": [
      {
       "code": "ZT1",
-      "ecart": "-23",
-      "valeur": "-11 500"
+      "ecart": "-25",
+      "valeur": "-12 500"
      },
      {
       "code": "ZT2",
-      "ecart": "+7",
-      "valeur": "8 400"
+      "ecart": "+9",
+      "valeur": "10 800"
      }
     ],
     "resume": [
-     "Articles inventoriés4",
-     "Articles inventoriés",
+     "Articles au périmètre4",
+     "Articles au périmètre",
      "4",
+     "Articles comptés2",
+     "Articles comptés",
+     "2",
+     "Articles non comptés2Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
+     "2",
      "Écarts constatés2",
      "Écarts constatés",
      "2",
-     "Valeur des écarts-3 100 FCFA",
+     "Valeur des écarts-1 700 FCFA",
      "Valeur des écarts",
-     "-3 100 FCFA"
+     "-1 700 FCFA"
     ],
     "inventaires": [
      {
       "statut": "actif",
-      "reference": "INV-0005",
+      "reference": "INV-0008",
       "date": "2026-10-30",
       "type": "Mensuel",
       "perimetre": "Immobilisations",
@@ -4296,48 +5051,50 @@
       "operateur": "Testeur Inventaire",
       "statutInv": "valide",
       "nbArticles": 4,
+      "nbComptes": 2,
+      "nbNonComptes": 2,
       "nbEcarts": 2,
-      "valeurEcart": -3100,
+      "valeurEcart": -1700,
       "lignes": [
        {
+        "produitId": "PRD-ZT1",
         "code": "ZT1",
         "designation": "ZZ Test 1",
         "unite": "Boîte",
-        "theorique": 23,
+        "theorique": 25,
         "physique": 0,
-        "ecart": -23,
+        "ecart": -25,
         "cump": 500,
-        "valeur": -11500
+        "valeur": -12500
        },
        {
+        "produitId": "PRD-ZT2",
         "code": "ZT2",
         "designation": "ZZ Test 2",
         "unite": "Boîte",
-        "theorique": 2,
+        "theorique": 0,
         "physique": 9,
-        "ecart": 7,
+        "ecart": 9,
         "cump": 1200,
-        "valeur": 8400
+        "valeur": 10800
        },
        {
+        "produitId": "PRD-ZT3",
         "code": "ZT3",
         "designation": "ZZ Test 3",
         "unite": "Boîte",
         "theorique": 12,
-        "physique": 12,
-        "ecart": 0,
-        "cump": 80,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 80
        },
        {
+        "produitId": "PRD-ZT4",
         "code": "ZT4",
         "designation": "ZZ Test 4",
         "unite": "Boîte",
         "theorique": 10,
-        "physique": 10,
-        "ecart": 0,
-        "cump": 300,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 300
        }
       ]
      }
@@ -4345,28 +5102,28 @@
     "mouvements": [
      {
       "statut": "actif",
-      "reference": "M000407",
+      "reference": "M000409",
       "date": "2026-10-30",
       "produitId": "PRD-ZT2",
       "produit": "ZZ Test 2",
       "type": "inventaire",
       "typeLabel": "Régularisation inventaire",
-      "quantite": 7,
+      "quantite": 9,
       "stockType": "gros",
-      "justificatif": "Inventaire INV-0005",
+      "justificatif": "Inventaire INV-0008",
       "utilisateur": "Testeur Inventaire"
      },
      {
       "statut": "actif",
-      "reference": "M000406",
+      "reference": "M000408",
       "date": "2026-10-30",
       "produitId": "PRD-ZT1",
       "produit": "ZZ Test 1",
       "type": "inventaire",
       "typeLabel": "Régularisation inventaire",
-      "quantite": 23,
+      "quantite": 25,
       "stockType": "gros",
-      "justificatif": "Inventaire INV-0005",
+      "justificatif": "Inventaire INV-0008",
       "utilisateur": "Testeur Inventaire"
      }
     ],
@@ -4398,24 +5155,24 @@
     ],
     "messages": [
      {
-      "message": "Inventaire INV-0005 validé — 2 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "message": "Inventaire INV-0008 validé — 2 écart(s) régularisé(s) sur le stock gros (magasin central).",
       "type": "success",
-      "detail": null
+      "detail": "2 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
      }
     ],
     "apresAnnulation": {
      "produits": [
       {
        "id": "PRD-ZT1",
-       "stockGros": 23,
+       "stockGros": 25,
        "stockDetail": 5,
-       "stock": 28
+       "stock": 30
       },
       {
        "id": "PRD-ZT2",
-       "stockGros": 2,
+       "stockGros": 0,
        "stockDetail": 0,
-       "stock": 2
+       "stock": 0
       },
       {
        "id": "PRD-ZT3",
@@ -4457,13 +5214,13 @@
       "prixVente": 100,
       "cump": 500,
       "seuilAlerte": 5,
-      "stockGros": 23,
+      "stockGros": 25,
       "stockDetail": 5,
-      "stock": 28,
+      "stock": 30,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.575Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:26.187Z"
+      "_modifieLe": "2026-10-30T12:00:02.738Z"
      },
      {
       "id": "PRD-ZT2",
@@ -4476,13 +5233,13 @@
       "prixVente": 100,
       "cump": 1200,
       "seuilAlerte": 5,
-      "stockGros": 2,
+      "stockGros": 0,
       "stockDetail": 0,
-      "stock": 2,
+      "stock": 0,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:26.187Z"
+      "_modifieLe": "2026-10-30T12:00:02.738Z"
      },
      {
       "id": "PRD-ZT3",
@@ -4499,9 +5256,9 @@
       "stockDetail": 9,
       "stock": 21,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.576Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.366Z"
+      "_modifieLe": "2026-10-30T12:00:00.992Z"
      },
      {
       "id": "PRD-ZT4",
@@ -4518,21 +5275,24 @@
       "stockDetail": 0,
       "stock": 0,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_creeLe": "2026-10-30T12:00:00.577Z",
       "_modifiePar": "BASSONGUI Chabi Séko",
-      "_modifieLe": "2026-10-30T17:58:25.863Z"
+      "_modifieLe": "2026-10-30T12:00:02.205Z"
      }
     ],
     "comptes": {
      "ZT1": 21
     },
     "inventairesExistants": [
+     "INV-0007",
+     "INV-0006",
+     "INV-0005",
      "INV-0004",
      "INV-0003",
      "INV-0002",
      "INV-0001"
     ],
-    "rangMax": 405,
+    "rangMax": 407,
     "jour": "2026-10-30",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
@@ -4541,25 +5301,31 @@
     "enDirect": [
      {
       "code": "ZT1",
-      "ecart": "-2",
-      "valeur": "-1 000"
+      "ecart": "-4",
+      "valeur": "-2 000"
      }
     ],
     "resume": [
-     "Articles inventoriés4",
-     "Articles inventoriés",
+     "Articles au périmètre4",
+     "Articles au périmètre",
      "4",
+     "Articles comptés1",
+     "Articles comptés",
+     "1",
+     "Articles non comptés3Stock inchangé, enregistrés « non compté »",
+     "Articles non comptés",
+     "3",
      "Écarts constatés1",
      "Écarts constatés",
      "1",
-     "Valeur des écarts-1 000 FCFA",
+     "Valeur des écarts-2 000 FCFA",
      "Valeur des écarts",
-     "-1 000 FCFA"
+     "-2 000 FCFA"
     ],
     "inventaires": [
      {
       "statut": "actif",
-      "reference": "INV-0005",
+      "reference": "INV-0008",
       "date": "2026-10-30",
       "type": "Annuel",
       "perimetre": "Immobilisations",
@@ -4568,48 +5334,48 @@
       "operateur": "Testeur Inventaire",
       "statutInv": "valide",
       "nbArticles": 4,
+      "nbComptes": 1,
+      "nbNonComptes": 3,
       "nbEcarts": 1,
-      "valeurEcart": -1000,
+      "valeurEcart": -2000,
       "lignes": [
        {
+        "produitId": "PRD-ZT1",
         "code": "ZT1",
         "designation": "ZZ Test 1",
         "unite": "Boîte",
-        "theorique": 23,
+        "theorique": 25,
         "physique": 21,
-        "ecart": -2,
+        "ecart": -4,
         "cump": 500,
-        "valeur": -1000
+        "valeur": -2000
        },
        {
+        "produitId": "PRD-ZT2",
         "code": "ZT2",
         "designation": "ZZ Test 2",
         "unite": "Boîte",
-        "theorique": 2,
-        "physique": 2,
-        "ecart": 0,
-        "cump": 1200,
-        "valeur": 0
+        "theorique": 0,
+        "nonCompte": true,
+        "cump": 1200
        },
        {
+        "produitId": "PRD-ZT3",
         "code": "ZT3",
         "designation": "ZZ Test 3",
         "unite": "Boîte",
         "theorique": 12,
-        "physique": 12,
-        "ecart": 0,
-        "cump": 80,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 80
        },
        {
+        "produitId": "PRD-ZT4",
         "code": "ZT4",
         "designation": "ZZ Test 4",
         "unite": "Boîte",
         "theorique": 10,
-        "physique": 10,
-        "ecart": 0,
-        "cump": 300,
-        "valeur": 0
+        "nonCompte": true,
+        "cump": 300
        }
       ]
      }
@@ -4617,15 +5383,15 @@
     "mouvements": [
      {
       "statut": "actif",
-      "reference": "M000406",
+      "reference": "M000408",
       "date": "2026-10-30",
       "produitId": "PRD-ZT1",
       "produit": "ZZ Test 1",
       "type": "inventaire",
       "typeLabel": "Régularisation inventaire",
-      "quantite": 2,
+      "quantite": 4,
       "stockType": "gros",
-      "justificatif": "Inventaire INV-0005",
+      "justificatif": "Inventaire INV-0008",
       "utilisateur": "Testeur Inventaire"
      }
     ],
@@ -4638,9 +5404,9 @@
      },
      {
       "id": "PRD-ZT2",
-      "stockGros": 2,
+      "stockGros": 0,
       "stockDetail": 0,
-      "stock": 2
+      "stock": 0
      },
      {
       "id": "PRD-ZT3",
@@ -4657,9 +5423,9 @@
     ],
     "messages": [
      {
-      "message": "Inventaire INV-0005 validé — 1 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "message": "Inventaire INV-0008 validé — 1 écart(s) régularisé(s) sur le stock gros (magasin central).",
       "type": "success",
-      "detail": null
+      "detail": "3 article(s) non compté(s) : enregistré(s) « non compté », stock inchangé."
      }
     ]
    }

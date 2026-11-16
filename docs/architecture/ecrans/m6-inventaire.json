@@ -32,7 +32,8 @@
  "commandes": [
   "Colonnes",
   "Exporter",
-  "Lancer un inventaire"
+  "Lancer un inventaire",
+  "Importer les données"
  ],
  "champs": [],
  "nbTableaux": 0,

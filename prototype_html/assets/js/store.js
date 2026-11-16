@@ -154,6 +154,8 @@
      90 (16/11/2026) : les PARAMÈTRES DE CLINIQUE datés (lot PARAM-CLINIQUE, décisions 10 et 14 de la Direction du 15/11/2026). La collection `parametresClinique` (préavis de
      péremption, 90 jours semés ; tranches de la balance âgée, 30 et 90 jours semés : une fiche par version, jamais réécrite) est semée au socle ; le geste réservé
      `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
+     Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
+     `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
   */
   var VERSION = 90;
   var db = null;
