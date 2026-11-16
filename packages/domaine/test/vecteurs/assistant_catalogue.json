@@ -131,9 +131,9 @@
     {
       "id": "I08", "groupe": "Stock et pharmacie (M6, M7)", "libelle": "Articles en rupture, sous le seuil, proches de péremption",
       "ecransLecture": ["m6-alertes", "m6-lots", "m6-produits"],
-      "sources": ["packages/domaine/lib/src/stock/stock.dart : sousSeuil, sousSeuilHorsRupture, aReapprovisionner, joursAvantPeremption, statutLot, delaiPreavisPeremption", "packages/domaine/lib/src/tableaux_de_bord/tba_regles.dart : tbaRuptures, tbaPerimes, tbaPeremptionProche"],
+      "sources": ["packages/domaine/lib/src/stock/stock.dart : sousSeuil, sousSeuilHorsRupture, aReapprovisionner, joursAvantPeremption, statutLot", "packages/domaine/lib/src/parametres/parametres_clinique.dart : pcDelaiPeremption, pcStatutLot", "packages/domaine/lib/src/tableaux_de_bord/tba_regles.dart : tbaRuptures, tbaPerimes, tbaPeremptionProche"],
       "statut": "calculable",
-      "raison": "Les listes existent déjà au tableau de bord. Le délai de péremption est une CONSTANTE de 90 jours (stock.dart:21, SEUIL_PEREMPTION de m6-stock.js) alors que RG-05 et le PRD le disent paramétrable : l'assistant ne pourra citer qu'un délai lu en base.",
+      "raison": "Les listes existent déjà au tableau de bord. Le délai de péremption est un paramètre de clinique daté (lot PARAM-CLINIQUE, 90 jours semés, `pcDelaiPeremption`) : l'assistant cite le délai lu en base à la date.",
       "limites": ["délai de péremption : constante 90, pas un paramètre en base (écart à la règle de paramétrage du 09/11/2026), petit lot avant l'assistant"],
       "refus": ["LECTURE_NON_AUTORISEE", "NON_CALCULABLE_HISTORIQUE"],
       "requis": [], "futurOk": true, "historique": false, "controles": []
@@ -211,9 +211,9 @@
     {
       "id": "I16", "groupe": "Caisse et recettes (M8, M6, M12)", "libelle": "Créances et impayés par ancienneté",
       "ecransLecture": ["m9-creances", "m8-reliquats"],
-      "sources": ["packages/domaine/lib/src/assurances/ass_regles.dart : assBalanceAgee, assTrancheDe (moins30, 30a90, plus90), assCreance, AssLigneCreance"],
+      "sources": ["packages/domaine/lib/src/assurances/ass_regles.dart : assBalanceAgee, assTrancheDe (moins30, 30a90, plus90), assCreance, AssLigneCreance", "packages/domaine/lib/src/parametres/parametres_clinique.dart : pcTranches, pcTrancheCreance"],
       "statut": "petit_lot",
-      "raison": "La balance âgée existe pour les créances des ASSUREURS (trois tranches fixes). Pour les impayés des PATIENTS, le `reliquat` et la date de la facture existent mais aucune balance âgée ne les agrège. Les tranches 30 et 90 jours sont des constantes de `assTrancheDe`, pas des paramètres.",
+      "raison": "La balance âgée existe pour les créances des ASSUREURS (trois tranches fixes). Pour les impayés des PATIENTS, le `reliquat` et la date de la facture existent mais aucune balance âgée ne les agrège. Les tranches sont un paramètre de clinique daté (lot PARAM-CLINIQUE, 30 et 90 jours semés, `pcTranches`).",
       "limites": ["impayés patients par ancienneté : agrégation à écrire", "« plus de N jours » avec N libre : seules les tranches 30 et 90 existent", "classement des débiteurs (assureurs et patients confondus) : définition à valider"],
       "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
       "requis": [], "futurOk": false, "historique": true, "controles": []
