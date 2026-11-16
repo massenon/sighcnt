@@ -50,9 +50,10 @@ class _EcranPaiementsState extends State<EcranPaiements> {
 
   void _maj() => setState(() {});
 
+  // LOT TARIF-FIX-2 : une pièce en attente de prix reste VISIBLE parmi celles à encaisser (reste dû non calculable, jamais absente).
   List<Fiche> get _aRegler => [
         for (final f in _col!.actives)
-          if (n(f['reliquat']) > 0) f
+          if (n(f['reliquat']) > 0 || (f['enAttentePrix'] == true && f['statutPaiement'] != 'soldee')) f
       ];
 
   @override
@@ -100,15 +101,20 @@ class _EcranPaiementsState extends State<EcranPaiements> {
                   sensInitial: 'desc',
                   nomExport: 'factures-a-encaisser',
                   messageVide: 'Aucune facture en attente de règlement.',
-                  actionsLigne: (context, f) => [
-                    // Encaisser est une ÉCRITURE : la commande est absente sans le droit d'éditer (jamais grisée).
-                    if (c.droit.editer)
-                      BoutonSigh(
-                          libelle: 'Encaisser',
-                          icone: LucideIcons.banknote,
-                          taille: TailleBouton.sm,
-                          onPressed: () => _encaisser(context, f)),
-                  ],
+                  actionsLigne: (context, f) {
+                    // LOT TARIF-FIX-2 : une pièce que le moteur refuserait d'encaisser (ligne sans prix) n'a PAS de commande « Encaisser » ; le motif est dit.
+                    final ep = etatCaissePrix(c.magasin, f, c.aujourdhui);
+                    return [
+                      if (!ep.encaissable) motifSansPrix(ep.refus!),
+                      // Encaisser est une ÉCRITURE : la commande est absente sans le droit d'éditer (jamais grisée).
+                      if (c.droit.editer && ep.encaissable)
+                        BoutonSigh(
+                            libelle: 'Encaisser',
+                            icone: LucideIcons.banknote,
+                            taille: TailleBouton.sm,
+                            onPressed: () => _encaisser(context, f)),
+                    ];
+                  },
                 )),
         OngletDef(
             id: 'historique',
@@ -165,8 +171,18 @@ class _EcranPaiementsState extends State<EcranPaiements> {
     ]);
   }
 
-  void _encaisser(BuildContext ctx, Fiche f) {
-    final reste = n(f['reliquat']);
+  void _encaisser(BuildContext ctx, Fiche f0) {
+    // LOT TARIF-FIX-2 : une ligne dont le prix est désormais en vigueur à la date de la pièce se valorise AVANT d'ouvrir l'encaissement.
+    final c0 = ContexteEcran.of(ctx);
+    if (lignesPrixManquant(f0).isNotEmpty) valoriserFacturePoste(c0.magasin, '${f0['id']}', c0.aujourdhui);
+    final f = c0.magasin.collection('factures').parId(f0['id']) ?? f0;
+    // Une pièce en attente de prix (encaissement du reste réglé) : le reste dû est celui des seules lignes valorisées.
+    final reste = f['enAttentePrix'] == true
+        ? ((f['lignes'] as List?) ?? const []).fold<num>(0, (a, x) {
+            final l = (x as Map).cast<String, Object?>();
+            return ligneSansPrix(l) || l['statutPaiement'] == 'paye' ? a : a + n(l['partPatient']);
+          })
+        : n(f['reliquat']);
     final acheteur = ControleurFormulaire(champsAcheteurNormalise, valeursAcheteur(f));
     final form = ControleurFormulaire(const [
       ChampDef(

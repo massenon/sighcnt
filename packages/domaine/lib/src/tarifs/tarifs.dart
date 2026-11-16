@@ -24,7 +24,10 @@ const String tarCollectionVersions = 'versionsTarif';
 const String tarCollectionDemandes = 'propositionsTarif';
 const List<String> tarCollectionsReferentiel = [tarCollectionTarifs, tarCollectionVersions];
 
-/// Qui DÉCIDE un changement de prix (liste de rôles de la famille, jamais le droit d'éditer l'écran) et qui peut dater dans le passé (T6, 11/11/2026).
+/// Qui DÉCIDE un changement de prix (jamais le droit d'éditer l'écran) : le geste réservé [tarGesteDecider] de la fiche RBAC (lot TARIF-FIX-2, Direction du 16/11/2026 : « pas de
+/// rôle ni validation en dur dans le code »). [tarRolesValidation] n'est que le DÉFAUT D'ORIGINE du manifeste (`N.GESTES`, `rolesDefaut`), vérifié égal à `rbac.json` par un test du
+/// poste ; il ne vaut que tant qu'aucune matrice n'est installée ([tarInstallerDroitDecider]). Qui peut dater dans le passé (T6, 11/11/2026) reste une liste (lot CLO-3).
+const String tarGesteDecider = 'decider_prix';
 const List<String> tarRolesValidation = ['admin', 'da', 'direction'];
 const List<String> tarRolesDatePassee = ['da', 'direction'];
 
@@ -819,7 +822,13 @@ class ContexteTarif {
   bool get peutDatePassee => tarRolesDatePassee.contains(role);
 }
 
-bool tarPeutDecider(String role) => tarRolesValidation.contains(role);
+bool Function(String role)? _droitDecider;
+
+/// Le poste installe la lecture de la fiche RBAC À CHAUD (`matrice.droitGeste(role, tarGesteDecider)`) ; `null` revient au défaut d'origine.
+void tarInstallerDroitDecider(bool Function(String role)? lecture) => _droitDecider = lecture;
+
+/// Le rôle détient-il le geste réservé « Décider un changement de prix » ? Lu dans la fiche RBAC installée, sinon le défaut d'origine du manifeste.
+bool tarPeutDecider(String role) => _droitDecider != null ? _droitDecider!(role) : tarRolesValidation.contains(role);
 
 String tarProfilsDatePassee(Map<String, String> libelles) => tarRolesDatePassee.map((r) => _libelleRole(r, libelles)).join(' et ');
 
@@ -853,6 +862,8 @@ List<Map<String, Object?>> tarUsages(FicheTarif p, String dateEffet, PiecesTarif
     if (jour == null || jour.compareTo(dateEffet) < 0) continue;
     final porte = ((f['lignes'] as List?) ?? const []).any((l) {
       final x = (l as Map).cast<String, Object?>();
+      // LOT TARIF-FIX-2 : une ligne SANS PRIX ne dit aucun prix ; poser son prix ne change rien de ce que la pièce dit (elle attend ce prix pour s'encaisser).
+      if (x['prixManquant'] != null) return false;
       return (x['acteCode'] != null && codes.contains('${x['acteCode']}')) ||
           (x['demandeId'] != null && codes.contains(analyses['${x['demandeId']}'])) ||
           (x['demandeImagerieId'] != null && codes.contains(imageries['${x['demandeImagerieId']}'])) ||
@@ -1029,8 +1040,8 @@ ResultatTarif<PropositionTarif> tarProposer(ContexteTarif cx, DemandeProposition
   }
   // VALIDER EN UN GESTE (PRD 5.4, Q3) : la liste de rôles de la famille décide, jamais le simple droit d'éditer ; le moteur refuse en nommant.
   if (o.valider && !cx.peutDecider) {
-    return non(const RefusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.',
-        'Enregistrer le changement comme proposition : la décision revient à l’un de ces profils.'));
+    return non(const RefusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.',
+        'Enregistrer le changement comme proposition : la décision revient à un rôle qui détient ce droit.'));
   }
   if (o.valider && cx.fileul) return non(tarRefusFileul());
   final h = cx.referentiel;
@@ -1164,8 +1175,8 @@ class DecisionTarif {
 ResultatTarif<DecisionTarif> tarDecider(ContexteTarif cx, String versionId, String decision, {String? motif, String? dateEffet}) {
   ResultatTarif<DecisionTarif> non(RefusTarif r) => ResultatTarif.refuse(r);
   if (!cx.peutDecider) {
-    return non(const RefusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.',
-        'Demander la décision à l’un de ces profils.'));
+    return non(const RefusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.',
+        'Demander la décision à un rôle qui détient ce droit.'));
   }
   // DAF = la mère (T11, 11/11/2026) : la décision est une écriture de configuration, tenue par la mère.
   if (cx.fileul) return non(tarRefusFileul());
@@ -1300,8 +1311,8 @@ ResultatTarif<DecisionEnBloc> tarDeciderTous(
 }) {
   final cx0 = contexte();
   if (!cx0.peutDecider) {
-    return const ResultatTarif.refuse(RefusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.',
-        'Demander la décision à l’un de ces profils.'));
+    return const ResultatTarif.refuse(RefusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.',
+        'Demander la décision à un rôle qui détient ce droit.'));
   }
   if (cx0.fileul) return ResultatTarif.refuse(tarRefusFileul());
   if (!comparaisonAffichee) {
@@ -1354,8 +1365,8 @@ int tarValiditeProformaJours(Object? reglage) {
 /// Le réglage de la durée de validité : réservé aux profils de la famille de décision ; refuse en nommant une durée illisible. Rend (jours, avant).
 ResultatTarif<({int jours, int avant})> tarDefinirValiditeProforma(ContexteTarif cx, Object? jours, {required Object? reglageActuel}) {
   if (!cx.peutDecider) {
-    return const ResultatTarif.refuse(RefusTarif('REGLAGE_RESERVE', 'La durée de validité d’une pro-forma se règle par la Direction, la Directrice Administrative ou l’administrateur.',
-        'Demander le réglage à l’un de ces profils.'));
+    return const ResultatTarif.refuse(RefusTarif('REGLAGE_RESERVE', 'La durée de validité d’une pro-forma se règle par un rôle qui détient le droit « Décider un changement de prix » (fiche RBAC).',
+        'Demander le réglage à un rôle qui détient ce droit.'));
   }
   final j = jours is num ? jours.toDouble() : (jours is String && jours.trim().isNotEmpty ? double.tryParse(jours.trim()) : null);
   if (j == null || !j.isFinite || j != j.floorToDouble() || j < tarValiditeProformaMin || j > tarValiditeProformaMax) {

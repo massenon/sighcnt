@@ -1,6 +1,7 @@
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import 'magasin.dart';
+import 'parcours_caisse.dart' show valoriserEnAttentePoste;
 
 /// LE RÉFÉRENTIEL DE PRIX UNIQUE AU POSTE (PRD-TARIFS, lot T6) : la colle entre les fonctions pures de `packages/domaine/lib/src/tarifs/tarifs.dart` (rejouées sur les
 /// vecteurs de la maquette) et le magasin du poste. Aucune règle ici : la résolution du prix, la proposition, la décision, le contrôle d'usage, la date passée et la
@@ -414,6 +415,8 @@ class TarifsPoste {
     final r = tarDecider(contexte(), versionId, decision, motif: motif, dateEffet: dateEffet);
     if (!r.ok) return IssueTarif(refus: r.refus);
     appliquerDecision(r.valeur!);
+    // LOT TARIF-FIX-2 : un prix décidé VALORISE aussitôt les pièces en attente dont la date est couverte (l'alerte dérivée retombe d'elle-même).
+    if (decision == 'oui') valoriserEnAttentePoste(m, _horloge());
     return IssueTarif(version: r.valeur!.version);
   }
 

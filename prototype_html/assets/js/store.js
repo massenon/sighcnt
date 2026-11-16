@@ -151,8 +151,12 @@
      89 (16/11/2026) : la SORTIE DES TABLEAUX (lot EXP). Le journal d'audit porte une nouvelle espèce d'entrée (`journaliserSortie` : `format`, `perimetre`, `lignes`,
      `references`, `referencesTotal`) et le geste réservé `exporter_donnees` entre au manifeste ; la limite de lignes par export est un réglage de clinique (`exportLimiteLignes`).
      Sans incrément, un poste n'aurait pas la garde qui journalise et borne la sortie.
+     90 (16/11/2026) : PRESCRIRE TOUJOURS, BLOQUER SEULEMENT L'ENCAISSEMENT (lot TARIF-FIX-2, décision de la Direction du 16/11/2026). Une ligne d'ordonnance, de demande ou de facture
+     peut porter `prixManquant` (nature, code, libellé, cause, motif, geste) avec prix, montant et parts NULS ; une facture `enAttentePrix` a des totaux nuls (non calculable) ; une
+     ligne valorisée porte `valoriseLe` et `valorisation` ; le réglage de clinique `caisseEncaissementPartielSansPrix` (versions datées, défaut semé « non ») vit dans `_reglages`.
+     Sans incrément, un poste garderait le moteur qui refuse la prescription entière.
   */
-  var VERSION = 89;
+  var VERSION = 90;
   var db = null;
   var listeners = {};
 

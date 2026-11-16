@@ -15,6 +15,7 @@ library;
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../mecef/montants.dart';
+import 'prix_manquant.dart';
 
 const compteCaisse = '571000';
 const compteClientsAssurance = '411110';
@@ -64,6 +65,9 @@ ResultatEncaissement encaisser(
   List<Map<String, Object?>> ecritures = const [],
   Map<String, Object?>? acheteur,
   int aibParDefaut = aibTauxParDefaut,
+
+  /// LOT TARIF-FIX-2 : le réglage de clinique « encaissement partiel d'une pièce en attente de prix » à la date du geste (défaut semé : non).
+  bool encaissementPartiel = false,
 }) {
   if (facture['statutPaiement'] == 'soldee') {
     return ResultatEncaissement(
@@ -73,6 +77,35 @@ ResultatEncaissement encaisser(
         montantRegle: null,
         restantDu: null,
         ecritures: const []);
+  }
+  // LOT TARIF-FIX-2 : une ligne SANS PRIX refuse l'encaissement, NOMMÉ, avant toute écriture : la pièce entière par défaut, la seule ligne quand le réglage de
+  // la clinique permet l'encaissement du reste. La valorisation (prix en vigueur à la date de la pièce) est faite AVANT par l'appelant (`valoriserLignes`).
+  final manquesPrix = lignesPrixManquant(facture);
+  if (manquesPrix.isNotEmpty) {
+    final lesLignes = ((facture['lignes'] ?? const []) as List).map((x) => (x as Map).cast<String, Object?>()).toList();
+    List<Map<String, Object?>>? refusees;
+    var partielRefus = encaissementPartiel;
+    if (!encaissementPartiel) {
+      refusees = manquesPrix;
+    } else if (lignes != null && lignes.isNotEmpty) {
+      final touchees = manquesPrix.where((l) => lignes.contains(l['id'])).toList();
+      if (touchees.isNotEmpty) refusees = touchees;
+    } else if (!lesLignes.any((l) => !ligneSansPrix(l) && l['statutPaiement'] != 'paye')) {
+      refusees = manquesPrix;
+      partielRefus = true;
+    }
+    if (refusees != null) {
+      final r = refusEncaissementPrix(facture, [for (final l in refusees) (l['prixManquant'] as Map).cast<String, Object?>()], partielRefus, aujourdhui: aujourdhui);
+      return ResultatEncaissement(
+          facture: facture,
+          deja: false,
+          lignesReglees: const [],
+          montantRegle: 0,
+          restantDu: null,
+          ecritures: const [],
+          refus: '${r.code} : ${r.motif} ${r.geste}',
+          refusCode: r.code);
+    }
   }
   // La fenêtre « Facture normalisée » (IFU de l'acheteur, nom, AIB) se contrôle AVANT toute écriture : un refus nommé n'écrit rien (E2299).
   AcheteurMecef? acheteurSaisi;
@@ -101,9 +134,12 @@ ResultatEncaissement encaisser(
   final toutes = ((facture['lignes'] ?? const []) as List)
       .map((l) => (l as Map).cast<String, Object?>())
       .toList();
-  final duTotal = facture['partPatient'] != null
-      ? _n(facture['partPatient'])
-      : _n(facture['montantTTC']);
+  // Une pièce en attente de prix (encaissement partiel réglé) : le dû est celui des seules lignes valorisées ; une ligne sans prix n'est jamais allouée.
+  final duTotal = manquesPrix.isNotEmpty
+      ? toutes.where((l) => !ligneSansPrix(l) && l['statutPaiement'] != 'paye').fold(0.0, (n, l) => n + _n(l['partPatient']))
+      : facture['partPatient'] != null
+          ? _n(facture['partPatient'])
+          : _n(facture['montantTTC']);
 
   final reglees = <Map<String, Object?>>[];
   var paye = 0.0;
@@ -118,7 +154,7 @@ ResultatEncaissement encaisser(
     // Allocation d'un montant global : les lignes dues, dans l'ordre, tant que la somme versée les couvre ENTIÈREMENT.
     var reste = montant != null ? montant.toDouble() : duTotal;
     for (final l in toutes) {
-      if (l['statutPaiement'] == 'paye') continue;
+      if (l['statutPaiement'] == 'paye' || ligneSansPrix(l)) continue;
       final part = _n(l['partPatient']);
       if (part <= reste) {
         reglees.add(l);
@@ -166,7 +202,9 @@ ResultatEncaissement encaisser(
       : (duTotal - totalPaye) > 0
           ? duTotal - totalPaye
           : 0.0;
-  final solde = restantDu <= 0;
+  // Une ligne sans prix restante : le reste dû est NON CALCULABLE et la pièce n'est jamais soldée.
+  final resteSansPrix = lignesMaj.any((l) => ligneSansPrix(l) && l['statutPaiement'] != 'paye');
+  final solde = !resteSansPrix && restantDu <= 0;
   // La base MECeF naît de la fonction unique des montants : seule la part PATIENT des lignes réglées par ce versement s'ajoute (ni part assureur,
   // ni remise). Une ligne que la fonction refuse (prix décimal d'une pièce ancienne) ne bloque pas l'encaissement : la base reste le total réglé,
   // et c'est la NORMALISATION qui refuse en nommant la ligne.
@@ -184,7 +222,7 @@ ResultatEncaissement encaisser(
     ...facture,
     'lignes': lignesMaj,
     'montantPaye': totalPaye,
-    'reliquat': restantDu,
+    'reliquat': resteSansPrix ? null : restantDu,
     'modePaiement': modeRetenu,
     'statutPaiement':
         solde ? 'soldee' : (totalPaye > 0 ? 'partielle' : 'impayee'),
@@ -215,7 +253,7 @@ ResultatEncaissement encaisser(
     deja: false,
     lignesReglees: [for (final l in reglees) '${l['id']}'],
     montantRegle: paye,
-    restantDu: restantDu,
+    restantDu: resteSansPrix ? null : restantDu,
     ecritures: posees,
   );
 }

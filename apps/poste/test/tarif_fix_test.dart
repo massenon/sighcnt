@@ -46,7 +46,14 @@ DemandeProposition creation(String code, num prix, String dateEffet, {String fam
       : pat.firstWhere((p) => !csVrai(p['assureur']));
   try {
     final r = csPrescrire(s, {'patientCode': pt['code'], 'medecin': 'TEST', 'diagnostic': 'test', 'date': horloge.toIso8601String(), voie: [code]}, session);
-    return (prix: ((r.facture['lignes'] as List).first as Map)['prixUnitaire'] as num?, refus: null, texte: null);
+    final l = ((r.facture['lignes'] as List).first as Map).cast<String, Object?>();
+    // LOT TARIF-FIX-2 : la prescription passe toujours ; la ligne sans prix porte `prixManquant` (le « refus » lu ici est celui que la caisse opposera).
+    if (l['prixManquant'] != null) {
+      final mq = (l['prixManquant'] as Map).cast<String, Object?>();
+      expect([l['prixUnitaire'], r.facture['montantTTC']], [null, null], reason: 'jamais 0 : prix et total non calculables');
+      return (prix: null, refus: 'PRIX_A_DEFINIR', texte: '${mq['motif']} ${mq['geste']}');
+    }
+    return (prix: l['prixUnitaire'] as num?, refus: null, texte: null);
   } on RefusCs catch (e) {
     return (prix: null, refus: e.code, texte: e.message);
   }

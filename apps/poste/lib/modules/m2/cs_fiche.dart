@@ -390,6 +390,9 @@ class _EtatFiche extends State<EcranFicheConsultation> {
         envois.add('pharmacie informée');
       }
       envois.add('facture ${ord.facture['numero']} en attente à la caisse');
+      // LOT TARIF-FIX-2 : la prescription passe toujours ; une ligne sans prix se DIT (la caisse attend le prix).
+      final sp = messageSansPrix(ord.sansPrix);
+      if (sp != null) envois.add(sp);
     }
     setState(() {});
     ToastsSigh.afficher(context,

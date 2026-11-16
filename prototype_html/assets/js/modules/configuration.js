@@ -1372,7 +1372,7 @@
                   el('span.text-xs.text-slate-500', { text: 'Porte sur les lignes affichées (filtres et recherche compris) ; la comparaison ligne à ligne s’affiche avant toute acceptation en bloc.' }),
                 ]) : null,
                 K.note('Chaque ligne est un <strong>changement de prix en attente</strong> : l’ancien prix reste en vigueur, le nouveau ne s’applique qu’après le <strong>Oui</strong>, à sa date d’effet. Un <strong>Non</strong> exige son motif. '
-                  + (peutDecider ? 'Vous pouvez décider.' : 'Décider revient à la Direction, à la Directrice Administrative et à l’administrateur : vous lisez les propositions sans les trancher.'), { tone: 'warning', icon: 'hourglass' }),
+                  + (peutDecider ? 'Vous pouvez décider.' : 'Décider revient aux rôles qui détiennent le droit « Décider un changement de prix » (aujourd’hui : ' + PRC().libellesDecidentPrix() + ') : vous lisez les propositions sans les trancher.'), { tone: 'warning', icon: 'hourglass' }),
                 (tableauAlertes = U.dataTable({
                   rows: lignes, pageSize: 15, exportName: 'prix-en-attente', emptyMessage: 'Aucun changement de prix en attente.',
                   filters: [{ name: 'lot', label: 'Origine', options: Object.keys(LIBELLE_ORIGINE).map(function (k) { return LIBELLE_ORIGINE[k]; }) }],

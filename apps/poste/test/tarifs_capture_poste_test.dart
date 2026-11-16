@@ -101,7 +101,7 @@ void main() {
     // (le référentiel unique est lu hors de l'espace de la voie : certificat, consultation…) ou un refus nommé « Prix à définir » ; toute ligne d'avant tarifée reste IDENTIQUE.
     final zerosLeves = <String, int>{};
     bool zero(Object? x) => x is List && x.isNotEmpty && x.first == 0;
-    bool leve(Object? x) => (x is List && x.isNotEmpty && x.first is num && (x.first as num) > 0) || (x is String && x.startsWith('ERREUR:Prix à définir'));
+    bool leve(Object? x) => (x is List && x.isNotEmpty && x.first is num && (x.first as num) > 0) || (x is String && x.startsWith('ERREUR:Prix à définir')) || x == null; // LOT TARIF-FIX-2 : prescrite, prix nul (« prix à définir »)
     (avant['voies'] as Map).forEach((voie, anciennes) {
       for (final c in (anciennes as Map).keys) {
         final ancien = jsonEncode(anciennes[c]);
@@ -116,6 +116,15 @@ void main() {
           }
           if (toutLeve) {
             zerosLeves[voie as String] = (zerosLeves[voie] ?? 0) + 1;
+            continue;
+          }
+        }
+        // LOT TARIF-FIX-2 (Direction, 16/11/2026) : sur la voie d'imagerie, un code d'avant REFUSÉ « Tarif non renseigné » devient soit un refus nommé « Examen absent
+        // du catalogue d’imagerie » (code hors catalogue, sans tarif), soit une demande PRESCRITE dont le prix est nul (« prix à définir », jamais 0).
+        if (voie == 'imagerie' && anciennes[c] is List && (anciennes[c] as List).every((x) => '$x'.startsWith('ERREUR:Tarif non renseigné'))) {
+          final n = (apres[voie] as Map)[c] as List;
+          if (n.every((x) => '$x'.startsWith('ERREUR:Examen absent du catalogue d’imagerie') || (x is List && x.first == null))) {
+            zerosLeves['imagerie'] = (zerosLeves['imagerie'] ?? 0) + 1;
             continue;
           }
         }

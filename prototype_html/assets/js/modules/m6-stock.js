@@ -135,9 +135,9 @@
     var f = U.form(champs, {});
     var info = K.note('Prix d’achat en vigueur aujourd’hui : <strong>' + (px.absent ? 'non renseigné (à valoriser)' : C.money(px.achat, false)) + '</strong>'
       + (px.absent ? '' : ' (version ' + px.version + ')') + '. ' + (med ? 'RG-02 : le prix de vente d’un médicament est son prix d’achat, il suit sans marge. ' : '')
-      + 'Une proposition <strong>ne change rien</strong> tant que la Direction, la Directrice Administrative ou l’administrateur n’a pas répondu Oui ; les pièces déjà émises gardent leur prix.', { tone: 'info' });
+      + 'Une proposition <strong>ne change rien</strong> tant qu’un rôle qui détient le droit « Décider un changement de prix » (' + PR.libellesDecidentPrix() + ') n’a pas répondu Oui ; les pièces déjà émises gardent leur prix.', { tone: 'info' });
     var etats = K.note('<strong>Deux états, visibles :</strong> « Enregistrer » dépose une <strong>proposition</strong> (à valider : rien ne change) ; '
-      + (peutValider ? '« Valider » la met <strong>en vigueur</strong> à sa date d’effet, en un geste tracé avec votre rôle.' : '« Valider » est réservé à la Direction, à la Directrice Administrative et à l’administrateur : leur décision suit votre proposition.'), { tone: 'info', icon: 'git-compare' });
+      + (peutValider ? '« Valider » la met <strong>en vigueur</strong> à sa date d’effet, en un geste tracé avec votre rôle.' : '« Valider » est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (' + PR.libellesDecidentPrix() + ') : leur décision suit votre proposition.'), { tone: 'info', icon: 'git-compare' });
     function envoyer(valider) {
       var v = f.collect(); if (!v) return;
       var r = PR.proposerTarif({ code: produit.code, prixNonAssure: v.prixNonAssure, prixVente: med ? null : v.prixVente, dateEffet: v.dateEffet, motif: v.motif, datePassee: v.datePassee === true, valider: valider,

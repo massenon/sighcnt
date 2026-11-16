@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, tarCollectionsReferentiel, valCollectionValidations;
+import 'package:sigh_domaine/sigh_domaine.dart' show CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
 import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
@@ -207,6 +207,8 @@ Future<void> main() async {
       source: SourceHorsSiteHttp(base: Uri.parse('http://127.0.0.1:9000'), admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin))
     .installer();
   final navigation = await DonneesNavigation.chargerAssets();
+  // LOT TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC, lu À CHAUD (une fiche modifiée vaut aussitôt).
+  tarInstallerDroitDecider((role) => navigation.aChaud(magasin).matrice.droitGeste(role, tarGesteDecider));
   SessionPoste? session;
   ServiceFichiers? serviceFichiers;
   // LA LECTURE OCR DES SCANS, PRÉPARÉE (lot OCR-prep) : AUCUN moteur n'est branché ni embarqué. Sans moteur, l'état de chaque scan dit « aucun moteur d'OCR installé sur ce poste » et rien ne se met en

@@ -13309,6 +13309,18 @@
     "defautSiEcritSur": null
    },
    {
+    "id": "decider_prix",
+    "libelle": "Décider un changement de prix (Oui ou Non), valider un prix en un geste, régler les réglages de prix de la clinique",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "da",
+     "direction"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
     "id": "exporter_donnees",
     "libelle": "Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)",
     "module": null,
@@ -13346,6 +13358,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
     "regler_circuit_cloture": 1,
+    "decider_prix": 1,
     "exporter_donnees": 1
    },
    "direction": {
@@ -13353,6 +13366,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
     "regler_circuit_cloture": 0,
+    "decider_prix": 1,
     "exporter_donnees": 1
    },
    "dm": {
@@ -13360,6 +13374,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "da": {
@@ -13367,6 +13382,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
     "regler_circuit_cloture": 1,
+    "decider_prix": 1,
     "exporter_donnees": 1
    },
    "medecin": {
@@ -13374,6 +13390,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "infirmier": {
@@ -13381,6 +13398,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "pharmacien": {
@@ -13388,6 +13406,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 0
    },
    "laborantin": {
@@ -13395,6 +13414,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "stock": {
@@ -13402,6 +13422,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "caissier": {
@@ -13409,6 +13430,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "comptable": {
@@ -13416,6 +13438,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 1,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "rh": {
@@ -13423,6 +13446,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 0
    },
    "reception": {
@@ -13430,6 +13454,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "agentadmin": {
@@ -13437,6 +13462,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 1,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "ambulancier": {
@@ -13444,6 +13470,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "aide_soignant": {
@@ -13451,6 +13478,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "echographiste": {
@@ -13458,6 +13486,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "surveillant": {
@@ -13465,6 +13494,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 1,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "assistant_comptable": {
@@ -13472,6 +13502,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "chirurgien": {
@@ -13479,6 +13510,7 @@
     "corriger_texte_ocr": 1,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "anesthesiste": {
@@ -13486,6 +13518,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    },
    "aide_comptable": {
@@ -13493,6 +13526,7 @@
     "corriger_texte_ocr": 0,
     "voir_toutes_les_validations": 0,
     "regler_circuit_cloture": 0,
+    "decider_prix": 0,
     "exporter_donnees": 1
    }
   }

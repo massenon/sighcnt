@@ -320,7 +320,7 @@
       /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : UNE alerte par LOT (les propositions d'un même lot, par exemple la grille imprimée des
          analyses, ne sont qu'une alerte portant son compte ; une saisie à l'écran est un lot d'une ligne). La source LIT l'état des versions et ne décide d'aucun
          seuil ; elle cesse de produire l'alerte quand la dernière proposition du lot est décidée. Les destinataires sont les profils de la famille de décision
-         (`PR.ROLES_VALIDATION_TARIFS`), jamais une liste écrite ici. */
+         (`PR.rolesDecidentPrix()`, geste réservé `decider_prix` de la fiche RBAC), jamais une liste écrite ici. */
       lire: function () {
         var PR = global.SIGH.parcours;
         var lots = {}, ordre = [];
@@ -339,7 +339,7 @@
               ? 'Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.'
               : (g[0].proposePar ? 'Proposé par ' + g[0].proposePar + '. ' : '') + 'Le prix en vigueur ne change pas avant le Oui.',
             lien: 'cfg-tarifs', onglet: 'alertes',
-            postes: PR && PR.ROLES_VALIDATION_TARIFS ? PR.ROLES_VALIDATION_TARIFS.slice() : null,
+            postes: PR && PR.rolesDecidentPrix ? PR.rolesDecidentPrix() : null,
           };
         });
       },
@@ -349,7 +349,7 @@
       /* Les articles repris avec leur stock mais SANS prix d'achat (reprise du Grand Stock : le stock existe, RG-03) : ils ne se facturent pas tant qu'un premier prix n'est pas
          décidé. UNE alerte par article ; au-delà du seuil de regroupement, une ligne portant le compte. La source LIT la liste unique (`PR.produitsAValoriser`) et disparaît quand elle
          est vide ; le message ne porte AUCUNE donnée sensible (le code et la désignation de l'article, jamais une quantité ni une valeur). Les destinataires sont ceux de la
-         famille de décision des prix (`PR.ROLES_VALIDATION_TARIFS`), jamais une liste écrite ici ; le RBAC de l'écran visé filtre ensuite (`pourMoi`). */
+         famille de décision des prix (`PR.rolesDecidentPrix()`, geste `decider_prix`), jamais une liste écrite ici ; le RBAC de l'écran visé filtre ensuite (`pourMoi`). */
       lire: function () {
         var PR = global.SIGH.parcours;
         if (!PR || !PR.produitsAValoriser) return [];
@@ -361,7 +361,7 @@
             detail: x.designation + ' : ' + x.raison + '. L’article ne se facture pas. '
               + (x.enAttente ? 'Un premier prix est proposé : il attend le Oui ou le Non.' : 'Proposez son premier prix d’achat (Oui ou Non de la Directrice Administrative).'),
             lien: 'cfg-tarifs', onglet: 'produits',
-            postes: PR.ROLES_VALIDATION_TARIFS ? PR.ROLES_VALIDATION_TARIFS.slice() : null,
+            postes: PR.rolesDecidentPrix ? PR.rolesDecidentPrix() : null,
           };
         });
       },
@@ -391,6 +391,28 @@
               postes: ['comptable', 'da', 'aide_comptable'],
             };
           });
+      },
+    },
+    {
+      code: 'prix_manquant', categorie: 'metier', domaine: 'Tarifs',
+      /* LOT TARIF-FIX-2 (Direction, 16/11/2026) : une prescription acceptée avec une ligne SANS PRIX attend ce prix à la caisse. L'alerte part vers le profil qui le
+         FIXE, lu dans la fiche RBAC (droit de modifier « Tarifs et prix » pour un acte, une analyse, un examen ; « Référentiel produits » pour un prix d'achat), jamais
+         un nom de rôle. UNE alerte PAR CODE (jamais une par prescription), DÉRIVÉE : elle retombe d'elle-même dès qu'un prix est en vigueur à la date des pièces. Aucune
+         donnée de santé : le code, le libellé de la prestation et le nombre de pièces, jamais un patient. */
+      lire: function () {
+        var PR = global.SIGH.parcours;
+        if (!PR || !PR.prixManquantsEnAttente) return [];
+        return PR.prixManquantsEnAttente().map(function (m) {
+          var achat = m.nature === 'prix_achat';
+          return {
+            cle: 'prix:' + m.cle,
+            priorite: 'important',
+            titre: (achat ? 'Prix à valoriser : « ' : 'Prix à définir : « ') + m.code + ' » ' + m.libelle,
+            detail: C.num(m.pieces.length) + ' pièce(s) en attente à la caisse. ' + m.geste,
+            lien: achat ? 'm6-produits' : 'cfg-tarifs',
+            postes: PR.rolesQuiFixent(m.nature),
+          };
+        });
       },
     },
     {
@@ -519,6 +541,8 @@
       'Établir un bon de commande, validation de la Direction requise (RG-04).'],
     lots_peremption: ['lot(s) périmés ou proches de la péremption',
       'Appliquer le principe FEFO (RG-05) et déclarer les pertes constatées.'],
+    prix_manquant: ['prestation(s) sans prix attendue(s) à la caisse',
+      'Poser le prix (« Tarifs et prix » ou « Changer le prix d’achat ») : les pièces en attente se valorisent à leur date.'],
     mecef_rejet: ['facture(s) rejetée(s) par la MECeF',
       'Corriger puis réémettre auprès de l’administration fiscale.'],
     echeance_fiscale: ['échéance(s) fiscale(s) dépassée(s)',

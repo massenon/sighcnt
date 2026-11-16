@@ -56,7 +56,6 @@
    "['comptable', 'da', 'aide_comptable']": 1
   },
   "js/parcours.js": {
-   "['admin', 'da', 'direction']": 1,
    "['da', 'direction']": 1,
    "['direction', 'da', 'admin']": 11,
    "['laborantin']": 1,

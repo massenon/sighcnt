@@ -243,17 +243,20 @@
    * Une proposition ne change RIEN : le prix en vigueur ne bouge qu'au Oui, à la date d'effet. Le Non exige son motif et reste lisible à l'historique.
    * Un refus se nomme : code, motif, geste.
    * ======================================================================== */
-  var ROLES_VALIDATION_TARIFS = ['admin', 'da', 'direction'];
+  /* Lot TARIF-FIX-2 (Direction, 16/11/2026) : DÉCIDER un prix est le geste réservé `decider_prix` de la fiche RBAC (manifeste `N.GESTES`), jamais une liste de rôles du moteur. */
+  var GESTE_DECIDER_PRIX = 'decider_prix';
+  function rolesDecidentPrix() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_DECIDER_PRIX) : []; }
+  function libellesDecidentPrix() { var n = rolesDecidentPrix().map(function (r) { return libelleRole(r); }); return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle'); }
   /* T6 (Direction, 11/11/2026) : la date d'effet PASSÉE est une autorité de la Directrice Administrative et de la Direction, avec un motif. */
   var ROLES_DATE_PASSEE = ['da', 'direction'];
   function refusTarif(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
   function roleDeLaSession() { var s = S.session(); return s && s.role; }
-  function peutDeciderTarif() { return ROLES_VALIDATION_TARIFS.indexOf(roleDeLaSession()) >= 0; }
+  function peutDeciderTarif() { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleDeLaSession(), GESTE_DECIDER_PRIX)); }
   function peutDatePasseeTarif() { return ROLES_DATE_PASSEE.indexOf(roleDeLaSession()) >= 0; }
   function profilsDatePassee() { return ROLES_DATE_PASSEE.map(function (r) { return libelleRole(r); }).join(' et '); }
   function peutProposerTarif() {
     var N = global.SIGH.nav, r = roleDeLaSession();
-    if (!N || !N.droitsEcran) return ROLES_VALIDATION_TARIFS.indexOf(r) >= 0;
+    if (!N || !N.droitsEcran) return false;
     var d = N.droitsEcran(r, 'cfg-tarifs', 'CFG');
     return !!(d && d.editer);
   }
@@ -300,7 +303,9 @@
       if (!f || f.statut === 'archive' || f.proforma) return;
       var jour = f.date ? D.TARIFS.jourDe(f.date) : null;
       if (!jour || jour < dateEffet) return;
+      /* LOT TARIF-FIX-2 : une ligne SANS PRIX ne dit aucun prix ; poser son prix ne change rien de ce que la pièce dit (elle attend ce prix pour s'encaisser). */
       var porte = (f.lignes || []).some(function (l) {
+        if (l.prixManquant) return false;
         return (l.acteCode && codes[l.acteCode]) || (l.demandeId && codes[analyses[l.demandeId]]) || (l.demandeImagerieId && codes[imageries[l.demandeImagerieId]]) || (l.produitId && produits[l.produitId]);
       });
       if (porte) out.push({ id: f.id, numero: f.numero, date: jour });
@@ -448,7 +453,7 @@
     }
     /* VALIDER EN UN GESTE (PRD 5.4, Q3) : la liste de rôles de la famille décide, jamais le simple droit d'éditer ; le moteur refuse en nommant, il ne dégrade pas
        silencieusement une demande de validation en proposition. */
-    if (o.valider === true && !peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Enregistrer le changement comme proposition : la décision revient à l’un de ces profils.');
+    if (o.valider === true && !peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.', 'Enregistrer le changement comme proposition : la décision revient à un rôle qui détient ce droit.');
     if (o.valider === true) { var gm = refusFileulValidation(familleAValider('prix')); if (gm) return gm; }
     var h = D.TARIFS.lire();
     if (!h) return refusTarif('REFERENTIEL_ABSENT', 'Le référentiel de prix n’est pas chargé.', 'Recharger la page.');
@@ -519,7 +524,8 @@
     if (!rec) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Réessayer ; le refus est au journal.');
     D.TARIFS.invalider();
     /* Une création n'a rien à projeter (la fiche porte déjà ce prix) ; une validation en un geste met la fiche au pas. */
-    if (!creation && valide) { leverMarquageTarif(code); S.projeterTarifs(); }
+    /* LOT TARIF-FIX-2 : un prix d'achat validé en un geste VALORISE aussitôt les pièces en attente dont la date est couverte. */
+    if (!creation && valide) { leverMarquageTarif(code); S.projeterTarifs(); valoriserEnAttente(); }
     return { ok: true, version: rec.record, identite: identite ? identite.record : null, creation: creation, valideeEnUnGeste: !creation && valide };
   }
 
@@ -582,14 +588,14 @@
     var rec = colVersionsTarif().insert(v);
     if (!rec) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Réessayer ; le refus est au journal.');
     D.TARIFS.invalider();
-    if (enUnGeste) { leverMarquageTarif(code); S.projeterTarifs(); }
+    if (enUnGeste) { leverMarquageTarif(code); S.projeterTarifs(); valoriserEnAttente(); }
     return { ok: true, version: rec.record, identite: identite ? identite.record : null, creation: !!o.creation, valideeEnUnGeste: enUnGeste };
   }
 
   /** Décide une proposition : Oui (elle devient la version en vigueur à sa date d'effet) ou Non (refusée, motif obligatoire). */
   function deciderTarif(versionId, decision, o) {
     o = o || {};
-    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.', 'Demander la décision à un rôle qui détient ce droit.');
     /* DAF = la mère (T11, 11/11/2026) : la décision est une écriture de configuration, tenue par la mère. Un fileul la refuse en nommant (même code que les validations de
        référentiels) ; la décision d'un fileul comme pièce de famille B appliquée par la mère est du lot du poste. */
     var gardeMere = refusFileulValidation(familleAValider('prix'));
@@ -624,7 +630,8 @@
     var maj = col.update(versionId, patch);
     if (!maj) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé la décision.', 'Réessayer ; le refus est au journal.');
     D.TARIFS.invalider();
-    if (decision === 'oui') { leverMarquageTarif(v.code); S.projeterTarifs(); }
+    /* LOT TARIF-FIX-2 : un prix décidé VALORISE aussitôt les pièces en attente dont la date est couverte (l'alerte dérivée retombe d'elle-même). */
+    if (decision === 'oui') { leverMarquageTarif(v.code); S.projeterTarifs(); valoriserEnAttente(); }
     /* LE RETOUR À L'AUTEUR : « votre changement de prix a été accepté ou refusé, motif ». Une alerte dérivée ne peut pas porter un retour, la notification de poste le fait. */
     if (v.proposeRole && v.proposePar && v.proposePar !== auteurDeLaSession()) {
       notifier({ type: 'prix_decide', poste: v.proposeRole, destinataire: v.proposePar, reference: v.code, ecran: 'cfg-tarifs',
@@ -661,7 +668,7 @@
       Chaque ligne passe par la décision ordinaire (contrôle d'usage, date, droit) : celles qui ne passent pas sont NOMMÉES avec leur refus, les autres sont acceptées. */
   function deciderTousTarifs(o) {
     o = o || {};
-    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.', 'Demander la décision à un rôle qui détient ce droit.');
     var gardeMereT = refusFileulValidation(familleAValider('prix'));
     if (gardeMereT) return gardeMereT;
     if (o.comparaisonAffichee !== true) return refusTarif('COMPARAISON_REQUISE', 'Un « Oui à tout » ne se donne qu’après l’affichage de la comparaison ligne à ligne (ancien prix, nouveau prix, variation).', 'Ouvrir la comparaison, la lire, puis confirmer.');
@@ -696,7 +703,7 @@
   }
   function definirValiditeProforma(o) {
     o = o || {};
-    if (!peutDeciderTarif()) return refusTarif('REGLAGE_RESERVE', 'La durée de validité d’une pro-forma se règle par la Direction, la Directrice Administrative ou l’administrateur.', 'Demander le réglage à l’un de ces profils.');
+    if (!peutDeciderTarif()) return refusTarif('REGLAGE_RESERVE', 'La durée de validité d’une pro-forma se règle par un rôle qui détient le droit « Décider un changement de prix » (fiche RBAC).', 'Demander le réglage à un rôle qui détient ce droit.');
     var j = Number(o.jours);
     if (o.jours === '' || o.jours === null || o.jours === undefined || !isFinite(j) || j !== Math.floor(j) || j < VALIDITE_PROFORMA_BORNES[0] || j > VALIDITE_PROFORMA_BORNES[1]) {
       return refusTarif('DUREE_INVALIDE', 'La durée de validité est un nombre entier de jours, de ' + VALIDITE_PROFORMA_BORNES[0] + ' à ' + VALIDITE_PROFORMA_BORNES[1] + '.', 'Saisir un nombre entier de jours.');
@@ -753,6 +760,211 @@
   }
   function numeroSerieFacture(prefixe) { return prefixe + C.pad(rangSerieFactures(prefixe), 5); }
 
+  /* ==========================================================================
+   * LOT TARIF-FIX-2 (décision de la Direction du 16/11/2026, section AL point 2) : PRESCRIRE TOUJOURS, BLOQUER SEULEMENT L'ENCAISSEMENT
+   * --------------------------------------------------------------------------
+   * Le médecin prescrit toujours : le soin n'attend ni la pharmacie ni le tarif. Une ligne sans prix porte `prixManquant` (nature, code, libellé, cause, motif,
+   * geste) : « prix à valoriser » pour un médicament sans prix d'achat, « prix à définir » pour un acte, une analyse, un examen d'imagerie ou un soin. Jamais 0 :
+   * son prix, son montant et ses parts sont NULS, et le total de la pièce est NON CALCULABLE (nul). SEUL L'ENCAISSEMENT d'une ligne sans prix est refusé,
+   * nommé (`ENCAISSEMENT_PRIX_MANQUANT`). Par défaut la pièce entière attend le prix ; l'encaissement du reste est un RÉGLAGE de clinique en base, versionné par
+   * date (défaut semé « non », proposition à valider, section AM). Dès qu'un prix est en vigueur À LA DATE DE LA PIÈCE, la ligne se VALORISE (prix lu à cette date,
+   * colonne et taux décidés à la prescription) : une pièce en attente de prix n'est ni réglée ni normalisée, la valoriser n'est pas réécrire une pièce émise.
+   * ======================================================================== */
+  var REGLAGE_ENCAISSEMENT_PARTIEL = 'caisseEncaissementPartielSansPrix';
+  /* Le défaut SEMÉ (proposition à valider) : la pièce entière attend le prix. Une version nouvelle ne réécrit jamais la précédente. */
+  var ENCAISSEMENT_PARTIEL_SEME = [{ valeur: 'non', dateEffet: '2026-01-01', source: 'Défaut semé : la pièce entière attend le prix (proposition à valider, section AM)', par: 'semence' }];
+  function versionsEncaissementPartiel() {
+    var x = S.reglage(REGLAGE_ENCAISSEMENT_PARTIEL, null);
+    return (Array.isArray(x) && x.length ? x : ENCAISSEMENT_PARTIEL_SEME).slice()
+      .sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); });
+  }
+  /** Le réglage à la date : { valeur: 'oui' | 'non', partiel: bool, dateEffet, version, source }. */
+  function encaissementPartielALaDate(date) {
+    var j = D.TARIFS.jourDe(date || null), toutes = versionsEncaissementPartiel();
+    var v = toutes.filter(function (x) { return String(x.dateEffet) <= j; }).pop() || toutes[0];
+    return { valeur: v.valeur === 'oui' ? 'oui' : 'non', partiel: v.valeur === 'oui', dateEffet: v.dateEffet, version: toutes.indexOf(v) + 1, source: v.source || null, date: j };
+  }
+  /** Pose une NOUVELLE version du réglage (jamais une réécriture) : { valeur: 'oui' | 'non', dateEffet?, motif }. Autorité : celle qui décide les prix. */
+  function definirEncaissementPartiel(o) {
+    o = o || {};
+    if (!peutDeciderTarif()) return refusTarif('REGLAGE_RESERVE', 'L’encaissement partiel d’une pièce en attente de prix se règle par un profil qui décide les prix.', 'Demander le réglage à un profil qui décide les prix (« Tarifs et prix »).');
+    if (o.valeur !== 'oui' && o.valeur !== 'non') return refusTarif('VALEUR_INCONNUE', 'Le réglage vaut « oui » (le reste de la pièce s’encaisse) ou « non » (la pièce entière attend le prix).', 'Choisir oui ou non.');
+    var motif = String(o.motif || '').trim();
+    if (motif.length < 3) return refusTarif('MOTIF_REQUIS', 'Un réglage de clinique se motive.', 'Saisir le motif du changement.');
+    var jour = o.dateEffet ? D.TARIFS.jourDe(o.dateEffet) : jourTarif(null);
+    if (jour < jourTarif(null)) return refusTarif('DATE_PASSEE', 'Un réglage ne se change pas dans le passé (' + jour + ').', 'Choisir une date d’effet d’aujourd’hui ou postérieure.');
+    var avant = encaissementPartielALaDate(jour);
+    var toutes = versionsEncaissementPartiel().filter(function (x) { return String(x.dateEffet) !== jour || x.par === 'semence'; });
+    toutes.push({ valeur: o.valeur, dateEffet: jour, source: motif.slice(0, 120), par: auteurDeLaSession(), role: roleDeLaSession(), le: new Date().toISOString() });
+    S.log('Encaissement partiel d’une pièce en attente de prix', 'M8', 'reglage', REGLAGE_ENCAISSEMENT_PARTIEL, { valeur: avant.valeur }, { valeur: o.valeur, dateEffet: jour, motif: motif.slice(0, 60) });
+    S.setReglage(REGLAGE_ENCAISSEMENT_PARTIEL, toutes);
+    return { ok: true, valeur: o.valeur, dateEffet: jour, avant: avant.valeur };
+  }
+
+  var GESTE_PRIX_ACHAT = 'Changer le prix d’achat au « Référentiel produits » (ou proposer le premier prix dans « Tarifs et prix », liste « Produits à valoriser »), puis le faire décider (Oui).';
+  /** Ce qui manque à une ligne : { nature: 'prix_achat' | 'tarif', code, libelle, cause, motif, geste, effectifLe? }. Aucune donnée de santé : le code et le libellé seuls. */
+  function manqueDePrix(nature, code, libelle, r) {
+    r = r || {};
+    var m = { nature: nature, code: String(code == null ? '' : code), libelle: libelle || String(code || ''), cause: r.cause || (nature === 'prix_achat' ? 'prix-achat-absent' : 'sans-version') };
+    if (nature === 'prix_achat') {
+      m.motif = '« ' + m.code + ' » ' + m.libelle + ' : prix à valoriser (' + String(r.motif || 'prix d’achat non renseigné').replace(/\s*:\s*l’article ne se facture jamais à zéro\.?$/, '').replace(/\.$/, '') + ')';
+      m.geste = GESTE_PRIX_ACHAT;
+    } else {
+      m.motif = r.motif || ('« ' + m.code + ' » ' + m.libelle + ' : prix à définir');
+      m.geste = r.geste || GESTE_PROPOSER_PRIX;
+    }
+    if (r.effectifLe) m.effectifLe = r.effectifLe;
+    return m;
+  }
+  var GESTE_PROPOSER_PRIX = 'Proposer le prix dans « Tarifs et prix », puis le faire décider (Oui).';
+  /** Les parts d'une ligne valorisée : même arithmétique que `construireLignes` (pas de remise). */
+  function partsLigne(montant, taux, estAgent) {
+    var partAssureur = estAgent ? 0 : Math.round(montant * (Number(taux) || 0) / 100);
+    var partPersonnel = estAgent ? montant : 0;
+    return { partAssureur: partAssureur, partPersonnel: partPersonnel, partPatient: montant - partAssureur - partPersonnel };
+  }
+  function ligneSansPrix(l) { return !!(l && l.prixManquant); }
+  function facturePrixManquants(fac) { return ((fac && fac.lignes) || []).filter(function (l) { return ligneSansPrix(l) && l.statutPaiement !== 'paye'; }); }
+  /** Les totaux d'une pièce : la somme des lignes, ou NULS (non calculable) tant qu'une ligne est sans prix. */
+  function totauxPiece(lignes, montantPaye) {
+    if (lignes.some(ligneSansPrix)) {
+      return { montantHT: null, montantTTC: null, montantBrut: null, partAssurance: null, partPersonnel: null, partPatient: null, reliquat: null, enAttentePrix: true };
+    }
+    var pp = C.sum(lignes, 'partPatient');
+    return { montantHT: C.sum(lignes, 'montant'), montantTTC: C.sum(lignes, 'montant'), montantBrut: C.sum(lignes, 'montantBrut'), partAssurance: C.sum(lignes, 'partAssureur'),
+      partPersonnel: C.sum(lignes, 'partPersonnel'), partPatient: pp,
+      reliquat: C.sum(lignes.filter(function (l) { return l.statutPaiement !== 'paye'; }), 'partPatient') };
+  }
+  /** Le prix d'une ligne de FACTURE en attente, lu à la date de la PIÈCE (jamais aujourd'hui) : { ok, montant, prixUnitaire } ou le manque, mis à jour. */
+  function prixLigneEnAttente(fac, l) {
+    var m = l.prixManquant, date = fac.date, p = patientParCode(fac.patientCode) || (fac.patientId ? col('patients').get(fac.patientId) : null);
+    var assure = !!(p && p.assureur && carteValide(p, date));
+    if (m.nature === 'prix_achat') {
+      var prod = produitParId(l.produitId) || produitDeCode(m.code) || {};
+      var px = prod.code ? prixProduitALaDate(prod, date) : { absent: true, motif: 'Produit inconnu.' };
+      if (px.absent) return { ok: false, manque: manqueDePrix('prix_achat', m.code, m.libelle, px) };
+      var q = l.quantite != null ? Number(l.quantite) : 1;
+      return { ok: true, prixUnitaire: px.achat, montant: px.achat * q, version: px.version };
+    }
+    if (m.voie === 'imagerie') {
+      var pi = D.tarifPrix ? D.tarifPrix(m.tarifCode || m.code, assure, date) : { montant: null };
+      if (pi.montant != null && Number(pi.montant) > 0) return { ok: true, prixUnitaire: Number(pi.montant), montant: Number(pi.montant) };
+      var ri = prixLignePrescription(m.tarifCode || m.code, date, assure, 'acte');
+      return { ok: false, manque: Object.assign(manqueDePrix('tarif', m.code, m.libelle, ri.ok ? { cause: 'sans-version', motif: '« ' + m.code + ' » ' + m.libelle + ' : prix à définir (examen sans tarif)' } : ri), { voie: 'imagerie', tarifCode: m.tarifCode || m.code }) };
+    }
+    var r = prixLignePrescription(m.code, date, assure, m.voie === 'analyse' ? 'analyse' : 'acte');
+    if (!r.ok) return { ok: false, manque: Object.assign(manqueDePrix('tarif', m.code, m.libelle, r), { voie: m.voie }) };
+    return { ok: true, prixUnitaire: r.montant, montant: r.montant * (l.quantite != null ? Number(l.quantite) : 1), version: r.version };
+  }
+  /** VALORISE les lignes en attente d'une pièce dont le prix est désormais en vigueur à SA date. Écrit la pièce (lignes, totaux), les copies de prix des demandes
+      et de l'ordonnance, journalise (RG-12). Une ligne réglée ou une pièce normalisée n'est jamais touchée. Rend { valorisees, restantes }. */
+  function valoriserFacture(factureId) {
+    var fac = col('factures').get(factureId);
+    if (!fac || fac.statut === 'archive' || !(fac.lignes || []).some(ligneSansPrix)) return { valorisees: [], restantes: [] };
+    var estAgent = !!fac.personnelId, taux = Number(fac.tauxPriseEnCharge) || 0;
+    var valorisees = [], restantes = [];
+    var lignes = fac.lignes.map(function (l) {
+      if (!ligneSansPrix(l)) return l;
+      var r = prixLigneEnAttente(fac, l);
+      if (!r.ok) { restantes.push(r.manque); return Object.assign({}, l, { prixManquant: r.manque }); }
+      var montant = Math.round(r.montant);
+      var nl = Object.assign({}, l, { prixUnitaire: r.prixUnitaire, prixUnitaireNet: r.prixUnitaire, montantBrut: montant, remise: 0, montant: montant }, partsLigne(montant, taux, estAgent),
+        { valoriseLe: new Date().toISOString(), valorisation: { code: l.prixManquant.code, nature: l.prixManquant.nature, jour: D.TARIFS.jourDe(fac.date), version: r.version != null ? r.version : null } });
+      delete nl.prixManquant;
+      valorisees.push({ id: l.id, code: l.prixManquant.code, nature: l.prixManquant.nature, prixUnitaire: r.prixUnitaire, montant: montant });
+      if (l.demandeId) S.collection('demandesAnalyses').update(l.demandeId, { prix: montant });
+      if (l.demandeImagerieId) S.collection('demandesImagerie').update(l.demandeImagerieId, { prix: montant });
+      return nl;
+    });
+    if (!valorisees.length) {
+      if (JSON.stringify(lignes.map(function (l) { return l.prixManquant || null; })) !== JSON.stringify(fac.lignes.map(function (l) { return l.prixManquant || null; }))) col('factures').update(factureId, { lignes: lignes });
+      return { valorisees: [], restantes: restantes };
+    }
+    var t = totauxPiece(lignes, fac.montantPaye || 0);
+    var patch = Object.assign({ lignes: lignes }, t);
+    if (!t.enAttentePrix) { patch.enAttentePrix = false; patch.reliquat = Math.max(0, t.partPatient - (fac.montantPaye || 0)); }
+    S.log('Valorisation d’une ligne sans prix', 'M8', 'facture', fac.numero, { prix: null }, { lignes: valorisees.map(function (x) { return x.code + '=' + x.prixUnitaire; }).join(', '), jour: D.TARIFS.jourDe(fac.date), restantes: restantes.length });
+    col('factures').update(factureId, patch);
+    if (fac.ordonnanceId) valoriserOrdonnance(fac.ordonnanceId, valorisees, lignes);
+    col('taches').all().forEach(function (tc) {
+      if (tc.factureId === factureId && tc.type === 'encaissement' && tc.statut !== 'termine') col('taches').update(tc.id, { montant: t.enAttentePrix ? null : t.montantTTC });
+    });
+    return { valorisees: valorisees, restantes: restantes };
+  }
+  function valoriserOrdonnance(ordId, valorisees, lignesFacture) {
+    var ord = col('ordonnances').get(ordId);
+    if (!ord) return;
+    function prixDe(nature, code) { var x = valorisees.filter(function (v) { return v.nature === nature && v.code === code; })[0]; return x ? x.prixUnitaire : undefined; }
+    var med = (ord.medicaments || []).map(function (m) { var prod = produitParId(m.produitId) || {}; var pu = m.prix == null ? prixDe('prix_achat', prod.code) : undefined; if (pu === undefined) return m; var n = Object.assign({}, m, { prix: pu, total: pu * m.quantite }); delete n.prixManquant; return n; });
+    var ana = (ord.analyses || []).map(function (a) { var pu = a.prix == null ? prixDe('tarif', a.code) : undefined; if (pu === undefined) return a; var n = Object.assign({}, a, { prix: pu }); delete n.prixManquant; return n; });
+    var act = (ord.actes || []).map(function (a) { var pu = a.prix == null ? prixDe('tarif', a.code) : undefined; if (pu === undefined) return a; var n = Object.assign({}, a, { prix: pu, tarifValide: true }); delete n.prixManquant; return n; });
+    var img = (ord.imagerie || []).map(function (i) { var pu = i.prix == null ? prixDe('tarif', i.code) : undefined; if (pu === undefined) return i; var n = Object.assign({}, i, { prix: pu }); delete n.prixManquant; return n; });
+    var tot = function (arr, k) { return arr.some(function (x) { return x[k] == null; }) ? null : C.sum(arr, k); };
+    var mMed = tot(med, 'total'), mAna = tot(ana, 'prix'), mAct = tot(act, 'prix'), mImg = tot(img, 'prix');
+    col('ordonnances').update(ordId, { medicaments: med, analyses: ana, actes: act, imagerie: img, montantMedicaments: mMed, montantAnalyses: mAna, montantActes: mAct, montantImagerie: mImg,
+      montant: [mMed, mAna, mAct, mImg].some(function (x) { return x == null; }) ? null : mMed + mAna + mAct + mImg });
+  }
+  /** Valorise TOUTES les pièces en attente (à la décision d'un prix, à l'ouverture de la caisse) : rend le nombre de lignes valorisées. */
+  function valoriserEnAttente() {
+    var n = 0;
+    col('factures').active().forEach(function (f) {
+      if (!(f.lignes || []).some(ligneSansPrix) || f.statutPaiement === 'soldee') return;
+      n += valoriserFacture(f.id).valorisees.length;
+    });
+    return n;
+  }
+  /** LES CODES SANS PRIX DES PIÈCES EN ATTENTE, un par code (jamais un par prescription) : ce que l'alerte dit et à qui. Lu à la date de chaque pièce : une ligne dont
+      le prix est en vigueur à sa date n'y figure plus (l'alerte retombe sans tâche). Aucune donnée de santé : code, libellé, nombre de pièces. */
+  function prixManquantsEnAttente() {
+    var parCle = {};
+    col('factures').active().forEach(function (f) {
+      if (f.statutPaiement === 'soldee') return;
+      facturePrixManquants(f).forEach(function (l) {
+        var r = prixLigneEnAttente(f, l);
+        if (r.ok) return;
+        var m = r.manque, cle = m.nature + ':' + m.code;
+        if (!parCle[cle]) parCle[cle] = { cle: cle, nature: m.nature, code: m.code, libelle: m.libelle, cause: m.cause, motif: m.motif, geste: m.geste, pieces: [] };
+        if (parCle[cle].pieces.indexOf(f.numero) < 0) parCle[cle].pieces.push(f.numero);
+      });
+    });
+    return Object.keys(parCle).sort().map(function (k) { return parCle[k]; });
+  }
+  /** Les rôles qui FIXENT un prix, lus dans la fiche RBAC (jamais un nom de rôle) : prix d'achat, droit de modifier « Référentiel produits » ; tarif, droit de modifier « Tarifs et prix ». */
+  function rolesQuiFixent(nature) {
+    var N = global.SIGH.nav;
+    if (!N || !N.droitsEcran || !N.ROLES) return [];
+    var ecran = nature === 'prix_achat' ? ['m6-produits', 'M6'] : ['cfg-tarifs', 'CFG'];
+    return Object.keys(N.ROLES).filter(function (r) { var d = N.droitsEcran(r, ecran[0], ecran[1]); return !!(d && d.editer); });
+  }
+  /** Le refus NOMMÉ d'un encaissement qui toucherait une ligne sans prix. */
+  function refusEncaissementPrix(fac, manques, partiel) {
+    var j = D.TARIFS.jourDe(fac.date), fr = C.dateFR(j);
+    var motif = 'La pièce ' + (fac.numero || fac.id) + ' porte ' + (manques.length > 1 ? manques.length + ' lignes' : 'une ligne') + ' sans prix : '
+      + manques.map(function (m) { return m.motif; }).join(' ; ') + '. '
+      + (partiel ? 'Une ligne sans prix ne s’encaisse pas ; le reste de la pièce peut s’encaisser (réglage de la clinique).' : 'Elle ne s’encaisse pas tant que ce prix n’est pas posé : la pièce entière attend le prix (réglage de la clinique).');
+    var geste = manques[0].geste + ' La ligne se lit à la date de la pièce (' + fr + ') : il faut un prix en vigueur ce jour-là (date d’effet du ' + fr + ' au plus tard), puis rouvrir l’encaissement.';
+    return { ok: false, code: 'ENCAISSEMENT_PRIX_MANQUANT', motif: motif, geste: geste, lignes: manques, partiel: !!partiel };
+  }
+  /** L'ÉTAT DE CAISSE d'une pièce pour l'écran : `encaissable` faux quand la commande serait refusée (elle est alors ABSENTE, le motif est dit à côté). */
+  function etatCaissePrix(fac) {
+    var manques = facturePrixManquants(fac).map(function (l) { var r = prixLigneEnAttente(fac, l); return r.ok ? null : r.manque; });
+    var aValoriser = manques.some(function (m) { return m === null; });
+    manques = manques.filter(Boolean);
+    if (!manques.length) return { encaissable: true, partiel: false, manques: [], aValoriser: aValoriser };
+    var reg = encaissementPartielALaDate(null);
+    var reste = (fac.lignes || []).some(function (l) { return !ligneSansPrix(l) && l.statutPaiement !== 'paye'; });
+    var refus = refusEncaissementPrix(fac, manques, reg.partiel);
+    return { encaissable: reg.partiel && reste, partiel: reg.partiel, manques: manques, refus: refus, aValoriser: aValoriser };
+  }
+
+  /** Ce que l'écran de prescription DIT d'une pièce acceptée avec des lignes sans prix (null s'il n'y en a pas). */
+  function messageSansPrix(res) {
+    var l = (res && res.sansPrix) || [];
+    if (!l.length) return null;
+    return C.num(l.length) + ' ligne(s) sans prix (' + l.map(function (m) { return '« ' + m.code + ' » ' + (m.nature === 'prix_achat' ? 'prix à valoriser' : 'prix à définir'); }).join(', ')
+      + ') : total non calculable, la caisse attend le prix ; alerte transmise à qui le fixe.';
+  }
+
   function prescrire(v) {
     var p = patientParCode(v.patientCode);
     if (!p) throw new Error('Patient introuvable : ' + v.patientCode);
@@ -761,38 +973,34 @@
     var numero = 'ORD-' + String(new Date(date).getFullYear()) + '-' + C.pad(col('ordonnances').all().length + 1, 5);
 
     /* --- Lignes ----------------------------------------------------------- */
-    var sansPrixAchat = [];
     var medicaments = (v.medicaments || []).map(function (l) {
       var prod = produitParId(l.produitId) || {};
-      /* RG-02 — prix d'achat, sans marge : celui de la version EN VIGUEUR à la date de la PIÈCE (lot T5), jamais la fiche, jamais un zéro. Un prix d'achat absent refuse la prescription
-         en nommant l'article, avant toute écriture. */
-      var px = prod.code ? prixProduitALaDate(prod, date) : { absent: true };
-      var pu = px.absent ? 0 : px.achat;
+      /* RG-02 : prix d'achat, sans marge : celui de la version EN VIGUEUR à la date de la PIÈCE (lot T5), jamais la fiche, jamais un zéro. LOT TARIF-FIX-2 : un prix
+         d'achat absent ne refuse plus la prescription ; la ligne dit « prix à valoriser », son prix est nul, et seul l'encaissement l'attend. */
+      var px = prod.code ? prixProduitALaDate(prod, date) : { absent: true, motif: 'Produit inconnu.' };
       var q = Number(l.quantite) || 0;
-      if (px.absent && q > 0) sansPrixAchat.push(prod.designation || l.produit || l.produitId);
-      return {
+      var ligne = {
         produitId: l.produitId, produit: prod.designation || l.produit || '—',
         unite: prod.unite || '', quantite: q,
         posologie: l.posologie || '', duree: l.duree || '',
-        prix: pu, total: pu * q,
+        prix: px.absent ? null : px.achat, total: px.absent ? null : px.achat * q,
       };
+      if (px.absent) ligne.prixManquant = manqueDePrix('prix_achat', prod.code || l.produitId, prod.designation || l.produit, px);
+      return ligne;
     }).filter(function (l) { return l.quantite > 0; });
 
-    if (sansPrixAchat.length) {
-      throw new Error('Prix d’achat absent pour : ' + sansPrixAchat.join(', ') + '. Un article sans prix d’achat ne se facture jamais à zéro : renseigner son prix d’achat au Référentiel produits (« Changer le prix d’achat ») avant de prescrire.');
-    }
     /* RG-09 : la colonne se décide à la date de la pièce, comme pour les actes. Le prix est celui de la version en vigueur à CETTE date (PRD-TARIFS). */
     var assureAnalyses = !!(p.assureur && carteValide(p, date));
     /* LOT TARIF-FIX : « non calculable n'est pas zéro ». Chaque ligne d'analyse et d'acte lit le référentiel de prix à la date de la PIÈCE par `prixLignePrescription` ; une
-       ligne sans prix strictement positif est « prix à définir », jamais 0 : elle est NOMMÉE (cause, motif, geste) et la prescription est refusée avant toute écriture,
-       comme un médicament sans prix d'achat et un examen d'imagerie sans tarif. */
-    var aDefinir = [];
+       ligne sans prix strictement positif est « prix à définir », jamais 0, NOMMÉE (cause, motif, geste). LOT TARIF-FIX-2 : elle ne refuse plus la prescription ; elle
+       porte `prixManquant` et seul l'encaissement l'attend. */
     var analyses = (v.analyses || []).map(function (code) {
       var a = analyseParCode(code) || {};
       var pr = prixLignePrescription(code, date, assureAnalyses, 'analyse');
-      if (!pr.ok) aDefinir.push(pr);
-      return { code: code, designation: a.designation || pr.libelle || code, categorie: a.categorie || '',
+      var ligne = { code: code, designation: a.designation || pr.libelle || code, categorie: a.categorie || '',
         echantillon: a.echantillon || '', delai: a.delai || '', prix: pr.ok ? pr.montant : null };
+      if (!pr.ok) ligne.prixManquant = Object.assign(manqueDePrix('tarif', code, ligne.designation, pr), { voie: 'analyse' });
+      return ligne;
     });
 
     /* C3 (corrigé le 31/10/2026) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées, décision du
@@ -806,20 +1014,17 @@
          assuré. PRD-TARIFS (T1) puis TARIF-FIX : le prix vient du RÉFÉRENTIEL UNIQUE à la date de la prescription (espace des actes, puis le code ou l'alias de toute
          prestation : un certificat ou une consultation ne tombe plus à 0 parce qu'il n'est pas dans l'espace des actes). La collection `actes` n'est qu'une projection. */
       var pr = prixLignePrescription(code, date, assureActes, 'acte');
-      if (!pr.ok) aDefinir.push(pr);
-      return { code: code, libelle: a.libelle || pr.libelle || code, secteur: a.secteur || '', prix: pr.ok ? pr.montant : null,
+      var ligne = { code: code, libelle: a.libelle || pr.libelle || code, secteur: a.secteur || '', prix: pr.ok ? pr.montant : null,
         tarifValide: pr.ok };
+      if (!pr.ok) ligne.prixManquant = Object.assign(manqueDePrix('tarif', code, ligne.libelle, pr), { voie: 'acte' });
+      return ligne;
     });
-    if (aDefinir.length) {
-      var refusPrix = new Error('Prix à définir : ' + aDefinir.map(function (x) { return x.motif; }).join(' ; ') + '. ' + aDefinir[0].geste
-        + ' Une ligne sans prix ne se facture jamais à zéro.');
-      refusPrix.code = 'PRIX_A_DEFINIR'; refusPrix.lignes = aDefinir; refusPrix.geste = aDefinir[0].geste;
-      throw refusPrix;
-    }
 
-    var mMed = C.sum(medicaments, 'total');
-    var mAna = C.sum(analyses, 'prix');
-    var mAct = C.sum(actes, function (a) { return a.prix || 0; });
+    /* Un total qui porte une ligne sans prix est NON CALCULABLE (nul), jamais la somme des seules lignes tarifées. */
+    function totalOuNul(arr, k) { return arr.some(function (x) { return x[k] == null; }) ? null : C.sum(arr, k); }
+    var mMed = totalOuNul(medicaments, 'total');
+    var mAna = totalOuNul(analyses, 'prix');
+    var mAct = totalOuNul(actes, 'prix');
 
     /* --- L'imagerie médicale (refonte Zone 2, 14/09/2026) -------------------
        La fiche de consultation prescrit l'imagerie DANS LE MÊME GESTE que les
@@ -839,9 +1044,12 @@
       : { demandes: [], lignes: [] };
     var demandesImagerie = imagerieCree.demandes;
     var imagerie = demandesImagerie.map(function (d) {
-      return { code: d.examenCode, examen: d.examen, modalite: d.modalite, prix: d.prix, demandeImagerieId: d.id };
+      var x = { code: d.examenCode, examen: d.examen, modalite: d.modalite, prix: d.prix, demandeImagerieId: d.id };
+      if (d.prixManquant) x.prixManquant = d.prixManquant;
+      return x;
     });
-    var mImg = C.sum(imagerie, 'prix');
+    var mImg = totalOuNul(imagerie, 'prix');
+    var montantOrd = [mMed, mAna, mAct, mImg].some(function (x) { return x == null; }) ? null : mMed + mAna + mAct + mImg;
 
     /* --- L'ordonnance ------------------------------------------------------ */
     var ord = col('ordonnances').insert({
@@ -851,7 +1059,7 @@
       dossierConsultationId: v.dossierConsultationId || null,
       medicaments: medicaments, analyses: analyses, actes: actes, imagerie: imagerie,
       montantMedicaments: mMed, montantAnalyses: mAna, montantActes: mAct, montantImagerie: mImg,
-      montant: mMed + mAna + mAct + mImg,
+      montant: montantOrd,
       urgent: !!v.urgent,
       statutPaiement: 'impayee',
       statutDispensation: medicaments.length ? 'en_attente' : 'sans_objet',
@@ -890,8 +1098,7 @@
     /* RG-09 — la prise en charge ne s'applique que si la carte est valide À LA DATE de la prescription (écart E340 : le taux du
        dossier s'appliquait même carte expirée, alors que l'imagerie de la même pièce était déjà tarifée « non assuré »). */
     var taux = (p.assureur && carteValide(p, date)) ? (p.tauxPriseEnCharge || 0) : 0;
-    var montant = mMed + mAna + mAct + mImg;
-    var partAssurance = Math.round(montant * taux / 100);
+    var montant = montantOrd;
 
     /* Les LIGNES PAYABLES. Chacune sait ce qu'elle couvre — une demande
        d'analyse, un produit, un acte, un examen d'imagerie — pour que le
@@ -909,30 +1116,28 @@
     /* LE TOTAL EST LA SOMME DES LIGNES, jamais un montant calculé à côté.
        C'est le défaut déjà corrigé sur les états imprimés : deux façons de
        compter la même chose divergent au premier correctif. */
-    var totalLignes = C.sum(lignesFacture, 'montant');
-    var totalAssureur = C.sum(lignesFacture, 'partAssureur');
-    var totalPersonnel = C.sum(lignesFacture, 'partPersonnel');
+    /* LOT TARIF-FIX-2 : une ligne sans prix rend les totaux NON CALCULABLES (nuls) et marque la pièce `enAttentePrix` (`totauxPiece`). */
     var totalRemise = C.sum(lignesFacture, 'remise');
-    var duPatient = totalLignes - totalAssureur - totalPersonnel;
+    var tot = totauxPiece(lignesFacture, 0);
 
-    var facture = col('factures').insert({
+    var facture = col('factures').insert(Object.assign({
       lignes: lignesFacture,
       numero: numeroSerieFacture('FP-' + String(new Date(date).getFullYear()) + '-'),   /* E6 : rang de la série de l'année */
       numeroMecef: null,
       patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
       date: C.iso(new Date(date)), type: 'Prescription',
-      montantHT: totalLignes, montantTTC: totalLignes,
-      montantBrut: C.sum(lignesFacture, 'montantBrut'), totalRemise: totalRemise,
-      partPersonnel: totalPersonnel,
+      montantHT: tot.montantHT, montantTTC: tot.montantTTC,
+      montantBrut: tot.montantBrut, totalRemise: totalRemise,
+      partPersonnel: tot.partPersonnel,
       priseEnChargePersonnel: !!p.personnelId, personnelId: p.personnelId || null,
       assureur: p.assureur || null, tauxPriseEnCharge: taux,
-      partAssurance: totalAssureur, partPatient: duPatient,
-      montantPaye: 0, reliquat: duPatient,
+      partAssurance: tot.partAssurance, partPatient: tot.partPatient,
+      montantPaye: 0, reliquat: tot.reliquat,
       modePaiement: null,
       statutPaiement: 'impayee', statutMecef: 'en_attente',
       ordonnanceId: ord.id, ordonnanceNumero: numero,
       dossierConsultationId: v.dossierConsultationId || null,
-    }).record;
+    }, tot.enAttentePrix ? { enAttentePrix: true } : {})).record;
 
     col('ordonnances').update(ord.id, { factureId: facture.id, factureNumero: facture.numero });
     demandesImagerie.forEach(function (d) {
@@ -963,7 +1168,7 @@
     }
     if (medicaments.length) {
       taches.push(creerTache('dispensation', ord, facture, {
-        detail: medicaments.length + ' médicament(s) — ' + C.money(mMed, false),
+        detail: medicaments.length + ' médicament(s) — ' + C.moneyOu(mMed, 'prix à valoriser', false),
         montant: mMed,
         /* Informé tout de suite, exécutable après encaissement. */
         statut: 'bloque',
@@ -995,10 +1200,13 @@
       catch (e) { /* le registre est secondaire, il ne doit pas casser la prescription */ }
     }
 
+    /* Les lignes sans prix de la pièce, NOMMÉES pour l'écran ; l'alerte vers qui fixe le prix est DÉRIVÉE (centre de notifications, source `prix_manquant`). */
+    var sansPrix = facturePrixManquants(facture).map(function (l) { return l.prixManquant; });
+
     return {
       ordonnance: col('ordonnances').get(ord.id), demandes: demandes,
       demandesImagerie: demandesImagerie.map(function (d) { return S.collection('demandesImagerie').get(d.id); }),
-      facture: facture, taches: taches,
+      facture: facture, taches: taches, sansPrix: sansPrix,
     };
   }
 
@@ -1393,12 +1601,15 @@
     var analyses = (v.analyses || []).map(function (code) {
       var a = analyseParCode(code) || {};
       var pr = prixAnalyseALaDate(code, date, assureExterne);
-      return {
+      var px = pr === undefined ? a.prix : pr;
+      /* LOT TARIF-FIX-2 (E2677 de la même famille) : `|| 0` facturait une analyse sans prix à 0. Elle dit désormais « prix à définir » et seul l'encaissement l'attend. */
+      var ligne = {
         code: code, designation: a.designation || code, categorie: a.categorie || '',
-        echantillon: a.echantillon || '', delai: a.delai || '', prix: (pr === undefined ? a.prix : pr) || 0,
+        echantillon: a.echantillon || '', delai: a.delai || '', prix: Number(px) > 0 ? Number(px) : null,
       };
+      if (ligne.prix == null) ligne.prixManquant = Object.assign(manqueDePrix('tarif', code, ligne.designation, prixLignePrescription(code, date, assureExterne, 'analyse')), { voie: 'analyse' });
+      return ligne;
     });
-    var montant = C.sum(analyses, 'prix');
 
     /* Les demandes, marquées EXTERNE : le résultat se remet au patient. */
     var demandes = analyses.map(function (a) {
@@ -1433,44 +1644,40 @@
 
     /* La facture, avec ses lignes payables. */
     var taux = p.assureur ? (p.tauxPriseEnCharge || 0) : 0;
-    var partAssurance = Math.round(montant * taux / 100);
     var lignes = construireLignes({
       analyses: analyses, demandes: demandes, taux: taux,
       personnelId: p.personnelId || null,
     });
 
-    var facture = col('factures').insert({
+    var facture = col('factures').insert(Object.assign({
       lignes: lignes,
       numero: 'FE-' + String(new Date(date).getFullYear()) + '-' + C.pad(col('factures').all().length + 1, 5),
       numeroMecef: null,
       patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
       date: C.iso(new Date(date)), type: 'Analyses — patient externe',
       /* Le total est la somme des lignes, comme sur la facture de
-         prescription : deux façons de compter divergeraient. */
-      montantHT: C.sum(lignes, 'montant'), montantTTC: C.sum(lignes, 'montant'),
-      montantBrut: C.sum(lignes, 'montantBrut'), totalRemise: C.sum(lignes, 'remise'),
-      partPersonnel: C.sum(lignes, 'partPersonnel'),
+         prescription : deux façons de compter divergeraient. Une ligne sans prix le rend non calculable (`totauxPiece`). */
+      totalRemise: C.sum(lignes, 'remise'),
       priseEnChargePersonnel: !!p.personnelId, personnelId: p.personnelId || null,
       assureur: p.assureur || null, tauxPriseEnCharge: taux,
-      partAssurance: C.sum(lignes, 'partAssureur'),
-      partPatient: C.sum(lignes, 'partPatient'),
-      montantPaye: 0, reliquat: C.sum(lignes, 'partPatient'),
+      montantPaye: 0,
       modePaiement: null,
       statutPaiement: 'impayee', statutMecef: 'en_attente',
       origineDemande: 'externe',
       prescripteurExterieur: v.prescripteur || null,
-    }).record;
+    }, totauxPiece(lignes, 0))).record;
 
     demandes.forEach(function (d) {
       S.collection('demandesAnalyses').update(d.id, { factureId: facture.id, factureNumero: facture.numero });
     });
 
     /* La caisse est saisie, le prélèvement attend le règlement. */
+    var montant = facture.montantTTC;
     var taches = [];
     taches.push(col('taches').insert({
       type: 'encaissement', poste: 'caisse',
       libelle: 'Patient externe — ' + p.nom + ' ' + p.prenom,
-      detail: C.num(analyses.length) + ' examen(s) — ' + C.money(montant, false),
+      detail: C.num(analyses.length) + ' examen(s) — ' + C.moneyOu(montant, 'prix à définir', false),
       reference: facture.numero, factureId: facture.id,
       patientId: p.id, patient: p.nom + ' ' + p.prenom,
       montant: montant, statut: 'en_attente', creeLe: date,
@@ -1526,11 +1733,35 @@
     var assure = carteValide(p, date);
     var col_ = S.collection('demandesImagerie', { module: 'M2', entite: 'demande d’imagerie', prefix: 'IME' });
 
+    /* Un code ABSENT du catalogue d'imagerie ET sans tarif n'est pas une ligne sans prix : c'est une demande qui ne désigne rien. Refusée en le nommant, avant toute
+       écriture (elle l'était déjà, sous « Tarif non renseigné »). Un code hors catalogue mais tarifé à la grille se prescrit comme avant ; un examen du catalogue SANS
+       TARIF se prescrit (lot TARIF-FIX-2) : la ligne dit « prix à définir » et seule la caisse l'attend. */
+    var inconnus = codes.filter(function (code) {
+      if (examenImagerieParCode(code)) return false;
+      var t = D.tarifPrix ? D.tarifPrix(code, carteValide(p, date), date) : { montant: null };
+      return !(t.montant != null && Number(t.montant) > 0);
+    });
+    if (inconnus.length) {
+      var refusEx = new Error('Examen absent du catalogue d’imagerie : ' + inconnus.join(', ') + '. Choisir l’examen dans le catalogue d’imagerie (ou l’y créer).');
+      refusEx.code = 'EXAMEN_INCONNU';
+      throw refusEx;
+    }
+
     var demandes = codes.map(function (code) {
       var ex = examenImagerieParCode(code);
       /* RG-09 : la validité de la carte À LA DATE décide du tarif. */
-      var pr = D.tarifPrix ? D.tarifPrix((ex && ex.tarifCode) || code, assure, date) : { montant: null };
-      return col_.insert({
+      var tarifCode = (ex && ex.tarifCode) || code;
+      var pr = D.tarifPrix ? D.tarifPrix(tarifCode, assure, date) : { montant: null };
+      /* LOT TARIF-FIX-2 : un examen sans tarif ne refuse plus la demande ; elle porte « prix à définir » (cause et geste lus au référentiel) et seul l'encaissement
+         l'attend. Jamais 0 : un montant nul ou négatif est un prix manquant. */
+      var sansTarif = !(pr.montant != null && Number(pr.montant) > 0);
+      var manque = null;
+      if (sansTarif) {
+        var ri = prixLignePrescription(tarifCode, date, !!assure, 'acte');
+        manque = Object.assign(manqueDePrix('tarif', code, ex ? ex.label : code, ri.ok ? { cause: 'sans-version', motif: '« ' + code + ' » ' + (ex ? ex.label : code) + ' : prix à définir (examen sans tarif)' } : ri),
+          { voie: 'imagerie', tarifCode: tarifCode });
+      }
+      return col_.insert(Object.assign({
         /* Lue sur les demandes EXISTANTES (écart E100) : le compteur de page de nextRef repartait à 1 à chaque chargement. */
         reference: C.referenceSuivante('IME-', 5, col_.all()),
         dateHeure: date,
@@ -1545,21 +1776,11 @@
         origine: v.origine || 'consultation',
         ordonnanceId: v.ordonnanceId || null, ordonnanceNumero: v.ordonnanceNumero || null,
         dossierConsultationId: v.dossierConsultationId || null,
-        prix: pr.montant, motifTarif: pr.motif || null,
+        prix: sansTarif ? null : pr.montant, motifTarif: pr.motif || null,
         statut: 'demandee',
         bloqueParPaiement: true,
-      }).record;
+      }, manque ? { prixManquant: manque } : {})).record;
     });
-
-    var sansPrix = demandes.filter(function (d) { return d.prix == null; });
-    if (sansPrix.length) {
-      /* Un tiret n'est pas un zéro : une demande sans tarif validé ne se
-         facture pas — elle est refusée EN NOMMANT l'examen. */
-      demandes.forEach(function (d) { col_.archive(d.id); });
-      throw new Error('Tarif non renseigné pour : '
-        + sansPrix.map(function (d) { return d.examen; }).join(', ')
-        + '. Le renseigner au référentiel tarifaire avant de facturer.');
-    }
 
     return {
       demandes: demandes,
@@ -1568,7 +1789,7 @@
       lignes: demandes.map(function (d) {
         return { categorie: 'imagerie', designation: d.examen,
           quantite: 1, prixUnitaire: d.prix, montant: d.prix,
-          demandeImagerieId: d.id };
+          demandeImagerieId: d.id, prixManquant: d.prixManquant || null };
       }),
     };
   }
@@ -1598,23 +1819,19 @@
       autres: cree.lignes,
     });
 
-    var facture = col('factures').insert({
+    var facture = col('factures').insert(Object.assign({
       lignes: lignes,
       numero: 'FI-' + String(new Date(date).getFullYear()) + '-' + C.pad(col('factures').all().length + 1, 5),
       numeroMecef: null,
       patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
       date: C.iso(new Date(date)), type: 'Imagerie',
-      montantHT: C.sum(lignes, 'montant'), montantTTC: C.sum(lignes, 'montant'),
-      montantBrut: C.sum(lignes, 'montantBrut'), totalRemise: C.sum(lignes, 'remise'),
-      partPersonnel: C.sum(lignes, 'partPersonnel'),
+      totalRemise: C.sum(lignes, 'remise'),
       priseEnChargePersonnel: !!p.personnelId, personnelId: p.personnelId || null,
       assureur: p.assureur || null, tauxPriseEnCharge: taux,
-      partAssurance: C.sum(lignes, 'partAssureur'),
-      partPatient: C.sum(lignes, 'partPatient'),
-      montantPaye: 0, reliquat: C.sum(lignes, 'partPatient'),
+      montantPaye: 0,
       modePaiement: null,
       statutPaiement: 'impayee', statutMecef: 'en_attente',
-    }).record;
+    }, totauxPiece(lignes, 0))).record;
 
     demandes.forEach(function (d) {
       col_.update(d.id, { factureId: facture.id, factureNumero: facture.numero });
@@ -1624,7 +1841,7 @@
     taches.push(col('taches').insert({
       type: 'encaissement', poste: 'caisse',
       libelle: 'Imagerie — ' + p.nom + ' ' + p.prenom,
-      detail: C.num(demandes.length) + ' examen(s) — ' + C.money(facture.montantTTC, false),
+      detail: C.num(demandes.length) + ' examen(s) — ' + C.moneyOu(facture.montantTTC, 'prix à définir', false),
       reference: facture.numero, factureId: facture.id,
       patientId: p.id, patient: p.nom + ' ' + p.prenom,
       montant: facture.montantTTC, statut: 'en_attente', creeLe: date,
@@ -1767,6 +1984,19 @@
 
     function ajouter(o) {
       n++;
+      /* LOT TARIF-FIX-2 : une ligne sans prix garde prix, montant et parts NULS (jamais 0) et porte ce qui lui manque. */
+      if (o.prixManquant) {
+        lignes.push({
+          id: 'L' + C.pad(n, 3), categorie: o.categorie, designation: o.designation,
+          quantite: o.quantite != null ? o.quantite : 1,
+          prixUnitaire: null, prixUnitaireNet: null, montantBrut: null, remise: 0, motifRemise: null, montant: null,
+          partAssureur: null, partPersonnel: null, partPatient: null,
+          prixManquant: o.prixManquant,
+          demandeId: o.demandeId || null, produitId: o.produitId || null, acteCode: o.acteCode || null, demandeImagerieId: o.demandeImagerieId || null,
+          statutPaiement: 'du', montantRegle: 0, payeLe: null, payePar: null,
+        });
+        return;
+      }
       var brut = Math.round(Number(o.montant) || 0);
       var remise = Math.round(Number(o.remise) || 0);
       /* RG-02 — pas de remise sur un médicament : il se facture au prix
@@ -1805,7 +2035,7 @@
       ajouter({
         categorie: 'medicament', designation: m.produit,
         quantite: m.quantite, prixUnitaire: m.prix, montant: m.total,
-        produitId: m.produitId,
+        produitId: m.produitId, prixManquant: m.prixManquant || null,
       });
     });
 
@@ -1814,15 +2044,15 @@
       ajouter({
         categorie: 'analyse', designation: a.designation,
         quantite: 1, prixUnitaire: a.prix, montant: a.prix,
-        demandeId: dem ? dem.id : null,
+        demandeId: dem ? dem.id : null, prixManquant: a.prixManquant || null,
       });
     });
 
     (v.actes || []).forEach(function (a) {
       ajouter({
         categorie: 'acte', designation: a.libelle,
-        quantite: 1, prixUnitaire: a.prix || 0, montant: a.prix || 0,
-        acteCode: a.code,
+        quantite: 1, prixUnitaire: a.prix, montant: a.prix,
+        acteCode: a.code, prixManquant: a.prixManquant || (a.prix == null ? Object.assign(manqueDePrix('tarif', a.code, a.libelle, null), { voie: 'acte' }) : null),
       });
     });
 
@@ -2133,6 +2363,27 @@
     if (!fac) throw new Error('Facture introuvable.');
     if (fac.statutPaiement === 'soldee') return { facture: fac, deja: true, lignesReglees: [] };
 
+    /* LOT TARIF-FIX-2 : une ligne sans prix se VALORISE d'abord (prix en vigueur à la date de la pièce) ; ce qui reste sans prix refuse l'encaissement, NOMMÉ, avant
+       toute écriture : la pièce entière par défaut, la seule ligne quand le réglage de la clinique permet l'encaissement du reste. Rien ne part au MECeF. */
+    if ((fac.lignes || []).some(ligneSansPrix)) { valoriserFacture(factureId); fac = col('factures').get(factureId); }
+    var manquesPrix = facturePrixManquants(fac);
+    if (manquesPrix.length) {
+      var regPartiel = encaissementPartielALaDate(null), refusPrix = null;
+      if (!regPartiel.partiel) refusPrix = refusEncaissementPrix(fac, manquesPrix.map(function (l) { return l.prixManquant; }), false);
+      else if (opts.lignes && opts.lignes.length) {
+        var touchees = manquesPrix.filter(function (l) { return opts.lignes.indexOf(l.id) >= 0; });
+        if (touchees.length) refusPrix = refusEncaissementPrix(fac, touchees.map(function (l) { return l.prixManquant; }), true);
+      } else if (!(fac.lignes || []).some(function (l) { return !ligneSansPrix(l) && l.statutPaiement !== 'paye'; })) {
+        refusPrix = refusEncaissementPrix(fac, manquesPrix.map(function (l) { return l.prixManquant; }), true);
+      }
+      if (refusPrix) {
+        return {
+          facture: fac, refus: refusPrix.code + ' : ' + refusPrix.motif + ' ' + refusPrix.geste, refusNomme: refusPrix,
+          debloquees: [], ecritures: [], lignesReglees: [], montantRegle: 0, restantDu: null, demandesLiberees: [],
+        };
+      }
+    }
+
     /* La fenêtre « Facture normalisée » (IFU de l'acheteur, nom, AIB) se contrôle AVANT toute écriture : un refus nommé n'écrit rien. */
     var acheteurSaisi = null;
     if (opts.acheteur) {
@@ -2148,7 +2399,9 @@
     }
 
     var toutes = fac.lignes || [];
-    var duTotal = fac.partPatient != null ? fac.partPatient : fac.montantTTC;
+    /* Une pièce en attente de prix (encaissement partiel réglé) : le dû est celui des seules lignes valorisées ; une ligne sans prix n'est jamais allouée. */
+    var duTotal = manquesPrix.length ? C.sum(toutes.filter(function (l) { return !ligneSansPrix(l) && l.statutPaiement !== 'paye'; }), 'partPatient')
+      : (fac.partPatient != null ? fac.partPatient : fac.montantTTC);
 
     /* --- Quelles lignes sont réglées par ce versement ? ------------------ */
     var reglees = [];
@@ -2166,7 +2419,7 @@
          que la somme versée les couvre ENTIÈREMENT. */
       var reste = opts.montant != null ? Number(opts.montant) : duTotal;
       toutes.forEach(function (l) {
-        if (l.statutPaiement === 'paye') return;
+        if (l.statutPaiement === 'paye' || ligneSansPrix(l)) return;
         if (l.partPatient <= reste) { reglees.push(l); reste -= l.partPatient; paye += l.partPatient; }
       });
     } else {
@@ -2199,9 +2452,11 @@
     var totalPaye = (fac.montantPaye || 0) + paye;
     var restantDu = lignesMaj.length
       ? lignesMaj.filter(function (l) { return l.statutPaiement !== 'paye'; })
-        .reduce(function (n, l) { return n + l.partPatient; }, 0)
+        .reduce(function (n, l) { return n + (l.partPatient || 0); }, 0)
       : Math.max(0, duTotal - totalPaye);
-    var solde = restantDu <= 0;
+    /* Une ligne sans prix restante : le reste dû est NON CALCULABLE et la pièce n'est jamais soldée. */
+    var resteSansPrix = lignesMaj.some(function (l) { return ligneSansPrix(l) && l.statutPaiement !== 'paye'; });
+    var solde = !resteSansPrix && restantDu <= 0;
 
     /* LA BASE MECeF NAÎT DE LA FONCTION UNIQUE DES MONTANTS : seule la part PATIENT des lignes réglées par ce versement s'ajoute (ni part
        assureur, ni remise). Les montants des pièces ne changent pas : la fonction retrouve exactement ce qui a été alloué. Une ligne que la
@@ -2217,7 +2472,7 @@
     col('factures').update(factureId, Object.assign({
       lignes: lignesMaj,
       montantPaye: totalPaye,
-      reliquat: restantDu,
+      reliquat: resteSansPrix ? null : restantDu,
       modePaiement: opts.mode || 'especes',
       statutPaiement: solde ? 'soldee' : (totalPaye > 0 ? 'partielle' : 'impayee'),
       /* TOUTE VENTE EST NORMALISÉE (Direction, 07/11/2026) : l'état se décide plus bas, par la normalisation de la vente soldée. */
@@ -2315,7 +2570,7 @@
     return {
       facture: fac, debloquees: debloquees, ecritures: ecritures,
       lignesReglees: reglees, montantRegle: paye,
-      restantDu: restantDu, demandesLiberees: demandesLiberees,
+      restantDu: resteSansPrix ? null : restantDu, restantSansPrix: resteSansPrix, demandesLiberees: demandesLiberees,
       normalisation: normalisation,
     };
   }
@@ -3223,7 +3478,10 @@
       var code = typeof a === 'string' ? a : a.code;
       var t = D.tarif ? D.tarif(code) : null;
       var pr = D.tarifPrix ? D.tarifPrix(code, assure, date) : { montant: null, motif: null };
-      return {
+      /* LOT TARIF-FIX-2 (E2677 point 1) : un soin sans prix dit « prix à définir » avec sa cause et son geste ; il n'est jamais compté pour 0. */
+      var sansPrix = !(pr.montant != null && Number(pr.montant) > 0);
+      var manque = sansPrix ? Object.assign(manqueDePrix('tarif', code, t ? t.libelle : code, prixLignePrescription(code, date, !!assure, 'acte')), { voie: 'acte' }) : null;
+      return Object.assign({
         acteCode: code,
         libelle: t ? t.libelle : code,
         famille: t ? t.famille : null,
@@ -3233,11 +3491,11 @@
         /* Le nombre d'administrations attendues : c'est lui qui fait vivre le
            relais. Une seule administration ne quitte jamais la salle de soins. */
         nbAdministrations: Number((typeof a === 'object' && a.nbAdministrations) || 1),
-        prix: pr.montant,
+        prix: sansPrix ? null : pr.montant,
         tarif: pr.tarif || null,
         motifTarif: pr.motif || null,
-        prixAValider: pr.montant == null,
-      };
+        prixAValider: sansPrix,
+      }, manque ? { prixManquant: manque } : {});
     });
 
     var modalite = v.modalite || 'ambulatoire';
@@ -3257,7 +3515,8 @@
       admissionId: v.admissionId || null,
       indication: v.indication || '',
       lignes: lignes,
-      montant: lignes.reduce(function (t, l) { return t + (l.prix || 0) * l.quantite; }, 0),
+      /* Non calculable (nul) dès qu'une ligne est sans prix, jamais la somme des seules lignes tarifées. */
+      montant: lignes.some(function (l) { return l.prix == null; }) ? null : lignes.reduce(function (t, l) { return t + l.prix * l.quantite; }, 0),
       assure: assure,
       statut: 'en_cours',
       statutPaiement: 'impayee',
@@ -3304,7 +3563,8 @@
           nbAdministrations: Number(m.nbAdministrations || 1),
         };
       }),
-      montant: ord.montantMedicaments || 0,
+      /* LOT TARIF-FIX-2 : un montant NUL (médicament à prix à valoriser) reste nul au registre, jamais 0. */
+      montant: ord.montantMedicaments === null ? null : (ord.montantMedicaments || 0),
       statut: 'en_cours',
       statutPaiement: ord.statutPaiement || 'impayee',
     }).record;
@@ -3783,7 +4043,7 @@
     carteValide: carteValide, categoriser: categoriser, libelleUnite: libelleUnite,
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
     colActes: colActes, colAnalyses: colAnalyses, colCatalogueTarifs: colCatalogueTarifs,
-    ROLES_VALIDATION_TARIFS: ROLES_VALIDATION_TARIFS, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
+    GESTE_DECIDER_PRIX: GESTE_DECIDER_PRIX, rolesDecidentPrix: rolesDecidentPrix, libellesDecidentPrix: libellesDecidentPrix, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
     ROLES_DATE_PASSEE: ROLES_DATE_PASSEE, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
     deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
@@ -3795,6 +4055,12 @@
     changerCouverture: changerCouverture,
     TACHES: TACHES,
     prescrire: prescrire, encaisser: encaisser, delivrer: delivrer,
+    /* LOT TARIF-FIX-2 : prescrire toujours, bloquer seulement l'encaissement d'une ligne sans prix. */
+    valoriserFacture: valoriserFacture, messageSansPrix: messageSansPrix, valoriserEnAttente: valoriserEnAttente, etatCaissePrix: etatCaissePrix, prixManquantsEnAttente: prixManquantsEnAttente,
+    rolesQuiFixent: rolesQuiFixent, encaissementPartielALaDate: encaissementPartielALaDate, definirEncaissementPartiel: definirEncaissementPartiel,
+    versionsEncaissementPartiel: versionsEncaissementPartiel, ligneSansPrix: ligneSansPrix,
+    /* Les fonctions pures du lot, pour les vecteurs du domaine (`build/vecteurs-prix-manquant.js`). */
+    _tf2: { manqueDePrix: manqueDePrix, totauxPiece: totauxPiece, partsLigne: partsLigne, refusEncaissementPrix: refusEncaissementPrix },
     transcrireMobile: transcrireMobile, CORRESPONDANCE_EXAMENS_MOBILE: CORRESPONDANCE_EXAMENS_MOBILE,
     verifierStock: verifierStock,
     taches: taches, aFaire: aFaire, terminer: terminer, compteurs: compteurs,
@@ -5277,7 +5543,7 @@
     /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : un compte LU sur `versionsTarif`, jamais écrit ; la décision se prend à « Tarifs et prix »,
        onglet Alertes, avec la comparaison. Mêmes profils que les familles des actes et des analyses. */
     { id: 'prix', libelle: 'Changements de prix en attente (Oui ou Non)', module: 'CFG', mode: 'prix', collections: ['versionsTarif'], champs: ['statut'],
-      roles: ROLES_VALIDATION_TARIFS.slice(), ecran: 'cfg-tarifs' },
+      get roles() { return rolesDecidentPrix(); }, ecran: 'cfg-tarifs' },
     { id: 'valorisation_sage', libelle: 'Valorisation des références de l’inventaire initial', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'm6-produits', champsChiffres: ['prixRevient'] },
     { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],
@@ -6388,6 +6654,10 @@
     for (var i = 0; i < src.length; i++) {
       var l = src[i] || {};
       var nom = l.designation || l.id || ('ligne ' + (i + 1));
+      /* LOT TARIF-FIX-2 : une ligne SANS PRIX ne part jamais au boîtier (ni à 0, ni à un prix supposé). */
+      if (l.prixManquant || (l.montantBrut == null && ('prixUnitaire' in l) && (l.prixUnitaire == null || l.prixUnitaire === ''))) {
+        return refusMecef('PRIX_MANQUANT', 'La ligne « ' + nom + ' » n’a pas de prix : rien n’est normalisé tant que son prix n’est pas posé.', 'Poser le prix de la ligne (« Tarifs et prix » ou « Changer le prix d’achat »), puis encaisser la pièce.');
+      }
       var q = l.quantite == null ? 1 : Number(l.quantite);
       var qm = Math.round(q * 1000);
       if (!(isFinite(q) && q > 0) || Math.abs(qm / 1000 - q) > 1e-9) {
@@ -6583,6 +6853,7 @@
   function ligneVersMecef(l) {
     var o = { id: l.id, designation: l.designation, quantite: l.quantite != null ? l.quantite : 1, prixUnitaire: l.prixUnitaire,
       partAssureur: l.partAssureur || 0, partPersonnel: l.partPersonnel || 0, statutPaiement: l.statutPaiement };
+    if (l.prixManquant) o.prixManquant = true;
     if (l.montantBrut != null) { o.montantBrut = l.montantBrut; o.remise = l.remise || 0; }
     else if (l.montant != null) { o.montantBrut = l.montant; o.remise = 0; }
     return o;
