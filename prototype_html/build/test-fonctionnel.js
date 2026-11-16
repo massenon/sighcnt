@@ -22823,7 +22823,8 @@ async function viderMessages(page) {
     const prop = await page.evaluate((c, jour) => { const r = window.SIGH.parcours.proposerTarif({ code: c, prixNonAssure: 120, dateEffet: jour, motif: 'Premier prix sonde 138' }); return { ok: r.ok, code: r.code || null, version: r.version ? r.version.id : null }; }, g2, D.aujourdhui);
     const listeAttente = await page.evaluate((c) => window.SIGH.parcours.produitsAValoriser().filter((x) => x.code === c).map((x) => x.enAttente)[0], g2);
     const refusEncore = await T.prescrire(g2, 1, null, false);
-    verifier('Une proposition ouverte ne sort PAS l’article de la liste (seul le Oui met un prix en vigueur) : la liste le dit « proposition en attente », la facturation refuse encore', prop.ok && listeAttente === true && refusEncore.ok === false, JSON.stringify({ prop, listeAttente, refusEncore }));
+    /* LOT TARIF-FIX-2 : la prescription passe, la ligne reste « prix à valoriser » (prix nul) tant que le Oui n'a pas mis un prix en vigueur : c'est la caisse qui refuse. */
+    verifier('Une proposition ouverte ne sort PAS l’article de la liste (seul le Oui met un prix en vigueur) : la liste le dit « proposition en attente », la ligne prescrite reste SANS prix (la caisse refusera)', prop.ok && listeAttente === true && refusEncore.ok === true && refusEncore.pu === null && refusEncore.total === null, JSON.stringify({ prop, listeAttente, refusEncore }));
     await poserSessionServeur(roleImp('da', 'DAF138'));
     const oui = await page.evaluate((id) => { const r = window.SIGH.parcours.deciderTarif(id, 'oui'); return { ok: r.ok, code: r.code || null }; }, prop.version);
     const apresOui = await page.evaluate((c) => ({ liste: window.SIGH.parcours.produitsAValoriser().map((x) => x.code).indexOf(c) >= 0 }), g2);
