@@ -179,12 +179,13 @@ class TableauSighState extends State<TableauSigh> {
   /// Lignes après recherche, filtres et tri — c'est CE que l'état imprime et que l'export écrit.
   List<Ligne> get lignesFiltrees {
     var l = [...widget.lignes];
-    if (_q.isNotEmpty)
+    if (_q.isNotEmpty) {
       l = l
           .where((r) =>
               widget.colonnes.any((c) => correspond(c.enTexte(r), _q)) ||
               (widget.rechercheExtra != null && correspond(widget.rechercheExtra!(r), _q)))
           .toList();
+    }
     for (final e in _filtres.entries) {
       if (e.value.isEmpty) continue;
       final f = widget.filtres.firstWhere((x) => x.nom == e.key);
@@ -439,8 +440,9 @@ class TableauSighState extends State<TableauSigh> {
     for (var k = 0; k < cols.length; k++) {
       colonnes[i++] = const IntrinsicColumnWidth(flex: 1);
     }
-    if (widget.actionsLigne != null)
+    if (widget.actionsLigne != null) {
       colonnes[i++] = const IntrinsicColumnWidth();
+    }
     return LayoutBuilder(
         builder: (context, c) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -546,7 +548,11 @@ class TableauSighState extends State<TableauSigh> {
                                   cle: identical(r, page.first)
                                       ? const Key('kit:tableau-ligne')
                                       : null,
-                                  Row(
+                                  // Les boutons d'une ligne ne se coupent pas : leur largeur minimale déclarée est leur largeur réelle
+                                  // (IntrinsicWidth), sinon un tableau serré (une colonne de cases en plus) resserre la colonne des actions
+                                  // sous la largeur des boutons et la ligne déborde ; ce sont les colonnes de texte qui reviennent à la ligne.
+                                  IntrinsicWidth(
+                                      child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -556,7 +562,7 @@ class TableauSighState extends State<TableauSigh> {
                                               padding: const EdgeInsets.only(
                                                   left: 4),
                                               child: a),
-                                      ])),
+                                      ]))),
                           ]),
                   ],
                 ),

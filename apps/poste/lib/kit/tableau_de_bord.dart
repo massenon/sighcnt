@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
@@ -131,13 +132,14 @@ class _MiniTableauSighState extends State<MiniTableauSigh> {
   Widget build(BuildContext context) {
     final colonnes = widget.colonnes, lignes = widget.lignes, vide = widget.vide;
     if (_coches.any((i) => i >= lignes.length)) _coches.removeWhere((i) => i >= lignes.length);
-    if (lignes.isEmpty)
+    if (lignes.isEmpty) {
       return Padding(
           padding: const EdgeInsets.all(24),
           child: Center(
               child: Text(vide,
                   style: const TextStyle(
                       color: JetonsShell.slate500, fontSize: 14))));
+    }
     Widget cel(Widget w, {bool tete = false}) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: w);
@@ -181,7 +183,10 @@ class _MiniTableauSighState extends State<MiniTableauSigh> {
                     nom: widget.nomExport,
                     cle: (l) => '${l['id'] ?? lignes.indexOf(l) + 1}')),
         ]));
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+    // Un encart posé dans un défilement horizontal reçoit une largeur INFINIE, qu'un étirement transformerait en contrainte impossible
+    // (« BoxConstraints forces an infinite width ») : `_LargeurBornee` la ramène à la plus grande de sa largeur minimale et de sa largeur
+    // intrinsèque, comme le faisait le tableau seul avant la barre d'export. Sous une largeur bornée, rien ne change.
+    return _LargeurBornee(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
       barre,
       Table(
         columnWidths: {
@@ -238,7 +243,34 @@ class _MiniTableauSighState extends State<MiniTableauSigh> {
                                     ])))),
                 ]),
         ]),
-    ]);
+    ]));
+  }
+}
+
+/// Sous une largeur infinie (défilement horizontal), borne la largeur de l'enfant à max(largeur minimale, largeur intrinsèque) ; sous une
+/// largeur bornée, transmet les contraintes telles quelles. Les mesures intrinsèques traversent (aucun `LayoutBuilder`).
+class _LargeurBornee extends SingleChildRenderObjectWidget {
+  const _LargeurBornee({required Widget super.child});
+  @override
+  RenderObject createRenderObject(BuildContext context) => _RenduLargeurBornee();
+}
+
+class _RenduLargeurBornee extends RenderProxyBox {
+  @override
+  void performLayout() {
+    var c = constraints;
+    final enfant = child;
+    if (enfant == null) {
+      size = c.smallest;
+      return;
+    }
+    if (!c.hasBoundedWidth) {
+      final h = c.hasBoundedHeight ? c.maxHeight : double.infinity;
+      final w = enfant.getMaxIntrinsicWidth(h);
+      c = c.copyWith(maxWidth: w > c.minWidth ? w : c.minWidth);
+    }
+    enfant.layout(c, parentUsesSize: true);
+    size = constraints.constrain(enfant.size);
   }
 }
 
@@ -259,12 +291,13 @@ class _MiniTableauSighState extends State<MiniTableauSigh> {
     if (d == null) continue;
     final diff = (ref.year - d.year) * 12 + (ref.month - d.month);
     final idx = nb - 1 - diff;
-    if (idx >= 0 && idx < nb)
+    if (idx >= 0 && idx < nb) {
       b[idx] += champValeur != null
           ? (r[champValeur] is num
               ? r[champValeur] as num
               : num.tryParse('${r[champValeur]}') ?? 0)
           : 1;
+    }
   }
   return (etiquettes: etiq, valeurs: b);
 }
