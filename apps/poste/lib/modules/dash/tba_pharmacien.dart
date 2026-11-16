@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../donnees/parametres_clinique_poste.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
@@ -26,7 +27,7 @@ class EcranDashPharmacien extends StatelessWidget with EcranMaquette {
     return ListenableBuilder(
       listenable: tbaEcoute(c, ['produits', 'lots', 'mouvements', 'taches']),
       builder: (context, _) {
-        final produits = tbaActives(c, 'produits'), lots = tbaActives(c, 'lots');
+        final produits = tbaActives(c, 'produits'), lots = lotsAuJour(c.magasin, tbaActives(c, 'lots'), c.aujourdhui);
         List<num> mois(List<Fiche> rows) => parMois(rows, 'date', champValeur: 'quantite', ref: c.aujourdhui).valeurs;
         final etiquettes = parMois(const [], 'date', ref: c.aujourdhui).etiquettes;
         final d = tbaPharmacien(produits: produits, lots: lots, mouvements: tbaActives(c, 'mouvements'), parMoisQuantite: mois);

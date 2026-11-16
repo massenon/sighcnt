@@ -101,6 +101,9 @@ mixin EcranMaquette on Widget {
 
   /// Texte brut (les balises de mise en forme de la maquette sont retirées).
   String? get regle => null;
+
+  /// La règle d'en-tête lue dans le contexte de l'écran (une valeur de paramètre en vigueur, par exemple) : par défaut [regle].
+  String? regleDe(BuildContext context) => regle;
   List<Widget> actionsEntete(BuildContext context) => const [];
 }
 

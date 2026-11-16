@@ -18,9 +18,9 @@
   "Configuration Clinique"
  ],
  "regle": [
+  "Le préavis de péremption (RG-05) et les tranches de la balance âgée des créances sont des paramètres de la clinique, en base : une nouvelle valeur s’applique à partir de sa date d’effet, l’ancienne reste lisible ; alertes, tableaux de bord et états lisent la valeur en vigueur à leur date. Les bornes sont une proposition à valider. Réglage de la clinique, posé à la mère, jamais envoyé aux téléphones.",
   "Annotation manuscrite de la réunion du 30/12/2024 : « Paramétrer pour que les produits sortent au Prix de Vente et non au CUMP ». La Direction demandait un paramètre — le voici, avec la mesure de ce qu’il change.",
-  "Prix de venteValeur de sortie = prix de vente de l’article. Demandé par la Direction ; la marge éventuelle est reconnue dès la sortie de stock.En vigueur",
-  "Coût unitaire moyen pondéré (CUMP)Valeur de sortie = coût moyen d’acquisition. Méthode comptable classique ; la marge n’apparaît qu’à la facturation."
+  "Prix de venteValeur de sortie = prix de vente de l’article. Demandé par la Direction ; la marge éventuelle est reconnue dès la sortie de stock.En vigueur"
  ],
  "onglets": [],
  "kpis": [
@@ -30,6 +30,7 @@
   "Règles de gestion"
  ],
  "cartes": [
+  "Paramètres de clinique (datés)",
   "Valorisation des sorties de stock",
   "Groupes et familles d’articles",
   "Matrice « document collecté → rôle dans le logiciel »",
@@ -37,6 +38,13 @@
   "Règles métier versionnées"
  ],
  "tableaux": [
+  [
+   "Paramètre",
+   "En vigueur",
+   "Depuis",
+   "Bornes",
+   "Version à venir"
+  ],
   [
    "Groupe",
    "Famille",
@@ -67,14 +75,15 @@
   ]
  ],
  "commandes": [
-  "Colonnes",
   "Exporter",
+  "Régler",
+  "Colonnes",
   "Ouvrir",
   "Imprimer la matrice",
   "Voir",
   "Consulter les notes"
  ],
  "champs": [],
- "nbTableaux": 4,
+ "nbTableaux": 5,
  "nbKpis": 4
 }

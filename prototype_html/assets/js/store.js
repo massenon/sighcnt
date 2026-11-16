@@ -155,8 +155,13 @@
      peut porter `prixManquant` (nature, code, libellé, cause, motif, geste) avec prix, montant et parts NULS ; une facture `enAttentePrix` a des totaux nuls (non calculable) ; une
      ligne valorisée porte `valoriseLe` et `valorisation` ; le réglage de clinique `caisseEncaissementPartielSansPrix` (versions datées, défaut semé « non ») vit dans `_reglages`.
      Sans incrément, un poste garderait le moteur qui refuse la prescription entière.
+     91 (16/11/2026, après fusion avec TARIF-FIX-2 qui a posé 90) : les PARAMÈTRES DE CLINIQUE datés (lot PARAM-CLINIQUE, décisions 10 et 14 de la Direction du 15/11/2026). La collection `parametresClinique` (préavis de
+     péremption, 90 jours semés ; tranches de la balance âgée, 30 et 90 jours semés : une fiche par version, jamais réécrite) est semée au socle ; le geste réservé
+     `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
+     Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
+     `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
   */
-  var VERSION = 90;
+  var VERSION = 91;
   var db = null;
   var listeners = {};
 
@@ -870,6 +875,8 @@
 
   function genLots(rnd, produits) {
     var out = [], today = new Date(2026, 7, 16);
+    /* Lot PARAM-CLINIQUE : le préavis de la semence est le DÉFAUT semé du paramètre de clinique (un statut de semence ; les écrans le recalculent à la date). */
+    var preavis = D.definitionParametreClinique('stock.delaiPeremptionJours').defaut;
     produits.forEach(function (p, i) {
       if (p.categorie === 'fourniture' || p.categorie === 'petit_materiel' || p.categorie === 'immobilisation') return;
       var nb = C.between(rnd, 1, 3);
@@ -882,7 +889,7 @@
           datePeremption: C.iso(C.addDays(today, jours)),
           quantiteRestante: C.between(rnd, 0, Math.max(1, Math.round(p.stock / nb))),
           emplacement: p.emplacement,
-          statut: jours < 0 ? 'perime' : (jours < 90 ? 'alerte' : 'actif'),
+          statut: jours < 0 ? 'perime' : (jours < preavis ? 'alerte' : 'actif'),
         });
       }
     });
@@ -1898,6 +1905,10 @@
       reglagesCloture: (D.REGLAGES_CLOTURE_SEMENCE || []).map(function (x, i) {
         return Object.assign({ id: 'RCL' + C.pad(i + 1, 3), statut: 'actif', dateFin: null, creeLe: '2026-11-14', creePar: 'Semence du socle' }, x);
       }),
+
+      /* LES PARAMÈTRES DE CLINIQUE (16/11/2026, lot PARAM-CLINIQUE) : le préavis de péremption (RG-05) et les tranches de la balance âgée, une fiche par version datée,
+         jamais réécrite. Trois fiches de semence (une par clé, mesurées : moins d'un kilo-octet). Lus par le stock, les créances, les alertes et les tableaux de bord, donc au socle. */
+      parametresClinique: D.semenceParametresClinique(),
 
       /* ====================================================================
        * COMPTES DE TRÉSORERIE — d'où l'argent sort
@@ -4200,7 +4211,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'regimesIndividuels', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux', 'parametresClinique',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -4511,6 +4522,7 @@
     baremeAib: 'CFG|Barème de l’AIB par situation',
     reglagesAib: 'CFG|Réglages de l’AIB',
     reglagesCloture: 'M12|Réglages de la clôture annuelle',
+    parametresClinique: 'CFG|Paramètres de clinique (préavis de péremption, tranches de la balance âgée)',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
     avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',

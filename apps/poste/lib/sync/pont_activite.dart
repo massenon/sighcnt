@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show champDepartCompteurs, champEnAttenteMere, champSerieDemande, ficheLocaleAuPoste;
+import 'package:sigh_domaine/sigh_domaine.dart' show champDepartCompteurs, champEnAttenteMere, champSerieDemande, collectionsGestionSynchronisees, ficheLocaleAuPoste, identiteSyncGestion;
 
 import '../donnees/magasin.dart';
 import 'fusion_activite.dart';
@@ -67,6 +67,10 @@ const Set<String> collectionsActivite = {
   'lots',
   'produits',
   'admissions',
+  // LOT SYNC-CFG (décision 26 de la Direction, 15/11/2026) : les BUDGETS, les IMMOBILISATIONS et les COUVERTURES D'ASSURANCE. Une saisie ou un import chez un fileul ne reste plus local
+  // à ce poste. Famille A (champ à champ) à la mère ; identité COMMUNE par le contenu (`identiteSyncGestion`) : deux postes qui écrivent la même chose ne font qu'une fiche. La mère
+  // refuse au rejeu le budget d'un exercice clos (refus nommé). Jamais vers un téléphone (RG-13). Elles viennent APRÈS `patients` : l'identité d'une couverture lit celle de l'assuré.
+  ...collectionsGestionSynchronisees,
 };
 
 /// Les référentiels d'ACTIVITÉ que la mère seule écrit (famille R de la mère) : un fileul les reçoit, il ne les envoie pas.
@@ -274,7 +278,12 @@ class PontActivite {
         // Lot D5 : une fiche du registre `fichiers` a pour identifiant `FIC-<empreinte>` : déterministe, elle est la MÊME sur tous les postes (préfixée, deux postes qui déposent le même fichier
         // feraient deux fiches et le texte indexé deux fois).
         final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c) || c == 'fichiers' || c == 'lecturesOcr' || c == 'exercices';
-        f['idSync'] = identiteCommune ? '${f['id']}' : '$etiquette-${f['id']}';
+        // LOT SYNC-CFG : budget, bien, couverture créés sur un poste prennent une identité COMMUNE tirée de leur contenu (jamais préfixée du poste) : le même budget saisi à deux postes,
+        // le même fichier importé deux fois mère coupée, ne font qu'une fiche partout.
+        final parContenu = identiteCommune || !collectionsGestionSynchronisees.contains(c)
+            ? null
+            : identiteSyncGestion(c, f, patientSync: '${magasin.collection('patients').parId(f['patientId'])?['idSync'] ?? ''}');
+        f['idSync'] = identiteCommune ? '${f['id']}' : (parContenu ?? '$etiquette-${f['id']}');
       }
     }
   }

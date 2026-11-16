@@ -54,8 +54,14 @@ const FAMILLES = {
   courriers: 'A', documentsPatient: 'A', fichiers: 'B',
   /* Lot OCR-prep : une lecture OCR est une version immuable du texte d'un fichier (ajout seul, identité commune). */
   lecturesOcr: 'B',
+  /* Lot SYNC-CFG (décision 26) : budgets, immobilisations et couvertures d'assurance, écrits à n'importe quel poste (A : champ à champ ; une couverture se clôt sur sa propre fiche quand
+     la suivante prend effet). Identité commune par le contenu, posée par le poste. Jamais vers un téléphone (RG-13). Le refus au rejeu du budget d'un exercice clos est tenu par la mère
+     Dart (`sync_dart`), comme celui des pièces (lot CLO-2) : cette mère de référence ne connaît pas les exercices. */
+  budgets: 'A', immobilisations: 'A', couverturesAssurance: 'A',
 };
 const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers', 'lecturesOcr']);
+/* Lot SYNC-CFG : les trois collections de gestion (identité commune par le contenu, jamais vers un téléphone). */
+const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance']);
 const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 
 const PARAMETRES = require('./parametres');
@@ -176,6 +182,13 @@ function traiter(op, app) {
 
   /* A, C et R : fusion par champ */
   if (op.type === 'creer') {
+    /* Lot SYNC-CFG : identité commune par le contenu (budget, bien, couverture) : la seconde création de la même fiche est une FUSION champ à champ (mêmes valeurs : sans effet ;
+       valeur différente d'un champ déjà écrit : conflit nommé), jamais un refus bruyant à « traiter ». */
+    if (f && GESTION.has(op.collection)) {
+      const differents = Object.fromEntries(Object.entries(op.champs || {}).filter(([k, v]) => JSON.stringify(f.data[k]) !== JSON.stringify(v)));
+      if (!Object.keys(differents).length) return { id: op.id, statut: 'acceptee', seq: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), rejeu: true };
+      return traiter(Object.assign({}, op, { type: 'modifier', champs: differents, vu: {} }), app);
+    }
     if (f) return refus('fiche_existe', 'Cette fiche existe déjà.', 'Aucun');
     const champs = Object.assign({}, op.champs);
     let numero;
@@ -375,7 +388,9 @@ const routes = {
     const app = auth(req);
     if (+q.epoch !== +meta('epoch')) throw new Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', { epoch_mere: +meta('epoch') });
     const depuis = +q.depuis || 0; const limite = Math.min(+q.limite || 500, 500);
-    const ops = db.prepare('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>? ORDER BY seq LIMIT ?').all(depuis, limite)
+    /* Lot SYNC-CFG : un mobile qui tire directement de la mère ne reçoit ni budget, ni immobilisation, ni couverture d'assurance (RG-13), comme la mère Dart. */
+    const exclues = app.role === 'mobile' ? [...GESTION] : [];
+    const ops = db.prepare(`SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?${exclues.length ? ` AND collection NOT IN (${exclues.map(() => '?').join(',')})` : ''} ORDER BY seq LIMIT ?`).all(depuis, ...exclues, limite)
       .map((o) => Object.assign({}, o, { champs: JSON.parse(o.champs) }));
     db.prepare('UPDATE appareils SET dernier_seq=MAX(dernier_seq,?) WHERE uuid=?').run(depuis, app.uuid);
     return { ops, fin: ops.length < limite, epoch: +meta('epoch'), resync: meta('resync') || null };
@@ -424,6 +439,9 @@ const routes = {
     /* Lot D5 : un lot de tournée ne porte JAMAIS une fiche de fichier numérisé (courrier, document du patient, registre par empreinte) : refus nommé, rien n'est publié (RG-13). */
     const interdite = lot.find((f) => FICHIERS_JAMAIS_MOBILE.has(f.collection));
     if (interdite) throw new Err(422, 'fichiers_interdits_au_mobile', `la collection « ${interdite.collection} » ne va jamais vers un téléphone (RG-13) : les fichiers numérisés se consultent depuis un poste`);
+    /* Lot SYNC-CFG : ni budget, ni immobilisation, ni couverture d'assurance dans un lot de tournée (RG-13). */
+    const gestion = lot.find((f) => GESTION.has(f.collection));
+    if (gestion) throw new Err(422, 'gestion_interdite_au_mobile', `la collection « ${gestion.collection} » ne va jamais vers un téléphone (RG-13) : la comptabilité et l'assurance se consultent depuis un poste`);
     /* E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
        jamais à une infirmière ni à une réception. Ce n'est pas une donnée patient : il ne sort pas du périmètre de la tournée. */
     const dest = db.prepare('SELECT * FROM appareils WHERE uuid=?').get(b.uuid);
@@ -569,7 +587,7 @@ function diffuser() {
     if (!ops.length) continue;
     /* L0 : un mobile ne reçoit de la configuration que les paramètres de la LISTE BLANCHE (déclarés `mobile`, non sensibles, famille non réservée : RG-13) ; le reste de
        `parametres`, comme toute autre collection hors de sa portée, ne part pas. */
-    const mine = ops.filter((o) => FICHIERS_JAMAIS_MOBILE.has(o.collection) ? false : (o.collection === 'parametres' ? PARAMETRES.autoriseMobile(JSON.parse(o.champs)) : db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche)))
+    const mine = ops.filter((o) => FICHIERS_JAMAIS_MOBILE.has(o.collection) || GESTION.has(o.collection) ? false : (o.collection === 'parametres' ? PARAMETRES.autoriseMobile(JSON.parse(o.champs)) : db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche)))
       .map((o) => Object.assign({}, o, { seq: Number(o.seq), champs: JSON.parse(o.champs) }));
     setMeta('sortie_seq:' + a.uuid, Number(ops[ops.length - 1].seq));
     if (mine.length) publier(a.uuid, { type: 'ops', ops: mine });

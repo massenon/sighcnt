@@ -25,6 +25,9 @@ String f0(num v) => sp(money(v, avecDevise: false));
 List<String> cellules(Object? ligne) =>
     [for (final c in (m(ligne)['cellules'] as List)) '$c'];
 
+
+/// Les tranches SEMÉES de la balance âgée (paramètres de clinique, lot PARAM-CLINIQUE) : les vecteurs de M9 ont été relevés à ces bornes. Lues au registre.
+final tranchesSemees = TranchesCreances(definitionDeParametre(pcCleTrancheCourte)!.defaut as int, definitionDeParametre(pcCleTrancheLongue)!.defaut as int);
 void main() {
   final v = lireVecteurs('ass_m9');
   final ecrans = m(v['ecrans']);
@@ -122,6 +125,7 @@ void main() {
         final obtenu = [
           for (final a in assureurs)
             if (assFiltreCompagnie(nom, p[1], a,
+                tranches: tranchesSemees,
                 assures: assures,
                 facturesAssurance: fa,
                 carteValide: valide,
@@ -604,6 +608,7 @@ void main() {
     for (final c in lm(e['cas'])) {
       test('filtres du ${c['du']} au ${c['au']} / ${c['comp']} / ${c['anc']} / ${c['seuil']}', () {
         final rows = assBalanceAgee(
+            tranches: tranchesSemees,
             assureurs: assureurs,
             facturesAssurance: fa,
             auj: auj,
@@ -636,11 +641,11 @@ void main() {
     }
 
     test('les tranches : 30 j inclus, jusqu’à 90 j inclus ; une facture datée d’après aujourd’hui est « moins de 30 jours »', () {
-      expect(assTrancheDe(-9), 'moins30');
-      expect(assTrancheDe(30), 'moins30');
-      expect(assTrancheDe(31), '30a90');
-      expect(assTrancheDe(90), '30a90');
-      expect(assTrancheDe(91), 'plus90');
+      expect(assTrancheDe(-9, tranchesSemees), 'moins30');
+      expect(assTrancheDe(30, tranchesSemees), 'moins30');
+      expect(assTrancheDe(31, tranchesSemees), '30a90');
+      expect(assTrancheDe(90, tranchesSemees), '30a90');
+      expect(assTrancheDe(91, tranchesSemees), 'plus90');
     });
   });
 

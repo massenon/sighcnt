@@ -85,7 +85,11 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       const Dd = poserP({ stockGros: 10, stockDetail: 8, stock: 2, cump: 300 });
       await jouerInventaire('magasin GROS : surplus et manquant régularisés sur le stock gros ; le détail n\'est pas touché', 'gros', [A, B, Cc, Dd], { [A.code]: 23, [B.code]: 2 });
       await jouerInventaire('magasin DÉTAIL : la régularisation porte sur le détail seul', 'detail', [A, B, Cc, Dd], { [A.code]: 5, [Cc.code]: 9 });
-      await jouerInventaire('aucun écart : inventaire enregistré, aucun mouvement', 'gros', [A, B, Cc, Dd], {});
+      /* Lot INVENT-NC (décision 12) : une case laissée vide est un article NON COMPTÉ, jamais « compté, écart zéro ». */
+      await jouerInventaire('aucun article compté : quatre lignes « non compté », aucun mouvement, stocks inchangés', 'gros', [A, B, Cc, Dd], {});
+      await jouerInventaire('aucun écart : les quatre articles comptés à leur théorique, inventaire enregistré, aucun mouvement', 'gros', [A, B, Cc, Dd], { [A.code]: colP.get(A.id).stockGros, [B.code]: colP.get(B.id).stockGros, [Cc.code]: colP.get(Cc.id).stockGros, [Dd.code]: colP.get(Dd.id).stockGros });
+      await jouerInventaire('non comptés mêlés : A compté avec écart, Cc compté juste, B et Dd non comptés (stock inchangé, aucun mouvement pour eux)', 'gros', [A, B, Cc, Dd], { [A.code]: colP.get(A.id).stockGros + 2, [Cc.code]: colP.get(Cc.id).stockGros });
+      await jouerInventaire('compté zéro n’est pas non compté : B compté 0 (écart régularisé), les autres non comptés', 'gros', [A, B, Cc, Dd], { [B.code]: 0 });
       await jouerInventaire('stock total inférieur au stock du magasin (après des pertes) : le total ne passe jamais sous zéro', 'detail', [A, B, Cc, Dd], { [Dd.code]: 0 });
       await jouerInventaire('annulation du message : stocks, mouvements et inventaire restitués', 'gros', [A, B, Cc, Dd], { [A.code]: 0, [B.code]: 9 }, { annuler: true });
       await jouerInventaire('type annuel : le type est porté tel quel sur la pièce', 'gros', [A, B, Cc, Dd], { [A.code]: 21 }, { entete: { type: 'Annuel' } });

@@ -224,6 +224,10 @@
        Le droit n'ouvre aucun écran (module et écran nuls : il vaut aussi au « Référentiel produits » pour un prix d'achat). */
     { id: 'decider_prix', libelle: 'Décider un changement de prix (Oui ou Non), valider un prix en un geste, régler les réglages de prix de la clinique', module: null, ecran: null,
       rolesDefaut: ['admin', 'da', 'direction'] },
+    /* Lot PARAM-CLINIQUE (16/11/2026) : régler les paramètres de clinique datés (préavis de péremption, tranches de la balance âgée). Décision 5 de la Direction du 15/11/2026 : un
+       réglage réservé à l'administrateur et à la DAF a son DROIT PROPRE ; d'origine l'administrateur et la Directrice Administrative, PROPOSITION À VALIDER. Il ne donne aucun écran. */
+    { id: 'regler_parametres_clinique', libelle: 'Régler les paramètres de clinique (préavis de péremption, tranches de la balance âgée)', module: 'CFG', ecran: 'cfg-regles',
+      rolesDefaut: ['admin', 'da'] },
     /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
        « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
        détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en

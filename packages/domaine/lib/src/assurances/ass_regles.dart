@@ -8,6 +8,7 @@ library;
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../referentiels/regles.dart' show joursEntre;
+import '../parametres/parametres_clinique.dart' show TranchesCreances, pcTrancheCreance;
 
 typedef AssFiche = Map<String, Object?>;
 
@@ -58,17 +59,17 @@ String assNomAssureur(String? code, Iterable<AssFiche> assureurs) {
 
 /// Les trois tranches d'ancienneté : la fabrique UNIQUE du filtre « Ancienneté de la dette » et de la balance âgée (deux découpages divergents ne se
 /// verraient qu'en réunion). Une facture datée d'APRÈS aujourd'hui (jours négatifs) tombe dans « moins de 30 jours ».
+/// Lot PARAM-CLINIQUE (décision 14) : les deux bornes sont un PARAMÈTRE DE CLINIQUE daté ([TranchesCreances], lu par `pcTranches`), jamais une constante.
 const assTranches = ['moins30', '30a90', 'plus90'];
 
-String assTrancheDe(int jours) =>
-    jours <= 30 ? 'moins30' : (jours <= 90 ? '30a90' : 'plus90');
+String assTrancheDe(int jours, TranchesCreances tranches) => pcTrancheCreance(jours, tranches);
 
 double assAnciennete(Iterable<AssFiche> facturesAssurance, String code,
-        String tranche, DateTime auj) =>
+        String tranche, DateTime auj, TranchesCreances tranches) =>
     assSomme(
         facturesAssurance.where((x) =>
             x['assureur'] == code &&
-            assTrancheDe(assJours(x['date'], auj)) == tranche),
+            assTrancheDe(assJours(x['date'], auj), tranches) == tranche),
         'partAssurance');
 
 // --- tableau de bord ----------------------------------------------------------------------------------------------------------
@@ -118,7 +119,8 @@ bool assFiltreCompagnie(String filtre, String valeur, AssFiche a,
     {required List<AssFiche> assures,
     required List<AssFiche> facturesAssurance,
     required bool Function(AssFiche) carteValide,
-    required DateTime auj}) {
+    required DateTime auj,
+    required TranchesCreances tranches}) {
   final code = '${a['code']}';
   final mes = assures.where((x) => x['assureur'] == code).toList();
   switch (filtre) {
@@ -130,7 +132,7 @@ bool assFiltreCompagnie(String filtre, String valeur, AssFiche a,
       if (valeur == 'sans') return c == 0;
       return c > 500000;
     case 'anciennete':
-      return assAnciennete(facturesAssurance, code, valeur, auj) > 0;
+      return assAnciennete(facturesAssurance, code, valeur, auj, tranches) > 0;
     case 'portefeuille':
       if (valeur == 'aucun') return mes.isEmpty;
       if (valeur == 'petit') return mes.isNotEmpty && mes.length <= 9;
@@ -651,6 +653,7 @@ List<AssLigneCreance> assBalanceAgee({
   String compagnie = '',
   String anciennete = '',
   num seuil = 0,
+  required TranchesCreances tranches,
 }) {
   bool dansPlage(AssFiche f) {
     final s = '${f['date'] ?? ''}';
@@ -668,7 +671,7 @@ List<AssLigneCreance> assBalanceAgee({
         if (x['assureur'] == code && dansPlage(x)) x
     ];
     double dans(String t) => assSomme(
-        f.where((x) => assTrancheDe(assJours(x['date'], auj)) == t), 'partAssurance');
+        f.where((x) => assTrancheDe(assJours(x['date'], auj), tranches) == t), 'partAssurance');
     final r = AssLigneCreance(
         code: code,
         nom: '${a['nom']}',

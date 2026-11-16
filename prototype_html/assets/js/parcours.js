@@ -5876,6 +5876,101 @@
   global.SIGH.parcours.remettreAValider = remettreAValider;
 
   /* ==========================================================================
+   * LES PARAMÈTRES DE CLINIQUE (lot PARAM-CLINIQUE, 16/11/2026 ; décisions 10 et 14 de la Direction du 15/11/2026)
+   * --------------------------------------------------------------------------
+   * Le préavis de péremption (RG-05) et les deux bornes de la balance âgée se LISENT à la date dans `parametresClinique` (data.js :
+   * `D.parametreCliniqueALaDate`), jamais dans une constante. Régler pose une NOUVELLE version datée (jamais une réécriture),
+   * bornée et dite, motivée, journalisée (RG-12) ; geste réservé de la fiche RBAC `regler_parametres_clinique` (administrateur et
+   * Directrice Administrative d'origine, proposition à valider) ; un fileul ne règle pas (réglage de branche, posé à la mère).
+   * Une version à venir s'ANNULE en l'archivant (RG-14), jamais une version déjà en vigueur.
+   * ======================================================================== */
+  var GESTE_REGLER_PARAMETRES_CLINIQUE = 'regler_parametres_clinique';
+  function colParametresClinique() { return S.collection('parametresClinique', { module: 'CFG', entite: 'paramètre de clinique', prefix: 'PCL' }); }
+  function peutReglerParametresClinique(role) {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_REGLER_PARAMETRES_CLINIQUE));
+  }
+  /** Contrôle d'une valeur (pur, sans écriture) : null si recevable, sinon le refus nommé. `autres` : { cle: valeur } des autres clés à la même date (tranches). */
+  function controleParametreClinique(cle, valeur, autres) {
+    var def = D.definitionParametreClinique(cle);
+    if (!def) return refusCfg('PARAMETRE_CLINIQUE_INCONNU', 'Le paramètre « ' + cle + ' » n’existe pas parmi les paramètres de clinique.', 'Choisir un paramètre listé à l’écran « Règles métier versionnées ».');
+    var n = Number(valeur);
+    if (valeur === '' || valeur === null || valeur === undefined || !isFinite(n) || n !== Math.floor(n) || n < def.min || n > def.max) {
+      return refusCfg('PARAMETRE_HORS_BORNES', '« ' + def.libelle + ' » est un nombre entier de ' + def.min + ' à ' + def.max + ' ' + def.unite + ' (reçu « ' + valeur + ' »).',
+        'Saisir un nombre entier de ' + def.min + ' à ' + def.max + '.', { min: def.min, max: def.max });
+    }
+    autres = autres || {};
+    var courte = cle === 'creances.trancheCourteJours' ? n : Number(autres['creances.trancheCourteJours']);
+    var longue = cle === 'creances.trancheLongueJours' ? n : Number(autres['creances.trancheLongueJours']);
+    if ((cle === 'creances.trancheCourteJours' || cle === 'creances.trancheLongueJours') && isFinite(courte) && isFinite(longue) && !(courte < longue)) {
+      return refusCfg('TRANCHES_INCOHERENTES', 'La fin de la première tranche (' + courte + ' jours) doit être plus petite que la fin de la deuxième (' + longue + ' jours).',
+        'Saisir une première tranche plus courte que la deuxième, ou régler d’abord l’autre borne.', { courte: courte, longue: longue });
+    }
+    return null;
+  }
+  /** Régler : { cle, valeur, dateEffet?, motif }. Rend { ok, id, cle, valeur, dateEffet, avant } ou le refus nommé. */
+  function definirParametreClinique(o) {
+    o = o || {};
+    var def = D.definitionParametreClinique(o.cle);
+    if (!def) return controleParametreClinique(o.cle, o.valeur);
+    if (!peutReglerParametresClinique()) {
+      return refusCfg('PARAMETRE_CLINIQUE_RESERVE', 'Régler les paramètres de clinique est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+        'Demander à un rôle qui détient le droit « Régler les paramètres de clinique » (matrice des droits).', { roles: global.SIGH.nav.rolesAvecGeste(GESTE_REGLER_PARAMETRES_CLINIQUE) });
+    }
+    var fileul = controleEcritureCfg();
+    if (fileul) return fileul;
+    if (!o.motif || String(o.motif).trim().length < 3) return refusCfg('PARAMETRE_MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour changer un paramètre de clinique.', 'Saisir le motif du changement.');
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : aujIso();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusCfg('DATE_EFFET_INVALIDE', 'Date d’effet illisible : attendu AAAA-MM-JJ.', 'Choisir la date d’effet.');
+    var autres = {};
+    D.PARAMETRES_CLINIQUE.forEach(function (d) { if (d.cle !== o.cle) autres[d.cle] = D.parametreCliniqueALaDate(d.cle, dateEffet).valeur; });
+    var refus = controleParametreClinique(o.cle, o.valeur, autres);
+    if (refus) return refus;
+    var existantes = D.versionsParametreClinique(o.cle).filter(function (v) { return v.dateEffet; });
+    var derniere = existantes[existantes.length - 1] || null;
+    if (derniere && String(dateEffet) < String(derniere.dateEffet).slice(0, 10)) {
+      return refusCfg('DATE_EFFET_ANTERIEURE', 'La date d’effet ' + C.dateFR(dateEffet) + ' précède celle de la dernière version (' + C.dateFR(String(derniere.dateEffet).slice(0, 10)) + ') : une version ne s’insère pas dans le passé.',
+        'Choisir une date d’effet égale ou postérieure, ou annuler d’abord la version à venir.');
+    }
+    var avant = D.parametreCliniqueALaDate(o.cle, dateEffet);
+    var valeur = Number(o.valeur);
+    var base = { cle: o.cle, valeur: valeur, libelle: def.libelle + ' : ' + valeur + ' ' + def.unite, dateEffet: dateEffet, source: String(o.source || '').trim() || null,
+      motif: String(o.motif).trim(), creeLe: new Date().toISOString(), creePar: acteur() };
+    var res = colParametresClinique().insert(base, { journal: { action: 'Paramètre de clinique : nouvelle version', module: def.module, entite: 'parametresClinique',
+      avant: { valeur: avant.valeur, dateEffet: avant.dateEffet }, apres: { cle: o.cle, valeur: valeur, dateEffet: dateEffet, motif: base.motif } } });
+    if (!res) return refusCfg('PARAMETRE_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Relire le journal.');
+    return { ok: true, id: res.record.id, cle: o.cle, valeur: valeur, dateEffet: dateEffet, avant: avant.valeur, undo: res.undo };
+  }
+  /** Annuler une version À VENIR (archivage motivé, RG-14). Une version déjà en vigueur ne s'annule pas : on en pose une autre. */
+  function annulerParametreClinique(id, motif) {
+    var v = colParametresClinique().get(id);
+    if (!v || v.statut === 'archive') return refusCfg('PARAMETRE_VERSION_INCONNUE', 'Version introuvable ou déjà annulée.', 'Rafraîchir l’écran.');
+    if (!peutReglerParametresClinique()) return refusCfg('PARAMETRE_CLINIQUE_RESERVE', 'Annuler une version est réservé au droit « Régler les paramètres de clinique ».', 'Demander à un rôle qui détient ce droit.');
+    var fileul = controleEcritureCfg();
+    if (fileul) return fileul;
+    if (!v.dateEffet || String(v.dateEffet).slice(0, 10) <= aujIso()) return refusCfg('PARAMETRE_VERSION_EN_VIGUEUR', 'Une version déjà en vigueur ne s’annule pas : elle a pu décider d’une alerte ou d’un état.', 'Poser une nouvelle version datée.');
+    if (!motif || String(motif).trim().length < 3) return refusCfg('PARAMETRE_MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour annuler une version.', 'Saisir le motif.');
+    var res = colParametresClinique().archive(id, String(motif).trim(), { journal: { action: 'Paramètre de clinique : version à venir annulée', module: 'CFG', entite: 'parametresClinique',
+      avant: { valeur: v.valeur, dateEffet: v.dateEffet }, apres: { statut: 'archive', motif: String(motif).trim() } } });
+    if (!res) return refusCfg('PARAMETRE_ECRITURE_REFUSEE', 'Le magasin a refusé l’archivage de la version.', 'Relire le journal.');
+    return { ok: true, id: id, undo: res.undo };
+  }
+  S.garder('parametresClinique', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colParametresClinique().get(rec.id) : null;
+    if (!avant) return null;
+    if (JSON.stringify(avant.valeur) !== JSON.stringify(rec.valeur) || avant.cle !== rec.cle || String(avant.dateEffet || '') !== String(rec.dateEffet || '')) {
+      return 'PARAMETRE_VERSION_FIGEE : une version d’un paramètre de clinique ne se réécrit pas (valeur, clé, date d’effet). Ajouter une nouvelle version datée.';
+    }
+    return null;
+  });
+  global.SIGH.parametresClinique = {
+    GESTE: GESTE_REGLER_PARAMETRES_CLINIQUE, definitions: function () { return D.PARAMETRES_CLINIQUE; },
+    aLaDate: D.parametreCliniqueALaDate, versions: D.versionsParametreClinique, controler: controleParametreClinique,
+    definir: definirParametreClinique, annuler: annulerParametreClinique, peutRegler: peutReglerParametresClinique,
+  };
+
+  /* ==========================================================================
    * PASSERELLE SMS : LA FABRIQUE UNIQUE D’ENVOI (étape S2, 08/11/2026)
    * --------------------------------------------------------------------------
    * Tout déclencheur (rappel de rendez-vous, anniversaire, plus tard fêtes, relances, résultat disponible) passe par PR.envoyerSms, et par rien
@@ -8151,7 +8246,8 @@
   function regulariserInventaire(inv, opts) {
     opts = opts || {};
     var magasin = inv.magasin === 'detail' ? 'detail' : 'gros', champ = magasin === 'detail' ? 'stockDetail' : 'stockGros';
-    var ecarts = (inv.lignes || []).filter(function (l) { return l.ecart !== 0 && l.ecart != null; });
+    /* Lot INVENT-NC : une ligne NON COMPTÉE ne se régularise jamais (RG-03 : aucune sortie sans justificatif, et un non compté n'est pas un écart zéro). */
+    var ecarts = (inv.lignes || []).filter(function (l) { return !l.nonCompte && l.ecart !== 0 && l.ecart != null; });
     if (opts.strict) {
       for (var i = 0; i < ecarts.length; i++) {
         var pr0 = produitParId(ecarts[i].produitId);

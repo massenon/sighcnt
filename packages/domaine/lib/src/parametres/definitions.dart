@@ -20,6 +20,7 @@ import '../sauvegarde/sauvegarde_horssite.dart';
 import '../tableaux/sortie_tableau.dart' show tabCleLimiteLignes, tabLimiteDefaut;
 import '../caisse/prix_manquant.dart' show cleEncaissementPartielSansPrix;
 import 'parametres.dart';
+import 'parametres_clinique.dart' show pcDefinitions;
 
 const String _decisions = 'Décision de la Direction du 09/11/2026 (DECISIONS-A-VALIDER, section D)';
 
@@ -448,6 +449,9 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot TARIF-FIX-2 (prescrire toujours, bloquer seulement l’encaissement)',
   ),
+  // Lot PARAM-CLINIQUE (16/11/2026, décisions 10 et 14) : le préavis de péremption (RG-05) et les deux bornes de la balance âgée. Famille `clinique` (réglage de BRANCHE : posé à la mère,
+  // jamais vers un téléphone), réglée à l'écran « Règles métier versionnées » (geste réservé, bornes, motif, refus nommés), pas au panneau générique.
+  ...pcDefinitions,
 ];
 
 /// Le libellé d'une famille de paramètres, pour les onglets de l'écran des paramètres. Une famille absente de la table s'affiche sous son identifiant.
@@ -462,6 +466,7 @@ const Map<String, String> libellesFamillesParametres = {
   'horssite': 'Sauvegarde hors site',
   'exercice': 'Clôture annuelle',
   'caisse': 'Caisse',
+  'clinique': 'Paramètres de clinique',
 };
 
 /// La définition d'une clé, ou `null`.

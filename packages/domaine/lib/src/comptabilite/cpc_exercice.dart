@@ -187,6 +187,17 @@ CpcRefusRejeu? cpcRefusRejeuPiece(Iterable<CpaFiche> exercices, CpaFiche piece, 
   return null;
 }
 
+/// LOT SYNC-CFG : le BUDGET reçu d'un autre poste se contrôle au rejeu comme une pièce (lot CLO-2). Le fileul qui n'a pas encore reçu le statut d'un exercice écrit son budget en croyant
+/// l'exercice ouvert ; la MÈRE, qui fait foi du statut, refait la garde de la collection (`cpcGardeBudgets` : seul un exercice CLOS est refusé, un exercice en clôture reçoit encore ses
+/// budgets). Refus NOMMÉ, jamais un blocage : le poste met la fiche de côté, la dit et la réessaie dès qu'elle change. [budget] : la fiche telle qu'elle sera (fusion de l'existant et du correctif).
+CpcRefusRejeu? cpcRefusRejeuBudget(Iterable<CpaFiche> exercices, CpaFiche budget) {
+  final motif = cpcGardeBudgets(exercices, budget['exercice']);
+  if (motif == null) return null;
+  final ref = '${budget['reference'] ?? ''}';
+  return CpcRefusRejeu('exercice_clos', 'Budget${ref.isEmpty ? '' : ' $ref'} reçu d’un autre poste, REFUSÉ au rejeu : $motif',
+      'Dater le budget de l’exercice ouvert depuis le poste qui l’a écrit, ou faire rouvrir l’exercice (comptable, motif obligatoire).');
+}
+
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // LECTURES D'UN EXERCICE
 // ---------------------------------------------------------------------------------------------------------------------------------------------------

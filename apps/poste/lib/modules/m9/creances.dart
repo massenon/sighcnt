@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../donnees/parametres_clinique_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -69,12 +70,14 @@ class _EtatCreances extends State<EcranCreances> {
             OptionChamp('${a['code']}', '${a['code']} — ${a['nom']}')
         ]),
         '');
+    // Lot PARAM-CLINIQUE (décision 14) : les bornes des tranches sont un paramètre de clinique daté, lu à la date ; les libellés en sont tirés.
+    final libT = pcLibellesTranches(tranchesCreancesPoste(c.magasin, c.aujourdhui));
     _anciennete = champUnique(
-        def('anciennete', 'Ancienneté retenue', TypeChamp.select, options: const [
-          OptionChamp('', 'Toutes anciennetés'),
-          OptionChamp('moins30', 'Moins de 30 jours'),
-          OptionChamp('30a90', 'De 30 à 90 jours'),
-          OptionChamp('plus90', 'Au-delà de 90 jours'),
+        def('anciennete', 'Ancienneté retenue', TypeChamp.select, options: [
+          const OptionChamp('', 'Toutes anciennetés'),
+          OptionChamp('moins30', libT.moins30),
+          OptionChamp('30a90', libT.de30a90),
+          OptionChamp('plus90', libT.plus90),
         ]),
         '');
     _seuil = champUnique(
@@ -103,7 +106,12 @@ class _EtatCreances extends State<EcranCreances> {
 
   String _txt(ControleurFormulaire k, String nom) => '${k[nom] ?? ''}';
 
+  /// Les tranches EN VIGUEUR à la date du jour (paramètre de clinique daté) et leurs libellés.
+  TranchesCreances _tranches(ContexteEcran c) => tranchesCreancesPoste(c.magasin, c.aujourdhui);
+  ({String moins30, String de30a90, String plus90, String courtMoins30, String courtDe30a90, String courtPlus90}) _lib(ContexteEcran c) => pcLibellesTranches(_tranches(c));
+
   List<AssLigneCreance> _lignes(ContexteEcran c) => assBalanceAgee(
+      tranches: _tranches(c),
       assureurs: actives(c, 'assureurs'),
       facturesAssurance: assFacturesAssurance(actives(c, 'factures')),
       auj: c.aujourdhui,
@@ -145,7 +153,7 @@ class _EtatCreances extends State<EcranCreances> {
               ),
               ('Compagnies concernées', nombre(rows.length)),
               (
-                'Dont plus de 90 jours',
+                'Dont ${_lib(c).plus90.substring(0, 1).toLowerCase()}${_lib(c).plus90.substring(1)}',
                 money(rows.fold<num>(0, (a, r) => a + r.plus90))
               ),
               ('Date d’édition', dateFR(c.aujourdhui)),
@@ -158,17 +166,17 @@ class _EtatCreances extends State<EcranCreances> {
                 ColonneEtat(
                     libelle: 'Factures', droite: true, valeur: (r) => r['nb']),
                 ColonneEtat(
-                    libelle: '< 30 j',
+                    libelle: _lib(c).courtMoins30,
                     droite: true,
                     valeur: (r) => m(r['moins30']),
                     somme: (r) => n(r['moins30'])),
                 ColonneEtat(
-                    libelle: '30-90 j',
+                    libelle: _lib(c).courtDe30a90,
                     droite: true,
                     valeur: (r) => m(r['de30a90']),
                     somme: (r) => n(r['de30a90'])),
                 ColonneEtat(
-                    libelle: '> 90 j',
+                    libelle: _lib(c).courtPlus90,
                     droite: true,
                     valeur: (r) => m(r['plus90']),
                     somme: (r) => n(r['plus90'])),
@@ -240,17 +248,17 @@ class _EtatCreances extends State<EcranCreances> {
                     icone: LucideIcons.handCoins,
                     ton: TonSigh.attention),
                 KpiSigh(
-                    libelle: 'Moins de 30 jours',
+                    libelle: _lib(c).moins30,
                     valeur: money(som((r) => r.moins30)),
                     icone: LucideIcons.clock,
                     ton: TonSigh.succes),
                 KpiSigh(
-                    libelle: '30 à 90 jours',
+                    libelle: _lib(c).de30a90,
                     valeur: money(som((r) => r.de30a90)),
                     icone: LucideIcons.clockAlert,
                     ton: TonSigh.attention),
                 KpiSigh(
-                    libelle: 'Plus de 90 jours',
+                    libelle: _lib(c).plus90,
                     valeur: money(som((r) => r.plus90)),
                     indice: 'Relance impérative',
                     icone: LucideIcons.octagonAlert,
@@ -296,12 +304,12 @@ class _EtatCreances extends State<EcranCreances> {
                       cle: 'nbFactures', libelle: 'Factures', droite: true),
                   ColonneTableau(
                       cle: 'moins30',
-                      libelle: '< 30 j',
+                      libelle: _lib(c).courtMoins30,
                       droite: true,
                       texte: (r) => m(r['moins30'])),
                   ColonneTableau(
                       cle: 'de30a90',
-                      libelle: '30 – 90 j',
+                      libelle: _lib(c).courtDe30a90,
                       droite: true,
                       texte: (r) => m(r['de30a90']),
                       rendu: (_, r) => Text(m(r['de30a90']),
@@ -313,7 +321,7 @@ class _EtatCreances extends State<EcranCreances> {
                               height: 20 / 14))),
                   ColonneTableau(
                       cle: 'plus90',
-                      libelle: '> 90 j',
+                      libelle: _lib(c).courtPlus90,
                       droite: true,
                       texte: (r) => m(r['plus90']),
                       rendu: (_, r) => Text(m(r['plus90']),
@@ -349,10 +357,10 @@ class _EtatCreances extends State<EcranCreances> {
                 CarteSigh(
                     titre: 'Répartition par ancienneté',
                     child: GraphiqueAnneau(
-                        etiquettes: const [
-                          'Moins de 30 jours',
-                          '30 à 90 jours',
-                          'Plus de 90 jours'
+                        etiquettes: [
+                          _lib(c).moins30,
+                          _lib(c).de30a90,
+                          _lib(c).plus90
                         ],
                         valeurs: [
                           som((r) => r.moins30),

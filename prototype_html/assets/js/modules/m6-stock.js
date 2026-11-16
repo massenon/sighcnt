@@ -17,7 +17,10 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
   var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
-  var SEUIL_PEREMPTION = 90; /* jours — paramétrable (RG-05) */
+  /* RG-05 : le préavis de péremption est un PARAMÈTRE DE CLINIQUE daté (lot PARAM-CLINIQUE, `parametresClinique`), lu à la date du jour à chaque peinture, jamais
+     une constante. Le statut d'un lot se recalcule de même (un statut écrit à la saisie ne suit pas un préavis changé). */
+  function seuilPeremption() { return D.delaiPeremptionALaDate(AUJ); }
+  function statutLot(l) { return D.statutLotALaDate(l, AUJ); }
 
   /* ==========================================================================
    * VALORISATION DES ARTICLES QUE LE DOCUMENT SAGE NE VALORISE PAS
@@ -238,11 +241,11 @@
           { label: 'Valeur totale du stock', value: C.money(valeurStock(p)), icon: 'wallet', tone: 'navy', hint: 'Valorisation au CUMP' },
           { label: 'Références gérées', value: C.num(p.length), icon: 'package', tone: 'info' },
           { label: 'Produits critiques', value: C.num(p.filter(function (x) { return x.stock <= x.seuilAlerte; }).length), icon: 'trending-down', tone: 'danger' },
-          { label: 'Produits périmés', value: C.num(l.filter(function (x) { return x.statut === 'perime'; }).length), icon: 'calendar-x', tone: 'danger' },
+          { label: 'Produits périmés', value: C.num(l.filter(function (x) { return statutLot(x) === 'perime'; }).length), icon: 'calendar-x', tone: 'danger' },
           { label: 'Valeur stock gros', value: C.money(C.sum(p, function (x) { return x.stockGros * x.cump; })), icon: 'warehouse', tone: 'neutral' },
           { label: 'Valeur stock détail', value: C.money(C.sum(p, function (x) { return x.stockDetail * x.cump; })), icon: 'pill', tone: 'neutral' },
           { label: 'Mouvements du mois', value: C.num(mouvements().filter(function (m) { var d = C.toDate(m.date); return d.getMonth() === AUJ.getMonth() && d.getFullYear() === AUJ.getFullYear(); }).length), icon: 'arrow-left-right', tone: 'success' },
-          { label: 'Péremption sous 90 j', value: C.num(l.filter(function (x) { return x.statut === 'alerte'; }).length), icon: 'clock', tone: 'warning', hint: 'Application du FEFO' },
+          { label: 'Péremption sous ' + seuilPeremption() + ' j', value: C.num(l.filter(function (x) { return statutLot(x) === 'alerte'; }).length), icon: 'clock', tone: 'warning', hint: 'Application du FEFO' },
         ];
       },
       kpiCols: 'grid-cols-2 lg:grid-cols-4',
@@ -293,9 +296,9 @@
                 title: 'État des péremptions',
                 render: function () {
                   var l = lots();
-                  var perimes = l.filter(function (x) { return x.statut === 'perime'; }).length;
-                  var alerte = l.filter(function (x) { return x.statut === 'alerte'; }).length;
-                  return G.anneau(['Périmés', 'Sous 90 jours', 'Au-delà de 90 jours'],
+                  var perimes = l.filter(function (x) { return statutLot(x) === 'perime'; }).length;
+                  var alerte = l.filter(function (x) { return statutLot(x) === 'alerte'; }).length;
+                  return G.anneau(['Périmés', 'Sous ' + seuilPeremption() + ' jours', 'Au-delà de ' + seuilPeremption() + ' jours'],
                     [perimes, alerte, l.length - perimes - alerte],
                     { legend: 'bottom', colors: [G.TONES.rouge, G.TONES.orange, G.TONES.vert] });
                 },
@@ -383,7 +386,7 @@
               label: 'État',
               render: function (l) {
                 var j = joursAvantPeremption(l);
-                return j < 0 ? U.badge('Périmé', 'danger') : (j <= SEUIL_PEREMPTION ? U.badge('Dans ' + j + ' j', 'warning') : U.badge('Valide', 'success'));
+                return j < 0 ? U.badge('Périmé', 'danger') : (j <= seuilPeremption() ? U.badge('Dans ' + j + ' j', 'warning') : U.badge('Valide', 'success'));
               },
             },
             { label: 'Emplacement', key: 'emplacement' },
@@ -1458,9 +1461,11 @@
   global.SIGH.screen('m6-lots', {
     title: 'Lots & péremptions (FEFO)',
     description: 'Suivi des lots par date de péremption, application du principe « premier périmé, premier sorti ».',
-    regle: '<strong>RG-05</strong> — le rangement applique le principe <strong>FEFO</strong> (premier périmé, premier sorti). '
-      + 'Les alertes sont déclenchées automatiquement ' + SEUIL_PEREMPTION + ' jours avant échéance. '
-      + 'Les produits périmés sont retournés aux fournisseurs habilités (CAME, SoBAPS) et la perte est valorisée en comptabilité.',
+    regle: function () {
+      return '<strong>RG-05</strong> — le rangement applique le principe <strong>FEFO</strong> (premier périmé, premier sorti). '
+        + 'Les alertes sont déclenchées automatiquement ' + seuilPeremption() + ' jours avant échéance (paramètre de clinique daté, écran « Règles métier versionnées »). '
+        + 'Les produits périmés sont retournés aux fournisseurs habilités (CAME, SoBAPS) et la perte est valorisée en comptabilité.';
+    },
     render: K.crud({
       collection: 'lots', entite: 'lot', entiteP: 'lots', module: 'M6',
       defaultSort: 'datePeremption', pageSize: 15,
@@ -1476,7 +1481,7 @@
             var j = joursAvantPeremption(l);
             if (j < 0) return U.badge('Périmé depuis ' + Math.abs(j) + ' j', 'danger');
             if (j <= 30) return U.badge('Dans ' + j + ' j', 'danger');
-            if (j <= SEUIL_PEREMPTION) return U.badge('Dans ' + j + ' j', 'warning');
+            if (j <= seuilPeremption()) return U.badge('Dans ' + j + ' j', 'warning');
             return el('span.num.text-slate-600', { text: j + ' j' });
           },
         },
@@ -1484,9 +1489,9 @@
         { key: 'emplacement', label: 'Emplacement' },
         {
           key: 'statut2', label: 'État FEFO',
-          value: function (l) { return l.statut; },
-          text: function (l) { return l.statut; },
-          render: function (l) { return U.statut(l.statut === 'actif' ? 'normal' : l.statut); },
+          value: function (l) { return statutLot(l); },
+          text: function (l) { return statutLot(l); },
+          render: function (l) { var st = statutLot(l); return U.statut(st === 'actif' ? 'normal' : st); },
         },
       ],
       fields: function () {
@@ -1505,23 +1510,24 @@
         var p = produits().filter(function (x) { return x.id === v.produitId; })[0];
         if (p) v.produit = p.designation;
         var j = C.daysBetween(AUJ, v.datePeremption);
-        v.statut = j < 0 ? 'perime' : (j <= SEUIL_PEREMPTION ? 'alerte' : 'actif');
+        v.statut = j < 0 ? 'perime' : (j <= seuilPeremption() ? 'alerte' : 'actif');
         return v;
       },
       filters: [
         {
           name: 'statut', label: 'État',
           options: [{ value: 'perime', label: 'Périmés' }, { value: 'alerte', label: 'Péremption proche' }, { value: 'actif', label: 'Valides' }],
+          match: function (l, v) { return statutLot(l) === v; },
         },
       ],
       kpis: function (rows) {
-        var perimes = rows.filter(function (l) { return l.statut === 'perime'; });
-        var alerte = rows.filter(function (l) { return l.statut === 'alerte'; });
+        var perimes = rows.filter(function (l) { return statutLot(l) === 'perime'; });
+        var alerte = rows.filter(function (l) { return statutLot(l) === 'alerte'; });
         return [
           { label: 'Lots suivis', value: C.num(rows.length), icon: 'boxes', tone: 'navy' },
           { label: 'Périmés', value: C.num(perimes.length), icon: 'calendar-x', tone: 'danger', hint: C.num(C.sum(perimes, 'quantiteRestante')) + ' unités à retourner' },
-          { label: 'Péremption sous ' + SEUIL_PEREMPTION + ' j', value: C.num(alerte.length), icon: 'clock', tone: 'warning', hint: 'Prioriser en sortie (FEFO)' },
-          { label: 'Lots valides', value: C.num(rows.filter(function (l) { return l.statut === 'actif'; }).length), icon: 'check-circle-2', tone: 'success' },
+          { label: 'Péremption sous ' + seuilPeremption() + ' j', value: C.num(alerte.length), icon: 'clock', tone: 'warning', hint: 'Prioriser en sortie (FEFO)' },
+          { label: 'Lots valides', value: C.num(rows.filter(function (l) { return statutLot(l) === 'actif'; }).length), icon: 'check-circle-2', tone: 'success' },
         ];
       },
       extraTabs: [{
@@ -1612,14 +1618,14 @@
       var prods = produits();
       var ruptures = prods.filter(function (p) { return p.stock === 0; });
       var critiques = prods.filter(function (p) { return p.stock > 0 && p.stock <= p.seuilAlerte; });
-      var perimes = lots().filter(function (l) { return l.statut === 'perime'; });
-      var proches = lots().filter(function (l) { return l.statut === 'alerte'; });
+      var perimes = lots().filter(function (l) { return statutLot(l) === 'perime'; });
+      var proches = lots().filter(function (l) { return statutLot(l) === 'alerte'; });
 
       host.appendChild(U.kpiGrid([
         { label: 'Ruptures de stock', value: C.num(ruptures.length), icon: 'x-circle', tone: 'danger' },
         { label: 'Sous le seuil d’alerte', value: C.num(critiques.length), icon: 'trending-down', tone: 'warning' },
         { label: 'Lots périmés', value: C.num(perimes.length), icon: 'calendar-x', tone: 'danger' },
-        { label: 'Péremption sous ' + SEUIL_PEREMPTION + ' j', value: C.num(proches.length), icon: 'clock', tone: 'warning' },
+        { label: 'Péremption sous ' + seuilPeremption() + ' j', value: C.num(proches.length), icon: 'clock', tone: 'warning' },
       ]));
 
       host.appendChild(U.tabs([
@@ -1662,7 +1668,7 @@
       ]));
 
       host.appendChild(K.note('Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de <strong>'
-        + SEUIL_PEREMPTION + ' jours</strong> et se règle dans la configuration du module (RG-05).', { tone: 'info' }));
+        + seuilPeremption() + ' jours</strong> : un paramètre de clinique daté, réglé à l’écran « Règles métier versionnées » (RG-05).', { tone: 'info' }));
 
       root.appendChild(host);
       return null;
@@ -1730,6 +1736,10 @@
           { key: 'type', label: 'Type', render: function (i) { return U.badge(i.type, 'navy'); } },
           { key: 'perimetre', label: 'Périmètre' },
           { key: 'nbArticles', label: 'Articles', align: 'right' },
+          /* Lot INVENT-NC (décision 12) : un article NON COMPTÉ n'est pas un article compté juste ; le registre le dit (les inventaires d'avant le lot n'en ont pas : « non suivi »). */
+          { key: 'nbNonComptes', label: 'Non comptés', align: 'right', value: function (i) { return i.nbNonComptes == null ? -1 : i.nbNonComptes; },
+            text: function (i) { return i.nbNonComptes == null ? 'non suivi' : String(i.nbNonComptes); },
+            render: function (i) { return i.nbNonComptes == null ? el('span.text-xs.text-slate-400', { text: 'non suivi' }) : (i.nbNonComptes ? el('span.font-semibold.text-warning-700', { 'data-non-comptes': i.reference, text: String(i.nbNonComptes) }) : el('span', { 'data-non-comptes': i.reference, text: '0' })); } },
           { key: 'nbEcarts', label: 'Écarts', align: 'right', render: function (i) { return i.nbEcarts ? el('span.font-semibold.text-danger-600', { text: String(i.nbEcarts) }) : U.badge('Aucun', 'success'); } },
           {
             key: 'valeurEcart', label: 'Valeur des écarts', align: 'right',
@@ -1846,21 +1856,30 @@
           body: el('div.space-y-4', null, [
             U.descList([['Référence', i.reference], ['Type', i.type], ['Périmètre', i.perimetre],
               ['Date', C.dateFR(i.date)], ['Réalisé par', i.operateur],
-              ['Articles inventoriés', C.num(i.nbArticles)], ['Écarts', C.num(i.nbEcarts)],
-              ['Valeur des écarts', C.money(i.valeurEcart || 0)]]),
-            (i.lignes || []).filter(function (l) { return l.ecart !== 0; }).length
+              ['Articles au périmètre', C.num(i.nbArticles)], ['Articles non comptés', i.nbNonComptes == null ? 'non suivi (inventaire antérieur)' : C.num(i.nbNonComptes)],
+              ['Écarts', C.num(i.nbEcarts)], ['Valeur des écarts', C.money(i.valeurEcart || 0)]]),
+            nonComptes(i).length ? U.card('Articles non comptés (stock inchangé)', K.miniTable([
+              { label: 'Article', key: 'designation' }, { label: 'Code', key: 'code' },
+              { label: 'Théorique', align: 'right', key: 'theorique' },
+              { label: 'Physique', align: 'right', value: function () { return 'non compté'; } },
+            ], nonComptes(i), { nom: 'inventaire-non-comptes' })) : null,
+            ecartsDe(i).length
               ? U.card('Écarts constatés', K.miniTable([
                 { label: 'Article', key: 'designation' },
                 { label: 'Théorique', align: 'right', key: 'theorique' },
                 { label: 'Physique', align: 'right', key: 'physique' },
                 { label: 'Écart', align: 'right', render: function (l) { return el('span', { class: l.ecart < 0 ? 'font-semibold text-danger-600' : 'font-semibold text-success-600', text: (l.ecart > 0 ? '+' : '') + l.ecart }); } },
                 { label: 'Valeur', align: 'right', render: function (l) { return C.money(l.valeur, false); } },
-              ], (i.lignes || []).filter(function (l) { return l.ecart !== 0; })))
-              : U.empty('Aucun écart constaté : stock physique conforme au stock théorique.', { icon: 'check-circle-2' }),
-          ]),
+              ], ecartsDe(i)))
+              : U.empty('Aucun écart constaté sur les articles comptés.', { icon: 'check-circle-2' }),
+          ].filter(Boolean)),
           footer: [K.btn('Imprimer l’état', { variant: 'primary', icon: 'printer', onclick: function () { etat(i); } })],
         });
       }
+
+      /* Lot INVENT-NC : les lignes NON COMPTÉES (stock inchangé) et les écarts des seules lignes comptées. */
+      function nonComptes(i) { return (i.lignes || []).filter(function (l) { return l.nonCompte === true; }); }
+      function ecartsDe(i) { return (i.lignes || []).filter(function (l) { return !l.nonCompte && l.ecart != null && l.ecart !== 0; }); }
 
       function etat(i) {
         P.etat({
@@ -1868,13 +1887,14 @@
           sousTitre: i.reference + ' — ' + i.type,
           cartouche: [['Référence', i.reference], ['Type', i.type], ['Périmètre', i.perimetre],
             ['Date', C.dateFR(i.date)], ['Réalisé par', i.operateur],
+            ['Articles non comptés', i.nbNonComptes == null ? 'non suivi' : C.num(i.nbNonComptes) + (i.nbNonComptes ? ' (stock inchangé)' : '')],
             ['Valeur des écarts', C.money(i.valeurEcart || 0)]],
           contenu: P.tableau([
             { label: 'Code', key: 'code' }, { label: 'Désignation', key: 'designation' },
             { label: 'Unité', key: 'unite' },
             { label: 'Stock théorique', key: 'theorique', align: 'right' },
-            { label: 'Stock physique', key: 'physique', align: 'right' },
-            { label: 'Écart', align: 'right', value: function (l) { return (l.ecart > 0 ? '+' : '') + l.ecart; } },
+            { label: 'Stock physique', align: 'right', value: function (l) { return l.nonCompte ? 'Non compté' : l.physique; } },
+            { label: 'Écart', align: 'right', value: function (l) { return l.nonCompte ? 'Non compté' : (l.ecart > 0 ? '+' : '') + l.ecart; } },
             { label: 'Valeur écart', align: 'right', value: function (l) { return C.money(l.valeur, false); },
               somme: function (l) { return l.valeur || 0; } },
           ], i.lignes || [], { total: true }),
@@ -1951,7 +1971,8 @@
       var corps = el('div.space-y-3');
       corps.appendChild(K.note('Saisir le <strong>stock physique compté</strong> pour chaque article. '
         + 'Les écarts avec le stock théorique du <strong>' + magasinLabel + '</strong> sont calculés en '
-        + 'direct et valorisés au CUMP.', { tone: 'info', icon: 'clipboard-list' }));
+        + 'direct et valorisés au CUMP. Une case laissée vide est un article <strong>non compté</strong> : il est enregistré comme tel, '
+        + 'son stock reste inchangé (RG-03), et la validation reste possible.', { tone: 'info', icon: 'clipboard-list' }));
       corps.appendChild(recherche);
 
       var t = el('table.tbl');
@@ -1973,12 +1994,20 @@
           el('p.font-mono.text-xs.text-slate-400', { text: pr.code }),
         ])));
         tr.appendChild(el('td.text-right.num', { text: C.num(th) }));
-        var input = el('input.input.w-24.text-right', { type: 'number', min: 0, value: th });
+        /* Lot INVENT-NC (décision 12) : la case part VIDE. Un article dont on n'a rien saisi est NON COMPTÉ, jamais « compté, écart zéro » : la feuille
+           ne recopie plus le théorique dans le physique. Saisir 0 est un comptage (rien en rayon). */
+        var input = el('input.input.w-24.text-right', { type: 'number', min: 0, value: '', placeholder: 'non compté', 'data-comptage': pr.id });
         tr.appendChild(el('td.text-right', null, input));
-        var ecart = el('td.text-right.num', { text: '0' });
-        var val = el('td.text-right.num', { text: C.money(0, false) });
+        var ecart = el('td.text-right.text-xs.text-slate-400', { text: 'non compté' });
+        var val = el('td.text-right.num', { text: '—' });
         tr.appendChild(ecart); tr.appendChild(val);
         input.addEventListener('input', function () {
+          if (String(input.value).trim() === '') {
+            saisies[pr.id] = { produit: pr, theorique: th, nonCompte: true };
+            ecart.textContent = 'non compté'; ecart.className = 'text-right text-xs text-slate-400'; val.textContent = '—';
+            majResume();
+            return;
+          }
           var phys = Number(input.value) || 0;
           var e = phys - th;
           saisies[pr.id] = { produit: pr, theorique: th, physique: phys, ecart: e, valeur: e * pr.cump };
@@ -1987,7 +2016,7 @@
           val.textContent = C.money(e * pr.cump, false);
           majResume();
         });
-        saisies[pr.id] = { produit: pr, theorique: th, physique: th, ecart: 0, valeur: 0 };
+        saisies[pr.id] = { produit: pr, theorique: th, nonCompte: true };
         tb.appendChild(tr);
       });
       t.appendChild(tb);
@@ -2046,27 +2075,37 @@
 
       function toutes() { return Object.keys(saisies).map(function (k) { return saisies[k]; }); }
 
+      function comptees() { return toutes().filter(function (x) { return !x.nonCompte; }); }
       function majResume() {
-        var vals = toutes();
-        var ecarts = vals.filter(function (x) { return x.ecart !== 0; });
+        var vals = toutes(), comptes = comptees();
+        var ecarts = comptes.filter(function (x) { return x.ecart !== 0; });
+        var nc = vals.length - comptes.length;
         C.clear(resume);
-        resume.appendChild(U.kpi({ label: 'Articles inventoriés', value: C.num(vals.length), icon: 'package', tone: 'navy' }));
+        resume.appendChild(U.kpi({ label: 'Articles au périmètre', value: C.num(vals.length), icon: 'package', tone: 'navy' }));
+        resume.appendChild(U.kpi({ label: 'Articles comptés', value: C.num(comptes.length), icon: 'clipboard-check', tone: 'info' }));
+        resume.appendChild(U.kpi({ label: 'Articles non comptés', value: C.num(nc), icon: 'circle-dashed', tone: nc ? 'warning' : 'success', hint: nc ? 'Stock inchangé, enregistrés « non compté »' : null }));
         resume.appendChild(U.kpi({ label: 'Écarts constatés', value: C.num(ecarts.length), icon: 'triangle-alert', tone: ecarts.length ? 'warning' : 'success' }));
         resume.appendChild(U.kpi({ label: 'Valeur des écarts', value: C.money(C.sum(ecarts, 'valeur')), icon: 'wallet', tone: C.sum(ecarts, 'valeur') < 0 ? 'danger' : 'success' }));
         U.icons(resume);
       }
 
       function valider() {
-        var vals = toutes();
-        var ecarts = vals.filter(function (x) { return x.ecart !== 0; });
+        var vals = toutes(), comptes = comptees();
+        var ecarts = comptes.filter(function (x) { return x.ecart !== 0; });
+        var nc = vals.length - comptes.length;
         var enr = {
           reference: C.referenceSuivante('INV-', 4, col.all()), /* série lue sur les inventaires existants (E17) */
           date: entete.date, type: entete.type, perimetre: entete.perimetre,
           magasin: entete.magasin, magasinLabel: magasinLabel,
           operateur: entete.operateur, statutInv: 'valide',
-          nbArticles: vals.length, nbEcarts: ecarts.length,
+          nbArticles: vals.length, nbComptes: comptes.length, nbNonComptes: nc, nbEcarts: ecarts.length,
           valeurEcart: C.sum(ecarts, 'valeur'),
+          /* Lot INVENT-NC : une ligne NON COMPTÉE porte `nonCompte: true` et ni physique, ni écart, ni valeur (les champs nuls ne s'écrivent pas) : elle ne
+             vaut jamais « compté, écart zéro » et la régularisation ne la touche pas (RG-03). */
           lignes: vals.map(function (x) {
+            if (x.nonCompte) {
+              return { produitId: x.produit.id, code: x.produit.code, designation: x.produit.designation, unite: x.produit.unite, theorique: x.theorique, nonCompte: true, cump: x.produit.cump };
+            }
             return {
               produitId: x.produit.id, code: x.produit.code, designation: x.produit.designation, unite: x.produit.unite,
               theorique: x.theorique, physique: x.physique, ecart: x.ecart,
@@ -2090,6 +2129,7 @@
         U.toast('Inventaire ' + enr.reference + ' validé — ' + ecarts.length
           + ' écart(s) régularisé(s) sur le ' + magasinLabel.toLowerCase() + '.', {
           type: 'success', duration: 12000,
+          detail: nc ? C.num(nc) + ' article(s) non compté(s) : enregistré(s) « non compté », stock inchangé.' : null,
           undo: function () { annulations.forEach(function (u) { u(); }); res.undo(); },
         });
         C.clear(principal);
@@ -2097,7 +2137,9 @@
           U.descList([
             ['Référence', enr.reference], ['Magasin', magasinLabel],
             ['Type', enr.type], ['Périmètre', enr.perimetre],
-            ['Articles inventoriés', C.num(enr.nbArticles)],
+            ['Articles au périmètre', C.num(enr.nbArticles)],
+            ['Articles comptés', C.num(enr.nbComptes)],
+            ['Articles non comptés (stock inchangé)', C.num(enr.nbNonComptes)],
             ['Écarts régularisés', C.num(enr.nbEcarts)],
             ['Valeur des écarts', C.money(enr.valeurEcart || 0)],
           ]),

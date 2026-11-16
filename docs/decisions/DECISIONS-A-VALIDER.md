@@ -542,3 +542,27 @@ La décision du 16/11/2026 (section AL, point 2) est appliquée : la prescriptio
 - **Un examen ABSENT du catalogue d'imagerie reste refusé (`EXAMEN_INCONNU`)** : ce n'est pas une ligne sans prix, c'est une demande qui ne désigne rien. Un examen du catalogue sans tarif, lui, se prescrit. ☐ Accepter ☐ Autre.
 - **Destinataires de l'alerte** : les rôles qui peuvent MODIFIER « Tarifs et prix » (acte, analyse, imagerie, soin) et « Référentiel produits » (prix d'achat), lus dans la fiche RBAC. Celui qui DÉCIDE un prix proposé (Direction, Directrice Administrative, administrateur) reçoit déjà l'alerte « changement de prix à valider ». ☐ Accepter ☐ Ajouter les profils qui décident.
 - **Caisse manuelle et vente de la pharmacie** : un article sans prix reste refusé à la COMPOSITION (rien n'est prescrit : c'est la caisse qui compose la pièce). ☐ Accepter ☐ Permettre aussi d'y composer une ligne sans prix.
+## AN. Lot SYNC-CFG (16/11/2026, domaine, synchronisation, poste) : budgets, immobilisations et couvertures d'assurance synchronisés, ce qui reste à trancher par la Direction
+
+La décision 26 (section AH) est appliquée : les trois collections voyagent par le pont (famille A, identité commune par le contenu, garde d'exercice clos au rejeu, jamais vers un téléphone). `ECARTS-MAQUETTE.md` E2730 à E2732. Hypothèses écrites plutôt qu'inventées :
+
+- **Identité commune par le contenu.** Le même budget (exercice, centre, nature), le même bien (désignation, date, valeur) ou la même couverture (assuré, date d'effet) écrits sur deux postes ne font qu'UNE fiche ; deux montants différents pour le même budget gardent la première valeur arrivée à la mère et ouvrent un conflit nommé. ☐ Accepter ☐ Deux fiches distinctes, à réconcilier à la main.
+- **Numéros BG-AAAA-NNN et IM-NNN attribués par chaque poste** : deux postes coupés de la mère peuvent donner le même numéro à deux fiches différentes. ☐ Marquer le doublon de numéro (comme les factures) ☐ Faire attribuer le numéro par la mère ☐ Garder ainsi.
+- **Référence d'un dossier créé chez un fileul** (constat systémique du pont, E2732 point 2) : la couverture d'un tel dossier arrive à la mère avec l'identifiant local du fileul. ☐ Lot à faire (traduire les références au passage du pont, pour toutes les collections d'activité) ☐ Garder ainsi tant que les dossiers s'ouvrent à l'accueil de la mère.
+
+## AO. Lot PARAM-CLINIQUE (16/11/2026, maquette, domaine, poste) : préavis de péremption et tranches de la balance âgée en paramètres de clinique, ce qui reste à trancher par la Direction
+
+Les décisions 10 et 14 (section AH) sont appliquées : les trois valeurs sont en base, semées (90 ; 30 et 90), versionnées par date, réglées à l'écran « Règles métier versionnées » avec motif et journal, jamais vers un téléphone. `ECARTS-MAQUETTE.md` E2733 à E2736. Hypothèses écrites plutôt qu'inventées :
+
+- **Qui règle.** Un droit propre de la fiche RBAC, `regler_parametres_clinique`, détenu d'origine par l'administrateur et la Directrice Administrative (décision 5 : un droit propre par réglage réservé). La Direction lit sans régler. ☐ Accepter ☐ L'ouvrir aussi à : ________
+- **Les bornes.** Préavis de péremption de 1 à 730 jours ; première tranche de 1 à 365 jours ; deuxième tranche plus grande que la première, au plus 730. Aucun document ne les fixe. ☐ Accepter ☐ Autres : ________
+- **Les états lisent le préavis À LA DATE DU JOUR**, plus le statut écrit à la saisie : un préavis allongé fait entrer aussitôt des lots dans les alertes et dans les tableaux de bord (au 30/10/2026 du jeu : 42 lots périmés et 56 à péremption proche, au lieu de 17 et 37 écrits en août). ☐ Accepter ☐ Garder le statut écrit à la saisie.
+- **Balance âgée des patients** : elle n'existe pas encore (constat AST-0) ; le même paramètre de tranches la servira (lot AST-1). ☐ Les mêmes tranches pour les patients et les assureurs ☐ Des tranches distinctes pour les patients.
+
+## AP. Lot INVENT-NC (16/11/2026, maquette, domaine, poste) : l'article non compté sur la ligne d'inventaire, ce qui reste à trancher par la Direction
+
+La décision 12 (section AH) est appliquée : une case laissée vide est un article « non compté », enregistré comme tel, son stock jamais touché, la validation possible et dite. `ECARTS-MAQUETTE.md` E2737 à E2739. Hypothèses écrites plutôt qu'inventées :
+
+- **La case part vide.** Il faut saisir chaque article, même celui qui est conforme (avant le lot, la case recopiait le théorique et un oubli valait « conforme »). ☐ Accepter ☐ Offrir une commande « marquer les articles affichés comptés conformes » (geste explicite, tracé).
+- **Validation avec des non comptés : non bloquante**, dite au résumé, au message de validation, au registre et à l'état. ☐ Accepter ☐ Exiger une confirmation au-delà de ____ % de non comptés.
+- **Inventaires d'avant le lot** : « non suivi » au registre et à l'état (aucune reprise ne les réécrit). ☐ Accepter

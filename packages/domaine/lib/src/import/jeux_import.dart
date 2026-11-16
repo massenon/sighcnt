@@ -13,6 +13,8 @@ import '../format/format_fr.dart' show dateFR, nombre;
 import '../format/js.dart' show arrondiJs;
 import '../imagerie/cr_modalites.dart' show modalitesImagerie;
 import '../stock/referentiels_stock.dart' show categoriesProduit;
+import '../parametres/parametres.dart' show parCollectionParametres;
+import '../parametres/parametres_clinique.dart' show pcDelaiPeremption;
 import '../tarifs/tarifs.dart'
     show
         ContexteTarif,

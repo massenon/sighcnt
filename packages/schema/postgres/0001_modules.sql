@@ -359,6 +359,28 @@ CREATE TABLE IF NOT EXISTS "cfg"."obligations_fiscales_redevances" (
   FOREIGN KEY ("parent_id") REFERENCES "cfg"."obligations_fiscales" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE "cfg"."obligations_fiscales_redevances" IS 'Lignes « redevances » de « obligationsFiscales »';
+CREATE TABLE IF NOT EXISTS "cfg"."parametres_clinique" (
+  "id" text PRIMARY KEY,
+  "cle" text,
+  "motif" text,
+  "cree_le" timestamptz,
+  "source" text,
+  "statut" text,
+  "valeur" integer,
+  "cree_le_2" timestamptz,
+  "cree_par" text,
+  "libelle" text,
+  "cree_par_2" text,
+  "date_effet" date,
+  "archive_le" timestamptz,
+  "archive_par" text,
+  "motif_archivage" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."parametres_clinique" IS 'Collection « parametresClinique » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_parametres_clinique_statut" ON "cfg"."parametres_clinique" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."parametres_fiscaux" (
   "id" text PRIMARY KEY,
   "code" text,

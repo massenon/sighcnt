@@ -103,13 +103,11 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
     super.dispose();
   }
 
-  /// Le stock physique compté : l'article jamais touché garde son théorique (écart nul) ; un champ vidé vaut zéro (`Number('') || 0`).
-  Fiche _ligne(Fiche p) => ligneComptage(p, _magasin, _edites.containsKey('${p['id']}') ? _edites['${p['id']}'] : stockTheorique(p, _magasin));
+  /// LOT INVENT-NC (décision 12) : la case part VIDE. Un article dont rien n'est saisi (ou dont la saisie est vidée) est NON COMPTÉ, jamais « compté, écart
+  /// zéro » : la feuille ne recopie plus le théorique dans le physique. Saisir 0 est un comptage (rien en rayon).
+  Fiche _ligne(Fiche p) => comptageVide(_edites['${p['id']}']) ? ligneNonComptee(p, _magasin) : ligneComptage(p, _magasin, _edites['${p['id']}']);
 
-  TextEditingController _ctl(Fiche p) =>
-      _saisies.putIfAbsent('${p['id']}', () => TextEditingController(text: nombreBrut(stockTheorique(p, _magasin))));
-
-  static String nombreBrut(num v) => v == v.truncate() ? '${v.toInt()}' : '$v';
+  TextEditingController _ctl(Fiche p) => _saisies.putIfAbsent('${p['id']}', () => TextEditingController());
 
   void valider() {
     if (!mounted || _valide != null) return;
@@ -122,7 +120,7 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
     final v = validerInventaire(
       entete: {'magasin': _magasin, 'type': _entete.type, 'date': _date, 'perimetre': _entete.perimetre, 'operateur': _operateur},
       cible: _cible,
-      physiques: {for (final e in _edites.entries) e.key: n(e.value)},
+      physiques: {for (final e in _edites.entries) e.key: comptageVide(e.value) ? '' : n(e.value)},
       inventaires: inventaires.toutes,
       mouvements: mouvements.toutes,
     );
@@ -136,7 +134,9 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
     }
     final avant = v.avant;
     final nbEcarts = v.inventaire['nbEcarts'];
-    annonce(context, 'Inventaire ${v.inventaire['reference']} validé — $nbEcarts écart(s) régularisé(s) sur le ${_label.toLowerCase()}.',
+    final nc = n(v.inventaire['nbNonComptes']);
+    annonce(context,
+        'Inventaire ${v.inventaire['reference']} validé — $nbEcarts écart(s) régularisé(s) sur le ${_label.toLowerCase()}.${nc > 0 ? ' ${nombre(nc)} article(s) non compté(s) : enregistré(s) « non compté », stock inchangé.' : ''}',
         duree: const Duration(seconds: 12), annuler: () {
       for (final a in avant) {
         produits.mettreAJour(a.id, a.patch);
@@ -161,7 +161,9 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
       ]);
     }
     final vals = [for (final p in _cible) _ligne(p)];
-    final ecarts = vals.where((x) => n(x['ecart']) != 0).toList();
+    final comptes = vals.where((x) => x['nonCompte'] != true).toList();
+    final ecarts = comptes.where((x) => n(x['ecart']) != 0).toList();
+    final nonComptes = vals.length - comptes.length;
     final valeurEcarts = ecarts.fold<num>(0, (a, x) => a + n(x['valeur']));
     final principal = _valide == null ? _comptage(vals) : _resultat(c, _valide!);
     final aside = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -178,7 +180,16 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
       CarteSigh(
           titre: 'Écarts constatés',
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            KpiSigh(libelle: 'Articles inventoriés', valeur: nombre(vals.length), icone: LucideIcons.package),
+            KpiSigh(libelle: 'Articles au périmètre', valeur: nombre(vals.length), icone: LucideIcons.package),
+            const SizedBox(height: 12),
+            KpiSigh(libelle: 'Articles comptés', valeur: nombre(comptes.length), icone: LucideIcons.clipboardCheck, ton: TonSigh.info),
+            const SizedBox(height: 12),
+            KpiSigh(
+                libelle: 'Articles non comptés',
+                valeur: nombre(nonComptes),
+                icone: LucideIcons.circleDashed,
+                ton: nonComptes > 0 ? TonSigh.attention : TonSigh.succes,
+                indice: nonComptes > 0 ? 'Stock inchangé, enregistrés « non compté »' : null),
             const SizedBox(height: 12),
             KpiSigh(
                 libelle: 'Écarts constatés',
@@ -261,7 +272,7 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
       titre: 'Comptage — ${_entete.perimetre}',
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         NoteSigh(
-            'Saisir le stock physique compté pour chaque article. Les écarts avec le stock théorique du $_label sont calculés en direct et valorisés au CUMP.',
+            'Saisir le stock physique compté pour chaque article. Les écarts avec le stock théorique du $_label sont calculés en direct et valorisés au CUMP. Une case laissée vide est un article non compté : il est enregistré comme tel, son stock reste inchangé (RG-03), et la validation reste possible.',
             icone: LucideIcons.clipboardList),
         const SizedBox(height: 12),
         TextField(
@@ -299,6 +310,7 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
   Widget _rangee(Fiche x) {
     final pr = x['produit'] as Fiche;
     final e = n(x['ecart']);
+    final nonCompte = x['nonCompte'] == true;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: const BoxDecoration(border: Border(top: BorderSide(color: JetonsShell.slate100))),
@@ -322,18 +334,20 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
                     textAlign: TextAlign.right,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     style: styleSaisie,
-                    decoration: decorationChamp(),
+                    decoration: decorationChamp(indicatif: 'non compté'),
                     onChanged: (v) => setState(() => _edites['${pr['id']}'] = v),
                   )),
             )),
         Expanded(
-            child: Text('${e > 0 ? '+' : ''}${nombre(e)}',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                    color: e == 0 ? JetonsShell.slate700 : (e < 0 ? JetonsShell.danger600 : JetonsShell.success600),
-                    fontSize: 14,
-                    fontWeight: e == 0 ? null : FontWeight.w600))),
-        Expanded(flex: 2, child: Text(m(x['valeur']), textAlign: TextAlign.right, style: const TextStyle(color: JetonsShell.slate700, fontSize: 14))),
+            child: nonCompte
+                ? Text('non compté', key: Key('inv:nc:${pr['code']}'), textAlign: TextAlign.right, style: const TextStyle(color: JetonsShell.slate400, fontSize: 12))
+                : Text('${e > 0 ? '+' : ''}${nombre(e)}',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                        color: e == 0 ? JetonsShell.slate700 : (e < 0 ? JetonsShell.danger600 : JetonsShell.success600),
+                        fontSize: 14,
+                        fontWeight: e == 0 ? null : FontWeight.w600))),
+        Expanded(flex: 2, child: Text(nonCompte ? '—' : m(x['valeur']), textAlign: TextAlign.right, style: const TextStyle(color: JetonsShell.slate700, fontSize: 14))),
       ]),
     );
   }
@@ -349,7 +363,9 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
             ('Magasin', _label),
             ('Type', enr['type']),
             ('Périmètre', enr['perimetre']),
-            ('Articles inventoriés', nombre(enr['nbArticles'])),
+            ('Articles au périmètre', nombre(enr['nbArticles'])),
+            ('Articles comptés', nombre(enr['nbComptes'])),
+            ('Articles non comptés (stock inchangé)', nombre(enr['nbNonComptes'])),
             ('Écarts régularisés', nombre(enr['nbEcarts'])),
             ('Valeur des écarts', money(enr['valeurEcart'] ?? 0)),
           ]),

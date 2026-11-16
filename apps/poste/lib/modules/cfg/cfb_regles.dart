@@ -4,6 +4,8 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart' show Fiche;
+import '../../donnees/parametres_clinique_poste.dart';
+import '../m14/commun_m14.dart' show libelleRole;
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -30,6 +32,7 @@ class EcranRegles extends StatelessWidget with EcranMaquette {
     final c = ContexteEcran.of(context);
     return cfaPile([
       cfaLectureSeule(c),
+      const _CarteParametresClinique(),
       const _CarteValorisation(),
       _carteFamilles(c),
       cfaKpis(cfbKpisRegles()),
@@ -164,6 +167,111 @@ class EcranRegles extends StatelessWidget with EcranMaquette {
           ligne(cfbNs131),
           ligne(cfbNs132)
         ]));
+  }
+}
+
+/// LOT PARAM-CLINIQUE (décisions 10 et 14 de la Direction du 15/11/2026) : la carte « Paramètres de clinique (datés) » de la maquette. Le préavis de péremption
+/// (RG-05) et les deux bornes de la balance âgée, lus à la date au registre des paramètres (famille `clinique`, défauts semés) ; « Régler » est ABSENT sans le
+/// geste réservé `regler_parametres_clinique` de la fiche RBAC, et le réglage refuse aussi (bornes, cohérence, motif, fileul : refus nommés).
+class _CarteParametresClinique extends StatelessWidget {
+  const _CarteParametresClinique();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = ContexteEcran.of(context);
+    final col = c.magasin.collection(parCollectionParametres);
+    return ListenableBuilder(
+        listenable: col,
+        builder: (ctx, _) {
+          final auj = parametreDateIso(c.aujourdhui);
+          final peut = c.donnees?.matrice.droitGeste(c.role, pcGesteRegler) ?? false;
+          final versions = col.toutes;
+          final lignes = <Fiche>[
+            for (final d in pcDefinitions)
+              {
+                'id': d.cle,
+                'libelle': d.libelle,
+                'aide': d.aide,
+                'valeur': pcValeur(versions, d.cle, auj),
+                'depuis': _depuis(versions, d.cle, auj),
+                'bornes': '${pcBornesDe(d.cle)!.min} à ${pcBornesDe(d.cle)!.max} jours',
+                'aVenir': [
+                  for (final v in versions)
+                    if (v['cle'] == d.cle && v['statut'] != 'archive' && v['dateEffet'] != null && '${v['dateEffet']}'.compareTo(auj) > 0) '${v['valeur']} jours au ${dateFR(DateTime.parse('${v['dateEffet']}'))}'
+                ].join(', '),
+              }
+          ];
+          return CarteSigh(
+              titre: 'Paramètres de clinique (datés)',
+              child: cfaPile([
+                cfbNote(
+                    'Le préavis de péremption (RG-05) et les tranches de la balance âgée des créances sont des paramètres de la clinique, en base : une nouvelle valeur s’applique à partir de sa date d’effet, l’ancienne reste lisible ; alertes, tableaux de bord et états lisent la valeur en vigueur à leur date. Les bornes sont une proposition à valider. Réglage de la clinique, posé à la mère, jamais envoyé aux téléphones.${peut ? '' : ' Votre profil consulte sans régler (droit « Régler les paramètres de clinique » de la matrice).'}',
+                    ton: 'info',
+                    icone: LucideIcons.calendarClock),
+                MiniTableauSigh(colonnes: [
+                  ColonneMini('Paramètre', (r) => '${r['libelle']}',
+                      rendu: (r) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text('${r['libelle']}', style: const TextStyle(color: JetonsShell.slate800, fontSize: 14, fontWeight: FontWeight.w500)),
+                            Text('${r['aide']}', style: const TextStyle(color: JetonsShell.slate500, fontSize: 12)),
+                          ])),
+                  ColonneMini('En vigueur', (r) => '${nombre(r['valeur'])} jours', droite: true),
+                  ColonneMini('Depuis', (r) => '${r['depuis']}'),
+                  ColonneMini('Bornes', (r) => '${r['bornes']}'),
+                  ColonneMini('Version à venir', (r) => '${r['aVenir']}'.isEmpty ? 'aucune' : '${r['aVenir']}'),
+                  if (peut)
+                    ColonneMini('', (r) => '',
+                        rendu: (r) => BoutonSigh(
+                            key: Key('regler-parametre:${r['id']}'),
+                            libelle: 'Régler',
+                            variante: VarianteBouton.secondaire,
+                            taille: TailleBouton.sm,
+                            onPressed: () => _regler(ctx, c, r))),
+                ], lignes: lignes),
+              ], espace: 12));
+        });
+  }
+
+  /// « Depuis » : la date d'effet de la version en vigueur, ou « défaut semé » (version 0).
+  static String _depuis(List<Fiche> versions, String cle, String auj) {
+    final r = Parametres.resoudre(cle, [for (final f in versions) if (f['statut'] != 'archive' && f['cle'] == cle) Parametre.fromJson(f)], auj,
+        definition: pcDefinitions.firstWhere((d) => d.cle == cle));
+    final d = r.ok ? r.valeur!.dateEffet : null;
+    return d == null ? 'défaut semé' : dateFR(DateTime.parse(d));
+  }
+
+  void _regler(BuildContext ctx, ContexteEcran c, Fiche r) {
+    final form = ControleurFormulaire([
+      ChampDef(nom: 'valeur', libelle: '${r['libelle']}', type: TypeChamp.nombre, requis: true),
+      const ChampDef(nom: 'dateEffet', libelle: 'Date d’effet', type: TypeChamp.date, requis: true),
+      const ChampDef(nom: 'motif', libelle: 'Motif du changement (obligatoire)', type: TypeChamp.textarea, col: ColChamp.plein, lignes: 2),
+    ], {'valeur': r['valeur'], 'dateEffet': parametreDateIso(c.aujourdhui)});
+    afficherModale<void>(ctx,
+        titre: 'Régler : ${r['libelle']}',
+        sousTitre: 'Une NOUVELLE version, à partir de la date d’effet ; la version en vigueur reste lisible. ${r['aide']}',
+        corps: FormulaireSigh(controleur: form),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  key: Key('enregistrer-parametre:${r['id']}'),
+                  libelle: 'Enregistrer',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final refus = reglerParametreClinique(c.magasin,
+                        cle: '${r['id']}',
+                        valeur: form['valeur'],
+                        dateEffet: '${form['dateEffet'] ?? ''}'.length >= 10 ? '${form['dateEffet']}'.substring(0, 10) : '${form['dateEffet'] ?? ''}',
+                        gesteAccorde: c.donnees?.matrice.droitGeste(c.role, pcGesteRegler) ?? false,
+                        libelleRole: libelleRole(c.magasin, c.role),
+                        motif: '${form['motif'] ?? ''}',
+                        horloge: () => c.aujourdhui);
+                    if (refus != null) {
+                      ToastsSigh.afficher(ctx, 'Réglage refusé (${refus.code}).', type: TypeToast.erreur, detail: '${refus.motif} ${refus.geste}');
+                      return;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Nouvelle version enregistrée.', type: TypeToast.succes);
+                  }),
+            ]);
   }
 }
 

@@ -140,7 +140,7 @@ void main() {
       expect(kpis(t), ['0 FCFA', '0 FCFA', '0 FCFA', '0 FCFA']);
       expect(find.textContaining('Aucune créance ne répond à cette sélection'), findsOneWidget);
       await toucher(t, find.text('Réinitialiser'));
-      await choisir(t, 'anciennete', 'Moins de 30 jours');
+      await choisir(t, 'anciennete', '30 jours ou moins'); // Lot PARAM-CLINIQUE : libellé tiré des bornes lues (30 semés)
       expect(kpis(t), [for (final k in lm(cas0[3]['kpis'])) '${k['valeur']}']);
     });
 

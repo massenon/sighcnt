@@ -41,9 +41,11 @@ ProblemeImport _articleInconnu(_V v) => _p(
     'aucun article « ${v['code']} » au référentiel produits',
     'Créez l’article d’abord (jeu « Importation du référentiel produits » ou écran Référentiel produits), ou corrigez le code.');
 
-String _statutLot(String peremption, String jour) {
+/// Le statut ÉCRIT d'un lot importé (comparaison stricte de l'import de la maquette). Le préavis est le paramètre de clinique en vigueur au jour de l'import
+/// (lot PARAM-CLINIQUE), lu par le port, jamais une constante.
+String _statutLot(String peremption, String jour, int preavis) {
   final j = importJoursEntre(jour, peremption);
-  return j < 0 ? 'perime' : (j < 90 ? 'alerte' : 'actif');
+  return j < 0 ? 'perime' : (j < preavis ? 'alerte' : 'actif');
 }
 
 /// Les valeurs distinctes non vides d'une colonne, dans l'ordre du fichier.
@@ -199,7 +201,7 @@ final JeuImport jeuStockDetailInitial = JeuImport(
           'quantiteRestante': q,
           'emplacement': p['emplacement'] ?? '',
           'magasin': 'detail',
-          'statut': _statutLot('${v['peremption']}', jour),
+          'statut': _statutLot('${v['peremption']}', jour, pcDelaiPeremption(port.toutes(parCollectionParametres), jour)),
         });
       }
       final ref = _referenceMouvement(mouvs);

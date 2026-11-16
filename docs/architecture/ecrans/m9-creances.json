@@ -21,9 +21,9 @@
  "onglets": [],
  "kpis": [
   "Créances totales",
-  "Moins de 30 jours",
-  "30 à 90 jours",
-  "Plus de 90 jours"
+  "30 jours ou moins",
+  "De 31 à 90 jours",
+  "Au-delà de 90 jours"
  ],
  "cartes": [
   "Balance âgée des créances par compagnie",
@@ -35,8 +35,8 @@
    "Code",
    "Compagnie",
    "Factures",
-   "< 30 j",
-   "30 – 90 j",
+   "≤ 30 j",
+   "31 à 90 j",
    "> 90 j",
    "Total dû"
   ]

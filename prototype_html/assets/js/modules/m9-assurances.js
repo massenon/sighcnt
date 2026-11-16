@@ -127,16 +127,13 @@
    * ======================================================================== */
   /* L'ANCIENNETÉ D'UNE DETTE EST UNE FABRIQUE UNIQUE : la balance âgée de
      `m9-creances` et le filtre du référentiel doivent découper les mêmes
-     tranches, sinon une compagnie « au-delà de 90 jours » ici ne l'est pas
+     tranches, sinon une compagnie « dans la dernière tranche » ici ne l'est pas
      là — et c'est le genre d'écart qu'on ne voit qu'en réunion. */
+  /* Lot PARAM-CLINIQUE (décision 14) : les deux bornes des tranches sont un PARAMÈTRE DE CLINIQUE daté (`parametresClinique`), lu à la date du jour, jamais écrit ici. */
   function ancienneteAssureur(code, tranche) {
     var f = facturesAssurance().filter(function (x) { return x.assureur === code; });
-    return C.sum(f.filter(function (x) {
-      var j = C.daysBetween(x.date, AUJ);
-      if (tranche === 'moins30') return j <= 30;
-      if (tranche === '30a90') return j > 30 && j <= 90;
-      return j > 90;
-    }), 'partAssurance');
+    var t = D.tranchesCreancesALaDate(AUJ);
+    return C.sum(f.filter(function (x) { return D.trancheCreance(C.daysBetween(x.date, AUJ), t) === tranche; }), 'partAssurance');
   }
 
   global.SIGH.screen('m9-compagnies', {
@@ -195,10 +192,10 @@
           if (v === 'sans') return !c;
           return c > 500000;
         } },
-        { name: 'anciennete', label: 'Ancienneté de la dette', options: [
-          { value: 'plus90', label: 'Au-delà de 90 jours' },
-          { value: '30a90', label: 'De 30 à 90 jours' },
-          { value: 'moins30', label: 'Moins de 30 jours' },
+        { name: 'anciennete', label: 'Ancienneté de la dette (tranches de la balance âgée)', options: [
+          { value: 'plus90', label: 'Dernière tranche (relance impérative)' },
+          { value: '30a90', label: 'Deuxième tranche' },
+          { value: 'moins30', label: 'Première tranche' },
         ], match: function (a, v) { return ancienneteAssureur(a.code, v) > 0; } },
         { name: 'portefeuille', label: 'Portefeuille d’assurés', options: [
           { value: 'aucun', label: 'Aucun assuré rattaché' },
@@ -1737,8 +1734,9 @@
       assureurs().forEach(function (a) {
         fCompagnie.appendChild(el('option', { value: a.code, text: a.code + ' — ' + a.nom }));
       });
-      [['', 'Toutes anciennetés'], ['moins30', 'Moins de 30 jours'], ['30a90', 'De 30 à 90 jours'],
-        ['plus90', 'Au-delà de 90 jours']].forEach(function (o) {
+      var tranches = D.tranchesCreancesALaDate(AUJ), libT = D.libellesTranches(tranches);
+      [['', 'Toutes anciennetés'], ['moins30', libT.moins30], ['30a90', libT['30a90']],
+        ['plus90', libT.plus90]].forEach(function (o) {
         fAnciennete.appendChild(el('option', { value: o[0], text: o[1] }));
       });
       [['', 'Tout montant'], ['50000', 'Au moins 50 000 F'], ['200000', 'Au moins 200 000 F'],
@@ -1778,9 +1776,9 @@
       C.clear(host);
       var rows = assureurs().map(function (a) {
         var f = facturesAssurance().filter(function (x) { return x.assureur === a.code && dansPlage(x); });
-        var recent = f.filter(function (x) { return C.daysBetween(x.date, AUJ) <= 30; });
-        var moyen = f.filter(function (x) { var j = C.daysBetween(x.date, AUJ); return j > 30 && j <= 90; });
-        var ancien = f.filter(function (x) { return C.daysBetween(x.date, AUJ) > 90; });
+        var recent = f.filter(function (x) { return D.trancheCreance(C.daysBetween(x.date, AUJ), tranches) === 'moins30'; });
+        var moyen = f.filter(function (x) { return D.trancheCreance(C.daysBetween(x.date, AUJ), tranches) === '30a90'; });
+        var ancien = f.filter(function (x) { return D.trancheCreance(C.daysBetween(x.date, AUJ), tranches) === 'plus90'; });
         return {
           id: a.code, code: a.code, nom: a.nom,
           nbFactures: f.length,
@@ -1800,9 +1798,9 @@
 
       host.appendChild(U.kpiGrid([
         { label: 'Créances totales', value: C.money(C.sum(rows, 'total')), icon: 'hand-coins', tone: 'warning' },
-        { label: 'Moins de 30 jours', value: C.money(C.sum(rows, 'moins30')), icon: 'clock', tone: 'success' },
-        { label: '30 à 90 jours', value: C.money(C.sum(rows, 'de30a90')), icon: 'clock-alert', tone: 'warning' },
-        { label: 'Plus de 90 jours', value: C.money(C.sum(rows, 'plus90')), icon: 'alert-octagon', tone: 'danger', hint: 'Relance impérative' },
+        { label: libT.moins30, value: C.money(C.sum(rows, 'moins30')), icon: 'clock', tone: 'success' },
+        { label: libT['30a90'], value: C.money(C.sum(rows, 'de30a90')), icon: 'clock-alert', tone: 'warning' },
+        { label: libT.plus90, value: C.money(C.sum(rows, 'plus90')), icon: 'alert-octagon', tone: 'danger', hint: 'Relance impérative' },
       ]));
 
       host.appendChild(U.dataTable({
@@ -1812,9 +1810,9 @@
           { key: 'code', label: 'Code', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold', { text: r.code }); } },
           { key: 'nom', label: 'Compagnie' },
           { key: 'nbFactures', label: 'Factures', align: 'right' },
-          { key: 'moins30', label: '< 30 j', align: 'right', text: function (r) { return C.money(r.moins30, false); }, render: function (r) { return C.money(r.moins30, false); } },
-          { key: 'de30a90', label: '30 – 90 j', align: 'right', text: function (r) { return C.money(r.de30a90, false); }, render: function (r) { return el('span', { class: r.de30a90 > 0 ? 'text-warning-700' : '', text: C.money(r.de30a90, false) }); } },
-          { key: 'plus90', label: '> 90 j', align: 'right', text: function (r) { return C.money(r.plus90, false); }, render: function (r) { return el('span', { class: r.plus90 > 0 ? 'font-semibold text-danger-600' : '', text: C.money(r.plus90, false) }); } },
+          { key: 'moins30', label: libT.courts.moins30, align: 'right', text: function (r) { return C.money(r.moins30, false); }, render: function (r) { return C.money(r.moins30, false); } },
+          { key: 'de30a90', label: libT.courts['30a90'], align: 'right', text: function (r) { return C.money(r.de30a90, false); }, render: function (r) { return el('span', { class: r.de30a90 > 0 ? 'text-warning-700' : '', text: C.money(r.de30a90, false) }); } },
+          { key: 'plus90', label: libT.courts.plus90, align: 'right', text: function (r) { return C.money(r.plus90, false); }, render: function (r) { return el('span', { class: r.plus90 > 0 ? 'font-semibold text-danger-600' : '', text: C.money(r.plus90, false) }); } },
           { key: 'total', label: 'Total dû', align: 'right', text: function (r) { return C.money(r.total, false); }, render: function (r) { return el('span.font-bold.text-navy-900', { text: C.money(r.total, false) }); } },
         ],
         actions: [K.btn('Éditer l’état des créances', {
@@ -1825,16 +1823,16 @@
               sousTitre: 'Balance âgée au ' + C.dateFR(AUJ),
               cartouche: [['Créances totales', C.money(C.sum(rows, 'total'))],
                 ['Compagnies concernées', C.num(rows.length)],
-                ['Dont plus de 90 jours', C.money(C.sum(rows, 'plus90'))],
+                ['Dont ' + libT.plus90.charAt(0).toLowerCase() + libT.plus90.slice(1), C.money(C.sum(rows, 'plus90'))],
                 ['Date d’édition', C.dateFR(AUJ)]],
               contenu: P.tableau([
                 { label: 'Code', key: 'code' }, { label: 'Compagnie', key: 'nom' },
                 { label: 'Factures', key: 'nbFactures', align: 'right' },
-                { label: '< 30 j', align: 'right', value: function (r) { return C.money(r.moins30, false); },
+                { label: libT.courts.moins30, align: 'right', value: function (r) { return C.money(r.moins30, false); },
                   somme: function (r) { return r.moins30 || 0; } },
-                { label: '30-90 j', align: 'right', value: function (r) { return C.money(r.de30a90, false); },
+                { label: libT.courts['30a90'], align: 'right', value: function (r) { return C.money(r.de30a90, false); },
                   somme: function (r) { return r.de30a90 || 0; } },
-                { label: '> 90 j', align: 'right', value: function (r) { return C.money(r.plus90, false); },
+                { label: libT.courts.plus90, align: 'right', value: function (r) { return C.money(r.plus90, false); },
                   somme: function (r) { return r.plus90 || 0; } },
                 { label: 'Total', align: 'right', value: function (r) { return C.money(r.total, false); },
                   somme: function (r) { return r.total || 0; } },
@@ -1857,7 +1855,7 @@
         {
           title: 'Répartition par ancienneté',
           render: function () {
-            return G.anneau(['Moins de 30 jours', '30 à 90 jours', 'Plus de 90 jours'],
+            return G.anneau([libT.moins30, libT['30a90'], libT.plus90],
               [C.sum(rows, 'moins30'), C.sum(rows, 'de30a90'), C.sum(rows, 'plus90')],
               { legend: 'bottom', colors: [G.TONES.vert, G.TONES.orange, G.TONES.rouge] });
           },
