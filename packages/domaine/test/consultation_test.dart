@@ -292,6 +292,34 @@ void main() {
       expect(apres - avant, 1110, reason: 'la prescription du 20/08 garde les anciens prix, celle du 01/10 prend les versions du 15/09, alors que le jour courant est le 31/10');
     });
 
+    test('LOT TARIF-FIX : une ligne sans prix n’est JAMAIS facturée à zéro. Refus nommé (PRIX_A_DEFINIR, code, « prix à définir », geste) AVANT toute écriture ; après la version décidée, la prescription suivante lit le prix ; un certificat hors de l’espace des actes prend son prix', () {
+      final c = liste((v['cas'] as Map)['prescrire']).firstWhere((x) => '${x['nom']}'.startsWith('patient non assuré'));
+      final entree = (c['entree'] as Map).cast<String, Object?>();
+      final params = (c['params'] as Map).cast<String, Object?>();
+      final m = memoire(entree);
+      m.inserer(tarCollectionTarifs, {'id': 'TFX1', 'code': 'TFX1', 'codeActe': 'TFX1', 'libelle': 'Acte sonde', 'famille': 'ACTE', 'statut': 'actif'});
+      m.inserer(tarCollectionVersions, {'id': 'TFX1@2026-08-20@1', 'code': 'TFX1', 'version': 1, 'dateEffet': '2026-08-20', 'statut': 'propose', 'etatAssure': 'unique', 'prixNonAssure': 4200});
+      final avant = m.instantane();
+      final base = {'patientCode': params['patientCode'], 'medecin': 'Test', 'diagnostic': 'sonde', 'date': '2026-08-20T09:00:00.000Z'};
+      RefusCs? refus;
+      try {
+        csPrescrire(m, {...base, 'actes': ['TFX1']}, const SessionCs(role: 'admin', fonction: 'direction'));
+      } on RefusCs catch (e) {
+        refus = e;
+      }
+      expect(refus?.code, 'PRIX_A_DEFINIR');
+      expect(refus!.message, allOf(contains('TFX1'), contains('prix à définir'), contains('Tarifs et prix')));
+      String nonVides(Map<String, List<Map<String, Object?>>> x) => jsonEncode({for (final e in x.entries) if (e.value.isNotEmpty) e.key: e.value});
+      expect(nonVides(m.instantane()), nonVides(avant), reason: 'un refus n’écrit rien');
+      m.mettreAJour(tarCollectionVersions, 'TFX1@2026-08-20@1', {'statut': 'valide'});
+      csPrescrire(m, {...base, 'actes': ['TFX1']}, const SessionCs(role: 'admin', fonction: 'direction'));
+      expect(liste(m.toutes('factures').first['lignes']).first['prixUnitaire'], 4200);
+      final cert = migration.tarifs.where((t) => t['famille'] == 'CERTIFICAT').first;
+      csPrescrire(m, {...base, 'actes': [cert['code']]}, const SessionCs(role: 'admin', fonction: 'direction'));
+      final lc = liste(m.toutes('factures').first['lignes']).first;
+      expect((lc['prixUnitaire'] as num) > 0, isTrue, reason: 'le certificat ${cert['code']} n’est plus à 0 hors de l’espace des actes');
+    });
+
     test('RG-09 : carte expirée → aucune part assureur, imagerie et reste au tarif non assuré (E340)', () {
       final c = liste((v['cas'] as Map)['prescrire'])[2];
       final f = liste((c['sortie'] as Map)['inserts'] == null ? [] : ((c['sortie'] as Map)['inserts'] as Map)['factures']).first;

@@ -1,0 +1,3009 @@
+{
+ "_doc": "Prix d’une ligne de prescription (lot TARIF-FIX) : un montant strictement positif, ou « prix à définir » avec sa cause, son motif et son geste. Jamais un zéro. Tiré de la maquette en marche (écran « Nouvelle ordonnance »).",
+ "sonde": {
+  "tarifs": [
+   {
+    "code": "A1",
+    "codeActe": "A1",
+    "libelle": "Acte assurable à deux colonnes",
+    "famille": "ACTE",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "code": "A2",
+    "codeActe": "A2",
+    "libelle": "Acte assurable, colonne assurée vide",
+    "famille": "ACTE",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "code": "A3",
+    "codeActe": "A3",
+    "libelle": "Acte à prix unique",
+    "famille": "ACTE",
+    "statut": "actif"
+   },
+   {
+    "code": "A4",
+    "codeActe": "A4",
+    "libelle": "Acte, colonne non assurée vide",
+    "famille": "ACTE",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "code": "A5",
+    "codeActe": "A5",
+    "libelle": "Acte seulement proposé",
+    "famille": "ACTE",
+    "statut": "actif"
+   },
+   {
+    "code": "A6",
+    "codeActe": "A6",
+    "libelle": "Acte à effet futur",
+    "famille": "ACTE",
+    "statut": "actif"
+   },
+   {
+    "code": "A7",
+    "codeActe": "A7",
+    "libelle": "Acte refusé",
+    "famille": "ACTE",
+    "statut": "actif"
+   },
+   {
+    "code": "A8",
+    "codeActe": "A8",
+    "libelle": "Acte à deux versions",
+    "famille": "ACTE",
+    "statut": "actif"
+   },
+   {
+    "code": "A9",
+    "codeActe": "A9",
+    "libelle": "Acte à prix nul",
+    "famille": "ACTE",
+    "statut": "actif"
+   },
+   {
+    "code": "A10",
+    "codeActe": "A10",
+    "libelle": "Acte non couvert",
+    "famille": "ACTE",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "code": "G1",
+    "codeGrille": "G1",
+    "libelle": "Certificat de sonde",
+    "famille": "CERTIFICAT",
+    "assurable": "sos",
+    "statut": "actif"
+   },
+   {
+    "code": "G2",
+    "codeGrille": "G2",
+    "libelle": "Soin non couvert",
+    "famille": "AMI",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "code": "G3",
+    "codeGrille": "G3",
+    "libelle": "Consultation de sonde",
+    "famille": "CONSULTATION",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "code": "G4",
+    "codeGrille": "G4",
+    "libelle": "Ligne de grille, colonne assurée vide",
+    "famille": "GYNECO",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "code": "L1",
+    "codeAnalyse": "L1",
+    "codeGrille": "LAB-X",
+    "codesAlias": [
+     "LAB-X"
+    ],
+    "libelle": "Analyse à prix unique",
+    "famille": "LABO",
+    "statut": "actif"
+   },
+   {
+    "code": "L2",
+    "codeAnalyse": "L2",
+    "libelle": "Analyse à deux colonnes",
+    "famille": "LABO",
+    "statut": "actif"
+   },
+   {
+    "code": "L3",
+    "codeAnalyse": "L3",
+    "libelle": "Analyse sans prix",
+    "famille": "LABO",
+    "statut": "actif"
+   },
+   {
+    "code": "L4",
+    "codeAnalyse": "L4",
+    "libelle": "Analyse, colonne assurée vide",
+    "famille": "LABO",
+    "statut": "actif"
+   },
+   {
+    "code": "AR1",
+    "codeActe": "AR1",
+    "libelle": "Acte archivé",
+    "famille": "ACTE",
+    "statut": "archive"
+   }
+  ],
+  "versions": [
+   {
+    "code": "A1",
+    "version": 1,
+    "prixNonAssure": 9000,
+    "prixAssure": 6000,
+    "etatAssure": "montant",
+    "statut": "valide"
+   },
+   {
+    "code": "A2",
+    "version": 1,
+    "prixNonAssure": 4000,
+    "prixAssure": null,
+    "etatAssure": "manquant",
+    "statut": "valide"
+   },
+   {
+    "code": "A3",
+    "version": 1,
+    "prixNonAssure": 2000,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "valide"
+   },
+   {
+    "code": "A4",
+    "version": 1,
+    "prixNonAssure": null,
+    "etatNonAssure": "manquant",
+    "prixAssure": 3000,
+    "etatAssure": "montant",
+    "statut": "valide"
+   },
+   {
+    "code": "A5",
+    "version": 1,
+    "prixNonAssure": 2500,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "propose",
+    "dateEffet": "2026-08-16"
+   },
+   {
+    "code": "A6",
+    "version": 1,
+    "prixNonAssure": 3500,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "valide",
+    "dateEffet": "2026-08-20"
+   },
+   {
+    "code": "A6",
+    "version": 2,
+    "prixNonAssure": 3700,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "valide",
+    "dateEffet": "2026-09-01"
+   },
+   {
+    "code": "A7",
+    "version": 1,
+    "prixNonAssure": 1900,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "refuse",
+    "dateEffet": "2026-08-16"
+   },
+   {
+    "code": "A8",
+    "version": 1,
+    "prixNonAssure": 5000,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "valide"
+   },
+   {
+    "code": "A8",
+    "version": 2,
+    "prixNonAssure": 5500,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "valide",
+    "dateEffet": "2026-08-20"
+   },
+   {
+    "code": "A9",
+    "version": 1,
+    "prixNonAssure": 0,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "valide"
+   },
+   {
+    "code": "A10",
+    "version": 1,
+    "prixNonAssure": 1200,
+    "prixAssure": null,
+    "etatAssure": "nc",
+    "statut": "valide"
+   },
+   {
+    "code": "G1",
+    "version": 1,
+    "prixNonAssure": 7000,
+    "prixAssure": 7000,
+    "etatAssure": "montant",
+    "statut": "valide"
+   },
+   {
+    "code": "G2",
+    "version": 1,
+    "prixNonAssure": 1500,
+    "prixAssure": null,
+    "etatAssure": "nc",
+    "statut": "valide"
+   },
+   {
+    "code": "G3",
+    "version": 1,
+    "prixNonAssure": 3000,
+    "prixAssure": 5000,
+    "etatAssure": "montant",
+    "statut": "valide"
+   },
+   {
+    "code": "G4",
+    "version": 1,
+    "prixNonAssure": 2000,
+    "prixAssure": null,
+    "etatAssure": "manquant",
+    "statut": "valide"
+   },
+   {
+    "code": "L1",
+    "version": 1,
+    "prixNonAssure": 2500,
+    "prixAssure": 2500,
+    "etatAssure": "unique",
+    "statut": "valide"
+   },
+   {
+    "code": "L2",
+    "version": 1,
+    "prixNonAssure": 2000,
+    "prixAssure": 2500,
+    "etatAssure": "montant",
+    "statut": "valide"
+   },
+   {
+    "code": "L3",
+    "version": 1,
+    "prixNonAssure": null,
+    "etatNonAssure": "manquant",
+    "prixAssure": null,
+    "etatAssure": "manquant",
+    "statut": "valide"
+   },
+   {
+    "code": "L4",
+    "version": 1,
+    "prixNonAssure": 1800,
+    "prixAssure": null,
+    "etatAssure": "manquant",
+    "statut": "valide"
+   },
+   {
+    "code": "AR1",
+    "version": 1,
+    "prixNonAssure": 800,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "statut": "valide"
+   }
+  ],
+  "cas": [
+   {
+    "voie": "acte",
+    "code": "A1",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A1",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A1",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A1",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A1",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A1",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A2",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 4000,
+     "tarif": "non assuré",
+     "prestation": "A2",
+     "libelle": "Acte assurable, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A2",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A2 » Acte assurable, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "A2",
+     "libelle": "Acte assurable, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A2",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 4000,
+     "tarif": "non assuré",
+     "prestation": "A2",
+     "libelle": "Acte assurable, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A2",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A2 » Acte assurable, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "A2",
+     "libelle": "Acte assurable, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A2",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 4000,
+     "tarif": "non assuré",
+     "prestation": "A2",
+     "libelle": "Acte assurable, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A2",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A2 » Acte assurable, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "A2",
+     "libelle": "Acte assurable, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A3",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "A3",
+     "libelle": "Acte à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A3",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "A3",
+     "libelle": "Acte à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A3",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "A3",
+     "libelle": "Acte à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A3",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "A3",
+     "libelle": "Acte à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A3",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "A3",
+     "libelle": "Acte à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A3",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "A3",
+     "libelle": "Acte à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A4",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A4 » Acte, colonne non assurée vide : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A4",
+     "libelle": "Acte, colonne non assurée vide",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A4",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "assuré",
+     "prestation": "A4",
+     "libelle": "Acte, colonne non assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A4",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A4 » Acte, colonne non assurée vide : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A4",
+     "libelle": "Acte, colonne non assurée vide",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A4",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "assuré",
+     "prestation": "A4",
+     "libelle": "Acte, colonne non assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A4",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A4 » Acte, colonne non assurée vide : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A4",
+     "libelle": "Acte, colonne non assurée vide",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A4",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "assuré",
+     "prestation": "A4",
+     "libelle": "Acte, colonne non assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A5",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A5 » Acte seulement proposé : prix à définir (une proposition attend la décision)",
+     "prestation": "A5",
+     "libelle": "Acte seulement proposé",
+     "cause": "proposition-en-attente",
+     "geste": "Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A5",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A5 » Acte seulement proposé : prix à définir (une proposition attend la décision)",
+     "prestation": "A5",
+     "libelle": "Acte seulement proposé",
+     "cause": "proposition-en-attente",
+     "geste": "Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A5",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A5 » Acte seulement proposé : prix à définir (une proposition attend la décision)",
+     "prestation": "A5",
+     "libelle": "Acte seulement proposé",
+     "cause": "proposition-en-attente",
+     "geste": "Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A5",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A5 » Acte seulement proposé : prix à définir (une proposition attend la décision)",
+     "prestation": "A5",
+     "libelle": "Acte seulement proposé",
+     "cause": "proposition-en-attente",
+     "geste": "Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A5",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A5 » Acte seulement proposé : prix à définir (une proposition attend la décision)",
+     "prestation": "A5",
+     "libelle": "Acte seulement proposé",
+     "cause": "proposition-en-attente",
+     "geste": "Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A5",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A5 » Acte seulement proposé : prix à définir (une proposition attend la décision)",
+     "prestation": "A5",
+     "libelle": "Acte seulement proposé",
+     "cause": "proposition-en-attente",
+     "geste": "Décider la proposition (Oui, avec une date d’effet) dans « Tarifs et prix », onglet Alertes.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A6",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A6 » Acte à effet futur : prix à définir, effectif le 20/08/2026",
+     "prestation": "A6",
+     "libelle": "Acte à effet futur",
+     "cause": "version-future",
+     "geste": "Le prix décidé prend effet le 20/08/2026 : la ligne le lira ce jour-là. Pour l’appliquer plus tôt, proposer dans « Tarifs et prix » une version datée d’aujourd’hui et la faire décider (Oui).",
+     "effectifLe": "2026-08-20",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A6",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A6 » Acte à effet futur : prix à définir, effectif le 20/08/2026",
+     "prestation": "A6",
+     "libelle": "Acte à effet futur",
+     "cause": "version-future",
+     "geste": "Le prix décidé prend effet le 20/08/2026 : la ligne le lira ce jour-là. Pour l’appliquer plus tôt, proposer dans « Tarifs et prix » une version datée d’aujourd’hui et la faire décider (Oui).",
+     "effectifLe": "2026-08-20",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A6",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 3500,
+     "tarif": "non assuré",
+     "prestation": "A6",
+     "libelle": "Acte à effet futur",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A6",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 3500,
+     "tarif": "non assuré",
+     "prestation": "A6",
+     "libelle": "Acte à effet futur",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A6",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 3700,
+     "tarif": "non assuré",
+     "prestation": "A6",
+     "libelle": "Acte à effet futur",
+     "version": 2
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A6",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 3700,
+     "tarif": "non assuré",
+     "prestation": "A6",
+     "libelle": "Acte à effet futur",
+     "version": 2
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A7",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A7 » Acte refusé : prix à définir (aucune version de prix décidée)",
+     "prestation": "A7",
+     "libelle": "Acte refusé",
+     "cause": "sans-version",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A7",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A7 » Acte refusé : prix à définir (aucune version de prix décidée)",
+     "prestation": "A7",
+     "libelle": "Acte refusé",
+     "cause": "sans-version",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A7",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A7 » Acte refusé : prix à définir (aucune version de prix décidée)",
+     "prestation": "A7",
+     "libelle": "Acte refusé",
+     "cause": "sans-version",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A7",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A7 » Acte refusé : prix à définir (aucune version de prix décidée)",
+     "prestation": "A7",
+     "libelle": "Acte refusé",
+     "cause": "sans-version",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A7",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A7 » Acte refusé : prix à définir (aucune version de prix décidée)",
+     "prestation": "A7",
+     "libelle": "Acte refusé",
+     "cause": "sans-version",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A7",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A7 » Acte refusé : prix à définir (aucune version de prix décidée)",
+     "prestation": "A7",
+     "libelle": "Acte refusé",
+     "cause": "sans-version",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A8",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "prestation": "A8",
+     "libelle": "Acte à deux versions",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A8",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "prestation": "A8",
+     "libelle": "Acte à deux versions",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A8",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 5500,
+     "tarif": "non assuré",
+     "prestation": "A8",
+     "libelle": "Acte à deux versions",
+     "version": 2
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A8",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 5500,
+     "tarif": "non assuré",
+     "prestation": "A8",
+     "libelle": "Acte à deux versions",
+     "version": 2
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A8",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 5500,
+     "tarif": "non assuré",
+     "prestation": "A8",
+     "libelle": "Acte à deux versions",
+     "version": 2
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A8",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 5500,
+     "tarif": "non assuré",
+     "prestation": "A8",
+     "libelle": "Acte à deux versions",
+     "version": 2
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A9",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A9 » Acte à prix nul : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A9",
+     "libelle": "Acte à prix nul",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A9",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A9 » Acte à prix nul : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A9",
+     "libelle": "Acte à prix nul",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A9",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A9 » Acte à prix nul : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A9",
+     "libelle": "Acte à prix nul",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A9",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A9 » Acte à prix nul : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A9",
+     "libelle": "Acte à prix nul",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A9",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« A9 » Acte à prix nul : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A9",
+     "libelle": "Acte à prix nul",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A9",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« A9 » Acte à prix nul : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "A9",
+     "libelle": "Acte à prix nul",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A10",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1200,
+     "tarif": "non assuré",
+     "prestation": "A10",
+     "libelle": "Acte non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A10",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 1200,
+     "tarif": "non assuré",
+     "prestation": "A10",
+     "libelle": "Acte non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A10",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1200,
+     "tarif": "non assuré",
+     "prestation": "A10",
+     "libelle": "Acte non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A10",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 1200,
+     "tarif": "non assuré",
+     "prestation": "A10",
+     "libelle": "Acte non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A10",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1200,
+     "tarif": "non assuré",
+     "prestation": "A10",
+     "libelle": "Acte non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "A10",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 1200,
+     "tarif": "non assuré",
+     "prestation": "A10",
+     "libelle": "Acte non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G1",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "prestation": "G1",
+     "libelle": "Certificat de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G1",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "prestation": "G1",
+     "libelle": "Certificat de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G1",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "prestation": "G1",
+     "libelle": "Certificat de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G1",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "prestation": "G1",
+     "libelle": "Certificat de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G1",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "prestation": "G1",
+     "libelle": "Certificat de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G1",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "prestation": "G1",
+     "libelle": "Certificat de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G2",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1500,
+     "tarif": "non assuré",
+     "prestation": "G2",
+     "libelle": "Soin non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G2",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 1500,
+     "tarif": "non assuré",
+     "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré.",
+     "prestation": "G2",
+     "libelle": "Soin non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G2",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1500,
+     "tarif": "non assuré",
+     "prestation": "G2",
+     "libelle": "Soin non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G2",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 1500,
+     "tarif": "non assuré",
+     "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré.",
+     "prestation": "G2",
+     "libelle": "Soin non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G2",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1500,
+     "tarif": "non assuré",
+     "prestation": "G2",
+     "libelle": "Soin non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G2",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 1500,
+     "tarif": "non assuré",
+     "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré.",
+     "prestation": "G2",
+     "libelle": "Soin non couvert",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G3",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "non assuré",
+     "prestation": "G3",
+     "libelle": "Consultation de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G3",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "assuré",
+     "prestation": "G3",
+     "libelle": "Consultation de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G3",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "non assuré",
+     "prestation": "G3",
+     "libelle": "Consultation de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G3",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "assuré",
+     "prestation": "G3",
+     "libelle": "Consultation de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G3",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "non assuré",
+     "prestation": "G3",
+     "libelle": "Consultation de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G3",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "assuré",
+     "prestation": "G3",
+     "libelle": "Consultation de sonde",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G4",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "G4",
+     "libelle": "Ligne de grille, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G4",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« G4 » Ligne de grille, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "G4",
+     "libelle": "Ligne de grille, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G4",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "G4",
+     "libelle": "Ligne de grille, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G4",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« G4 » Ligne de grille, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "G4",
+     "libelle": "Ligne de grille, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G4",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "G4",
+     "libelle": "Ligne de grille, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "G4",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« G4 » Ligne de grille, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "G4",
+     "libelle": "Ligne de grille, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "L1",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "L1",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "L1",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "L1",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "L1",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "L1",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "LAB-X",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "LAB-X",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "LAB-X",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "LAB-X",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "LAB-X",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "LAB-X",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "AR1",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« AR1 » AR1 : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "AR1",
+     "libelle": "AR1",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "AR1",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« AR1 » AR1 : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "AR1",
+     "libelle": "AR1",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "AR1",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« AR1 » AR1 : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "AR1",
+     "libelle": "AR1",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "AR1",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« AR1 » AR1 : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "AR1",
+     "libelle": "AR1",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "AR1",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« AR1 » AR1 : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "AR1",
+     "libelle": "AR1",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "AR1",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« AR1 » AR1 : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "AR1",
+     "libelle": "AR1",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "ZZ",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "ZZ",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "ZZ",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "ZZ",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "ZZ",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "ZZ",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "«  »  : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "",
+     "libelle": "",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "«  »  : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "",
+     "libelle": "",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "«  »  : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "",
+     "libelle": "",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "«  »  : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "",
+     "libelle": "",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "«  »  : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "",
+     "libelle": "",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "acte",
+    "code": "",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "«  »  : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "",
+     "libelle": "",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » (Nouvelle prestation, même code), puis la faire décider (Oui) ; ou retirer la ligne de la prescription.",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L1",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L1",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L1",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L1",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L1",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L1",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L2",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "L2",
+     "libelle": "Analyse à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L2",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L2",
+     "libelle": "Analyse à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L2",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "L2",
+     "libelle": "Analyse à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L2",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L2",
+     "libelle": "Analyse à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L2",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2000,
+     "tarif": "non assuré",
+     "prestation": "L2",
+     "libelle": "Analyse à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L2",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L2",
+     "libelle": "Analyse à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L3",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« L3 » Analyse sans prix : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "L3",
+     "libelle": "Analyse sans prix",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L3",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« L3 » Analyse sans prix : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "L3",
+     "libelle": "Analyse sans prix",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L3",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« L3 » Analyse sans prix : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "L3",
+     "libelle": "Analyse sans prix",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L3",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« L3 » Analyse sans prix : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "L3",
+     "libelle": "Analyse sans prix",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L3",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« L3 » Analyse sans prix : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "L3",
+     "libelle": "Analyse sans prix",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L3",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« L3 » Analyse sans prix : prix à définir (la version en vigueur ne porte pas de prix non assuré ; le prix assuré ne le remplace pas)",
+     "prestation": "L3",
+     "libelle": "Analyse sans prix",
+     "version": 1,
+     "cause": "prix-non-assure-vide",
+     "geste": "Proposer le prix dans « Tarifs et prix » (Proposer un changement de prix), puis le faire décider (Oui) par la Direction, la Directrice Administrative ou l’administrateur ; ou retirer la ligne de la prescription.",
+     "colonne": "non assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L4",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1800,
+     "tarif": "non assuré",
+     "prestation": "L4",
+     "libelle": "Analyse, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L4",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« L4 » Analyse, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "L4",
+     "libelle": "Analyse, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L4",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1800,
+     "tarif": "non assuré",
+     "prestation": "L4",
+     "libelle": "Analyse, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L4",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« L4 » Analyse, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "L4",
+     "libelle": "Analyse, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L4",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 1800,
+     "tarif": "non assuré",
+     "prestation": "L4",
+     "libelle": "Analyse, colonne assurée vide",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "L4",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« L4 » Analyse, colonne assurée vide : prix assuré à définir (la colonne assurée de la version en vigueur n’est pas renseignée ; le prix non assuré ne la remplace pas)",
+     "prestation": "L4",
+     "libelle": "Analyse, colonne assurée vide",
+     "version": 1,
+     "cause": "prix-assure-vide",
+     "geste": "Proposer dans « Tarifs et prix » une version qui porte le prix assuré (ou qui déclare la prestation NON COUVERTE), puis la faire décider (Oui).",
+     "colonne": "assuré",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "LAB-X",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "LAB-X",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "LAB-X",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "LAB-X",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "LAB-X",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "non assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "LAB-X",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 2500,
+     "tarif": "assuré",
+     "prestation": "L1",
+     "libelle": "Analyse à prix unique",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "A1",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "A1",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "A1",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "A1",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "A1",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "A1",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "A1",
+     "libelle": "Acte assurable à deux colonnes",
+     "version": 1
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "ZZ",
+    "jour": "2026-08-16",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "ZZ",
+    "jour": "2026-08-16",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "ZZ",
+    "jour": "2026-08-20",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "ZZ",
+    "jour": "2026-08-20",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "ZZ",
+    "jour": "2026-09-01",
+    "assure": false,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).",
+     "code": "PRIX_A_DEFINIR"
+    }
+   },
+   {
+    "voie": "analyse",
+    "code": "ZZ",
+    "jour": "2026-09-01",
+    "assure": true,
+    "attendu": {
+     "ok": false,
+     "motif": "« ZZ » ZZ : prix à définir (aucune prestation de prix ne porte ce code)",
+     "prestation": "ZZ",
+     "libelle": "ZZ",
+     "cause": "absent-du-referentiel",
+     "geste": "Créer la prestation dans « Tarifs et prix » : Nouvelle prestation, famille Analyses de laboratoire, MÊME code que le catalogue du laboratoire, puis la faire décider (Oui).",
+     "code": "PRIX_A_DEFINIR"
+    }
+   }
+  ],
+  "sansReferentiel": {
+   "ok": false,
+   "motif": "« A1 » A1 : prix à définir (le référentiel de prix n’est pas chargé)",
+   "prestation": "A1",
+   "libelle": "A1",
+   "cause": "referentiel-absent",
+   "geste": "Recharger la page.",
+   "code": "PRIX_A_DEFINIR"
+  }
+ },
+ "codePris": {
+  "tarifs": [
+   {
+    "code": "CERT-APT",
+    "codeGrille": "CERT-APT",
+    "libelle": "Certificat médical d’aptitude",
+    "statut": "actif"
+   },
+   {
+    "code": "SO02",
+    "codeActe": "SO02",
+    "codeGrille": "SIV",
+    "codesAlias": [
+     "SIV"
+    ],
+    "libelle": "Soins IV",
+    "statut": "actif"
+   },
+   {
+    "code": "OLD1",
+    "codeActe": "OLD1",
+    "libelle": "Acte archivé",
+    "statut": "archive"
+   }
+  ],
+  "cas": [
+   {
+    "code": "CERT-APT",
+    "pris": "CERT-APT",
+    "normalise": "CERT-APT"
+   },
+   {
+    "code": "cert-apt",
+    "pris": "CERT-APT",
+    "normalise": "CERT-APT"
+   },
+   {
+    "code": " CERT-APT ",
+    "pris": "CERT-APT",
+    "normalise": "CERT-APT"
+   },
+   {
+    "code": "Cert-Apt  ",
+    "pris": "CERT-APT",
+    "normalise": "CERT-APT"
+   },
+   {
+    "code": "siv",
+    "pris": "SO02",
+    "normalise": "SIV"
+   },
+   {
+    "code": " so02",
+    "pris": "SO02",
+    "normalise": "SO02"
+   },
+   {
+    "code": "old1",
+    "pris": "OLD1",
+    "normalise": "OLD1"
+   },
+   {
+    "code": "CERT-CA",
+    "pris": null,
+    "normalise": "CERT-CA"
+   },
+   {
+    "code": "",
+    "pris": null,
+    "normalise": ""
+   },
+   {
+    "code": null,
+    "pris": null,
+    "normalise": ""
+   }
+  ]
+ },
+ "seme": [
+  {
+   "code": "CERT-APT",
+   "acte": [
+    {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "prestation": "CERT-APT",
+     "libelle": "Certificat médical d’aptitude",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "prestation": "CERT-APT",
+     "libelle": "Certificat médical d’aptitude",
+     "version": 1
+    }
+   ],
+   "analyse": [
+    {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "prestation": "CERT-APT",
+     "libelle": "Certificat médical d’aptitude",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 7000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "prestation": "CERT-APT",
+     "libelle": "Certificat médical d’aptitude",
+     "version": 1
+    }
+   ]
+  },
+  {
+   "code": "CERT-CA",
+   "acte": [
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "prestation": "CERT-CA",
+     "libelle": "Certificat d’aptitude",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "prestation": "CERT-CA",
+     "libelle": "Certificat d’aptitude",
+     "version": 1
+    }
+   ],
+   "analyse": [
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "prestation": "CERT-CA",
+     "libelle": "Certificat d’aptitude",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "prestation": "CERT-CA",
+     "libelle": "Certificat d’aptitude",
+     "version": 1
+    }
+   ]
+  },
+  {
+   "code": "CONS-GEN",
+   "acte": [
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "prestation": "MG01",
+     "libelle": "Consultation généraliste",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "assuré",
+     "prestation": "MG01",
+     "libelle": "Consultation généraliste",
+     "version": 1
+    }
+   ],
+   "analyse": [
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "non assuré",
+     "prestation": "MG01",
+     "libelle": "Consultation généraliste",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 3000,
+     "tarif": "assuré",
+     "prestation": "MG01",
+     "libelle": "Consultation généraliste",
+     "version": 1
+    }
+   ]
+  },
+  {
+   "code": "SO09",
+   "acte": [
+    {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "SO09",
+     "libelle": "Pansement",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "SO09",
+     "libelle": "Pansement",
+     "version": 1
+    }
+   ],
+   "analyse": [
+    {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "SO09",
+     "libelle": "Pansement",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 6000,
+     "tarif": "assuré",
+     "prestation": "SO09",
+     "libelle": "Pansement",
+     "version": 1
+    }
+   ]
+  },
+  {
+   "code": "L05",
+   "acte": [
+    {
+     "ok": true,
+     "montant": 1000,
+     "tarif": "non assuré",
+     "prestation": "L05",
+     "libelle": "BU",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 1000,
+     "tarif": "assuré",
+     "prestation": "L05",
+     "libelle": "BU",
+     "version": 1
+    }
+   ],
+   "analyse": [
+    {
+     "ok": true,
+     "montant": 1000,
+     "tarif": "non assuré",
+     "prestation": "L05",
+     "libelle": "BU",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 1000,
+     "tarif": "non assuré",
+     "prestation": "L05",
+     "libelle": "BU",
+     "version": 1
+    }
+   ]
+  },
+  {
+   "code": "LAB-NFS",
+   "acte": [
+    {
+     "ok": true,
+     "montant": 4000,
+     "tarif": "non assuré",
+     "prestation": "L24",
+     "libelle": "NFS COMPLETE (HEMOGRAMME)",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 4000,
+     "tarif": "assuré",
+     "prestation": "L24",
+     "libelle": "NFS COMPLETE (HEMOGRAMME)",
+     "version": 1
+    }
+   ],
+   "analyse": [
+    {
+     "ok": true,
+     "montant": 4000,
+     "tarif": "non assuré",
+     "prestation": "L24",
+     "libelle": "NFS COMPLETE (HEMOGRAMME)",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 4000,
+     "tarif": "assuré",
+     "prestation": "L24",
+     "libelle": "NFS COMPLETE (HEMOGRAMME)",
+     "version": 1
+    }
+   ]
+  },
+  {
+   "code": "IMG-ECHO-PEL",
+   "acte": [
+    {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "IM01",
+     "libelle": "Échographie pelvienne",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "assuré",
+     "prestation": "IM01",
+     "libelle": "Échographie pelvienne",
+     "version": 1
+    }
+   ],
+   "analyse": [
+    {
+     "ok": true,
+     "montant": 9000,
+     "tarif": "non assuré",
+     "prestation": "IM01",
+     "libelle": "Échographie pelvienne",
+     "version": 1
+    },
+    {
+     "ok": true,
+     "montant": 5000,
+     "tarif": "assuré",
+     "prestation": "IM01",
+     "libelle": "Échographie pelvienne",
+     "version": 1
+    }
+   ]
+  }
+ ],
+ "ecran": {
+  "proposee": true,
+  "decidee": true,
+  "options": [
+   "Vecteur futurSoins · prix à définir, effectif le 20/08/2026",
+   "Vecteur proposéSoins · prix à définir"
+  ],
+  "total": "Non calculable : prix à définir pour VTFP (à tarifier dans « Tarifs et prix »)",
+  "texteCatalogueSansPrix": "sans prix : à tarifier dans Tarifs et prix"
+ }
+}

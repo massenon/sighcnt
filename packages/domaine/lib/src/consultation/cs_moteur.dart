@@ -658,19 +658,23 @@ ResultatPrescription csPrescrire(
   final jourPiece = tarJourDe(date, tarIso(s.maintenant));
   final referentielAnalyses = s.referentiel('analyses');
   final assureAnalyses = csVrai(p['assureur']) && _carteValide(s, p, date);
+  // LOT TARIF-FIX : « non calculable n'est pas zéro ». Chaque ligne d'analyse et d'acte lit le référentiel à la date de la PIÈCE (`prixDeLigne`) ; une ligne sans prix
+  // strictement positif est « prix à définir » : elle est NOMMÉE (cause, motif, geste) et la prescription est refusée AVANT toute écriture.
+  final aDefinir = <LignePrix>[];
   final analyses = <FicheCs>[
     for (final code in (v['analyses'] as List? ?? const []))
       () {
         final a = referentielAnalyses.where((x) => x['code'] == code).firstOrNull ??
             const <String, Object?>{};
-        final pr = h.prixAnalyse(code, jourPiece, assureAnalyses, aujourdhui: jourPiece);
+        final pr = h.prixDeLigne(code, jourPiece, assureAnalyses, voie: 'analyse', aujourdhui: jourPiece);
+        if (!pr.ok) aDefinir.add(pr);
         return <String, Object?>{
           'code': code,
-          'designation': _ou(a['designation'], code),
+          'designation': _ou(a['designation'], pr.libelle),
           'categorie': _ou(a['categorie'], ''),
           'echantillon': _ou(a['echantillon'], ''),
           'delai': _ou(a['delai'], ''),
-          'prix': _ou(pr.montant, 0),
+          'prix': pr.montant,
         };
       }()
   ];
@@ -684,17 +688,20 @@ ResultatPrescription csPrescrire(
       () {
         // Le libellé et le secteur sont ceux de la prestation ; la colonne ASSURÉE ne s'applique que si l'acte est assurable ET porte un montant assuré (la règle historique).
         final a = h.parActe['$code'] ?? const <String, Object?>{};
-        final pr = h.prixActe(code, jourPiece, assureActes, aujourdhui: jourPiece);
-        final Object? prixActe = pr.montant;
+        final pr = h.prixDeLigne(code, jourPiece, assureActes, voie: 'acte', aujourdhui: jourPiece);
+        if (!pr.ok) aDefinir.add(pr);
         return <String, Object?>{
           'code': code,
-          'libelle': _ou(a['libelle'], code),
+          'libelle': _ou(a['libelle'], pr.libelle),
           'secteur': _ou(a['secteur'], ''),
-          'prix': csVrai(prixActe) ? prixActe : 0,
-          'tarifValide': prixActe != null,
+          'prix': pr.montant,
+          'tarifValide': pr.ok,
         };
       }()
   ];
+  if (aDefinir.isNotEmpty) {
+    throw RefusCs('Prix à définir : ${aDefinir.map((x) => x.motif).join(' ; ')}. ${aDefinir.first.geste} Une ligne sans prix ne se facture jamais à zéro.', 'PRIX_A_DEFINIR');
+  }
 
   final mMed = _somme(medicaments, 'total');
   final mAna = _somme(analyses, 'prix');
