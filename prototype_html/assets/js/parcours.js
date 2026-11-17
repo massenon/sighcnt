@@ -7509,7 +7509,7 @@
   function definirModeMecef(m) {
     if (MODES_MECEF.indexOf(m) < 0) return refusMecef('MODE_INCONNU', 'Le mode « ' + m + ' » n’existe pas.', 'Choisir boîtier physique ou e-MECeF.');
     if (!peutGeste(GESTE_MODE_MECEF)) {
-      return refusMecef('MODE_RESERVE', 'Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+      return refusMecef('MODE_RESERVE', 'Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle (« ' + GESTE_MODE_MECEF + ' ») : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
         'Demander le changement à un rôle qui détient le droit « Régler le mode de facturation normalisée » (' + nomsRolesGeste(GESTE_MODE_MECEF) + ').');
     }
     var fileul = controleEcritureCfg();

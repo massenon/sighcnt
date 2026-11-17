@@ -270,7 +270,9 @@ async function viderMessages(page) {
     N.invaliderRbac();
     return avant;
   }, { role, geste, valeur });
-  const restaurer = (role, avant) => page.evaluate((x) => {
+  /* UNE RESTAURATION ATTEND SES ÉCRITURES : la mise à jour d'une fiche part par le geste nommé (file `crud.php`, la fiche telle qu'elle était posée) et le retrait d'un champ par l'écriture différée du magasin ; deux restaurations qui se suivent sur la MÊME fiche (Vague 302, ordre inverse) laissaient la plus ancienne arriver en dernier et la fiche gardait un droit retiré chez le voisin (Vague 211). */
+  const restaurer = async (role, avant) => { const r = await restaurerBrut(role, avant); await attendreEcritures(); return r; };
+  const restaurerBrut = (role, avant) => page.evaluate((x) => {
     const S = window.SIGH.store, col = S.collection('rbac'), N = window.SIGH.nav;
     const f = col.all().filter((y) => y.role === x.role && y.statut !== 'archive')[0];
     /* Une fiche créée par la sonde se RETIRE du magasin (l'archiver la laisserait peser : `surcharges()` lit `all()`). */
@@ -17333,7 +17335,7 @@ async function viderMessages(page) {
   });
 
   await etape(async () => {
-    scenario('Vague 101 : valeur chiffrée corrigée par la famille (motif obligatoire demandé au geste, refus nommé, libellé sans motif)');
+    scenario('Vague 101 : valeur chiffrée corrigée par la famille (motif obligatoire demandé au geste, refus nommé, libellé corrigé : motif aussi)');
     const O = outils100;
     for (const c of CAS100.filter((x) => x.chiffre)) {
       if (process.env.V100 && process.env.V100.split(',').indexOf(c.fam) < 0) continue;
@@ -17373,7 +17375,9 @@ async function viderMessages(page) {
         confirme && e.enAttente === false && Number(fiche.v) === Number(avantFiche || 0) + c.chiffre.delta && fiche.motif === 'Reprise de la notice du lot, sonde 101'
           && jm.length === j0 + 1 && /Reprise de la notice/.test(String(jm[0].apres)), JSON.stringify({ confirme, e: e.enAttente, fiche, avantFiche, jm: jm.slice(0, 2) }));
     }
-    /* Un LIBELLÉ corrigé par la famille ne demande aucun motif (pathologie). */
+    /* Un LIBELLÉ corrigé par la famille demande AUSSI un motif (Direction, section « Famille de validation » Q4 : le motif est obligatoire pour TOUTE
+       modification par le validateur, le 09/11 le limitait aux valeurs chiffrées ; appliqué au lot FISC-2, E2790 et suivants). Rien n'est écrit tant
+       qu'il manque ; avec le motif, le libellé est écrit et l'élément validé du même geste. */
     {
       const c = CAS100[0];
       const F = await O.familleDe(c.fam);
@@ -17381,14 +17385,23 @@ async function viderMessages(page) {
       await O.sessionDe('admin'); await O.ouvrirCas(c);
       const s = await O.poserSonde(c, nom, false);
       const role = await roleDeLaFamilleQuiEdite(c, F, s.libelle, nom);
+      const j0 = (await O.journalDe(s.id)).length;
       await O.cliquerLigne('Modifier', nom);
       await pause(500);
       const renomme = await O.champModale('libelle', nom + ' renommée');
       await O.cliquerModale('Enregistrer');
       await pause(600);
-      const demande = await page.evaluate(() => !!document.querySelector('.modal-root textarea, [role=dialog] textarea'));
+      const demande = await page.evaluate(() => !![...document.querySelectorAll('.modal-root textarea, [role=dialog] textarea')].length && /exige un motif/i.test(document.body.textContent));
+      const avant = await O.etat('pathologies', s.id);
+      const jSans = (await O.journalDe(s.id)).length;
+      verifier('(pathologies) un LIBELLÉ corrigé par la famille (' + role + ') demande un motif (toute modification du validateur) : rien n’est écrit tant qu’il manque',
+        renomme && demande && avant && avant.enAttente === true && avant.libelle === nom && jSans === j0, JSON.stringify({ renomme, demande, avant, j0, jSans }));
+      await O.motifModale('Reprise de l’intitulé, sonde 101');
+      await O.cliquerModale('Enregistrer');
+      await pause(700);
       const e = await O.etat('pathologies', s.id);
-      verifier('(pathologies) un LIBELLÉ corrigé par la famille (' + role + ') ne demande aucun motif : validé du même geste', renomme && !demande && e && e.enAttente === false, JSON.stringify({ renomme, demande, e }));
+      verifier('(pathologies) avec le motif, le libellé est écrit et l’élément VALIDÉ du même geste',
+        e && e.enAttente === false && e.libelle === nom + ' renommée', JSON.stringify({ e }));
     }
     /* Le refus nommé au moteur, sans passer par l'écran : code, motif, geste. */
     const refus = await page.evaluate(() => {
@@ -22922,6 +22935,8 @@ async function viderMessages(page) {
       if (!clic) return { clic: false, toast: '' };
       await pause(700);
       await T.remplir('referenceBL', bl);
+      /* lot VAL : plus aucun nom de personne dans l'écran, le second contrôleur n'a plus de valeur par défaut (il est obligatoire, le premier est l'agent de la session) */
+      await T.remplir('controleur2', 'Second contrôleur sonde 139');
       if (date) await T.remplir('date', date);
       await T.cliquerDansModale('Valider la réception'); await pause(1000);
       return { clic: true, toast: await T.toast() };
@@ -29082,6 +29097,8 @@ async function viderMessages(page) {
     const prepa = await page.evaluate(() => {
       const S = window.SIGH.store, col = S.collection('reponsesEnquetes', { module: 'M13' }), enq = S.collection('enquetes', { module: 'M13' }).active().filter((e) => e.reference === 'ENQ-SAT')[0];
       const anciennes = col.active().map((r) => r.id);
+      /* l'état d'AVANT est copié AVANT l'écriture : la fiche est modifiée en place, lue après, elle rendrait les versions de la sonde et la restauration les laisserait au questionnaire (les sondes suivantes partiraient d'une V2 qui n'existe pas au jeu) */
+      const versionsAvant = enq.versions ? JSON.parse(JSON.stringify(enq.versions)) : null, questionsAvant = JSON.parse(JSON.stringify(enq.questions));
       anciennes.forEach((id) => col.archive(id, 'Sonde 250 : mise à l’écart'));
       S.collection('enquetes', { module: 'M13' }).update(enq.id, { versions: [{ version: 'V1', effetLe: '2026-08-01', questions: enq.questions }, { version: 'V2', effetLe: '2026-08-10', questions: enq.questions }] });
       const mk = (date, version, point, canal, reponses) => col.insert({ enqueteId: enq.id, date, version, point, canal, reponses, saisiPar: 'Sonde 250', statut: 'actif' }).record.id;
@@ -29094,7 +29111,7 @@ async function viderMessages(page) {
         mk('2026-08-15', 'V2', 'maternite', 'Lien public', { Q_ACCUEIL: 1, Q_SOINS: 3, Q_ATTENTE: '', Q_RECO: '' }),
         mk('2026-08-16', 'V2', 'sortie', 'À la sortie', { Q_ACCUEIL: 'abc', Q_SOINS: 0, Q_ATTENTE: 6 }),
       ];
-      return { anciennes, ids, enq: enq.id, versionsAvant: enq.versions || null, questionsAvant: enq.questions };
+      return { anciennes, ids, enq: enq.id, versionsAvant, questionsAvant };
     });
     await attendreEcritures();
     await ouvrir('adm-satisfaction.html');
@@ -29169,7 +29186,14 @@ async function viderMessages(page) {
     await ligneSat(); await new Promise((r) => setTimeout(r, 150));
     await page.evaluate(() => { document.querySelector('[role=dialog] button[aria-label="Retirer la question"], [role=dialog] button[title="Retirer la question"]').click(); });
     await new Promise((r) => setTimeout(r, 100));
-    await cliquer('Enregistrer'); await new Promise((r) => setTimeout(r, 300)); await attendreEcritures();
+    await cliquer('Enregistrer'); await new Promise((r) => setTimeout(r, 300));
+    /* Direction, section « Famille de validation » Q4 (appliquée au lot FISC-2) : le motif est obligatoire pour TOUTE modification par le validateur ; la modale du motif s'ouvre AU-DESSUS du formulaire (qui a sa propre zone « Description » : on écrit dans la DERNIÈRE zone, jamais la première). Rien n'est écrit tant qu'il manque. */
+    const motifDemande = await page.evaluate(() => { const ds = [...document.querySelectorAll('[role=dialog]')]; const d = ds[ds.length - 1]; return ds.length >= 2 && /exige un motif/i.test(d.textContent); });
+    const nVersionsSansMotif = await page.evaluate((id) => (window.SIGH.store.collection('enquetes', { module: 'M13' }).active().filter((x) => x.id === id)[0].versions || []).length, avant.id);
+    verifier('Retirer une question par la Direction demande un MOTIF (toute modification du validateur) et RIEN n’est écrit tant qu’il manque', motifDemande && nVersionsSansMotif === sans, JSON.stringify({ motifDemande, nVersionsSansMotif, sans }));
+    await page.evaluate(() => { const ds = [...document.querySelectorAll('[role=dialog]')]; const z = ds[ds.length - 1].querySelector('textarea'); z.value = 'Question retirée du questionnaire, sonde 251'; z.dispatchEvent(new Event('input', { bubbles: true })); z.dispatchEvent(new Event('change', { bubbles: true })); });
+    await page.evaluate(() => { const ds = [...document.querySelectorAll('[role=dialog]')]; const b = [...ds[ds.length - 1].querySelectorAll('button')].filter((x) => x.textContent.trim() === 'Enregistrer').pop(); b.click(); });
+    await new Promise((r) => setTimeout(r, 400)); await attendreEcritures();
     const apres = await page.evaluate((id) => { const e = window.SIGH.store.collection('enquetes', { module: 'M13' }).active().filter((x) => x.id === id)[0]; return { versions: (e.versions || []).map((v) => ({ version: v.version, effetLe: v.effetLe, codes: v.questions.map((q) => q.code) })), courantes: e.questions.map((q) => q.code) }; }, avant.id);
     const n0 = avant.versions ? avant.versions.length : 1;
     verifier('Retirer une question AJOUTE la version suivante, datée d’aujourd’hui ; la précédente est intacte (jamais réécrite)',

@@ -171,7 +171,7 @@ RefusMecef? mecefModeControler({
   if (!aDroit) {
     return RefusMecef(
         'MODE_RESERVE',
-        'Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle : « $libelleRole » ne l’a pas.',
+        'Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle (« $mecefGesteMode ») : « $libelleRole » ne l’a pas.',
         'Demander le changement à un rôle qui détient le droit « Régler le mode de facturation normalisée » ($rolesQuiLeDetiennent).');
   }
   if (fileul) {

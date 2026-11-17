@@ -26,7 +26,7 @@
   "refus": {
    "ok": false,
    "code": "MODE_RESERVE",
-   "motif": "Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
+   "motif": "Régler le mode de facturation normalisée est un droit réservé de la fiche du rôle (« regler_mode_mecef ») : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
    "geste": "Demander le changement à un rôle qui détient le droit « Régler le mode de facturation normalisée » (Administrateur système, Directrice de l’Administration et des Finances (DAF))."
   },
   "inconnu": {
