@@ -3502,6 +3502,11 @@
     1,
     1
    ],
+   "m8-factures-tiers": [
+    1,
+    1,
+    1
+   ],
    "m8-caisse": [
     1,
     1,
@@ -5274,6 +5279,11 @@
     0,
     0
    ],
+   "m8-factures-tiers": [
+    1,
+    0,
+    0
+   ],
    "m8-caisse": [
     1,
     0,
@@ -6626,6 +6636,11 @@
     0,
     0
    ],
+   "m8-factures-tiers": [
+    1,
+    0,
+    0
+   ],
    "m8-caisse": [
     1,
     0,
@@ -7099,6 +7114,11 @@
     1
    ],
    "m8-facture-avoir": [
+    1,
+    1,
+    1
+   ],
+   "m8-factures-tiers": [
     1,
     1,
     1
@@ -9622,6 +9642,11 @@
     0,
     0
    ],
+   "m8-factures-tiers": [
+    1,
+    0,
+    0
+   ],
    "m8-caisse": [
     1,
     0,
@@ -9872,6 +9897,11 @@
    "m8-facture-avoir": [
     1,
     0,
+    0
+   ],
+   "m8-factures-tiers": [
+    1,
+    1,
     0
    ],
    "m8-caisse": [
@@ -10232,6 +10262,11 @@
     1
    ],
    "m8-facture-avoir": [
+    1,
+    1,
+    1
+   ],
+   "m8-factures-tiers": [
     1,
     1,
     1
@@ -12902,6 +12937,11 @@
     0,
     0
    ],
+   "m8-factures-tiers": [
+    1,
+    0,
+    0
+   ],
    "m8-caisse": [
     1,
     0,
@@ -13361,6 +13401,31 @@
     "rolesDefaut": [
      "admin",
      "da"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "emettre_facture_tiers",
+    "libelle": "Émettre une facture à un tiers payeur (fiche du tiers, brouillon, émission normalisée, règlement reçu)",
+    "module": "M8",
+    "ecran": "m8-factures-tiers",
+    "rolesDefaut": [
+     "caissier",
+     "da",
+     "comptable",
+     "admin"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "corriger_facture_tiers",
+    "libelle": "Corriger une facture à un tiers payeur (avoir, lettrage et délettrage d’un règlement)",
+    "module": "M8",
+    "ecran": "m8-factures-tiers",
+    "rolesDefaut": [
+     "comptable",
+     "da",
+     "admin"
     ],
     "defautSiEcritSur": null
    },
@@ -13842,6 +13907,8 @@
     "regler_passerelle_sms": 1,
     "regler_mode_mecef": 1,
     "regler_imprimante_caisse": 1,
+    "emettre_facture_tiers": 1,
+    "corriger_facture_tiers": 1,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 1,
@@ -13892,6 +13959,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 1,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 1,
@@ -13942,6 +14011,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -13992,6 +14063,8 @@
     "regler_passerelle_sms": 1,
     "regler_mode_mecef": 1,
     "regler_imprimante_caisse": 1,
+    "emettre_facture_tiers": 1,
+    "corriger_facture_tiers": 1,
     "adopter_plan_annuel": 1,
     "valider_commande_stock": 1,
     "arbitrer_besoins": 1,
@@ -14042,6 +14115,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14092,6 +14167,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14142,6 +14219,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14192,6 +14271,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14242,6 +14323,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14292,6 +14375,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 1,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14342,6 +14427,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 1,
+    "corriger_facture_tiers": 1,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14392,6 +14479,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14442,6 +14531,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14492,6 +14583,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14542,6 +14635,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14592,6 +14687,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14642,6 +14739,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14692,6 +14791,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14742,6 +14843,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14792,6 +14895,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14842,6 +14947,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,
@@ -14892,6 +14999,8 @@
     "regler_passerelle_sms": 0,
     "regler_mode_mecef": 0,
     "regler_imprimante_caisse": 0,
+    "emettre_facture_tiers": 0,
+    "corriger_facture_tiers": 0,
     "adopter_plan_annuel": 0,
     "valider_commande_stock": 0,
     "arbitrer_besoins": 0,

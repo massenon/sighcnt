@@ -238,6 +238,14 @@
       rolesDefaut: ['admin', 'da'] },
     { id: 'regler_imprimante_caisse', libelle: 'Régler l’imprimante de caisse (modèle, liaison, nom)', module: 'M8', ecran: 'mecef-config',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot TIERS (Direction, 16/11/2026, section AQ point 36) : la FACTURE À UN TIERS PAYEUR (entreprise, assureur, convention qui prend un patient en charge) est une vente normalisée DISTINCTE de la
+       facture du patient. DEUX gestes réservés de la fiche RBAC, jamais une liste de rôles dans le moteur ni l'écran : ÉMETTRE (tenir la fiche du tiers, proposer et émettre la facture, enregistrer un règlement
+       reçu) et CORRIGER (avoir, lettrage). D'ORIGINE, PROPOSITION À VALIDER : émettre au caissier, à la Directrice Administrative, au comptable et à l'administrateur ; corriger au comptable, à la
+       Directrice Administrative et à l'administrateur (le canal de l'avoir est celui du comptable et de la DAF). La décision sur l'AIB reste le geste `imputer_aib` : le logiciel propose, il ne décide jamais. */
+    { id: 'emettre_facture_tiers', libelle: 'Émettre une facture à un tiers payeur (fiche du tiers, brouillon, émission normalisée, règlement reçu)', module: 'M8', ecran: 'm8-factures-tiers',
+      rolesDefaut: ['caissier', 'da', 'comptable', 'admin'] },
+    { id: 'corriger_facture_tiers', libelle: 'Corriger une facture à un tiers payeur (avoir, lettrage et délettrage d’un règlement)', module: 'M8', ecran: 'm8-factures-tiers',
+      rolesDefaut: ['comptable', 'da', 'admin'] },
     /* Lot PTA (16/11/2026) : ADOPTER le plan annuel de travail d'un exercice (date, motif, journal RG-12). Directive de la Direction : « Adoption par la Direction ». Défaut PROPOSÉ, à valider :
        la Direction et la Directrice Administrative. Après l'adoption, le contenu du plan ne se modifie plus que par version datée ; le suivi (état, pourcentage, réalisé) reste libre. */
     { id: 'adopter_plan_annuel', libelle: 'Adopter le plan annuel de travail d’un exercice (le contenu ne change plus ensuite que par version datée)', module: 'M13', ecran: 'm13-plan-annuel',
@@ -673,6 +681,8 @@
                le CONSULTE (surcharge d'écran) ; l'émission est au Comptable
                et à la DAF. */
             { id: 'm8-facture-avoir', label: 'Factures d’avoir', icon: 'file-minus-2' },
+            /* Lot TIERS : la facture à l'entreprise (tiers payeur) qui prend un patient en charge, distincte de la facture patient ; sa créance et son lettrage. */
+            { id: 'm8-factures-tiers', label: 'Factures aux tiers payeurs', icon: 'building-2' },
             { id: 'm8-caisse', label: 'État de caisse journalier', icon: 'calculator' },
             { id: 'm8-operations', label: 'Opérations de caisse', icon: 'scroll-text' },
             { id: 'm8-recettes', label: 'Recettes par période', icon: 'trending-up' },
@@ -2106,7 +2116,7 @@
      de bord de poste) n'en ont pas besoin. La règle est déclarée ICI, jamais dans chaque écran. */
   var EXERCICE_MODULES = ['M12'];
   var EXERCICE_ECRANS = ['mecef-factures', 'mecef-avoirs', 'mecef-transmission', 'mecef-journal', 'm9-factures-assureur', 'm9-historique',
-    'm8-factures', 'm8-facture-avoir', 'm7-commandes', 'm7-factures-fournisseurs', 'm11-bulletins'];
+    'm8-factures', 'm8-facture-avoir', 'm8-factures-tiers', 'm7-commandes', 'm7-factures-fournisseurs', 'm11-bulletins'];
   var EXERCICE_SAUF = /dashboard|^dash-|^hub-|caisse$|point-ventes|point-stock|^m12-ouverture$/;
   function aExercice(entry) {
     if (!entry || !entry.id) return false;
