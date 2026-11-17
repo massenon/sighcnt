@@ -34,16 +34,18 @@ class ServiceMiseAJour {
     required this.dossier,
     required List<int> cle,
     DateTime Function()? horloge,
-    this.reglages = ReglagesMaj.defaut,
+    ReglagesMaj Function()? reglages,
     this.dossierFichiers,
     this.apresEcritureCollection,
   })  : _cle = cle,
+        reglages = reglages ?? (() => ReglagesMaj.defaut),
         _horloge = horloge ?? DateTime.now;
 
   final String dossier;
   final List<int> _cle;
   final DateTime Function() _horloge;
-  final ReglagesMaj reglages;
+  /// Les réglages de clinique (lus en base à chaque garde : un réglage changé s'applique à l'opération suivante).
+  final ReglagesMaj Function() reglages;
 
   /// Le dossier des fichiers numérisés (joint à l'export portable, jamais écrasé à l'import). `null` : le poste n'en tient pas.
   final String? dossierFichiers;
@@ -233,7 +235,7 @@ class ServiceMiseAJour {
     final plan = await this.plan();
     if (plan.refus != null) throw RefusMajException(plan.refus!);
     final copie = await derniereCopieVerifiee();
-    final refus = jugerLancement(geste: geste, copieVerifieeLe: copie?.faiteLe, maintenant: _horloge().toUtc(), reglages: reglages);
+    final refus = jugerLancement(geste: geste, copieVerifieeLe: copie?.faiteLe, maintenant: _horloge().toUtc(), reglages: reglages());
     if (refus != null) {
       await _journaliser('migrer_refuse', {'code': refus.code, 'motif': refus.motif});
       throw RefusMajException(refus);
@@ -292,21 +294,33 @@ class ServiceMiseAJour {
     }
   }
 
-  // --- export portable -------------------------------------------------------------------------------------------------------------------------------------------
-  static const _entete = 'SGX1';
+  // --- export portable (SGX2, en FLUX) -----------------------------------------------------------------------------------------------------------------------------
+  static const _entete = 'SGX2';
+  static const _tailleMorceau = 1 << 20;
 
-  /// EXPORT COMPLET PORTABLE : UN fichier chiffré (AES-256-GCM, clé de clinique) : base, fichiers numérisés, manifeste signé, version du format. Illisible sans la clé.
-  /// L'en-tête n'en dit que l'empreinte de la clé (non réversible) pour refuser une autre clinique AVANT de déchiffrer. La clé n'est JAMAIS dans le fichier.
+  Future<List<int>> _boite(int index, List<int> clair) async {
+    final b = await _aes.encrypt(clair, secretKey: SecretKey(_cle), aad: utf8.encode('$_entete:$index'));
+    final c = b.concatenation();
+    return [(c.length >> 24) & 255, (c.length >> 16) & 255, (c.length >> 8) & 255, c.length & 255, ...c];
+  }
+
+  /// EXPORT COMPLET PORTABLE : UN fichier chiffré (AES-256-GCM par morceaux de 1 Mio, clé de clinique) : base, fichiers numérisés LUS ET ÉCRITS EN FLUX (jamais un fichier entier en mémoire),
+  /// manifeste signé, version du format, morceau final qui compte les morceaux (un fichier tronqué est refusé). L'en-tête n'en dit que l'empreinte SHA-256 de la clé (non réversible,
+  /// pour refuser une autre clinique AVANT de déchiffrer). La clé n'est JAMAIS dans le fichier.
   Future<String> exporter(String destination) async {
     final c = await _lire(dossier);
-    final fichiers = <String, String>{};
+    final releve = releverCollections(c);
+    final fichiers = <File>[];
+    final noms = <String>[];
     if (dossierFichiers != null && await Directory(dossierFichiers!).exists()) {
       final racine = Directory(dossierFichiers!).absolute.path;
       await for (final e in Directory(racine).list(recursive: true)) {
-        if (e is File) fichiers[e.path.substring(racine.length + 1).replaceAll('\\', '/')] = base64.encode(await e.readAsBytes());
+        if (e is File) {
+          fichiers.add(e);
+          noms.add(e.path.substring(racine.length + 1).replaceAll('\\', '/'));
+        }
       }
     }
-    final releve = releverCollections(c);
     final manifeste = <String, Object?>{
       'exporteLe': _horloge().toUtc().toIso8601String(),
       'formatDonnees': await formatDonnees(),
@@ -314,53 +328,163 @@ class ServiceMiseAJour {
       'collections': {for (final e in releve.entries) e.key: e.value.versJson()},
       'fichiers': fichiers.length,
     };
-    final contenu = utf8.encode(jsonEncode({'manifeste': manifeste, 'signature': _hex(await _signer(manifeste)), 'collections': c, 'fichiers': fichiers}));
-    final boite = await _aes.encrypt(contenu, secretKey: SecretKey(_cle), aad: utf8.encode(_entete));
     final f = File(destination);
     await f.parent.create(recursive: true);
     final tmp = File('${f.path}.tmp');
-    await tmp.writeAsBytes([...utf8.encode(_entete), ...sha256Bytes(_cle), ...boite.concatenation()], flush: true);
+    final sink = tmp.openWrite();
+    var n = 0;
+    try {
+      sink.add([...utf8.encode(_entete), ...sha256Bytes(_cle)]);
+      sink.add(await _boite(n++, utf8.encode(jsonEncode({'manifeste': manifeste, 'signature': _hex(await _signer(manifeste)), 'collections': c}))));
+      for (var i = 0; i < fichiers.length; i++) {
+        final taille = await fichiers[i].length();
+        sink.add(await _boite(n++, utf8.encode(jsonEncode({'fichier': noms[i], 'taille': taille}))));
+        await for (final bloc in _morceaux(fichiers[i].openRead())) {
+          sink.add(await _boite(n++, bloc));
+        }
+      }
+      sink.add(await _boite(n, utf8.encode(jsonEncode({'fin': true, 'morceaux': n, 'fichiers': fichiers.length}))));
+      await sink.flush();
+    } finally {
+      await sink.close();
+    }
     await tmp.rename(f.path);
     await _journaliser('exporter', {'fichier': f.path, 'formatDonnees': manifeste['formatDonnees'], 'collections': manifeste['collections'], 'fichiers': fichiers.length});
     return f.path;
   }
 
+  /// Redécoupe un flux en morceaux de [_tailleMorceau] octets au plus (mémoire bornée).
+  Stream<List<int>> _morceaux(Stream<List<int>> entree) async* {
+    var tampon = <int>[];
+    await for (final b in entree) {
+      tampon.addAll(b);
+      while (tampon.length >= _tailleMorceau) {
+        yield tampon.sublist(0, _tailleMorceau);
+        tampon = tampon.sublist(_tailleMorceau);
+      }
+    }
+    if (tampon.isNotEmpty) yield tampon;
+  }
+
   static List<int> sha256Bytes(List<int> b) => [for (var i = 0; i < 64; i += 2) int.parse(sha256Octets(b).substring(i, i + 2), radix: 16)];
 
-  /// Lit un export SANS rien écrire : en-tête, clé, déchiffrement, signature du manifeste. Refus nommés (`IMPORT_AUTRE_CLINIQUE`, `IMPORT_ALTERE`).
-  Future<({Map<String, Object?> manifeste, CollectionsMaj collections, Map<String, String> fichiers, bool signatureValide, String? empreinteCleExport})> _ouvrirExport(String source) async {
-    final brut = await File(source).readAsBytes();
-    if (brut.length < 4 + 32 + 12 + 16 || utf8.decode(brut.sublist(0, 4), allowMalformed: true) != _entete) {
-      throw RefusMajException(const RefusMaj(CodeMaj.importAltere, 'Ce fichier n’est pas un export SIGH.', 'Choisir un fichier d’export fait par « Exporter toute la base »'));
-    }
-    final empreinteExport = _hex(brut.sublist(4, 36));
-    if (empreinteExport != empreinteCle) {
-      throw RefusMajException(const RefusMaj(CodeMaj.importAutreClinique, 'L’export vient d’une autre clinique (la clé de chiffrement diffère).', 'Utiliser l’export de CETTE clinique, ou restaurer la bonne clé'));
-    }
-    final List<int> clair;
+  RefusMajException _altere(String motif) => RefusMajException(RefusMaj(CodeMaj.importAltere, motif, 'Refaire l’export depuis le poste d’origine'));
+
+  /// Lit un morceau (rend `null` à la fin du fichier) ; un fichier tronqué ou altéré est refusé nommément.
+  Future<List<int>?> _lireMorceau(RandomAccessFile raf, int index) async {
+    final len4 = await raf.read(4);
+    if (len4.isEmpty) return null;
+    if (len4.length < 4) throw _altere('L’export est tronqué.');
+    final len = (len4[0] << 24) | (len4[1] << 16) | (len4[2] << 8) | len4[3];
+    if (len < 28 || len > _tailleMorceau + 4096) throw _altere('L’export est altéré (longueur de morceau impossible).');
+    final c = await raf.read(len);
+    if (c.length < len) throw _altere('L’export est tronqué.');
     try {
-      clair = await _aes.decrypt(SecretBox.fromConcatenation(brut.sublist(36), nonceLength: 12, macLength: 16), secretKey: SecretKey(_cle), aad: utf8.encode(_entete));
+      return await _aes.decrypt(SecretBox.fromConcatenation(c, nonceLength: 12, macLength: 16), secretKey: SecretKey(_cle), aad: utf8.encode('$_entete:$index'));
     } catch (_) {
-      throw RefusMajException(const RefusMaj(CodeMaj.importAltere, 'L’export est altéré ou tronqué : il ne se déchiffre pas.', 'Refaire l’export depuis le poste d’origine'));
+      throw _altere('L’export est altéré ou tronqué : il ne se déchiffre pas.');
     }
-    final j = (jsonDecode(utf8.decode(clair)) as Map).cast<String, Object?>();
-    final m = (j['manifeste'] as Map).cast<String, Object?>();
-    return (
-      manifeste: m,
-      collections: {for (final e in (j['collections'] as Map).entries) '${e.key}': [for (final f in (e.value as List)) (f as Map).cast<String, Object?>()]},
-      fichiers: {for (final e in (j['fichiers'] as Map).entries) '${e.key}': '${e.value}'},
-      signatureValide: j['signature'] == _hex(await _signer(m)),
-      empreinteCleExport: '${m['empreinteCle']}',
-    );
+  }
+
+  /// Ouvre un export SANS rien écrire : en-tête, clé, premier morceau (manifeste, signature, collections), puis UNE PASSE DE VÉRIFICATION de tous les morceaux (déchiffrement et
+  /// comptes) avant toute écriture. Refus nommés `IMPORT_AUTRE_CLINIQUE`, `IMPORT_ALTERE`.
+  Future<({Map<String, Object?> manifeste, CollectionsMaj collections, bool signatureValide, String empreinteCleExport})> _ouvrirExport(String source) async {
+    final raf = await File(source).open();
+    try {
+      final tete = await raf.read(36);
+      if (tete.length < 36 || utf8.decode(tete.sublist(0, 4), allowMalformed: true) != _entete) {
+        throw RefusMajException(const RefusMaj(CodeMaj.importAltere, 'Ce fichier n’est pas un export SIGH.', 'Choisir un fichier d’export fait par « Exporter toute la base »'));
+      }
+      final empreinteExport = _hex(tete.sublist(4, 36));
+      if (empreinteExport != empreinteCle) {
+        throw RefusMajException(const RefusMaj(CodeMaj.importAutreClinique, 'L’export vient d’une autre clinique (la clé de chiffrement diffère).', 'Utiliser l’export de CETTE clinique, ou restaurer la bonne clé'));
+      }
+      var index = 0;
+      final premier = await _lireMorceau(raf, index++);
+      if (premier == null) throw _altere('L’export est vide.');
+      final j = (jsonDecode(utf8.decode(premier)) as Map).cast<String, Object?>();
+      final m = (j['manifeste'] as Map).cast<String, Object?>();
+      var fichiers = 0;
+      var fin = false;
+      while (!fin) {
+        final e = await _lireMorceau(raf, index);
+        if (e == null) throw _altere('L’export est tronqué (morceau final absent).');
+        index++;
+        final t = (jsonDecode(utf8.decode(e)) as Map).cast<String, Object?>();
+        if (t['fin'] == true) {
+          if (t['morceaux'] != index - 1 || t['fichiers'] != fichiers || fichiers != m['fichiers']) throw _altere('L’export est incohérent (comptes de morceaux ou de fichiers).');
+          fin = true;
+        } else {
+          fichiers++;
+          var reste = (t['taille'] as num).toInt();
+          while (reste > 0) {
+            final b = await _lireMorceau(raf, index++);
+            if (b == null) throw _altere('L’export est tronqué (fichier numérisé incomplet).');
+            reste -= b.length;
+          }
+        }
+      }
+      return (
+        manifeste: m,
+        collections: {for (final e in (j['collections'] as Map).entries) '${e.key}': [for (final f in (e.value as List)) (f as Map).cast<String, Object?>()]},
+        signatureValide: j['signature'] == _hex(await _signer(m)),
+        empreinteCleExport: '${m['empreinteCle']}',
+      );
+    } finally {
+      await raf.close();
+    }
+  }
+
+  /// Écrit EN FLUX les fichiers numérisés de l'export qui manquent à [dossierFichiers] (jamais un fichier existant écrasé, jamais un chemin qui sort du dossier). Rend le nombre ajouté.
+  Future<int> _extraireFichiers(String source) async {
+    if (dossierFichiers == null) return 0;
+    final raf = await File(source).open();
+    var ajoutes = 0;
+    try {
+      await raf.read(36);
+      var index = 0;
+      await _lireMorceau(raf, index++);
+      for (;;) {
+        final e = await _lireMorceau(raf, index++);
+        if (e == null) break;
+        final t = (jsonDecode(utf8.decode(e)) as Map).cast<String, Object?>();
+        if (t['fin'] == true) break;
+        final nom = '${t['fichier']}';
+        var reste = (t['taille'] as num).toInt();
+        final sur = !nom.contains('..') && !nom.startsWith('/');
+        final dest = File('$dossierFichiers/$nom');
+        final ecrire = sur && !await dest.exists();
+        IOSink? sink;
+        File? part;
+        if (ecrire) {
+          await dest.parent.create(recursive: true);
+          part = File('${dest.path}.part');
+          sink = part.openWrite();
+        }
+        while (reste > 0) {
+          final b = (await _lireMorceau(raf, index++))!;
+          reste -= b.length;
+          sink?.add(b);
+        }
+        if (sink != null) {
+          await sink.close();
+          await part!.rename(dest.path);
+          ajoutes++;
+        }
+      }
+    } finally {
+      await raf.close();
+    }
+    return ajoutes;
   }
 
   /// IMPORT d'un export portable, sur la mère ET sur un fileul (mêmes contrôles). Refus : geste, clé, autre clinique, altéré, plus récent, pas de copie préalable vérifiée.
-  /// Le magasin local est REMPLACÉ (l'ancien est rangé dans `avant-import-…`), les fichiers numérisés absents sont ajoutés (jamais écrasés), le format est migré, les comptes sont
+  /// Le magasin local est REMPLACÉ (l'ancien est rangé dans `avant-import-…`), les fichiers numérisés absents sont ajoutés en flux (jamais écrasés), le format est migré, les comptes sont
   /// contrôlés. Sur un fileul rattaché, les saisies locales absentes de la base importée (ou différentes) sont LISTÉES ; l'appelant relance ensuite la synchronisation par le journal
   /// (`MoteurFileul.rejouerDepuisLeDebut`) sans jamais écrire une fiche à la place de la mère. [essaiABlanc] : dit tout, n'écrit rien.
   Future<RapportMaj> importer(String source, {required bool geste, bool fileulRattache = false, DateTime? derniereSynchro, bool essaiABlanc = false}) async {
     final copie = await derniereCopieVerifiee();
-    final copieOk = copie != null && _horloge().toUtc().difference(copie.faiteLe) <= Duration(hours: reglages.ageMaxCopieHeures);
+    final copieOk = copie != null && _horloge().toUtc().difference(copie.faiteLe) <= Duration(hours: reglages().ageMaxCopieHeures);
     if (!geste) throw RefusMajException(jugerImport(geste: false, cleLocalePresente: true, empreinteCleExport: empreinteCle, empreinteCleLocale: empreinteCle, signatureValide: true, formatExport: 0, copieLocaleVerifiee: copieOk).refus!);
     final ex = await _ouvrirExport(source);
     final format = (ex.manifeste['formatDonnees'] as num?)?.toInt() ?? formatSansVersion;
@@ -394,17 +518,7 @@ class ServiceMiseAJour {
       final relu = releverCollections(await _lire(dossier));
       final rap = comparerReleves(attendu, relu);
       if (!rap.ok) throw RefusMajException(RefusMaj(CodeMaj.comptesDifferents, 'Le contrôle d’après import refuse : ${rap.phrase}', 'Le magasin d’avant l’import a été remis'));
-      var ajoutes = 0;
-      if (dossierFichiers != null) {
-        for (final e in ex.fichiers.entries) {
-          if (e.key.contains('..')) continue;
-          final f = File('$dossierFichiers/${e.key}');
-          if (await f.exists()) continue; // un fichier numérisé n'est jamais écrasé
-          await f.parent.create(recursive: true);
-          await f.writeAsBytes(base64.decode(e.value), flush: true);
-          ajoutes++;
-        }
-      }
+      final ajoutes = await _extraireFichiers(source);
       await _terminer();
       await _journaliser('importer', {'fichier': source, 'formatExport': format, 'rapport': rap.phrase, 'saisies_locales_non_presentes': saisies.length, 'fichiers_ajoutes': ajoutes, 'gardee_dans': avantDir, 'avertissements': j.avertissements});
       return RapportMaj(comptes: comparerReleves(releverCollections(local), relu, modifieesParMigration: {...migre.modifiees, ...relu.keys}), notes: [...migre.notes, '$ajoutes fichier(s) numérisé(s) ajouté(s), aucun écrasé.', 'Le magasin d’avant l’import est gardé dans $avantDir.'], avertissements: j.avertissements, saisies: saisies, etapes: migre.etapes, copie: avantDir);
@@ -413,5 +527,22 @@ class ServiceMiseAJour {
       await reprendreSiInterrompu();
       rethrow;
     }
+  }
+
+  // --- journal d'audit (RG-12) ---------------------------------------------------------------------------------------------------------------------------------------
+  File get _verse => File('$dossierMaj/journal.verse');
+
+  /// Les entrées du journal de la mise à jour pas encore versées au journal d'audit du magasin. Le versement se fait AU DÉMARRAGE (le magasin en mémoire n'est jamais réécrit par-dessus une
+  /// base qu'une opération vient de remplacer) ; [marquerVerses] avance le repère, un redémarrage au milieu ne verse rien deux fois.
+  Future<List<Map<String, Object?>>> journalNonVerse() async {
+    final deja = await _verse.exists() ? int.tryParse((await _verse.readAsString()).trim()) ?? 0 : 0;
+    final tout = await journal();
+    return tout.length <= deja ? [] : tout.sublist(deja);
+  }
+
+  Future<void> marquerVerses(int nombre) async {
+    final deja = await _verse.exists() ? int.tryParse((await _verse.readAsString()).trim()) ?? 0 : 0;
+    await Directory(dossierMaj).create(recursive: true);
+    await _verse.writeAsString('${deja + nombre}', flush: true);
   }
 }

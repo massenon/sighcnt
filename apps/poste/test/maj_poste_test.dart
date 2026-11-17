@@ -229,7 +229,7 @@ void main() {
       final texte = latin1.decode(octets);
       expect(texte.contains('Patient1'), isFalse);
       expect(texte.contains('patients'), isFalse);
-      expect(utf8.decode(octets.sublist(0, 4)), 'SGX1');
+      expect(utf8.decode(octets.sublist(0, 4)), 'SGX2');
       final hexCle = [for (final b in cle) b.toRadixString(16).padLeft(2, '0')].join();
       expect(texte.contains(hexCle), isFalse);
     });
@@ -248,6 +248,43 @@ void main() {
       expect(await s2.formatDonnees(), formatDonneesCourant);
       expect(File('${tmp.path}/machine2/scans/aa/x.pdf').readAsBytesSync(), [9, 8, 7]);
       expect(r.comptes.differences, isEmpty);
+    });
+
+    test('fichiers numérisés EN FLUX : un fichier de 3 Mio traverse l’export, un export tronqué est refusé AVANT toute écriture', () async {
+      Directory('${tmp.path}/scans/bb').createSync(recursive: true);
+      final gros = List<int>.generate(3 * 1024 * 1024 + 17, (i) => (i * 31 + 7) & 0xff);
+      File('${tmp.path}/scans/bb/gros.bin').writeAsBytesSync(gros);
+      File('${tmp.path}/scans/vide.txt').writeAsBytesSync([]);
+      final f = await svc(d, fichiers: '${tmp.path}/scans').exporter('${tmp.path}/e.sighexp');
+      final m2 = '${tmp.path}/m2/donnees';
+      final s2 = svc(m2, fichiers: '${tmp.path}/m2/scans');
+      await s2.preparer();
+      await s2.importer(f, geste: true);
+      expect(File('${tmp.path}/m2/scans/bb/gros.bin').readAsBytesSync(), gros);
+      expect(File('${tmp.path}/m2/scans/vide.txt').existsSync(), isTrue);
+      expect(Directory('${tmp.path}/m2/scans').listSync(recursive: true).where((e) => e.path.endsWith('.part')), isEmpty);
+      // tronqué : la fin du fichier manque
+      final brut = File(f).readAsBytesSync();
+      File('${tmp.path}/tronque.sighexp').writeAsBytesSync(brut.sublist(0, brut.length - 5000));
+      final m3 = '${tmp.path}/m3/donnees';
+      final s3 = svc(m3, fichiers: '${tmp.path}/m3/scans');
+      await s3.preparer();
+      final avant = await empreinteDossier(m3);
+      await attendRefus(s3.importer('${tmp.path}/tronque.sighexp', geste: true), CodeMaj.importAltere);
+      expect(await empreinteDossier(m3), avant);
+      expect(Directory('${tmp.path}/m3/scans').existsSync(), isFalse);
+    });
+
+    test('le journal de la mise à jour se verse au journal d’audit UNE fois (repère)', () async {
+      final s = svc(d);
+      await s.preparer();
+      await s.exporter('${tmp.path}/e.sighexp');
+      final a = await s.journalNonVerse();
+      expect(a.map((x) => x['action']), ['preparer', 'exporter']);
+      await s.marquerVerses(a.length);
+      expect(await s.journalNonVerse(), isEmpty);
+      await s.exporter('${tmp.path}/e2.sighexp');
+      expect((await s.journalNonVerse()).single['action'], 'exporter');
     });
 
     test('IMPORT_SANS_COPIE_PREALABLE', () async {
