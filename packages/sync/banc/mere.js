@@ -62,13 +62,17 @@ const FAMILLES = {
   planningsPersonnalises: 'A',
   /* Lot PTA : le plan annuel de travail et son adoption (A, identité par le contenu, jamais vers un téléphone). */
   planAnnuel: 'A', adoptionsPlan: 'A',
+  /* Lot TIERS : la facture à un tiers payeur, ses avoirs, règlements et lettrages (A, identité par le contenu, jamais vers un téléphone ; une pièce émise ne se réécrit jamais au rejeu). */
+  tiersPayeurs: 'A', facturesTiers: 'A', avoirsTiers: 'A', reglementsTiers: 'A', lettragesTiers: 'A',
   /* Lot CMD (AQ point 1) : la commande de stock gros voyage (A : champ à champ), identité commune par le contenu posée par le poste (`identiteSyncCommande` du domaine), référence provisoire par poste
      que la mère remplace par le rang définitif à l'adoption (`referenceCommandeDefinitive`), validation jamais écrite directement par un autre poste. Jamais vers un téléphone (RG-13). */
   commandes: 'A',
 };
 const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers', 'lecturesOcr']);
 /* Lot SYNC-CFG : les collections de gestion (identité commune par le contenu, jamais vers un téléphone). */
-const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises', 'planAnnuel', 'adoptionsPlan']);
+const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises', 'planAnnuel', 'adoptionsPlan', 'tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers']);
+/* Lot TIERS : les champs d'une facture à un tiers payeur qui ne se réécrivent plus une fois la pièce émise (mêmes champs que `tiersChampsFiges` du domaine, dont celle-ci est la copie de référence). */
+const TIERS_FIGES = ['tiersCode', 'tiersVersionId', 'tiersVersion', 'tiersNom', 'ifuAcheteur', 'nomAcheteur', 'tiersAdresse', 'delaiPaiementJours', 'patientId', 'patientNom', 'patientCode', 'date', 'lignes', 'base', 'ht', 'tva', 'numero', 'aibDecision', 'aibTaux', 'aibMontant', 'net', 'partPatientRestante', 'sourcesCle'];
 /* Lot CMD : la commande de stock gros (jamais vers un téléphone ; mêmes règles que `commande_synchronisee.dart`, dont celle-ci est la copie de référence). */
 const ACHATS = new Set(['commandes']);
 const RE_PROV = /^BC-(\d{4})-P([A-Za-z0-9]+)-(\d+)$/; const RE_DEF = /^BC-(\d{4})-(\d+)$/;
@@ -203,6 +207,14 @@ function traiter(op, app) {
     } else if (STATUTS_VALIDES.includes(apres.statutCommande) || apres.valideePar) {
       return refus('COMMANDE_VALIDATION_DIRECTE', `Commande ${ref} : une validation écrite directement sur la fiche par un autre poste est REFUSÉE au rejeu (RG-04).`, 'Passer par le geste « Valider une commande de stock gros » (décision signée déposée à la mère)');
     }
+  }
+
+  /* Lot TIERS : une facture à un tiers payeur ÉMISE ne se réécrit jamais (refus nommé au rejeu, comme `refusRejeuFactureTiers` du domaine). */
+  if (op.collection === 'facturesTiers' && app.role !== 'mere' && op.type === 'modifier' && f && f.data.statut === 'emise') {
+    const apres = Object.assign({}, f.data, op.champs || {});
+    const figee = TIERS_FIGES.find((k) => JSON.stringify(f.data[k] === undefined ? null : f.data[k]) !== JSON.stringify(apres[k] === undefined ? null : apres[k]));
+    if (figee) return refus('FACTURE_TIERS_FIGEE', `La facture à un tiers payeur ${f.data.numero || ''} est émise : le champ « ${figee} » ne se réécrit jamais (une pièce émise se corrige par un avoir).`, 'Émettre un avoir, puis refaire la facture.');
+    if (f.data.numeroMecef && String(apres.numeroMecef || '') !== String(f.data.numeroMecef)) return refus('FACTURE_TIERS_NUMERO_MECEF_FIGE', 'Un numéro MECeF posé ne se réécrit jamais.', 'Laisser le numéro tel que l\'appareil l\'a rendu.');
   }
 
   /* A, C et R : fusion par champ */

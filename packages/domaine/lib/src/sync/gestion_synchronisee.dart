@@ -28,7 +28,15 @@ import '../fichiers/sha256.dart';
 ///  - action : exercice, libellé normalisé, version (une révision après adoption est une AUTRE identité : elle ne fusionne pas avec la version qu'elle remplace) ;
 ///  - adoption : l'exercice (une adoption par exercice : la seconde, écrite sur un autre poste, fusionne ; une date ou un motif différents sont un conflit nommé, jamais écrasés).
 /// Les référentiels du plan (`referentielsPlan`) et le réglage des signataires (`reglagesPlan`) sont de la CONFIGURATION de la mère : ils voyagent par le canal de configuration, pas ici.
-const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan', 'planningsPersonnalises'};
+///
+/// LOT TIERS (16/11/2026) : la FACTURE À UN TIERS PAYEUR et ses quatre pièces voyagent aussi (famille A : un brouillon se complète champ à champ, la décision de l'AIB puis l'émission s'écrivent sur la même
+/// fiche ; un lettrage se défait par archive), identité par le contenu, jamais vers un téléphone (RG-13 : créance, IFU d'entreprise et prestations d'un patient ne se lisent pas sur un téléphone).
+///  - tiers : son code et la date d'effet de la version (une version est figée) ;
+///  - facture : le tiers, la date et les prestations rattachées (`sourcesCle` : numéro de la facture du patient, ligne, montant), jamais le numéro affiché FT-AAAA-nnnn (attribué par chaque poste) ;
+///  - avoir : le numéro de la facture annulée (un seul avoir par pièce) ; règlement : le tiers, la date, le montant et la référence du paiement ; lettrage : la référence du règlement et la facture lettrée.
+/// Une pièce émise ne se réécrit jamais (`refusRejeuFactureTiers`, tenu par la mère au rejeu comme par le magasin du poste).
+const Set<String> collectionsTiersSynchronisees = {'tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers'};
+const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan', 'planningsPersonnalises', ...collectionsTiersSynchronisees};
 
 /// Elles ne vont JAMAIS vers un téléphone (RG-13) : la comptabilité et l'assurance d'un patient ne sont lues par aucun écran du mobile ; un téléphone perdu n'emporte ni budget, ni
 /// patrimoine, ni police d'assurance.
@@ -67,6 +75,21 @@ String? identiteSyncGestion(String collection, Map<String, Object?> f, {String? 
     case 'adoptionsPlan':
       if ('${f['exercice'] ?? ''}'.isEmpty) return null;
       return 'ADP-${f['exercice']}';
+    case 'tiersPayeurs':
+      if ('${f['code'] ?? ''}'.isEmpty || '${f['dateEffet'] ?? ''}'.isEmpty) return null;
+      return 'TPY-${_empreinte([f['code'], _jour(f['dateEffet'])])}';
+    case 'facturesTiers':
+      if ('${f['tiersCode'] ?? ''}'.isEmpty || '${f['sourcesCle'] ?? ''}'.isEmpty || '${f['date'] ?? ''}'.isEmpty) return null;
+      return 'FTP-${_empreinte([f['tiersCode'], _jour(f['date']), f['sourcesCle']])}';
+    case 'avoirsTiers':
+      if ('${f['sourcesCle'] ?? ''}'.isEmpty) return null;
+      return 'ATP-${_empreinte([f['sourcesCle']])}';
+    case 'reglementsTiers':
+      if ('${f['tiersCode'] ?? ''}'.isEmpty || '${f['referencePaiement'] ?? ''}'.isEmpty || '${f['montant'] ?? ''}'.isEmpty) return null;
+      return 'RTP-${_empreinte([f['tiersCode'], _jour(f['date']), f['montant'], f['referencePaiement']])}';
+    case 'lettragesTiers':
+      if ('${f['reglementRef'] ?? ''}'.isEmpty || '${f['factureNumero'] ?? ''}'.isEmpty) return null;
+      return 'LTP-${_empreinte([f['tiersCode'], f['reglementRef'], f['factureNumero'], f['montant']])}';
     case 'couverturesAssurance':
       final p = (patientSync == null || patientSync.isEmpty) ? '${f['patientId'] ?? ''}' : patientSync;
       if (p.isEmpty) return null;

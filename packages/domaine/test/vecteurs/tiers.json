@@ -1,0 +1,5546 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-tiers.js : SIGH.tiers piloté dans Chrome, ne pas éditer. Horloge : 30/10/2026 midi.",
+ "aujourdhui": "2026-10-30",
+ "gestes": {
+  "emettre": "emettre_facture_tiers",
+  "corriger": "corriger_facture_tiers"
+ },
+ "detenteurs": {
+  "emettre": [
+   "admin",
+   "caissier",
+   "comptable",
+   "da"
+  ],
+  "corriger": [
+   "admin",
+   "comptable",
+   "da"
+  ],
+  "imputer": [
+   "admin",
+   "comptable",
+   "da"
+  ]
+ },
+ "situations": [
+  {
+   "id": "SAI01",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "ifu_actif",
+   "libelle": "Acheteur avec IFU actif",
+   "declencheur": "ifu_renseigne",
+   "ordre": 1,
+   "description": "L’acheteur présente un IFU de 13 chiffres. L’activité de l’IFU n’est pas vérifiée auprès de la DGI (la maquette ne peut pas l’interroger) : elle est présumée."
+  },
+  {
+   "id": "SAI02",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "ifu_inactif_ou_absent",
+   "libelle": "Acheteur sans IFU actif",
+   "declencheur": "ifu_absent",
+   "ordre": 2,
+   "description": "Aucun IFU renseigné (particulier) ou IFU désactivé : contribuable non conforme ou non immatriculé."
+  },
+  {
+   "id": "SAI03",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "prestation_service",
+   "libelle": "Prestation de service retenue par le payeur",
+   "declencheur": "choix",
+   "ordre": 3,
+   "description": "Prestation de service dont l’organisme payeur retient l’AIB sur le prix hors taxe. Choisie par le caissier, jamais d’office."
+  },
+  {
+   "id": "SAI04",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "personne_physique",
+   "libelle": "Tiers, personne physique (retenue sur sa facture)",
+   "declencheur": "choix",
+   "ordre": 4,
+   "famille": "retenue_tiers",
+   "description": "Tiers personne physique dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
+  },
+  {
+   "id": "SAI05",
+   "statut": "actif",
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "code": "personne_morale",
+   "libelle": "Tiers, personne morale (retenue sur sa facture)",
+   "declencheur": "choix",
+   "ordre": 5,
+   "famille": "retenue_tiers",
+   "description": "Tiers personne morale dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
+  }
+ ],
+ "bareme": [
+  {
+   "id": "BAI001",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_inactif_ou_absent",
+   "taux": 1,
+   "dateEffet": "2026-01-01",
+   "dateFin": "2026-09-06",
+   "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+   "motif": "Taux appliqué avant le communiqué de septembre 2026 : défaut historique de la maquette (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI002",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_inactif_ou_absent",
+   "taux": 5,
+   "dateEffet": "2026-09-07",
+   "dateFin": null,
+   "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+   "motif": "Généralisation du prélèvement de 5 % à l’émission des factures normalisées, à compter du 07/09/2026."
+  },
+  {
+   "id": "BAI003",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "ifu_actif",
+   "taux": 1,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+   "motif": "Défaut de la fenêtre MECeF quand l’acheteur a un IFU actif (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI004",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "prestation_service",
+   "taux": 3,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+   "motif": "Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI005",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "personne_physique",
+   "taux": 3,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+   "motif": "Retenue sur la facture d’un tiers personne physique (date d’effet d’attente : début de l’exercice 2026)."
+  },
+  {
+   "id": "BAI006",
+   "statut": "actif",
+   "aValider": true,
+   "creeLe": "2026-11-09",
+   "creePar": "Semence du socle",
+   "situation": "personne_morale",
+   "taux": 5,
+   "dateEffet": "2026-01-01",
+   "dateFin": null,
+   "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+   "motif": "Retenue sur la facture d’un tiers personne morale (date d’effet d’attente : début de l’exercice 2026)."
+  }
+ ],
+ "acheteurs": [
+  {
+   "nom": "IFU et nom valides",
+   "ifu": "3201642748214",
+   "acheteur": "Société Vecteur",
+   "sortie": {
+    "ok": true,
+    "ifu": "3201642748214",
+    "nom": "Société Vecteur"
+   }
+  },
+  {
+   "nom": "IFU absent",
+   "ifu": "",
+   "acheteur": "Société Vecteur",
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_IFU_ABSENT",
+    "motif": "L’IFU de l’acheteur est obligatoire sur une facture à un tiers payeur : une vente normalisée à un professionnel porte son identifiant fiscal.",
+    "geste": "Renseigner l’IFU (13 chiffres) sur la fiche du tiers payeur, par une nouvelle version datée."
+   }
+  },
+  {
+   "nom": "IFU absent (espaces)",
+   "ifu": "   ",
+   "acheteur": "Société Vecteur",
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_IFU_ABSENT",
+    "motif": "L’IFU de l’acheteur est obligatoire sur une facture à un tiers payeur : une vente normalisée à un professionnel porte son identifiant fiscal.",
+    "geste": "Renseigner l’IFU (13 chiffres) sur la fiche du tiers payeur, par une nouvelle version datée."
+   }
+  },
+  {
+   "nom": "IFU de 5 chiffres",
+   "ifu": "12345",
+   "acheteur": "Société Vecteur",
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE",
+    "motif": "L’IFU de l’acheteur (« 12345 ») doit comporter exactement 13 chiffres.",
+    "geste": "Corriger l’IFU du tiers payeur."
+   }
+  },
+  {
+   "nom": "IFU avec des lettres",
+   "ifu": "32016427489AB",
+   "acheteur": "Société Vecteur",
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE",
+    "motif": "L’IFU de l’acheteur (« 32016427489AB ») doit comporter exactement 13 chiffres.",
+    "geste": "Corriger l’IFU du tiers payeur."
+   }
+  },
+  {
+   "nom": "IFU de 14 chiffres",
+   "ifu": "32016427482140",
+   "acheteur": "Société Vecteur",
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE",
+    "motif": "L’IFU de l’acheteur (« 32016427482140 ») doit comporter exactement 13 chiffres.",
+    "geste": "Corriger l’IFU du tiers payeur."
+   }
+  },
+  {
+   "nom": "IFU avec espaces à nettoyer",
+   "ifu": "3201 6427 48214",
+   "acheteur": "Société Vecteur",
+   "sortie": {
+    "ok": true,
+    "ifu": "3201642748214",
+    "nom": "Société Vecteur"
+   }
+  },
+  {
+   "nom": "nom absent",
+   "ifu": "3201642748214",
+   "acheteur": "",
+   "sortie": {
+    "ok": false,
+    "code": "NOM_ACHETEUR_ABSENT",
+    "motif": "Le nom de l’acheteur est obligatoire sur une facture à un tiers payeur.",
+    "geste": "Renseigner le nom du tiers payeur sur sa fiche."
+   }
+  },
+  {
+   "nom": "nom d’espaces",
+   "ifu": "3201642748214",
+   "acheteur": "   ",
+   "sortie": {
+    "ok": false,
+    "code": "NOM_ACHETEUR_ABSENT",
+    "motif": "Le nom de l’acheteur est obligatoire sur une facture à un tiers payeur.",
+    "geste": "Renseigner le nom du tiers payeur sur sa fiche."
+   }
+  }
+ ],
+ "champs": [
+  {
+   "nom": "tiers complet",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 30,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": true,
+    "version": 1,
+    "ifu": "3201642748999",
+    "delai": 30
+   },
+   "ecrits": 1
+  },
+  {
+   "nom": "sans IFU",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 30,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": true,
+    "version": 1,
+    "ifu": null,
+    "delai": 30
+   },
+   "ecrits": 1
+  },
+  {
+   "nom": "sans délai",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": "",
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": true,
+    "version": 1,
+    "ifu": "3201642748999",
+    "delai": null
+   },
+   "ecrits": 1
+  },
+  {
+   "nom": "nom vide",
+   "entree": {
+    "nom": " ",
+    "type": "entreprise",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 30,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_NOM_ABSENT"
+   },
+   "ecrits": 0
+  },
+  {
+   "nom": "IFU court",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "12345",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 30,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE"
+   },
+   "ecrits": 0
+  },
+  {
+   "nom": "IFU lettres",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "32016427489AB",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 30,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE"
+   },
+   "ecrits": 0
+  },
+  {
+   "nom": "type inconnu",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "banque",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 30,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_TYPE_INCONNU"
+   },
+   "ecrits": 0
+  },
+  {
+   "nom": "délai négatif",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": -3,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_DELAI_INVALIDE"
+   },
+   "ecrits": 0
+  },
+  {
+   "nom": "délai décimal",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 2.5,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_DELAI_INVALIDE"
+   },
+   "ecrits": 0
+  },
+  {
+   "nom": "délai trop long",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "entreprise",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 400,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_DELAI_INVALIDE"
+   },
+   "ecrits": 0
+  },
+  {
+   "nom": "assureur",
+   "entree": {
+    "nom": "Société Vecteur",
+    "type": "assureur",
+    "ifu": "3201642748999",
+    "adresse": "BP 1",
+    "delaiPaiementJours": 30,
+    "dateEffet": "2026-10-01"
+   },
+   "sortie": {
+    "ok": true,
+    "version": 1,
+    "ifu": "3201642748999",
+    "delai": 30
+   },
+   "ecrits": 1
+  }
+ ],
+ "decisions": [
+  {
+   "nom": "sans droit (caissier)",
+   "role": "caissier",
+   "droit": false,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": false,
+    "motif": "m"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "IMPUTATION_AIB_RESERVEE"
+   }
+  },
+  {
+   "nom": "décision absente",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {},
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DECISION_ABSENTE"
+   }
+  },
+  {
+   "nom": "non appliqué sans motif",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": false
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_MOTIF_ABSENT"
+   }
+  },
+  {
+   "nom": "non appliqué avec motif",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": false,
+    "motif": "L’acheteur paie lui-même son AIB"
+   },
+   "sortie": {
+    "ok": true,
+    "decision": {
+     "appliquer": false,
+     "motif": "L’acheteur paie lui-même son AIB"
+    }
+   }
+  },
+  {
+   "nom": "ligne absente",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "taux": 1
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_LIGNE_ABSENTE"
+   }
+  },
+  {
+   "nom": "ligne inconnue",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "nexiste_pas",
+    "taux": 1
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SITUATION_INCONNUE"
+   }
+  },
+  {
+   "nom": "taux absent",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "ifu_actif"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_ABSENT"
+   }
+  },
+  {
+   "nom": "taux invalide",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "ifu_actif",
+    "taux": 150
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE"
+   }
+  },
+  {
+   "nom": "taux décimal",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "ifu_actif",
+    "taux": 1.5
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_TAUX_INVALIDE"
+   }
+  },
+  {
+   "nom": "taux hors barème sans motif",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "ifu_actif",
+    "taux": 3
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_MOTIF_ABSENT"
+   }
+  },
+  {
+   "nom": "taux du barème (1 %)",
+   "role": "comptable",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "ifu_actif",
+    "taux": 1
+   },
+   "sortie": {
+    "ok": true,
+    "decision": {
+     "appliquer": true,
+     "situation": "ifu_actif",
+     "taux": 1,
+     "horsProposition": false,
+     "propositionTaux": 1,
+     "propositionVersion": "BAI003",
+     "propositionArretee": false
+    }
+   }
+  },
+  {
+   "nom": "taux hors barème motivé (3 %)",
+   "role": "da",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "ifu_actif",
+    "taux": 3,
+    "motif": "Convention de la Direction"
+   },
+   "sortie": {
+    "ok": true,
+    "decision": {
+     "appliquer": true,
+     "situation": "ifu_actif",
+     "taux": 3,
+     "horsProposition": true,
+     "propositionTaux": 1,
+     "propositionVersion": "BAI003",
+     "propositionArretee": false,
+     "motif": "Convention de la Direction"
+    }
+   }
+  },
+  {
+   "nom": "ligne de retenue (personne morale 5 %)",
+   "role": "admin",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "date": "2026-10-12",
+    "numero": null
+   },
+   "saisie": {
+    "appliquer": true,
+    "situation": "personne_morale",
+    "taux": 5
+   },
+   "sortie": {
+    "ok": true,
+    "decision": {
+     "appliquer": true,
+     "situation": "personne_morale",
+     "taux": 5,
+     "horsProposition": false,
+     "propositionTaux": 5,
+     "propositionVersion": "BAI006",
+     "propositionArretee": false
+    }
+   }
+  }
+ ],
+ "emissions": [
+  {
+   "nom": "sans droit d’émettre (comptable sans le geste)",
+   "role": "laborantin",
+   "droit": false,
+   "facture": {
+    "statut": "brouillon",
+    "numero": null,
+    "ifuAcheteur": "3201642748555",
+    "nomAcheteur": "Société Vecteur Tiers",
+    "aibDecision": {
+     "appliquer": false,
+     "decidePar": "Acteur comptable",
+     "decideRole": "Comptable",
+     "decideLe": "2026-10-30T12:00:00.544Z",
+     "motif": "x"
+    }
+   },
+   "sortie": {
+    "ok": false,
+    "code": "FACTURE_TIERS_RESERVEE"
+   }
+  },
+  {
+   "nom": "sans décision de l’AIB",
+   "role": "caissier",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "numero": null,
+    "ifuAcheteur": "3201642748555",
+    "nomAcheteur": "Société Vecteur Tiers",
+    "aibDecision": null
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TIERS_AIB_DECISION_ABSENTE"
+   }
+  },
+  {
+   "nom": "décidée : non appliqué",
+   "role": "caissier",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "numero": null,
+    "ifuAcheteur": "3201642748555",
+    "nomAcheteur": "Société Vecteur Tiers",
+    "aibDecision": {
+     "appliquer": false,
+     "decidePar": "Acteur comptable",
+     "decideRole": "Comptable",
+     "decideLe": "2026-10-30T12:00:00.547Z",
+     "motif": "Sonde"
+    }
+   },
+   "sortie": {
+    "ok": true,
+    "numeroPrefixe": true,
+    "net": 100000,
+    "aib": 0
+   }
+  },
+  {
+   "nom": "décidée : 1 % (base 100 000, AIB 1 000)",
+   "role": "caissier",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "numero": null,
+    "ifuAcheteur": "3201642748555",
+    "nomAcheteur": "Société Vecteur Tiers",
+    "aibDecision": {
+     "appliquer": true,
+     "decidePar": "Acteur comptable",
+     "decideRole": "Comptable",
+     "decideLe": "2026-10-30T12:00:00.551Z",
+     "situation": "ifu_actif",
+     "taux": 1,
+     "horsProposition": false,
+     "propositionTaux": 1,
+     "propositionVersion": "BAI003",
+     "propositionArretee": false
+    }
+   },
+   "sortie": {
+    "ok": true,
+    "numeroPrefixe": true,
+    "net": 101000,
+    "aib": 1000
+   }
+  },
+  {
+   "nom": "déjà émise : seconde émission",
+   "role": "caissier",
+   "droit": true,
+   "facture": {
+    "statut": "brouillon",
+    "numero": null,
+    "ifuAcheteur": "3201642748555",
+    "nomAcheteur": "Société Vecteur Tiers",
+    "aibDecision": {
+     "appliquer": false,
+     "decidePar": "Acteur comptable",
+     "decideRole": "Comptable",
+     "decideLe": "2026-10-30T12:00:00.555Z",
+     "motif": "Sonde"
+    }
+   },
+   "sortie": {
+    "ok": true,
+    "numeroPrefixe": true,
+    "net": 100000,
+    "aib": 0
+   }
+  },
+  {
+   "nom": "pièce déjà émise",
+   "role": "caissier",
+   "droit": true,
+   "facture": {
+    "statut": "emise",
+    "numero": "FT-2026-0003",
+    "ifuAcheteur": "3201642748555",
+    "nomAcheteur": "Société Vecteur Tiers",
+    "aibDecision": {
+     "appliquer": false,
+     "decidePar": "Acteur comptable",
+     "decideRole": "Comptable",
+     "decideLe": "2026-10-30T12:00:00.555Z",
+     "motif": "Sonde"
+    }
+   },
+   "sortie": {
+    "ok": false,
+    "code": "FACTURE_TIERS_DEJA_EMISE"
+   }
+  }
+ ],
+ "numeros": {
+  "pieces": [
+   {
+    "numero": "FT-2026-0003"
+   },
+   {
+    "numero": "FT-2026-0002"
+   },
+   {
+    "numero": "FT-2026-0001"
+   }
+  ],
+  "cas": [
+   {
+    "date": "2026-10-30",
+    "numero": "FT-2026-0004"
+   },
+   {
+    "date": "2026-01-01",
+    "numero": "FT-2026-0004"
+   },
+   {
+    "date": "2026-12-31",
+    "numero": "FT-2026-0004"
+   },
+   {
+    "date": "2027-03-05",
+    "numero": "FT-2027-0001"
+   },
+   {
+    "date": "2025-06-01",
+    "numero": "FT-2025-0001"
+   },
+   {
+    "date": "",
+    "numero": "FT-2026-0004"
+   }
+  ]
+ },
+ "creances": {
+  "depart": {
+   "factures": [
+    {
+     "id": "FTPxmvux6z3p5a2b7",
+     "statut": "emise",
+     "numero": "FT-2026-0007",
+     "tiersCode": "TP-005",
+     "tiersNom": "Société Vecteur Tiers",
+     "date": "2026-10-25",
+     "net": 50000,
+     "delaiPaiementJours": 30
+    },
+    {
+     "id": "FTPxmvux6z3nfhi5v",
+     "statut": "emise",
+     "numero": "FT-2026-0006",
+     "tiersCode": "TP-006",
+     "tiersNom": "Convention Vecteur",
+     "date": "2026-05-01",
+     "net": 101000,
+     "delaiPaiementJours": null
+    },
+    {
+     "id": "FTPxmvux6z3lu0u8c",
+     "statut": "emise",
+     "numero": "FT-2026-0005",
+     "tiersCode": "TP-005",
+     "tiersNom": "Société Vecteur Tiers",
+     "date": "2026-08-30",
+     "net": 100000,
+     "delaiPaiementJours": 30
+    },
+    {
+     "id": "FTPxmvux6z3jc6sgk",
+     "statut": "emise",
+     "numero": "FT-2026-0004",
+     "tiersCode": "TP-005",
+     "tiersNom": "Société Vecteur Tiers",
+     "date": "2026-10-20",
+     "net": 101000,
+     "delaiPaiementJours": 30
+    },
+    {
+     "id": "FTPxmvux6z3f8rdbo",
+     "statut": "emise",
+     "numero": "FT-2026-0003",
+     "tiersCode": "TP-005",
+     "tiersNom": "Société Vecteur Tiers",
+     "date": "2026-10-12",
+     "net": 100000,
+     "delaiPaiementJours": 30
+    },
+    {
+     "id": "FTPxmvux6z3afhcgc",
+     "statut": "emise",
+     "numero": "FT-2026-0002",
+     "tiersCode": "TP-005",
+     "tiersNom": "Société Vecteur Tiers",
+     "date": "2026-10-12",
+     "net": 101000,
+     "delaiPaiementJours": 30
+    },
+    {
+     "id": "FTPxmvux6z37rzj1t",
+     "statut": "emise",
+     "numero": "FT-2026-0001",
+     "tiersCode": "TP-005",
+     "tiersNom": "Société Vecteur Tiers",
+     "date": "2026-10-12",
+     "net": 100000,
+     "delaiPaiementJours": 30
+    }
+   ],
+   "avoirs": [
+    {
+     "id": "ATPxmvux6z3qfrm03",
+     "factureTiersId": "FTPxmvux6z3p5a2b7",
+     "statut": "actif"
+    },
+    {
+     "id": "ATPxmvux6z3jxg8rd",
+     "factureTiersId": "FTPxmvux6z37rzj1t",
+     "statut": "actif"
+    },
+    {
+     "id": "ATPxmvux6z3jcy0p8",
+     "factureTiersId": "FTPxmvux6z3afhcgc",
+     "statut": "actif"
+    },
+    {
+     "id": "ATPxmvux6z3j3fmlf",
+     "factureTiersId": "FTPxmvux6z3f8rdbo",
+     "statut": "actif"
+    }
+   ],
+   "reglements": [
+    {
+     "id": "RTPxmvux6z3rwj4pc",
+     "tiersCode": "TP-006",
+     "montant": 5000,
+     "numero": "RGT-2026-0002",
+     "statut": "actif"
+    },
+    {
+     "id": "RTPxmvux6z3rezivd",
+     "tiersCode": "TP-005",
+     "montant": 150000,
+     "numero": "RGT-2026-0001",
+     "statut": "actif"
+    }
+   ],
+   "lettrages": []
+  },
+  "ids": {
+   "f1": "FTPxmvux6z3jc6sgk",
+   "f2": "FTPxmvux6z3lu0u8c",
+   "f3": "FTPxmvux6z3nfhi5v",
+   "f4": "FTPxmvux6z3p5a2b7",
+   "regl": "RTPxmvux6z3rezivd",
+   "regl2": "RTPxmvux6z3rwj4pc"
+  },
+  "jour": "2026-10-30",
+  "etapes": [
+   {
+    "nom": "sans droit (caissier)",
+    "role": "caissier",
+    "droit": false,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 1000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_RESERVE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "aucune facture",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": []
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_VIDE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "facture d’un autre tiers",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3nfhi5v",
+       "montant": 1000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_AUTRE_TIERS"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "facture annulée par un avoir",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "montant": 1000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_FACTURE_ANNULEE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "facture inconnue",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPinconnue",
+       "montant": 1000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_FACTURE_INCONNUE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "au-delà du dû de la facture",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101001
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_DEPASSE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "au-delà du reste du règlement",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101000
+      },
+      {
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 60000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_AU_DELA_DU_REGLEMENT"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "montant décimal",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 100.5
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_MONTANT_INVALIDE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "montant nul",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 0
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_MONTANT_INVALIDE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "facture répétée",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 1000
+      },
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 1000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_FACTURE_DOUBLE"
+    },
+    "creances": {
+     "f1": 101000,
+     "f2": 100000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 201000,
+       "moins30": 101000,
+       "de30a90": 100000,
+       "plus90": 0,
+       "enRetard": 100000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 100000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        },
+        {
+         "id": "FTPxmvux6z3jc6sgk",
+         "numero": "FT-2026-0004",
+         "date": "2026-10-20",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "moins30",
+         "age": 10,
+         "echeance": "2026-11-19"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 302000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "numero": "RGT-2026-0001",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "reste": 150000
+      }
+     ],
+     "nonLettre": 155000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    }
+   },
+   {
+    "nom": "lettrage sur deux factures (101 000 + 49 000)",
+    "role": "comptable",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101000
+      },
+      {
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 49000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": []
+    },
+    "sortie": {
+     "ok": true,
+     "lettre": 150000,
+     "resteNonLettre": 0
+    },
+    "creances": {
+     "f1": 0,
+     "f2": 51000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 51000,
+       "moins30": 0,
+       "de30a90": 51000,
+       "plus90": 0,
+       "enRetard": 51000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 51000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 152000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      }
+     ],
+     "nonLettre": 5000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": [
+      {
+       "id": "LTPxmvux6z3z7uk2t",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 49000,
+       "statut": "actif"
+      },
+      {
+       "id": "LTPxmvux6z3z5m8ti",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101000,
+       "statut": "actif"
+      }
+     ]
+    }
+   },
+   {
+    "nom": "règlement entièrement lettré",
+    "role": "da",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rezivd",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 1
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": [
+      {
+       "id": "LTPxmvux6z3z7uk2t",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 49000,
+       "statut": "actif"
+      },
+      {
+       "id": "LTPxmvux6z3z5m8ti",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101000,
+       "statut": "actif"
+      }
+     ]
+    },
+    "sortie": {
+     "ok": false,
+     "code": "LETTRAGE_TIERS_AU_DELA_DU_REGLEMENT"
+    },
+    "creances": {
+     "f1": 0,
+     "f2": 51000,
+     "f3": 101000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 51000,
+       "moins30": 0,
+       "de30a90": 51000,
+       "plus90": 0,
+       "enRetard": 51000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 51000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 101000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 101000,
+       "enRetard": 0,
+       "echeanceIncalculable": 101000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 101000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 152000,
+     "nonLettres": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "numero": "RGT-2026-0002",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "reste": 5000
+      }
+     ],
+     "nonLettre": 5000
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": [
+      {
+       "id": "LTPxmvux6z3z7uk2t",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 49000,
+       "statut": "actif"
+      },
+      {
+       "id": "LTPxmvux6z3z5m8ti",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101000,
+       "statut": "actif"
+      }
+     ]
+    }
+   },
+   {
+    "nom": "second règlement du second tiers (5 000 sur f3)",
+    "role": "admin",
+    "droit": true,
+    "entree": {
+     "reglementId": "RTPxmvux6z3rwj4pc",
+     "affectations": [
+      {
+       "factureTiersId": "FTPxmvux6z3nfhi5v",
+       "montant": 5000
+      }
+     ]
+    },
+    "etatAvant": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": [
+      {
+       "id": "LTPxmvux6z3z7uk2t",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 49000,
+       "statut": "actif"
+      },
+      {
+       "id": "LTPxmvux6z3z5m8ti",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101000,
+       "statut": "actif"
+      }
+     ]
+    },
+    "sortie": {
+     "ok": true,
+     "lettre": 5000,
+     "resteNonLettre": 0
+    },
+    "creances": {
+     "f1": 0,
+     "f2": 51000,
+     "f3": 96000,
+     "f4": 0
+    },
+    "balance": {
+     "ok": true,
+     "date": "2026-10-30",
+     "tranches": {
+      "courte": 30,
+      "longue": 90
+     },
+     "lignes": [
+      {
+       "code": "TP-005",
+       "nom": "Société Vecteur Tiers",
+       "factures": 2,
+       "facture": 201000,
+       "du": 51000,
+       "moins30": 0,
+       "de30a90": 51000,
+       "plus90": 0,
+       "enRetard": 51000,
+       "echeanceIncalculable": 0,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3lu0u8c",
+         "numero": "FT-2026-0005",
+         "date": "2026-08-30",
+         "net": 100000,
+         "du": 51000,
+         "tranche": "30a90",
+         "age": 61,
+         "echeance": "2026-09-29"
+        }
+       ]
+      },
+      {
+       "code": "TP-006",
+       "nom": "Convention Vecteur",
+       "factures": 1,
+       "facture": 101000,
+       "du": 96000,
+       "moins30": 0,
+       "de30a90": 0,
+       "plus90": 96000,
+       "enRetard": 0,
+       "echeanceIncalculable": 96000,
+       "nonCertifiees": 0,
+       "lignes": [
+        {
+         "id": "FTPxmvux6z3nfhi5v",
+         "numero": "FT-2026-0006",
+         "date": "2026-05-01",
+         "net": 101000,
+         "du": 96000,
+         "tranche": "plus90",
+         "age": 182,
+         "echeance": null
+        }
+       ]
+      }
+     ],
+     "total": 147000,
+     "nonLettres": [],
+     "nonLettre": 0
+    },
+    "etatApres": {
+     "factures": [
+      {
+       "id": "FTPxmvux6z3p5a2b7",
+       "statut": "emise",
+       "numero": "FT-2026-0007",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-25",
+       "net": 50000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "statut": "emise",
+       "numero": "FT-2026-0006",
+       "tiersCode": "TP-006",
+       "tiersNom": "Convention Vecteur",
+       "date": "2026-05-01",
+       "net": 101000,
+       "delaiPaiementJours": null
+      },
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "statut": "emise",
+       "numero": "FT-2026-0005",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-08-30",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "statut": "emise",
+       "numero": "FT-2026-0004",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-20",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3f8rdbo",
+       "statut": "emise",
+       "numero": "FT-2026-0003",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z3afhcgc",
+       "statut": "emise",
+       "numero": "FT-2026-0002",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 101000,
+       "delaiPaiementJours": 30
+      },
+      {
+       "id": "FTPxmvux6z37rzj1t",
+       "statut": "emise",
+       "numero": "FT-2026-0001",
+       "tiersCode": "TP-005",
+       "tiersNom": "Société Vecteur Tiers",
+       "date": "2026-10-12",
+       "net": 100000,
+       "delaiPaiementJours": 30
+      }
+     ],
+     "avoirs": [
+      {
+       "id": "ATPxmvux6z3qfrm03",
+       "factureTiersId": "FTPxmvux6z3p5a2b7",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jxg8rd",
+       "factureTiersId": "FTPxmvux6z37rzj1t",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3jcy0p8",
+       "factureTiersId": "FTPxmvux6z3afhcgc",
+       "statut": "actif"
+      },
+      {
+       "id": "ATPxmvux6z3j3fmlf",
+       "factureTiersId": "FTPxmvux6z3f8rdbo",
+       "statut": "actif"
+      }
+     ],
+     "reglements": [
+      {
+       "id": "RTPxmvux6z3rwj4pc",
+       "tiersCode": "TP-006",
+       "montant": 5000,
+       "numero": "RGT-2026-0002",
+       "statut": "actif"
+      },
+      {
+       "id": "RTPxmvux6z3rezivd",
+       "tiersCode": "TP-005",
+       "montant": 150000,
+       "numero": "RGT-2026-0001",
+       "statut": "actif"
+      }
+     ],
+     "lettrages": [
+      {
+       "id": "LTPxmvux6z40i22q5",
+       "reglementId": "RTPxmvux6z3rwj4pc",
+       "factureTiersId": "FTPxmvux6z3nfhi5v",
+       "montant": 5000,
+       "statut": "actif"
+      },
+      {
+       "id": "LTPxmvux6z3z7uk2t",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3lu0u8c",
+       "montant": 49000,
+       "statut": "actif"
+      },
+      {
+       "id": "LTPxmvux6z3z5m8ti",
+       "reglementId": "RTPxmvux6z3rezivd",
+       "factureTiersId": "FTPxmvux6z3jc6sgk",
+       "montant": 101000,
+       "statut": "actif"
+      }
+     ]
+    }
+   }
+  ],
+  "balanceDepart": {
+   "ok": true,
+   "date": "2026-10-30",
+   "tranches": {
+    "courte": 30,
+    "longue": 90
+   },
+   "lignes": [
+    {
+     "code": "TP-005",
+     "nom": "Société Vecteur Tiers",
+     "factures": 2,
+     "facture": 201000,
+     "du": 201000,
+     "moins30": 101000,
+     "de30a90": 100000,
+     "plus90": 0,
+     "enRetard": 100000,
+     "echeanceIncalculable": 0,
+     "nonCertifiees": 0,
+     "lignes": [
+      {
+       "id": "FTPxmvux6z3lu0u8c",
+       "numero": "FT-2026-0005",
+       "date": "2026-08-30",
+       "net": 100000,
+       "du": 100000,
+       "tranche": "30a90",
+       "age": 61,
+       "echeance": "2026-09-29"
+      },
+      {
+       "id": "FTPxmvux6z3jc6sgk",
+       "numero": "FT-2026-0004",
+       "date": "2026-10-20",
+       "net": 101000,
+       "du": 101000,
+       "tranche": "moins30",
+       "age": 10,
+       "echeance": "2026-11-19"
+      }
+     ]
+    },
+    {
+     "code": "TP-006",
+     "nom": "Convention Vecteur",
+     "factures": 1,
+     "facture": 101000,
+     "du": 101000,
+     "moins30": 0,
+     "de30a90": 0,
+     "plus90": 101000,
+     "enRetard": 0,
+     "echeanceIncalculable": 101000,
+     "nonCertifiees": 0,
+     "lignes": [
+      {
+       "id": "FTPxmvux6z3nfhi5v",
+       "numero": "FT-2026-0006",
+       "date": "2026-05-01",
+       "net": 101000,
+       "du": 101000,
+       "tranche": "plus90",
+       "age": 182,
+       "echeance": null
+      }
+     ]
+    }
+   ],
+   "total": 302000,
+   "nonLettres": [
+    {
+     "id": "RTPxmvux6z3rwj4pc",
+     "numero": "RGT-2026-0002",
+     "tiersCode": "TP-006",
+     "montant": 5000,
+     "reste": 5000
+    },
+    {
+     "id": "RTPxmvux6z3rezivd",
+     "numero": "RGT-2026-0001",
+     "tiersCode": "TP-005",
+     "montant": 150000,
+     "reste": 150000
+    }
+   ],
+   "nonLettre": 155000
+  },
+  "avoir": {
+   "f4": true
+  }
+ },
+ "collections": [
+  "tiersPayeurs",
+  "facturesTiers",
+  "avoirsTiers",
+  "reglementsTiers",
+  "lettragesTiers"
+ ]
+}
