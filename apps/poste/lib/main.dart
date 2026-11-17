@@ -24,6 +24,7 @@ import 'sync/service_fichiers.dart';
 import 'sync/service_verdicts_import.dart';
 import 'donnees/tarifs_poste.dart';
 import 'donnees/magasin.dart';
+import 'donnees/maj_poste.dart';
 import 'donnees/persistance.dart';
 import 'modules/cfg/cfb_systeme.dart' show CfbPersistance;
 import 'core/config_poste.dart';
@@ -138,6 +139,20 @@ Future<void> main() async {
   // tout autant les dossiers des patients. Sans chiffrement (`SIGH_CHIFFREMENT=non`), tout reste en clair, pour le développement seulement.
   final cle = chiffrementActif != 'non' ? await CleLocale('$dossierDonnees/cle-poste.bin').obtenir() : null;
   final cleSqlite = cle == null ? '' : cle.map((o) => o.toRadixString(16).padLeft(2, '0')).join();
+  // LA MISE À JOUR SANS PERTE (lot MAJ) : AVANT d'ouvrir le magasin, une migration ou un import interrompu par une coupure est ramené aux données d'AVANT (jamais un état mixte) ; un dossier
+  // neuf reçoit le format courant ; des données PLUS RÉCENTES que ce logiciel ne s'ouvrent pas (refus nommé). Le 426 de la mère (`ConfigMere.formatDonnees`, `ConfigFileul.formatDonnees`) n'est PAS encore branché sur le format stocké : tant que l'écran « Mettre à jour le logiciel » qui lance la migration n'existe pas, brancher le 426 bloquerait un fileul neuf devant une mère non migrée (section BG).
+  if (cle != null) {
+    final maj = ServiceMiseAJour(dossier: '$dossierDonnees/magasin', cle: cle, dossierFichiers: '$dossierDonnees/fichiers');
+    await maj.reprendreSiInterrompu();
+    await maj.marquerNeuf();
+    final plan = await maj.plan();
+    if (plan.refus != null) {
+      runApp(MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: Scaffold(body: Center(child: Padding(padding: const EdgeInsets.all(24), child: SelectableText('SIGH-CNT ne peut pas démarrer.\n\n${plan.refus!.code} : ${plan.refus!.motif}\n\n${plan.refus!.geste}'))))));
+      return;
+    }
+  }
   final stockage = StockageFichier('$dossierDonnees/poste.json', cle: cle);
   final activation = ActivationMere(
     stockage: stockage,

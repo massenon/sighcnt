@@ -285,7 +285,7 @@ class ServiceMiseAJour {
       await _terminer();
       await _journaliser('retour_arriere', {'copie': copie.dir, 'saisies_posterieures': prop.saisies.length, 'gardees_dans': avantDir, 'rapport': rap.phrase});
       return RapportMaj(comptes: rap, saisies: prop.saisies, copie: avantDir, notes: ['Les saisies postérieures à la copie sont gardées dans $avantDir (rien n’est écrasé en silence).']);
-    } on Exception catch (e) {
+    } on Exception {
       // une COUPURE (process tué, Error) ne passe pas ici : le marqueur reste et `reprendreSiInterrompu` agit au démarrage suivant
       await reprendreSiInterrompu();
       rethrow;
@@ -408,7 +408,7 @@ class ServiceMiseAJour {
       await _terminer();
       await _journaliser('importer', {'fichier': source, 'formatExport': format, 'rapport': rap.phrase, 'saisies_locales_non_presentes': saisies.length, 'fichiers_ajoutes': ajoutes, 'gardee_dans': avantDir, 'avertissements': j.avertissements});
       return RapportMaj(comptes: comparerReleves(releverCollections(local), relu, modifieesParMigration: {...migre.modifiees, ...relu.keys}), notes: [...migre.notes, '$ajoutes fichier(s) numérisé(s) ajouté(s), aucun écrasé.', 'Le magasin d’avant l’import est gardé dans $avantDir.'], avertissements: j.avertissements, saisies: saisies, etapes: migre.etapes, copie: avantDir);
-    } on Exception catch (e) {
+    } on Exception {
       // une COUPURE (process tué, Error) ne passe pas ici : le marqueur reste et `reprendreSiInterrompu` agit au démarrage suivant
       await reprendreSiInterrompu();
       rethrow;

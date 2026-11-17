@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:sigh_domaine/sigh_domaine.dart' show formatDonneesCourant;
 import 'package:sigh_sync/sigh_sync.dart';
 
 import 'source_pieces_fileul.dart';
@@ -16,9 +17,9 @@ class MoteurFileul {
 
   /// `dbChemin` = fichier SQLite du poste (`:memory:` en test). `mere` = adresse de la mère, ex. `http://192.168.1.10:9000`.
   static MoteurFileul creer(
-      {required String dbChemin, required String mere, String nom = 'poste', String cleStockage = ''}) {
-    final f =
-        Fileul(ConfigFileul(port: 0, mere: mere, dbChemin: dbChemin, nom: nom, cleStockage: cleStockage));
+      {required String dbChemin, required String mere, String nom = 'poste', String cleStockage = '', int? formatDonnees}) {
+    final f = Fileul(ConfigFileul(
+        port: 0, mere: mere, dbChemin: dbChemin, nom: nom, cleStockage: cleStockage, formatDonnees: formatDonnees ?? formatDonneesCourant));
     return MoteurFileul._(f);
   }
 
