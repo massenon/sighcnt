@@ -71,3 +71,14 @@ table.matrice th.v span { display: inline-block; transform: rotate(-90deg); tran
 .cle { font-family: 'Liberation Mono', monospace; font-size: 10pt; background: #f1f5f9; padding: 0 1mm; border-radius: 2px; }
 .petit { font-size: 9.5pt; color: var(--gris); }
 .saut { page-break-before: always; }
+
+/* Édition du 17/11/2026 : répertoire des écrans (annexe C) et rappel du geste réservé. */
+table.repertoire { font-size: 8pt; }
+table.repertoire th, table.repertoire td { padding: 1mm 1.4mm; vertical-align: top; }
+table.repertoire td:first-child { width: 33%; }
+table.repertoire td.qui-agit { width: 22%; }
+table.repertoire tr { page-break-inside: avoid; }
+table.repertoire .chem { display: block; color: #64748b; font-size: 7pt; }
+table.repertoire .btns { display: block; color: #334155; }
+.droit { font-size: 9.5pt; background: #f8fafc; border-left: 2mm solid #94a3b8; padding: 1.5mm 3mm; margin: 2mm 0 3mm; }
+h3.groupe-ecrans { font-size: 11pt; margin: 5mm 0 1mm; color: #0f2a4a; page-break-after: avoid; }

@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
 const ICI = __dirname;
 const SORTIE = path.resolve(ICI, '../MANUEL-UTILISATION-SIGH-CNT.pdf');
 const TITRE = 'Manuel d’utilisation SIGH-CNT';
-const DATE = '16 novembre 2026';
+const DATE = '17 novembre 2026';
 const CHAPITRES = require('./contenu.js');
 
 function echapper(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -39,7 +39,7 @@ function assembler(pages) {
     <div class="sous-couv">SIGH-CNT, Système Intégré de Gestion Hospitalière</div>
     <div class="public">Pour les agents de la clinique : poste de travail, application mobile et relais web</div>
     <div class="devise">« Votre santé, notre raison de vivre »</div>
-    <div class="edition">Édition du ${DATE} · Version de la maquette de référence : schéma 91</div>
+    <div class="edition">Édition du ${DATE} · Version de la maquette de référence : schéma 97</div>
   </section>`;
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${TITRE}</title><link rel="stylesheet" href="style.css"></head><body>
   ${couverture}<section class="sommaire"><h1 class="titre-sommaire">Sommaire</h1><ol>${sommaire}</ol></section>${corps}</body></html>`;

@@ -22,12 +22,12 @@ const poste = [
 
 /* Le téléphone : écrans de la maquette mobile (prototype_html/mobile/ecrans/*.php) et de l'application Flutter (apps/mobile/lib/ui). */
 const mobile = [
-  ['appairage', 'Appairage'], ['verrou', 'Verrou du téléphone'], ['accueil-soignant', 'Tournée du soignant'], ['accueil-medecin', 'Visites du médecin'],
-  ['accueil-sagefemme', 'Suivis de la sage-femme'], ['accueil-reception', 'Réception de secours'], ['dossier', 'Dossier du patient'],
-  ['constantes', 'Constantes'], ['consultation', 'Consultation'], ['cpn', 'Consultation prénatale'], ['cpon', 'Consultation postnatale'],
-  ['demande-analyse', 'Demande d’analyse'], ['dossiers-crees', 'Dossiers créés au téléphone'], ['lot', 'Lot de tournée'], ['nouveau-dossier', 'Nouveau dossier'],
-  ['orientation', 'Orientation'], ['parametres', 'Réglages du téléphone'], ['prescription', 'Prescription'], ['surveillance', 'Surveillance'],
-  ['sync', 'Synchronisation du téléphone'], ['a-traiter', 'À traiter'],
+  ['appairage', 'Appairer ce téléphone'], ['verrou', 'Code PIN'], ['accueil-soignant', 'Ma tournée'], ['accueil-medecin', 'Mes visites'],
+  ['accueil-sagefemme', 'Mes suivis'], ['accueil-reception', 'Accueil de secours'], ['dossier', 'Dossier du patient'],
+  ['constantes', 'Constantes'], ['consultation', 'Consultation à domicile'], ['cpn', 'Visite prénatale (CPN)'], ['cpon', 'Visite post-natale (CPoN)'],
+  ['demande-analyse', 'Demande d’analyses'], ['dossiers-crees', 'Dossiers ouverts'], ['lot', 'Lot de tournée'], ['nouveau-dossier', 'Nouveau dossier'],
+  ['orientation', 'Orienter un patient'], ['parametres', 'Réglages'], ['prescription', 'Prescription'], ['surveillance', 'Surveillance mère-bébé'],
+  ['sync', 'Synchronisation'], ['a-traiter', 'À traiter'],
 ].map(([id, nom]) => ({ id: 'mob-' + id, nom, groupe: 'mobile' }));
 
 /* Le relais : écrans du panneau superadmin (routes de apps/web/routes/web.php) et page publique de satisfaction. */

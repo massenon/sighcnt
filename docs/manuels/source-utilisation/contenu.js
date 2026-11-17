@@ -69,7 +69,7 @@ function tableGestes() {
 }
 
 /* ======================================================================================= */
-module.exports = [
+const CHAPITRES = [
 {
   titre: 'À propos de ce manuel',
   chapeau: 'Ce manuel explique, geste par geste, comment les agents de la Clinique NASSIERA TOO utilisent SIGH-CNT au quotidien.',
@@ -83,7 +83,7 @@ ${puces(`le ${b('poste de travail')} : l’application de bureau installée sur 
 <p>L’installation, les comptes, les droits, les sauvegardes et le réglage du relais sont traités dans le ${b('Manuel administrateur')}.</p>
 
 <h2>D’où viennent les captures d’écran</h2>
-<p>Les captures de ce manuel sont prises sur la ${b('maquette de référence')} de SIGH-CNT. La maquette est l’exécutable qui fait foi : l’interface du poste de travail la reproduit écran par écran, avec les mêmes libellés, les mêmes onglets et les mêmes boutons. Les captures du téléphone viennent du simulateur mobile de la maquette.</p>
+<p>Les captures de ce manuel sont prises sur la ${b('maquette de référence')} de SIGH-CNT. La maquette est l’exécutable qui fait foi : l’interface du poste de travail la reproduit écran par écran, avec les mêmes libellés, les mêmes onglets et les mêmes boutons. Les captures du téléphone viennent du simulateur mobile de la maquette. Elles sont prises à la date du 17 novembre 2026, ce qui explique que l’identité imprimée porte le nouveau RCCM.</p>
 ${info('Les données visibles sur les captures sont des <b>données de démonstration</b>. Aucune donnée de santé réelle n’y figure. Le nom de l’utilisateur connecté et les noms du personnel sont remplacés par « AGENT Démonstration » ou « Agent de démonstration ».')}
 ${att('Le poste de travail est une application de bureau. Sa présentation peut différer légèrement de la maquette (polices, marges, position d’une icône). Les libellés, l’ordre des étapes et les règles restent les mêmes. Quand un écran n’est pas encore porté au poste, ce manuel le signale dans un encadré « Attention ».')}
 
@@ -100,7 +100,7 @@ ${alerte('Un risque de perte de données ou une action qui ne se défait pas.')}
 ${astuce('Un raccourci ou une bonne pratique.')}
 
 <h2>Ce que ce manuel ne dit pas</h2>
-<p>Ce manuel décrit l’état du logiciel au 16 novembre 2026. Certaines parties ne sont pas encore éprouvées en conditions réelles ; elles sont signalées là où elles jouent et récapitulées à l’annexe « Limites connues ».</p>
+<p>Ce manuel décrit l’état du logiciel au 17 novembre 2026. Certaines parties ne sont pas encore éprouvées en conditions réelles ; elles sont signalées là où elles jouent et récapitulées à l’annexe « Limites connues ».</p>
 `},
 {
   titre: 'Les rôles et ce qu’ils voient',
@@ -577,7 +577,6 @@ ${qui(['m8-facturation', 'm8-paiements'])}
 ${etapes(`Ouvrez ${chemin('Financier', 'Facturation & Caisse', 'Paiements')}. L’onglet ${b('À encaisser')} liste les factures dues.`,
  `Cliquez sur ${b('Encaisser')} dans la ligne de la facture.`,
  `Saisissez le ${b('Montant encaissé (FCFA)')} et le ${b('Mode de règlement')} ; ajoutez la ${b('Référence de la transaction')} pour un paiement mobile ou bancaire.`,
- `Pour une entreprise, renseignez ${b('IFU de l’acheteur')}, ${b('Nom de l’acheteur')} et ${b('Taux d’AIB')}.`,
  `Cliquez sur ${b('Valider l’encaissement')}. La pièce de caisse est émise et le reçu s’imprime.`)}
 ${fig('encaisser', 'La fenêtre Encaissement.')}
 ${info('Un paiement partiel laisse un reste dû : il se suit dans <b>Reliquats</b> et se solde par <b>Régler l’encaissement partiel</b>. L’onglet <b>Historique des règlements</b> garde tous les reçus.')}
@@ -794,8 +793,8 @@ ${duo('mob-lot', 'Le lot de tournée.', 'mob-reglages', 'Les réglages du télé
 <p>Le relais web est un service hébergé en ligne (adresse de la clinique : <span class="cle">sighcnt.nassieratoo.com</span>). Il transporte des paquets ${b('chiffrés')} entre le poste mère, les postes de la clinique et les téléphones. Il ne sait pas les lire : la clé reste à la clinique.</p>
 ${puces(`Vous ne vous connectez jamais au relais pour travailler : le travail se fait sur le poste ou sur le téléphone.`,
  `Vous voyez le relais seulement à travers la ${b('pastille de synchronisation')} du poste et le ${b('bandeau')} du téléphone.`,
- `Les SMS de la clinique (rappels de rendez-vous, si le patient l’a accepté) partent par le relais.`,
- `Un lien de partage d’une ${b('enquête de satisfaction')} peut être remis à un patient ; il ouvre un questionnaire sans aucun accès au dossier.`)}
+ `Les SMS de la clinique (rappels de rendez-vous, vœux d’anniversaire, si la personne l’a accepté) partent par le relais.`,
+ `Un lien de partage ou un code QR d’une ${b('enquête de satisfaction')} peut être remis à un patient ; il ouvre un questionnaire sans aucun accès au dossier, et la réponse est chiffrée dans son navigateur.`)}
 ${info('Le panneau du relais (adresse /panneau) est réservé au superadministrateur. Un agent n’y a pas de compte. Il est décrit dans le Manuel administrateur.')}
 ${att('Le relais réel sur l’hébergement de la clinique n’a pas été éprouvé en conditions de production au moment de cette édition. Aucune donnée de santé ne transite en clair : si le relais est indisponible, les postes continuent de travailler entre eux et les téléphones gardent leurs saisies jusqu’au retour du service.')}
 `},
@@ -803,16 +802,24 @@ ${att('Le relais réel sur l’hébergement de la clinique n’a pas été épro
   titre: 'Limites connues et points non vérifiés',
   annexe: 'A',
   html: `
-<p>Cette annexe récapitule ce que le manuel ne garantit pas encore, au 16 novembre 2026.</p>
-${puces(`${b('Captures')} : toutes prises sur la maquette de référence, pas sur le poste de bureau compilé. Le poste Windows n’a pas été compilé ni photographié pour cette édition.`,
+<p>Cette annexe récapitule ce que le manuel ne garantit pas encore, au 17 novembre 2026. Elle est écrite pour que chaque agent sache ce qui est éprouvé et ce qui ne l’est pas.</p>
+${puces(`${b('Poste Windows')} : le poste de bureau n’a pas été compilé ni éprouvé sous Windows pour cette édition. Les captures sont celles de la maquette de référence, pas du poste compilé.`,
  `${b('Application mobile')} : captures du simulateur de la maquette ; l’application Flutter n’a pas été éprouvée sur un téléphone réel.`,
- `${b('Relais web')} : non éprouvé sur l’hébergement réel de la clinique.`,
- `${b('MECeF')} : le boîtier physique n’est pas encore piloté ; la certification réelle reste à vérifier sur site avec le fournisseur.`,
+ `${b('SMS réels')} : aucun SMS réel n’a été envoyé à un vrai numéro avec un vrai compte de fournisseur. La couverture du Bénin, l’expéditeur alphanumérique, le coût d’un message et les codes d’erreur des deux fournisseurs restent à vérifier sur site, la première semaine, avec un plafond bas. Les envois automatiques sont désactivés au départ.`,
+ `${b('Satisfaction en ligne')} : la page publique et le chiffrement des réponses dans le navigateur n’ont pas été éprouvés sur les téléphones du terrain ; un navigateur ancien (avant Chrome 133, Firefox 130, Safari 17) ne peut pas répondre. La collecte est désactivée au départ.`,
+ `${b('Relais web')} : non éprouvé sur l’hébergement réel de la clinique, ni avec deux machines et une vraie charge.`,
+ `${b('MECeF')} : le boîtier physique n’est pas encore piloté et le dossier d’interface e-MECeF de la DGI manque : aucun numéro fiscal n’est produit, une vente reste en attente de certification. Le modèle, l’interface et le protocole du boîtier restent à obtenir du fournisseur.`,
+ `${b('Imprimante de caisse')} : le modèle Xprinter XP-Q800 est semé ; sa liaison (USB ou Ethernet) est à constater sur l’appareil, l’impression en pixels n’est pas vérifiée.`,
  `${b('Chiffrement de la base locale')} (SQLCipher) : non branché à la date de cette édition.`,
+ `${b('Taux de l’AIB')} : les taux de retenue sur la facture d’un tiers (3 % pour une personne physique, 5 % pour une personne morale) sont des hypothèses à confirmer ; les textes officiels n’ont pas été relus. L’imputation n’écrit aucune écriture comptable pour l’instant.`,
+ `${b('Factures aux tiers payeurs')} : le montant dû est la base plus l’AIB décidé ; la caisse du patient n’est pas encore ajustée à la part restante ; l’avoir est total seulement, sans certification MECeF ; aucune écriture comptable n’est produite.`,
+ `${b('Dates et valeurs à confirmer')} : la date d’effet du RCCM (16 novembre 2026), les heures des SMS (rappel de la veille à 18 h, du matin à 7 h, vœux à 9 h), les valeurs d’attente de la fiche du personnel (salaire, catégorie, date d’embauche, CNSS), le délai d’alerte d’une décision qui attend la mère (4 heures).`,
+ `${b('Plusieurs postes')} : deux postes coupés de la mère peuvent attribuer le même numéro à deux factures aux tiers ou à deux actions du plan annuel ; la commande de stock gros, elle, porte une référence provisoire par poste. Les régimes individuels ne voyagent pas encore d’un poste à l’autre.`,
  `${b('Seuils du laboratoire')} : la validation d’un seuil de variation et son délai entre deux mesures existent sur la maquette ; le poste de bureau ne les porte pas encore.`,
- `${b('Libellés')} : extraits de la maquette ; quelques titres de fenêtre gardent une tournure brute (« Nouveau admission », « Tous les consultations ») qui sera corrigée à l’écran.`,
- `${b('Droits')} : les tableaux « Qui voit quoi » montrent les droits d’origine ; votre clinique a pu les ajuster.`,
- `${b('Non couverts en détail')} : chaque écran de la maternité, des statistiques, de la gestion documentaire et des registres annexes (seuls leurs écrans principaux sont décrits).`)}
+ `${b('Libellés')} : extraits de la maquette ; quelques titres de fenêtre gardent une tournure brute qui sera corrigée à l’écran.`,
+ `${b('Droits')} : les tableaux « Qui voit quoi » et le répertoire montrent les droits d’origine ; votre clinique a pu les ajuster. Les noms des signataires de plusieurs états imprimés sont encore écrits dans le logiciel et seront lus de l’organigramme.`,
+ `${b('Données de démonstration')} : toutes les captures montrent des données de démonstration, les noms du personnel sont masqués ; le répertoire patients de démonstration porte des noms fictifs.`,
+ `${b('Répertoire des écrans')} : l’annexe C décrit chaque écran en une ligne, extraite de l’écran réel ; les écrans principaux sont détaillés en fiches pas à pas dans les chapitres. Les écrans de statistiques, de la gestion documentaire et des registres annexes ne sont décrits que par cette ligne.`)}
 `},
 {
   titre: 'Glossaire',
@@ -835,3 +842,13 @@ ${puces(`${b('Captures')} : toutes prises sur la maquette de référence, pas su
 </table>
 `},
 ];
+
+/* ---- Édition du 17/11/2026 : ajouts par chapitre, répertoire des écrans (annexe C) ---- */
+const NOUV = require('./contenu-nouveau.js')({ b, chemin, info, att, alerte, astuce, fig, duo, etapes, puces, qui, lib, N, RBAC, ROLES, LIB });
+const REP = require('./repertoire.js');
+CHAPITRES.forEach((c) => { if (NOUV.ajouts[c.titre]) c.html += NOUV.ajouts[c.titre]; });
+Object.keys(NOUV.ajouts).forEach((t) => { if (!CHAPITRES.some((c) => c.titre === t)) throw new Error('chapitre inconnu : ' + t); });
+const glossaire = CHAPITRES.pop();
+CHAPITRES.push(glossaire);
+CHAPITRES.push({ titre: 'Répertoire de tous les écrans', annexe: 'C', html: REP({ RBAC, ROLES }) + REP.partiesPropres() });
+module.exports = CHAPITRES;
