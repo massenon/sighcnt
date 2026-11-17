@@ -46,6 +46,8 @@ Magasin poste({List<M> jetons = const [], List<M> enquetes = const []}) => Magas
       'personnel': jeu('personnel'),
       'soignants': jeu('soignants'),
       'rolesBase': jeu('rolesBase'),
+      // Lot IDENT : l'identité imprimée se lit À LA DATE (30/10/2026 : version 1, comme la maquette qui a tiré les fiches) ; sans cette collection la coque lit la semence du jour (version 2).
+      'identiteLegale': jeu('identiteLegale'),
       'support': const <M>[],
       'jetonsEnquete': jetons,
       'enquetes': enquetes,
