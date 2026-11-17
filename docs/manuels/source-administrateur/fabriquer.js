@@ -12,10 +12,25 @@ let playwright;
 try { playwright = require('playwright'); } catch (e) { playwright = require('/opt/node-tools/node_modules/playwright'); }
 
 const ICI = __dirname;
-const SOURCE = path.join(ICI, 'manuel-administrateur.html');
+const MODELE = path.join(ICI, 'manuel-administrateur.html');
+const SOURCE = path.join(ICI, 'manuel-administrateur.assemble.html'); /* engendré : le modèle + les chapitres tirés des fichiers (droits, écrans, paramètres) */
 const SORTIE = path.join(ICI, '..', 'MANUEL-ADMINISTRATEUR-SIGH-CNT.pdf');
-const DATE = '16/11/2026';
-const CHROME = process.env.CHROME_PATH || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined);
+const DATE = '17/11/2026';
+const CHROME = process.env.CHROME_PATH || ['/opt/pw-browsers/chromium-1243/chrome-linux64/chrome', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find((c) => fs.existsSync(c));
+
+/* Assemble le modèle : les trois chapitres tirés des fichiers remplacent leurs repères. */
+function assembler() {
+  let h = fs.readFileSync(MODELE, 'utf8');
+  const gen = { droits: require('./droits-reserves.js').html(), ecrans: require('./ecrans-liste.js').html(), parametres: require('./parametres-liste.js').html() };
+  for (const [k, v] of Object.entries(gen)) {
+    if (!h.includes('<!--GEN:' + k + '-->')) throw new Error('repère manquant : ' + k);
+    h = h.replace('<!--GEN:' + k + '-->', v.html);
+    h = h.split('<!--NB:' + k + '-->').join(String(v.nombre));
+  }
+  h = h.split('<!--NB:total-ecrans-->').join(String(gen.ecrans.total));
+  fs.writeFileSync(SOURCE, h);
+  console.log('assemblé : ' + gen.droits.nombre + ' gestes, ' + gen.ecrans.nombre + ' écrans, ' + gen.parametres.nombre + ' paramètres');
+}
 
 const pied = `<div style="width:100%;font-family:Arial,'Liberation Sans',sans-serif;font-size:8.5pt;color:#475569;padding:0 17mm;display:flex;justify-content:space-between;">
   <span>Manuel administrateur SIGH-CNT · ${DATE}</span><span>Page <span class="pageNumber"></span> / <span class="totalPages"></span></span></div>`;
@@ -47,6 +62,7 @@ async function imprimer(page, fichier, extra = {}) {
 }
 
 (async () => {
+  assembler();
   const navigateur = await playwright.chromium.launch({ executablePath: CHROME, args: ['--no-sandbox'] });
   const page = await navigateur.newPage();
   await page.goto('file://' + SOURCE, { waitUntil: 'networkidle' });

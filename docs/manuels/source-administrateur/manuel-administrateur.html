@@ -21,7 +21,7 @@
   <div class="couv-bas">
     <p class="couv-devise">« Votre santé, notre raison de vivre »</p>
     <table class="couv-meta">
-      <tr><td>Version du document</td><td>1.0, du 16/11/2026</td></tr>
+      <tr><td>Version du document</td><td>2.0, du 17/11/2026 (reprend tous les lots fusionnés jusqu’au 17/11/2026)</td></tr>
       <tr><td>Destinataires</td><td>Administrateur système, Directrice de l’Administration et des Finances (DAF), prestataire chargé de l’hébergement</td></tr>
       <tr><td>Relais web</td><td><code>sighcnt.nassieratoo.com</code></td></tr>
       <tr><td>Diffusion</td><td>Interne à la clinique. Ne contient aucun secret.</td></tr>
@@ -78,6 +78,18 @@
 <figcaption>Les postes fileuls se synchronisent avec la mère sur le réseau local. La mère et les téléphones passent par le relais web.</figcaption>
 </figure>
 
+<h3>Ce que cette édition ajoute</h3>
+<ul>
+  <li>La <strong>passerelle SMS</strong> tenue par le relais (rappels de rendez-vous, vœux d’anniversaire), avec Twilio ou Vonage : chapitres 4 et 7.</li>
+  <li>La <strong>satisfaction en ligne</strong> : page publique du relais, réponses chiffrées dans le navigateur du patient : chapitres 4 et 7.</li>
+  <li>Le <strong>mode MECeF</strong> et l’<strong>imprimante de caisse</strong> réglables à l’écran : chapitre 6.</li>
+  <li>L’<strong>identité de la clinique</strong> à jour (RCCM <code>NAT/2021/M02-020</code>), propagée à tous les postes, avec migration automatique des postes déjà installés : chapitre 4.</li>
+  <li>Le <strong>chiffrement au repos</strong> des données du poste et la procédure de contrôle sous Windows : section 5.6.</li>
+  <li>Le chapitre <strong>Droits réservés</strong> : les <!--NB:droits--> gestes réservés de la fiche des droits, leur défaut semé et ce qu’ils ouvrent (chapitre 8).</li>
+  <li>Le <strong>registre des paramètres</strong> de la clinique (chapitre 9) et le <strong>catalogue de tous les écrans</strong> du logiciel, au nombre de <!--NB:total-ecrans--> (chapitre 10).</li>
+  <li>La fiscalité (confirmation du versement CNSS, deux barèmes de l’AIB, imputations), la facture au tiers payeur, le plan annuel de travail, les plannings individuels, la commande de stock gros validée sur n’importe quel poste : chapitre 4.</li>
+</ul>
+
 <h2 id="s0-2">Conventions du manuel</h2>
 <ul>
   <li>Les éléments d’interface sont écrits en <strong>gras</strong>, exactement comme à l’écran : cliquez sur <strong>Enregistrer</strong>.</li>
@@ -105,13 +117,22 @@
 <h2 id="s0-4">État de vérification de ce manuel</h2>
 <div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention : ce qui n’a pas encore été vérifié en conditions réelles</p>
 <ul>
-  <li>L’installateur Windows et l’application de poste n’ont <strong>jamais été compilés ni lancés sur un vrai Windows</strong> dans l’environnement de rédaction. La protection de la clé du poste par Windows (DPAPI) n’est pas éprouvée.</li>
-  <li>Le chiffrement de la base locale (SQLCipher) n’est pas encore branché sur le poste.</li>
-  <li>Le relais n’a pas encore été déployé sur l’hébergement cPanel réel. Les captures du panneau viennent d’une copie lancée en local.</li>
+  <li>L’installateur Windows et l’application de poste n’ont <strong>jamais été compilés ni lancés sur un vrai Windows</strong> dans l’environnement de rédaction. La protection de la clé du poste par Windows (DPAPI) est écrite mais <strong>n’est pas éprouvée sous Windows</strong>.</li>
+  <li>Le chiffrement au repos est éprouvé par des tests automatiques hors Windows (clé en fichier). Il n’a <strong>jamais été contrôlé sur un vrai poste Windows</strong> : la procédure de la section 5.6 est à jouer à la mise en service.</li>
+  <li>Le relais n’a pas encore été déployé sur l’hébergement cPanel réel. Les captures du panneau viennent d’une copie lancée en local avec le code de ce dépôt.</li>
   <li>La synchronisation n’a pas été mesurée entre deux ordinateurs physiques reliés par un vrai routeur.</li>
   <li>L’imprimante Xprinter XP-Q800 et le boîtier MECeF n’ont pas été branchés.</li>
+  <li><strong>Aucun SMS réel n’a été envoyé.</strong> Les comptes Twilio et Vonage n’ont jamais été essayés ; la couverture du Bénin, l’expéditeur alphanumérique et le coût par message ne sont pas connus.</li>
+  <li>La page publique de satisfaction n’a pas été ouverte sur de vrais téléphones du terrain ; elle exige un navigateur récent (section 4.6).</li>
+  <li>La charge (nombre d’agents réels en même temps) n’a pas été mesurée.</li>
 </ul></div></div>
-<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">D’où viennent les captures</p><p>Les écrans du poste sont montrés depuis la <strong>maquette de référence</strong>, avec des données de démonstration. Le poste reprend les mêmes écrans et les mêmes libellés ; quand un écran du poste diffère, le texte le dit. Les noms de personnes visibles sur les captures sont des noms de démonstration (« AGENT Démo »). Les écrans du relais viennent d’une copie du panneau lancée en local.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">D’où viennent les captures</p><p>Trois sources, dites sous chaque figure :</p>
+<ul>
+<li>la <strong>maquette de référence</strong> pour les écrans de configuration (mêmes libellés que le poste), avec des données de démonstration ;</li>
+<li>l’<strong>application de poste</strong> (« capture Flutter ») pour les écrans qui lui sont propres : assistant d’installation, clé de chiffrement, sauvegarde hors site, passerelle SMS telle que la mère la montre ;</li>
+<li>le <strong>panneau du relais</strong>, lancé en local depuis le code de ce dépôt, sur une base vierge.</li>
+</ul>
+<p>L’horloge des captures est celle du <strong>17/11/2026</strong> : le RCCM visible en pied d’écran est le numéro à jour <code>NAT/2021/M02-020</code>. Les noms de personnes qui apparaissent sont des noms de démonstration (« AGENT Démo »). Aucun secret, code de secours ou mot de passe n’est montré.</p></div></div>
 
 <!-- ============================== CHAPITRE 1 ============================== -->
 <h1 id="ch1">1. Installation des postes</h1>
@@ -155,7 +176,7 @@
   <li>Cliquez sur <strong>Installer</strong>, puis laissez cochée la case qui lance <strong>SIGH-CNT Poste</strong> à la fin.</li>
 </ol>
 <p>Le raccourci <strong>SIGH-CNT Poste</strong> est créé dans le menu Démarrer, dans le groupe <strong>SIGH-CNT</strong>.</p>
-<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Où vivent les données</p><p>Rien ne s’écrit dans <code>Program Files</code>. La base du poste, sa clé, sa configuration (<code>poste.json</code>) et, sur la mère, les sauvegardes, vivent dans <code>%LOCALAPPDATA%\SIGHCNT\donnees</code>. Les exports que vous faites vont dans votre dossier <strong>Téléchargements</strong>. Une mise à jour ne touche jamais ces dossiers.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Où vivent les données</p><p>Rien ne s’écrit dans <code>Program Files</code>. Les données du poste (chiffrées, section 5.6), la clé qui les protège (<code>cle-poste.bin</code>), sa configuration (<code>poste.json</code>, chiffrée aussi) et, sur la mère, la base de synchronisation et les sauvegardes, vivent dans <code>%LOCALAPPDATA%\SIGHCNT\donnees</code>. Les exports que vous faites vont dans votre dossier <strong>Téléchargements</strong>. Une mise à jour ne touche jamais ces dossiers.</p></div></div>
 <div class="enc astuce"><div class="ico">✅</div><div><p class="t">Mettre à jour un poste</p><p>Lancez le nouvel installateur par-dessus l’ancien. Il ferme l’application, remplace les fichiers du programme et garde les données.</p></div></div>
 
 <h2 id="s1-4">1.4 Premier démarrage : choisir le rôle du poste</h2>
@@ -165,6 +186,7 @@
   <li><strong>Rejoindre une clinique existante</strong> : la clinique est déjà installée sur un autre poste. Vous saisissez l’adresse de ce poste et un code d’appairage. Aucune configuration n’est à refaire. Faites ce choix sur tous les autres ordinateurs (section 1.7).</li>
 </ul>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>L’assistant ne s’ouvre que sur un poste jamais installé et sans aucun compte. Un poste qui porte déjà des comptes garde son chemin habituel : l’écran de connexion.</p></div></div>
+<figure><img src="captures/f-ins-accueil.png" alt=""><figcaption>L’écran <strong>Installation du poste</strong> (capture Flutter). (1) <strong>Première installation de la clinique</strong>, (2) <strong>Rejoindre une clinique existante</strong>.</figcaption></figure>
 
 <h2 id="s1-5">1.5 Créer le premier administrateur et noter le code de secours</h2>
 <h3>1. Créer l’administrateur</h3>
@@ -176,6 +198,7 @@
   <li>Cliquez sur <strong>Créer le compte</strong>.</li>
 </ol>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Vous choisissez vous-même votre mot de passe. Il n’est écrit nulle part : le poste n’en garde qu’une empreinte.</p></div></div>
+<figure><img src="captures/f-ins-admin.png" alt=""><figcaption>Créer l’administrateur (capture Flutter). (1) <strong>Créer le compte</strong>.</figcaption></figure>
 <h3>2. Ranger le code de secours</h3>
 <p>L’écran <strong>Votre code de secours</strong> s’affiche. Ce code de 25 caractères (format <code>XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</code>) permet de retrouver l’accès administrateur si vous perdez votre mot de passe.</p>
 <ol class="etapes">
@@ -185,6 +208,7 @@
   <li>Cliquez sur <strong>Ouvrir le tableau de bord</strong>.</li>
 </ol>
 <div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Le code de secours ne s’affiche qu’une fois. Sans lui et sans mot de passe, plus personne ne peut administrer le poste. Ne l’envoyez jamais par messagerie et ne le photographiez pas.</p></div></div>
+<figure><img src="captures/f-ins-code-secours.png" alt=""><figcaption>Le code de secours (capture Flutter). (1) Le code lui-même, <strong>masqué sur cette capture</strong> : il ne s’affiche qu’une fois. (2) <strong>Ouvrir le tableau de bord</strong>, qui reste inactif tant que la case <strong>J’ai rangé ce code en lieu sûr.</strong> n’est pas cochée.</figcaption></figure>
 <h3>3. Mot de passe administrateur perdu</h3>
 <ol class="etapes">
   <li>Sur l’écran de connexion, ouvrez <strong>Mot de passe administrateur perdu</strong>.</li>
@@ -203,6 +227,7 @@
 <tr><td><strong>3. Créer les comptes des agents</strong></td><td>Un compte par agent, avec son rôle.</td><td>Section 3.2</td></tr>
 <tr><td><strong>4. Appairer les postes et les mobiles</strong></td><td>Depuis la mère, un code par appareil.</td><td>Sections 2.4 et 2.5</td></tr>
 </table>
+<p>Deux configurations ne sont pas dans l’assistant et se font ensuite : la <strong>passerelle SMS</strong> (section 4.5) et la <strong>satisfaction en ligne</strong> (section 4.6). Toutes deux sont désactivées par défaut.</p>
 <p>Quand les quatre étapes sont faites, cliquez sur <strong>Clore l’assistant</strong>. Le message <strong>L’assistant d’installation est clos.</strong> confirme la fin.</p>
 <div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention : un second administrateur est obligatoire</p><p>Le poste refuse de clore l’assistant tant qu’il n’y a qu’un seul administrateur actif. Créez un second compte administrateur à l’écran <strong>Utilisateurs</strong> et définissez-lui un mot de passe. Ainsi, la clinique n’est jamais bloquée par l’absence d’une seule personne.</p></div></div>
 <div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où regarder</p><p>La même progression se lit sur la mère à l’écran <strong>Poste mère</strong> ➔ <strong>Cycle de vie</strong> ➔ <strong>Assistant de première mise en service</strong> (figure ci-dessous). Chaque étape se reprend avec <strong>Ouvrir</strong>.</p></div></div>
@@ -326,6 +351,11 @@
   <li>Mettez la feuille sous scellé et notez le numéro du scellé.</li>
   <li>Enregistrez l’attestation : date, détenteur, numéro de scellé, personne qui a contrôlé. Tant que le détenteur n’est pas désigné, l’écran affiche <strong>Détenteur de la copie papier non désigné</strong>.</li>
 </ol>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">À quoi sert encore la clé de clinique</p><ul>
+<li>Elle chiffre le journal et les sauvegardes qui quittent la clinique (chapitre 5).</li>
+<li>Elle calcule l’<strong>identifiant opaque</strong> de chaque SMS (une empreinte HMAC) : le relais ne peut pas relier un message à une personne (section 4.5).</li>
+<li>Elle dérive la <strong>paire de clés de la satisfaction en ligne</strong> : seule la clé publique va au relais, la mère ouvre les réponses (section 4.6).</li>
+</ul><p>Aucun secret de plus à sauvegarder : la perte de la clé de clinique reste le seul scénario à prévenir.</p></div></div>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Le bouton <strong>Afficher le QR d’appairage mobile</strong> sert à appairer un téléphone sur place sans recopier la clé. Le bouton <strong>Faire tourner la clé</strong> (2) remplace la clé : faites-le seulement en cas de soupçon de fuite, et imprimez aussitôt la nouvelle copie papier.</p></div></div>
 
 <h2 id="s2-7">2.7 La liaison avec le relais</h2>
@@ -335,6 +365,7 @@
   <li>La mère <strong>interroge</strong> le relais toutes les 10 à 15 secondes. Le relais n’appelle jamais la mère : elle est derrière le routeur de la clinique.</li>
   <li>Si Internet est coupé, les fileuls continuent de se synchroniser avec la mère. Le retard vers le relais monte et se voit. Au retour d’Internet, la mère rattrape seule.</li>
   <li>Si la mère se tait plus de 5 minutes, le relais lève une alerte « battement ».</li>
+  <li>La mère fait aussi, <strong>chaque minute</strong>, le travail des deux services publics du relais : elle calcule et dépose les SMS à envoyer (section 4.5), elle publie les liens de satisfaction et relève les réponses chiffrées (section 4.6).</li>
 </ul>
 <div class="enc param"><div class="ico">⚙️</div><div><p class="t">Faire tourner le secret de la mère</p><p>Changez d’abord <code>RELAIS_SECRET_MERE</code> dans le <code>.env</code> du relais (section 7.3), puis saisissez le même texte sur la mère avec <strong>Faire tourner le secret de la mère</strong>. Entre les deux gestes, la mère ne peut plus déposer.</p></div></div>
 
@@ -368,7 +399,7 @@
 <tr><td><strong>Rôle</strong></td><td>Les écrans ouverts (voir, éditer, annuler, lecture seule).</td><td>Sur le compte de l’agent ; la fiche du rôle à <strong>Rôles &amp; permissions (RBAC)</strong>.</td></tr>
 <tr><td><strong>Fonction</strong></td><td>Les données : qui prescrit, qui exécute les soins, quels résultats il voit.</td><td>Onglet <strong>Habilitations métier</strong>.</td></tr>
 <tr><td><strong>Secteur</strong></td><td>Le périmètre : « son secteur » ou « tous ».</td><td>Onglet <strong>Habilitations métier</strong> et fiche des soignants (<strong>Prescripteurs &amp; exécutants de soins</strong>).</td></tr>
-<tr><td><strong>Geste réservé</strong></td><td>Un acte qui engage un professionnel nommé (valider un seuil du laboratoire, décider un prix, régler la clôture, exporter un tableau…). Il ne se déduit d’aucun droit d’écran.</td><td>Bouton <strong>Régler les gestes réservés de ce rôle</strong> de la fiche du rôle.</td></tr>
+<tr><td><strong>Geste réservé</strong></td><td>Un acte qui engage un professionnel nommé (valider un seuil du laboratoire, décider un prix, régler la clôture, valider une commande de stock gros, exporter un tableau…). Il ne se déduit d’aucun droit d’écran. Il y en a <!--NB:droits-->, tous listés au chapitre 8.</td><td>Bouton <strong>Régler les gestes réservés de ce rôle</strong> de la fiche du rôle.</td></tr>
 </table>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">RG-13, le cloisonnement</p><p>Le médical est réservé au soignant habilité ; le financier et les RH aux profils comptables et RH. Fermer un module le retire du ruban et de la recherche globale : l’écran devient inatteignable, pas seulement invisible. Le moteur refuse aussi l’écriture : masquer un bouton ne protège rien, le logiciel contrôle chaque geste.</p></div></div>
 
@@ -411,16 +442,18 @@
 <figure><img src="captures/m14-roles-gestes.png" alt=""><figcaption>Les gestes réservés d’un rôle : un droit par geste.</figcaption></figure>
 <p>Les autres icônes de la ligne d’un rôle : <strong>Modifier les droits de ce rôle</strong>, <strong>Régler écran par écran</strong>, <strong>Régler les importations de ce rôle</strong>, <strong>Renommer ce rôle</strong>, <strong>Archiver ce rôle</strong>.</p>
 <div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention : modifier un rôle</p><p>Un changement de rôle s’applique à <strong>tous</strong> les comptes de ce rôle, sur tous les postes, après synchronisation. Une surcharge accorde autant qu’elle restreint. Un rôle archivé ferme les comptes qui le portent. Prévenez les agents concernés avant d’enregistrer.</p></div></div>
-<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Les gestes réservés semés</p><table class="tab petite">
-<tr><th>Geste</th><th>Rôles par défaut</th></tr>
-<tr><td>Valider un seuil de variation brutale du laboratoire</td><td>Biologiste médical</td></tr>
-<tr><td>Corriger le texte lu par machine d’un scan</td><td>La plupart des rôles qui numérisent</td></tr>
-<tr><td>Voir toutes les files du centre « Validations en attente »</td><td>DAF, administrateur, Direction, Directeur Médical, comptable, surveillant, agent administratif</td></tr>
-<tr><td>Régler le circuit de la clôture annuelle</td><td>Administrateur, DAF</td></tr>
-<tr><td>Décider un changement de prix</td><td>Administrateur, DAF, Direction</td></tr>
-<tr><td>Régler les paramètres de clinique</td><td>Administrateur, DAF</td></tr>
-<tr><td>Exporter ou imprimer les lignes d’un tableau</td><td>Tous les rôles</td></tr>
-</table></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Les gestes réservés semés</p><p>Le <strong>chapitre 8</strong> donne la liste complète des gestes réservés, avec leur défaut semé, depuis le fichier des droits du dépôt. Retenez trois règles :</p><ul><li>Un <strong>rôle créé en exploitation part de zéro</strong> : aucun geste réservé n’est ouvert tant que vous ne le cochez pas.</li><li>Un geste réservé <strong>n’ouvre aucun écran</strong> (sauf mention contraire) : un rôle qui doit valider une commande de stock gros doit aussi lire l’écran <strong>Bons de commande</strong>.</li><li>Le moteur <strong>refuse aussi</strong> : sans le droit, la commande est absente de l’écran et le refus cite le droit.</li></ul></div></div>
+
+<h3>Un cas particulier : le Surveillant et la fiche de son équipe</h3>
+<p>Le geste <code>ouvrir_fiche_personnel_equipe</code> (défaut : le Surveillant) ouvre l’écran <strong>Fiche de mon équipe</strong> en lecture restreinte : identité, fonction, service, planning. Jamais le salaire, la catégorie, la date d’embauche, le numéro CNSS, l’assurance ni la paie (RG-13). Le moteur refuse un agent hors de l’équipe. Pour qu’un autre rôle y accède, accordez-lui ce geste ; pour le retirer au Surveillant, décochez-le.</p>
+<h3>Séparer la pharmacie et la caisse</h3>
+<p>Aujourd’hui un seul rôle (Caissier, Dispensaire) tient la caisse et la pharmacie. Le rôle Pharmacien est archivé : la pharmacie n’a donc pas de poste propre. Pour les séparer sans toucher au code :</p>
+<ol class="etapes">
+  <li>Rouvrez le rôle <strong>Pharmacien</strong> (corbeille des rôles).</li>
+  <li>Accordez-lui le seul geste <code>poste_pharmacie</code> et retirez-le du Caissier.</li>
+  <li>Le Caissier garde <code>poste_caisse</code> : il reçoit la tâche « Encaisser la prescription ». Le Pharmacien reçoit la tâche « Délivrer les médicaments ».</li>
+</ol>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">À vérifier avant de séparer</p><p>Donnez à chaque rôle les écrans dont il a besoin : les gestes ne les ouvrent pas. Vérifiez qu’au moins un agent actif tient chacun des deux postes, sinon la tâche n’a pas de destinataire.</p></div></div>
 
 <h2 id="s3-4">3.4 Fonction et secteur</h2>
 <p>L’onglet <strong>Habilitations métier</strong> donne, pour chaque fonction, ce qu’elle voit des données (résultats d’analyses, échographies : <strong>Toutes</strong>, <strong>Son secteur</strong>, <strong>Aucune</strong>), si elle <strong>Peut prescrire</strong> et si elle <strong>Exécute les soins</strong>. Le rôle ouvre les écrans, la fonction décide des données, le secteur en fixe le périmètre.</p>
@@ -443,7 +476,13 @@
   <li>Saisissez la valeur dans les bornes affichées, la date d’effet et le motif, puis enregistrez.</li>
 </ol></div></div>
 <figure><img src="captures/cfg-regles.png" alt=""><figcaption>Les paramètres de clinique datés : valeur en vigueur, depuis quand, bornes, version à venir. (1) <strong>Régler</strong>.</figcaption></figure>
-<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Pas encore porté partout</p><p>La Direction a décidé le 16/11/2026 qu’une mise à jour des informations de la clinique (identité, en-têtes, fiscalité) se propage à tous les postes. La mesure de ce qui voyage aujourd’hui et de ce qui reste sur son poste est prévue au lot IDENT. En attendant, vérifiez l’identité imprimée sur chaque poste après une modification.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Ce qui voyage d’un poste à l’autre : l’identité et les informations de la clinique</p><p>La Direction a décidé le 16/11/2026 qu’une mise à jour des informations de la clinique se propage à tous les postes. C’est fait :</p>
+<ul>
+<li>L’identité (légale et visible) et les <strong>options d’impression</strong> (logo de part et d’autre, filigrane) sont de la configuration de la mère : elles voyagent aux fileuls.</li>
+<li>Un profil habilité à écrire <strong>Paramètres fiscaux</strong> ou <strong>Identité &amp; papier à en-tête</strong> (un droit de la fiche, jamais un nom de rôle) peut poser l’identité sur <strong>n’importe quel poste</strong>. Sur un fileul, la modification est signée et déposée à la mère (« Modification déposée à la mère ») ; la mère la revérifie sous le rôle de l’auteur et la propage. Le fileul ne la voit qu’une fois appliquée.</li>
+<li>Rien de tout cela ne part vers un téléphone.</li>
+<li>Les autres réglages locaux (canaux et paramètres de notification) ne voyagent <strong>pas</strong> encore entre postes : réglez-les sur chaque poste.</li>
+</ul></div></div>
 
 <h2 id="s4-2">4.2 Identité imprimée et papier à en-tête</h2>
 <p>L’identité de la clinique alimente automatiquement tous les états imprimables : facture, ordonnance, bulletin de paie, bon de sortie, état comptable. Aucune mention légale ne se saisit document par document.</p>
@@ -452,10 +491,12 @@
   <li>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Identité &amp; papier à en-tête</strong>.</li>
   <li>Vérifiez <strong>Dénomination sociale</strong>, <strong>Sigle</strong>, <strong>Devise ou slogan</strong>, <strong>Adresse géographique</strong>, <strong>Pays</strong>, <strong>Adresse électronique</strong>, <strong>Téléphones (séparés par « / »)</strong>, <strong>Ligne rendez-vous</strong>.</li>
   <li>Déposez le logo, le cachet et la signature numérisée dans <strong>Ressources graphiques</strong> avec <strong>Déposer une ressource</strong>.</li>
+  <li>Réglez les <strong>options d’impression</strong> : <strong>Logo de part et d’autre de la dénomination</strong> et <strong>Filigrane par défaut</strong> (aucun, <strong>Document officiel</strong> ou <strong>Confidentiel</strong>).</li>
   <li>Cliquez sur <strong>Enregistrer</strong> (1), puis sur <strong>Prévisualiser un état</strong> (2) pour contrôler le rendu.</li>
 </ol>
 <figure><img src="captures/cfg-branding.png" alt="" class="haute"><figcaption>Identité &amp; papier à en-tête : paramètres, aperçu du papier à en-tête, ressources graphiques.</figcaption></figure>
 <h3>2. Régler l’identité légale (IFU, RCCM)</h3>
+<p>Le droit de poser l’identité est le <strong>droit d’écriture</strong> de l’écran Paramètres fiscaux ou de l’écran Identité &amp; papier à en-tête, à régler par la fiche du rôle (chapitre 3). Le geste <code>valider_configuration_fiscale</code> (Direction, DAF, administrateur) valide ensuite l’identité légale.</p>
 <ol class="etapes">
   <li>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Paramètres fiscaux (IFU / RCCM)</strong>.</li>
   <li>Vérifiez <strong>IFU (13 chiffres)</strong>, <strong>RCCM</strong>, <strong>Autorisation d’ouverture</strong>, <strong>Adresse fiscale</strong>, <strong>Devise</strong>, <strong>Régime de TVA</strong>.</li>
@@ -464,7 +505,15 @@
 </ol>
 <figure><img src="captures/cfg-fiscalite.png" alt="" class="haute"><figcaption>Paramètres fiscaux : identification fiscale, versions de l’identité légale, numérotation des documents.</figcaption></figure>
 <div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Une pièce émise ne se réécrit jamais</p><p>Modifier l’identité crée une <strong>nouvelle version datée</strong>. Une facture déjà émise garde l’en-tête de sa date. Choisissez la date d’effet avec soin.</p></div></div>
-<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Écart à corriger : le numéro RCCM</p><p>Le jeu de départ porte le RCCM <code>RB/NAT/2016-B-268</code>, visible sur les captures. La Direction a indiqué le 16/11/2026 que le numéro à jour est <code>NAT/2021/M02-020</code>. Posez-le comme nouvelle version datée de l’identité légale, avec le motif « numéro RCCM à jour ».</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Le numéro RCCM à jour est en place</p><p>La Direction a indiqué le 16/11/2026 que le numéro à jour est <code>NAT/2021/M02-020</code>. Il est posé comme <strong>version 2</strong> de l’identité légale, avec effet le <strong>16/11/2026</strong> (date d’effet <strong>à confirmer par la Direction</strong>). L’ancien numéro <code>RB/NAT/2016-B-268</code> est la version 1, close au 15/11/2026 : une pièce émise avant le 16/11/2026 garde l’ancien numéro, une pièce émise ensuite imprime le nouveau (voyez le tableau <strong>Versions de l’identité légale</strong> de la figure ci-dessus).</p>
+<p>Si le numéro était en usage plus tôt, la Direction pose une version datée antérieure : aucune pièce déjà émise n’est réécrite.</p></div></div>
+<h3>3. Poste déjà installé : la migration est automatique</h3>
+<p>Un poste installé avant cette mise à jour n’a que la version 1. <strong>Au démarrage</strong>, il reçoit la version 2 et sa version 1 est close au 15/11/2026, sans être réécrite. L’opération est signée (« Migration automatique de l’identité »), journalisée (RG-12) et <strong>sans effet si elle a déjà eu lieu</strong>. La version 2 n’est pas validée : la Direction la valide (étape 4 ci-dessus).</p>
+<ul>
+<li>Un <strong>fileul rattaché</strong> ne migre pas : l’identité est de la configuration de la mère, qui la propage.</li>
+<li>La migration ne <strong>remplace jamais</strong> une identité modifiée à la main : si la version 1 a été changée, ou close à une autre date, ou existe en double, le poste <strong>refuse en nommant la cause</strong> (<code>IDENTITE_MODIFIEE</code>, <code>IDENTITE_FIN_DIFFERENTE</code>, <code>IDENTITE_VERSION_1_EN_DOUBLE</code>, <code>IDENTITE_VERSION_1_ABSENTE</code>, <code>IDENTITE_ID_PRIS</code>), journalise une fois et n’écrit rien. Corrigez alors l’identité à la main (étapes 1 et 2).</li>
+</ul>
+<div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où vérifier après la mise à jour</p><p>Sur chaque poste : <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Paramètres fiscaux (IFU / RCCM)</strong>, tableau <strong>Versions de l’identité légale</strong> : la version 2 doit être « en force ». Le pied d’écran et l’aperçu du papier à en-tête portent le même numéro.</p></div></div>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Trois gabarits d’impression</p><p>A4 (documents), rouleau 80 mm (caisse) et carte CR80 (badge, sans IFU ni RCCM). Tous reprennent l’en-tête officiel et un pied normalisé : pagination, date, utilisateur, identifiant.</p></div></div>
 
 <h2 id="s4-3">4.3 Importer des données de départ</h2>
@@ -507,6 +556,196 @@
 <div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Après la clôture définitive, l’exercice est en lecture seule. Une réouverture se fait avec <strong>Rouvrir</strong>, par un rôle autorisé, avec un motif, par contre-passation. Sur un fileul, une pièce datée d’un exercice clos est refusée par la mère au moment de la synchronisation.</p></div></div>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>La caisse continue d’encaisser pendant la clôture : une pièce s’enregistre toujours dans l’exercice de sa date. Les soldes d’ouverture inconnus restent « inconnus », jamais zéro.</p></div></div>
 
+<h2 id="s4-5">4.5 La passerelle SMS (rappels de rendez-vous, vœux)</h2>
+<p>La passerelle envoie des SMS automatiques : un rappel de rendez-vous aux patients, des vœux d’anniversaire aux patients et au personnel qui y consent. Le travail est partagé :</p>
+<ul>
+  <li>La <strong>mère calcule</strong> les envois (qui, quand, quel texte) et dépose au relais des messages <strong>déjà composés</strong>.</li>
+  <li>Le <strong>relais les garde planifiés et les envoie</strong> par une tâche cron chaque minute (<code>relais:sms-envoyer</code>, section 7.11), avec le fournisseur choisi : <strong>Twilio</strong> ou <strong>Vonage</strong>. Même si la mère est éteinte à l’heure d’envoi, le message part.</li>
+  <li>Les <strong>identifiants du fournisseur</strong> sont dans le fichier <code>.env</code> du relais, jamais sur le poste ni dans le dépôt. L’écran du poste affiche seulement « défini » ou « non défini ».</li>
+</ul>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Une exception assumée à « le relais ne lit rien » (ADR-0008)</p><p>Pour envoyer un SMS, le fournisseur doit lire le numéro et le texte. Le relais voit donc, <strong>le temps de l’envoi seulement</strong> : le numéro, le texte final (320 caractères au plus), l’heure, le type de message et un identifiant opaque. Dès que le message est envoyé, refusé ou retiré, le numéro et le texte sont <strong>effacés</strong> ; il reste l’identifiant opaque, l’heure, le type, l’état, le code et les quatre derniers chiffres.</p>
+<ul>
+<li>L’identifiant est une empreinte (HMAC) calculée à la mère avec la <strong>clé de clinique</strong>, que le relais ne détient pas : il ne peut pas le relier à une personne ni à un rendez-vous.</li>
+<li>Le relais ne voit <strong>jamais</strong> : l’annuaire, une date de naissance, un code patient ou de dossier, un rendez-vous, le médecin, le service, le motif, une donnée de santé.</li>
+<li>Entre le dépôt et l’envoi (au plus de la veille 18 h au lendemain pour un rappel), la base du relais contient des numéros et des textes. Un <strong>compte superadmin</strong> qui lit la base (pas le panneau, qui les masque) peut les lire : à reconnaître au <strong>registre des accès</strong> de la clinique.</li>
+</ul></div></div>
+<h3>1. Régler la passerelle sur la mère</h3>
+<ol class="etapes">
+  <li>Sur la mère, ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Passerelle SMS</strong>.</li>
+  <li>Lisez la carte <strong>Passerelle</strong> : <strong>Non configurée</strong> tant que le relais n’a pas ses identifiants, <strong>Prête</strong> ensuite. L’état est lu au relais par la mère.</li>
+  <li>Vérifiez dans <strong>Réglages de la passerelle</strong> : fournisseur, plafond par jour, état « défini » ou « non défini » de chaque identifiant (lecture seule : ils se posent au relais), heures calmes, rappels.</li>
+  <li>Cochez <strong>Passerelle active</strong> (1), saisissez le motif demandé, puis cliquez sur <strong>Enregistrer la passerelle</strong>. Le réglage est daté et journalisé.</li>
+  <li>Dans <strong>Test d’envoi</strong>, saisissez <strong>votre</strong> numéro au format international (<code>+229…</code>) et cliquez sur <strong>Tester l’envoi</strong> (2). Le résultat est <strong>nommé</strong> : accepté par le fournisseur, ou le code du refus avec le geste de correction. Le numéro n’est pas conservé.</li>
+  <li><strong>Calculer et déposer maintenant</strong> force un passage sans attendre la minute suivante.</li>
+</ol>
+<figure><img src="captures/f-cfg-sms.png" alt="" class="haute"><figcaption>La passerelle SMS vue par la mère (capture Flutter) : état lu au relais, identifiants « non défini » (ils se posent dans le <code>.env</code> du relais), heures calmes, rappel du matin. (1) <strong>Enregistrer la passerelle</strong>, (2) <strong>Tester l’envoi</strong>.</figcaption></figure>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">La maquette montre cet écran autrement</p><p>La maquette de référence propose des champs pour <em>saisir</em> les identifiants du fournisseur. Le poste ne le fait pas : il les <em>lit</em> au relais. Suivez le poste. Seuls la mère, et un compte qui détient le geste réservé <code>regler_passerelle_sms</code> (administrateur et DAF d’origine), peuvent enregistrer, tester ou déposer. Sur un fileul, l’écran se lit sans aucune commande.</p></div></div>
+<h3>2. Ce que la mère envoie, et quand</h3>
+<table class="tab">
+<tr><th>Message</th><th>Quand</th><th>Qui le reçoit</th></tr>
+<tr><td><strong>Rappel de rendez-vous</strong></td><td>La veille à <strong>18 h</strong> (réglable).</td><td>Le patient du rendez-vous, s’il a donné son consentement.</td></tr>
+<tr><td><strong>Rappel du matin</strong></td><td>Le matin du rendez-vous, à <strong>7 h</strong> (réglable, à valider par la Direction), pour un rendez-vous pris <strong>après</strong> l’envoi de la veille. Jamais après l’heure du rendez-vous ; jamais en double du rappel de la veille.</td><td>Le patient, qui reçoit ici son prénom.</td></tr>
+<tr><td><strong>Vœux d’anniversaire</strong></td><td>À <strong>9 h</strong> (réglable).</td><td>Les patients (consentement coché par défaut) et le personnel qui y consent (case décochée par défaut).</td></tr>
+</table>
+<ul>
+  <li><strong>Heures calmes</strong> : 21 h à 7 h (proposition de la Direction). Un message non urgent attend la fin des heures calmes.</li>
+  <li><strong>Modèles de messages</strong> : cinq variables seulement, <code>{{nom}}</code> (le <strong>prénom</strong> seul), <code>{{date}}</code>, <code>{{heure}}</code>, <code>{{clinique}}</code> et <code>{{telephone}}</code> (la ligne rendez-vous de l’identité). Un rappel ne nomme <strong>jamais</strong> le médecin, le service ni le motif. Un modèle qui contient un mot médical est <strong>refusé à l’enregistrement</strong> (la liste des mots reste à faire valider par un médecin nommé).</li>
+  <li><strong>Consentement</strong> : au dossier du patient, la case <strong>Accepte de recevoir des SMS de la clinique</strong> (cochée par défaut, retirable, datée, journalisée) ; à la fiche du personnel, <strong>Accepte de recevoir les vœux d’anniversaire par SMS</strong> et <strong>Date de naissance</strong> (case décochée par défaut). Retirer le consentement, annuler ou déplacer un rendez-vous, corriger un numéro <strong>retire l’envoi planifié</strong> au prochain calcul. Un envoi déjà parti ne se retire pas.</li>
+  <li>Le <strong>29 février</strong> est fêté le 28 février les années non bissextiles.</li>
+</ul>
+<h3>3. Les limites et les autres réglages</h3>
+<table class="tab">
+<tr><th>Réglage</th><th>Valeur de départ</th><th>Où il se règle</th></tr>
+<tr><td>Plafond de messages par jour (heure du Bénin)</td><td>200 (bornes 1 à 5 000)</td><td>Panneau du relais, <strong>Passerelle SMS</strong> ➔ <strong>Limites</strong></td></tr>
+<tr><td>Tentatives quand le fournisseur ne répond pas</td><td>5 (1 à 20), puis refus <code>FOURNISSEUR_INJOIGNABLE</code></td><td>Panneau du relais</td></tr>
+<tr><td>Délai entre deux tentatives</td><td>300 secondes (30 à 86 400)</td><td>Panneau du relais</td></tr>
+<tr><td>Un message resté planifié trop longtemps n’est plus envoyé</td><td>180 minutes (5 à 2 880), refus <code>HEURE_DEPASSEE</code> : un rappel de la veille ne part pas le lendemain</td><td>Panneau du relais</td></tr>
+<tr><td>Conservation du journal des envois (sans numéro ni texte)</td><td>365 jours (30 à 3 650)</td><td>Panneau du relais</td></tr>
+<tr><td>Heures des envois, heures calmes, horizon de calcul (2 jours), tolérance après l’heure (120 minutes), modèles</td><td>Voir le chapitre 9, famille <strong>Envois automatiques de SMS</strong></td><td>Paramètres en base, versionnés par date, <strong>affichés</strong> à l’écran <strong>Passerelle SMS</strong>. Aucun écran du poste ne les modifie encore (hors l’activation) : pour changer une heure ou un modèle, demandez au prestataire de poser une nouvelle version datée.</td></tr>
+<tr><td>Activation des envois automatiques</td><td>Désactivée</td><td>Case <strong>Passerelle active</strong> de l’écran <strong>Passerelle SMS</strong></td></tr>
+</table>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Un plafond atteint refuse le message, il ne le reporte pas</p><p>Au-delà du plafond du jour, le message est <strong>refusé</strong> (<code>PLAFOND_ATTEINT</code>), pas reporté au lendemain. Un rappel de la veille n’aurait plus de sens le lendemain. Surveillez le compteur <strong>Envois aujourd’hui</strong> la première semaine, avec un plafond bas.</p></div></div>
+<h3>4. Le journal des envois</h3>
+<p>Ouvrez <strong>Administration</strong> ➔ <strong>Administration &amp; Ambulance</strong> ➔ <strong>Journal des envois SMS</strong> : lecture seule, lu au relais par la mère. Il montre le motif, le statut (accepté, refusé, reporté, en file), le code de refus nommé, le numéro <strong>masqué</strong> (quatre derniers chiffres) et l’identifiant chez le fournisseur. Le relais garde ce journal 12 mois, sans numéro ni texte, puis le purge.</p>
+<figure><img src="captures/f-m13-sms-journal.png" alt=""><figcaption>Le journal des envois SMS (capture Flutter), ici avec deux envois planifiés : numéros masqués, aucun texte.</figcaption></figure>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Pas encore vérifié</p><p>Aucun SMS réel n’a été envoyé. Les <strong>codes d’erreur réels</strong> de Twilio et de Vonage, la <strong>couverture du Bénin</strong>, l’acceptation d’un <strong>expéditeur alphanumérique</strong> (sinon un numéro au format <code>+229…</code> acheté chez le fournisseur) et le <strong>coût par message</strong> restent à vérifier avec un vrai compte, en recette sur site, la première semaine avec un plafond bas. Les envois automatiques sont <strong>désactivés par défaut</strong> : la Direction a validé les heures et les modèles, pas l’activation.</p></div></div>
+
+<h2 id="s4-6">4.6 La satisfaction en ligne</h2>
+<p>Un patient peut répondre à un questionnaire de satisfaction sur son téléphone, par un <strong>code QR</strong> ou une <strong>adresse personnalisée</strong> du relais (<code>https://sighcnt.nassieratoo.com/s/&lt;jeton&gt;</code>). Ce n’est <strong>pas un portail patient</strong> : aucun nom ni numéro de dossier n’est demandé, aucune question ne porte sur la santé.</p>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Comment c’est protégé (ADR-0009)</p><ul>
+<li>La réponse est <strong>chiffrée dans le navigateur du patient</strong> avant d’être envoyée (échange de clés X25519, dérivation HKDF-SHA-256, chiffrement AES-256-GCM), avec la <strong>clé publique</strong> de la clinique. Le relais ne lit jamais une réponse.</li>
+<li>Seule la <strong>mère</strong> peut les ouvrir : sa paire de clés est dérivée de la clé de clinique, jamais envoyée.</li>
+<li>La page est publique, <strong>sans cookie ni session</strong>. Un jeton inconnu, expiré ou révoqué reçoit une seule réponse générique (page « indisponible »), sans nommer d’enquête.</li>
+<li>Le relais vérifie la forme et le débit (<strong>10 réponses par adresse et par 10 minutes</strong>, enveloppe de <strong>16 Kio</strong> au plus, un <strong>champ piège</strong> contre les robots, <strong>200 liens ouverts</strong> au plus). Le commentaire libre est limité à 1 000 caractères.</li>
+<li>La mère refuse toute réponse qui contiendrait un champ d’identité (nom, prénom, téléphone, courriel, dossier, patient).</li>
+</ul></div></div>
+<figure><img src="captures/p-satisfaction-publique.png" alt="" class="moyenne"><figcaption>La page publique vue par le patient (capture du relais local) : questionnaire anonyme, réponse chiffrée avant l’envoi.</figcaption></figure>
+<h3>1. Ouvrir la collecte en ligne</h3>
+<p>La collecte en ligne est <strong>désactivée par défaut</strong> : une surface publique ne s’ouvre pas sans geste.</p>
+<ol class="etapes">
+  <li>Sur la mère, ouvrez <strong>Système</strong> ➔ <strong>Paramètres système</strong> ➔ onglet <strong>Paramètres</strong>, famille <strong>Satisfaction en ligne</strong>.</li>
+  <li>Vérifiez <strong>Adresse publique du relais (liens et affiches)</strong> : <code>https://sighcnt.nassieratoo.com</code>.</li>
+  <li>Réglez <strong>Satisfaction en ligne (formulaire public)</strong> sur <strong>oui</strong>, avec sa date d’effet et son motif.</li>
+  <li>Les <strong>points de collecte</strong> sont sept : accueil, consultation, laboratoire, pharmacie, maternité, hospitalisation, sortie. Ils se règlent dans la même famille.</li>
+</ol>
+<h3>2. Publier un lien</h3>
+<ol class="etapes">
+  <li>Ouvrez <strong>Administration</strong> ➔ <strong>Administration &amp; Ambulance</strong> ➔ <strong>Enquêtes &amp; questionnaires</strong>. Un modèle d’enquête doit être validé (geste réservé <code>valider_famille_enquetes</code>, Direction, DAF et administrateur d’origine).</li>
+  <li>Sur la ligne du modèle, cliquez sur <strong>Partager à un tiers</strong>.</li>
+  <li>Dans <strong>Où le tiers répond-il ?</strong>, choisissez <strong>En ligne : adresse publique ou code QR (le relais ne lit pas la réponse)</strong>, puis le <strong>Point de collecte</strong> et la date d’expiration du lien.</li>
+  <li>Cliquez sur <strong>Afficher le lien et le QR</strong>. Vous pouvez <strong>Copier l’adresse</strong>, <strong>Imprimer l’affiche (A4)</strong> ou <strong>Ouvrir la page publique</strong>.</li>
+  <li>Pour fermer un lien : <strong>Révoquer le lien</strong>. Il cesse de répondre ; une réponse reçue après la révocation est refusée (<code>lien_revoque</code>) un jour plus tard, acceptée le jour même.</li>
+</ol>
+<p>La mère publie ses liens et relève les réponses <strong>chaque minute</strong>, puis les écrit en <strong>Réponses recueillies</strong>. Elle doit donc être allumée : les enveloppes attendent au relais, sans jamais être purgées.</p>
+<h3>3. Lire les résultats</h3>
+<p>Ouvrez <strong>Satisfaction des patients</strong>. Le <strong>taux de satisfaction</strong> est la part des notes 4 ou 5 sur le total des notes valides ; le <strong>taux de recommandation</strong> est la part des réponses « Oui » ou « Plutôt oui » ; le <strong>taux de réponse</strong> est « non calculable » tant que les passages à l’accueil ne sont pas comptés (jamais zéro).</p>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Navigateurs et vérifications à faire</p><ul>
+<li>La page exige un navigateur récent (<strong>Chrome 133, Firefox 130, Safari 17</strong> ou plus). Sur un téléphone plus ancien, la page le dit et ne répond pas : aucun repli n’existe. À mesurer sur les téléphones du terrain.</li>
+<li>Le relais n’est plus muet côté Internet : il faut un nom d’hôte public, du HTTPS, et un débit limité par l’adresse vue (derrière un mandataire, régler les mandataires de confiance).</li>
+<li>Un tiers qui connaît un lien peut répondre : c’est le but. La protection contre l’abus est le débit, le champ piège, le plafond de liens et la révocation.</li>
+<li>Hors lot : mode kiosque hors ligne, autres langues, alertes par SMS, modération des commentaires.</li>
+</ul></div></div>
+
+<h2 id="s4-7">4.7 Fiscalité : versement CNSS, deux barèmes de l’AIB, imputations</h2>
+<h3>Confirmer le versement CNSS</h3>
+<p>Le versement CNSS du 15 est une obligation « à confirmer par la CNSS ». Le bouton <strong>Confirmer</strong> la fait passer à « confirmée ». La <strong>référence est obligatoire</strong>, l’opération est signée, journalisée et versionnée par date. Elle demande le geste réservé <code>confirmer_obligation_fiscale</code> (administrateur, DAF et Direction d’origine, à valider). Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Paramètres fiscaux (IFU / RCCM)</strong>, tableau <strong>Calendrier fiscal et social</strong> : sur la ligne de l’obligation « à confirmer », cliquez sur <strong>Confirmer</strong>. La fenêtre demande la <strong>Référence de la confirmation</strong> (le courrier, le courriel ou la page de la CNSS, avec sa date) et la date <strong>Confirmée à compter du</strong>. La version « à confirmer » reste lue pour les dates antérieures. Un <strong>fileul</strong> ne confirme pas (c’est de la configuration de la mère). Les échéances elles-mêmes se suivent à <strong>Financier</strong> ➔ <strong>Comptabilité SYSCOHADA</strong> ➔ <strong>Échéances fiscales &amp; paiements</strong> (figure ci-dessous).</p>
+<figure><img src="captures/m12-echeances.png" alt=""><figcaption>Échéances fiscales &amp; paiements : ce qui est dû, ce qui approche, ce qui est réglé (maquette).</figcaption></figure>
+<h3>Les deux barèmes de l’AIB</h3>
+<p>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Barème de l’AIB</strong>. Il y a <strong>deux barèmes</strong> datés, versionnés, qui ne se réécrivent jamais (corriger crée une version et ferme la précédente à la veille) :</p>
+<ul>
+<li>la <strong>situation de l’acheteur</strong> (acheteur avec IFU actif 1 %, sans IFU actif 5 % depuis le 07/09/2026, prestation de service retenue par le payeur) ;</li>
+<li>la <strong>retenue sur la facture d’un tiers</strong> : 3 % pour une personne physique, 5 % pour une personne morale. <strong>Hypothèse à confirmer</strong> : ce sont les mots de la Direction ; les textes officiels (CGI, mesure de la DGI du 07/09/2026) n’ont pas été lus au texte.</li>
+</ul>
+<figure><img src="captures/cfg-bareme-aib.png" alt=""><figcaption>Le barème de l’AIB : situations, versions, taux, état « à valider ». (1) <strong>Nouvelle version</strong>.</figcaption></figure>
+<ul>
+<li>Un <strong>taux sans version</strong> est refusé en le nommant, jamais rendu à zéro.</li>
+<li>La <strong>validation</strong> d’une version se fait par la Direction, la DAF, le comptable ou l’administrateur. Toutes les versions de départ sont « à valider » : la source de chaque taux est écrite sur sa fiche et aucun texte réglementaire n’est au dépôt.</li>
+<li>La <strong>facture d’un patient</strong> ne porte jamais d’AIB ni de bloc « Facture normalisée » (refus <code>AIB_FACTURE_PATIENT</code>). Seule la facture au tiers payeur (section 4.8) en porte.</li>
+<li>Le <strong>motif est obligatoire</strong> pour toute modification faite par le validateur.</li>
+</ul>
+<h3>Imputer l’AIB opération par opération</h3>
+<p>L’onglet <strong>Imputations</strong> du barème permet au comptable d’appliquer ou non l’AIB à une opération (achat auprès d’un fournisseur, règlement d’un prescripteur ou prestataire externe, règlement reçu d’un assureur), de choisir la ligne du barème et le compte. Geste réservé <code>imputer_aib</code> (comptable, DAF et administrateur d’origine). <strong>Le logiciel propose le taux, il ne décide jamais.</strong></p>
+<figure><img src="captures/cfg-bareme-aib-imputations.png" alt=""><figcaption>L’onglet <strong>Imputations</strong> : une imputation est un enregistrement signé, journalisé et annulable avec un motif.</figcaption></figure>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Limites à connaître</p><ul>
+<li>L’imputation <strong>n’écrit aucune écriture comptable</strong> : le branchement de l’AIB sur les écritures d’achat reste différé (décision du 09/11/2026, désactivé par défaut).</li>
+<li>Les imputations <strong>ne se synchronisent pas encore</strong> entre postes : elles restent sur le poste qui les a écrites.</li>
+<li>Au poste, la lecture et les imputations sont portées ; l’<strong>écriture d’une version du barème</strong> et celle des paramètres du calendrier fiscal étaient à la maquette au lot de référence : à vérifier sur le poste avant de promettre cette commande.</li>
+<li><strong>Aucune collection fiscale</strong> (obligations, échéances, barèmes, imputations) ne va vers un téléphone.</li>
+</ul></div></div>
+
+<h2 id="s4-8">4.8 La facture au tiers payeur</h2>
+<p>La facture à une entreprise, un assureur ou une convention qui prend un patient en charge est une <strong>vente normalisée distincte</strong> de la facture du patient. Ouvrez <strong>Financier</strong> ➔ <strong>Facturation &amp; Caisse</strong> ➔ <strong>Factures aux tiers payeurs</strong>.</p>
+<figure><img src="captures/m8-factures-tiers.png" alt=""><figcaption>Factures aux tiers payeurs : onglets Factures, Tiers payeurs, Règlements et lettrage, Créances (maquette).</figcaption></figure>
+<table class="tab">
+<tr><th>Droit (geste réservé)</th><th>Ce qu’il permet</th><th>Défaut semé (à valider)</th></tr>
+<tr><td><code>emettre_facture_tiers</code></td><td>Tenir la fiche du tiers, proposer et émettre la facture, enregistrer un règlement reçu.</td><td>Caissier, DAF, comptable, administrateur</td></tr>
+<tr><td><code>corriger_facture_tiers</code></td><td>Émettre un avoir, lettrer ou délettrer un règlement.</td><td>Comptable, DAF, administrateur</td></tr>
+<tr><td><code>imputer_aib</code></td><td>Décider l’AIB : le caissier propose et émet, il ne décide jamais.</td><td>Comptable, DAF, administrateur</td></tr>
+</table>
+<ul>
+<li>L’<strong>IFU (13 chiffres) et le nom de l’acheteur sont obligatoires</strong> et contrôlés avant toute écriture. La DGI n’est pas interrogeable : un IFU de 13 chiffres est présumé actif, et le comptable change la ligne du barème en le motivant.</li>
+<li><strong>Montant dû = base + AIB</strong> (hypothèse à confirmer : si l’AIB devait se soustraire du montant versé, la créance changerait de sens).</li>
+<li>Une pièce émise ne se réécrit jamais : elle se corrige par un <strong>avoir</strong> (avoir total seulement, sans certification MECeF de l’avoir ni écriture de contre-passation à ce stade).</li>
+<li>Le numéro <code>FT-AAAA-nnnn</code> est attribué <strong>par le poste qui émet</strong> : deux postes coupés de la mère peuvent attribuer le même numéro à deux pièces différentes. L’identité de synchronisation vient du contenu (tiers, date, prestations), pas du numéro.</li>
+<li><strong>Aucune écriture comptable</strong> n’est passée pour cette facture. La caisse du patient n’est pas modifiée. La facture, les prix d’achat et les tiers <strong>ne vont jamais vers un téléphone</strong>.</li>
+</ul>
+
+<h2 id="s4-9">4.9 Le plan annuel de travail</h2>
+<p>Ouvrez <strong>Administration</strong> ➔ <strong>Administration &amp; Ambulance</strong> ➔ <strong>Plan annuel de travail</strong>. Le plan est <strong>par exercice</strong> (l’exercice du jour par défaut) ; les références sont <code>PA-AAAA-NNN</code>, l’année étant celle de l’exercice.</p>
+<figure><img src="captures/m13-plan-annuel.png" alt=""><figcaption>Le plan annuel de travail d’un exercice (maquette) : actions, responsables, trimestres, suivi chiffré.</figcaption></figure>
+<ul>
+<li><strong>Adopter</strong> le plan est le geste réservé <code>adopter_plan_annuel</code> (Direction et DAF d’origine, à valider). Après l’adoption, le <strong>contenu</strong> d’une action ne change plus que par <strong>version datée</strong> (même référence, version plus un, date d’effet et motif ; l’ancienne est archivée). Le <strong>suivi</strong> (état, pourcentage, budget réalisé) reste libre.</li>
+<li>Le <strong>responsable</strong> d’une action est choisi par référence (jamais un texte libre). Les <strong>signataires</strong> sont un réglage daté (<code>reglagesPlan</code>) : une fonction par référence à un poste de l’organigramme, un à quatre signataires ; défaut semé : la Directrice Administrative et le Directeur Médical. Il se règle sur l’écran du plan lui-même, par le bouton <strong>Signataires de l’impression</strong> (geste <code>regler_parametres_clinique</code>), avec une date d’effet et un motif.</li>
+<li>Une <strong>alerte de retard</strong> (une par action, dérivée) part vers les détenteurs du geste d’adoption quand le dernier jour du trimestre de fin est passé. La <strong>tolérance en jours</strong> est le paramètre de clinique <code>plan.graceRetardJours</code> (défaut 0, bornes 0 à 90), réglé à <strong>Règles métier versionnées</strong>.</li>
+<li>Un budget non renseigné se lit « non renseigné », jamais zéro. Le rattachement à une ligne du module Budgets est informatif.</li>
+<li>Les <strong>axes</strong> (neuf semés) et les <strong>états d’avancement</strong> (trois) sont en base ; aucun écran d’édition n’existe encore : pour en ajouter un, passer par le prestataire.</li>
+<li>Le plan se synchronise (une action se suit champ à champ), jamais vers un téléphone. Le numéro <code>PA-AAAA-NNN</code> est attribué par chaque poste : deux postes coupés de la mère peuvent attribuer le même numéro à deux actions différentes.</li>
+</ul>
+
+<h2 id="s4-10">4.10 Plannings individuels et valeurs d’attente du personnel</h2>
+<p>Sur <strong>RH</strong> ➔ <strong>Ressources humaines</strong> ➔ <strong>Planning &amp; gardes</strong> et sur la fiche employé :</p>
+<ul>
+<li>Le <strong>régime individuel</strong> d’un agent est <strong>« déroge »</strong> (seuls les champs renseignés changent, le reste suit sa catégorie) ou <strong>« remplace »</strong> (rien n’est hérité : vacations et repos sont exigés ; le cycle ou l’honoraire non dits sont « non défini »).</li>
+<li>Le <strong>planning personnalisé</strong> est un <em>modèle</em> hebdomadaire ou mensuel, en versions datées figées. Il est contrôlé contre la grille dès sa définition (repos entre deux gardes, types permis). Il <strong>ne compte pour aucune prime</strong> : « Appliquer à une période » (92 jours au plus) le transforme en vacations <strong>validées</strong>, sans jamais écraser un jour occupé. La paie ne compte que les vacations validées (RG-11).</li>
+<li>Les <strong>valeurs d’attente</strong> (salaire de base, catégorie, date d’embauche, numéro CNSS) sont marquées champ par champ : le jeu de départ les a tirées, aucune n’est arrêtée par la Direction. La marque tombe quand le champ est modifié, ou par <strong>Confirmer</strong> (motif obligatoire, journal RG-12). Un agent créé sans salaire n’en porte aucun : l’ancienneté sans date d’embauche est « non calculable ».</li>
+</ul>
+<table class="tab">
+<tr><th>Geste réservé</th><th>Défaut semé</th></tr>
+<tr><td><code>regler_regime_individuel</code></td><td>Administrateur, DAF</td></tr>
+<tr><td><code>regler_planning_personnalise</code></td><td>Administrateur, DAF, Surveillant (pour son équipe)</td></tr>
+<tr><td><code>confirmer_valeur_attente_personnel</code></td><td>Administrateur, DAF</td></tr>
+<tr><td><code>ouvrir_fiche_personnel_equipe</code></td><td>Surveillant (section 3.3)</td></tr>
+</table>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Ce qui ne voyage pas</p><p>Les <strong>régimes individuels</strong> ne se synchronisent pas encore : un régime posé à la mère n’arrive pas chez un fileul. Seul le planning personnalisé voyage (famille A, identité par le contenu), jamais vers un téléphone.</p></div></div>
+
+<h2 id="s4-11">4.11 La commande de stock gros (RG-04) sur n’importe quel poste</h2>
+<p>Valider une commande de stock gros avant sa transmission au fournisseur est le geste réservé <code>valider_commande_stock</code> : la <strong>Directrice Administrative seule</strong> d’origine (l’administrateur et la Direction ne valident pas à sa place). Le rôle qui le détient doit aussi lire l’écran <strong>Bons de commande</strong>. Le validateur enregistré est l’agent de la session.</p>
+<ul>
+<li>La commande <strong>voyage</strong> à la synchronisation. Sur un <strong>fileul</strong>, la validation est une <strong>décision signée</strong> déposée à la mère (« commande_stock »), qui l’applique sous le rôle de l’auteur ; une validation écrite directement est refusée au rejeu.</li>
+<li>Une commande créée sur un fileul porte une <strong>référence provisoire</strong> <code>BC-AAAA-P&lt;poste&gt;-nnnn</code>, remplacée par le rang définitif <code>BC-AAAA-nnnn</code> par la mère. Tant que la mère est coupée, la référence provisoire s’affiche et s’imprime. Deux commandes qui prennent le même rang à la même seconde sont <strong>marquées en doublon</strong> (jamais corrigées en silence).</li>
+<li>L’identité commune est le <strong>contenu</strong> (fournisseur, jour, lignes) : deux commandes identiques le même jour au même fournisseur sont fusionnées. À connaître.</li>
+<li>Les droits <code>arbitrer_besoins</code> (DAF, Direction, administrateur) et <code>traiter_besoins_accordes</code> (comptable, gestionnaire de stock) règlent les bons d’expression de besoins. Prix d’achat et fournisseur <strong>ne vont jamais vers un téléphone</strong>.</li>
+</ul>
+
+<h2 id="s4-12">4.12 Les décisions qui attendent la mère</h2>
+<p>Une décision de validation (prix, commande, identité, plan…) se prend sur <strong>n’importe quel poste</strong>. Sur un fileul, elle est signée et déposée ; la mère l’applique mécaniquement. Une pastille <strong>« N décisions en attente de la mère »</strong> le dit. C’est une alerte, <strong>jamais un blocage</strong>.</p>
+<ul>
+<li>Le <strong>délai d’alerte</strong> est de <strong>4 heures</strong> par défaut (paramètre <code>securite.delaiAlerteDecisionEnAttenteHeures</code>, chapitre 9), réglé à <strong>Paramètres système</strong> ➔ onglet <strong>Paramètres</strong>, famille <strong>Sécurité</strong>.</li>
+<li>La mère <strong>vérifie que le compte signataire existe avec ce rôle</strong>, sinon elle refuse en le nommant.</li>
+<li>Un compte ne garde pas l’historique de ses changements de rôle : la mère compare le rôle au moment de l’application.</li>
+</ul>
+
+<h2 id="s4-13">4.13 La messagerie du poste (SMTP)</h2>
+<p>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Messagerie (SMTP)</strong>. Cet écran règle le serveur de courriel de la clinique, qui sert à écrire à l’éditeur et à tout envoi de la clinique. Valeurs proposées (non secrètes) : serveur <code>mail.sighcnt.nassieratoo.com</code>, port 587 en STARTTLS (465 en SSL), identifiant et adresse d’expéditeur <code>admin@sighcnt.nassieratoo.com</code>.</p>
+<ol class="etapes">
+  <li>Vérifiez <strong>Serveur SMTP</strong>, <strong>Port</strong>, <strong>Chiffrement</strong> et <strong>Adresse d’expéditeur</strong>.</li>
+  <li>Saisissez le <strong>Mot de passe</strong> de la boîte. Il est chiffré et <strong>jamais relu</strong> : l’écran dit seulement « défini » ou « non défini ».</li>
+  <li>Cliquez sur <strong>Enregistrer la messagerie</strong>.</li>
+  <li>Dans <strong>Test d’envoi</strong>, saisissez une <strong>Adresse de test</strong> et cliquez sur <strong>Envoyer un message de test</strong> : il montre la suite des étapes (connexion, salutation, chiffrement, authentification, expéditeur, destinataire, envoi) ou celle où cela échoue.</li>
+</ol>
+<figure><img src="captures/cfg-smtp.png" alt=""><figcaption>La messagerie du poste (maquette) : serveur, chiffrement, mot de passe jamais relu, test d’envoi.</figcaption></figure>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Le relais a sa propre messagerie</p><p>Le relais envoie ses courriels (récupération de la clé) avec un serveur réglé dans <strong>Paramètres du relais</strong> (section 7.8), pas ici. Les deux utilisent le même serveur et la même boîte par défaut : <code>mail.sighcnt.nassieratoo.com</code> et <code>admin@sighcnt.nassieratoo.com</code>.</p></div></div>
+
 <!-- ============================== CHAPITRE 5 ============================== -->
 <h1 id="ch5">5. Sécurité et sauvegardes</h1>
 
@@ -517,6 +756,7 @@
 <tr><td>Sauvegarde hors site</td><td>Les mêmes copies, en blocs chiffrés par la clé de clinique</td><td>Relais web ou dossier distant monté</td><td>5.4</td></tr>
 <tr><td>Journal chiffré au relais</td><td>Les opérations synchronisées</td><td>Relais web</td><td>5.5</td></tr>
 </table>
+<p>Au repos, sur chaque poste, les données sont aussi <strong>chiffrées</strong> par une clé propre au poste (section 5.6). Ce chiffrement-là ne remplace aucune sauvegarde.</p>
 
 <h2 id="s5-2">5.2 Choisir la destination de la sauvegarde locale</h2>
 <ol class="etapes">
@@ -540,7 +780,7 @@
 
 <h2 id="s5-4">5.4 Activer la sauvegarde hors site</h2>
 <p>La copie hors site protège contre la perte de la clinique entière (vol, incendie, panne de disque). Elle est <strong>désactivée par défaut</strong>. Elle se règle sur la <strong>mère</strong>, par l’administrateur ou la DAF.</p>
-<p>Elle se règle dans l’application de poste, carte <strong>Sauvegarde hors site</strong> de l’écran <strong>Sauvegardes &amp; restauration</strong> (cette carte n’existe pas dans la maquette, elle est décrite ici depuis le code du poste).</p>
+<p>Elle se règle dans l’application de poste, carte <strong>Sauvegarde hors site</strong> de l’écran <strong>Sauvegardes &amp; restauration</strong> (cette carte n’existe pas dans la maquette : les figures ci-dessous sont des captures Flutter du poste).</p>
 <ol class="etapes">
   <li>Sur la mère, ouvrez <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Sauvegardes &amp; restauration</strong>.</li>
   <li>Dans la carte <strong>Sauvegarde hors site</strong>, cliquez sur <strong>Régler la copie hors site</strong>.</li>
@@ -551,6 +791,7 @@
   <li>Cliquez sur <strong>Enregistrer</strong>. Le message <strong>Réglage enregistré.</strong> s’affiche.</li>
   <li>Lancez une première copie avec <strong>Copier le magasin maintenant</strong>, puis <strong>Copier les fichiers maintenant</strong>. Contrôlez avec <strong>Contrôler les copies</strong>.</li>
 </ol>
+<figure><img src="captures/f-m14-sauvegardes.png" alt="" class="haute"><figcaption>L’écran <strong>Sauvegardes &amp; restauration</strong> du poste mère (capture Flutter, données de démonstration) : en bas, la carte <strong>Sauvegarde hors site</strong>, désactivée par défaut. (1) <strong>Régler la copie hors site</strong>.</figcaption></figure><figure><img src="captures/f-horssite-reglage.png" alt="" class="haute"><figcaption>La fenêtre de réglage de la copie hors site (capture Flutter) : destination du magasin et des fichiers, copies gardées, heure du contrôle, motif. (1) <strong>Enregistrer</strong>.</figcaption></figure>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Ce que voit le relais</p><p>La copie est chiffrée au poste mère par la clé de la clinique <strong>avant</strong> de partir. Le relais ou le dossier distant ne reçoit que des blocs opaques : des identifiants, des tailles, des dates. Un fileul lit le réglage, mais ne le pose pas.</p></div></div>
 <div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage : la place sur l’hébergement</p><p>L’espace d’un cPanel mutualisé est limité. Le panneau du relais affiche l’espace utilisé (écran <strong>Sauvegarde du relais</strong>, section 7.8). Au-delà de N copies, la plus ancienne est <strong>archivée</strong> (toujours restaurable). Elle n’est purgée que si l’espace manque. Si l’espace manque encore, la copie est refusée avec le code <code>ESPACE_RELAIS_INSUFFISANT</code> et rien d’actuel n’est détruit : augmentez le quota, réduisez le nombre de copies gardées, ou passez à un dossier distant.</p></div></div>
 <div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Pas encore fait ni vérifié</p><p>La copie par SFTP n’existe pas. La mesure réelle sur l’hébergement cPanel (espace, taille maximale d’une requête, temps d’exécution) reste à faire avant la mise en service.</p></div></div>
@@ -573,11 +814,48 @@
 </ol>
 <div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Remplacer la mère se fait par <strong>restauration</strong> sur la nouvelle machine, jamais par copie de fichiers. Une seule mère peut être active par clinique : l’ancienne doit être arrêtée. La restauration incrémente l’époque : les anciens appareils ne ressuscitent rien.</p></div></div>
 
+<h2 id="s5-6">5.6 Le chiffrement au repos des données du poste</h2>
+<p>Les données d’un poste portent des dossiers de patients : elles sont <strong>chiffrées sur le disque</strong>. Un disque volé, ou un dossier copié par quelqu’un d’autre, ne donne rien de lisible.</p>
+<h3>Ce qui est chiffré, et comment</h3>
+<table class="tab">
+<tr><th>Élément</th><th>Où</th><th>Chiffrement</th></tr>
+<tr><td>Les fichiers du magasin du poste (un fichier par collection, <code>*.sigh</code>)</td><td><code>%LOCALAPPDATA%\SIGHCNT\donnees</code></td><td>AES-256-GCM, un nonce frais à chaque écriture, le nom de la collection lié au chiffré (un fichier recopié sous un autre nom ne se déchiffre pas).</td></tr>
+<tr><td>Les fichiers numérisés (scans)</td><td>sous-dossier <code>fichiers</code></td><td>AES-256-GCM avec la <strong>même clé</strong> ; l’empreinte du fichier est liée au chiffré ; une empreinte altérée n’est jamais servie.</td></tr>
+<tr><td>La configuration du poste (<code>poste.json</code>)</td><td>dossier des données</td><td>Chiffrée avec la même clé.</td></tr>
+<tr><td>La base de la mère (<code>mere.db</code>) et le journal de chaque poste (<code>poste.db</code>)</td><td>dossier des données</td><td><strong>SQLite3 Multiple Ciphers</strong>, algorithme ChaCha20-Poly1305, avec la même clé. La sauvegarde de la mère (<code>VACUUM INTO</code>) reste chiffrée.</td></tr>
+</table>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">À dire exactement : ce que ce n’est pas</p><p>Ce n’est <strong>pas SQLCipher</strong> au sens strict : la base est chiffrée par <strong>SQLite3 Multiple Ciphers</strong> (bibliothèque voisine, algorithme ChaCha20-Poly1305). Ce n’est pas non plus un coffre matériel : c’est un chiffrement de fichiers dont la <strong>clé est liée à la session Windows</strong>. Quiconque ouvre la session Windows de l’agent peut utiliser le poste, comme l’agent.</p></div></div>
+<h3>La clé du poste</h3>
+<ul>
+<li>Une clé de <strong>256 bits tirée au hasard</strong>, créée au premier démarrage, rangée dans <code>cle-poste.bin</code>.</li>
+<li>Sous <strong>Windows</strong>, ce fichier est <strong>protégé par DPAPI</strong> (portée utilisateur) : il ne sert qu’à la session Windows qui l’a créé. Copié ailleurs, il ne s’ouvre pas.</li>
+<li>La même clé sert aux fichiers, aux scans, à <code>poste.json</code> et aux deux bases. Une <strong>clé fausse</strong> est un refus nommé : le poste ne devine jamais une clé.</li>
+<li>Un poste installé <strong>avant</strong> le chiffrement est migré : ses fichiers en clair sont relus puis réécrits chiffrés, le clair est <strong>supprimé</strong> ; une base en clair est chiffrée sur place à la première ouverture.</li>
+</ul>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Sans la clé du poste, les données du poste sont illisibles</p><p>Une session Windows réinstallée, un compte Windows supprimé ou un poste remplacé rendent la clé inutilisable. Exportez-la <strong>dès l’installation</strong> (ci-dessous) et rangez le fichier au coffre, <strong>séparé</strong> de la phrase de passe et des sauvegardes. Pour la <strong>mère</strong>, le recours reste la restauration par le journal chiffré du relais avec la <strong>clé de clinique</strong> (section 5.5), qui ne dépend pas de la clé du poste.</p></div></div>
+<h3>1. Sauvegarder la clé du poste</h3>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Paramètres système</strong>, onglet <strong>Installation et données</strong>.</li>
+  <li>Cliquez sur <strong>Sauvegarder la clé de chiffrement</strong> (1). Ce bouton n’existe que sur le poste, quand le chiffrement est actif.</li>
+  <li>Saisissez une <strong>Phrase de passe</strong> de 12 caractères au moins, puis <strong>Confirmer la phrase de passe</strong>.</li>
+  <li>Cliquez sur <strong>Exporter la clé</strong> (2). Le fichier <code>sigh-cle-AAAA-MM-JJ.cle</code> est écrit dans le dossier de votre profil Windows et l’opération est journalisée.</li>
+  <li>Rangez le fichier au coffre (sur une clé USB, par exemple) et la phrase de passe <strong>ailleurs</strong>.</li>
+</ol>
+<figure><img src="captures/f-cfg-systeme-installation.png" alt="" class="haute"><figcaption>Paramètres système, onglet <strong>Installation et données</strong> (capture Flutter). (1) <strong>Sauvegarder la clé de chiffrement</strong>.</figcaption></figure><figure><img src="captures/f-cle-chiffrement.png" alt=""><figcaption>La fenêtre d’export de la clé (capture Flutter) : le fichier ne contient la clé que <strong>chiffrée</strong> par la phrase de passe (PBKDF2-SHA256, 200 000 tours, puis AES-256-GCM). (1) <strong>Exporter la clé</strong>.</figcaption></figure>
+<h3>2. Contrôler le chiffrement sur un vrai poste Windows (à jouer à la mise en service)</h3>
+<p>Ces trois contrôles n’ont <strong>jamais été faits sous Windows</strong> : ils sont à rejouer sur le poste réel, et à noter dans le registre de mise en service.</p>
+<ol class="etapes">
+  <li><strong>Les fichiers sont illisibles dans un éditeur.</strong> Fermez SIGH-CNT. Dans <code>%LOCALAPPDATA%\SIGHCNT\donnees</code>, ouvrez <code>poste.json</code> et un fichier <code>*.sigh</code> avec le Bloc-notes : <strong>aucun mot lisible</strong> (nom de patient, libellé de produit, identifiant). Ouvrez <code>mere.db</code> ou <code>poste.db</code> : le début du fichier ne doit <strong>pas</strong> afficher « SQLite format 3 ». Rouvrez l’application : tout se lit normalement.</li>
+  <li><strong>Une copie sur une autre session n’est pas déchiffrable sans la clé exportée.</strong> Copiez tout le dossier <code>donnees</code> vers une <strong>autre session Windows</strong> (autre compte, ou autre ordinateur). Lancez le poste avec ce dossier : résultat attendu, le poste <strong>refuse de lire</strong> les données (clé illisible, refus nommé) et n’affiche aucun contenu de patient. Supprimez ensuite la copie.</li>
+  <li><strong>Restaurer la clé sur un poste neuf.</strong> Voir l’alerte ci-dessous.</li>
+</ol>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Restauration de la clé : pas d’écran aujourd’hui</p><p>Le code sait relire un fichier <code>.cle</code> avec sa phrase de passe et remettre la clé en service (la protéger de nouveau par DPAPI) : cette fonction est éprouvée par des tests automatiques (bonne phrase, mauvaise phrase, fichier étranger : refus nommés, rien n’est écrasé). <strong>Mais aucun écran du poste ne l’offre aujourd’hui.</strong> Un administrateur ne peut donc pas restaurer la clé seul : il faut le prestataire, ou attendre qu’un écran de restauration soit livré. Ne comptez pas dessus comme seul recours : conservez les sauvegardes de la mère et la clé de clinique (section 5.5).</p></div></div>
+
 <!-- ============================== CHAPITRE 6 ============================== -->
 <h1 id="ch6">6. Impression et MECeF</h1>
 
 <h2 id="s6-1">6.1 L’imprimante de caisse Xprinter XP-Q800</h2>
-<p>La caisse imprime ses reçus sur une imprimante thermique directe <strong>Xprinter XP-Q800</strong> (ou une variante de même châssis, XP-N160II ou XP-C260N) : rouleau 80 mm, massicot, liaison USB ou Ethernet selon la version (à vérifier à l’arrière de l’appareil). C’est l’imprimante du gabarit rouleau 80 mm. Ce n’est pas le boîtier MECeF.</p>
+<p>La caisse imprime ses reçus sur une imprimante thermique directe <strong>Xprinter XP-Q800</strong> (ou une variante de même châssis, XP-N160II ou XP-C260N) : rouleau 80 mm, massicot, liaison USB ou Ethernet selon la version (à vérifier à l’arrière de l’appareil). C’est l’imprimante du gabarit rouleau 80 mm. Ce n’est pas le boîtier MECeF. Son modèle, son type, la largeur du rouleau, sa liaison et son nom sont un <strong>réglage daté en base</strong>, qui se règle à l’écran <strong>Configuration fiscale</strong> (section 6.2).</p>
 <h3>1. Installer l’imprimante sous Windows</h3>
 <ol class="etapes">
   <li>Branchez l’imprimante (USB) ou reliez-la au réseau (Ethernet). Chargez un rouleau de 80 mm.</li>
@@ -598,11 +876,14 @@
 <ol class="etapes">
   <li>Ouvrez <strong>Financier</strong> ➔ <strong>MECeF — Facture normalisée</strong> ➔ <strong>Configuration fiscale</strong>.</li>
   <li>Dans <strong>Mode de certification</strong>, lisez le <strong>Mode en vigueur</strong>.</li>
-  <li>Cliquez sur <strong>Régler le mode</strong> (1) (sur le poste : choisissez le mode puis <strong>Enregistrer le mode</strong>).</li>
+  <li>Cliquez sur <strong>Régler le mode</strong> (1) (sur le poste : choisissez le mode puis <strong>Enregistrer le mode</strong>). Le geste réservé est <code>regler_mode_mecef</code>.</li>
+  <li>Lisez la carte <strong>État de la caisse</strong> : ventes encaissées non normalisées, montant encaissé non normalisé, avoirs en attente de certification (comptés à part). Un montant inconnu rend le total « <strong>Non calculable</strong> », jamais zéro.</li>
+  <li>Dans la carte <strong>Imprimante de caisse</strong>, lisez le <strong>Nom</strong>, le <strong>Modèle</strong> (Xprinter XP-Q800), le <strong>Type</strong> (thermique, rouleau 80 mm) et la <strong>Liaison</strong> (semée « À vérifier à l’arrière de l’appareil »). Cliquez sur <strong>Régler l’imprimante</strong> (2) pour poser la liaison réelle (USB ou Ethernet). Le geste réservé est <code>regler_imprimante_caisse</code>.</li>
   <li>Vérifiez les <strong>Paramètres fiscaux</strong> : ils sont en lecture seule ici et viennent de l’identité légale (section 4.2).</li>
 </ol>
-<figure><img src="captures/mecef-config.png" alt="" class="haute"><figcaption>Configuration fiscale : mode de certification, paramètres fiscaux, mentions portées sur chaque facture.</figcaption></figure>
-<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage</p><p>Le mode se règle par l’administrateur ou la Directrice Administrative. Il est enregistré en base (paramètre <code>mecef.mode</code>), versionné par date.</p></div></div>
+<figure><img src="captures/mecef-config.png" alt="" class="haute"><figcaption>Configuration fiscale (maquette) : mode de certification, état de la caisse, imprimante de caisse, paramètres fiscaux.</figcaption></figure><figure><img src="captures/f-mecef-config.png" alt="" class="haute"><figcaption>La même page sur le poste (capture Flutter). (1) <strong>Régler le mode</strong>, (2) <strong>Régler l’imprimante</strong>.</figcaption></figure>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage</p><p>Le mode et l’imprimante se règlent par deux <strong>gestes réservés</strong> distincts de la fiche des droits (administrateur et Directrice Administrative d’origine). Ils sont enregistrés en base (paramètres <code>mecef.mode</code> et <code>mecef.imprimante</code>), versionnés par date, et ne partent jamais vers un téléphone. <strong>Un réglage ne s’insère pas dans le passé</strong> : la date d’effet est aujourd’hui ou à venir (des tickets sont déjà imprimés). Le mode « Désactivé » de démonstration n’est plus proposé.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Retransmettre une vente refusée ou expirée</p><p>Le caissier peut retransmettre <strong>une seule fois</strong> une vente refusée ou expirée (geste <code>retransmettre_mecef</code> : caissier, DAF, administrateur). La retransmission <strong>sans limite d’essais</strong> demande <code>retransmettre_mecef_sans_limite</code> (DAF, administrateur). Le nombre d’essais (un) est une constante de la règle.</p></div></div>
 <div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Boîtier en attente des réponses du fournisseur</p><p>Le modèle du boîtier, son interface et son protocole ne figurent dans aucun document remis. Les questions au fournisseur et à la DGI ont été remises à la Direction. Tant que l’adaptateur du boîtier n’est pas branché :</p>
 <ul><li>une vente est encaissée et reste <strong>en attente de certification</strong> ;</li>
 <li>elle ne reçoit <strong>aucun numéro</strong> : aucun numéro n’est fabriqué comme s’il était fiscal ;</li>
@@ -614,7 +895,7 @@
 <h1 id="ch7">7. Le relais web sur cPanel</h1>
 
 <h2 id="s7-1">7.1 Ce que fait le relais, ce qu’il ne voit jamais</h2>
-<p>Le relais est installé sur l’hébergement mutualisé cPanel de la clinique, au domaine <code>sighcnt.nassieratoo.com</code>. Il est <strong>opaque</strong> : il stocke des enveloppes chiffrées de bout en bout et des indicateurs sans nom de patient. Il ne détient aucune clé.</p>
+<p>Le relais est installé sur l’hébergement mutualisé cPanel de la clinique, au domaine <code>sighcnt.nassieratoo.com</code>. Il est <strong>opaque</strong> : il stocke des enveloppes chiffrées de bout en bout et des indicateurs sans nom de patient. Il ne détient aucune clé. Trois exceptions <strong>bornées</strong>, décidées par la Direction et écrites en ADR, sont dites dans ce chapitre : la <strong>sauvegarde hors site</strong> (blocs opaques, ADR-0007), la <strong>passerelle SMS</strong> (numéro et texte visibles le temps de l’envoi, ADR-0008, section 7.11) et la <strong>page publique de satisfaction</strong> (réponses scellées dans le navigateur, ADR-0009, section 7.12).</p>
 <table class="tab">
 <tr><th>Le relais voit</th><th>Le relais ne voit jamais</th></tr>
 <tr><td>
@@ -622,12 +903,15 @@
 <li>Le sens, le rang, la taille et la date d’une enveloppe</li>
 <li>Les indicateurs publiés par la mère (agrégats sans nom)</li>
 <li>L’état de synchronisation des fileuls (compteurs, horodatages)</li>
-<li>L’identifiant, la taille et la date d’un bloc de sauvegarde</li></ul></td>
+<li>L’identifiant, la taille et la date d’un bloc de sauvegarde</li>
+<li>Le numéro, le texte, l’heure et le type d’un SMS planifié, <strong>jusqu’à son envoi</strong> (puis ils sont effacés)</li></ul></td>
 <td><ul><li>Le contenu d’une enveloppe (chiffré)</li>
 <li>Un nom de patient, un dossier, un motif</li>
 <li>Le nom d’une collection ou d’un champ</li>
 <li>Le contenu, le nom ou le nombre de fichiers d’une sauvegarde</li>
-<li>La clé de clinique</li></ul></td></tr>
+<li>La clé de clinique</li>
+<li>Une réponse de satisfaction (chiffrée dans le navigateur du patient)</li>
+<li>Un annuaire, une date de naissance, un rendez-vous, un motif</li></ul></td></tr>
 </table>
 <div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Protégez-le comme un serveur de santé</p><p>Même compromis, le relais ne livre pas de dossier. Mais il porte l’accès aux boîtes des téléphones et les sauvegardes chiffrées. HTTPS obligatoire, mot de passe superadmin long, secret de la mère long.</p></div></div>
 <div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Contraintes de l’hébergement</p><p>PHP 8.2 ou plus, PostgreSQL, une tâche cron chaque minute. Pas de SSH, pas de Redis, pas de WebSocket, pas de <code>npm</code>. Le panneau n’utilise aucune ressource externe.</p></div></div>
@@ -666,10 +950,20 @@
 <tr><td><code>RELAIS_SECRET_MERE</code></td><td>un texte long et aléatoire, 32 caractères au moins (secret). Le <strong>même</strong> texte se saisit sur la mère.</td></tr>
 <tr><td><code>RELAIS_SEUIL_BATTEMENT_MS</code></td><td>le silence de la mère toléré avant l’alerte (5 minutes par défaut)</td></tr>
 <tr><td><code>RELAIS_BANC</code></td><td><code>false</code> (les crochets du banc d’essai sont fermés)</td></tr>
+<tr><td><code>RELAIS_SEUIL_CRON_MS</code></td><td>silence du cron au-delà duquel l’alerte « cron » se lève (300 000, soit 5 minutes, par défaut)</td></tr>
+<tr><td><code>RELAIS_SEUIL_DISQUE_PCT</code></td><td>espace disque libre, en pourcentage, sous lequel l’alerte « disque » se lève (10 par défaut)</td></tr>
+<tr><td><code>RELAIS_RETENTION_AUDIT_JOURS</code></td><td>conservation du journal d’audit en jours (365 par défaut ; les enveloppes ne sont jamais purgées)</td></tr>
+<tr><td><code>RELAIS_SAUVEGARDES_DIR</code></td><td>dossier des blocs de la sauvegarde hors site (<code>storage/app/sauvegardes</code> par défaut)</td></tr>
+<tr><td><code>RELAIS_SMS_FOURNISSEUR</code></td><td><code>twilio</code> ou <code>vonage</code> (section 7.11)</td></tr>
+<tr><td><code>RELAIS_SMS_EXPEDITEUR</code></td><td>un numéro au format <code>+229…</code> acheté chez le fournisseur, ou un identifiant de 1 à 11 caractères avec une lettre (à confirmer pour le Bénin)</td></tr>
+<tr><td><code>RELAIS_SMS_TWILIO_SID</code>, <code>RELAIS_SMS_TWILIO_TOKEN</code></td><td>identifiants Twilio (secrets), seulement si le fournisseur est <code>twilio</code></td></tr>
+<tr><td><code>RELAIS_SMS_VONAGE_KEY</code>, <code>RELAIS_SMS_VONAGE_SECRET</code></td><td>identifiants Vonage (secrets), seulement si le fournisseur est <code>vonage</code></td></tr>
+<tr><td><code>RELAIS_SMS_FUSEAU</code></td><td>fuseau qui décide du « jour » du plafond (<code>Africa/Porto-Novo</code> par défaut : l’heure du Bénin)</td></tr>
+<tr><td><code>MAIL_SCHEME</code>, <code>MAIL_HOST</code>, <code>MAIL_PORT</code>, <code>MAIL_USERNAME</code>, <code>MAIL_FROM_ADDRESS</code></td><td><code>smtp</code>, <code>mail.sighcnt.nassieratoo.com</code>, <code>587</code>, <code>admin@sighcnt.nassieratoo.com</code>, <code>admin@sighcnt.nassieratoo.com</code> (valeurs non secrètes, déjà dans <code>.env.example</code>)</td></tr>
+<tr><td><code>MAIL_PASSWORD</code></td><td>laissez vide : le mot de passe de la boîte se saisit dans le panneau, chiffré (secret)</td></tr>
 </table>
 <div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Les secrets</p><p>Le <code>.env</code> n’est jamais versé au dépôt de code, jamais envoyé par courriel, jamais photographié. Rangez une copie des secrets avec la copie papier de la clé de clinique. La clé de clinique, elle, ne va <strong>jamais</strong> sur le relais.</p></div></div>
-<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Messagerie du relais</p><p>Le serveur d’envoi et son mot de passe se règlent dans le panneau (<strong>Paramètres du relais</strong>, carte <strong>Messagerie SMTP du relais</strong>), pas dans le dépôt. Le mot de passe est chiffré et jamais relu. Un bouton <strong>Envoyer un message de test</strong> nomme l’étape en échec.</p></div></div>
-<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Écart à confirmer : deux noms de domaine</p><p>Le relais est servi à <code>sighcnt.nassieratoo.com</code>. Les valeurs de messagerie proposées par défaut dans le dépôt utilisent un autre nom : serveur <code>mail.sigh.nassieratoo.com</code>, adresse <code>contact@sigh.nassieratoo.com</code>. Le guide de déploiement (<code>DEPLOIEMENT-CPANEL.md</code>) ne nomme pas le domaine (il écrit <code>relais.exemple.bj</code>). Confirmez auprès de l’hébergeur le nom exact du serveur de messagerie et corrigez les valeurs par défaut si besoin.</p></div></div>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Messagerie du relais</p><p>Le serveur d’envoi et son mot de passe se règlent dans le panneau (<strong>Paramètres du relais</strong>, carte <strong>Messagerie SMTP du relais</strong>), pas dans le dépôt. Les valeurs proposées sont celles de la clinique : serveur <code>mail.sighcnt.nassieratoo.com</code>, port 587 en STARTTLS (465 en SSL), boîte <code>admin@sighcnt.nassieratoo.com</code>. Le mot de passe est chiffré et jamais relu. Un bouton <strong>Envoyer un message de test</strong> nomme l’étape en échec.</p></div></div>
 
 <h2 id="s7-4">7.4 Commandes ponctuelles et tâche cron</h2>
 <p>Sans SSH, une commande se lance par une <strong>tâche cron à usage unique</strong> : cPanel ➔ <strong>Cron Jobs</strong>, réglez l’heure sur la minute suivante, attendez l’exécution, puis <strong>supprimez la tâche</strong>. Le chemin de PHP est <code>/usr/local/bin/php</code> (ou <code>ea-php82</code> selon l’hébergeur).</p>
@@ -682,7 +976,7 @@
 <tr><td>Voir les volumes (sans contenu)</td><td><code>php artisan relais:statut</code></td></tr>
 </table>
 <div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Après la création du compte superadmin, effacez aussitôt la ligne de cron qui contient le mot de passe.</p></div></div>
-<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Longueur du mot de passe superadmin</p><p>La commande accepte 8 caractères au moins, mais l’écran <strong>Comptes superadmin</strong> et le fichier lisez-moi du relais demandent 12 caractères au moins. Choisissez au moins 12 caractères. L’écart de texte est à corriger dans le code.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Longueur du mot de passe superadmin</p><p>Le code du relais, la commande <code>relais:superadmin</code> comme l’écran <strong>Comptes superadmin</strong>, exige <strong>8 caractères au moins</strong> (décision de la Direction, cohérente avec le poste). Le fichier lisez-moi de <code>apps/web</code> dit encore 12 : cet écart de texte est à corriger dans ce fichier. Choisissez de toute façon <strong>12 caractères au moins</strong>.</p></div></div>
 <h3>La tâche permanente</h3>
 <p>Créez une seule tâche permanente, chaque minute :</p>
 <pre>* * * * * cd ~/sigh-relais &amp;&amp; /usr/local/bin/php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</pre>
@@ -691,8 +985,9 @@
   <li><code>relais:surveiller</code> chaque minute : marque le passage du cron (écran <strong>Hébergement</strong>), lève ou résout les alertes ;</li>
   <li><code>relais:exporter</code> chaque jour à 03:00 : export de la base du relais ;</li>
   <li><code>relais:purger --oui</code> chaque jour à 03:10 : purge de l’<strong>audit</strong> au-delà de 365 jours (30 au minimum). Les enveloppes ne sont jamais purgées depuis le relais.</li>
+  <li><code>relais:sms-envoyer</code> <strong>chaque minute</strong>, sans chevauchement : envoie les SMS arrivés à l’heure et efface le texte clair dès l’envoi (section 7.11).</li>
 </ul>
-<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Écart à corriger dans le guide</p><p>Le guide <code>DEPLOIEMENT-CPANEL.md</code> (section 4) dit « Rien n’est planifié aujourd’hui côté relais ». C’est dépassé : les trois tâches ci-dessus sont planifiées par le code du relais. Sans le cron, l’écran <strong>Hébergement</strong> affiche une alerte « Tâche cron non exécutée ».</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Sans le cron, rien ne part</p><p>Sans la tâche permanente, l’écran <strong>Hébergement</strong> affiche une alerte « Tâche cron non exécutée » <strong>et aucun SMS ne part</strong> : la passerelle dépend du cron du relais, surveillé par <code>relais:surveiller</code>.</p></div></div>
 
 <h2 id="s7-5">7.5 Brancher la mère et contrôler avant la mise en service</h2>
 <ol class="etapes">
@@ -701,10 +996,11 @@
 </ol>
 <h3>Liste de contrôle</h3>
 <ul class="cases">
-  <li><code>https://sighcnt.nassieratoo.com/panneau</code> redirige vers la connexion ; l’accueil <code>/</code> aussi ; aucune autre page publique.</li>
+  <li><code>https://sighcnt.nassieratoo.com/panneau</code> redirige vers la connexion ; l’accueil <code>/</code> aussi ; la <strong>seule page publique</strong> est le formulaire de satisfaction <code>/s/&lt;jeton&gt;</code> (un jeton inconnu reçoit une page « indisponible »).</li>
   <li><code>https://sighcnt.nassieratoo.com/.env</code> et <code>…/vendor/autoload.php</code> renvoient une erreur 404.</li>
   <li><code>RELAIS_BANC=false</code>, <code>APP_DEBUG=false</code>, HTTPS forcé.</li>
   <li>Aucune route <code>banc/*</code> ne répond (elles renvoient 404 sans <code>RELAIS_BANC</code>).</li>
+  <li>La passerelle SMS est <strong>désactivée</strong> à la mère tant que les identifiants du fournisseur ne sont pas posés et testés (section 7.11).</li>
   <li>Une sauvegarde de la base du relais est planifiée.</li>
   <li>La clé de clinique n’est ni sur le relais, ni dans le dépôt : copie papier sous scellé chez la Direction, détenteur nommé.</li>
   <li>L’écran <strong>Hébergement</strong> ne montre aucune alerte.</li>
@@ -717,9 +1013,9 @@
   <li>Cliquez sur <strong>Se connecter</strong> (1).</li>
 </ol>
 <figure><img src="captures/p-connexion.png" alt="" class="moyenne"><figcaption>La connexion au panneau : accès réservé à l’administrateur système. Six essais par minute au plus.</figcaption></figure>
-<p>Le menu du panneau a quatorze entrées : <strong>Tableau de bord du relais</strong>, <strong>Appareils</strong>, <strong>Boîtes aux lettres</strong>, <strong>Codes d’appairage</strong>, <strong>Indicateurs reçus</strong>, <strong>Synchronisation</strong>, <strong>Alertes et notifications</strong>, <strong>Journal d’audit du relais</strong>, <strong>Comptes superadmin</strong>, <strong>Paramètres du relais</strong>, <strong>Hébergement</strong>, <strong>Sauvegarde du relais</strong>, <strong>Preuve d’opacité</strong>, <strong>Consultation des copies</strong>. Un compte qui n’est pas superadmin ne voit aucune entrée.</p>
+<p>Le menu du panneau a quinze entrées : <strong>Tableau de bord du relais</strong>, <strong>Appareils</strong>, <strong>Boîtes aux lettres</strong>, <strong>Codes d’appairage</strong>, <strong>Indicateurs reçus</strong>, <strong>Synchronisation</strong>, <strong>Alertes et notifications</strong>, <strong>Journal d’audit du relais</strong>, <strong>Comptes superadmin</strong>, <strong>Paramètres du relais</strong>, <strong>Hébergement</strong>, <strong>Sauvegarde du relais</strong>, <strong>Passerelle SMS</strong>, <strong>Preuve d’opacité</strong>, <strong>Consultation des copies</strong>. Un compte qui n’est pas superadmin ne voit aucune entrée.</p>
 <figure><img src="captures/p-tableau.png" alt=""><figcaption>Le tableau de bord : (1) la mère est-elle vivante ? Appareils actifs, enveloppes, alertes en cours. Actualisé toutes les 15 secondes.</figcaption></figure>
-<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Sur la capture</p><p>La copie locale tourne sur un ordinateur de test : les alertes « Espace disque faible » et « Tâche cron non exécutée » sont réelles pour cet ordinateur. Sur l’hébergement, elles disparaissent quand le disque a de la place et que le cron tourne.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Sur la capture</p><p>La copie locale tourne sur un ordinateur de test, sur une base vierge (une mère de démonstration, deux appareils) : l’alerte « Espace disque faible » est réelle pour cet ordinateur. Sur l’hébergement, elles disparaissent quand le disque a de la place et que le cron tourne.</p></div></div>
 
 <h2 id="s7-7">7.7 Appareils, codes, synchronisation, alertes</h2>
 <h3>Appareils</h3>
@@ -778,33 +1074,152 @@
   <li>Vérifiez le tableau de bord : <strong>Mère</strong> ➔ <strong>En ligne</strong>.</li>
 </ol>
 
-<!-- ============================== ANNEXES ============================== -->
-<h1 id="ch8">Annexes</h1>
-
-<h2 id="s8-1">A. Ce qui n’est pas couvert ou pas vérifié</h2>
+<h2 id="s7-11">7.11 La passerelle SMS du relais</h2>
+<p>Le relais envoie les SMS que la mère lui dépose (section 4.5). Il lui faut un compte chez <strong>Twilio</strong> ou <strong>Vonage</strong>, ses identifiants dans le <code>.env</code>, et le cron d’une minute (section 7.4).</p>
+<h3>1. Poser les identifiants du fournisseur</h3>
+<ol class="etapes">
+  <li>Ouvrez le <code>.env</code> du relais (section 7.3) dans le Gestionnaire de fichiers de cPanel.</li>
+  <li>Choisissez le fournisseur : <code>RELAIS_SMS_FOURNISSEUR=twilio</code> ou <code>RELAIS_SMS_FOURNISSEUR=vonage</code>.</li>
+  <li>Pour <strong>Twilio</strong> : renseignez <code>RELAIS_SMS_TWILIO_SID</code> et <code>RELAIS_SMS_TWILIO_TOKEN</code>. Pour <strong>Vonage</strong> : <code>RELAIS_SMS_VONAGE_KEY</code> et <code>RELAIS_SMS_VONAGE_SECRET</code>.</li>
+  <li>Renseignez <code>RELAIS_SMS_EXPEDITEUR</code> : un numéro <code>+229…</code> acheté chez le fournisseur, ou un identifiant alphanumérique de 1 à 11 caractères (à confirmer pour le Bénin).</li>
+  <li>Enregistrez, puis videz les caches par une tâche cron à usage unique (<code>optimize:clear</code>, section 7.4).</li>
+  <li>Ouvrez <strong>Passerelle SMS</strong> au panneau : la carte <strong>Fournisseur</strong> doit afficher « Identifiants : défini ».</li>
+</ol>
+<figure><img src="captures/p-sms.png" alt="" class="haute"><figcaption>La page <strong>Passerelle SMS</strong> du panneau (copie locale, identifiants non définis, deux envois de démonstration planifiés). (1) <strong>Tester l’envoi</strong>.</figcaption></figure>
+<ul>
+<li><strong>Fournisseur</strong> : le nom, « défini » ou « non défini » pour les identifiants et l’expéditeur, et le badge <strong>Non configurée</strong> ou <strong>Prête</strong>. Les identifiants ne s’affichent <strong>jamais</strong>.</li>
+<li><strong>Aujourd’hui</strong> : les envois du jour sur le plafond, comptés à l’<strong>heure du Bénin</strong>.</li>
+<li><strong>Envois planifiés</strong> : heure, type, numéro <strong>masqué</strong> (les quatre derniers chiffres), tentatives. <strong>Dernier passage de la tâche</strong> : doit dater de moins d’une minute.</li>
+<li><strong>Tester l’envoi</strong> : un message de contrôle à un numéro au format international ; le résultat est nommé.</li>
+<li><strong>Journal des envois</strong> : sans numéro en clair ni texte. <strong>Limites</strong> : plafond, tentatives, délai de reprise, péremption, conservation ; <strong>Enregistrer les limites</strong> refuse une valeur hors bornes en la nommant, et journalise le changement à l’audit du relais.</li>
+</ul>
+<h3>2. Ce qui se passe, et ce que le panneau dit</h3>
 <table class="tab">
-<tr><th>Sujet</th><th>État au 16/11/2026</th></tr>
+<tr><th>Situation</th><th>Ce que fait le relais</th></tr>
+<tr><td>Identifiants non posés</td><td>Le message <strong>attend</strong> ; le panneau le dit (<code>SECRET_NON_DEFINI</code>). Rien ne part.</td></tr>
+<tr><td>Plafond du jour atteint</td><td>Le message est <strong>refusé</strong> (<code>PLAFOND_ATTEINT</code>), pas reporté.</td></tr>
+<tr><td>Fournisseur injoignable</td><td>5 tentatives (réglables), puis refus <code>FOURNISSEUR_INJOIGNABLE</code>.</td></tr>
+<tr><td>Message resté planifié 3 heures après son heure (réglable)</td><td>Refusé (<code>HEURE_DEPASSEE</code>) : un rappel de la veille ne part pas le lendemain.</td></tr>
+<tr><td>Un passage de la tâche meurt en plein envoi</td><td>Le message reste « en cours » et n’est <strong>jamais renvoyé</strong> : un doublon est pire qu’un oubli signalé.</td></tr>
+<tr><td>Dépôt invalide de la mère</td><td>Refus nommé : <code>IDENTIFIANT_NON_OPAQUE</code> (un code de patient ou de rendez-vous est refusé), <code>TYPE_INCONNU</code>, <code>NUMERO_INVALIDE</code> (format E.164), <code>TEXTE_VIDE</code>, <code>TEXTE_TROP_LONG</code> (plus de 320 caractères), <code>HEURE_INVALIDE</code>.</td></tr>
+<tr><td>Un appareil appairé (téléphone, fileul) appelle la passerelle</td><td>Refus 403 <code>sms_reserve_mere</code> : la famille de routes <code>/sms/*</code> est réservée à la mère.</td></tr>
+</table>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Ce que voit un superadmin</p><p>Le panneau masque les numéros, mais un compte qui lit la base du relais lit les numéros et les textes des messages <strong>planifiés</strong>. Limitez les comptes superadmin et reconnaissez cet accès au registre de la clinique.</p></div></div>
+<h2 id="s7-12">7.12 La page publique de satisfaction</h2>
+<p>Le relais sert le formulaire de satisfaction (section 4.6). Il ne gagne que deux familles de routes :</p>
+<ul>
+<li><strong>Publiques, sans cookie, sans session</strong> : <code>GET /s/&lt;jeton&gt;</code> (le formulaire) et <code>POST /s/&lt;jeton&gt;</code> (le dépôt d’une enveloppe scellée). Le relais ne connaît un jeton que par son empreinte SHA-256 ; jeton inconnu, expiré ou révoqué : une seule page « indisponible » (404).</li>
+<li><strong>Réservées à la mère</strong> : <code>/satisfaction/publier</code> (clé publique et liens) et <code>/satisfaction/releve</code> (les enveloppes). Un appareil appairé reçoit 403 <code>satisfaction_reservee_mere</code>.</li>
+</ul>
+<ol class="etapes">
+  <li>Vérifiez que <code>https://sighcnt.nassieratoo.com/s/test</code> répond par la page « indisponible » (aucun lien n’existe encore).</li>
+  <li>Sur la mère, ouvrez la collecte en ligne (section 4.6) et publiez un lien.</li>
+  <li>Ouvrez le lien sur votre téléphone et répondez : la réponse apparaît à la mère dans la minute qui suit, <strong>jamais en clair</strong> au relais.</li>
+</ol>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">À savoir</p><p>La limite de débit (10 réponses par adresse et par 10 minutes) dépend de l’adresse vue : derrière un mandataire, réglez les mandataires de confiance. Les enveloppes sont gardées au relais et <strong>jamais purgées</strong>. Un export de la base du relais les contient, déjà chiffrées.</p></div></div>
+
+<!-- ============================== CHAPITRES ENGENDRÉS ============================== -->
+<h1 id="ch8">8. Droits réservés</h1>
+<h2 id="s8-1">8.1 Ce qu’est un geste réservé</h2>
+<p>Un <strong>geste réservé</strong> est un acte qui engage un professionnel nommé : valider un seuil du laboratoire, décider un prix, valider une commande de stock gros, confirmer le versement CNSS, régler la passerelle SMS… Chacun est un <strong>droit de la fiche des droits</strong>, accordé <strong>par rôle</strong> (jamais par agent), avec un <strong>défaut semé</strong> qui reproduit la liste qui existait avant que le geste devienne un droit.</p>
+<ul>
+<li>La liste ci-dessous est <strong>engendrée</strong> depuis <code>packages/rbac/data/rbac.json</code> (clé <code>gestes</code>), la source unique : <!--NB:droits--> gestes, aucun omis.</li>
+<li>Un geste <strong>n’ouvre aucun écran</strong>, sauf mention contraire : le rôle qui le détient doit aussi lire l’écran concerné (chapitre 3).</li>
+<li>Sans le droit, la commande est <strong>absente</strong> de l’écran, jamais grisée, et le moteur <strong>refuse aussi</strong> en citant le droit : masquer un bouton ne protège rien.</li>
+<li>Une surcharge de la fiche <strong>accorde autant qu’elle restreint</strong> : on peut retirer un geste à un rôle qui l’avait d’origine.</li>
+<li>Un <strong>rôle créé en exploitation</strong> part de zéro : aucun geste n’est ouvert tant que vous ne le cochez pas.</li>
+<li>L’acteur d’une validation, d’un engagement, d’une autorisation ou d’une réception est <strong>toujours l’agent de la session</strong> (RG-12 : aucune action anonyme).</li>
+</ul>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Pour le prestataire : la garde des rôles en dur</p><p>Une <strong>garde automatique</strong> (<code>garde-roles-en-dur.js</code>, lancée par la commande de contrôle du code <code>npm run lint</code>) refuse qu’un nom de rôle ou de personne s’écrive dans un moteur ou un écran : un rôle se règle par la fiche des droits, pas dans le code. Elle lit la maquette, le domaine, le poste et le PHP. Une <strong>liste blanche décroissante</strong> garde les sites encore à convertir ; elle ne peut que diminuer. Mesure du lot de réference (16/11/2026) : 58 sites de rôle dans la maquette, 84 dans le domaine, 36 au poste et à la mère, 28 dans le PHP de la maquette ; les lots suivants les reprennent un module à la fois.</p></div></div>
+<h2 id="s8-2">8.2 Régler un geste, et le vérifier</h2>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Rôles &amp; permissions (RBAC)</strong>, onglet <strong>Matrice des droits</strong> (section 3.3).</li>
+  <li>Sur la ligne du rôle, cliquez sur <strong>Régler les gestes réservés de ce rôle</strong>.</li>
+  <li>Cochez ou décochez le geste (colonne <strong>Accordé</strong>) ; la colonne <strong>Origine</strong> rappelle le défaut. Enregistrez.</li>
+  <li>Prévenez les agents du rôle : le changement vaut pour tous les comptes de ce rôle, sur tous les postes, après synchronisation.</li>
+  <li><strong>Vérifiez</strong> avec un compte du rôle : la commande doit apparaître (ou disparaître) à l’écran concerné.</li>
+</ol>
+<h2 id="s8-3">8.3 La liste complète des gestes réservés</h2>
+<p>Pour chaque geste : son code, ce qu’il ouvre (le libellé exact du droit et, s’il en a un, l’écran concerné) et ses rôles d’origine. Les rôles archivés (Pharmacien, Responsable RH) ne détiennent rien tant qu’ils sont archivés.</p>
+<!--GEN:droits-->
+
+<h1 id="ch9">9. Registre des paramètres</h1>
+<h2 id="s9-1">9.1 Où se règle chaque famille</h2>
+<p>Tout ce qui est paramétrable (taux, dates, seuils, circuits, modes) est <strong>enregistré en base avec un défaut semé</strong>, jamais une constante du code, et se <strong>versionne par date</strong>. Un paramètre se règle sur la <strong>mère</strong> ; un fileul le reçoit et le lit ; aucun paramètre ne part vers un téléphone. Les familles qui ont un écran dédié ne figurent pas dans l’onglet générique <strong>Paramètres</strong> de <strong>Paramètres système</strong>.</p>
+<table class="tab">
+<tr><th>Famille</th><th>Où elle se règle</th></tr>
+<tr><td>Envois automatiques de SMS</td><td>Écran dédié <strong>Passerelle SMS</strong> (activation) ; les autres valeurs se lisent là et se posent en base (section 4.5).</td></tr>
+<tr><td>MECeF (mode, imprimante de caisse)</td><td>Écran dédié <strong>Configuration fiscale</strong> (section 6.2).</td></tr>
+<tr><td>Paramètres de clinique (préavis de péremption, balance âgée, tolérance du plan annuel)</td><td>Écran dédié <strong>Règles métier versionnées</strong> (section 4.1).</td></tr>
+<tr><td>Sauvegarde hors site</td><td>Carte dédiée <strong>Sauvegarde hors site</strong> (section 5.4).</td></tr>
+<tr><td>Lecture des scans (OCR)</td><td>Écran dédié de lecture des scans (geste <code>regler_lecture_scans</code>).</td></tr>
+<tr><td>Satisfaction en ligne, Sécurité, Caisse, Planning et présences, Paie, AIB, Affichage, Clôture annuelle</td><td><strong>Paramètres système</strong> ➔ onglet <strong>Paramètres</strong> (la clôture se règle aussi à l’onglet <strong>Circuit de clôture</strong>, section 4.4).</td></tr>
+</table>
+<h2 id="s9-2">9.2 La liste complète des paramètres</h2>
+<p>Engendrée depuis le registre du domaine : <!--NB:parametres--> paramètres. Le défaut est celui qui est semé à l’installation. « Valeur structurée » désigne un réglage qui porte plusieurs champs (par exemple l’imprimante de caisse ou les modèles de messages).</p>
+<!--GEN:parametres-->
+
+<h1 id="ch10">10. Catalogue des écrans</h1>
+<h2 id="s10-1">10.1 Comment lire le catalogue</h2>
+<p>Le catalogue liste <strong>tous les écrans du logiciel</strong>, au nombre de <!--NB:total-ecrans-->, tels que le manifeste de navigation (<code>packages/referentiels/data/manifeste.json</code>) les déclare : libellé exact du ruban, identifiant, rôles qui l’ouvrent <strong>d’origine</strong>. La fiche des droits peut ouvrir ou fermer un écran à un rôle : le catalogue donne le point de départ, pas l’état de votre clinique. Les rôles archivés ne sont pas listés. Un écran « Aucun rôle d’origine » s’ouvre seulement par une surcharge de la fiche ou par un geste réservé.</p>
+<p>Le ruban a dix domaines : <strong>Accueil, Soins, Logistique, Financier, RH, Administration, Système, Poste mère, Relais en ligne, Pilotage</strong>. Les écrans de configuration et d’administration sont décrits dans les chapitres 1 à 7 ; les écrans du travail quotidien (accueil, soins, caisse, stock, paie…) sont décrits dans le <strong>Manuel d’utilisation</strong>.</p>
+<h2 id="s10-2">10.2 Le panneau du relais, entrée par entrée</h2>
+<p>Le panneau du relais est un site à part (<code>apps/web</code>) ; le manifeste n’en déclare que douze entrées. Voici les <strong>quinze entrées</strong> du menu réel.</p>
+<table class="tab">
+<tr><th>Entrée du menu</th><th>Ce qu’elle montre</th><th>Section</th></tr>
+<tr><td><strong>Tableau de bord du relais</strong></td><td>La mère est-elle vivante, appareils actifs, enveloppes, alertes.</td><td>7.6</td></tr>
+<tr><td><strong>Appareils</strong></td><td>Les appareils appairés, leur état, <strong>Révoquer</strong>.</td><td>7.7</td></tr>
+<tr><td><strong>Boîtes aux lettres</strong></td><td>Les boîtes des téléphones : enveloppes en attente, sans contenu.</td><td>7.7</td></tr>
+<tr><td><strong>Codes d’appairage</strong></td><td>Les empreintes des codes : valides, utilisés, expirés.</td><td>7.7</td></tr>
+<tr><td><strong>Indicateurs reçus</strong></td><td>Les agrégats sans nom publiés par la mère.</td><td>7.7</td></tr>
+<tr><td><strong>Synchronisation</strong></td><td>La mère, les fileuls et les mobiles : contact, retard (lecture seule).</td><td>7.7</td></tr>
+<tr><td><strong>Alertes et notifications</strong></td><td>Les règles d’alerte du relais.</td><td>7.7</td></tr>
+<tr><td><strong>Journal d’audit du relais</strong></td><td>Qui a fait quoi sur le panneau.</td><td>7.9</td></tr>
+<tr><td><strong>Comptes superadmin</strong></td><td>Les comptes, les sessions, le changement de mot de passe.</td><td>7.9</td></tr>
+<tr><td><strong>Paramètres du relais</strong></td><td>Les seuils, la messagerie SMTP du relais.</td><td>7.8</td></tr>
+<tr><td><strong>Hébergement</strong></td><td>PHP, base, cron, disque, certificat.</td><td>7.8</td></tr>
+<tr><td><strong>Sauvegarde du relais</strong></td><td>Exports de la base, espace des sauvegardes hors site.</td><td>7.8</td></tr>
+<tr><td><strong>Passerelle SMS</strong></td><td>Fournisseur, envois planifiés, journal, limites, test.</td><td>7.11</td></tr>
+<tr><td><strong>Preuve d’opacité</strong></td><td>Entropie des enveloppes, ce que le relais voit.</td><td>7.9</td></tr>
+<tr><td><strong>Consultation des copies</strong></td><td>Lecture des dossiers copiés, avec la clé saisie dans la page.</td><td>7.9</td></tr>
+</table>
+<figure><img src="captures/p-boites.png" alt=""><figcaption>Boîtes aux lettres (copie locale) : les boîtes des téléphones appairés, sans aucun contenu.</figcaption></figure><figure><img src="captures/p-indicateurs.png" alt=""><figcaption>Indicateurs reçus (copie locale) : les agrégats que la mère publie, sans aucun nom.</figcaption></figure><figure><img src="captures/p-journal.png" alt=""><figcaption>Journal d’audit du relais (copie locale).</figcaption></figure><figure><img src="captures/p-consultation.png" alt=""><figcaption>Consultation des copies (copie locale) : la clé de clinique se saisit dans la page et ne quitte pas le navigateur.</figcaption></figure>
+<h2 id="s10-3">10.3 Les écrans du poste, par domaine et par module</h2>
+<!--GEN:ecrans-->
+
+<!-- ============================== ANNEXES ============================== -->
+<h1 id="ch11">Annexes</h1>
+
+<h2 id="sa-1">A. Ce qui n’est pas couvert ou pas vérifié</h2>
+<table class="tab">
+<tr><th>Sujet</th><th>État au 17/11/2026</th></tr>
 <tr><td>Installateur Windows, poste sous Windows</td><td>Écrit, jamais compilé ni exécuté sur un vrai Windows. Les cinq cas de désinstallation sont à rejouer sur un vrai poste.</td></tr>
-<tr><td>Protection de la clé du poste (DPAPI), chiffrement de la base (SQLCipher)</td><td>Non éprouvés ; SQLCipher non branché.</td></tr>
+<tr><td>Protection de la clé du poste (DPAPI), chiffrement au repos</td><td>Éprouvés par des tests automatiques hors Windows. <strong>Aucun contrôle sous Windows</strong> : les trois contrôles de la section 5.6 sont à jouer. Le chiffrement de la base est SQLite3 Multiple Ciphers, <strong>pas SQLCipher</strong>.</td></tr>
+<tr><td>Restauration de la clé du poste sur un poste neuf</td><td>La fonction existe et est testée ; <strong>aucun écran ne l’offre</strong>.</td></tr>
 <tr><td>Relais sur l’hébergement cPanel réel</td><td>Non déployé. Espace disque, taille de requête et temps d’exécution à mesurer.</td></tr>
-<tr><td>Deux postes physiques, vrai routeur, Android</td><td>Non exercés ; la synchronisation est prouvée sur un seul ordinateur (processus réels).</td></tr>
-<tr><td>Imprimante Xprinter XP-Q800</td><td>Non branchée ; impression par l’imprimante par défaut du système non essayée sur matériel.</td></tr>
-<tr><td>Boîtier MECeF, e-MECeF</td><td>Aucun adaptateur : en attente des réponses du fournisseur et de la DGI.</td></tr>
+<tr><td>Deux postes physiques, vrai routeur, Android, charge</td><td>Non exercés ; la synchronisation est prouvée sur un seul ordinateur (processus réels).</td></tr>
+<tr><td>Imprimante Xprinter XP-Q800</td><td>Non branchée ; impression par l’imprimante par défaut du système non essayée sur matériel ; liaison réelle (USB ou Ethernet) à constater.</td></tr>
+<tr><td>Boîtier MECeF, e-MECeF</td><td>Aucun adaptateur : en attente des réponses du fournisseur et de la DGI. Aucun numéro n’est fabriqué comme s’il était fiscal.</td></tr>
 <tr><td>Sauvegarde hors site par SFTP</td><td>Non faite.</td></tr>
-<tr><td>Propagation de l’identité de la clinique à tous les postes</td><td>Décidée le 16/11/2026, mesure prévue au lot IDENT.</td></tr>
+<tr><td>Passerelle SMS</td><td><strong>Aucun SMS réel envoyé.</strong> Comptes Twilio et Vonage jamais essayés ; couverture du Bénin, expéditeur alphanumérique, coût par message, codes d’erreur réels : à vérifier en recette sur site. Heures et modèles : aucun écran du poste ne les modifie encore. Activation désactivée par défaut.</td></tr>
+<tr><td>Satisfaction en ligne</td><td>Jamais ouverte sur de vrais téléphones ; navigateurs récents exigés, aucun repli ; limites et définitions des taux à confirmer par la Direction.</td></tr>
+<tr><td>Fiscalité</td><td>Taux de la retenue sur la facture d’un tiers (3 % et 5 %) et textes officiels non lus ; toutes les versions du barème de l’AIB sont « à valider » ; imputations de l’AIB non synchronisées entre postes et sans écriture comptable ; écriture d’une version du barème à vérifier au poste.</td></tr>
+<tr><td>Régimes individuels, plan annuel</td><td>Les régimes individuels ne se synchronisent pas ; aucun écran d’édition des axes et états du plan annuel.</td></tr>
+<tr><td>Rôles et noms écrits dans le code</td><td>Reste une liste blanche décroissante (section 8.1) ; les signataires de nombreux états imprimés nomment encore une personne (lot de reprise prévu).</td></tr>
 <tr><td>Double facteur du panneau superadmin</td><td>Non pris en charge.</td></tr>
-<tr><td>Captures des écrans du poste</td><td>Prises sur la maquette de référence ; la carte <strong>Sauvegarde hors site</strong> et l’assistant d’installation du poste sont décrits depuis leur code, sans capture.</td></tr>
+<tr><td>Captures</td><td>Maquette (écrans de configuration), application de poste en Flutter (écrans propres au poste), panneau du relais en local. Aucune capture n’a été prise sur un poste Windows réel.</td></tr>
 </table>
 
-<h2 id="s8-2">B. Écarts à corriger repérés pendant la rédaction</h2>
+<h2 id="sa-2">B. Écarts à corriger repérés pendant la rédaction</h2>
 <ul>
-  <li>Nom du serveur de messagerie (<code>mail.sigh.nassieratoo.com</code>) différent du domaine du relais (<code>sighcnt.nassieratoo.com</code>) : à confirmer auprès de l’hébergeur (section 7.3).</li>
-  <li><code>DEPLOIEMENT-CPANEL.md</code> section 4 : « Rien n’est planifié » est dépassé (section 7.4) ; le guide n’écrit pas le domaine de la clinique.</li>
-  <li>Mot de passe superadmin : 8 caractères pour la commande, 12 pour le panneau et le lisez-moi (section 7.4).</li>
-  <li>RCCM du jeu de départ ancien (<code>RB/NAT/2016-B-268</code>) ; numéro à jour <code>NAT/2021/M02-020</code> à poser en version datée (section 4.2).</li>
+  <li><strong>Mot de passe superadmin</strong> : la commande <code>relais:superadmin</code> et l’écran <strong>Comptes superadmin</strong> exigent 8 caractères au moins ; le fichier lisez-moi de <code>apps/web</code> dit 12 (section 7.4). Le texte du lisez-moi est à corriger.</li>
+  <li><strong>Exemple d’adresse</strong> : <code>production.env.exemple</code> (<code>APP_URL</code>) et l’aide du champ « Adresse du relais » du mode pair montrent encore <code>https://relais.exemple.bj</code>. Ce sont des exemples sans effet : saisissez <code>sighcnt.nassieratoo.com</code>.</li>
+  <li><strong>Maquette et poste</strong> : l’écran <strong>Passerelle SMS</strong> de la maquette propose de saisir les identifiants du fournisseur ; le poste les lit au relais (section 4.5). Suivez le poste.</li>
+  <li><strong>Manifeste et panneau</strong> : le manifeste de navigation ne déclare que douze entrées du panneau du relais ; le menu réel en a quinze (<strong>Synchronisation</strong>, <strong>Passerelle SMS</strong>, <strong>Consultation des copies</strong> n’y sont pas) (section 10.2).</li>
+  <li><strong>Deux droits voisins</strong> pour la vue complète du centre des validations (<code>voir_toutes_les_validations</code> et <code>voir_toutes_les_familles_validation</code>) : à fusionner quand la Direction aura dit qui voit quoi.</li>
 </ul>
 
-<h2 id="s8-3">C. Petit glossaire</h2>
+<h2 id="sa-3">C. Petit glossaire</h2>
 <table class="tab">
 <tr><td><strong>Mère</strong></td><td>Le poste de référence de la clinique, sur le réseau local. Une seule par clinique.</td></tr>
 <tr><td><strong>Fileul</strong></td><td>Un poste rattaché à la mère.</td></tr>
@@ -814,12 +1229,18 @@
 <tr><td><strong>Secret de la mère</strong></td><td>Le texte qui identifie la mère auprès du relais (<code>RELAIS_SECRET_MERE</code>).</td></tr>
 <tr><td><strong>Enveloppe</strong></td><td>Un paquet d’opérations chiffré, déposé au relais.</td></tr>
 <tr><td><strong>Battement</strong></td><td>Le signe de vie que la mère envoie au relais.</td></tr>
-<tr><td><strong>Geste réservé</strong></td><td>Un acte qui engage un professionnel nommé, accordé par rôle.</td></tr>
+<tr><td><strong>Geste réservé</strong></td><td>Un acte qui engage un professionnel nommé, accordé par rôle (chapitre 8).</td></tr>
+<tr><td><strong>Passerelle SMS</strong></td><td>Le service du relais qui envoie les SMS déposés par la mère (Twilio ou Vonage).</td></tr>
+<tr><td><strong>Identifiant opaque</strong></td><td>L’empreinte (HMAC) qui désigne un message ou une réponse sans rien dire de la personne ; calculée avec la clé de clinique.</td></tr>
+<tr><td><strong>Heures calmes</strong></td><td>La plage (21 h à 7 h proposée) pendant laquelle aucun SMS non urgent ne part.</td></tr>
+<tr><td><strong>Chiffrement au repos</strong></td><td>Le chiffrement des fichiers et des bases du poste sur le disque, par la clé du poste (protégée par DPAPI sous Windows).</td></tr>
+<tr><td><strong>DPAPI</strong></td><td>La protection de Windows qui lie un secret à la session de l’utilisateur.</td></tr>
+<tr><td><strong>Tiers payeur</strong></td><td>L’entreprise, l’assureur ou la convention qui prend un patient en charge et reçoit une facture distincte de celle du patient.</td></tr>
 <tr><td><strong>Version datée</strong></td><td>Une nouvelle valeur qui s’applique à partir d’une date, sans effacer l’ancienne.</td></tr>
 <tr><td><strong>MECeF</strong></td><td>Le dispositif de certification des factures normalisées (boîtier physique retenu).</td></tr>
 </table>
 
-<p class="fin">Fin du manuel administrateur. Sources : <code>docs/guides/</code>, <code>docs/architecture/adr/</code> (ADR-0005 à 0007), <code>apps/web</code>, <code>apps/poste/lib</code>, <code>prototype_html/</code>, <code>docs/decisions/DECISIONS-A-VALIDER.md</code>.</p>
+<p class="fin">Fin du manuel administrateur. Sources : <code>docs/guides/</code>, <code>docs/architecture/adr/</code> (ADR-0005 à 0009), <code>apps/web</code>, <code>apps/poste/lib</code>, <code>packages/rbac/data/rbac.json</code>, <code>packages/referentiels/data/manifeste.json</code>, <code>prototype_html/</code>, <code>docs/decisions/DECISIONS-A-VALIDER.md</code>. Les chapitres 8, 9 et 10 sont engendrés par des scripts depuis ces fichiers (<code>docs/manuels/source-administrateur/</code>).</p>
 
 </body>
 </html>

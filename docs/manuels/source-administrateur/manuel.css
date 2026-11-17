@@ -91,3 +91,14 @@ ol.toc li.n1 > a { font-weight: 700; color: var(--navy); font-size: 12.5pt; marg
 ol.toc li.n2 > a { padding-left: 16pt; font-size: 10.8pt; }
 
 .fin { margin-top: 18pt; font-size: 9.5pt; color: var(--gris); border-top: 1px solid #e2e8f0; padding-top: 6pt; }
+
+/* Chapitres engendrés (droits réservés, registre des paramètres, catalogue des écrans) */
+.note { font-size: 9pt; color: var(--gris); }
+table.droits td code { font-size: 8.4pt; word-break: break-all; }
+table.droits td, table.param td, table.ecrans td { font-size: 9.4pt; padding: 3.5pt 6pt; }
+table.droits, table.param { break-inside: auto; }
+table.ecrans { break-inside: auto; margin-bottom: 8pt; }
+table.ecrans tr.sous td { background: #f8fafc; color: var(--gris); font-size: 8.6pt; font-weight: 700; padding: 2pt 6pt; }
+table.ecrans th { background: var(--navy); color: #fff; font-size: 10pt; border-color: var(--navy); }
+table.ecrans th .code { font-weight: 400; color: #c7daf0; font-size: 8.6pt; margin-left: 6pt; }
+h3.dom { background: var(--navy-clair); border-left: 5px solid var(--navy); padding: 5pt 9pt; border-radius: 4px; margin: 16pt 0 6pt; }
