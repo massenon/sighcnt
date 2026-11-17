@@ -64,8 +64,8 @@
   "Gestion & trésorerie",
   "Tableaux de bord par poste",
   "DASH",
-  "342 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
-  "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268."
+  "343 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
+  "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM NAT/2021/M02-020."
  ],
  "cartes": [
   "Accueil",
@@ -203,6 +203,7 @@
   "Reliquats",
   "Remboursements & annulations",
   "Factures d’avoir",
+  "Factures aux tiers payeurs",
   "État de caisse journalier",
   "Opérations de caisse",
   "Recettes par période",

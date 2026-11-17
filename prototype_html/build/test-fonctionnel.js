@@ -422,6 +422,11 @@ async function viderMessages(page) {
       if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: o.role, statut: 'actif', droitsGestes: g }); window.SIGH.nav.invaliderRbac(); }, { role, id, val }),
   };
 
+  /* --- Outils du lot TIERS (Vagues 320 à 324) : la facture à un tiers payeur. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const TIERS = Object.assign({}, FISC2, {
+    session: (role) => poserSessionServeur({ role, nom: 'TIERS ' + role, nomComplet: 'TIERS ' + role, fonction: role, identifiant: 's32x.' + role, secteur: 'DIR' }),
+  });
+
   /* --- Outils du lot IMP-B1 (Vagues 127 à 132) : les cinq jeux du stock. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
   const outilsB1 = (() => {
     const ENT = {
@@ -30339,6 +30344,457 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CLO-3 FIN */
+  /* LOT TIERS DEBUT (Vagues 320 à 324) : la facture à un tiers payeur (Direction, 16/11/2026, section AQ point 36) */
+  await etape(async () => {
+    scenario('Vague 320 : lot TIERS, la fiche du tiers payeur (versions datées jamais réécrites, IFU de 13 chiffres contrôlé, code non réutilisé, geste réservé emettre_facture_tiers) et ses refus nommés');
+    erreursJS = [];
+    const depart = await TIERS.sauver(['tiersPayeurs', 'rbac']);
+    await TIERS.session('comptable');
+    await ouvrir('m8-factures-tiers.html');
+    const e0 = await page.evaluate(() => {
+      const N = window.SIGH.nav;
+      return { emettre: N.rolesAvecGeste('emettre_facture_tiers').slice().sort(), corriger: N.rolesAvecGeste('corriger_facture_tiers').slice().sort(), imputer: N.rolesAvecGeste('imputer_aib').slice().sort(), version: window.SIGH.store.version ? window.SIGH.store.version() : null };
+    });
+    verifier('Les deux gestes réservés sont au manifeste, défaut PROPOSÉ : émettre (administrateur, caissier, DAF, comptable), corriger (administrateur, comptable, DAF) ; l’AIB reste le geste imputer_aib',
+      JSON.stringify(e0.emettre) === JSON.stringify(['admin', 'caissier', 'comptable', 'da']) && JSON.stringify(e0.corriger) === JSON.stringify(['admin', 'comptable', 'da']) && JSON.stringify(e0.imputer) === JSON.stringify(['admin', 'comptable', 'da']), JSON.stringify(e0));
+    const r = await page.evaluate(() => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      const base = { nom: 'Société Sonde 320', type: 'entreprise', ifu: '3201642748999', adresse: 'BP 12 Natitingou', delaiPaiementJours: 30, conditions: 'Paiement à 30 jours', dateEffet: '2026-11-01' };
+      o.nomVide = T.creerTiers(Object.assign({}, base, { nom: ' ' })).code;
+      o.ifuCourt = T.creerTiers(Object.assign({}, base, { ifu: '12345' })).code;
+      o.ifuLettres = T.creerTiers(Object.assign({}, base, { ifu: '32016427489AB' })).code;
+      o.type = T.creerTiers(Object.assign({}, base, { type: 'banque' })).code;
+      o.delai = T.creerTiers(Object.assign({}, base, { delaiPaiementJours: -3 })).code;
+      const n0 = S.collection('tiersPayeurs').all().length;
+      const a = T.creerTiers(base);
+      o.dbl = T.creerTiers(Object.assign({}, base, { nom: 'Autre nom' })).code;
+      o.rien = S.collection('tiersPayeurs').all().length === n0 + 1;
+      const sans = T.creerTiers({ nom: 'Convention Sonde 320', type: 'convention', dateEffet: '2026-11-01' });
+      o.a = a.ok && { code: a.code, version: a.fiche.version, ifu: a.fiche.ifu }; o.sans = sans.ok && { ifu: sans.fiche.ifu };
+      o.codes = a.ok && sans.ok && a.code !== sans.code;
+      /* version datée : motif, date postérieure, la précédente se ferme la veille, jamais réécrite */
+      o.sansMotif = T.nouvelleVersion(a.code, { dateEffet: '2026-11-10', adresse: 'BP 99' }).code;
+      o.anterieure = T.nouvelleVersion(a.code, { dateEffet: '2026-11-01', adresse: 'BP 99', motif: 'x' }).code;
+      const v2 = T.nouvelleVersion(a.code, { dateEffet: '2026-11-10', adresse: 'BP 99 Natitingou', motif: 'Changement d’adresse' });
+      const vs = T.versions(a.code);
+      o.v2 = v2.ok && { n: vs.length, fin1: vs[0].dateFin, adresse1: vs[0].adresse, adresse2: vs[1].adresse, version: vs[1].version, ifu2: vs[1].ifu };
+      o.alaDate1 = T.aLaDate(a.code, '2026-11-05').adresse; o.alaDate2 = T.aLaDate(a.code, '2026-11-12').adresse;
+      o.reecrit = S.collection('tiersPayeurs').update(vs[0].id, { adresse: 'REECRITE' }) === null ? 'refusee' : 'acceptee';
+      o.adresseApres = T.versions(a.code)[0].adresse;
+      o.ifuAutre = T.nouvelleVersion(sans.code, { dateEffet: '2026-11-10', ifu: '3201642748999', motif: 'IFU' }).code;
+      const ifuPose = T.nouvelleVersion(sans.code, { dateEffet: '2026-11-10', ifu: '3201642748555', motif: 'IFU communiqué' });
+      o.ifuPose = ifuPose.ok && T.aLaDate(sans.code, '2026-11-12').ifu;
+      o.anciennePiece = T.aLaDate(sans.code, '2026-11-05').ifu === null;
+      o.codesVus = { a: a.code, sans: sans.code };
+      return o;
+    });
+    verifier('Refus nommés AVANT toute écriture : nom vide, IFU de 5 chiffres ou avec des lettres (IFU_INVALIDE), type inconnu, délai négatif, IFU déjà porté par un autre tiers ; un seul tiers écrit',
+      r.nomVide === 'TIERS_NOM_ABSENT' && r.ifuCourt === 'IFU_INVALIDE' && r.ifuLettres === 'IFU_INVALIDE' && r.type === 'TIERS_TYPE_INCONNU' && r.delai === 'TIERS_DELAI_INVALIDE' && r.dbl === 'TIERS_IFU_DEJA_PRIS' && r.rien, JSON.stringify(r));
+    verifier('Un tiers se crée avec un code TP-nnn (version 1) ; un tiers sans IFU est admis (l’IFU sera exigé à la facture) ; les deux codes diffèrent',
+      r.a && /^TP-\d{3}$/.test(r.a.code) && r.a.version === 1 && r.a.ifu === '3201642748999' && r.sans && r.sans.ifu === null && r.codes, JSON.stringify(r));
+    verifier('Une nouvelle version exige un motif et une date d’effet postérieure, ferme la précédente la veille, ne réécrit RIEN ; une pièce lit la version de SA date ; la garde du magasin refuse la réécriture d’une version',
+      r.sansMotif === 'TIERS_MOTIF_ABSENT' && r.anterieure === 'TIERS_DATE_ANTERIEURE' && r.v2 && r.v2.n === 2 && r.v2.fin1 === '2026-11-09' && r.v2.adresse1 === 'BP 12 Natitingou' && r.v2.adresse2 === 'BP 99 Natitingou' && r.v2.version === 2
+      && r.alaDate1 === 'BP 12 Natitingou' && r.alaDate2 === 'BP 99 Natitingou' && r.reecrit === 'refusee' && r.adresseApres === 'BP 12 Natitingou', JSON.stringify(r));
+    verifier('L’IFU posé par une version tardive ne réécrit pas le passé (la date antérieure lit toujours « IFU absent ») ; un IFU déjà porté par un autre tiers est refusé sur une version aussi',
+      r.ifuAutre === 'TIERS_IFU_DEJA_PRIS' && r.ifuPose === '3201642748555' && r.anciennePiece === true, JSON.stringify(r));
+    /* sans le geste : refus nommé qui cite le droit, rien d'écrit */
+    await TIERS.geste('comptable', 'emettre_facture_tiers', false);
+    await TIERS.session('comptable');
+    await ouvrir('m8-factures-tiers.html');
+    const sans = await page.evaluate(() => { const T = window.SIGH.tiers, S = window.SIGH.store; const n = S.collection('tiersPayeurs').all().length;
+      const x = T.creerTiers({ nom: 'Sonde sans droit', type: 'entreprise' }); return { code: x.code, droit: x.droit, motif: x.motif, rien: S.collection('tiersPayeurs').all().length === n }; });
+    await TIERS.restituer(depart);
+    await attendreEcritures();
+    verifier('Sans le geste emettre_facture_tiers, le moteur refuse TIERS_RESERVE en citant le droit ; rien n’est écrit ; fiche RBAC et tiers de la sonde restaurés',
+      sans.code === 'TIERS_RESERVE' && sans.droit === 'emettre_facture_tiers' && /emettre_facture_tiers/.test(sans.motif) && sans.rien, JSON.stringify(sans));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 321 : lot TIERS, la facture à un tiers payeur : pièce distincte de la facture du patient, IFU et nom contrôlés avant toute écriture, AIB proposé par le barème et DÉCIDÉ par le comptable, numéro de l’année de la pièce, normalisation MECeF avec acheteur sans numéro simulé, pièce émise jamais réécrite (avoir), double facturation refusée');
+    erreursJS = [];
+    const depart = await TIERS.sauver(['tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers', 'factures', 'rbac']);
+    await TIERS.session('caissier');
+    await ouvrir('m8-factures-tiers.html');
+    const prep = await page.evaluate(() => {
+      const T = window.SIGH.tiers, S = window.SIGH.store;
+      const p = S.collection('patients').active()[0];
+      const fac = S.collection('factures').insert({ numero: 'FAC-T321-1', date: '2026-11-16', patientId: p.id, patient: 'Patient Sonde 321', patientCode: p.code, montantTTC: 100000, montantHT: 100000, type: 'Facture',
+        partAssurance: 20000, partPersonnel: 0, partPatient: 80000,
+        lignes: [{ id: 'L001', categorie: 'acte', designation: 'Hospitalisation 2 jours', montant: 60000, partAssureur: 20000, partPersonnel: 0, partPatient: 40000, statutPaiement: 'du' },
+          { id: 'L002', categorie: 'analyse', designation: 'Bilan sanguin', montant: 40000, partAssureur: 0, partPersonnel: 0, partPatient: 40000, statutPaiement: 'du' },
+          { id: 'L003', categorie: 'medicament', designation: 'Ordonnance sans prix', montant: null, prixManquant: { nature: 'manquant' }, partAssureur: null, partPersonnel: null, partPatient: null, statutPaiement: 'du' }] }).record;
+      return { facId: fac.id, ficheAvant: JSON.stringify(S.collection('factures').get(fac.id)), numeroPatient: fac.numero };
+    });
+    await TIERS.session('comptable');
+    await ouvrir('m8-factures-tiers.html');
+    const tp = await page.evaluate(() => {
+      const T = window.SIGH.tiers;
+      const a = T.creerTiers({ nom: 'Société Sonde 321', type: 'entreprise', ifu: '3201642748321', adresse: 'BP 21', delaiPaiementJours: 30, dateEffet: '2026-01-05' });
+      const b = T.creerTiers({ nom: 'Convention Sans IFU 321', type: 'convention', dateEffet: '2026-01-05' });
+      return { a: a.code, b: b.code };
+    });
+    const f = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      const L = (id, m) => ({ factureId: x.facId, ligneId: id, montant: m });
+      const n0 = S.collection('facturesTiers').all().length;
+      o.sansIfu = T.proposer({ tiersCode: x.b, date: '2026-11-16', lignes: [L('L002', 10000)] }).code;
+      o.inconnu = T.proposer({ tiersCode: 'TP-999', date: '2026-11-16', lignes: [L('L002', 10000)] }).code;
+      o.sansLigne = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [] }).code;
+      o.ligneInconnue = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [L('L099', 10000)] }).code;
+      o.prixManquant = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [L('L003', 10000)] }).code;
+      o.depasse = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [L('L001', 50000)] }).code;
+      o.montant = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [L('L002', 0)] }).code;
+      o.decimal = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [L('L002', 1000.5)] }).code;
+      o.double = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [L('L002', 100), L('L002', 200)] }).code;
+      o.rien = S.collection('facturesTiers').all().length === n0;
+      return o;
+    }, Object.assign({}, prep, tp));
+    verifier('Refus nommés AVANT toute écriture : tiers sans IFU (TIERS_IFU_ABSENT), tiers inconnu, aucune ligne, ligne inconnue, ligne sans prix (non calculable, pas zéro), montant au-delà du facturable (la part de l’assureur est exclue), montant nul ou décimal, ligne répétée ; rien n’est écrit',
+      f.sansIfu === 'TIERS_IFU_ABSENT' && f.inconnu === 'TIERS_INCONNU' && f.sansLigne === 'FACTURE_TIERS_SANS_LIGNE' && f.ligneInconnue === 'FACTURE_TIERS_LIGNE_INCONNUE' && f.prixManquant === 'FACTURE_TIERS_PRIX_MANQUANT'
+      && f.depasse === 'FACTURE_TIERS_MONTANT_DEPASSE' && f.montant === 'FACTURE_TIERS_MONTANT_INVALIDE' && f.decimal === 'FACTURE_TIERS_MONTANT_INVALIDE' && f.double === 'FACTURE_TIERS_LIGNE_DOUBLE' && f.rien, JSON.stringify(f));
+    /* proposition, brouillon, décision */
+    const b = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      const r = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [{ factureId: x.facId, ligneId: 'L001', montant: 30000 }, { factureId: x.facId, ligneId: 'L002', montant: 40000 }] });
+      o.ok = r.ok; if (!r.ok) return Object.assign(o, { code: r.code, motif: r.motif });
+      const fi = S.collection('facturesTiers').get(r.id);
+      o.brouillon = { statut: fi.statut, numero: fi.numero, base: fi.base, ifu: fi.ifuAcheteur, nom: fi.nomAcheteur, reste: fi.partPatientRestante, aib: fi.aibDecision, tiersVersion: fi.tiersVersion };
+      o.emissionSansDecision = T.emettre(r.id).code;
+      o.encoreBrouillon = S.collection('facturesTiers').get(r.id).statut;
+      o.prop = (() => { const p = T.proposerAib(r.id); return { ok: p.ok, taux: p.taux, famille: p.famille }; })();
+      o.id = r.id;
+      /* le patient : sa facture n'a pas bougé, ni IFU, ni AIB */
+      const fp = S.collection('factures').get(x.facId);
+      const avantP = JSON.parse(x.ficheAvant);
+      const proj = (f) => JSON.stringify(f.lignes.map((l) => [l.id, l.montant == null ? null : l.montant, l.partAssureur == null ? null : l.partAssureur, l.designation, l.statutPaiement]));
+      o.patientIntact = fp.numero === avantP.numero && fp.montantTTC === avantP.montantTTC && fp.lignes.length === avantP.lignes.length && Object.keys(fp).filter((k) => /tiers|ifu|aib|mecef/i.test(k)).length === 0 && proj(fp) === proj(avantP);
+      o.patientRefuse = window.SIGH.mecef.validerAcheteur({ ifu: '3201642748321', nom: 'X', aibTaux: 1 }).code;
+      /* la deuxième facture ne peut pas reprendre ce que la première a pris */
+      o.reprise = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [{ factureId: x.facId, ligneId: 'L002', montant: 5000 }] }).code;
+      o.reprisePossible = T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [{ factureId: x.facId, ligneId: 'L001', montant: 10000 }] });
+      o.repriseOk = o.reprisePossible.ok === true;
+      if (o.repriseOk) o.reprisePossible = T.abandonner(o.reprisePossible.id, 'sonde 321').ok;
+      return o;
+    }, Object.assign({}, prep, tp));
+    verifier('Le brouillon porte l’IFU et le nom de l’acheteur lus à SA date, la base (70 000), la part restante du patient CALCULÉE (60 000 moins la part assureur 20 000 moins 30 000 = 10 000 ; 40 000 moins 40 000 = 0), aucun numéro ni décision ; l’émission sans décision est refusée (TIERS_AIB_DECISION_ABSENTE)',
+      b.ok && b.brouillon.statut === 'brouillon' && b.brouillon.numero === null && b.brouillon.base === 70000 && b.brouillon.ifu === '3201642748321' && b.brouillon.nom === 'Société Sonde 321' && b.brouillon.reste === 10000 && b.brouillon.aib === null
+      && b.emissionSansDecision === 'TIERS_AIB_DECISION_ABSENTE', JSON.stringify(b));
+    verifier('Le logiciel PROPOSE le taux du barème de l’acheteur (IFU présent : 1 %), n’impose rien (le brouillon reste sans décision) ; la facture du patient est INTACTE (ni IFU, ni AIB) et le moteur du patient refuse toujours l’AIB (AIB_FACTURE_PATIENT) ; une prestation déjà prise par une pièce ne se reprend pas (FACTURE_TIERS_MONTANT_DEPASSE), le solde restant se facture',
+      b.prop.ok && b.prop.taux === 1 && b.prop.famille === 'acheteur' && b.encoreBrouillon === 'brouillon' && b.patientIntact && b.patientRefuse === 'AIB_FACTURE_PATIENT' && b.reprise === 'FACTURE_TIERS_MONTANT_DEPASSE' && b.repriseOk, JSON.stringify(b));
+    /* la décision par le comptable, refus nommés, puis l'émission par le caissier */
+    const d = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      o.absente = T.deciderAib(x.id, {}).code;
+      o.nonSansMotif = T.deciderAib(x.id, { appliquer: false }).code;
+      o.ligne = T.deciderAib(x.id, { appliquer: true, taux: 1 }).code;
+      o.ligneInconnue = T.deciderAib(x.id, { appliquer: true, situation: 'nexiste_pas', taux: 1 }).code;
+      o.tauxAbsent = T.deciderAib(x.id, { appliquer: true, situation: 'ifu_actif' }).code;
+      o.tauxInvalide = T.deciderAib(x.id, { appliquer: true, situation: 'ifu_actif', taux: 150 }).code;
+      o.horsSansMotif = T.deciderAib(x.id, { appliquer: true, situation: 'ifu_actif', taux: 3 }).code;
+      o.encore = S.collection('facturesTiers').get(x.id).aibDecision === null;
+      const ok = T.deciderAib(x.id, { appliquer: true, situation: 'ifu_actif', taux: 1 });
+      const fi = S.collection('facturesTiers').get(x.id);
+      o.decision = ok.ok && { appliquer: fi.aibDecision.appliquer, taux: fi.aibDecision.taux, prop: fi.aibDecision.propositionTaux, hors: fi.aibDecision.horsProposition, par: fi.aibDecision.decidePar, role: fi.aibDecision.decideRole };
+      return o;
+    }, Object.assign({}, tp, { id: b.id }));
+    verifier('Refus de décision nommés, rien écrit : décision absente (le logiciel ne décide jamais), « ne pas appliquer » sans motif, ligne absente ou inconnue, taux absent ou hors 0 à 100, taux hors barème sans motif ; la décision du comptable (1 % de la ligne « acheteur avec IFU actif ») est signée, rôle dit',
+      d.absente === 'AIB_DECISION_ABSENTE' && d.nonSansMotif === 'AIB_MOTIF_ABSENT' && d.ligne === 'AIB_LIGNE_ABSENTE' && d.ligneInconnue === 'AIB_SITUATION_INCONNUE' && d.tauxAbsent === 'AIB_TAUX_ABSENT' && d.tauxInvalide === 'AIB_TAUX_INVALIDE'
+      && d.horsSansMotif === 'AIB_MOTIF_ABSENT' && d.encore && d.decision && d.decision.appliquer === true && d.decision.taux === 1 && d.decision.prop === 1 && d.decision.hors === false && /Comptable/i.test(d.decision.role), JSON.stringify(d));
+    await TIERS.session('caissier');
+    await ouvrir('m8-factures-tiers.html');
+    const em = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      o.caissierDecide = T.deciderAib(x.id, { appliquer: false, motif: 'x' }).code;
+      const r = T.emettre(x.id);
+      o.ok = r.ok; if (!r.ok) return Object.assign(o, { code: r.code, motif: r.motif });
+      const fi = S.collection('facturesTiers').get(x.id);
+      o.piece = { statut: fi.statut, numero: fi.numero, aibTaux: fi.aibTaux, aib: fi.aibMontant, net: fi.net, base: fi.base, ht: fi.ht, statutMecef: fi.statutMecef, numeroMecef: fi.numeroMecef, simule: fi.mecefSimule, mode: fi.modeMecef };
+      o.mecef = { ok: r.mecef.ok, numero: r.mecef.numero };
+      o.dejaEmise = T.emettre(x.id).code;
+      o.abandonEmise = T.abandonner(x.id, 'x').code;
+      o.renormaliser = T.normaliser(x.id).code;
+      /* l'appareil a vu l'acheteur */
+      const em = window.SIGH.mecef.fauxBoitier.consulter(x.id);
+      o.appareil = em && { ifu: em.ifuAcheteur, nom: em.nomAcheteur, aibTaux: em.aibTaux, aib: em.aib };
+      /* la pièce ne se réécrit jamais, ni par le magasin */
+      o.reecrite = S.collection('facturesTiers').update(x.id, { base: 1 }) === null ? 'refusee' : 'acceptee';
+      o.reecriteIfu = S.collection('facturesTiers').update(x.id, { ifuAcheteur: '0000000000000' }) === null ? 'refusee' : 'acceptee';
+      o.numeroMecefReecrit = S.collection('facturesTiers').update(x.id, { numeroMecef: 'MECEF9' }) === null ? 'refusee' : 'acceptee';
+      o.apres = S.collection('facturesTiers').get(x.id);
+      o.apres = { base: o.apres.base, ifu: o.apres.ifuAcheteur, numeroMecef: o.apres.numeroMecef };
+      o.numerosPatient = S.collection('factures').all().some((f) => f.numero === fi.numero);
+      return o;
+    }, { id: b.id });
+    verifier('L’émission attribue FT-AAAA-nnnn (année de la DATE de la pièce, 2026), décomposition MECeF : base 70 000, AIB 1 % = 700, net 70 700 ; la normalisation passe par le moteur MECeF existant (appareil de démonstration, mecefSimule dit), l’appareil a reçu l’IFU, le nom, le taux et l’AIB de l’acheteur',
+      em.ok && /^FT-2026-\d{4}$/.test(em.piece.numero) && em.piece.statut === 'emise' && em.piece.base === 70000 && em.piece.aibTaux === 1 && em.piece.aib === 700 && em.piece.net === 70700 && em.piece.statutMecef === 'valide' && /^MECEF/.test(em.piece.numeroMecef)
+      && em.piece.simule === true && em.mecef.ok && em.appareil && em.appareil.ifu === '3201642748321' && em.appareil.nom === 'Société Sonde 321' && em.appareil.aibTaux === 1 && em.appareil.aib === 700, JSON.stringify(em));
+    verifier('Le caissier ÉMET mais ne décide PAS de l’AIB (IMPUTATION_AIB_RESERVEE : le geste imputer_aib n’est pas à son rôle)', em.caissierDecide === 'IMPUTATION_AIB_RESERVEE', JSON.stringify(em));
+    verifier('Une pièce ÉMISE ne se réécrit jamais : ré-émission, abandon et renormalisation refusés (nommés ; la décision de l’AIB est refusée aussi, plus bas), et la garde du magasin refuse base, IFU et numéro MECeF réécrits ; son numéro n’entre pas dans la série des factures du patient (pièces distinctes)',
+      em.dejaEmise === 'FACTURE_TIERS_DEJA_EMISE' && em.abandonEmise === 'FACTURE_TIERS_EMISE' && em.renormaliser === 'DEJA_NORMALISEE' && em.reecrite === 'refusee' && em.reecriteIfu === 'refusee' && em.numeroMecefReecrit === 'refusee'
+      && em.apres.base === 70000 && em.apres.ifu === '3201642748321' && em.apres.numeroMecef === em.piece.numeroMecef && em.numerosPatient === false, JSON.stringify(em));
+    /* l'année du numéro suit la date de la pièce ; le mode e-MECeF n'invente aucun numéro ; l'avoir */
+    await TIERS.session('comptable');
+    await ouvrir('m8-factures-tiers.html');
+    const suite = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      const mk = (date, lig, m) => { const r = T.proposer({ tiersCode: x.a, date, lignes: [{ factureId: x.facId, ligneId: lig, montant: m }] }); if (!r.ok) return r; const dd = T.deciderAib(r.id, { appliquer: false, motif: 'Sonde 321 : l’acheteur paie son AIB' }); if (!dd.ok) return dd; return r; };
+      const futur = mk('2027-03-05', 'L001', 5000);
+      o.futur = futur.ok ? (() => { const e = T.emettre(futur.id); return { ok: e.ok, numero: e.numero, code: e.code }; })() : { code: futur.code, motif: futur.motif };
+      o.numeroSuivant2026 = T.numeroSuivant('2026-11-17');
+      o.numeroSuivant2027 = T.numeroSuivant('2027-06-01');
+      /* e-MECeF : rien n'est branché, la pièce reste en attente, aucun numéro fabriqué */
+      const avant = S.reglage('mecefMode', 'boitier');
+      S.setReglage('mecefMode', 'emecef');
+      const e2 = mk('2026-11-17', 'L001', 100);
+      o.decisionEmise = T.deciderAib(x.emiseId, { appliquer: false, motif: 'x' }).code;
+      if (e2.ok) {
+        const em = T.emettre(e2.id); const fi = S.collection('facturesTiers').get(e2.id);
+        o.emecef = { emise: em.ok, mecefOk: em.mecef.ok, code: em.mecef.code, statut: fi.statutMecef, numeroMecef: fi.numeroMecef || null, statutPiece: fi.statut };
+        o.emecefId = e2.id;
+      } else o.emecef = { code: e2.code, motif: e2.motif };
+      S.setReglage('mecefMode', avant);
+      return o;
+    }, Object.assign({}, prep, tp, { emiseId: b.id }));
+    verifier('Une décision de l’AIB sur une pièce déjà émise est refusée par le comptable lui-même (FACTURE_TIERS_EMISE) : une pièce émise ne se réécrit jamais', suite.decisionEmise === 'FACTURE_TIERS_EMISE', JSON.stringify(suite));
+    verifier('Le numéro prend l’année de la DATE DE LA PIÈCE : une facture datée du 05/03/2027 devient FT-2027-0001 (le rang repart avec l’année), la série 2026 garde le sien',
+      suite.futur.ok && suite.futur.numero === 'FT-2027-0001' && /^FT-2026-\d{4}$/.test(suite.numeroSuivant2026) && suite.numeroSuivant2027 === 'FT-2027-0002', JSON.stringify(suite));
+    verifier('En mode e-MECeF (rien de branché), la facture tiers est émise mais RESTE EN ATTENTE de certification sous le refus nommé MECEF_NON_CONFIGURE : aucun numéro MECeF n’est fabriqué',
+      suite.emecef && suite.emecef.emise === true && suite.emecef.mecefOk === false && suite.emecef.code === 'MECEF_NON_CONFIGURE' && suite.emecef.statut === 'en_attente' && suite.emecef.numeroMecef === null, JSON.stringify(suite.emecef));
+    const av = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      o.sansMotif = T.avoir(x.id, ' ').code;
+      o.brouillon = T.avoir(S.collection('facturesTiers').all().filter((f) => f.statut === 'brouillon')[0] ? S.collection('facturesTiers').all().filter((f) => f.statut === 'brouillon')[0].id : 'x', 'm').code;
+      const r = T.avoir(x.id, 'Sonde 321 : prise en charge retirée');
+      o.ok = r.ok && { numero: r.numero, montant: r.montant };
+      o.double = T.avoir(x.id, 'encore').code;
+      o.creance = T.creance(S.collection('facturesTiers').get(x.id));
+      o.pieceIntacte = S.collection('facturesTiers').get(x.id).statut === 'emise' && S.collection('facturesTiers').get(x.id).base === 70000;
+      o.lignesLibres = T.lignesFacturables(x.facId).lignes.filter((l) => l.ligneId === 'L002')[0].dejaAuxTiers;
+      o.statutAvoir = S.collection('avoirsTiers').get(r.id).statutMecef; o.numeroAvoir = 'numeroMecef' in S.collection('avoirsTiers').get(r.id);
+      return o;
+    }, { id: b.id, facId: prep.facId });
+    verifier('L’AVOIR est la seule correction : motif obligatoire, refusé sur un brouillon, un seul par pièce ; la pièce reste intacte (émise, 70 000), la créance tombe à 0, les lignes redeviennent facturables à un tiers',
+      av.sansMotif === 'AVOIR_TIERS_MOTIF_ABSENT' && av.brouillon !== 'AVOIR_TIERS_MOTIF_ABSENT' && av.ok && /^AVT-2026-\d{4}$/.test(av.ok.numero) && av.ok.montant === 70700 && av.double === 'AVOIR_TIERS_DEJA_EMIS' && av.creance === 0 && av.pieceIntacte && av.lignesLibres === 0 && av.statutAvoir === 'en_attente' && av.numeroAvoir === false, JSON.stringify(av));
+    /* sans le droit d'émettre : le moteur refuse partout */
+    await TIERS.geste('caissier', 'emettre_facture_tiers', false);
+    await TIERS.session('caissier');
+    await ouvrir('m8-factures-tiers.html');
+    const sans = await page.evaluate((x) => { const T = window.SIGH.tiers; return { proposer: T.proposer({ tiersCode: x.a, date: '2026-11-16', lignes: [{ factureId: x.facId, ligneId: 'L002', montant: 100 }] }).code, emettre: T.emettre('x').code, reglement: T.reglement({ tiersCode: x.a, montant: 1, mode: 'virement', referencePaiement: 'r' }).code }; }, Object.assign({}, prep, tp));
+    await TIERS.restituer(depart);
+    await attendreEcritures();
+    verifier('Sans le geste emettre_facture_tiers (caissier), proposer, émettre et enregistrer un règlement sont refusés nommément : le droit est dans le moteur, pas dans un bouton ; tout restauré (facture du patient, tiers, pièces archivées)',
+      sans.proposer === 'FACTURE_TIERS_RESERVEE' && sans.emettre === 'FACTURE_TIERS_RESERVEE' && sans.reglement === 'REGLEMENT_TIERS_RESERVE', JSON.stringify(sans));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 322 : lot TIERS, l’écran « Factures aux tiers payeurs » sous Facturation : liste, décision de l’AIB, émission, impression A4 (IFU et nom de l’acheteur, AIB, net), commandes ABSENTES sans le geste réservé de la fiche RBAC');
+    erreursJS = [];
+    const depart = await TIERS.sauver(['tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers', 'factures', 'rbac']);
+    await TIERS.session('comptable');
+    await ouvrir('m8-factures-tiers.html');
+    const prep = await page.evaluate(() => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, p = S.collection('patients').active()[0];
+      const fac = S.collection('factures').insert({ numero: 'FAC-T322-1', date: '2026-11-16', patientId: p.id, patient: 'Patient Sonde 322', patientCode: p.code, montantTTC: 90000, montantHT: 90000, type: 'Facture', partAssurance: 0, partPersonnel: 0, partPatient: 90000,
+        lignes: [{ id: 'L001', categorie: 'acte', designation: 'Intervention chirurgicale', montant: 90000, partAssureur: 0, partPersonnel: 0, partPatient: 90000, statutPaiement: 'du' }] }).record;
+      const t = T.creerTiers({ nom: 'Entreprise Sonde 322', type: 'entreprise', ifu: '3201642748322', adresse: 'BP 322 Cotonou', delaiPaiementJours: 45, conditions: 'Paiement à 45 jours fin de mois', dateEffet: '2026-01-05' });
+      const r = T.proposer({ tiersCode: t.code, date: '2026-11-16', lignes: [{ factureId: fac.id, ligneId: 'L001', montant: 90000 }] });
+      return { facId: fac.id, code: t.code, id: r.id };
+    });
+    await ouvrir('m8-factures-tiers.html');
+    const liste = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      await pause(500);
+      const texte = document.getElementById('page-content').textContent;
+      const titres = [...document.querySelectorAll('#page-content button[title]')].map((b) => b.title);
+      const onglets = [...document.querySelectorAll('#page-content [data-tab]')].map((b) => b.dataset.tab);
+      return { onglets, brouillon: /Brouillon/.test(texte), tiers: /Entreprise Sonde 322/.test(texte), ifu: /3201642748322/.test(texte), decider: titres.includes('Décider de l’AIB'), emettre: titres.includes('Émettre la facture'), nouvelle: !![...document.querySelectorAll('#page-content button')].find((b) => /Nouvelle facture à un tiers payeur/.test(b.textContent)),
+        regle: /distincte de la facture du patient/.test(document.body.textContent), aDecider: /À décider/.test(texte) };
+    });
+    verifier('L’écran liste le brouillon (tiers, IFU, « À décider »), porte les onglets Factures, Tiers payeurs, Règlements et lettrage, Créances, et au comptable les commandes « Décider de l’AIB », « Émettre la facture » et « Nouvelle facture à un tiers payeur » ; la règle dit que la pièce est distincte de la facture du patient',
+      JSON.stringify(liste.onglets) === JSON.stringify(['factures', 'tiers', 'reglements', 'creances']) && liste.brouillon && liste.tiers && liste.ifu && liste.decider && liste.emettre && liste.nouvelle && liste.regle && liste.aDecider, JSON.stringify(liste));
+    /* décision par le formulaire : aucune présélection, proposition affichée */
+    const form = await page.evaluate(async (x) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const out = {};
+      [...document.querySelectorAll('#page-content button[title="Décider de l’AIB"]')][0].click();
+      await pause(500);
+      const m = document.querySelector('.drawer-backdrop');
+      const champ = (n) => m.querySelector('[name="' + n + '"], #f_' + n);
+      const poser = (n, v) => { const c = champ(n); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      out.vide = champ('appliquer').value === '';
+      out.proposition = /1 %/.test(m.textContent) && /Le logiciel propose, le comptable décide/.test(m.textContent);
+      poser('appliquer', 'oui'); await pause(200); poser('situation', 'ifu_actif'); poser('taux', '1');
+      [...m.querySelectorAll('button')].find((b) => /Enregistrer la décision/.test(b.textContent)).click();
+      await pause(900);
+      const f = window.SIGH.store.collection('facturesTiers').get(x.id);
+      out.decision = f.aibDecision ? { appliquer: f.aibDecision.appliquer, taux: f.aibDecision.taux } : null;
+      return out;
+    }, prep);
+    verifier('Le formulaire de décision ne présélectionne rien, affiche la proposition du barème (1 %) et le rappel « le logiciel propose, le comptable décide », puis enregistre la décision du comptable',
+      form.vide && form.proposition && form.decision && form.decision.appliquer === true && form.decision.taux === 1, JSON.stringify(form));
+    /* émission par la commande de l'écran */
+    await ouvrir('m8-factures-tiers.html');
+    const emis = await page.evaluate(async (x) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      await pause(500);
+      [...document.querySelectorAll('#page-content button[title="Émettre la facture"]')][0].click();
+      await pause(1200);
+      const f = window.SIGH.store.collection('facturesTiers').get(x.id);
+      return { statut: f.statut, numero: f.numero, net: f.net, aib: f.aibMontant, mecef: f.numeroMecef };
+    }, prep);
+    verifier('La commande « Émettre la facture » émet : FT-2026-nnnn, base 90 000, AIB 900, net 90 900, numéro MECeF de l’appareil de démonstration',
+      emis.statut === 'emise' && /^FT-2026-\d{4}$/.test(emis.numero) && emis.net === 90900 && emis.aib === 900 && /^MECEF/.test(emis.mecef), JSON.stringify(emis));
+    /* impression A4 */
+    await ouvrir('m8-factures-tiers.html');
+    const imp = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      await pause(500);
+      const b = [...document.querySelectorAll('#page-content button[title="Imprimer la facture (A4)"]')][0];
+      if (!b) return { bouton: false };
+      b.click(); await pause(900);
+      const s = document.querySelector('.print-sheet');
+      const t = s ? s.textContent : '';
+      return { bouton: true, feuille: !!s, titre: /Facture à un tiers payeur/.test(t), ifu: /3201642748322/.test(t), nom: /Entreprise Sonde 322/.test(t), aib: /AIB \(1 %\)/.test(t), net: /90\s?900/.test(t), mecef: /MECEF/.test(t), identite: /IFU/.test(t) && /Natitingou/.test(t), reste: /facturée séparément à la caisse/.test(t), patient: /Patient Sonde 322/.test(t),
+        a4: s ? (s.style.width === '210mm') : false };
+    });
+    await page.evaluate(() => { const b = [...document.querySelectorAll('.print-chrome button')].find((x) => /Fermer/.test(x.textContent)); if (b) b.click(); });
+    verifier('L’impression A4 porte l’en-tête officiel, l’IFU et le nom de l’ACHETEUR, le patient, le tableau des prestations, l’AIB (1 %), le net à payer 90 900, le numéro MECeF, et dit que la part restante du patient se facture séparément à la caisse',
+      imp.bouton && imp.feuille && imp.a4 && imp.titre && imp.ifu && imp.nom && imp.aib && imp.net && imp.mecef && imp.identite && imp.reste && imp.patient, JSON.stringify(imp));
+    /* droit retiré au caissier : les commandes sont ABSENTES */
+    await TIERS.geste('caissier', 'emettre_facture_tiers', false);
+    await TIERS.session('caissier');
+    await ouvrir('m8-factures-tiers.html');
+    const absent = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      await pause(500);
+      const titres = [...document.querySelectorAll('#page-content button[title]')].map((b) => b.title);
+      const btns = [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim());
+      return { ecran: !!document.querySelector('#page-content [data-tab]'), nouvelle: btns.some((t) => /Nouvelle facture à un tiers payeur/.test(t)), emettre: titres.includes('Émettre la facture'), imprimer: titres.includes('Imprimer la facture (A4)'), avoir: titres.includes('Émettre un avoir'),
+        refus: window.SIGH.tiers.emettre('x').code };
+    });
+    await TIERS.geste('caissier', 'emettre_facture_tiers', true);
+    await TIERS.session('caissier');
+    await ouvrir('m8-factures-tiers.html');
+    const present = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      await pause(500);
+      return { nouvelle: [...document.querySelectorAll('#page-content button')].some((b) => /Nouvelle facture à un tiers payeur/.test(b.textContent)), avoir: [...document.querySelectorAll('#page-content button[title]')].some((b) => b.title === 'Émettre un avoir') };
+    });
+    await TIERS.restituer(depart);
+    await attendreEcritures();
+    verifier('Sans le geste emettre_facture_tiers (fiche du caissier), « Nouvelle facture à un tiers payeur » est ABSENTE (jamais grisée), le moteur refuse FACTURE_TIERS_RESERVEE ; l’écran reste lisible et imprimable ; accordé, la commande revient ; le caissier n’a jamais « Émettre un avoir » (geste corriger_facture_tiers) ; fiches restaurées',
+      absent.ecran && !absent.nouvelle && !absent.emettre && absent.imprimer && !absent.avoir && absent.refus === 'FACTURE_TIERS_RESERVEE' && present.nouvelle && !present.avoir, JSON.stringify({ absent, present }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 323 : lot TIERS, suivi du paiement du tiers : créance (dû moins lettrages), balance âgée aux tranches lues en base, règlement reçu et lettrage (jamais au-delà), avoir refusé après lettrage, créance affichée à « Créances »');
+    erreursJS = [];
+    const depart = await TIERS.sauver(['tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers', 'factures', 'rbac', 'parametresClinique']);
+    await TIERS.session('comptable');
+    await ouvrir('m8-factures-tiers.html');
+    const prep = await page.evaluate(() => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, p = S.collection('patients').active()[0];
+      const fac = S.collection('factures').insert({ numero: 'FAC-T323-1', date: '2026-01-10', patientId: p.id, patient: 'Patient Sonde 323', patientCode: p.code, montantTTC: 600000, montantHT: 600000, type: 'Facture', partAssurance: 0, partPersonnel: 0, partPatient: 600000,
+        lignes: ['L001', 'L002', 'L003'].map((id, i) => ({ id, categorie: 'acte', designation: 'Séjour ' + (i + 1), montant: 200000, partAssureur: 0, partPersonnel: 0, partPatient: 200000, statutPaiement: 'du' })) }).record;
+      const a = T.creerTiers({ nom: 'Entreprise Sonde 323', type: 'entreprise', ifu: '3201642748323', delaiPaiementJours: 30, dateEffet: '2026-01-05' });
+      const b = T.creerTiers({ nom: 'Convention Sonde 323B', type: 'convention', ifu: '3201642748324', dateEffet: '2026-01-05' });
+      const mk = (code, date, ligne, m, aib) => { const r = T.proposer({ tiersCode: code, date, lignes: [{ factureId: fac.id, ligneId: ligne, montant: m }] }); if (!r.ok) return r;
+        const d = aib ? T.deciderAib(r.id, { appliquer: true, situation: 'ifu_actif', taux: 1 }) : T.deciderAib(r.id, { appliquer: false, motif: 'Sonde 323 : l’acheteur paie son AIB' }); if (!d.ok) return d; return T.emettre(r.id); };
+      /* récente (moins de 30 jours), moyenne (30 à 90), ancienne (plus de 90) */
+      const auj = window.SIGH.core.iso(window.SIGH.core.aujourdhui());
+      const jours = (n) => window.SIGH.core.iso(window.SIGH.core.addDays(auj, -n));
+      const r1 = mk(a.code, jours(10), 'L001', 100000, true), r2 = mk(a.code, jours(60), 'L002', 200000, false), r3 = mk(b.code, jours(120), 'L003', 200000, true);
+      return { a: a.code, b: b.code, facId: fac.id, ids: [r1.id, r2.id, r3.id], oks: [r1.ok, r2.ok, r3.ok], codes: [r1.code, r2.code, r3.code] };
+    });
+    const c1 = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      const du = T.creances();
+      const la = du.lignes.filter((l) => l.code === x.a)[0], lb = du.lignes.filter((l) => l.code === x.b)[0];
+      o.a = la && { factures: la.factures, facture: la.facture, du: la.du, moins30: la.moins30, de30a90: la.de30a90, plus90: la.plus90 };
+      o.b = lb && { du: lb.du, plus90: lb.plus90, moins30: lb.moins30, de30a90: lb.de30a90 };
+      o.tranches = du.tranches;
+      o.net = x.ids.map((id) => S.collection('facturesTiers').get(id).net);
+      return o;
+    }, prep);
+    verifier('La créance d’un tiers est le montant DÛ (base + AIB) : 100 000 + 1 000 (AIB 1 %) en première tranche, 200 000 sans AIB en deuxième ; le second tiers (200 000 + 2 000 d’AIB) est dans la dernière tranche ; les bornes viennent des paramètres de clinique (30 et 90 jours)',
+      prep.oks.every(Boolean) && c1.a && c1.a.factures === 2 && c1.a.du === 301000 && c1.a.moins30 === 101000 && c1.a.de30a90 === 200000 && c1.a.plus90 === 0 && c1.b && c1.b.du === 202000 && c1.b.plus90 === 202000 && c1.b.moins30 === 0 && c1.b.de30a90 === 0, JSON.stringify({ prep, c1 }));
+    /* règlement et lettrage */
+    const r = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      const base = { tiersCode: x.a, date: '2026-11-17', montant: 150000, mode: 'virement', referencePaiement: 'VIR-S323-1' };
+      o.montant = T.reglement(Object.assign({}, base, { montant: 0 })).code;
+      o.reference = T.reglement(Object.assign({}, base, { referencePaiement: ' ' })).code;
+      o.mode = T.reglement(Object.assign({}, base, { mode: '' })).code;
+      o.tiers = T.reglement(Object.assign({}, base, { tiersCode: 'TP-999' })).code;
+      const ok = T.reglement(base);
+      o.ok = ok.ok && /^RGT-2026-\d{4}$/.test(ok.numero);
+      o.double = T.reglement(base).code;
+      const du0 = T.creances().total;
+      o.nonLettreNeReduitRien = T.creances().total === du0 && T.creances().nonLettre === 150000;
+      const f1 = S.collection('facturesTiers').get(x.ids[0]), f2 = S.collection('facturesTiers').get(x.ids[1]), f3 = S.collection('facturesTiers').get(x.ids[2]);
+      o.autreTiers = T.lettrer({ reglementId: ok.id, affectations: [{ factureTiersId: f3.id, montant: 1000 }] }).code;
+      o.vide = T.lettrer({ reglementId: ok.id, affectations: [] }).code;
+      o.depasseFacture = T.lettrer({ reglementId: ok.id, affectations: [{ factureTiersId: f1.id, montant: 101001 }] }).code;
+      o.depasseReglement = T.lettrer({ reglementId: ok.id, affectations: [{ factureTiersId: f1.id, montant: 101000 }, { factureTiersId: f2.id, montant: 60000 }] }).code;
+      o.rienEcrit = T.lettrages().length === 0;
+      const l = T.lettrer({ reglementId: ok.id, affectations: [{ factureTiersId: f1.id, montant: 101000 }, { factureTiersId: f2.id, montant: 49000 }] });
+      o.lettrage = l.ok && { lettre: l.lettre, reste: l.resteNonLettre };
+      o.creanceF1 = T.creance(S.collection('facturesTiers').get(f1.id)); o.creanceF2 = T.creance(S.collection('facturesTiers').get(f2.id));
+      const du = T.creances(); const la = du.lignes.filter((q) => q.code === x.a)[0];
+      o.apres = { du: la.du, nonLettre: du.nonLettre, total: du.total };
+      o.avoirApresLettrage = T.avoir(f2.id, 'Sonde 323').code;
+      o.depasseApres = T.lettrer({ reglementId: ok.id, affectations: [{ factureTiersId: f2.id, montant: 1 }] }).code;
+      o.ids = { reg: ok.id, l: l.ids };
+      return o;
+    }, prep);
+    verifier('Règlement reçu : montant, référence, mode et tiers contrôlés avant écriture, jamais saisi deux fois ; NON LETTRÉ il ne diminue aucune créance (il est dit à part)',
+      r.montant === 'REGLEMENT_TIERS_MONTANT_INVALIDE' && r.reference === 'REGLEMENT_TIERS_REFERENCE_ABSENTE' && r.mode === 'REGLEMENT_TIERS_MODE_ABSENT' && r.tiers === 'TIERS_INCONNU' && r.ok && r.double === 'REGLEMENT_TIERS_DEJA_SAISI' && r.nonLettreNeReduitRien, JSON.stringify(r));
+    verifier('Lettrage : refusé sur les factures d’un AUTRE tiers, vide, au-delà du dû de la facture ou du reste du règlement (rien d’écrit) ; accepté sur deux factures (101 000 + 49 000) : créance de la première 0, de la seconde 151 000, total du tiers 151 000, aucun reste non lettré',
+      r.autreTiers === 'LETTRAGE_TIERS_AUTRE_TIERS' && r.vide === 'LETTRAGE_TIERS_VIDE' && r.depasseFacture === 'LETTRAGE_TIERS_DEPASSE' && r.depasseReglement === 'LETTRAGE_TIERS_AU_DELA_DU_REGLEMENT' && r.rienEcrit
+      && r.lettrage && r.lettrage.lettre === 150000 && r.lettrage.reste === 0 && r.creanceF1 === 0 && r.creanceF2 === 151000 && r.apres.du === 151000 && r.apres.nonLettre === 0, JSON.stringify(r));
+    verifier('Un avoir est refusé sur une facture lettrée (AVOIR_TIERS_APRES_LETTRAGE : délettrer d’abord), et un règlement entièrement lettré n’a plus de reste à affecter (LETTRAGE_TIERS_AU_DELA_DU_REGLEMENT)',
+      r.avoirApresLettrage === 'AVOIR_TIERS_APRES_LETTRAGE' && r.depasseApres === 'LETTRAGE_TIERS_AU_DELA_DU_REGLEMENT', JSON.stringify(r));
+    /* délettrage motivé */
+    const dl = await page.evaluate((x) => {
+      const T = window.SIGH.tiers, S = window.SIGH.store, o = {};
+      o.sansMotif = T.delettrer(x.l[0], ' ').code;
+      const r = T.delettrer(x.l[0], 'Sonde 323 : mauvaise facture');
+      o.ok = r.ok; o.archive = S.collection('lettragesTiers').get(x.l[0]).statut;
+      o.du = T.creances().lignes.filter((q) => q.code === x.a0)[0].du;
+      o.reste = T.resteNonLettre(S.collection('reglementsTiers').get(x.reg));
+      o.reecrit = S.collection('lettragesTiers').update(x.l[1], { montant: 1 }) === null ? 'refusee' : 'acceptee';
+      return o;
+    }, Object.assign({}, r.ids, { a0: prep.a }));
+    verifier('Délettrer exige un motif, archive le lettrage (RG-14), la facture redevient due (252 000) et le règlement retrouve son reste (101 000) ; un lettrage ne se réécrit pas (garde du magasin)',
+      dl.sansMotif === 'LETTRAGE_TIERS_MOTIF_ABSENT' && dl.ok && dl.archive === 'archive' && dl.du === 252000 && dl.reste === 101000 && dl.reecrit === 'refusee', JSON.stringify(dl));
+    /* écrans : onglet Créances et écran « Créances » de l'assurance */
+    await ouvrir('m8-factures-tiers.html');
+    const ui = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      await pause(500);
+      document.querySelector('#page-content [data-tab="creances"]').click(); await pause(500);
+      const t = document.getElementById('page-content').textContent;
+      document.querySelector('#page-content [data-tab="reglements"]').click(); await pause(500);
+      const t2 = document.getElementById('page-content').textContent;
+      return { creances: /Entreprise Sonde 323/.test(t) && /Convention Sonde 323B/.test(t) && /non calculable/.test(t), reglements: /RGT-2026-/.test(t2) && /VIR-S323-1/.test(t2) && /Enregistrer un règlement reçu/.test(t2) };
+    });
+    await ouvrir('m9-creances.html');
+    const m9 = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      await pause(700);
+      const z = document.querySelector('[data-creances-tiers]');
+      return { bloc: !!z, tiers: !!z && /Entreprise Sonde 323/.test(z.textContent) && /Convention Sonde 323B/.test(z.textContent) };
+    });
+    verifier('L’onglet « Créances » liste les deux tiers (échéance sans délai convenu dite « non calculable »), l’onglet des règlements montre le règlement et sa commande ; l’écran « Créances » de l’assurance porte le bloc des créances sur les tiers payeurs',
+      ui.creances && ui.reglements && m9.bloc && m9.tiers, JSON.stringify({ ui, m9 }));
+    await TIERS.restituer(depart);
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT TIERS FIN */
 
   /* LOT SURV (Vagues 330 à 333) : la fiche du personnel de son équipe et les plannings du Surveillant (Direction, 16/11/2026, section AQ point 37) */
   await etape(async () => {

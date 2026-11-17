@@ -27,6 +27,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         cpcRefusRejeuPiece,
         idCollectionOptions,
         referenceCommandeDefinitive,
+        refusRejeuFactureTiers,
         refusRejeuReferenceCommande,
         refusRejeuValidationCommande,
         mobMotifFonctionNonHabilitee,
@@ -114,6 +115,8 @@ const familleDeBase = <String, String>{
   // Lot PTA : le plan annuel de travail et son adoption (famille A, identité par le contenu, jamais vers un téléphone). Les référentiels du plan et le réglage des signataires sont de la
   // configuration de la mère : ils voyagent par le canal de configuration (`cfbEssentielles`), non par cette table.
   'planAnnuel': 'A', 'adoptionsPlan': 'A',
+  // Lot TIERS : la facture à un tiers payeur, ses avoirs, règlements et lettrages (famille A, identité par le contenu, jamais vers un téléphone). Une pièce émise ne se réécrit jamais au rejeu.
+  'tiersPayeurs': 'A', 'facturesTiers': 'A', 'avoirsTiers': 'A', 'reglementsTiers': 'A', 'lettragesTiers': 'A',
   // Lot CMD (AQ point 1) : la commande de stock gros voyage. Famille A, identité commune par le contenu (`identiteSyncCommande`), référence provisoire par poste que la mère remplace par le rang
   // définitif à l'adoption, validation seulement par décision signée appliquée à la mère. Jamais vers un téléphone (RG-13).
   'commandes': 'A',
@@ -432,6 +435,12 @@ class Mere {
     if (collection == 'commandes' && app.role != 'mere' && (type == 'creer' || type == 'modifier')) {
       final r = (type == 'modifier' ? refusRejeuReferenceCommande(f?.data, {...?f?.data, ...champsOp}) : null) ?? refusRejeuValidationCommande(f?.data, {...?f?.data, ...champsOp});
       if (r != null) return refus(r.code, r.motif, r.geste);
+    }
+
+    // LOT TIERS : une facture à un tiers payeur ÉMISE ne se réécrit jamais : la mère refuse au rejeu l'écriture d'un autre poste qui change un champ figé ou un numéro MECeF déjà posé (refus nommé).
+    if (collection == 'facturesTiers' && app.role != 'mere' && type == 'modifier') {
+      final r = refusRejeuFactureTiers(f?.data, {...?f?.data, ...champsOp});
+      if (r != null) return refus(r['code']!, r['motif']!, r['geste']!);
     }
 
     // LOT SYNC-CFG : le BUDGET d'un exercice CLOS reçu d'un autre poste est refusé au rejeu, comme une pièce (même garde que le magasin du poste, `cpcGardeBudgets`). Refus nommé.

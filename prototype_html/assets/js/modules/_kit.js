@@ -1886,7 +1886,31 @@
     };
   }
 
+  /** Le tableau des CRÉANCES SUR LES TIERS PAYEURS (balance âgée, tranches lues en base) : partagé avec « Créances » (M9). Lecture seule. */
+  function tiersCreances() {
+    var D = global.SIGH.data, T = global.SIGH.tiers, du = T.creances(C.iso(C.aujourdhui())), lib = D.libellesTranches(du.tranches);
+    var corps = [
+      note('<strong>Créance sur un tiers payeur = montant dû (base + AIB) moins les lettrages.</strong> Les tranches de la balance âgée sont celles des paramètres de clinique. Une échéance sans délai convenu est <strong>non calculable</strong> (ce n’est pas zéro).', { tone: 'info', icon: 'hourglass' }),
+      U.dataTable({
+        title: 'Créances sur les tiers payeurs', rows: du.lignes, pageSize: 15, exportName: 'creances-tiers-payeurs', emptyMessage: 'Aucune créance sur un tiers payeur.',
+        columns: [
+          { key: 'nom', label: 'Tiers payeur', render: function (r) { return el('div', null, [el('p.text-sm.font-medium', { text: r.nom }), el('p.font-mono.text-\\[10px\\].text-slate-400', { text: r.code })]); }, text: function (r) { return r.nom; } },
+          { key: 'factures', label: 'Factures', align: 'right' },
+          { key: 'facture', label: 'Facturé', align: 'right', render: function (r) { return C.money(r.facture, false); }, text: function (r) { return C.money(r.facture, false); } },
+          { key: 'moins30', label: lib.moins30, align: 'right', render: function (r) { return C.money(r.moins30, false); }, text: function (r) { return C.money(r.moins30, false); } },
+          { key: 'de30a90', label: lib['30a90'], align: 'right', render: function (r) { return C.money(r.de30a90, false); }, text: function (r) { return C.money(r.de30a90, false); } },
+          { key: 'plus90', label: lib.plus90, align: 'right', render: function (r) { return C.money(r.plus90, false); }, text: function (r) { return C.money(r.plus90, false); } },
+          { key: 'du', label: 'Total dû', align: 'right', render: function (r) { return el('span.font-semibold.text-warning-700', { text: C.money(r.du, false) }); }, text: function (r) { return C.money(r.du, false); } },
+          { key: 'enRetard', label: 'Échu', align: 'right', render: function (r) { return r.echeanceIncalculable ? U.badge(C.money(r.enRetard, false) + ' + non calculable ' + C.money(r.echeanceIncalculable, false), 'warning') : C.money(r.enRetard, false); }, text: function (r) { return C.money(r.enRetard, false); } },
+        ],
+      }),
+    ];
+    if (du.nonLettre > 0) corps.push(note('<strong>' + C.money(du.nonLettre, false) + ' de règlements reçus ne sont pas lettrés</strong> : ils ne diminuent aucune créance tant qu’ils ne sont pas affectés à une facture.', { tone: 'warning', icon: 'link' }));
+    return el('div.space-y-3', { 'data-creances-tiers': '' }, corps);
+  }
+
   global.SIGH.kit = {
+    tiersCreances: tiersCreances,
     btn: btn, iconBtn: iconBtn, lien: lien,
     commande: commande, commandeIcone: commandeIcone, importer: importer, chargerMoteurImport: chargerMoteurImport,
     historiquePrix: historiquePrix, boutonHistoriquePrix: boutonHistoriquePrix,

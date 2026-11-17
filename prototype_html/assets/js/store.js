@@ -176,9 +176,10 @@
      97 (16/11/2026) : LE PLAN ANNUEL DE TRAVAIL PAR EXERCICE (lot PTA). `planAnnuel` change de forme (exercice, état et axe en CODES des référentiels, responsable par référence au personnel ou
      à un poste, budget prévu et réalisé, indicateur, cible, valeur atteinte, pourcentage borné, version datée) ; trois collections neuves : `referentielsPlan` (axes et états, défauts
      semés), `reglagesPlan` (signataires de l'impression : fonction par référence à un poste, versions datées) et `adoptionsPlan` (adoption par la Direction, une par exercice) ; le geste
-     réservé `adopter_plan_annuel` entre au manifeste, la clé `plan.graceRetardJours` aux paramètres de clinique. Sans incrément, un poste garderait l'ancien plan écrit en dur.
+     réservé `adopter_plan_annuel` entre au manifeste, la clé `plan.graceRetardJours` aux paramètres de clinique. Sans incrément, un poste garderait l'ancien plan écrit en dur.     98 (17/11/2026, lot TIERS) : LA FACTURE À UN TIERS PAYEUR. Cinq collections neuves (`tiersPayeurs`, fiches versionnées par date ; `facturesTiers` ; `avoirsTiers` ; `reglementsTiers` ;
+     `lettragesTiers`) et deux gestes réservés (`emettre_facture_tiers`, `corriger_facture_tiers`) entrent au manifeste. Sans incrément, un poste n'aurait ni les collections ni les droits.
   */
-  var VERSION = 97;
+  var VERSION = 98;
   var db = null;
   var listeners = {};
 
@@ -4568,6 +4569,8 @@
     referentielsPlan: 'M13|Plan annuel : axes et états d’avancement', reglagesPlan: 'M13|Plan annuel : signataires de l’impression', adoptionsPlan: 'M13|Plan annuel : adoptions par la Direction',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
+    tiersPayeurs: 'M8|Tiers payeurs (fiches versionnées par date)', facturesTiers: 'M8|Factures aux tiers payeurs', avoirsTiers: 'M8|Avoirs des factures aux tiers payeurs',
+    reglementsTiers: 'M8|Règlements reçus des tiers payeurs', lettragesTiers: 'M8|Lettrages des règlements de tiers payeurs',
     avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',
     secteurs: 'CFG|Secteurs de la clinique', postes: 'CFG|Postes de l’organigramme',
     ressources: 'CFG|Ressources graphiques',

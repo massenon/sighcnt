@@ -34,7 +34,7 @@
 
 | Rangée | Module | Type | Écrans | Rôles d'origine |
 |---|---|---|---|---|
-| Facturation & Caisse | M8 | canonique | 11 | caissier, comptable, da, stock, dm, admin, direction |
+| Facturation & Caisse | M8 | canonique | 12 | caissier, comptable, da, stock, dm, admin, direction |
 | Assurances & Créances | M9 | canonique | 10 | caissier, comptable, da, admin, direction |
 | MECeF — Facture normalisée | MECEF | canonique | 6 | caissier, comptable, da, admin, direction |
 | Comptabilité SYSCOHADA | M12 | canonique | 20 | comptable, da, admin, direction |

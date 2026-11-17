@@ -6941,7 +6941,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "334",
+     "valeur": "335",
      "indice": null
     },
     {
@@ -6956,7 +6956,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "332",
+     "valeur": "333",
      "indice": null
     }
    ],
@@ -7220,7 +7220,7 @@
     "boutons": []
    }
   ],
-  "tousEcrans": 334,
+  "tousEcrans": 335,
   "modulesListe": [
    [
     "M2",
@@ -7276,7 +7276,7 @@
     "Facturation & Caisse",
     "receipt",
     "Financier",
-    11
+    12
    ],
    [
     "M9",
@@ -7419,7 +7419,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "334",
+     "valeur": "335",
      "indice": null
     },
     {
@@ -7434,7 +7434,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "323",
+     "valeur": "324",
      "indice": null
     }
    ],
@@ -7676,7 +7676,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "334",
+     "valeur": "335",
      "indice": null
     },
     {
@@ -7691,7 +7691,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "332",
+     "valeur": "333",
      "indice": null
     }
    ],
@@ -7812,7 +7812,7 @@
      "DASH — Tableaux de bord par poste"
     ]
    ],
-   "nbEcrans": 334
+   "nbEcrans": 335
   },
   "declarerCfg": {
    "fiche": {
@@ -7895,7 +7895,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "334",
+     "valeur": "335",
      "indice": null
     },
     {
@@ -7910,7 +7910,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "320",
+     "valeur": "321",
      "indice": null
     }
    ],

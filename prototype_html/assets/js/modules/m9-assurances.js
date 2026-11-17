@@ -1862,6 +1862,8 @@
           },
         },
       ]));
+      /* Lot TIERS : les créances sur les tiers payeurs (factures à une entreprise ou à une convention), même balance âgée, mêmes tranches lues en base. */
+      host.appendChild(K.tiersCreances());
       if (!rows.length) {
         host.appendChild(K.note('Aucune créance ne répond à cette sélection. Les filtres portent sur '
           + 'la <strong>date des factures</strong> ; l’ancienneté, elle, se compte toujours par rapport '

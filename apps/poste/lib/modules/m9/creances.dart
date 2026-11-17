@@ -8,6 +8,7 @@ import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../m8/factures_tiers.dart' show blocCreancesTiers;
 import '../m6/points_commun.dart' show champUnique, commande;
 import 'commun.dart';
 
@@ -208,7 +209,7 @@ class _EtatCreances extends State<EcranCreances> {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     return ListenableBuilder(
-      listenable: ecoute(c, ['assureurs', 'factures']),
+      listenable: ecoute(c, ['assureurs', 'factures', 'facturesTiers', 'reglementsTiers', 'lettragesTiers', 'avoirsTiers']),
       builder: (context, _) {
         final rows = _lignes(c);
         double som(double Function(AssLigneCreance) f) =>
@@ -379,6 +380,9 @@ class _EtatCreances extends State<EcranCreances> {
                     'Aucune créance ne répond à cette sélection. Les filtres portent sur la date des factures ; l’ancienneté, elle, se compte toujours par rapport à aujourd’hui.',
                     icone: LucideIcons.filter),
               ],
+              // Lot TIERS : les créances sur les tiers payeurs (factures à une entreprise ou à une convention), même balance âgée, mêmes tranches lues en base.
+              const SizedBox(height: 16),
+              blocCreancesTiers(c),
             ]);
       },
     );

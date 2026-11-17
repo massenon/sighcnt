@@ -233,6 +233,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
@@ -1005,6 +1006,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
@@ -1518,6 +1520,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
@@ -1739,6 +1742,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
@@ -2932,6 +2936,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
@@ -3104,6 +3109,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
@@ -3276,6 +3282,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
@@ -4855,6 +4862,7 @@
         "m8-reliquats",
         "m8-remboursements",
         "m8-facture-avoir",
+        "m8-factures-tiers",
         "m8-caisse",
         "m8-operations",
         "m8-recettes"

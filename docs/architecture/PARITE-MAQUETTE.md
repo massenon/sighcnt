@@ -5,13 +5,13 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **358** |
+| Écrans du manifeste (hors hubs de module) | **359** |
 | Hubs de module (un par module, engendrés) | 23 |
-| Écrans nommés par au moins un scénario de la maquette | 271 (76 %) |
+| Écrans nommés par au moins un scénario de la maquette | 272 (76 %) |
 | Écrans **sans** scénario (recette à écrire) | 87 |
-| Écrans portés | 358 |
+| Écrans portés | 359 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 230 |
+| Scénarios de la maquette analysés | 234 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -19,7 +19,7 @@
 
 | Tranche | Écrans | Avec scénario | Portés | Recettés |
 |---|---|---|---|---|
-| 1 · caisse + MECeF + impression | 17 | 13 | 17 | 0 |
+| 1 · caisse + MECeF + impression | 18 | 14 | 18 | 0 |
 | 2 · pharmacie, stocks, achats | 27 | 24 | 27 | 0 |
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 53 | 67 | 0 |
@@ -39,6 +39,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m8-facturation` | Nouvelle facture | M8 | 7 | 11, 13, 17, 19, 32, 34, 88, 90, 117, 139, 181, 189, 195, 201, 202, 203 | porté |
 | `m8-facture-avoir` | Factures d’avoir | M8 | 8 | 48 | porté |
 | `m8-factures` | Factures | M8 | 8 | 12, 30, 48, 82, 191 | porté |
+| `m8-factures-tiers` | Factures aux tiers payeurs | M8 | 8 | 227, 228, 229, 230 | porté |
 | `m8-operations` | Opérations de caisse | M8 | 8 | 20 | porté |
 | `m8-paiements` | Paiements | M8 | 7 | 88, 99, 100, 195, 202, 204 | porté |
 | `m8-proforma` | Factures pro-forma | M8 | 8 | 123 | porté |
@@ -192,7 +193,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m9-assures` | Assurés & cartes | M9 | 6 | 18, 32, 62 | porté |
 | `m9-compagnies` | Compagnies partenaires | M9 | 6 | 9, 62, 124 | porté |
 | `m9-conventions` | Conventions & garanties | M9 | 6 | 18, 20, 90, 148 | porté |
-| `m9-creances` | Créances | M9 | 6 | 62, 76, 197 | porté |
+| `m9-creances` | Créances | M9 | 6 | 62, 76, 197, 230 | porté |
 | `m9-dashboard` | Tableau de bord assurances | M9 | 6 | — | porté |
 | `m9-facture-mere` | Facture mère assurance | M9 | 6 | 36 | porté |
 | `m9-factures-assureur` | Factures mensuelles assureur | M9 | 6 | 20, 76 | porté |
@@ -306,27 +307,27 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-tarifs-produits` | Importation des prix d’achat | IMP | 4 | 138 | porté |
 | `imp-transfert-lignes` | Importation d’un bon de transfert | IMP | 3 | 130 | porté |
 | `imp-unites-labo` | Importation des unités de mesure | IMP | 4 | 144 | porté |
-| `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112, 118, 230 | porté |
+| `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112, 118, 234 | porté |
 | `m10-badges` | Badges du personnel | M10 | 5 | 56, 68 | porté |
 | `m10-badges-impression` | Planche d’impression des badges | M10 | 3 | 56 | porté |
 | `m10-badges-modeles` | Modèles de badge | M10 | 3 | 1, 56, 95, 105 | porté |
 | `m10-badges-verification` | Vérifier un badge | M10 | 5 | 56, 113 | porté |
 | `m10-conges` | Congés | M10 | 4 | 110, 223 | porté |
-| `m10-contrats` | Contrats | M10 | 3 | 34, 68, 230 | porté |
+| `m10-contrats` | Contrats | M10 | 3 | 34, 68, 234 | porté |
 | `m10-dashboard` | Tableau de bord RH | M10 | 3 | 77 | porté |
-| `m10-employe-profil` | Fiche employé | M10 | 3 | 213, 214, 227, 228, 230 | porté |
+| `m10-employe-profil` | Fiche employé | M10 | 3 | 213, 214, 231, 232, 234 | porté |
 | `m10-evaluations` | Évaluations (NS 131) | M10 | 3 | 14, 33, 68, 102 | porté |
 | `m10-evenements` | Événements du personnel | M10 | 3 | 27, 33 | porté |
-| `m10-fiche-equipe` | Fiche de mon équipe | M10 | 1 | 227, 228, 229, 230 | porté |
+| `m10-fiche-equipe` | Fiche de mon équipe | M10 | 1 | 231, 232, 233, 234 | porté |
 | `m10-fiches-poste` | Fiches de poste | M10 | 3 | 77 | porté |
 | `m10-mes` | Mon espace | M10 | 20 (universel) | 112, 115 | porté |
 | `m10-missions` | Ordres de mission | M10 | 4 | 24, 68, 110 | porté |
 | `m10-participations` | Frais de participation | M10 | 3 | 27 | porté |
-| `m10-personnel` | Personnel | M10 | 3 | 24, 40, 55, 77, 124, 214, 227 | porté |
+| `m10-personnel` | Personnel | M10 | 3 | 24, 40, 55, 77, 124, 214, 231 | porté |
 | `m10-planning` | Planning & gardes | M10 | 4 | 27, 34, 109, 212 | porté |
 | `m10-presences` | Présences & absences | M10 | 4 | 34, 110 | porté |
 | `m10-prestataires` | Prestataires externes | M10 | 3 | — | porté |
-| `m10-primes` | Primes (NS 132) | M10 | 3 | 8, 27, 230 | porté |
+| `m10-primes` | Primes (NS 132) | M10 | 3 | 8, 27, 234 | porté |
 | `m10-propositions-planning` | Propositions de planning | M10 | 20 (universel) | 111 | porté |
 | `m10-sanctions` | Sanctions | M10 | 3 | — | porté |
 | `m10-securite-entretien` | Sécurité & entretien | M10 | 3 | — | porté |
@@ -334,8 +335,8 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m10-stats-permanences` | Statistiques des permanences | M10 | 4 | 40 | porté |
 | `m10-stats-presence` | Taux de présence par service | M10 | 4 | 40 | porté |
 | `m11-avances` | Avances sur salaire | M11 | 4 | — | porté |
-| `m11-bulletins` | Bulletins de paie | M11 | 4 | 10, 24, 55, 77, 82, 230 | porté |
-| `m11-calcul` | Calcul de la paie | M11 | 4 | 24, 27, 33, 77, 207, 227, 230 | porté |
+| `m11-bulletins` | Bulletins de paie | M11 | 4 | 10, 24, 55, 77, 82, 234 | porté |
+| `m11-calcul` | Calcul de la paie | M11 | 4 | 24, 27, 33, 77, 207, 231, 234 | porté |
 | `m11-cotisations` | Cotisations CNSS / ITS / VPS | M11 | 4 | 24, 77, 207 | porté |
 | `m11-dashboard` | Tableau de bord paie | M11 | 4 | 77 | porté |
 | `m11-heures-sup` | Heures supplémentaires | M11 | 4 | 77 | porté |

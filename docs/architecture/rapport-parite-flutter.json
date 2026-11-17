@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
- "ecrans_du_manifeste": 357,
- "ecrans_portes": 378,
+ "ecrans_du_manifeste": 358,
+ "ecrans_portes": 381,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -196,6 +196,14 @@
    "mesure": true,
    "attendus": 42,
    "presents": 42,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-sms",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
@@ -1502,8 +1510,8 @@
   {
    "id": "m13-plan-annuel",
    "mesure": true,
-   "attendus": 22,
-   "presents": 22,
+   "attendus": 33,
+   "presents": 33,
    "taux": 1.0,
    "manquants": []
   },
@@ -1520,6 +1528,14 @@
    "mesure": true,
    "attendus": 21,
    "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-sms-journal",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
    "taux": 1.0,
    "manquants": []
   },
@@ -2508,6 +2524,14 @@
    "manquants": []
   },
   {
+   "id": "m8-factures-tiers",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m8-operations",
    "mesure": true,
    "attendus": 13,
@@ -2646,8 +2670,8 @@
   {
    "id": "mecef-config",
    "mesure": true,
-   "attendus": 26,
-   "presents": 26,
+   "attendus": 29,
+   "presents": 29,
    "taux": 1.0,
    "manquants": []
   },

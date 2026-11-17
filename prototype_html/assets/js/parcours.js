@@ -7632,6 +7632,7 @@
       var pris = {};
       col('factures').all().forEach(function (f) { if (f.numeroMecef) pris[f.numeroMecef] = true; });
       col('avoirs').all().forEach(function (a) { if (a.numeroMecef) pris[a.numeroMecef] = true; });
+      col('facturesTiers').all().forEach(function (a) { if (a.numeroMecef) pris[a.numeroMecef] = true; });
       var et = this.etat(), n = et.compteur, num;
       do { n++; num = 'MECEF' + String(2000000 + n); } while (pris[num]);
       return { numero: num, compteur: n };
@@ -9461,4 +9462,504 @@
   global.SIGH.parcours.refusLigneTransfert = refusLigneTransfert;
   global.SIGH.parcours.emettreTransfert = emettreTransfert;
   global.SIGH.parcours.regulariserInventaire = regulariserInventaire;
+
+  /* ==========================================================================
+   * LA FACTURE À UN TIERS PAYEUR (lot TIERS, Direction, 16/11/2026, section AQ point 36)
+   * --------------------------------------------------------------------------
+   * La facture d'un PATIENT ne porte aucun AIB ni IFU d'acheteur (lot FISC-2, `AIB_FACTURE_PATIENT`). La clinique doit pouvoir, en revanche, ÉMETTRE UNE FACTURE À L'ENTREPRISE (ou
+   * à l'assureur, ou à la convention) qui prend un patient en charge : une vente normalisée DISTINCTE, jamais mélangée à la facture du patient, avec l'IFU (13 chiffres) et le nom de
+   * l'ACHETEUR, et l'AIB selon le barème daté (situation de l'acheteur) ET la décision du comptable (le logiciel PROPOSE le taux, ne décide jamais : geste `imputer_aib`).
+   *
+   * Quatre pièces, quatre collections, aucune ne réécrit une autre :
+   *  - `tiersPayeurs`   : la fiche de référence (code TP-nnn, nom, IFU, adresse, conditions), UNE FICHE PAR VERSION DATÉE, jamais réécrite ; une pièce lit la version à SA date ;
+   *  - `facturesTiers`  : la pièce, rattachée à des LIGNES de la facture du patient (sans la réécrire : le lien vit ICI), en brouillon (taux de l'AIB à décider) puis émise (numéro
+   *                       FT-AAAA-nnnn par la fabrique `C.referenceAnnuelle`, année de la DATE DE LA PIÈCE) puis normalisée par le moteur MECeF existant (aucun numéro simulé) ;
+   *  - `avoirsTiers`    : la correction d'une pièce émise (une pièce émise ne se réécrit jamais) ;
+   *  - `reglementsTiers` + `lettragesTiers` : le règlement reçu du tiers et son lettrage sur une ou plusieurs factures ; la créance = montant dû moins les lettrages.
+   * Les droits sont des GESTES RÉSERVÉS de la fiche RBAC : `emettre_facture_tiers` (proposer, émettre, enregistrer un règlement), `corriger_facture_tiers` (avoir, lettrer, délettrer),
+   * `imputer_aib` (la décision sur l'AIB). Le moteur refuse aussi : masquer un bouton ne protège rien. Aucune de ces collections ne va vers un téléphone.
+   * La part restante du patient (ligne moins part assureur moins part tiers) est CALCULÉE et DITE sur la pièce : elle se facture séparément à la caisse, RG-09 inchangé.
+   * ======================================================================== */
+  var GESTE_EMETTRE_TIERS = 'emettre_facture_tiers', GESTE_CORRIGER_TIERS = 'corriger_facture_tiers';
+  var TYPES_TIERS = [{ value: 'entreprise', label: 'Entreprise' }, { value: 'assureur', label: 'Assureur' }, { value: 'convention', label: 'Convention' }];
+  META.tiersPayeurs = { module: 'M8', entite: 'tiers payeur', prefix: 'TPY' };
+  META.facturesTiers = { module: 'M8', entite: 'facture à un tiers payeur', prefix: 'FTP' };
+  META.avoirsTiers = { module: 'M8', entite: 'avoir d’une facture à un tiers payeur', prefix: 'ATP' };
+  META.reglementsTiers = { module: 'M8', entite: 'règlement reçu d’un tiers payeur', prefix: 'RTP' };
+  META.lettragesTiers = { module: 'M8', entite: 'lettrage d’un règlement de tiers payeur', prefix: 'LTP' };
+  function colTiers() { return col('tiersPayeurs'); }
+  function colFacturesTiers() { return col('facturesTiers'); }
+  function colAvoirsTiers() { return col('avoirsTiers'); }
+  function colReglementsTiers() { return col('reglementsTiers'); }
+  function colLettragesTiers() { return col('lettragesTiers'); }
+  function refusTiers(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste || null }, extra || {}); }
+  function peutTiers(geste, role) { return aGeste(geste, role); }
+  function refusDroitTiers(geste, quoi, code) {
+    var N = global.SIGH.nav, g = N && N.geste ? N.geste(geste) : null;
+    var noms = rolesGeste(geste).map(libelleRole).join(', ') || 'aucun rôle ne le détient';
+    return refusTiers(code, quoi + ' est un droit réservé de la fiche du rôle (« ' + geste + ' ») : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+      'Demander ce geste à un rôle qui détient le droit « ' + ((g && g.libelle) || geste) + ' » (' + noms + ').', { droit: geste });
+  }
+  function entierTiers(x) { return typeof x === 'number' && isFinite(x) && Math.floor(x) === x; }
+
+  /* ---- La fiche du tiers payeur : une fiche par version datée --------------------------------------------------------------------- */
+  function versionsTiers(code) {
+    return colTiers().active().filter(function (v) { return v.code === code; }).sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); });
+  }
+  /** La version du tiers EN VIGUEUR à une date (une pièce lit SA date), ou null. */
+  function tiersALaDate(code, date) {
+    var d = dateAib(date);
+    var c = versionsTiers(code).filter(function (v) { return String(v.dateEffet) <= d && (!v.dateFin || String(v.dateFin) >= d); });
+    return c.length ? c[c.length - 1] : null;
+  }
+  function tiersCodes() {
+    var vu = {};
+    colTiers().all().forEach(function (v) { vu[v.code] = true; });
+    return Object.keys(vu).sort();
+  }
+  function tiersActifs(date) {
+    return tiersCodes().map(function (c) { return tiersALaDate(c, date); }).filter(Boolean);
+  }
+  /** L'acheteur d'une facture à un tiers : IFU de 13 chiffres ET nom OBLIGATOIRES, contrôlés AVANT toute écriture (refus nommés). Aucune valeur par défaut, aucun particulier. */
+  function validerAcheteurTiers(a) {
+    a = a || {};
+    var ifu = normaliserIfu(a.ifu);
+    if (!ifu) return refusTiers('TIERS_IFU_ABSENT', 'L’IFU de l’acheteur est obligatoire sur une facture à un tiers payeur : une vente normalisée à un professionnel porte son identifiant fiscal.', 'Renseigner l’IFU (13 chiffres) sur la fiche du tiers payeur, par une nouvelle version datée.');
+    if (!/^\d{13}$/.test(ifu)) return refusTiers('IFU_INVALIDE', 'L’IFU de l’acheteur (« ' + ifu + ' ») doit comporter exactement 13 chiffres.', 'Corriger l’IFU du tiers payeur.');
+    var nom = String(a.nom == null ? '' : a.nom).trim();
+    if (!nom) return refusTiers('NOM_ACHETEUR_ABSENT', 'Le nom de l’acheteur est obligatoire sur une facture à un tiers payeur.', 'Renseigner le nom du tiers payeur sur sa fiche.');
+    return { ok: true, ifu: ifu, nom: nom };
+  }
+  function lireChampsTiers(o) {
+    var nom = String(o.nom == null ? '' : o.nom).trim();
+    if (!nom) return refusTiers('TIERS_NOM_ABSENT', 'Le nom du tiers payeur est obligatoire.', 'Saisir le nom de l’entreprise, de l’assureur ou de la convention.');
+    var ifu = normaliserIfu(o.ifu);
+    if (ifu && !/^\d{13}$/.test(ifu)) return refusTiers('IFU_INVALIDE', 'L’IFU du tiers payeur (« ' + ifu + ' ») doit comporter exactement 13 chiffres.', 'Corriger l’IFU, ou le laisser vide : il sera exigé à la première facture.');
+    if (!TYPES_TIERS.some(function (t) { return t.value === o.type; })) return refusTiers('TIERS_TYPE_INCONNU', 'Le type « ' + (o.type == null ? '' : o.type) + ' » n’existe pas (entreprise, assureur, convention).', 'Choisir un type de la liste.');
+    var delai = o.delaiPaiementJours == null || o.delaiPaiementJours === '' ? null : Number(o.delaiPaiementJours);
+    if (delai != null && !(entierTiers(delai) && delai >= 0 && delai <= 365)) return refusTiers('TIERS_DELAI_INVALIDE', 'Le délai de paiement (« ' + o.delaiPaiementJours + ' ») est un nombre entier de jours de 0 à 365.', 'Saisir un entier, ou laisser vide (délai non convenu : l’échéance est alors non calculable).');
+    return { ok: true, champs: { nom: nom, ifu: ifu || null, type: o.type, adresse: o.adresse ? String(o.adresse).trim() : null, contact: o.contact ? String(o.contact).trim() : null,
+      delaiPaiementJours: delai, conditions: o.conditions ? String(o.conditions).trim() : null } };
+  }
+  /** Créer un tiers payeur : { nom, ifu?, type, adresse?, contact?, delaiPaiementJours?, conditions?, dateEffet? }. Une fiche, version 1, code TP-nnn jamais réutilisé. */
+  function creerTiers(o) {
+    o = o || {};
+    if (!peutTiers(GESTE_EMETTRE_TIERS)) return refusDroitTiers(GESTE_EMETTRE_TIERS, 'Tenir la fiche d’un tiers payeur', 'TIERS_RESERVE');
+    var l = lireChampsTiers(o); if (!l.ok) return l;
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : aujIso();
+    var clos = controleDateEffet(dateEffet, null); if (clos) return clos;
+    if (l.champs.ifu) {
+      var pris = colTiers().active().filter(function (v) { return v.ifu === l.champs.ifu; })[0];
+      if (pris) return refusTiers('TIERS_IFU_DEJA_PRIS', 'L’IFU ' + l.champs.ifu + ' est déjà porté par le tiers payeur ' + pris.code + ' (' + pris.nom + ').', 'Ouvrir la fiche de ' + pris.code + ' et y poser une nouvelle version datée.');
+    }
+    var code = C.referenceSuivante('TP-', 3, colTiers().all().map(function (v) { return { reference: v.code }; }));
+    var fiche = Object.assign({ code: code, version: 1, dateEffet: dateEffet, dateFin: null, creePar: acteur(), creeLe: new Date().toISOString() }, l.champs);
+    var res = colTiers().insert(fiche, { journal: { action: 'Tiers payeur : création', module: 'M8', entite: 'tiersPayeurs', avant: null, apres: { code: code, nom: l.champs.nom, ifu: l.champs.ifu, dateEffet: dateEffet } } });
+    return { ok: true, id: res.record.id, code: code, fiche: res.record, undo: res.undo };
+  }
+  /** Une NOUVELLE VERSION datée du tiers (jamais une réécriture) : la version en cours se ferme la veille ; motif obligatoire ; date d'effet strictement postérieure à la dernière. */
+  function nouvelleVersionTiers(code, o) {
+    o = o || {};
+    if (!peutTiers(GESTE_EMETTRE_TIERS)) return refusDroitTiers(GESTE_EMETTRE_TIERS, 'Tenir la fiche d’un tiers payeur', 'TIERS_RESERVE');
+    var vs = versionsTiers(code);
+    if (!vs.length) return refusTiers('TIERS_INCONNU', 'Le tiers payeur « ' + code + ' » n’existe pas.', 'Choisir un tiers de la liste.');
+    var derniere = vs[vs.length - 1];
+    var motif = String(o.motif == null ? '' : o.motif).trim();
+    if (!motif) return refusTiers('TIERS_MOTIF_ABSENT', 'Un motif est obligatoire pour poser une nouvelle version de la fiche d’un tiers payeur.', 'Dire ce qui change et pourquoi.');
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : aujIso();
+    var clos = controleDateEffet(dateEffet, null); if (clos) return clos;
+    if (dateEffet <= String(derniere.dateEffet)) {
+      return refusTiers('TIERS_DATE_ANTERIEURE', 'La date d’effet (' + C.dateFR(dateEffet) + ') n’est pas postérieure à celle de la version en cours (' + C.dateFR(derniere.dateEffet) + ') : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure.');
+    }
+    var l = lireChampsTiers(Object.assign({}, derniere, o)); if (!l.ok) return l;
+    if (l.champs.ifu) {
+      var pris = colTiers().active().filter(function (v) { return v.ifu === l.champs.ifu && v.code !== code; })[0];
+      if (pris) return refusTiers('TIERS_IFU_DEJA_PRIS', 'L’IFU ' + l.champs.ifu + ' est déjà porté par le tiers payeur ' + pris.code + ' (' + pris.nom + ').', 'Un IFU n’appartient qu’à un tiers payeur.');
+    }
+    var fiche = Object.assign({ code: code, version: derniere.version + 1, dateEffet: dateEffet, dateFin: null, motif: motif, creePar: acteur(), creeLe: new Date().toISOString() }, l.champs);
+    if (!derniere.dateFin || String(derniere.dateFin) >= dateEffet) colTiers().update(derniere.id, { dateFin: veille(dateEffet) });
+    var res = colTiers().insert(fiche, { journal: { action: 'Tiers payeur : nouvelle version', module: 'M8', entite: 'tiersPayeurs',
+      avant: { version: derniere.version, nom: derniere.nom, ifu: derniere.ifu }, apres: { code: code, version: fiche.version, nom: fiche.nom, ifu: fiche.ifu, dateEffet: dateEffet, motif: motif } } });
+    return { ok: true, id: res.record.id, code: code, version: fiche.version, fiche: res.record, undo: res.undo };
+  }
+  S.garder('tiersPayeurs', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colTiers().get(rec.id) : null;
+    if (!avant) return null;
+    if (['code', 'version', 'dateEffet', 'nom', 'ifu', 'type', 'adresse', 'contact', 'delaiPaiementJours', 'conditions'].some(function (k) { return JSON.stringify(avant[k] == null ? null : avant[k]) !== JSON.stringify(rec[k] == null ? null : rec[k]); })) {
+      return 'TIERS_VERSION_FIGEE : une version de la fiche d’un tiers payeur ne se réécrit pas (une pièce déjà émise la cite). Poser une nouvelle version à une date d’effet postérieure.';
+    }
+    return null;
+  });
+
+  /* ---- Les pièces : rattachement aux lignes du patient, brouillon, décision de l'AIB, émission ----------------------------------- */
+  function avoirDeFactureTiers(id) { return colAvoirsTiers().active().filter(function (a) { return a.factureTiersId === id; })[0] || null; }
+  /** Ce qu'une ligne de la facture du patient a DÉJÀ donné à des factures de tiers payeurs (brouillons et émises non avoirisées) : jamais deux fois la même prestation. */
+  function dejaFactureAuxTiers(factureId, ligneId, saufId) {
+    var t = 0;
+    colFacturesTiers().active().forEach(function (f) {
+      if (f.id === saufId || avoirDeFactureTiers(f.id)) return;
+      (f.lignes || []).forEach(function (l) { if (l.factureId === factureId && l.ligneId === ligneId) t += l.montant; });
+    });
+    return t;
+  }
+  function cleSources(lignes) {
+    return lignes.map(function (l) { return l.factureNumero + '#' + l.ligneId + ':' + l.montant; }).sort().join('|');
+  }
+  /** Les lignes du patient prises en charge par un tiers, avec ce qui reste facturable à ce tiers et la part restante du patient. Lecture seule. */
+  function lignesFacturablesTiers(factureId, saufId) {
+    var fac = col('factures').get(factureId);
+    if (!fac || fac.statut === 'archive') return refusTiers('FACTURE_PATIENT_INTROUVABLE', 'La facture du patient « ' + factureId + ' » n’existe pas.', 'Choisir une facture du registre.');
+    if (fac.proforma) return refusTiers('FACTURE_PATIENT_PROFORMA', 'Une pro-forma n’est pas une vente : elle ne se refacture pas à un tiers.', 'Choisir la facture de vente.');
+    if (fac.type === 'Avoir' || (fac.montantTTC || 0) < 0) return refusTiers('FACTURE_PATIENT_AVOIR', 'Un avoir ne se refacture pas à un tiers.', 'Choisir la facture de vente.');
+    return { ok: true, facture: fac, lignes: (fac.lignes || []).map(function (l) {
+      var net = l.montant == null ? null : Number(l.montant);
+      var ass = Number(l.partAssureur || 0), pers = Number(l.partPersonnel || 0);
+      var deja = dejaFactureAuxTiers(fac.id, l.id, saufId);
+      var dispo = net == null || l.prixManquant ? null : Math.max(0, net - ass - pers - deja);
+      return { ligneId: l.id, designation: l.designation, categorie: l.categorie, montant: net, partAssureur: ass, partPersonnel: pers, dejaAuxTiers: deja, disponible: dispo,
+        partPatientRestante: dispo == null ? null : dispo, prixManquant: !!l.prixManquant };
+    }) };
+  }
+  function entreeMontantsTiers(f, aibTaux) {
+    return { lignes: f.lignes.map(function (l) { return { id: l.ligneId, designation: l.designation, quantite: 1, montantBrut: l.montant, prixUnitaire: l.montant, remise: 0 }; }), totalAttendu: f.base, aibTaux: aibTaux == null ? 0 : aibTaux };
+  }
+  /** PROPOSER la facture (brouillon, aucun numéro) : { tiersCode, patientId?, date?, lignes: [{ factureId, ligneId, montant }] }. L'IFU et le nom de l'acheteur sont contrôlés AVANT toute écriture. */
+  function proposerFactureTiers(o) {
+    o = o || {};
+    if (!peutTiers(GESTE_EMETTRE_TIERS)) return refusDroitTiers(GESTE_EMETTRE_TIERS, 'Émettre une facture à un tiers payeur', 'FACTURE_TIERS_RESERVEE');
+    var date = o.date ? isoJour(o.date) : aujIso();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return refusTiers('FACTURE_TIERS_DATE_INVALIDE', 'La date de la pièce est illisible.', 'Choisir la date de la facture.');
+    var clos = controleDateEffet(date, null); if (clos) return clos;
+    if (!versionsTiers(o.tiersCode).length) return refusTiers('TIERS_INCONNU', 'Le tiers payeur « ' + (o.tiersCode == null ? '' : o.tiersCode) + ' » n’existe pas.', 'Choisir un tiers payeur de la liste, ou le créer.');
+    var t = tiersALaDate(o.tiersCode, date);
+    if (!t) return refusTiers('TIERS_SANS_VERSION', 'Le tiers payeur ' + o.tiersCode + ' n’a pas de version en vigueur au ' + C.dateFR(date) + '.', 'Choisir une date postérieure à sa première version, ou poser une version.');
+    var ach = validerAcheteurTiers({ ifu: t.ifu, nom: t.nom }); if (!ach.ok) return ach;
+    var demandees = o.lignes || [];
+    if (!demandees.length) return refusTiers('FACTURE_TIERS_SANS_LIGNE', 'Une facture à un tiers payeur se rattache à au moins une prestation du patient.', 'Choisir une ou plusieurs lignes de la facture du patient.');
+    var lignes = [], patientId = null, patientNom = null, patientCode = null, restePatient = 0, vus = {};
+    for (var i = 0; i < demandees.length; i++) {
+      var d = demandees[i];
+      var cle = d.factureId + '#' + d.ligneId;
+      if (vus[cle]) return refusTiers('FACTURE_TIERS_LIGNE_DOUBLE', 'La ligne ' + d.ligneId + ' est répétée dans la pièce.', 'Une ligne ne figure qu’une fois : saisir le montant en une fois.');
+      vus[cle] = true;
+      var lf = lignesFacturablesTiers(d.factureId); if (!lf.ok) return lf;
+      var fac = lf.facture;
+      if (patientId && fac.patientId !== patientId) return refusTiers('FACTURE_TIERS_PATIENTS_DIFFERENTS', 'Les lignes viennent de patients différents : une facture à un tiers payeur se rattache aux prestations d’UN patient.', 'Une facture par patient.');
+      patientId = fac.patientId; patientNom = fac.patient || null; patientCode = fac.patientCode || null;
+      var lg = lf.lignes.filter(function (x) { return x.ligneId === d.ligneId; })[0];
+      if (!lg) return refusTiers('FACTURE_TIERS_LIGNE_INCONNUE', 'La ligne « ' + d.ligneId + ' » n’existe pas sur la facture ' + fac.numero + '.', 'Choisir une ligne de la facture du patient.');
+      if (lg.disponible == null) return refusTiers('FACTURE_TIERS_PRIX_MANQUANT', 'La ligne « ' + lg.designation + ' » n’a pas de prix : son montant est non calculable (ce n’est pas zéro).', 'Poser le prix de la prestation avant de la facturer au tiers.');
+      var m = Number(d.montant);
+      if (!(entierTiers(m) && m > 0)) return refusTiers('FACTURE_TIERS_MONTANT_INVALIDE', 'Le montant pris en charge de « ' + lg.designation + ' » (« ' + d.montant + ' ») est un entier de FCFA strictement positif.', 'Saisir le montant que le tiers prend en charge.');
+      if (m > lg.disponible) return refusTiers('FACTURE_TIERS_MONTANT_DEPASSE', 'Le montant demandé pour « ' + lg.designation + ' » (' + C.money(m, false) + ') dépasse ce qui reste facturable à un tiers (' + C.money(lg.disponible, false) + ' : montant de la ligne, moins la part de l’assureur, moins ce qui est déjà facturé à un tiers).', 'Réduire le montant.');
+      lignes.push({ factureId: fac.id, factureNumero: fac.numero, ligneId: lg.ligneId, designation: lg.designation, montant: m });
+      restePatient += lg.disponible - m;
+    }
+    var f = { lignes: lignes, base: lignes.reduce(function (n, l) { return n + l.montant; }, 0) };
+    var mm = mecefMontants(entreeMontantsTiers(f, 0)); if (!mm.ok) return mm;
+    var fiche = { statut: 'brouillon', tiersCode: t.code, tiersVersionId: t.id, tiersVersion: t.version, tiersNom: t.nom, ifuAcheteur: ach.ifu, nomAcheteur: ach.nom, tiersAdresse: t.adresse || null,
+      delaiPaiementJours: t.delaiPaiementJours == null ? null : t.delaiPaiementJours, patientId: patientId, patientNom: patientNom, patientCode: patientCode, date: date, lignes: lignes,
+      base: f.base, ht: mm.ht, tva: mm.tva, partPatientRestante: restePatient, sourcesCle: cleSources(lignes), numero: null, aibDecision: null, proposePar: acteur(), proposeLe: new Date().toISOString() };
+    var res = colFacturesTiers().insert(fiche, { journal: { action: 'Facture tiers : brouillon proposé', module: 'M8', entite: 'facturesTiers', avant: null,
+      apres: { tiersCode: t.code, ifu: ach.ifu, base: f.base, lignes: lignes.length, date: date } } });
+    return { ok: true, id: res.record.id, fiche: res.record, undo: res.undo };
+  }
+  /** La PROPOSITION de l'AIB pour un brouillon : le taux du barème de la situation de l'acheteur à la date de la pièce. Ne décide rien, n'écrit rien. */
+  function proposerAibFactureTiers(id) {
+    var f = colFacturesTiers().get(id);
+    if (!f) return refusTiers('FACTURE_TIERS_INTROUVABLE', 'La facture à un tiers payeur « ' + id + ' » n’existe pas.', 'Choisir une pièce de la liste.');
+    var r = tauxAibPourAcheteur({ ifu: f.ifuAcheteur, date: f.date });
+    if (r.ok) r.famille = 'acheteur';
+    return r;
+  }
+  /** La DÉCISION du comptable sur l'AIB de la pièce (geste `imputer_aib`) : { appliquer: true|false, situation?, taux?, motif? }. Un brouillon seulement : une pièce émise ne se réécrit jamais. */
+  function deciderAibFactureTiers(id, o) {
+    o = o || {};
+    if (!peutImputerAib()) return refusImputationReservee();
+    var f = colFacturesTiers().get(id);
+    if (!f || f.statut === 'archive') return refusTiers('FACTURE_TIERS_INTROUVABLE', 'La facture à un tiers payeur « ' + id + ' » n’existe pas.', 'Choisir une pièce de la liste.');
+    if (f.statut !== 'brouillon') return refusTiers('FACTURE_TIERS_EMISE', 'La facture ' + f.numero + ' est émise : une pièce émise ne se réécrit jamais, son AIB non plus.', 'La corriger par un avoir, puis refaire la facture.');
+    if (o.appliquer !== true && o.appliquer !== false) return refusTiers('AIB_DECISION_ABSENTE', 'Le comptable n’a pas décidé : appliquer l’AIB à cette facture ou non. Le logiciel propose un taux, il ne décide jamais.', 'Répondre « appliquer » ou « ne pas appliquer ».');
+    var motif = String(o.motif == null ? '' : o.motif).trim();
+    var d = { appliquer: o.appliquer, decidePar: acteur(), decideRole: libelleRole(roleCourant()), decideLe: new Date().toISOString() };
+    var prop = proposerAibFactureTiers(id);
+    if (o.appliquer === false) {
+      if (!motif) return refusTiers('AIB_MOTIF_ABSENT', 'Ne pas appliquer l’AIB se motive (l’acheteur paie lui-même son AIB, exonération).', 'Saisir le motif de la décision.');
+      d.motif = motif;
+    } else {
+      if (!o.situation) return refusTiers('AIB_LIGNE_ABSENTE', 'La ligne du barème n’est pas choisie : le comptable choisit la ligne à chaque opération.', 'Choisir la ligne du barème (situation de l’acheteur).');
+      var sit = situationAibDe(o.situation);
+      if (!sit) return refusTiers('AIB_SITUATION_INCONNUE', 'La ligne « ' + o.situation + ' » n’existe pas au barème de l’AIB.', 'Choisir une ligne du barème.');
+      if (o.taux == null || o.taux === '') return refusTiers('AIB_TAUX_ABSENT', 'Le taux n’est pas posé : le logiciel le propose' + (prop.ok ? ' (' + prop.taux + ' % au ' + C.dateFR(f.date) + ')' : '') + ', le comptable le retient ou le change.', 'Saisir le taux retenu.');
+      var taux = Number(o.taux);
+      if (!(entierTiers(taux) && taux >= 0 && taux <= 100)) return refusTiers('AIB_TAUX_INVALIDE', 'Le taux (« ' + o.taux + ' ») doit être un pourcentage entier de 0 à 100.', 'Saisir un entier, par exemple 1.');
+      var delaLigne = tauxAibALaDate(o.situation, f.date);
+      var hors = !delaLigne.ok || delaLigne.taux !== taux;
+      if (hors && !motif) return refusTiers('AIB_MOTIF_ABSENT', 'Le taux retenu (' + taux + ' %) n’est pas celui du barème de cette ligne à la date de la pièce' + (delaLigne.ok ? ' (' + delaLigne.taux + ' %)' : ' (aucune version ne couvre cette date)') + ' : il se motive.', 'Saisir le motif.');
+      d.situation = o.situation; d.taux = taux; d.horsProposition = hors;
+      d.propositionTaux = delaLigne.ok ? delaLigne.taux : null; d.propositionVersion = delaLigne.ok ? delaLigne.versionId : null; d.propositionArretee = delaLigne.ok ? delaLigne.arrete === true : null;
+      if (motif) d.motif = motif;
+    }
+    colFacturesTiers().update(id, { aibDecision: d });
+    S.log('Facture tiers : décision de l’AIB', 'M8', 'facturesTiers', id, { aibDecision: f.aibDecision ? f.aibDecision.appliquer : null },
+      { appliquer: d.appliquer, taux: d.taux == null ? null : d.taux, horsProposition: !!d.horsProposition, motif: d.motif || null });
+    return { ok: true, id: id, decision: d };
+  }
+  /** Le prochain numéro : FT-AAAA-nnnn, l'année est celle de la DATE DE LA PIÈCE (fabrique unique), le rang se lit sur les pièces EXISTANTES (archivées comprises). */
+  function numeroFactureTiers(date) { return C.referenceAnnuelle('FT-', date, 4, colFacturesTiers().all(), 'numero'); }
+  /** ÉMETTRE : décision de l'AIB obligatoire, IFU et nom contrôlés une dernière fois AVANT l'écriture du numéro, puis normalisation par le moteur MECeF existant. */
+  function emettreFactureTiers(id, opts) {
+    opts = opts || {};
+    if (!peutTiers(GESTE_EMETTRE_TIERS)) return refusDroitTiers(GESTE_EMETTRE_TIERS, 'Émettre une facture à un tiers payeur', 'FACTURE_TIERS_RESERVEE');
+    var f = colFacturesTiers().get(id);
+    if (!f || f.statut === 'archive') return refusTiers('FACTURE_TIERS_INTROUVABLE', 'La facture à un tiers payeur « ' + id + ' » n’existe pas.', 'Choisir une pièce de la liste.');
+    if (f.statut !== 'brouillon') return refusTiers('FACTURE_TIERS_DEJA_EMISE', 'La facture ' + f.numero + ' est déjà émise : elle ne se réémet ni ne se réécrit.', 'La corriger par un avoir.');
+    var ach = validerAcheteurTiers({ ifu: f.ifuAcheteur, nom: f.nomAcheteur }); if (!ach.ok) return ach;
+    var dec = f.aibDecision;
+    if (!dec || (dec.appliquer !== true && dec.appliquer !== false)) {
+      return refusTiers('TIERS_AIB_DECISION_ABSENTE', 'Le comptable n’a pas décidé de l’AIB de cette facture : le logiciel propose le taux du barème, il ne l’impose jamais.', 'Faire poser la décision (appliquer ou non, ligne, taux) par un rôle qui détient le droit « Imputer l’AIB » (' + (rolesGeste(GESTE_IMPUTER_AIB).map(libelleRole).join(', ') || 'aucun rôle') + ').');
+    }
+    var clos = controleDateEffet(f.date, null); if (clos) return clos;
+    var aibTaux = dec.appliquer ? dec.taux : 0;
+    var m = mecefMontants(entreeMontantsTiers(f, aibTaux)); if (!m.ok) return m;
+    /* Les lignes restent facturables : rien n'a été pris entre la proposition et l'émission. */
+    for (var i = 0; i < f.lignes.length; i++) {
+      var l = f.lignes[i], lf = lignesFacturablesTiers(l.factureId, f.id); if (!lf.ok) return lf;
+      var lg = lf.lignes.filter(function (x) { return x.ligneId === l.ligneId; })[0];
+      if (!lg || lg.disponible == null || l.montant > lg.disponible) return refusTiers('FACTURE_TIERS_MONTANT_DEPASSE', 'La ligne « ' + l.designation + ' » n’a plus le montant facturable demandé : une autre pièce l’a prise.', 'Reprendre le brouillon.');
+    }
+    var numero = numeroFactureTiers(f.date);
+    var enrichi = { statut: 'emise', numero: numero, aibTaux: aibTaux, aibMontant: m.aib, net: m.net, ht: m.ht, tva: m.tva, base: m.base,
+      statutMecef: modeMecef() === 'desactive' ? 'sans_objet' : 'en_attente', modeMecef: modeMecef(), mecefSimule: true, emisPar: acteur(), emisLe: new Date().toISOString() };
+    colFacturesTiers().update(id, enrichi);
+    S.log('Facture tiers : émission', 'M8', 'facturesTiers', numero, { statut: 'brouillon' }, { statut: 'emise', tiersCode: f.tiersCode, ifu: f.ifuAcheteur, base: m.base, aibTaux: aibTaux, aib: m.aib, net: m.net });
+    var mec = modeMecef() === 'desactive' ? { ok: true, ignore: true } : normaliserFactureTiers(id, opts);
+    return { ok: true, id: id, numero: numero, mecef: mec, net: m.net, aib: m.aib };
+  }
+  /** Abandonner un BROUILLON (archive RG-14, motif obligatoire) : une pièce émise, elle, se corrige par un avoir. */
+  function abandonnerBrouillonTiers(id, motif) {
+    if (!peutTiers(GESTE_EMETTRE_TIERS)) return refusDroitTiers(GESTE_EMETTRE_TIERS, 'Abandonner un brouillon de facture à un tiers payeur', 'FACTURE_TIERS_RESERVEE');
+    var f = colFacturesTiers().get(id);
+    if (!f || f.statut === 'archive') return refusTiers('FACTURE_TIERS_INTROUVABLE', 'La facture à un tiers payeur « ' + id + ' » n’existe pas.', 'Choisir une pièce de la liste.');
+    if (f.statut !== 'brouillon') return refusTiers('FACTURE_TIERS_EMISE', 'La facture ' + f.numero + ' est émise : elle ne se retire pas, elle se corrige par un avoir.', 'Émettre un avoir.');
+    if (!String(motif || '').trim()) return refusTiers('FACTURE_TIERS_MOTIF_ABSENT', 'Le motif est obligatoire.', 'Dire pourquoi le brouillon est abandonné.');
+    colFacturesTiers().archive(id, String(motif).trim());
+    return { ok: true, id: id };
+  }
+
+  /* ---- La normalisation MECeF avec acheteur : le moteur existant, aucun numéro simulé ---------------------------------------------- */
+  function normaliserFactureTiers(id, opts) {
+    opts = opts || {};
+    var f = colFacturesTiers().get(id);
+    if (!f) return refusMecef('FACTURE_TIERS_INTROUVABLE', 'La facture à un tiers payeur « ' + id + ' » n’existe pas.', 'Choisir une pièce de la liste.');
+    if (f.statut !== 'emise') return refusMecef('FACTURE_TIERS_NON_EMISE', 'Un brouillon ne se normalise pas : il s’émet d’abord.', 'Émettre la facture.');
+    if (avoirDeFactureTiers(f.id)) return refusMecef('FACTURE_TIERS_AVOIRISEE', 'La facture ' + f.numero + ' est annulée par un avoir : elle ne se normalise plus.', 'Refaire une facture.');
+    if (modeMecef() === 'desactive') return { ok: true, ignore: true, motif: 'Mode « Désactivé » : aucune normalisation (démonstration).' };
+    if (etatMecef(f) === 'normalisee' && f.numeroMecef) return refusMecef('DEJA_NORMALISEE', 'La facture ' + f.numero + ' est déjà normalisée (' + f.numeroMecef + ') : elle ne se renormalise jamais.', 'La corriger par un avoir.');
+    var ach = validerAcheteurTiers({ ifu: f.ifuAcheteur, nom: f.nomAcheteur }); if (!ach.ok) return ach;
+    var m = mecefMontants(entreeMontantsTiers(f, f.aibTaux || 0));
+    if (!m.ok) {
+      colFacturesTiers().update(id, { statutMecef: 'rejete', codeRetour: m.code, motifRefusMecef: m.motif });
+      S.log('Normalisation refusée', 'MECEF', 'facturesTiers', f.numero, { statutMecef: f.statutMecef }, { code: m.code });
+      return Object.assign({}, m, { etat: 'refusee' });
+    }
+    colFacturesTiers().update(id, { statutMecef: 'en_attente', codeRetour: null, motifRefusMecef: null });
+    var ad = adaptateurMecef();
+    if (!ad.configure && !f.numeroMecef) {
+      colFacturesTiers().update(id, { statutMecef: 'en_attente', codeRetour: ad.code, motifRefusMecef: ad.motif });
+      S.log('Normalisation en attente (adaptateur non configuré)', 'MECEF', 'facturesTiers', f.numero, { statutMecef: f.statutMecef }, { statutMecef: 'en_attente', code: ad.code, mode: ad.mode });
+      return { ok: false, code: ad.code, motif: ad.motif, geste: ad.geste, etat: 'en_attente' };
+    }
+    var rep = fauxBoitier.emettre({ cle: id, total: f.base, base: m.base, ifuAcheteur: ach.ifu, nomAcheteur: ach.nom, aibTaux: f.aibTaux || 0, aib: m.aib });
+    if (rep.ok) {
+      colFacturesTiers().update(id, { statutMecef: 'valide', numeroMecef: rep.numero, codeRetour: 'OK-200', dateTransmission: rep.horodatage, normalisePar: opts.utilisateur || S.currentUser() });
+      S.log('Normalisation', 'MECEF', 'facturesTiers', f.numero, { statutMecef: 'en_attente' }, { statutMecef: 'valide', numero: rep.numero, mode: modeMecef() });
+      return { ok: true, numero: rep.numero, etat: 'normalisee' };
+    }
+    var stocke = rep.perdue ? 'a_verifier' : (rep.expiree ? 'expiree' : 'rejete');
+    colFacturesTiers().update(id, { statutMecef: stocke, codeRetour: rep.code, motifRefusMecef: rep.motif });
+    S.log('Normalisation non aboutie', 'MECEF', 'facturesTiers', f.numero, { statutMecef: 'en_attente' }, { statutMecef: stocke, code: rep.code });
+    return { ok: false, code: rep.code, motif: rep.motif, geste: rep.perdue ? 'Vérifier auprès de l’appareil : la reprise ne rejoue jamais l’émission.' : 'Retransmettre la facture.', etat: etatMecef({ statutMecef: stocke }) };
+  }
+  /** Retransmettre une facture tiers refusée, expirée ou en attente : le droit d'émettre suffit (la vente est la même, jamais une pièce normalisée). */
+  function retransmettreFactureTiers(id, opts) {
+    if (!peutTiers(GESTE_EMETTRE_TIERS)) return refusDroitTiers(GESTE_EMETTRE_TIERS, 'Retransmettre une facture à un tiers payeur', 'FACTURE_TIERS_RESERVEE');
+    return normaliserFactureTiers(id, opts);
+  }
+  /** Reprise sans doublon d'une pièce « à vérifier » : on LIT l'appareil, on n'émet pas. */
+  function reprendreFactureTiers(id) {
+    var f = colFacturesTiers().get(id);
+    if (!f) return refusMecef('FACTURE_TIERS_INTROUVABLE', 'La facture à un tiers payeur « ' + id + ' » n’existe pas.', 'Choisir une pièce de la liste.');
+    if (etatMecef(f) !== 'a_verifier') return refusMecef('PAS_A_VERIFIER', 'La facture ' + f.numero + ' n’est pas à vérifier.', 'Seule une pièce « À vérifier » se reprend.');
+    var em = fauxBoitier.consulter(id);
+    if (!em) { colFacturesTiers().update(id, { statutMecef: 'en_attente', codeRetour: 'NON_EMISE', motifRefusMecef: 'L’appareil n’a rien émis pour cette pièce.' }); return { ok: true, reconcilie: false, etat: 'en_attente' }; }
+    if (em.total !== f.base) return refusMecef('DIVERGENCE', 'L’appareil a émis ' + em.numero + ' pour ' + em.total + ' alors que la pièce vaut ' + f.base + '.', 'Ne pas renvoyer : en référer à la DA.');
+    colFacturesTiers().update(id, { statutMecef: 'valide', numeroMecef: em.numero, codeRetour: 'OK-200', dateTransmission: em.horodatage, reconcilie: true, motifRefusMecef: null });
+    return { ok: true, reconcilie: true, numero: em.numero, etat: 'normalisee' };
+  }
+  var CHAMPS_MECEF_TIERS = ['statutMecef', 'numeroMecef', 'codeRetour', 'motifRefusMecef', 'dateTransmission', 'normalisePar', 'reconcilie', 'retransmissions'];
+  /* LA GARDE DU MAGASIN : une pièce émise ne se réécrit jamais ; seules les traces MECeF changent (jamais un numéro déjà posé). Un brouillon se complète (décision de l'AIB, émission). */
+  S.garder('facturesTiers', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colFacturesTiers().get(rec.id) : null;
+    if (!avant || avant.statut !== 'emise') return null;
+    var fige = Object.keys(avant).filter(function (k) { return k.charAt(0) !== '_' && k !== 'id' && k !== 'statut' && CHAMPS_MECEF_TIERS.indexOf(k) < 0; });
+    if (fige.some(function (k) { return JSON.stringify(avant[k] == null ? null : avant[k]) !== JSON.stringify(rec[k] == null ? null : rec[k]); })) {
+      return 'FACTURE_TIERS_FIGEE : une facture à un tiers payeur émise ne se réécrit jamais ; la corriger par un avoir.';
+    }
+    if (avant.numeroMecef && rec.numeroMecef !== avant.numeroMecef) return 'FACTURE_TIERS_NUMERO_MECEF_FIGE : un numéro MECeF posé ne se réécrit jamais.';
+    return null;
+  });
+
+  /* ---- L'avoir (la correction d'une pièce émise) -------------------------------------------------------------------------------- */
+  /** AVOIR TOTAL d'une facture émise (geste `corriger_facture_tiers`, motif obligatoire) ; refusé si un règlement est lettré (le délettrer d'abord). La certification MECeF de l'avoir n'est pas faite (hors lot). */
+  function emettreAvoirTiers(factureTiersId, motif) {
+    if (!peutTiers(GESTE_CORRIGER_TIERS)) return refusDroitTiers(GESTE_CORRIGER_TIERS, 'Corriger une facture à un tiers payeur par un avoir', 'AVOIR_TIERS_RESERVE');
+    var f = colFacturesTiers().get(factureTiersId);
+    if (!f || f.statut !== 'emise') return refusTiers('AVOIR_TIERS_PIECE_NON_EMISE', 'Un avoir ne corrige qu’une facture à un tiers payeur ÉMISE.', 'Choisir une facture émise.');
+    if (avoirDeFactureTiers(f.id)) return refusTiers('AVOIR_TIERS_DEJA_EMIS', 'La facture ' + f.numero + ' est déjà annulée par un avoir.', 'Rien à faire.');
+    if (!String(motif || '').trim()) return refusTiers('AVOIR_TIERS_MOTIF_ABSENT', 'Le motif de l’avoir est obligatoire.', 'Dire pourquoi la facture est annulée.');
+    if (colLettragesTiers().active().some(function (l) { return l.factureTiersId === f.id; })) {
+      return refusTiers('AVOIR_TIERS_APRES_LETTRAGE', 'Un règlement est lettré sur la facture ' + f.numero + ' : annuler la facture sans traiter ce règlement le ferait disparaître.', 'Délettrer d’abord le règlement (avec un motif), puis émettre l’avoir.');
+    }
+    var date = aujIso();
+    var numero = C.referenceAnnuelle('AVT-', date, 4, colAvoirsTiers().all(), 'numero');
+    var res = colAvoirsTiers().insert({ numero: numero, date: date, factureTiersId: f.id, factureNumero: f.numero, tiersCode: f.tiersCode, montant: f.net, motif: String(motif).trim(),
+      sourcesCle: f.numero, emisPar: acteur(), emisLe: new Date().toISOString(),
+      /* Même règle que l'avoir du patient : « en attente » de régularisation si la pièce était certifiée, « sans objet » sinon ; AUCUN numéro n'est fabriqué. */
+      statutMecef: f.statutMecef === 'valide' ? 'en_attente' : 'sans_objet' },
+      { journal: { action: 'Facture tiers : avoir', module: 'M8', entite: 'avoirsTiers', avant: null, apres: { numero: numero, facture: f.numero, montant: f.net, motif: String(motif).trim() } } });
+    return { ok: true, id: res.record.id, numero: numero, montant: f.net, undo: res.undo };
+  }
+  S.garder('avoirsTiers', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colAvoirsTiers().get(rec.id) : null;
+    if (avant && ['numero', 'factureTiersId', 'montant', 'motif', 'date'].some(function (k) { return String(avant[k]) !== String(rec[k]); })) return 'AVOIR_TIERS_FIGE : un avoir émis ne se réécrit jamais.';
+    return null;
+  });
+
+  /* ---- La créance, le règlement reçu et son lettrage ----------------------------------------------------------------------------- */
+  function lettresDe(factureTiersId) { return colLettragesTiers().active().filter(function (l) { return l.factureTiersId === factureTiersId; }); }
+  /** La créance d'UNE facture émise : montant dû (net : base + AIB) moins les lettrages ; 0 si un avoir l'annule. Jamais négative. */
+  function creanceDeFactureTiers(f) {
+    if (!f || f.statut !== 'emise' || avoirDeFactureTiers(f.id)) return 0;
+    return Math.max(0, f.net - lettresDe(f.id).reduce(function (n, l) { return n + l.montant; }, 0));
+  }
+  function facturesTiersEmises() { return colFacturesTiers().active().filter(function (f) { return f.statut === 'emise'; }); }
+  /** Le reste à lettrer d'un règlement reçu. */
+  function resteNonLettre(r) { return r.montant - colLettragesTiers().active().filter(function (l) { return l.reglementId === r.id; }).reduce(function (n, l) { return n + l.montant; }, 0); }
+  /** Les CRÉANCES SUR LES TIERS PAYEURS à une date : une ligne par tiers (facturé, lettré, dû, tranches de la balance âgée LUES EN BASE), les règlements non lettrés dits à part. */
+  function creancesTiers(date) {
+    var d = dateAib(date);
+    var tr = D.tranchesCreancesALaDate(d);
+    var par = {};
+    facturesTiersEmises().forEach(function (f) {
+      var dette = creanceDeFactureTiers(f);
+      var l = par[f.tiersCode] || (par[f.tiersCode] = { code: f.tiersCode, nom: f.tiersNom, factures: 0, facture: 0, du: 0, moins30: 0, de30a90: 0, plus90: 0, enRetard: 0, echeanceIncalculable: 0, nonCertifiees: 0, lignes: [] });
+      var annulee = !!avoirDeFactureTiers(f.id);
+      if (annulee) return;
+      l.factures++; l.facture += f.net; l.du += dette;
+      if (etatMecef(f) !== 'normalisee' && f.statutMecef !== 'sans_objet') l.nonCertifiees++;
+      var age = C.daysBetween(f.date, d), tranche = D.trancheCreance(age, tr);
+      if (dette > 0) {
+        if (tranche === 'moins30') l.moins30 += dette; else if (tranche === '30a90') l.de30a90 += dette; else l.plus90 += dette;
+        var tv = tiersALaDate(f.tiersCode, f.date), delai = f.delaiPaiementJours != null ? f.delaiPaiementJours : (tv && tv.delaiPaiementJours != null ? tv.delaiPaiementJours : null);
+        var ech = delai == null ? null : C.iso(C.addDays(f.date, delai));
+        if (ech == null) l.echeanceIncalculable += dette; else if (ech < d) l.enRetard += dette;
+        l.lignes.push({ id: f.id, numero: f.numero, date: f.date, net: f.net, du: dette, tranche: tranche, age: age, echeance: ech });
+      }
+    });
+    var nonLettres = colReglementsTiers().active().map(function (r) { return { id: r.id, numero: r.numero, tiersCode: r.tiersCode, montant: r.montant, reste: resteNonLettre(r) }; }).filter(function (r) { return r.reste > 0; });
+    var lignes = Object.keys(par).sort().map(function (k) { return par[k]; });
+    var total = lignes.reduce(function (n, l) { return n + l.du; }, 0);
+    return { ok: true, date: d, tranches: tr, lignes: lignes, total: total, nonLettres: nonLettres,
+      nonLettre: nonLettres.reduce(function (n, r) { return n + r.reste; }, 0) };
+  }
+  /** Enregistrer un règlement REÇU du tiers : { tiersCode, montant, date?, mode, referencePaiement }. Jamais réécrit ; non lettré tant qu'on ne l'a pas lettré. */
+  function enregistrerReglementTiers(o) {
+    o = o || {};
+    if (!peutTiers(GESTE_EMETTRE_TIERS)) return refusDroitTiers(GESTE_EMETTRE_TIERS, 'Enregistrer un règlement reçu d’un tiers payeur', 'REGLEMENT_TIERS_RESERVE');
+    if (!versionsTiers(o.tiersCode).length) return refusTiers('TIERS_INCONNU', 'Le tiers payeur « ' + (o.tiersCode == null ? '' : o.tiersCode) + ' » n’existe pas.', 'Choisir un tiers payeur de la liste.');
+    var m = Number(o.montant);
+    if (!(entierTiers(m) && m > 0)) return refusTiers('REGLEMENT_TIERS_MONTANT_INVALIDE', 'Le montant du règlement (« ' + o.montant + ' ») est un entier de FCFA strictement positif.', 'Saisir le montant reçu.');
+    var ref = String(o.referencePaiement == null ? '' : o.referencePaiement).trim();
+    if (!ref) return refusTiers('REGLEMENT_TIERS_REFERENCE_ABSENTE', 'La référence du paiement (chèque, virement, bordereau) est obligatoire.', 'Saisir la référence portée par le moyen de paiement.');
+    var date = o.date ? isoJour(o.date) : aujIso();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return refusTiers('REGLEMENT_TIERS_DATE_INVALIDE', 'La date du règlement est illisible.', 'Choisir la date de réception.');
+    var clos = controleDateEffet(date, null); if (clos) return clos;
+    if (!String(o.mode || '').trim()) return refusTiers('REGLEMENT_TIERS_MODE_ABSENT', 'Le mode de règlement est obligatoire (virement, chèque, espèces).', 'Choisir le mode.');
+    var deja = colReglementsTiers().active().filter(function (r) { return r.tiersCode === o.tiersCode && String(r.referencePaiement).toLowerCase() === ref.toLowerCase(); })[0];
+    if (deja) return refusTiers('REGLEMENT_TIERS_DEJA_SAISI', 'Le règlement ' + ref + ' de ce tiers est déjà enregistré (' + deja.numero + ').', 'Ne pas le saisir deux fois.');
+    var numero = C.referenceAnnuelle('RGT-', date, 4, colReglementsTiers().all(), 'numero');
+    var res = colReglementsTiers().insert({ numero: numero, tiersCode: o.tiersCode, date: date, montant: m, mode: String(o.mode).trim(), referencePaiement: ref, recuPar: acteur(), recuLe: new Date().toISOString() },
+      { journal: { action: 'Facture tiers : règlement reçu', module: 'M8', entite: 'reglementsTiers', avant: null, apres: { numero: numero, tiersCode: o.tiersCode, montant: m, reference: ref } } });
+    return { ok: true, id: res.record.id, numero: numero, undo: res.undo };
+  }
+  S.garder('reglementsTiers', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colReglementsTiers().get(rec.id) : null;
+    if (avant && ['numero', 'tiersCode', 'montant', 'date', 'referencePaiement', 'mode'].some(function (k) { return String(avant[k]) !== String(rec[k]); })) return 'REGLEMENT_TIERS_FIGE : un règlement reçu ne se réécrit pas.';
+    return null;
+  });
+  /** LETTRER un règlement : { reglementId, affectations: [{ factureTiersId, montant }] } (geste `corriger_facture_tiers`). Jamais plus que le reste à lettrer ni que la créance de la facture, jamais sur un autre tiers. */
+  function lettrerTiers(o) {
+    o = o || {};
+    if (!peutTiers(GESTE_CORRIGER_TIERS)) return refusDroitTiers(GESTE_CORRIGER_TIERS, 'Lettrer un règlement de tiers payeur', 'LETTRAGE_TIERS_RESERVE');
+    var r = colReglementsTiers().get(o.reglementId);
+    if (!r || r.statut === 'archive') return refusTiers('REGLEMENT_TIERS_INTROUVABLE', 'Le règlement « ' + o.reglementId + ' » n’existe pas.', 'Choisir un règlement de la liste.');
+    var aff = o.affectations || [];
+    if (!aff.length) return refusTiers('LETTRAGE_TIERS_VIDE', 'Aucune facture n’est choisie : un lettrage affecte le règlement à au moins une facture.', 'Choisir la ou les factures.');
+    var reste = resteNonLettre(r), somme = 0, vues = {};
+    for (var i = 0; i < aff.length; i++) {
+      var a = aff[i], m = Number(a.montant), f = colFacturesTiers().get(a.factureTiersId);
+      if (vues[a.factureTiersId]) return refusTiers('LETTRAGE_TIERS_FACTURE_DOUBLE', 'La facture est répétée dans le lettrage.', 'Une ligne par facture.');
+      vues[a.factureTiersId] = true;
+      if (!f || f.statut !== 'emise') return refusTiers('LETTRAGE_TIERS_FACTURE_INCONNUE', 'La facture « ' + a.factureTiersId + ' » n’existe pas ou n’est pas émise.', 'Choisir une facture émise.');
+      if (f.tiersCode !== r.tiersCode) return refusTiers('LETTRAGE_TIERS_AUTRE_TIERS', 'La facture ' + f.numero + ' est celle du tiers ' + f.tiersCode + ', le règlement vient de ' + r.tiersCode + '.', 'Lettrer un règlement sur les factures de SON tiers.');
+      if (avoirDeFactureTiers(f.id)) return refusTiers('LETTRAGE_TIERS_FACTURE_ANNULEE', 'La facture ' + f.numero + ' est annulée par un avoir.', 'Choisir une facture due.');
+      if (!(entierTiers(m) && m > 0)) return refusTiers('LETTRAGE_TIERS_MONTANT_INVALIDE', 'Le montant lettré sur ' + f.numero + ' (« ' + a.montant + ' ») est un entier de FCFA strictement positif.', 'Saisir le montant.');
+      if (m > creanceDeFactureTiers(f)) return refusTiers('LETTRAGE_TIERS_DEPASSE', 'Le montant lettré sur ' + f.numero + ' (' + C.money(m, false) + ') dépasse ce qui reste dû (' + C.money(creanceDeFactureTiers(f), false) + ').', 'Réduire le montant.');
+      somme += m;
+    }
+    if (somme > reste) return refusTiers('LETTRAGE_TIERS_AU_DELA_DU_REGLEMENT', 'Le lettrage (' + C.money(somme, false) + ') dépasse le reste à lettrer du règlement ' + r.numero + ' (' + C.money(reste, false) + ').', 'Réduire les montants.');
+    var ids = [];
+    aff.forEach(function (a) {
+      var f = colFacturesTiers().get(a.factureTiersId);
+      var res = colLettragesTiers().insert({ reglementId: r.id, reglementNumero: r.numero, reglementRef: r.referencePaiement, factureTiersId: f.id, factureNumero: f.numero, tiersCode: r.tiersCode,
+        montant: Number(a.montant), date: aujIso(), lettrePar: acteur() },
+        { journal: { action: 'Facture tiers : lettrage', module: 'M8', entite: 'lettragesTiers', avant: null, apres: { reglement: r.numero, facture: f.numero, montant: Number(a.montant) } } });
+      ids.push(res.record.id);
+    });
+    return { ok: true, ids: ids, lettre: somme, resteNonLettre: reste - somme };
+  }
+  function delettrerTiers(id, motif) {
+    if (!peutTiers(GESTE_CORRIGER_TIERS)) return refusDroitTiers(GESTE_CORRIGER_TIERS, 'Délettrer un règlement de tiers payeur', 'LETTRAGE_TIERS_RESERVE');
+    var l = colLettragesTiers().get(id);
+    if (!l || l.statut === 'archive') return refusTiers('LETTRAGE_TIERS_INTROUVABLE', 'Le lettrage « ' + id + ' » n’existe pas ou est déjà défait.', 'Choisir un lettrage de la liste.');
+    if (!String(motif || '').trim()) return refusTiers('LETTRAGE_TIERS_MOTIF_ABSENT', 'Le motif du délettrage est obligatoire.', 'Dire pourquoi le lettrage est défait.');
+    colLettragesTiers().archive(id, String(motif).trim());
+    S.log('Facture tiers : lettrage défait', 'M8', 'lettragesTiers', id, { montant: l.montant, facture: l.factureNumero }, { statut: 'archive', motif: String(motif).trim() });
+    return { ok: true, id: id };
+  }
+  S.garder('lettragesTiers', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colLettragesTiers().get(rec.id) : null;
+    if (avant && ['reglementId', 'factureTiersId', 'montant', 'date'].some(function (k) { return String(avant[k]) !== String(rec[k]); })) return 'LETTRAGE_TIERS_FIGE : un lettrage ne se réécrit pas ; le défaire avec un motif.';
+    return null;
+  });
+  /** Lecture : les factures d'un tiers, créance de chacune (écrans). */
+  function facturesTiersListe() { return colFacturesTiers().active().slice(); }
+  global.SIGH.tiers = {
+    GESTES: { emettre: GESTE_EMETTRE_TIERS, corriger: GESTE_CORRIGER_TIERS }, TYPES: TYPES_TIERS,
+    peutEmettre: function (role) { return peutTiers(GESTE_EMETTRE_TIERS, role); }, peutCorriger: function (role) { return peutTiers(GESTE_CORRIGER_TIERS, role); },
+    creerTiers: creerTiers, nouvelleVersion: nouvelleVersionTiers, versions: versionsTiers, aLaDate: tiersALaDate, actifs: tiersActifs, codes: tiersCodes,
+    validerAcheteur: validerAcheteurTiers, lignesFacturables: lignesFacturablesTiers,
+    proposer: proposerFactureTiers, proposerAib: proposerAibFactureTiers, deciderAib: deciderAibFactureTiers, emettre: emettreFactureTiers, abandonner: abandonnerBrouillonTiers,
+    normaliser: normaliserFactureTiers, retransmettre: retransmettreFactureTiers, reprendre: reprendreFactureTiers, numeroSuivant: numeroFactureTiers,
+    avoir: emettreAvoirTiers, avoirDe: avoirDeFactureTiers, reglement: enregistrerReglementTiers, lettrer: lettrerTiers, delettrer: delettrerTiers,
+    creance: creanceDeFactureTiers, creances: creancesTiers, resteNonLettre: resteNonLettre, lettresDe: lettresDe,
+    factures: facturesTiersListe, reglements: function () { return colReglementsTiers().active().slice(); }, lettrages: function () { return colLettragesTiers().active().slice(); },
+    avoirs: function () { return colAvoirsTiers().active().slice(); },
+  };
 })(window);

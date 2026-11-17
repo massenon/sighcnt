@@ -1311,6 +1311,10 @@
         "href": "pages/m8-facture-avoir.php"
        },
        {
+        "label": "Factures aux tiers payeurs",
+        "href": "pages/m8-factures-tiers.php"
+       },
+       {
         "label": "État de caisse journalier",
         "href": "pages/m8-caisse.php"
        },

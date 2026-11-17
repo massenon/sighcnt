@@ -133,6 +133,7 @@ export 'src/comptabilite/cpc_baseline.dart';
 export 'src/comptabilite/cpc_echeances.dart';
 export 'src/comptabilite/aib.dart';
 export 'src/comptabilite/aib_donnees.dart';
+export 'src/comptabilite/tiers_payeurs.dart';
 export 'src/comptabilite/cpc_bfr.dart';
 export 'src/comptabilite/cpc_etats.dart';
 export 'src/rh/espace_mes.dart';
