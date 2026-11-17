@@ -46,6 +46,14 @@ void main() {
       expect(planifierMigration(formatDonneesCourant).aRien, isTrue);
     });
 
+    test('IDEMPOTENCE après coupure : rejouer M002 sur les données d’AVANT, archive déjà écrite, ne duplique rien', () {
+      final une = executerMigrations(jeu(), planifierMigration(1));
+      final rejeu = jeu()..[collectionArchiveMigrations] = [for (final a in une.collections[collectionArchiveMigrations]!) {...a}];
+      final deux = executerMigrations(rejeu, planifierMigration(1));
+      expect(deux.collections[collectionArchiveMigrations], hasLength(2));
+      expect(jsonCanonique(deux.collections), jsonCanonique(une.collections));
+    });
+
     test('l’entrée n’est jamais modifiée (essai à blanc : rien n’est écrit)', () {
       final avant = jsonEncode(jeu());
       final e = jeu();
