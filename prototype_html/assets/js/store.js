@@ -3892,12 +3892,22 @@
   }
 
   /** Les collections et clés qui ont changé depuis le dernier envoi. */
+  /* Les créations ANNULÉES, retenues archivées : l'envoi global les joint à leur collection (voir `insert().undo`). */
+  var RETIREES = {};
+  function avecRetirees(k, liste) {
+    var r = RETIREES[k];
+    if (!r || !r.length) return liste;
+    var ids = {};
+    liste.forEach(function (x) { ids[x.id] = true; });
+    var plus = r.filter(function (x) { return !ids[x.id]; });
+    return plus.length ? liste.concat(plus) : liste;
+  }
   function delta() {
     var collections = {}, meta = {}, n = 0;
     Object.keys(db || {}).forEach(function (k) {
       var brut = JSON.stringify(db[k]);
       if (Array.isArray(db[k])) {
-        if (SRV.envoye[k] !== brut) { collections[k] = db[k]; SRV.envoye[k] = brut; n++; }
+        if (SRV.envoye[k] !== brut) { collections[k] = avecRetirees(k, db[k]); SRV.envoye[k] = brut; n++; }
       } else if (SRV.meta[k] !== brut) { meta[k] = db[k]; SRV.meta[k] = brut; n++; }
     });
     return n ? { collections: collections, meta: meta } : null;
@@ -4443,13 +4453,12 @@
              que la règle interdit. Elle sort donc de l'écran (retirée du
              miroir) et reste à la corbeille, où le journal la rattache à sa
              création. */
-          /* LA FICHE RESTE AU MIROIR, ARCHIVÉE (comme l'archivage nomme la même chose au serveur) : la retirer du miroir faisait partir l'envoi global du magasin (qui pose la collection
-             ENTIÈRE) sans elle, donc la supprimait PHYSIQUEMENT du serveur (RG-14) et, selon l'ordre des minuteries, l'archivage nommé qui suivait n'y trouvait plus rien :
-             « Aucune fiche … » mettait la page en panne (vague 139, sous charge). Archivée des deux côtés, les deux chemins convergent dans n'importe quel ordre. */
+          /* La fiche sort du miroir, mais l'envoi GLOBAL du magasin (qui pose la collection ENTIÈRE) ne doit jamais la retirer du serveur : on la retient archivée (`RETIREES`),
+             `delta()` la joint à la collection envoyée. Sans cela, l'envoi global parti avant l'archivage nommé supprimait la fiche PHYSIQUEMENT (RG-14) et l'archivage qui
+             suivait levait « Aucune fiche … » : la page tombait en panne (vague 139, sous charge). Quel que soit l'ordre d'arrivée, la fiche finit archivée au serveur. */
           undo: function () {
-            if (rec.statut !== 'archive') {
-              rec.statut = 'archive'; rec._archivePar = currentUser(); rec._archiveLe = new Date().toISOString(); rec._motifArchivage = 'Création annulée';
-            }
+            api._remove(rec.id);
+            (RETIREES[name] = RETIREES[name] || []).push(Object.assign({}, rec, { statut: 'archive', _archivePar: currentUser(), _archiveLe: new Date().toISOString(), _motifArchivage: 'Création annulée' }));
             transmettre('archiver', name, { id: rec.id, motif: 'Création annulée' });
             save(); emit(name);
           },
