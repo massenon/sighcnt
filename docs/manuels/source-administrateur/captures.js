@@ -1,13 +1,27 @@
-/* Usage : maquette servie par un serveur PHP isolé sur 127.0.0.1:8732 (SIGH_BASE=<base à soi>, SIGH_BANC=1), relais local sur 127.0.0.1:8731 (php artisan serve, base SQLite à soi,
- * compte superadmin de démonstration), JETON=<jeton de api/auth.php> node captures.js [noms...]. Les PNG bruts sont ensuite réduits et quantifiés (256 couleurs). */
-/* Captures annotées du manuel administrateur. Maquette sur 8732 (base sigh_man_admin), relais local sur 8731 (SQLite à soi). */
+/* Captures annotées du manuel administrateur.
+ * Maquette : `node serveur-maquette.js` (PHP 8327, HTTP 8328, base jetable à soi). Relais : copie locale de apps/web lancée avec APP_BASE_PATH sur CET arbre (SQLite à soi, compte
+ * superadmin de démonstration), port PORT_RELAIS. JETON est lu de api/auth.php au lancement. Ordre : MAQUETTE d'abord (`node captures.js m-`), puis le relais (`node captures.js p-`),
+ * le relais réutilisant le port de la maquette une fois celle-ci arrêtée. Les PNG bruts vont dans OUT, puis sont réduits par optimiser-captures.py (256 couleurs). */
 const { chromium } = require('/opt/node-tools/node_modules/playwright');
+const http = require('http');
 const path = require('path');
 const OUT = process.env.OUT || path.join(__dirname, 'captures-brutes');
-const JETON = process.env.JETON;
-const M = 'http://127.0.0.1:8732/pages/';
-const R = 'http://127.0.0.1:8731/panneau/';
+const PORT_M = Number(process.env.PORT_MAQUETTE || 8328);
+const PORT_R = Number(process.env.PORT_RELAIS || 8328);
+const M = 'http://127.0.0.1:' + PORT_M + '/pages/';
+const R = 'http://127.0.0.1:' + PORT_R + '/panneau/';
+const CHROME = process.env.CHROME_PATH || '/opt/pw-browsers/chromium-1243/chrome-linux64/chrome';
+const COURRIEL_RELAIS = process.env.COURRIEL_RELAIS || 'admin@demo.local';
+const MDP_RELAIS = process.env.MDP_RELAIS; /* jamais écrit dans le dépôt : passé par l'environnement */
 const seul = process.argv.slice(2);
+function jeton() {
+  return new Promise((res) => {
+    const c = JSON.stringify({ action: 'connexion', identifiant: 'c.bassongui', motDePasse: 'demonstration', poste: 'manuel-adm' });
+    const q = http.request({ host: '127.0.0.1', port: PORT_M, path: '/api/auth.php', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(c) } },
+      (r) => { let d = ''; r.on('data', (x) => { d += x; }); r.on('end', () => { try { res(JSON.parse(d).jeton); } catch (e) { res(null); } }); });
+    q.on('error', () => res(null)); q.end(c);
+  });
+}
 
 /* Cadre rouge numéroté autour d'un élément, posé en coordonnées de la page. */
 async function cadre(p, loc, n, opts = {}) {
@@ -275,6 +289,71 @@ const MAQ = {
     await cadre(p, btn(p, 'Générer la clé'), 2);
     await prendre(p, 'cfg-pair', { h: 1100 });
   },
+  /* ---- Écrans nouveaux ou changés depuis la première édition (17/11/2026) ---- */
+  async 'cfg-sms'(p) {
+    await ouvrirMaquette(p, 'cfg-sms');
+    await cadre(p, btn(p, 'Enregistrer la passerelle'), 1);
+    await cadre(p, btn(p, 'Tester l’envoi'), 2);
+    await prendre(p, 'cfg-sms', { h: 1500 });
+  },
+  async 'm13-sms-journal'(p) {
+    await ouvrirMaquette(p, 'm13-sms-journal');
+    await prendre(p, 'm13-sms-journal', { h: 820 });
+  },
+  async 'cfg-smtp'(p) {
+    await ouvrirMaquette(p, 'cfg-smtp');
+    await prendre(p, 'cfg-smtp', { h: 900 });
+  },
+  async 'cfg-bareme-aib'(p) {
+    await ouvrirMaquette(p, 'cfg-bareme-aib');
+    await cadre(p, btn(p, 'Nouvelle version'), 1);
+    await prendre(p, 'cfg-bareme-aib', { h: 1100 });
+  },
+  async 'cfg-bareme-aib-imputations'(p) {
+    await ouvrirMaquette(p, 'cfg-bareme-aib');
+    await p.locator('main button, main [role=tab]').filter({ hasText: /^\s*Imputations/ }).first().click();
+    await p.waitForTimeout(900);
+    await nettoyer(p);
+    await prendre(p, 'cfg-bareme-aib-imputations', { h: 900 });
+  },
+  async 'm12-echeances'(p) {
+    await ouvrirMaquette(p, 'm12-echeances');
+    await prendre(p, 'm12-echeances', { h: 900 });
+  },
+  async 'm13-plan-annuel'(p) {
+    await ouvrirMaquette(p, 'm13-plan-annuel');
+    await prendre(p, 'm13-plan-annuel', { h: 1000 });
+  },
+  async 'm8-factures-tiers'(p) {
+    await ouvrirMaquette(p, 'm8-factures-tiers');
+    await prendre(p, 'm8-factures-tiers', { h: 820 });
+  },
+  async 'adm-validations'(p) {
+    await ouvrirMaquette(p, 'adm-validations');
+    await prendre(p, 'adm-validations', { h: 900 });
+  },
+  async 'cfg-systeme'(p) {
+    await ouvrirMaquette(p, 'cfg-systeme');
+    await prendre(p, 'cfg-systeme', { h: 900 });
+  },
+  async 'cfg-modules'(p) {
+    await ouvrirMaquette(p, 'cfg-modules');
+    await prendre(p, 'cfg-modules', { h: 900 });
+  },
+  async 'm14-securite-utilisateurs'(p) {
+    await ouvrirMaquette(p, 'm14-securite-utilisateurs');
+    await anonymiser(p);
+    await prendre(p, 'm14-securite-utilisateurs', { h: 800 });
+  },
+  async 'm14-audit'(p) {
+    await ouvrirMaquette(p, 'm14-audit');
+    await anonymiser(p);
+    await prendre(p, 'm14-audit', { h: 800 });
+  },
+  async 'mere-journal-operations'(p) {
+    await ouvrirMaquette(p, 'mere-journal-operations');
+    await prendre(p, 'mere-journal-operations', { h: 800 });
+  },
 };
 
 const REL = {
@@ -312,11 +391,23 @@ const REL = {
     await cadre(p, p.locator('main button').filter({ hasText: 'Changer le mot de passe' }), 1);
     await prendre(p, 'p-superadmin', { y0: 0, h: 760 });
   },
+  async 'p-sms'(p) {
+    await p.goto(R + 'sms'); await p.waitForLoadState('networkidle');
+    await p.waitForFunction(() => { const i = document.getElementById('limite-sms-plafond_jour'); return i && i.value !== ''; }, null, { timeout: 15000 }).catch(() => {});
+    await cadre(p, p.locator('main button').filter({ hasText: 'Tester l’envoi' }), 1);
+    await prendre(p, 'p-sms', { y0: 0, h: 1500 });
+  },
+  async 'p-boites'(p) { await p.goto(R + 'boites'); await p.waitForLoadState('networkidle'); await prendre(p, 'p-boites', { y0: 0, h: 700 }); },
+  async 'p-indicateurs'(p) { await p.goto(R + 'indicateurs'); await p.waitForLoadState('networkidle'); await prendre(p, 'p-indicateurs', { y0: 0, h: 700 }); },
+  async 'p-journal'(p) { await p.goto(R + 'journal'); await p.waitForLoadState('networkidle'); await prendre(p, 'p-journal', { y0: 0, h: 700 }); },
+  async 'p-consultation'(p) { await p.goto(R + 'consultation'); await p.waitForLoadState('networkidle'); await prendre(p, 'p-consultation', { y0: 0, h: 800 }); },
+  async 'p-satisfaction-publique'(p) { await p.goto(R.replace('/panneau/', '/s/' + (process.env.JETON_SAT || 'inconnu'))); await p.waitForLoadState('networkidle'); await prendre(p, 'p-satisfaction-publique', { y0: 0, h: 900 }); },
   async 'p-alertes'(p) { await p.goto(R + 'alertes'); await p.waitForLoadState('networkidle'); await prendre(p, 'p-alertes', { y0: 0, h: 640 }); },
 };
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--no-sandbox'] });
+  const JETON = (seul.length && seul.every((n) => n.startsWith('p-'))) ? null : await jeton();
+  const b = await chromium.launch({ executablePath: CHROME, args: ['--no-sandbox'] });
   const ctxM = await b.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, locale: 'fr-FR' });
   await ctxM.addInitScript(([j]) => {
     localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'admin', nom: 'ADMINISTRATEUR Démonstration', poste: 'Administrateur système', identifiant: 'c.bassongui', fonction: 'direction', secteur: 'ADM' }));
@@ -332,8 +423,8 @@ const REL = {
     const ctxR = await b.newContext({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 2, locale: 'fr-FR' });
     const pr = await ctxR.newPage();
     await pr.goto(R + 'connexion');
-    await pr.fill('input[type=email], input[name=courriel], input[name=email]', 'admin@demo.local');
-    await pr.fill('input[type=password]', 'demonstration-2026');
+    await pr.fill('input[type=email], input[name=courriel], input[name=email]', COURRIEL_RELAIS);
+    await pr.fill('input[type=password]', MDP_RELAIS);
     await pr.click('button[type=submit]');
     await pr.waitForLoadState('networkidle');
     for (const [nom, f] of Object.entries(REL)) {
