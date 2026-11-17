@@ -73,10 +73,10 @@ table.matrice th.v span { display: inline-block; transform: rotate(-90deg); tran
 .saut { page-break-before: always; }
 
 /* Édition du 17/11/2026 : répertoire des écrans (annexe C) et rappel du geste réservé. */
-table.repertoire { font-size: 8pt; }
+table.repertoire { font-size: 8pt; table-layout: fixed; width: 100%; word-wrap: break-word; overflow-wrap: anywhere; }
 table.repertoire th, table.repertoire td { padding: 1mm 1.4mm; vertical-align: top; }
-table.repertoire td:first-child { width: 33%; }
-table.repertoire td.qui-agit { width: 22%; }
+table.repertoire th:nth-child(1) { width: 26%; }
+table.repertoire th:nth-child(3) { width: 24%; }
 table.repertoire tr { page-break-inside: avoid; }
 table.repertoire .chem { display: block; color: #64748b; font-size: 7pt; }
 table.repertoire .btns { display: block; color: #334155; }

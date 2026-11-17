@@ -6,7 +6,8 @@ const fs = require('fs');
 const MAN = require(path.resolve(__dirname, '../../../packages/referentiels/data/manifeste.json'));
 const REC = JSON.parse(fs.readFileSync(path.join(__dirname, 'recolte-ecrans.json'), 'utf8'));
 const GENERIQUES = /^(Colonnes|Exporter|Importer les données|Actions|Effacer les filtres|Mois précédent|Mois suivant|Aujourd’hui|Retour à l’accueil|Y aller|Ouvrir|\d+)$/;
-const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = (s) => String(s).replace(/\s[—–]\s/g, ', ').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const escT = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const sansNombre = (t) => t.replace(/\d+$/, '').trim();
 const coupe = (t, n) => (t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : t);
 
@@ -31,7 +32,9 @@ module.exports = function (H) {
     const ong = (r.onglets || []).map(sansNombre).filter(Boolean);
     if (ong.length) parts.push('<b>Onglets :</b> ' + esc(ong.join(', ')) + '.');
     else if ((r.colonnes || []).length && !aides.length) parts.push('<b>Colonnes :</b> ' + esc([...new Set(r.colonnes)].slice(0, 8).join(', ')) + '.');
-    const btn = [...new Set((r.boutons || []).map(sansNombre).filter((t) => t && !GENERIQUES.test(t) && !ong.includes(t)))].slice(0, 6);
+    const btn = [...new Set((r.boutons || []).map(sansNombre).filter((t) => t && !GENERIQUES.test(t) && !ong.includes(t) && !/\d/.test(t) && t.length <= 34))].slice(0, 6);
+    if (!parts.length && /^hub-/.test(id)) parts.push('Page d’accueil du module : elle liste ses écrans.');
+    if (!parts.length && !btn.length) parts.push('Vue de consultation.');
     return parts.join(' ') + (btn.length ? '<span class="btns"><b>Boutons :</b> ' + esc(btn.join(', ')) + '.</span>' : '');
   }
   const groupes = [];
@@ -40,7 +43,7 @@ module.exports = function (H) {
   groupes.forEach((g) => {
     html += `<h3 class="groupe-ecrans">${esc(g.code)} : ${esc(g.label)} <span style="font-weight:400;color:#64748b">(${esc(g.domaine)}, ${g.ecrans.length} écran${g.ecrans.length > 1 ? 's' : ''})</span></h3>`;
     html += '<table class="repertoire"><tr><th>Écran</th><th>Ce que l’écran contient</th><th>Droits d’origine</th></tr>' +
-      g.ecrans.map((e) => `<tr><td><b>${esc(e.label)}</b><span class="chem">${esc(e.domaine)} ➔ ${esc(e.moduleLabel)}</span></td><td>${contenu(e.id)}</td><td class="qui-agit">${droits(e.id)}</td></tr>`).join('') + '</table>';
+      g.ecrans.map((e) => `<tr><td><b>${escT(e.label)}</b><span class="chem">${esc(e.domaine)} ➔ ${esc(e.moduleLabel)}</span></td><td>${contenu(e.id)}</td><td class="qui-agit">${droits(e.id)}</td></tr>`).join('') + '</table>';
   });
   return html;
 };

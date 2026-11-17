@@ -101,6 +101,7 @@ ${etapes(`Ouvrez ${ch('m7-commandes')}.`,
  `Cliquez sur l’icône ${b('Valider la commande')} de la ligne, puis confirmez ${b('Valider la commande')}. Le validateur enregistré est <b>vous</b>, l’agent de la session.`,
  `Une fois validée, la commande peut être transmise au fournisseur, puis livrée et soldée.`)}
 ${fig('commande-daf', 'Les bons de commande vus par la Directrice Administrative.')}
+${fig('poste-commandes', 'Le même écran sur le poste de bureau (capture du poste Flutter, jeu de test) : 1 Nouvelle commande.', 'poste')}
 ${droit('valider_commande_stock')}
 ${att('Les états « Validée », « Transmise », « Livrée » et « Soldée » ne se choisissent pas dans le formulaire : ils ne s’obtiennent que par le geste de validation. Un autre rôle, même administrateur, ne peut pas valider une commande si la fiche de son rôle ne lui donne pas ce geste.')}
 <p>Deux autres gestes réservés complètent le circuit des besoins : ${geste('arbitrer_besoins')} (détenu d’origine par ${detenteurs('arbitrer_besoins')}) et ${geste('traiter_besoins_accordes')} (détenu d’origine par ${detenteurs('traiter_besoins_accordes')}, qui reçoit la tâche « besoin accordé »).</p>
@@ -129,6 +130,7 @@ ${etapes(`Ouvrez ${ch('m8-factures-tiers')}. L’écran a quatre onglets : ${b('
  `Émettez la facture : elle devient une facture normalisée (colonne ${b('MECeF')}) avec le ${b('Net à payer')} (base plus AIB décidé). Imprimez avec ${b('Imprimer la facture (A4)')}.`,
  `Quand le tiers paie : onglet ${b('Règlements et lettrage')}, ${b('Enregistrer un règlement reçu')} (${b('Montant reçu (FCFA)')}, ${b('Mode')}, ${b('Référence du paiement')}), puis ${b('Lettrer')} le règlement sur la facture. Le ${b('Reste dû')} diminue.`)}
 ${fig('factures-tiers', 'Les factures aux tiers payeurs : 1 Nouvelle facture, 2 Créances.')}
+${fig('poste-factures-tiers', 'Sur le poste de bureau : 1 Nouvelle facture à un tiers payeur, 2 Créances.', 'poste')}
 ${puces(`<b>Corriger</b> : une facture émise ne se modifie pas. La correction est un avoir total, avec lettrage ou délettrage d’un règlement, réservé au geste ${geste('corriger_facture_tiers')}.`,
  `<b>Créances</b> : le montant dû moins les lettrages, par tiers, en tranches (30 et 90 jours à l’origine). Sans délai convenu, l’échéance est « non calculable » et l’écran le dit.`,
  `Un tiers n’est jamais facturé deux fois pour la même prestation. Un trop-perçu reste non lettré : le remboursement ne se gère pas ici.`)}
@@ -145,6 +147,7 @@ ${etapes(`Ouvrez ${ch('mecef-config')}.`,
  `La carte ${b('Mode de certification')} dit le ${b('Mode en vigueur')} : ${b('Boîtier physique')} par défaut.`,
  `Cliquez sur ${b('Régler le mode')}, choisissez le mode et validez.`)}
 ${fig('mecef-modes', 'La configuration fiscale : 1 Régler le mode, 2 Régler l’imprimante (plus bas), 3 Voir la file.')}
+${fig('poste-mecef-config', 'Sur le poste de bureau : la configuration fiscale et le réglage du mode.', 'poste')}
 ${droit('regler_mode_mecef')}
 ${alerte('Aucun numéro n’est jamais fabriqué comme s’il était fiscal. Tant que l’appareil réel n’est pas branché, le mode boîtier dit « en attente des réponses du fournisseur » et une vente reste <b>en attente de certification</b> ; le mode e-MECeF dit « non configuré : dossier d’interface DGI requis ». Le bouton « Tester la connexion au dispositif » le dit aussi au lieu d’annoncer une connexion qui n’existe pas.')}
 
@@ -172,6 +175,7 @@ ${etapes(`Ouvrez ${ch('cfg-comptabilite')} et repérez l’obligation ${b('CNSS-
  `Cliquez sur ${b('Confirmer')} dans sa ligne.`,
  `Saisissez la ${b('Référence de la confirmation')} (obligatoire : courrier, e-mail ou page de la CNSS qui confirme, avec sa date), puis validez. La confirmation est signée, journalisée et versionnée par date.`)}
 ${fig('cnss-confirmation', 'Les obligations fiscales : 1 Confirmer, dans la ligne CNSS-VERSEMENT.')}
+${fig('poste-obligations', 'Sur le poste de bureau : 1 Confirmer la ligne CNSS-VERSEMENT.', 'poste')}
 ${droit('confirmer_obligation_fiscale')}
 ${info('Le calendrier fiscal mensuel (' + ch('m12-calendrier-fiscal') + ') affiche ensuite l’échéance du versement avec sa date confirmée. Les assiettes des cotisations (CNSS part patronale 16,4 %, part ouvrière 3,6 %, VPS 4 %) sont celles du cahier des charges.')}
 
@@ -182,6 +186,7 @@ ${etapes(`Ouvrez ${ch('cfg-bareme-aib')} et cliquez sur l’onglet ${b('Imputati
  `Saisissez la base (montant hors taxes), acceptez ou changez le taux proposé, indiquez le compte et le motif, et enregistrez.`,
  `Une imputation se corrige par une <b>annulation motivée</b> (archivage) : elle ne s’efface pas.`)}
 ${fig('aib-imputations', 'L’onglet Imputations du barème de l’AIB (vue du Comptable).')}
+${fig('poste-aib', 'Sur le poste de bureau : 1 onglet Imputations du barème de l’AIB.', 'poste')}
 ${droit('imputer_aib')}
 ${att('Deux barèmes datés coexistent : la situation de l’acheteur (1 %, 5 %, 3 %) et la retenue sur la facture d’un tiers (3 % pour une personne physique, 5 % pour une personne morale). Ces derniers taux sont des <b>hypothèses à confirmer</b> par la Direction : les textes officiels n’ont pas été relus. L’imputation n’écrit aucune écriture comptable pour l’instant.')}
 <p>Le droit d’écrire une version du barème est ${geste('ecrire_bareme_aib')} (détenu d’origine par ${detenteurs('ecrire_bareme_aib')}) ; l’onglet ${b('Nouvelle version')} demande un motif. <b>Tout changement du validateur d’une famille</b> exige aussi un motif.</p>
@@ -239,6 +244,7 @@ ${etapes(`Ouvrez ${ch('m13-plan-annuel')} ; choisissez l’exercice.`,
  `Quand le plan est arrêté, la Direction l’<b>adopte</b>. Le contenu ne change plus ensuite que par version datée ; le suivi reste libre.`,
  `Imprimez avec ${b('Imprimer le plan')} ou ${b('Imprimer le bilan')}. Les signataires se règlent avec ${b('Signataires de l’impression')} (un à quatre, par fonction).`)}
 ${fig('plan-annuel', 'Le plan annuel de travail : 1 Nouvelle action, 2 Imprimer le plan.')}
+${fig('poste-plan-annuel', 'Sur le poste de bureau : 1 Nouvelle action, 2 Imprimer le plan.', 'poste')}
 ${puces(`${b('Reconduire les actions non réalisées')} copie, une seule fois par action, celles d’un exercice précédent vers le nouveau, suivi remis à zéro.`,
  `Une action non réalisée dont le dernier jour du trimestre de fin est passé déclenche une <b>alerte de retard</b> (une seule par action), qui retombe quand l’action est réalisée ou replanifiée.`,
  `Pour ajouter une action à un plan déjà adopté, utilisez « Ajouter après adoption » et donnez un motif.`)}
@@ -253,7 +259,9 @@ ${etapes(`Ouvrez ${ch('adm-enquetes')}. Onglet ${b('Modèles')} : choisissez l�
  `Cliquez sur ${b('Imprimer l’affiche (A4)')} : le bloc « À afficher en salle d’attente » donne l’affiche avec le code QR. ${b('Copier l’adresse')} copie le lien.`,
  `Pour arrêter la collecte, cliquez sur ${b('Révoquer le lien')} : la page répond « Ce lien n’est plus valable ».`)}
 ${fig('enquetes-liens', 'Enquêtes et questionnaires : 1 Liens de partage, 2 Nouveau modèle.')}
+${fig('poste-enquetes', 'Sur le poste de bureau : 1 Nouveau modèle.', 'poste')}
 ${fig('satisfaction', 'La satisfaction des patients : notes par question, taux et commentaires.')}
+${fig('poste-satisfaction', 'Sur le poste de bureau : la satisfaction des patients.', 'poste')}
 <p>L’écran ${ch('adm-satisfaction')} donne l’analyse : ${b('Réponses recueillies')}, ${b('Note moyenne globale')}, ${b('Recommanderaient la clinique')}, ${b('Avec commentaire libre')}, la note par question, l’évolution par mois et le résultat par point de collecte.</p>
 ${info('Le taux de satisfaction compte les notes 4 ou 5 sur les notes valides. Le taux de réponse est « non calculable » tant que les passages à l’accueil ne sont pas comptés : ce n’est pas zéro.')}
 ${att('La collecte en ligne est <b>désactivée par défaut</b> : une page publique ne s’ouvre pas sans geste. La page exige un navigateur récent (Chrome 133, Firefox 130, Safari 17) et le dit sinon ; un téléphone plus ancien ne peut pas répondre. Aucun nom, aucun numéro de dossier ni aucune donnée de santé ne doit figurer dans une réponse : le poste mère refuse la réponse qui en contient.')}
@@ -272,11 +280,13 @@ ${etapes(`Ouvrez ${ch('cfg-sms')}. Les cartes d’en-tête disent la ${b('Passer
  `Dans ${b('Test d’envoi')}, saisissez un numéro de test au format international et cliquez sur ${b('Tester l’envoi')}. L’écran dit « accepté par le fournisseur » avec son identifiant, ou un refus nommé avec le geste qui le corrige. <b>Accepté ne veut pas dire reçu</b> : vérifiez sur le téléphone.`,
  `Cochez ${b('Passerelle active')} pour activer les envois automatiques.`)}
 ${fig('sms-passerelle', 'La passerelle SMS : 1 Enregistrer la passerelle, 2 Tester l’envoi.')}
+${fig('poste-cfg-sms', 'Sur le poste de bureau : la passerelle SMS et ses cartes d’état.', 'poste')}
 ${droit('regler_passerelle_sms')}
 ${alerte('Les envois automatiques sont <b>désactivés par défaut</b> : activez-les seulement quand la passerelle est testée. La couverture du Bénin, l’expéditeur alphanumérique et le coût d’un message n’ont jamais été vérifiés avec un vrai compte : la première semaine, gardez un plafond bas.')}
 <p>Le <b>consentement</b> se règle sur la fiche : la case ${b('Accepte de recevoir des SMS de la clinique')} du dossier patient (cochée par défaut) et la case ${b('Accepte de recevoir les vœux d’anniversaire par SMS')} de la fiche du personnel, <b>décochée par défaut</b>. Sans consentement, aucun SMS ne part.</p>
 <p>${ch('m13-sms-journal')} garde une ligne par envoi tenté : motif, statut, code du refus, fournisseur et numéro <b>masqué</b> (les quatre derniers chiffres seulement). Filtres : ${b('Aujourd’hui')}, ${b('Sept derniers jours')}, ${b('Toute la période')} ; onglets ${b('Tous les envois')} et ${b('Archivés')}.</p>
 ${fig('sms-journal', 'Le journal des envois SMS.')}
+${fig('poste-sms-journal', 'Sur le poste de bureau : le journal des envois SMS.', 'poste')}
 ${info('Un rendez-vous pris juste avant un rappel qui part trop tard n’est pas rappelé à l’heure du rendez-vous ni après. Un message est refusé s’il a plus de 3 heures de retard sur son heure.')}
 
 <h2>L’identité de la clinique sur les pièces (RCCM)</h2>
@@ -286,6 +296,7 @@ ${etapes(`Ouvrez ${ch('cfg-fiscalite')} (paramètres fiscaux) ou ${ch('cfg-brand
  `Si la mention est une première configuration, cliquez sur ${b('Valider l’identité légale')} : la validation appartient à la Direction, à la DAF ou à l’administrateur.`,
  `Contrôlez avec ${b('Prévisualiser un état')}.`)}
 ${fig('identite-rccm', 'Les paramètres fiscaux : 1 Enregistrer.')}
+${fig('poste-identite-rccm', 'Sur le poste de bureau : les paramètres fiscaux, version 2 en force (RCCM NAT/2021/M02-020).', 'poste')}
 ${fig('identite-papier', 'Identité et papier à en-tête : 1 Enregistrer, 2 Prévisualiser un état.')}
 ${puces(`Le droit de poser l’identité est celui d’<b>écrire</b> l’un de ces deux écrans (administrateur, Direction, DAF d’origine). Sur un poste <b>fileul</b>, la modification est signée et déposée ; la mère la revérifie sous le rôle de l’auteur et la propage à tous les postes.`,
  `Les options d’impression (logo de part et d’autre, filigrane) sont un réglage de clinique qui voyage avec l’identité.`,
