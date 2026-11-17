@@ -4286,6 +4286,7 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
+        "m10-fiche-equipe",
         "m10-badges",
         "m10-badges-verification",
         "m10-planning",

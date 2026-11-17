@@ -716,6 +716,26 @@
     "nombre": 1
    },
    {
+    "source": "a_valider_besoins",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "Bon de besoins à valider : BEX-001",
+    "detail": "Laboratoire : Réactifs. La validation est un geste de la DAF.",
+    "lien": "m7-besoins",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_besoins",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "Bon de besoins à valider : BEX-002",
+    "detail": "Pharmacie : Gants. La validation est un geste de la DAF.",
+    "lien": "m7-besoins",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
     "source": "poste",
     "domaine": "Poste",
     "priorite": "information",
@@ -2535,17 +2555,17 @@
        "onglet": null
       },
       {
+       "label": "Factures aux tiers payeurs",
+       "detail": "Facturation & Caisse",
+       "icone": "building-2",
+       "ecran": "m8-factures-tiers",
+       "onglet": null
+      },
+      {
        "label": "Recettes par période",
        "detail": "Facturation & Caisse",
        "icone": "trending-up",
        "ecran": "m8-recettes",
-       "onglet": null
-      },
-      {
-       "label": "Compagnies partenaires",
-       "detail": "Assurances & Créances",
-       "icone": "building-2",
-       "ecran": "m9-compagnies",
        "onglet": null
       }
      ]
@@ -3098,17 +3118,17 @@
        "onglet": null
       },
       {
+       "label": "Factures aux tiers payeurs",
+       "detail": "Facturation & Caisse",
+       "icone": "building-2",
+       "ecran": "m8-factures-tiers",
+       "onglet": null
+      },
+      {
        "label": "Recettes par période",
        "detail": "Facturation & Caisse",
        "icone": "trending-up",
        "ecran": "m8-recettes",
-       "onglet": null
-      },
-      {
-       "label": "Compagnies partenaires",
-       "detail": "Assurances & Créances",
-       "icone": "building-2",
-       "ecran": "m9-compagnies",
        "onglet": null
       }
      ]
@@ -3887,6 +3907,13 @@
     {
      "groupe": "Écrans",
      "resultats": [
+      {
+       "label": "Factures aux tiers payeurs",
+       "detail": "Facturation & Caisse",
+       "icone": "building-2",
+       "ecran": "m8-factures-tiers",
+       "onglet": null
+      },
       {
        "label": "Recettes par période",
        "detail": "Facturation & Caisse",

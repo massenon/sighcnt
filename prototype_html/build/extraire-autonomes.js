@@ -127,6 +127,12 @@ async function jetonValide(page) {
       /* Un contexte NEUF par écran : sans session pour les pages d'accès, avec la session du banc pour le verrou. */
       const ctx = await navigateur.newContext({ viewport: { width: 1440, height: 900 } });
       const page = await ctx.newPage();
+      /* Horloge FIGÉE au 30/10/2026 10 h, celle des tests du poste (`parite_autonomes_test.dart`) : l'identité imprimée se lit À LA DATE (lot IDENT), la fiche ne doit pas changer de RCCM le jour où une version prend effet. */
+      await page.addInitScript(() => {
+        const Vrai = Date; const FIXE = new Vrai(2026, 9, 30, 10, 0, 0).getTime();
+        class Faux extends Vrai { constructor(...a) { if (a.length === 0) super(FIXE); else super(...a); } static now() { return FIXE; } }
+        window.Date = Faux;
+      });
       if (e.session) {
         const j = (await BANC.connecter(BANC.SESSION_BANC.identifiant) || {}).jeton;
         await page.addInitScript(([s, t]) => { localStorage.setItem('sigh-cnt:session', JSON.stringify(s)); localStorage.setItem('sigh-cnt:jeton', t); },

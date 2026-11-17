@@ -273,7 +273,7 @@ final List<_Source> _sources = [
                 'Bon de besoins à valider${_v(b['reference']) ? ' : ${b['reference']}' : ''}',
                 '${_ou(b['service'], 'Service')}${_v(b['motif']) ? ' : ${b['motif']}' : ''}. La validation est un geste de la DAF.',
                 'm7-besoins',
-                const ['da', 'direction']),
+                gesRoles('arbitrer_besoins', const ['da', 'direction', 'admin'])),
       ]),
   // Changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3, `notifications.js`) : UNE alerte par LOT (une proposition isolée est un lot d'une ligne). La source LIT
   // l'état des versions et ne décide d'aucun seuil ; les destinataires sont les profils de la famille de décision de la maquette (`PR.ROLES_VALIDATION_TARIFS`).

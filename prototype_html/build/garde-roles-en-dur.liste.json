@@ -373,7 +373,7 @@
    "['infirmier', 'aide_soignant', 'surveillant', 'medecin']": 1,
    "['comptable', 'da', 'assistant_comptable', 'direction']": 1,
    "['da', 'comptable', 'direction', 'assistant_comptable', 'aide_comptable']": 1,
-   "['da', 'direction']": 1,
+   "['da', 'direction', 'admin']": 1,
    "['comptable', 'da', 'aide_comptable']": 1,
    "['direction', 'da', 'comptable', 'admin']": 1,
    "['direction', 'da', 'admin']": 1

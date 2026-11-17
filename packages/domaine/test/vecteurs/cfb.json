@@ -6941,7 +6941,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "335",
+     "valeur": "336",
      "indice": null
     },
     {
@@ -6956,7 +6956,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "333",
+     "valeur": "334",
      "indice": null
     }
    ],
@@ -7220,7 +7220,7 @@
     "boutons": []
    }
   ],
-  "tousEcrans": 335,
+  "tousEcrans": 336,
   "modulesListe": [
    [
     "M2",
@@ -7304,7 +7304,7 @@
     "Ressources humaines",
     "id-card",
     "RH",
-    26
+    27
    ],
    [
     "M11",
@@ -7419,7 +7419,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "335",
+     "valeur": "336",
      "indice": null
     },
     {
@@ -7434,7 +7434,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "324",
+     "valeur": "325",
      "indice": null
     }
    ],
@@ -7676,7 +7676,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "335",
+     "valeur": "336",
      "indice": null
     },
     {
@@ -7691,7 +7691,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "333",
+     "valeur": "334",
      "indice": null
     }
    ],
@@ -7812,7 +7812,7 @@
      "DASH — Tableaux de bord par poste"
     ]
    ],
-   "nbEcrans": 335
+   "nbEcrans": 336
   },
   "declarerCfg": {
    "fiche": {
@@ -7895,7 +7895,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "335",
+     "valeur": "336",
      "indice": null
     },
     {
@@ -7910,7 +7910,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "321",
+     "valeur": "322",
      "indice": null
     }
    ],
