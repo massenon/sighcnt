@@ -43,7 +43,7 @@
 
 | Rangée | Module | Type | Écrans | Rôles d'origine |
 |---|---|---|---|---|
-| Ressources humaines | M10 | canonique | 26 | rh, da, admin, direction |
+| Ressources humaines | M10 | canonique | 27 | rh, da, admin, direction |
 | Paie & Primes | M11 | canonique | 9 | rh, da, comptable, admin, direction |
 
 ## Administration

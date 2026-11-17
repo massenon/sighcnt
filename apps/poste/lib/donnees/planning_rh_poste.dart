@@ -12,14 +12,43 @@ import 'magasin.dart';
 /// Les écrans (carte des régimes individuels, filtres avancés, commandes de validation, écran des propositions) sont portés au lot Y (E2339 et suivants) : ils
 /// n'appellent que ce fichier et le domaine, jamais une règle écrite à l'écran.
 class PlanningRhPoste {
-  PlanningRhPoste(this.m, {required this.auteur, required this.role, required this.droitGeste, DateTime Function()? horloge}) : _horloge = horloge ?? DateTime.now;
+  PlanningRhPoste(this.m, {required this.auteur, required this.role, required this.droitGeste, bool Function()? lectureCompletePersonnel, DateTime Function()? horloge})
+      : lectureCompletePersonnel = lectureCompletePersonnel ?? (() => true),
+        _horloge = horloge ?? DateTime.now;
   final Magasin m;
   final String Function() auteur;
   final String role;
 
   /// Le droit d'un geste réservé pour le rôle de la session (fiche RBAC, `matrice.droitGeste`) : JAMAIS un nom de rôle dans ce fichier (lot PLAN-INDIV).
   final bool Function(String geste) droitGeste;
+
+  /// La session lit-elle déjà TOUT le personnel (écran `m10-personnel`, droits d'écran) ? Elle n'a alors aucun périmètre d'équipe (lot SURV). Par défaut OUI : un appelant qui ne
+  /// le dit pas garde le comportement d'avant le lot (aucun périmètre).
+  final bool Function() lectureCompletePersonnel;
   final DateTime Function() _horloge;
+
+  /// La portée de la session, TIRÉE DES DROITS (jamais d'un nom de rôle) : lecture complète, puis geste `ouvrir_fiche_personnel_equipe`, sinon aucune.
+  PorteePersonnel get portee => porteePersonnelRh(lectureComplete: lectureCompletePersonnel(), geste: droitGeste(gesteFicheEquipe));
+
+  /// Le périmètre d'équipe pour [e] (`null` : permis ou agent absent, que le domaine refuse ensuite sous son propre code).
+  Map<String, Object?>? _perimetre(Fiche? e) {
+    if (e == null) return null;
+    return controlerPerimetreEquipeRh(portee: portee, agent: e, moi: moi())?.toJson();
+  }
+
+  /// L'ÉQUIPE de la session (liste restreinte, jamais de donnée de paie) : `{'ok': true, 'portee': …, 'agents': […]}` ou le refus nommé.
+  Map<String, Object?> equipeDeLaSession() {
+    final r = equipeDeLaSessionRh(portee: portee, personnelActif: [for (final e in m.collection('personnel').actives) e], moi: moi());
+    if (r.refus != null) return r.refus!.toJson();
+    return {'ok': true, 'portee': portee.nom, 'agents': r.agents};
+  }
+
+  /// La fiche RESTREINTE d'un agent de l'équipe : `{'ok': true, 'portee': …, 'fiche': {…}}` ou le refus nommé.
+  Map<String, Object?> ficheEquipe(Object? employeId) {
+    final r = ficheEquipeRh(portee: portee, agent: _agent(employeId), moi: moi());
+    if (r.refus != null) return r.refus!.toJson();
+    return {'ok': true, 'portee': portee.nom, 'fiche': r.fiche};
+  }
 
   String get aujourdhui => parametreDateIso(_horloge());
   ServiceParametres get service => serviceParametres(m, auteur: auteur, horloge: _horloge);
@@ -84,6 +113,8 @@ class PlanningRhPoste {
       if (x['id'] == employeId) e = x;
     }
     final versions = _versions(employeId);
+    final hors = droitGeste(gesteRegimeIndividuelRh) ? _perimetre(e) : null;
+    if (hors != null) return hors;
     final r = validerDerogationRh(
       droit: droitGeste(gesteRegimeIndividuelRh),
       mode: mode,
@@ -131,6 +162,8 @@ class PlanningRhPoste {
     final d = dateEffet ?? '';
     final dateRegime = RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(d) ? d : aujourdhui;
     final versions = versionsPersonnalisees(employeId);
+    final hors = droitGeste(gestePlanningPersonnaliseRh) ? _perimetre(e) : null;
+    if (hors != null) return hors;
     final r = validerPlanningPersoRh(
       droit: droitGeste(gestePlanningPersonnaliseRh),
       agentExiste: e != null,
@@ -155,6 +188,8 @@ class PlanningRhPoste {
   /// Les vacations posées sont VALIDÉES (celui qui applique est celui qui valide), comme [poserVacation] ; le modèle lui-même ne compte pour aucune prime (RG-11).
   Map<String, Object?> appliquerPlanningPerso({required Object? employeId, required String? du, required String? au, bool ecrire = false}) {
     final e = _agent(employeId);
+    final hors = peutPoserPlanningRh(role) == null ? _perimetre(e) : null;
+    if (hors != null) return hors;
     final r = apercuApplicationPersoRh(
       role: role,
       agent: e,
@@ -202,6 +237,10 @@ class PlanningRhPoste {
   /// CONFIRMER une valeur d'attente telle quelle (geste réservé `confirmer_valeur_attente_personnel`) : motif obligatoire, journal RG-12, la mention de CE champ tombe.
   Map<String, Object?> confirmerValeurAttente({required Object? employeId, required String? champ, required String? motif}) {
     final e = _agent(employeId);
+    if (droitGeste(gesteValeurAttenteRh)) {
+      final hors = controlerPorteeValeurAttenteRh(portee);
+      if (hors != null) return hors.toJson();
+    }
     final r = controlerConfirmationAttenteRh(droit: droitGeste(gesteValeurAttenteRh), agent: e, champ: champ, motif: motif);
     if (r.refus != null) return r.refus!.toJson();
     final col = m.collection('personnel');

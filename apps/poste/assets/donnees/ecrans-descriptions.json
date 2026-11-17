@@ -521,6 +521,10 @@
    "titre": "Événements du personnel",
    "description": "Mariages, naissances, décès et autres événements donnant lieu à une participation du personnel."
   },
+  "m10-fiche-equipe": {
+   "titre": "Fiche de mon équipe",
+   "description": "Lecture restreinte des agents de votre équipe : identité, fonction, service et planning."
+  },
   "m10-fiches-poste": {
    "titre": "Fiches de poste",
    "description": "Identification, missions, indicateurs de performance, relations fonctionnelles et compétences requises."

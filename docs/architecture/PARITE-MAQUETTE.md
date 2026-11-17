@@ -5,13 +5,13 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **357** |
+| Écrans du manifeste (hors hubs de module) | **358** |
 | Hubs de module (un par module, engendrés) | 23 |
-| Écrans nommés par au moins un scénario de la maquette | 266 (75 %) |
-| Écrans **sans** scénario (recette à écrire) | 91 |
-| Écrans portés | 355 |
+| Écrans nommés par au moins un scénario de la maquette | 271 (76 %) |
+| Écrans **sans** scénario (recette à écrire) | 87 |
+| Écrans portés | 358 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 202 |
+| Scénarios de la maquette analysés | 230 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 53 | 67 | 0 |
 | 5 · assurances et comptabilité | 32 | 25 | 32 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 188 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 191 | 134 | 191 | 0 |
 
 ## Par écran
 
@@ -34,19 +34,19 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 
 | Écran | Libellé | Module | Rôles | Scénarios | Statut |
 |---|---|---|---|---|---|
-| `m8-caisse` | État de caisse journalier | M8 | 8 | 16, 30, 35, 39, 40, 43, 71, 82, 102, 195, 200 | porté |
+| `m8-caisse` | État de caisse journalier | M8 | 8 | 16, 30, 35, 39, 40, 43, 71, 82, 102, 195, 202, 226 | porté |
 | `m8-dashboard` | Tableau de bord facturation | M8 | 8 | — | porté |
-| `m8-facturation` | Nouvelle facture | M8 | 7 | 11, 13, 17, 19, 32, 34, 88, 90, 117, 139, 181, 189, 195, 199, 200, 201 | porté |
+| `m8-facturation` | Nouvelle facture | M8 | 7 | 11, 13, 17, 19, 32, 34, 88, 90, 117, 139, 181, 189, 195, 201, 202, 203 | porté |
 | `m8-facture-avoir` | Factures d’avoir | M8 | 8 | 48 | porté |
 | `m8-factures` | Factures | M8 | 8 | 12, 30, 48, 82, 191 | porté |
 | `m8-operations` | Opérations de caisse | M8 | 8 | 20 | porté |
-| `m8-paiements` | Paiements | M8 | 7 | 88, 99, 100, 195, 200, 202 | porté |
+| `m8-paiements` | Paiements | M8 | 7 | 88, 99, 100, 195, 202, 204 | porté |
 | `m8-proforma` | Factures pro-forma | M8 | 8 | 123 | porté |
 | `m8-recettes` | Recettes par période | M8 | 8 | 20 | porté |
 | `m8-reliquats` | Reliquats | M8 | 8 | 20 | porté |
 | `m8-remboursements` | Remboursements & annulations | M8 | 8 | — | porté |
 | `mecef-avoirs` | Avoirs & annulations | MECEF | 6 | 108 | porté |
-| `mecef-config` | Configuration fiscale | MECEF | 5 | 90, 108 | porté |
+| `mecef-config` | Configuration fiscale | MECEF | 5 | 90, 108, 200, 205 | porté |
 | `mecef-dashboard` | Tableau de bord fiscal | MECEF | 6 | — | porté |
 | `mecef-factures` | Factures normalisées | MECEF | 6 | 76, 82, 99 | porté |
 | `mecef-journal` | Journal des transactions | MECEF | 6 | — | porté |
@@ -58,7 +58,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 |---|---|---|---|---|---|
 | `m6-alertes` | Alertes & seuils | M6 | 7 | — | porté |
 | `m6-dashboard` | Tableau de bord stock | M6 | 6 | 82 | porté |
-| `m6-dispensation` | Dispensation | M6 | 7 | 16, 25 | porté |
+| `m6-dispensation` | Dispensation | M6 | 7 | 16, 25, 226 | porté |
 | `m6-etiquetage` | Étiquetage & emplacements | M6 | 7 | 33, 132 | porté |
 | `m6-import-grand-stock` | Importation Grand Stock | M6 | 5 | 38, 77, 90, 140 | porté |
 | `m6-inventaire` | Inventaires | M6 | 6 | 66, 135, 198 | porté |
@@ -70,12 +70,12 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m6-pharmacie-interne` | Pharmacie interne — urgences | M6 | 7 | — | porté |
 | `m6-point-stock` | Point du stock valorisé | M6 | 7 | 39 | porté |
 | `m6-point-ventes` | Suivi des ventes | M6 | 7 | 39, 58, 70, 71, 82 | porté |
-| `m6-produits` | Référentiel produits | M6 | 7 | 4, 12, 55, 95, 103, 105, 117, 131, 136, 137, 138, 140, 141, 201 | porté |
+| `m6-produits` | Référentiel produits | M6 | 7 | 4, 12, 55, 95, 103, 105, 117, 131, 136, 137, 138, 140, 141, 203 | porté |
 | `m6-stock-detail` | Stock détail (pharmacie) | M6 | 6 | 41, 133 | porté |
 | `m6-stock-gros` | Stock gros (magasin) | M6 | 5 | 41, 55, 124, 125 | porté |
 | `m6-transferts` | Transferts gros → détail | M6 | 5 | 5, 41, 43, 134 | porté |
-| `m7-besoins` | Bons d’expression de besoins | M7 | 20 (universel) | 32, 53, 68 | porté |
-| `m7-commandes` | Bons de commande | M7 | 7 | 32, 82 | porté |
+| `m7-besoins` | Bons d’expression de besoins | M7 | 20 (universel) | 32, 53, 68, 225 | porté |
+| `m7-commandes` | Bons de commande | M7 | 7 | 32, 82, 220, 224 | porté |
 | `m7-ecarts` | Écarts de livraison | M7 | 7 | 32 | porté |
 | `m7-factures-fournisseurs` | Factures fournisseurs | M7 | 6 | 32 | porté |
 | `m7-fournisseurs` | Fournisseurs | M7 | 6 | 32, 124 | porté |
@@ -128,7 +128,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m1-numerisation` | Plan de numérisation | M1 | 8 | 32 | porté |
 | `m1-patient-nouveau` | Ouvrir un dossier patient | M1 | 15 | 2, 97 | porté |
 | `m1-patient-profil` | Fiche patient | M1 | 14 | 14, 23, 32, 40, 64 | porté |
-| `m1-patients` | Répertoire des patients | M1 | 15 | 2, 10, 15, 21, 23, 27, 32, 43, 46, 55, 64, 71, 75, 79, 80, 81, 82, 83, 84, 85, 86, 87, 92, 96, 97, 98, 117, 118, 119, 124 | porté |
+| `m1-patients` | Répertoire des patients | M1 | 15 | 2, 10, 15, 21, 23, 27, 32, 43, 46, 55, 64, 71, 75, 79, 80, 81, 82, 83, 84, 85, 86, 87, 92, 96, 97, 98, 117, 118, 119, 124, 208 | porté |
 | `m1-pieces` | Certificats & attestations | M1 | 9 | 41, 52 | porté |
 | `m1-reference` | Fiches de référence | M1 | 9 | 41 | porté |
 | `m2-affichage` | Écran d’appel des patients | M2 | 8 | 44 | porté |
@@ -141,7 +141,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m2-dossiers-consultation` | Dossiers de consultation | M2 | 6 | 46, 64 | porté |
 | `m2-file-attente` | File d’attente | M2 | 8 | 44 | porté |
 | `m2-file-cabinet` | File par cabinet | M2 | 8 | 52 | porté |
-| `m2-ordonnance-nouvelle` | Nouvelle ordonnance — saisie | M2 | 6 | 189, 199 | porté |
+| `m2-ordonnance-nouvelle` | Nouvelle ordonnance — saisie | M2 | 6 | 189, 201 | porté |
 | `m2-ordonnances` | Ordonnances | M2 | 6 | 16, 29, 34, 39, 58 | porté |
 | `m2-pathologies` | Pathologies & morbidité | M2 | 6 | 1, 29, 95, 105 | porté |
 | `m2-prescriptions` | Prescriptions | M2 | 7 | 34 | porté |
@@ -155,8 +155,8 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m3-bloc-cro` | Comptes rendus opératoires | M3 | 8 | 34, 43 | porté |
 | `m3-bons-pansements` | Bons de pansement | M3 | 8 | 50 | porté |
 | `m3-chambres` | Chambres & lits | M3 | 9 | 181 | porté |
-| `m3-cpa` | Consultation pré-anesthésique | M3 | 8 | 50 | porté |
-| `m3-cr-anesthesie` | Comptes rendus d’anesthésie | M3 | 8 | 50 | porté |
+| `m3-cpa` | Consultation pré-anesthésique | M3 | 8 | 50, 206 | porté |
+| `m3-cr-anesthesie` | Comptes rendus d’anesthésie | M3 | 8 | 50, 206 | porté |
 | `m3-demande-examen` | Demande d’examen | M3 | 8 | 50 | porté |
 | `m3-feuille-temperature` | Feuille de température | M3 | 9 | 34, 176 | porté |
 | `m3-glasgow` | Score de Glasgow | M3 | 8 | 43 | porté |
@@ -234,7 +234,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `error-404` | Page introuvable | AUTH | 20 | 119 | porté |
 | `index` | Connexion | AUTH | 20 | — | porté |
 | `plan-du-site` | Plan du site | AUTH | 0 | 119 | porté |
-| `cfg-bareme-aib` | Barème de l’AIB | CFG | 4 | 100, 105, 106, 193, 194, 196 | porté |
+| `cfg-bareme-aib` | Barème de l’AIB | CFG | 4 | 100, 105, 106, 193, 194, 196, 222 | porté |
 | `cfg-branding` | Identité & papier à en-tête | CFG | 3 | 89 | porté |
 | `cfg-catalogue` | Catalogue tarifaire (deux prix) | CFG | 4 | 34, 117 | porté |
 | `cfg-centres-couts` | Centres de coûts | CFG | 3 | 17, 58 | porté |
@@ -242,7 +242,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `cfg-comptabilite` | Paramètres comptables & obligations | CFG | 3 | 26, 89, 95, 101, 105, 192 | porté |
 | `cfg-compte` | Mon compte | CFG | 3 | — | porté |
 | `cfg-entetes` | Papier à en-tête officiel | CFG | 3 | 34, 89 | porté |
-| `cfg-fiscalite` | Paramètres fiscaux (IFU / RCCM) | CFG | 3 | 24, 89, 101 | porté |
+| `cfg-fiscalite` | Paramètres fiscaux (IFU / RCCM) | CFG | 3 | 24, 89, 101, 199, 222 | porté |
 | `cfg-imagerie-catalogue` | Catalogue de l’imagerie | CFG | 5 | 1, 51, 95, 105, 146 | porté |
 | `cfg-modules` | Activité des modules | CFG | 3 | 28, 55 | porté |
 | `cfg-natures-facture` | Natures de facture | CFG | 3 | 17 | porté |
@@ -252,10 +252,10 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `cfg-poste` | Ce poste (mode fileul / mère) | CFG | 2 | — | porté |
 | `cfg-rappels` | Rappels & messages | CFG | 3 | 1, 95, 105 | porté |
 | `cfg-regles` | Règles métier versionnées | CFG | 3 | 25, 197 | porté |
-| `cfg-sms` | Passerelle SMS | CFG | 3 | 96 | non commencé |
+| `cfg-sms` | Passerelle SMS | CFG | 3 | 96 | porté |
 | `cfg-smtp` | Messagerie (SMTP) | CFG | 2 | 86 | porté |
 | `cfg-systeme` | Paramètres système | CFG | 3 | 17, 24, 68, 77, 84, 119 | porté |
-| `cfg-tarifs` | Tarifs et prix | CFG | 4 | 10, 44, 116, 117, 118, 120, 121, 122, 123, 124, 128, 136, 137, 138, 139, 141, 188, 190, 200, 201, 202 | porté |
+| `cfg-tarifs` | Tarifs et prix | CFG | 4 | 10, 44, 116, 117, 118, 120, 121, 122, 123, 124, 128, 136, 137, 138, 139, 141, 188, 190, 202, 203, 204 | porté |
 | `cfg-types-piece` | Types de pièces certifiantes | CFG | 3 | 34 | porté |
 | `dash-admin-agent` | Agent administratif | DASH | 2 | 37, 42 | porté |
 | `dash-aide-comptable` | Assistant Comptable | DASH | 4 | 43 | porté |
@@ -306,26 +306,27 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-tarifs-produits` | Importation des prix d’achat | IMP | 4 | 138 | porté |
 | `imp-transfert-lignes` | Importation d’un bon de transfert | IMP | 3 | 130 | porté |
 | `imp-unites-labo` | Importation des unités de mesure | IMP | 4 | 144 | porté |
-| `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112, 118 | porté |
+| `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112, 118, 230 | porté |
 | `m10-badges` | Badges du personnel | M10 | 5 | 56, 68 | porté |
 | `m10-badges-impression` | Planche d’impression des badges | M10 | 3 | 56 | porté |
 | `m10-badges-modeles` | Modèles de badge | M10 | 3 | 1, 56, 95, 105 | porté |
 | `m10-badges-verification` | Vérifier un badge | M10 | 5 | 56, 113 | porté |
-| `m10-conges` | Congés | M10 | 4 | 110 | porté |
-| `m10-contrats` | Contrats | M10 | 3 | 34, 68 | porté |
+| `m10-conges` | Congés | M10 | 4 | 110, 223 | porté |
+| `m10-contrats` | Contrats | M10 | 3 | 34, 68, 230 | porté |
 | `m10-dashboard` | Tableau de bord RH | M10 | 3 | 77 | porté |
-| `m10-employe-profil` | Fiche employé | M10 | 3 | — | porté |
+| `m10-employe-profil` | Fiche employé | M10 | 3 | 213, 214, 227, 228, 230 | porté |
 | `m10-evaluations` | Évaluations (NS 131) | M10 | 3 | 14, 33, 68, 102 | porté |
 | `m10-evenements` | Événements du personnel | M10 | 3 | 27, 33 | porté |
+| `m10-fiche-equipe` | Fiche de mon équipe | M10 | 1 | 227, 228, 229, 230 | porté |
 | `m10-fiches-poste` | Fiches de poste | M10 | 3 | 77 | porté |
 | `m10-mes` | Mon espace | M10 | 20 (universel) | 112, 115 | porté |
 | `m10-missions` | Ordres de mission | M10 | 4 | 24, 68, 110 | porté |
 | `m10-participations` | Frais de participation | M10 | 3 | 27 | porté |
-| `m10-personnel` | Personnel | M10 | 3 | 24, 40, 55, 77, 124 | porté |
-| `m10-planning` | Planning & gardes | M10 | 4 | 27, 34, 109 | porté |
+| `m10-personnel` | Personnel | M10 | 3 | 24, 40, 55, 77, 124, 214, 227 | porté |
+| `m10-planning` | Planning & gardes | M10 | 4 | 27, 34, 109, 212 | porté |
 | `m10-presences` | Présences & absences | M10 | 4 | 34, 110 | porté |
 | `m10-prestataires` | Prestataires externes | M10 | 3 | — | porté |
-| `m10-primes` | Primes (NS 132) | M10 | 3 | 8, 27 | porté |
+| `m10-primes` | Primes (NS 132) | M10 | 3 | 8, 27, 230 | porté |
 | `m10-propositions-planning` | Propositions de planning | M10 | 20 (universel) | 111 | porté |
 | `m10-sanctions` | Sanctions | M10 | 3 | — | porté |
 | `m10-securite-entretien` | Sécurité & entretien | M10 | 3 | — | porté |
@@ -333,27 +334,27 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m10-stats-permanences` | Statistiques des permanences | M10 | 4 | 40 | porté |
 | `m10-stats-presence` | Taux de présence par service | M10 | 4 | 40 | porté |
 | `m11-avances` | Avances sur salaire | M11 | 4 | — | porté |
-| `m11-bulletins` | Bulletins de paie | M11 | 4 | 10, 24, 55, 77, 82 | porté |
-| `m11-calcul` | Calcul de la paie | M11 | 4 | 24, 27, 33, 77 | porté |
-| `m11-cotisations` | Cotisations CNSS / ITS / VPS | M11 | 4 | 24, 77 | porté |
+| `m11-bulletins` | Bulletins de paie | M11 | 4 | 10, 24, 55, 77, 82, 230 | porté |
+| `m11-calcul` | Calcul de la paie | M11 | 4 | 24, 27, 33, 77, 207, 227, 230 | porté |
+| `m11-cotisations` | Cotisations CNSS / ITS / VPS | M11 | 4 | 24, 77, 207 | porté |
 | `m11-dashboard` | Tableau de bord paie | M11 | 4 | 77 | porté |
 | `m11-heures-sup` | Heures supplémentaires | M11 | 4 | 77 | porté |
-| `m11-ortb` | Redevance ORTB | M11 | 4 | 24, 77, 89 | porté |
+| `m11-ortb` | Redevance ORTB | M11 | 4 | 24, 77, 89, 207 | porté |
 | `m11-prets-etudes` | Prêts et avances | M11 | 4 | 77 | porté |
 | `m11-validation` | Validation Direction | M11 | 4 | 79 | porté |
-| `adm-enquetes` | Enquêtes & questionnaires | M13 | 5 | 1, 53, 57, 95, 105 | porté |
-| `adm-satisfaction` | Satisfaction des patients | M13 | 5 | 53, 54 | porté |
-| `adm-validations` | Validations en attente | M13 | 11 | 54, 89, 94, 105, 122, 178, 186, 187 | porté |
+| `adm-enquetes` | Enquêtes & questionnaires | M13 | 5 | 1, 53, 57, 95, 105, 209, 210, 211 | porté |
+| `adm-satisfaction` | Satisfaction des patients | M13 | 5 | 53, 54, 209 | porté |
+| `adm-validations` | Validations en attente | M13 | 11 | 54, 89, 94, 105, 122, 178, 186, 187, 221 | porté |
 | `enquete-publique` | Fiche d’enquête (lien partagé) | M13 | 11 | — | porté |
-| `m13-ambulance` | Interventions ambulance | M13 | 6 | — | porté |
+| `m13-ambulance` | Interventions ambulance | M13 | 6 | 206 | porté |
 | `m13-courriers` | Courriers (départ / arrivée) | M13 | 6 | 1, 44, 53, 155, 157, 158, 160, 172, 173, 179 | porté |
 | `m13-evenements` | Événements & notifications | M13 | 5 | 14, 23 | porté |
 | `m13-maintenance` | Parc technique & maintenance | M13 | 4 | 38, 41 | porté |
 | `m13-notes-service` | Notes de service | M13 | 5 | — | porté |
-| `m13-plan-annuel` | Plan annuel de travail | M13 | 5 | — | porté |
+| `m13-plan-annuel` | Plan annuel de travail | M13 | 5 | 215, 216, 217, 218, 219 | porté |
 | `m13-repertoire-ambulances` | Répertoire des ambulances | M13 | 8 | 36, 44 | porté |
-| `m13-reunions` | Réunions | M13 | 5 | — | porté |
-| `m13-sms-journal` | Journal des envois SMS | M13 | 4 | 96, 97 | non commencé |
+| `m13-reunions` | Réunions | M13 | 5 | 206 | porté |
+| `m13-sms-journal` | Journal des envois SMS | M13 | 4 | 96, 97 | porté |
 | `m14-audit` | Journal d’audit | M14 | 3 | — | porté |
 | `m14-roles` | Rôles & permissions (RBAC) | M14 | 3 | 21, 32, 34, 125, 153, 175 | porté |
 | `m14-sauvegardes` | Sauvegardes & restauration | M14 | 3 | 24, 90 | porté |
@@ -413,7 +414,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `rls-sauvegarde` | Sauvegarde du relais | RLS | 1 | — | porté |
 | `rls-superadmin` | Comptes superadmin | RLS | 1 | — | porté |
 | `rls-tableau` | Tableau de bord du relais | RLS | 1 | — | porté |
-| `aide-apropos` | Aide & À propos | SUP | 20 | 15, 119 | porté |
+| `aide-apropos` | Aide & À propos | SUP | 20 | 15, 119, 200 | porté |
 | `contact-editeur` | Contactez l’éditeur | SUP | 20 | 15, 86 | porté |
 | `parametres-hub` | Paramètres système | SUP | 20 | 84, 85, 86, 96, 119 | porté |
 

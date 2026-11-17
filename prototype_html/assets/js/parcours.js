@@ -7825,7 +7825,7 @@
   ];
   var VACATIONS_GARDE_RH = ['garde', 'garde_hospi'];
   var MODES_REGIME_INDIVIDUEL = ['deroge', 'remplace'];
-  var GESTE_REGIME_INDIVIDUEL = 'regler_regime_individuel', GESTE_PLANNING_PERSONNALISE = 'regler_planning_personnalise', GESTE_VALEUR_ATTENTE = 'confirmer_valeur_attente_personnel';
+  var GESTE_REGIME_INDIVIDUEL = 'regler_regime_individuel', GESTE_PLANNING_PERSONNALISE = 'regler_planning_personnalise', GESTE_VALEUR_ATTENTE = 'confirmer_valeur_attente_personnel', GESTE_FICHE_EQUIPE = 'ouvrir_fiche_personnel_equipe';
   /** Un geste réservé du lot PLAN-INDIV : un DROIT de la fiche RBAC du rôle courant, jamais un nom de rôle dans le moteur. */
   function peutGestePlan(geste, role) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, geste)); }
   function refusRh(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste }, extra || {}); }
@@ -7836,6 +7836,61 @@
   function employeDeSession() {
     var nom = acteur();
     return S.collection('personnel').active().filter(function (e) { return e.nomComplet === nom; })[0] || null;
+  }
+
+  /* ==========================================================================
+   * LOT SURV (Direction, 16/11/2026, section AQ point 37) : LA FICHE DU PERSONNEL DE SON ÉQUIPE ET LE PÉRIMÈTRE D'ÉQUIPE
+   * --------------------------------------------------------------------------
+   * Trois portées, TIRÉES DES DROITS (jamais d'une liste de rôles) : « complète » (le rôle lit déjà tout le personnel : écran `m10-personnel`), « équipe » (il détient le geste
+   * réservé `ouvrir_fiche_personnel_equipe` sans lire tout le personnel), « aucune ». Dans la portée « équipe », l'équipe est LE SERVICE de l'agent de la session, SANS lui-même
+   * (nul ne règle son propre planning) ; une session qui n'est pas un agent du personnel n'a pas d'équipe déterminable : refus nommé, jamais « tout le monde ».
+   * La lecture restreinte ne porte AUCUNE donnée de paie : ni salaire, ni catégorie, ni date d'embauche, ni numéro CNSS, ni assurance (RG-13).
+   * ======================================================================== */
+  var CHAMPS_FICHE_EQUIPE = ['id', 'matricule', 'nomComplet', 'sexe', 'fonction', 'poste', 'service'];
+  function porteePersonnel(role) {
+    var N = global.SIGH.nav, r = role == null ? roleCourant() : role;
+    if (!N || !r) return 'aucune';
+    var ecran = N.get && N.get('m10-personnel');
+    if (ecran && N.can(r, ecran)) return 'complete';
+    return peutGestePlan(GESTE_FICHE_EQUIPE, r) ? 'equipe' : 'aucune';
+  }
+  /** Ce que la portée de la session permet pour l'agent `e` : `null` (permis) ou un refus nommé. */
+  function controlerPerimetreEquipe(e, ce) {
+    var portee = porteePersonnel();
+    if (portee === 'complete') return null;
+    if (portee === 'aucune') return refusRh('FICHE_EQUIPE_RESERVEE', 'La fiche du personnel de l’équipe s’ouvre par un rôle qui détient le droit « Ouvrir la fiche du personnel de son équipe » (fiche de droits du rôle).', 'Demander à l’administrateur d’attribuer ce droit au rôle.');
+    var moi = employeDeSession();
+    if (!moi || !moi.service) return refusRh('EQUIPE_INDETERMINEE', 'La session n’est pas un agent du personnel avec un service : son équipe ne se détermine pas.', 'Se connecter sous le compte d’un agent du personnel, ou faire rattacher le compte à un service.');
+    if (e.id === moi.id) return refusRh('AGENT_HORS_EQUIPE', 'Nul ne règle son propre planning : ' + e.nomComplet + ' est l’agent de la session.', 'Demander à la Directrice Administrative ou à l’administrateur.', { service: moi.service });
+    if (e.service !== moi.service) return refusRh('AGENT_HORS_EQUIPE', e.nomComplet + ' n’est pas de votre équipe (service « ' + moi.service + ' »).', 'Choisir un agent de votre service.', { service: moi.service, serviceAgent: e.service });
+    return null;
+  }
+  /** L'ÉQUIPE de la session : les agents actifs que sa portée lui laisse lire (portée complète : tout le personnel). Refus nommé sinon. */
+  function equipeDeLaSession() {
+    var portee = porteePersonnel();
+    if (portee === 'aucune') return refusRh('FICHE_EQUIPE_RESERVEE', 'La fiche du personnel de l’équipe s’ouvre par un rôle qui détient le droit « Ouvrir la fiche du personnel de son équipe » (fiche de droits du rôle).', 'Demander à l’administrateur d’attribuer ce droit au rôle.');
+    var tous = S.collection('personnel').active();
+    var liste;
+    if (portee === 'complete') liste = tous;
+    else {
+      var moi = employeDeSession();
+      if (!moi || !moi.service) return refusRh('EQUIPE_INDETERMINEE', 'La session n’est pas un agent du personnel avec un service : son équipe ne se détermine pas.', 'Se connecter sous le compte d’un agent du personnel, ou faire rattacher le compte à un service.');
+      liste = tous.filter(function (e) { return e.service === moi.service && e.id !== moi.id; });
+    }
+    return { ok: true, portee: portee, agents: liste.map(projeterFicheEquipe) };
+  }
+  /** LA PROJECTION RESTREINTE d'une fiche : une liste BLANCHE de champs, jamais « la fiche moins quelques champs » (un champ ajouté demain ne fuit pas). */
+  function projeterFicheEquipe(e) {
+    var o = {};
+    CHAMPS_FICHE_EQUIPE.forEach(function (c) { if (e[c] !== undefined) o[c] = e[c]; });
+    return o;
+  }
+  function ficheEquipe(employeId) {
+    var e = employeRh(employeId);
+    if (!e) { var p = porteePersonnel(); return p === 'aucune' ? refusRh('FICHE_EQUIPE_RESERVEE', 'La fiche du personnel de l’équipe s’ouvre par un rôle qui détient le droit « Ouvrir la fiche du personnel de son équipe » (fiche de droits du rôle).', 'Demander à l’administrateur d’attribuer ce droit au rôle.') : refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.'); }
+    var ref = controlerPerimetreEquipe(e);
+    if (ref) return ref;
+    return { ok: true, portee: porteePersonnel(), fiche: projeterFicheEquipe(e) };
   }
   function typePlanning(id) { return (D.TYPES_PLANNING || []).filter(function (t) { return t.id === id; })[0] || null; }
   function libelleType(id) { var t = typePlanning(id); return t ? t.label : id; }
@@ -7911,6 +7966,7 @@
     if (MODES_REGIME_INDIVIDUEL.indexOf(mode) < 0) return refusRh('MODE_INCONNU', 'Le mode « ' + mode + ' » n’existe pas : un régime individuel déroge à la catégorie ou la remplace.', 'Choisir « déroge » (le reste suit la catégorie) ou « remplace » (rien n’est hérité).', { mode: mode });
     var e = employeRh(o.employeId);
     if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    var hors = controlerPerimetreEquipe(e); if (hors) return hors;
     var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusRh('DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle la dérogation s’applique.');
     if (!String(o.motif || '').trim()) return refusRh('MOTIF_OBLIGATOIRE', 'Le motif de la dérogation est obligatoire.', 'Dire pourquoi le régime de cet agent diffère de celui de sa catégorie.');
@@ -8086,6 +8142,7 @@
     if (!peutGestePlan(GESTE_PLANNING_PERSONNALISE)) return refusRh('PLANNING_PERSO_RESERVE', 'Le planning personnalisé se définit par un rôle qui détient le droit « Définir le planning personnalisé d’un agent » (fiche de droits du rôle).', 'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur).');
     var e = employeRh(o.employeId);
     if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    var hors = controlerPerimetreEquipe(e); if (hors) return hors;
     var per = periodicitePerso(o.periodicite);
     if (!per) return refusRh('PERIODICITE_INCONNUE', 'La périodicité « ' + (o.periodicite || '') + ' » n’existe pas : un planning personnalisé est hebdomadaire ou mensuel.', 'Choisir hebdomadaire ou mensuel.');
     var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
@@ -8144,6 +8201,7 @@
     if (au < du) return refusRh('PERIODE_INVERSEE', 'Le dernier jour (' + C.dateFR(au) + ') précède le premier (' + C.dateFR(du) + ').', 'Corriger la période.');
     var nbJours = Math.round((C.toDate(au).getTime() - C.toDate(du).getTime()) / 86400000) + 1;
     if (nbJours > PERIODE_MAX_JOURS) return refusRh('PERIODE_TROP_LONGUE', 'La période couvre ' + nbJours + ' jours : au plus ' + PERIODE_MAX_JOURS + ' jours d’un coup.', 'Appliquer le modèle par périodes plus courtes.', { jours: nbJours });
+    var hors = controlerPerimetreEquipe(e); if (hors) return hors;
     if (!versionsPerso(e.id).length) return refusRh('AUCUN_MODELE', e.nomComplet + ' n’a pas de planning personnalisé.', 'Définir son planning personnalisé sur sa fiche.');
     var occupes = colPlanningRh().active().filter(function (p) { return p.employeId === e.id; });
     var simules = [], lignes = [];
@@ -8199,6 +8257,7 @@
     if (!peutGestePlan(GESTE_VALEUR_ATTENTE)) return refusRh('CONFIRMATION_RESERVEE', 'Confirmer une valeur d’attente se fait par un rôle qui détient le droit « Confirmer une valeur d’attente du personnel » (fiche de droits du rôle).', 'Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur).');
     var e = employeRh(o.employeId);
     if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    if (porteePersonnel() !== 'complete') return refusRh('VALEUR_ATTENTE_HORS_PORTEE', 'Les valeurs d’attente (salaire, catégorie, date d’embauche, numéro CNSS) ne se lisent ni ne se confirment depuis la fiche de l’équipe.', 'Demander à un rôle qui lit tout le personnel.');
     if (!CHAMPS_ATTENTE.some(function (c) { return c.cle === o.champ; })) return refusRh('CHAMP_INCONNU', 'Le champ « ' + o.champ + ' » n’a pas de valeur d’attente.', 'Choisir le salaire, la catégorie, la date d’embauche ou le numéro CNSS.');
     if (!(e.valeursAttente && e.valeursAttente[o.champ] === true)) return refusRh('PAS_UNE_VALEUR_ATTENTE', 'Le champ « ' + libelleChampAttente(o.champ) + ' » de ' + e.nomComplet + ' n’est pas une valeur d’attente.', 'Rien à confirmer.');
     if (!champRenseigne(e[o.champ])) return refusRh('VALEUR_ABSENTE', 'Le champ « ' + libelleChampAttente(o.champ) + ' » de ' + e.nomComplet + ' n’a pas de valeur : il n’y a rien à confirmer.', 'Renseigner la valeur sur la fiche.');
@@ -8682,7 +8741,8 @@
     employeDeSession: employeDeSession, peutPoserPlanning: peutPoserPlanningRh,
     MODES_REGIME: MODES_REGIME_INDIVIDUEL, CHAMPS_ATTENTE: CHAMPS_ATTENTE, PERIODICITES_PERSO: PERIODICITES_PERSO, JOURS_SEMAINE: JOURS_SEMAINE,
     definirPlanningPerso: definirPlanningPerso, planningPersoALaDate: planningPersoALaDate, historiquePlanningPerso: historiquePlanningPerso, appliquerPlanningPerso: appliquerPlanningPerso,
-    typeDuModele: typeDuModele, valeursAttente: valeursAttenteDe, libelleChampAttente: libelleChampAttente, confirmerValeurAttente: confirmerValeurAttente,
+    typeDuModele: typeDuModele, valeursAttente: valeursAttenteDe,
+    GESTE_FICHE_EQUIPE: GESTE_FICHE_EQUIPE, CHAMPS_FICHE_EQUIPE: CHAMPS_FICHE_EQUIPE, porteePersonnel: porteePersonnel, equipeDeLaSession: equipeDeLaSession, ficheEquipe: ficheEquipe, controlerPerimetreEquipe: controlerPerimetreEquipe, libelleChampAttente: libelleChampAttente, confirmerValeurAttente: confirmerValeurAttente,
   };
   /* ==========================================================================
    * L'ORGANIGRAMME, SES POSTES ET LE TITRE DE L'AGENT (11/11/2026, lot ORG2)

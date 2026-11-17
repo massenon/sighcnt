@@ -108,7 +108,7 @@ async function extraireRbac() {
       const ecrans = N.ids().map((id) => {
         const e = N.get(id);
         return { id, label: e.label, icone: e.icon || null, module: e.module, moduleLabel: e.moduleLabel, domaine: e.domain, hub: !!e.hub, standalone: !!e.standalone,
-          universel: !!e.universel, servant: e.servant || null, sousReglage: e.sousReglage || undefined, jeuImport: e.jeuImport || undefined,
+          universel: !!e.universel, servant: e.servant || null, parGeste: e.parGeste || undefined, sousReglage: e.sousReglage || undefined, jeuImport: e.jeuImport || undefined,
           /* Une PAGE DE JEU d'import est visible de qui détient le droit VOIR du jeu (`jeuImport`) : le domaine Dart ne connaît pas ce drapeau (lot IMP-C), il lit donc `roles`. On exporte
              ici les rôles qui détiennent le jeu (pas l'union du module), de sorte que le calcul du poste à partir du manifeste égale la matrice de la maquette aux défauts. Un réglage
              `droitsImport` de la fiche d'un rôle n'est pas encore lu par le poste : limite du lot IMP-C, consignée. */

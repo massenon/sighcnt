@@ -16,6 +16,7 @@ class EcranNav {
       required this.standalone,
       this.roles,
       this.universel = false,
+      this.parGeste,
       this.servant});
   final String id;
   final String label;
@@ -31,6 +32,9 @@ class EcranNav {
 
   /// Écran universel (`m7-besoins`) : ouvert à tout poste, jamais en annulation ; ne rouvre pas un module fermé.
   final bool universel;
+
+  /// Écran OUVERT en lecture par un geste réservé (lot SURV : `m10-fiche-equipe` par `ouvrir_fiche_personnel_equipe`) : sa visibilité vient du droit du geste, jamais d'une liste de rôles.
+  final String? parGeste;
 
   /// Page de saisie : ses droits se résolvent sur le registre qu'elle alimente.
   final String? servant;
@@ -140,6 +144,7 @@ class Manifeste {
         standalone: e['standalone'] == true,
         roles: e['roles'] is List ? [for (final r in (e['roles'] as List)) '$r'] : null,
         universel: e['universel'] == true,
+        parGeste: e['parGeste'] as String?,
         servant: s(e['servant']),
       );
     }

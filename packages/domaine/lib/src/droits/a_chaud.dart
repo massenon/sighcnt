@@ -171,6 +171,18 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
           'shortOrigine': e.value['libelle'] ?? e.key,
         }
   ];
+  // LES GESTES RÉSERVÉS : `N.droitGeste`. La liste d'origine ne vaut que pour un rôle que l'extraction connaissait ; un rôle créé part de zéro (jamais « tous les droits »).
+  final connusBase = {for (final r in base.rolesBruts) '${r['id']}'};
+  final gestesParRole = <String, Map<String, bool>>{
+    for (final r in roles)
+      '${r['id']}': {
+        for (final g in base.matriceGestes.declarations)
+          g.id: resoudreDroitGeste(
+              surcharge: bool3(mapDe(sur['${r['id']}']?['droitsGestes'])?[g.id]),
+              roleArchive: archive('${r['id']}'),
+              defaut: connusBase.contains('${r['id']}') && base.matriceGestes.droit('${r['id']}', g.id)),
+      }
+  };
   final libelles = <String, String>{};
   final accueils = <String, String>{};
   final archives = <String>{};
@@ -185,6 +197,13 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
     final droits = <String, Droit>{};
     if (!archive(id)) {
       for (final e in manifeste.tousLesEcrans) {
+        // Un écran OUVERT PAR UN GESTE (lot SURV) : activité ouverte, une surcharge d'écran qui le ferme nommément garde la main, sinon le droit du geste ; lecture seule.
+        final pg = e.parGeste;
+        if (pg != null && !e.hub) {
+          final ouvert = ferm.ecranActif(e.id, e.module) && surchargeEcranExplicite(id, e.id) != false && (gestesParRole[id]?[pg] ?? false);
+          if (ouvert) droits[e.id] = const Droit(voir: true, editer: false, annuler: false);
+          continue;
+        }
         if (e.hub || !can(id, e)) continue;
         // Une page de saisie porte les droits du registre qu'elle alimente (`app.droits` : `N.ecranDesDroits`).
         final s = e.servant == null ? null : manifeste.ecran(e.servant!);
@@ -215,18 +234,6 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
     if (!archive(id) && droitsModule(id, 'M11').editer) paie.add(id);
   }
   final imp = _matriceImport(declarations, impParRole, paie);
-  // LES GESTES RÉSERVÉS : `N.droitGeste`. La liste d'origine ne vaut que pour un rôle que l'extraction connaissait ; un rôle créé part de zéro (jamais « tous les droits »).
-  final connusBase = {for (final r in base.rolesBruts) '${r['id']}'};
-  final gestesParRole = <String, Map<String, bool>>{
-    for (final r in roles)
-      '${r['id']}': {
-        for (final g in base.matriceGestes.declarations)
-          g.id: resoudreDroitGeste(
-              surcharge: bool3(mapDe(sur['${r['id']}']?['droitsGestes'])?[g.id]),
-              roleArchive: archive('${r['id']}'),
-              defaut: connusBase.contains('${r['id']}') && base.matriceGestes.droit('${r['id']}', g.id)),
-      }
-  };
   return (
     parRole: parRole,
     archives: archives,

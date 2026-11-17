@@ -1513,6 +1513,10 @@
         "href": "pages/m10-employe-profil.php"
        },
        {
+        "label": "Fiche de mon équipe",
+        "href": "pages/m10-fiche-equipe.php"
+       },
+       {
         "label": "Contrats",
         "href": "pages/m10-contrats.php"
        },
@@ -2442,7 +2446,7 @@
     ]
    }
   ],
-  "pied": "341 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
+  "pied": "342 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2454,7 +2458,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "341"
+    "valeur": "342"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2775,7 +2779,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "341",
+   "342",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",
@@ -2898,6 +2902,7 @@
   ],
   "lignes": [
    [
+    "",
     "SUP-2026-0002",
     "30/10/2026",
     "Anomalie",
@@ -2906,6 +2911,7 @@
     "Enregistrée seulement"
    ],
    [
+    "",
     "SUP-2026-0001",
     "30/10/2026",
     "Message",
@@ -2915,6 +2921,7 @@
    ]
   ],
   "entetes": [
+   "",
    "Référence",
    "Date",
    "Nature",

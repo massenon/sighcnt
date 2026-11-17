@@ -499,6 +499,7 @@
     "m10-dashboard",
     "m10-personnel",
     "m10-employe-profil",
+    "m10-fiche-equipe",
     "m10-contrats",
     "m10-badges",
     "m10-badges-verification",
@@ -4191,6 +4192,25 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-fiche-equipe",
+   "label": "Fiche de mon équipe",
+   "icone": "users",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "parGeste": "ouvrir_fiche_personnel_equipe",
    "roles": [
     "rh",
     "da",

@@ -1,0 +1,42 @@
+{
+ "id": "m10-fiche-equipe",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Fiche de mon équipe",
+ "acces": "ouvert",
+ "titre": "Fiche de mon équipe",
+ "description": "Lecture restreinte des agents de votre équipe : identité, fonction, service et planning.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Fiche de mon équipe"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Lecture restreinte : aucune donnée de paie. Périmètre : tout le personnel (vous le lisez déjà en entier)."
+ ],
+ "onglets": [
+  "Informations",
+  "Planning personnalisé",
+  "Planning du mois"
+ ],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "BASSONGUI Chabi Séko",
+  "Informations",
+  "Planning personnalisé",
+  "Planning du mois"
+ ],
+ "champs": [
+  "Agent de l’équipe"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

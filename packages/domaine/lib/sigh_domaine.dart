@@ -137,6 +137,7 @@ export 'src/comptabilite/cpc_bfr.dart';
 export 'src/comptabilite/cpc_etats.dart';
 export 'src/rh/espace_mes.dart';
 export 'src/rh/planning_rh.dart';
+export 'src/rh/fiche_equipe.dart';
 export 'src/rh/pointage_badge.dart';
 export 'src/rh/rhc_regles.dart';
 export 'src/tableaux_de_bord/tbb_regles.dart';

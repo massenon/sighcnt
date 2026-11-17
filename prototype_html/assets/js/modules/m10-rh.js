@@ -661,6 +661,74 @@
   });
 
   /* ==========================================================================
+   * FICHE DE L'ÉQUIPE (lot SURV, Direction 16/11/2026, section AQ point 37) : lecture RESTREINTE du personnel de son équipe, ouverte par le geste réservé
+   * `ouvrir_fiche_personnel_equipe`. Ni salaire, ni catégorie, ni date d'embauche, ni numéro CNSS, ni assurance, ni primes (RG-13) : la liste blanche des champs est dans le
+   * moteur (`SIGH.planningRh.ficheEquipe`), cet écran ne lit JAMAIS la fiche du personnel directement. Les commandes (définir, appliquer) sont celles de l'onglet « Planning
+   * personnalisé » : absentes sans leur geste, et le moteur refuse un agent hors de l'équipe.
+   * ======================================================================== */
+  global.SIGH.screen('m10-fiche-equipe', {
+    title: 'Fiche de mon équipe',
+    description: 'Lecture restreinte des agents de votre équipe : identité, fonction, service et planning.',
+    render: function (root) {
+      var eq = PRH().equipeDeLaSession();
+      var host = el('div.space-y-4', { dataset: { ficheEquipe: 'ecran' } });
+      if (!eq.ok) {
+        host.appendChild(K.note(eq.motif + ' ' + eq.geste, { tone: 'danger' }));
+        root.appendChild(host);
+        return null;
+      }
+      var agents = C.sortBy(eq.agents, 'matricule');
+      host.appendChild(K.note('Lecture restreinte : aucune donnée de paie. ' + (eq.portee === 'equipe' ? 'Périmètre : votre service, sans vous-même.' : 'Périmètre : tout le personnel (vous le lisez déjà en entier).'), { tone: 'info' }));
+      host.appendChild(el('p.text-xs.text-slate-500', { dataset: { equipeEffectif: String(agents.length) }, text: 'Équipe : ' + agents.length + ' agent(s).' }));
+      if (!agents.length) { host.appendChild(U.empty('Aucun agent dans votre équipe.', { icon: 'users' })); root.appendChild(host); return null; }
+      var sel = U.combo(agents.map(function (a) { return { value: a.id, label: a.nomComplet, detail: 'Mat. ' + a.matricule + ' · ' + a.poste, icon: 'id-card' }; }),
+        { value: agents[0].id, searchPlaceholder: 'Nom, matricule ou poste…', placeholder: 'Choisir un agent' });
+      sel.classList.add('max-w-lg');
+      var barre = el('div.card', null, el('div.card-body', null, [el('label.label', { text: 'Agent de l’équipe' }), sel]));
+      var corps = el('div.card-body');
+      host.appendChild(barre);
+      host.appendChild(el('div.card', null, corps));
+      function afficher() {
+        C.clear(corps);
+        var r = PRH().ficheEquipe(sel.value);
+        if (!r.ok) { corps.appendChild(K.note(r.motif + ' ' + r.geste, { tone: 'danger' })); return; }
+        var f = r.fiche;
+        var mois = AUJ.getMonth(), annee = AUJ.getFullYear();
+        var wrap = el('div.space-y-4', { dataset: { ficheEquipe: f.id } });
+        wrap.appendChild(el('div.flex.items-start.gap-3.rounded-lg.bg-navy-50.p-3', null, [
+          el('span.grid.h-12.w-12.shrink-0.place-items-center.rounded-full.bg-navy-900.text-sm.font-semibold.text-white', { text: C.initials(f.nomComplet) }),
+          el('div.min-w-0.flex-1', null, [
+            el('p.text-sm.font-semibold.text-slate-900', { text: f.nomComplet }),
+            el('p.text-xs.text-navy-700', { text: f.poste }),
+            el('p.mt-1.text-xs.text-slate-500', { text: 'Matricule ' + f.matricule + ' · ' + f.service }),
+          ]),
+        ]));
+        wrap.appendChild(U.tabs([
+          { id: 'infos', label: 'Informations', render: function () {
+            return U.descList([['Matricule', f.matricule], ['Nom et prénoms', f.nomComplet], ['Sexe', f.sexe === 'F' ? 'Féminin' : 'Masculin'], ['Fonction', fonctionLabel(f.fonction)], ['Poste', f.poste], ['Service', f.service]]);
+          } },
+          { id: 'planning-perso', label: 'Planning personnalisé', render: function () { return ongletPlanningPerso(f); } },
+          { id: 'planning', label: 'Planning du mois', render: function () {
+            var v = C.sortBy(vacations(f.id, annee, mois), 'date');
+            if (!v.length) return U.empty('Aucune vacation programmée ce mois-ci.', { icon: 'calendar' });
+            return K.miniTable([
+              { label: 'Date', render: function (p) { return C.dateJour(p.date); } },
+              { label: 'Vacation', render: function (p) { return U.badge(typePlanningLabel(p.type), typePlanningTone(p.type)); } },
+              { label: 'Statut', render: function (p) { return U.statut(p.statut === 'validee' ? 'validee' : 'brouillon'); } },
+            ], v);
+          } },
+        ]));
+        corps.appendChild(wrap);
+        U.icons(corps);
+      }
+      sel.addEventListener('change', afficher);
+      root.appendChild(host);
+      afficher();
+      return null;
+    },
+  });
+
+  /* ==========================================================================
    * CONTRATS
    * ======================================================================== */
   global.SIGH.screen('m10-contrats', {

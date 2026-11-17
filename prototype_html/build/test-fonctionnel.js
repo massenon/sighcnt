@@ -383,6 +383,24 @@ async function viderMessages(page) {
   };
   const texteCorps = () => page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
 
+  /* --- Outils du lot SURV (Vagues 330 à 333). Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const SURV = { role: 'surveillant', nom: 'GARBA Yahouza', nomComplet: 'GARBA Yahouza', fonction: 'surveillant', identifiant: 's330.surv', secteur: 'DIR' };
+  const monde330 = () => page.evaluate(() => {
+    const S = window.SIGH.store, C = window.SIGH.core;
+    const pers = S.collection('personnel').active();
+    const moi = pers.filter((e) => e.nomComplet === 'GARBA Yahouza')[0];
+    const equipe = pers.filter((e) => e.service === moi.service && e.id !== moi.id).sort((a, b) => String(a.matricule).localeCompare(String(b.matricule)));
+    const hors = pers.filter((e) => e.service !== moi.service)[0];
+    const iso = (n) => C.iso(C.addDays(C.aujourdhui(), n));
+    return { moi: moi.id, service: moi.service, equipe: equipe.map((e) => e.id), nomEquipe: equipe.map((e) => e.nomComplet), a: equipe[0].id, fonctionA: equipe[0].fonction, hors: hors.id, serviceHors: hors.service, d400: iso(400), d500: iso(500),
+      ppe0: (S.raw().planningsPersonnalises || []).map((p) => p.id), plan0: S.collection('planning').all().map((p) => p.id), reg0: (S.raw().regimesIndividuels || []).map((p) => p.id) };
+  });
+  const nettoyer330 = (m) => page.evaluate((m) => { const S = window.SIGH.store;
+    S.raw().planningsPersonnalises = (S.raw().planningsPersonnalises || []).filter((x) => m.ppe0.indexOf(x.id) >= 0);
+    S.raw().regimesIndividuels = (S.raw().regimesIndividuels || []).filter((x) => m.reg0.indexOf(x.id) >= 0);
+    S.collection('planning').all().filter((p) => m.plan0.indexOf(p.id) < 0 && p.statut !== 'archive').forEach((p) => S.collection('planning').archive(p.id, 'Sonde SURV'));
+    S.save(); }, m);
+  const MOTS_PAIE = /Salaire|CNSS|Catégorie|Date d’embauche|Ancienneté|Primes|Assurance|FCFA|valeur d’attente/i;
   /* --- Outils du lot FISC-2 (Vagues 220 à 224) : confirmations, barèmes de l'AIB, imputations, facture de patient sans AIB, motif du validateur. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
   const FISC2 = {
     session: (role) => poserSessionServeur({ role, nom: 'FISC2 ' + role, nomComplet: 'FISC2 ' + role, fonction: role, identifiant: 's22x.' + role, secteur: 'DIR' }),
@@ -29372,8 +29390,8 @@ async function viderMessages(page) {
       S.setSession(sess);
       return { modif: modif === null && S.collection('regimesIndividuels').get(v.id).motif !== 'réécrit', archive: archive === null && S.collection('regimesIndividuels').get(v.id).statut !== 'archive', gestes, parRole };
     }, monde);
-    verifier('Une version ne se réécrit ni ne s’archive (le moteur refuse), les trois gestes réservés appartiennent à l’administrateur et à la DA d’origine, pas au surveillant ni au caissier',
-      droits.modif && droits.archive && droits.gestes.every((x) => x.admin && x.da && !x.surv && !x.cais), JSON.stringify(droits));
+    verifier('Une version ne se réécrit ni ne s’archive (le moteur refuse), les trois gestes réservés appartiennent à l’administrateur et à la DA d’origine, pas au caissier ; le surveillant ne détient que le planning personnalisé (lot SURV, Direction AQ 37), ni le régime individuel ni la valeur d’attente',
+      droits.modif && droits.archive && droits.gestes.every((x) => x.admin && x.da && !x.cais && x.surv === (x.g === 'regler_planning_personnalise')), JSON.stringify(droits));
     verifier('Sans le geste, le moteur refuse en le nommant (DEROGATION_RESERVEE) pour le caissier ET le surveillant', droits.parRole.caissier === 'DEROGATION_RESERVEE' && droits.parRole.surveillant === 'DEROGATION_RESERVEE', JSON.stringify(droits.parRole));
 
     /* la fiche RBAC retire le geste à la DA : la commande est ABSENTE à l'écran et le moteur refuse ; elle le rend à l'identique ensuite */
@@ -29498,9 +29516,9 @@ async function viderMessages(page) {
       S.setSession(sess);
       return { modif: modif === null && S.collection('planningsPersonnalises').get(v.id).motif !== 'réécrit', arch: arch === null && S.collection('planningsPersonnalises').get(v.id).statut !== 'archive', res };
     }, monde);
-    verifier('Une version de planning personnalisé ne se réécrit ni ne s’archive (PLANNING_PERSO_FIGE par le moteur) ; sans le geste, la définition est refusée (PLANNING_PERSO_RESERVE) ; seul le surveillant (qui pose le planning) peut appliquer',
-      garde.modif && garde.arch && garde.res.caissier[0] === 'PLANNING_PERSO_RESERVE' && garde.res.surveillant[0] === 'PLANNING_PERSO_RESERVE' && garde.res.medecin[0] === 'PLANNING_PERSO_RESERVE'
-      && garde.res.caissier[1] === 'PLANNING_RESERVE' && garde.res.surveillant[1] === 'OK' && garde.res.medecin[1] === 'PLANNING_RESERVE', JSON.stringify(garde));
+    verifier('Une version de planning personnalisé ne se réécrit ni ne s’archive (PLANNING_PERSO_FIGE par le moteur) ; sans le geste, la définition est refusée (PLANNING_PERSO_RESERVE) ; le surveillant (qui pose le planning) n’agit que dans son équipe : l’agent de cette session n’est pas du service de l’agent visé (AGENT_HORS_EQUIPE, lot SURV ; son application dans l’équipe est la Vague 332)',
+      garde.modif && garde.arch && garde.res.caissier[0] === 'PLANNING_PERSO_RESERVE' && garde.res.surveillant[0] === 'AGENT_HORS_EQUIPE' && garde.res.medecin[0] === 'PLANNING_PERSO_RESERVE'
+      && garde.res.caissier[1] === 'PLANNING_RESERVE' && garde.res.surveillant[1] === 'AGENT_HORS_EQUIPE' && garde.res.medecin[1] === 'PLANNING_RESERVE', JSON.stringify(garde));
     const pErr = await page.evaluate((m) => {
       const PR = window.SIGH.planningRh;
       const r = (o) => { const x = PR.appliquerPlanningPerso(Object.assign({ employeId: m.agent, du: m.d7, au: m.d13 }, o)); return x.ok ? 'OK' : x.code; };
@@ -30321,6 +30339,153 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CLO-3 FIN */
+
+  /* LOT SURV (Vagues 330 à 333) : la fiche du personnel de son équipe et les plannings du Surveillant (Direction, 16/11/2026, section AQ point 37) */
+  await etape(async () => {
+    scenario('Vague 330 : lot SURV, le Surveillant ouvre la fiche de SON ÉQUIPE (geste réservé `ouvrir_fiche_personnel_equipe`, défaut semé : le Surveillant) en lecture restreinte, sans salaire, catégorie, date d’embauche, CNSS ni assurance (RG-13)');
+    erreursJS = [];
+    await poserSessionServeur(SURV);
+    await ouvrir('m10-fiche-equipe.html');
+    const m330 = await monde330();
+    await pause(500);
+    const droits330 = await page.evaluate(() => { const N = window.SIGH.nav, PR = window.SIGH.planningRh;
+      return { detenteurs: N.rolesAvecGeste('ouvrir_fiche_personnel_equipe').slice().sort(), planning: N.rolesAvecGeste('regler_planning_personnalise').slice().sort(), regime: N.rolesAvecGeste('regler_regime_individuel').slice().sort(),
+        voit: !!N.can('surveillant', N.get('m10-fiche-equipe')), complet: !!N.can('surveillant', N.get('m10-employe-profil')), liste: !!N.can('surveillant', N.get('m10-personnel')), paie: !!N.can('surveillant', N.get('m11-calcul')),
+        portee: PR.porteePersonnel(), ruban: JSON.stringify(N.tree('surveillant')).indexOf('m10-fiche-equipe') >= 0, roAdmin: !!N.can('admin', N.get('m10-fiche-equipe')) }; });
+    verifier('Le geste est détenu D’ORIGINE par le Surveillant seul ; le Surveillant reçoit le planning personnalisé (avec l’administrateur et la DAF) mais PAS le régime individuel',
+      JSON.stringify(droits330.detenteurs) === JSON.stringify(['surveillant']) && JSON.stringify(droits330.planning) === JSON.stringify(['admin', 'da', 'surveillant']) && JSON.stringify(droits330.regime) === JSON.stringify(['admin', 'da']), JSON.stringify(droits330));
+    verifier('L’écran « Fiche de mon équipe » est OUVERT au Surveillant (au ruban), la fiche employé complète, la liste du personnel et la paie lui restent FERMÉES ; portée « équipe »',
+      droits330.voit && droits330.ruban && !droits330.complet && !droits330.liste && !droits330.paie && droits330.portee === 'equipe' && !droits330.roAdmin, JSON.stringify(droits330));
+    const eq330 = await page.evaluate(() => { const e = document.querySelector('[data-fiche-equipe="ecran"]'); const f = document.querySelector('[data-fiche-equipe]:not([data-fiche-equipe="ecran"])');
+      return { ecran: !!e, texte: (document.querySelector('#page-content') || document.body).textContent, fiche: !!f, options: [...document.querySelectorAll('#page-content [role=option], #page-content li')].length }; });
+    verifier('L’écran liste l’équipe du service « ' + m330.service + ' » (' + m330.equipe.length + ' agent(s), sans le Surveillant), et ne porte aucun mot ni montant de paie (salaire, catégorie, embauche, ancienneté, CNSS, assurance, primes)',
+      eq330.ecran && eq330.fiche && new RegExp(m330.equipe.length + ' agent').test(eq330.texte) && !MOTS_PAIE.test(eq330.texte) && eq330.texte.indexOf('GARBA Yahouza') < 0, JSON.stringify({ n: m330.equipe.length, mot: (eq330.texte.match(MOTS_PAIE) || [null])[0] }));
+    const proj = await page.evaluate((m) => { const PR = window.SIGH.planningRh; const r = PR.ficheEquipe(m.a); const l = PR.equipeDeLaSession(); const h = PR.ficheEquipe(m.hors); const moi = PR.ficheEquipe(m.moi);
+      return { champs: r.ok ? Object.keys(r.fiche).sort() : null, blanche: PR.CHAMPS_FICHE_EQUIPE.slice().sort(), n: l.ok ? l.agents.length : null, aucunChampPaie: l.ok && l.agents.every((x) => Object.keys(x).every((k) => PR.CHAMPS_FICHE_EQUIPE.indexOf(k) >= 0)),
+        hors: h.ok ? 'OK' : h.code, moi: moi.ok ? 'OK' : moi.code }; }, m330);
+    verifier('Le MOTEUR rend une projection à liste BLANCHE de champs (jamais la fiche moins quelques champs) ; un agent d’un AUTRE service est refusé nommément (AGENT_HORS_EQUIPE), le Surveillant lui-même aussi',
+      proj.champs && proj.champs.every((c) => proj.blanche.indexOf(c) >= 0) && proj.champs.indexOf('salaireBase') < 0 && proj.champs.indexOf('cnss') < 0 && proj.n === m330.equipe.length && proj.aucunChampPaie && proj.hors === 'AGENT_HORS_EQUIPE' && proj.moi === 'AGENT_HORS_EQUIPE', JSON.stringify(proj));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 331 : lot SURV, retirer le geste au Surveillant FAIT DISPARAÎTRE l’écran et la commande et le moteur refuse nommément (FICHE_EQUIPE_RESERVEE) ; l’attribuer à un autre rôle le lui donne ; fiches RBAC RESTAURÉES');
+    erreursJS = [];
+    const m330 = await monde330();
+    await poserSessionServeur(SURV);
+    await ouvrir('m10-fiche-equipe.html');
+    const avant331 = await fiche('surveillant', 'ouvrir_fiche_personnel_equipe', false);
+    const apres331 = await page.evaluate((m) => { const N = window.SIGH.nav, PR = window.SIGH.planningRh;
+      const d = PR.definirPlanningPerso({ employeId: m.a, periodicite: 'hebdomadaire', dateEffet: m.d400, motif: 'x', jours: [{ jour: 1, type: 'repos' }] });
+      return { geste: N.droitGeste('surveillant', 'ouvrir_fiche_personnel_equipe'), voit: !!N.can('surveillant', N.get('m10-fiche-equipe')), ruban: JSON.stringify(N.tree('surveillant')).indexOf('m10-fiche-equipe') >= 0,
+        fiche: PR.ficheEquipe(m.a).code, liste: PR.equipeDeLaSession().code, definir: d.code, portee: PR.porteePersonnel(), ecriture: (window.SIGH.store.raw().planningsPersonnalises || []).length - m.ppe0.length }; }, m330);
+    verifier('Geste retiré : l’écran n’est plus ouvert ni au ruban, la fiche, la liste ET la définition d’un planning sont refusées en nommant le droit (FICHE_EQUIPE_RESERVEE), rien n’est écrit',
+      !apres331.geste && !apres331.voit && !apres331.ruban && apres331.fiche === 'FICHE_EQUIPE_RESERVEE' && apres331.liste === 'FICHE_EQUIPE_RESERVEE' && apres331.definir === 'FICHE_EQUIPE_RESERVEE' && apres331.portee === 'aucune' && apres331.ecriture === 0, JSON.stringify(apres331));
+    await ouvrir('m10-fiche-equipe.html');
+    const ecran331 = await page.evaluate(() => ({ fiche: !!document.querySelector('[data-fiche-equipe]:not([data-fiche-equipe="ecran"])'), url: location.pathname, txt: (document.querySelector('#page-content') || document.body).textContent.slice(0, 300) }));
+    verifier('L’adresse de l’écran n’ouvre plus la fiche (aucune fiche d’agent à l’écran)', !ecran331.fiche, JSON.stringify(ecran331));
+    /* attribution à un autre rôle : l'infirmier (agent GARBA Yahouza dans la sonde, même service) reçoit le geste */
+    const avantInf = await fiche('infirmier', 'ouvrir_fiche_personnel_equipe', true);
+    await poserSessionServeur({ role: 'infirmier', nom: 'GARBA Yahouza', nomComplet: 'GARBA Yahouza', fonction: 'infirmier', identifiant: 's331.inf', secteur: 'DIR' });
+    await ouvrir('m10-fiche-equipe.html');
+    const inf331 = await page.evaluate((m) => { const N = window.SIGH.nav, PR = window.SIGH.planningRh; const r = PR.ficheEquipe(m.a);
+      return { voit: !!N.can('infirmier', N.get('m10-fiche-equipe')), ruban: JSON.stringify(N.tree('infirmier')).indexOf('m10-fiche-equipe') >= 0, ok: r.ok, portee: PR.porteePersonnel(), ecran: !!document.querySelector('[data-fiche-equipe]:not([data-fiche-equipe="ecran"])'),
+        complet: !!N.can('infirmier', N.get('m10-employe-profil')), definir: PR.definirPlanningPerso({ employeId: m.a, periodicite: 'hebdomadaire', dateEffet: m.d400, motif: 'x', jours: [{ jour: 1, type: 'repos' }] }).code }; }, m330);
+    verifier('Attribué à un AUTRE rôle (infirmier) : l’écran s’ouvre, la fiche est lue en lecture restreinte, la fiche complète reste fermée ; sans le droit du planning personnalisé la définition reste refusée (PLANNING_PERSO_RESERVE)',
+      inf331.voit && inf331.ruban && inf331.ok && inf331.portee === 'equipe' && inf331.ecran && !inf331.complet && inf331.definir === 'PLANNING_PERSO_RESERVE', JSON.stringify(inf331));
+    await restaurer('infirmier', avantInf);
+    const rest331 = await restaurer('surveillant', avant331);
+    const fin331 = await page.evaluate(() => { const N = window.SIGH.nav; N.invaliderRbac(); return { surv: N.rolesAvecGeste('ouvrir_fiche_personnel_equipe').slice().sort(), inf: N.droitGeste('infirmier', 'ouvrir_fiche_personnel_equipe') }; });
+    verifier('Fiches RBAC RESTAURÉES : le Surveillant seul détient le geste, l’infirmier ne l’a plus', JSON.stringify(fin331.surv) === JSON.stringify(['surveillant']) && fin331.inf === false, JSON.stringify({ rest331, fin331 }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 332 : lot SURV, le Surveillant définit, applique et relit le planning personnalisé de SON équipe ; un agent hors équipe, lui-même ou une session sans service sont refusés nommément ; commande absente sans le droit du planning');
+    erreursJS = [];
+    const m330 = await monde330();
+    await poserSessionServeur(SURV);
+    await ouvrir('m10-fiche-equipe.html');
+    await pause(400);
+    const clique332 = (re) => page.evaluate((r) => { const b = [...document.querySelectorAll('#page-content button')].find((x) => new RegExp(r).test(x.textContent)); if (b) b.click(); return !!b; }, re);
+    verifier('L’onglet « Planning personnalisé » de la fiche d’équipe s’ouvre', await clique332('Planning personnalisé'));
+    await pause(400);
+    const cmd332 = await page.evaluate(() => { const p = document.querySelector('[data-planning-perso]'); return { onglet: !!p, definir: !!p && [...p.querySelectorAll('button')].some((b) => /Définir une version/.test(b.textContent)) }; });
+    verifier('La commande « Définir une version » est PRÉSENTE (le Surveillant détient le planning personnalisé)', cmd332.onglet && cmd332.definir, JSON.stringify(cmd332));
+    const def332 = await page.evaluate((m) => { const PR = window.SIGH.planningRh;
+      const typ = PR.regimeALaDate(m.a, m.fonctionA, m.d400).vacations.filter((t) => t !== 'garde' && t !== 'garde_hospi')[0] || null;
+      const typeRepos = typ || 'repos';
+      const ok = PR.definirPlanningPerso({ employeId: m.a, periodicite: 'hebdomadaire', dateEffet: m.d400, motif: 'Sonde 332 : équipe', jours: [{ jour: 2, type: typeRepos }] });
+      const hors = PR.definirPlanningPerso({ employeId: m.hors, periodicite: 'hebdomadaire', dateEffet: m.d400, motif: 'x', jours: [{ jour: 2, type: typeRepos }] });
+      const moi = PR.definirPlanningPerso({ employeId: m.moi, periodicite: 'hebdomadaire', dateEffet: m.d400, motif: 'x', jours: [{ jour: 2, type: typeRepos }] });
+      const aplHors = PR.appliquerPlanningPerso({ employeId: m.hors, du: m.d400, au: m.d400 });
+      const apercu = PR.appliquerPlanningPerso({ employeId: m.a, du: m.d400, au: m.d400 });
+      const regime = PR.deroger({ employeId: m.a, dateEffet: m.d400, motif: 'x', champs: { repos: 'repos24' } });
+      return { typ: typeRepos, ok: ok.ok ? 'OK' : ok.code + ' ' + ok.motif, journal: window.SIGH.store.collection('audit').all().filter((x) => /Planning personnalisé : version définie/.test(x.action || '')).length, hors: hors.ok ? 'OK' : hors.code, moi: moi.ok ? 'OK' : moi.code, aplHors: aplHors.ok ? 'OK' : aplHors.code,
+        apercu: apercu.ok ? apercu.apercu : apercu.code, regime: regime.ok ? 'OK' : regime.code, ecritures: (window.SIGH.store.raw().planningsPersonnalises || []).length - m.ppe0.length }; }, m330);
+    verifier('Le Surveillant définit une version pour un agent de SON équipe (écrite, journalisée RG-12) ; un agent d’un autre service, lui-même et l’application à un agent hors équipe sont refusés (AGENT_HORS_EQUIPE) ; aucune écriture hors équipe',
+      def332.ok === 'OK' && def332.journal >= 1 && def332.hors === 'AGENT_HORS_EQUIPE' && def332.moi === 'AGENT_HORS_EQUIPE' && def332.aplHors === 'AGENT_HORS_EQUIPE' && def332.apercu === true && def332.ecritures === 1, JSON.stringify(def332));
+    verifier('Le régime individuel reste réservé : sans son droit le Surveillant est refusé (DEROGATION_RESERVEE), même pour son équipe (défaut : planning personnalisé seulement)', def332.regime === 'DEROGATION_RESERVEE', JSON.stringify(def332));
+    const appl332 = await page.evaluate((m) => { const PR = window.SIGH.planningRh, S = window.SIGH.store;
+      const jours = []; for (let i = 0; i < 7; i++) jours.push(window.SIGH.core.iso(window.SIGH.core.addDays(m.d400, i)));
+      const r = PR.appliquerPlanningPerso({ employeId: m.a, du: jours[0], au: jours[6], ecrire: true });
+      const h = PR.historiquePlanningPerso(m.a);
+      return { ok: r.ok, poses: r.poses, aPoser: r.aPoser, hist: h.length, vacations: S.collection('planning').active().filter((p) => p.employeId === m.a && p.date >= jours[0] && p.date <= jours[6] && m.plan0.indexOf(p.id) < 0).length }; }, m330);
+    verifier('« Appliquer à une période » pose les vacations de l’équipe et l’historique garde la version (planning personnalisé de l’agent)', appl332.ok && appl332.poses >= 1 && appl332.poses === appl332.vacations && appl332.hist === 1, JSON.stringify(appl332));
+    /* régime individuel accordé au Surveillant par la fiche : dans l'équipe oui, hors équipe non */
+    const avantReg = await fiche('surveillant', 'regler_regime_individuel', true);
+    const reg332 = await page.evaluate((m) => { const PR = window.SIGH.planningRh;
+      const ok = PR.deroger({ employeId: m.a, dateEffet: m.d500, motif: 'Sonde 332 : régime', champs: { repos: 'repos24' } });
+      const hors = PR.deroger({ employeId: m.hors, dateEffet: m.d500, motif: 'x', champs: { repos: 'repos24' } });
+      return { ok: ok.ok ? 'OK' : ok.code + ' ' + ok.motif, hors: hors.ok ? 'OK' : hors.code }; }, m330);
+    verifier('Régime individuel ATTRIBUÉ au Surveillant par la fiche : permis pour son équipe, refusé hors équipe (AGENT_HORS_EQUIPE)', reg332.ok === 'OK' && reg332.hors === 'AGENT_HORS_EQUIPE', JSON.stringify(reg332));
+    await restaurer('surveillant', avantReg);
+    /* session qui n'est pas un agent du personnel : pas d'équipe déterminable */
+    await poserSessionServeur(Object.assign({}, SURV, { nom: 'SANS AGENT 332', nomComplet: 'SANS AGENT 332', identifiant: 's332.sans' }));
+    const sans332 = await page.evaluate((m) => { const PR = window.SIGH.planningRh; const l = PR.equipeDeLaSession(); const d = PR.definirPlanningPerso({ employeId: m.a, periodicite: 'hebdomadaire', dateEffet: m.d500, motif: 'x', jours: [{ jour: 3, type: 'repos' }] });
+      return { liste: l.ok ? 'OK' : l.code, definir: d.ok ? 'OK' : d.code }; }, m330);
+    verifier('Une session qui n’est pas un agent du personnel n’a pas d’équipe : refus nommé EQUIPE_INDETERMINEE (jamais « tout le monde »)', sans332.liste === 'EQUIPE_INDETERMINEE' && sans332.definir === 'EQUIPE_INDETERMINEE', JSON.stringify(sans332));
+    /* commande absente sans le droit du planning */
+    await poserSessionServeur(SURV);
+    const avantPl = await fiche('surveillant', 'regler_planning_personnalise', false);
+    await ouvrir('m10-fiche-equipe.html'); await pause(400);
+    await clique332('Planning personnalisé'); await pause(400);
+    const sansDroit332 = await page.evaluate((m) => { const p = document.querySelector('[data-planning-perso]'); const r = window.SIGH.planningRh.definirPlanningPerso({ employeId: m.a, periodicite: 'hebdomadaire', dateEffet: m.d500, motif: 'x', jours: [{ jour: 3, type: 'repos' }] });
+      return { onglet: !!p, definir: !!p && [...p.querySelectorAll('button')].some((b) => /Définir une version/.test(b.textContent)), moteur: r.code }; }, m330);
+    verifier('Sans le droit du planning personnalisé la commande « Définir une version » est ABSENTE et le moteur refuse (PLANNING_PERSO_RESERVE) ; l’écran de lecture reste ouvert', sansDroit332.onglet && !sansDroit332.definir && sansDroit332.moteur === 'PLANNING_PERSO_RESERVE', JSON.stringify(sansDroit332));
+    await restaurer('surveillant', avantPl);
+    await nettoyer330(m330);
+    const fin332 = await page.evaluate((m) => { const N = window.SIGH.nav, S = window.SIGH.store; N.invaliderRbac();
+      return { planning: N.rolesAvecGeste('regler_planning_personnalise').slice().sort(), regime: N.rolesAvecGeste('regler_regime_individuel').slice().sort(), ppe: (S.raw().planningsPersonnalises || []).length - m.ppe0.length, reg: (S.raw().regimesIndividuels || []).length - m.reg0.length }; }, m330);
+    verifier('État restauré : droits de planning et de régime aux détenteurs d’origine, aucune version ni vacation de la sonde restée',
+      JSON.stringify(fin332.planning) === JSON.stringify(['admin', 'da', 'surveillant']) && JSON.stringify(fin332.regime) === JSON.stringify(['admin', 'da']) && fin332.ppe === 0 && fin332.reg === 0, JSON.stringify(fin332));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 333 : lot SURV, les valeurs d’attente (salaire, catégorie, date d’embauche, CNSS) et la paie restent hors de portée du profil d’équipe ; la lecture complète (administrateur) est inchangée');
+    erreursJS = [];
+    const m330 = await monde330();
+    await poserSessionServeur(SURV);
+    await ouvrir('m10-fiche-equipe.html');
+    const attente333 = await page.evaluate((m) => { const PR = window.SIGH.planningRh, N = window.SIGH.nav;
+      const e = window.SIGH.store.collection('personnel').get(m.a);
+      const c = PR.confirmerValeurAttente({ employeId: m.a, champ: 'salaireBase', motif: 'x' });
+      const fiche = PR.ficheEquipe(m.a);
+      return { attente: PR.valeursAttente(e).length, confirmer: c.ok ? 'OK' : c.code, salaireDansFiche: JSON.stringify(fiche).indexOf(String(e.salaireBase)) >= 0 && e.salaireBase != null, paieEcrans: ['m11-calcul', 'm11-bulletins', 'm10-assurance-personnel', 'm10-primes', 'm10-contrats'].map((x) => !!(N.get(x) && N.can('surveillant', N.get(x)))) }; }, m330);
+    verifier('Le Surveillant ne confirme aucune valeur d’attente (CONFIRMATION_RESERVEE, droit non détenu), la fiche d’équipe ne contient aucun salaire, la paie, les primes, les contrats et l’assurance du personnel lui restent fermés',
+      attente333.attente >= 1 && attente333.confirmer === 'CONFIRMATION_RESERVEE' && !attente333.salaireDansFiche && attente333.paieEcrans.every((x) => x === false), JSON.stringify(attente333));
+    const avantAtt = await fiche('surveillant', 'confirmer_valeur_attente_personnel', true);
+    const att2 = await page.evaluate((m) => { const PR = window.SIGH.planningRh; const c = PR.confirmerValeurAttente({ employeId: m.a, champ: 'salaireBase', motif: 'x' }); return { confirmer: c.ok ? 'OK' : c.code }; }, m330);
+    verifier('Même avec le droit de confirmer, la portée « équipe » ne lit ni ne confirme une valeur d’attente (VALEUR_ATTENTE_HORS_PORTEE)', att2.confirmer === 'VALEUR_ATTENTE_HORS_PORTEE', JSON.stringify(att2));
+    await restaurer('surveillant', avantAtt);
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN333', nomComplet: 'ADMIN333', fonction: 'direction', identifiant: 's333.admin', secteur: 'DIR' });
+    await ouvrir('m10-employe-profil.html');
+    const adm333 = await page.evaluate((m) => { const PR = window.SIGH.planningRh, N = window.SIGH.nav; const e = window.SIGH.store.collection('personnel').get(m.hors);
+      const r = PR.definirPlanningPerso({ employeId: m.hors, periodicite: 'hebdomadaire', dateEffet: m.d400, motif: 'x', jours: [{ jour: 2, type: 'repos' }] });
+      return { portee: PR.porteePersonnel(), complet: !!N.can('admin', N.get('m10-employe-profil')), horsEquipe: r.ok ? 'OK' : r.code, texte: (document.querySelector('#page-content') || document.body).textContent.indexOf('Salaire de base') >= 0 }; }, m330);
+    await nettoyer330(m330);
+    verifier('L’administrateur (lecture complète) garde la fiche employé complète avec la paie, et son périmètre n’est PAS limité à une équipe (portée « complète »)', adm333.portee === 'complete' && adm333.complet && adm333.horsEquipe !== 'AGENT_HORS_EQUIPE' && adm333.texte, JSON.stringify(adm333));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT SURV FIN */
 
   await browser.close();
   server.close();

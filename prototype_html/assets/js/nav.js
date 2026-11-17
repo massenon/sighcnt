@@ -274,8 +274,14 @@
        personnalisé (versions datées), confirmer une valeur d'attente de sa fiche (salaire, catégorie, date d'embauche, numéro CNSS). Aucun ne donne d'écran. */
     { id: 'regler_regime_individuel', libelle: 'Régler le régime individuel d\u2019un agent (déroge à sa catégorie ou la remplace)', module: null, ecran: null,
       rolesDefaut: ['admin', 'da'] },
+    /* Lot SURV (Direction, 16/11/2026, section AQ point 37) : le Surveillant gère les plannings de SON équipe. Défaut PROPOSÉ : il reçoit le planning personnalisé, rien d'autre. Hors de la
+       lecture complète du personnel, le périmètre est celui de l'équipe (même service, jamais soi-même) : le moteur refuse un agent hors équipe (`AGENT_HORS_EQUIPE`). */
     { id: 'regler_planning_personnalise', libelle: 'Définir le planning personnalisé d\u2019un agent (hebdomadaire ou mensuel, versions datées)', module: null, ecran: null,
-      rolesDefaut: ['admin', 'da'] },
+      rolesDefaut: ['admin', 'da', 'surveillant'] },
+    /* Lot SURV : OUVRIR la fiche du personnel de son équipe, en LECTURE RESTREINTE (identité, fonction, poste, service, planning). Jamais le salaire, la catégorie, la date d'embauche, le numéro CNSS,
+       l'assurance ni la paie (RG-13). Ce droit ouvre l'écran `m10-fiche-equipe` (`parGeste`) : l'administrateur le retire au Surveillant ou l'attribue à un autre rôle par la fiche des droits. */
+    { id: 'ouvrir_fiche_personnel_equipe', libelle: 'Ouvrir la fiche du personnel de son équipe (lecture restreinte : identité, fonction, service, planning ; jamais la paie ni la CNSS)', module: 'M10', ecran: 'm10-fiche-equipe',
+      rolesDefaut: ['surveillant'] },
     { id: 'confirmer_valeur_attente_personnel', libelle: 'Confirmer une valeur d\u2019attente de la fiche du personnel (salaire, catégorie, date d\u2019embauche, numéro CNSS)', module: null, ecran: null,
       rolesDefaut: ['admin', 'da'] },
     { id: 'exporter_donnees', libelle: 'Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)', module: null, ecran: null,
@@ -758,6 +764,8 @@
             { id: 'm10-dashboard', label: 'Tableau de bord RH', icon: 'gauge' },
             { id: 'm10-personnel', label: 'Personnel', icon: 'users' },
             { id: 'm10-employe-profil', label: 'Fiche employé', icon: 'id-card' },
+            /* Lot SURV : la fiche de l'ÉQUIPE, en lecture restreinte. Ouverte par le geste réservé `ouvrir_fiche_personnel_equipe` (`parGeste`), jamais par une liste de rôles ; elle ne porte aucune donnée de paie. */
+            { id: 'm10-fiche-equipe', label: 'Fiche de mon équipe', icon: 'users', parGeste: 'ouvrir_fiche_personnel_equipe' },
             { id: 'm10-contrats', label: 'Contrats', icon: 'file-signature' },
             /* BADGES DU PERSONNEL — le badge est une PIÈCE IMPRIMÉE rattachée
                à un agent : sa place est en M10, où vivent déjà l'agent, sa
@@ -1366,6 +1374,8 @@
       roles: item.roles || mod.roles || ALL,
       /* Un écran que TOUT poste peut ouvrir, quel que soit son module. */
       universel: !!item.universel,
+      /* Un écran ouvert par un GESTE réservé (lecture seule) : sa visibilité vient du droit du geste, jamais d'une liste de rôles (lot SURV). */
+      parGeste: item.parGeste || null,
       /* Fichiers de script ajoutés à la page en plus de celui de son module. */
       scripts: item.scripts || null,
       /* Un écran du ruban qui N'EST QU'UNE AUTRE VUE d'un registre porte ses droits (vue mensuelle du calendrier fiscal). */
@@ -1724,6 +1734,12 @@
     if (!ecranId) return base;
     var f = surcharges()[roleId];
     var o = f && f.droitsEcrans && f.droitsEcrans[ecranId];
+    var cano = ecranId && INDEX[ecranId];
+    if (!o && cano && cano.parGeste) {
+      /* Écran ouvert par un geste : VOIR seulement (la lecture restreinte), jamais écrire ni annuler ; les commandes de l'écran ont leurs propres gestes. */
+      var vg = droitGeste(roleId, cano.parGeste);
+      return { voir: vg, editer: false, annuler: false, origine: false, parGeste: true, lectureSeule: vg };
+    }
     if (!o && estUniversel(ecranId)) {
       /* Voir et écrire — exprimer un besoin, c'est écrire. Mais jamais
          ANNULER : retirer le bon d'un autre service n'appartient pas à
@@ -1843,6 +1859,12 @@
       if (!ecranActif(entry.id, canonique.module)) return false;
       if (surchargeEcranExplicite(roleId, entry.id) === false) return false;
       return canonique.jeuImport === '*' ? importsVisibles(roleId).length > 0 : droitImport(roleId, canonique.jeuImport).voir;
+    }
+    /* UN ÉCRAN OUVERT PAR UN GESTE (lot SURV) : activité ouverte, puis le droit du geste ; une surcharge d'écran qui le ferme nommément garde la main. Lecture seule (`droitsEcran`). */
+    if (canonique && canonique.parGeste) {
+      if (!ecranActif(entry.id, canonique.module)) return false;
+      if (surchargeEcranExplicite(roleId, entry.id) === false) return false;
+      return droitGeste(roleId, canonique.parGeste);
     }
     if (canonique && (canonique.universel || canonique.servant)) {
       entry = {

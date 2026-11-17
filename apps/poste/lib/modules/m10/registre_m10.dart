@@ -4,6 +4,7 @@ import '../../core/config_poste.dart';
 import 'rha_conges.dart';
 import 'rha_contrats.dart';
 import 'rha_dashboard.dart';
+import 'rha_fiche_equipe.dart';
 import 'rha_fiches_poste.dart';
 import 'rha_missions.dart';
 import 'rha_personnel.dart';
@@ -37,6 +38,7 @@ final Map<String, ConstruireEcran> ecransM10 = {
   'm10-dashboard': (c, cfg) => const EcranDashboardRh(),
   'm10-personnel': (c, cfg) => const EcranPersonnel(),
   'm10-employe-profil': (c, cfg) => const EcranProfilEmploye(),
+  'm10-fiche-equipe': (c, cfg) => const EcranFicheEquipe(),
   'm10-contrats': (c, cfg) => const EcranContrats(),
   'm10-conges': (c, cfg) => const EcranConges(),
   'm10-missions': (c, cfg) => const EcranMissions(),

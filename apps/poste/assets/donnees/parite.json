@@ -269,7 +269,8 @@
     117,
     118,
     119,
-    124
+    124,
+    208
    ],
    "statut": "porté"
   },
@@ -1025,7 +1026,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    50
+    50,
+    206
    ],
    "statut": "porté"
   },
@@ -1072,7 +1074,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    50
+    50,
+    206
    ],
    "statut": "porté"
   },
@@ -2033,7 +2036,7 @@
     138,
     140,
     141,
-    201
+    203
    ],
    "statut": "porté"
   },
@@ -2235,7 +2238,8 @@
    ],
    "scenarios": [
     16,
-    25
+    25,
+    226
    ],
    "statut": "porté"
   },
@@ -2366,7 +2370,8 @@
    "scenarios": [
     32,
     53,
-    68
+    68,
+    225
    ],
    "statut": "porté"
   },
@@ -2389,7 +2394,9 @@
    ],
    "scenarios": [
     32,
-    82
+    82,
+    220,
+    224
    ],
    "statut": "porté"
   },
@@ -2595,9 +2602,9 @@
     181,
     189,
     195,
-    199,
-    200,
-    201
+    201,
+    202,
+    203
    ],
    "statut": "porté"
   },
@@ -2673,8 +2680,8 @@
     99,
     100,
     195,
-    200,
-    202
+    202,
+    204
    ],
    "statut": "porté"
   },
@@ -2774,7 +2781,8 @@
     82,
     102,
     195,
-    200
+    202,
+    226
    ],
    "statut": "porté"
   },
@@ -3159,7 +3167,9 @@
    ],
    "scenarios": [
     90,
-    108
+    108,
+    200,
+    205
    ],
    "statut": "porté"
   },
@@ -3643,7 +3653,9 @@
     40,
     55,
     77,
-    124
+    124,
+    214,
+    227
    ],
    "statut": "porté"
   },
@@ -3660,7 +3672,32 @@
     "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    213,
+    214,
+    227,
+    228,
+    230
+   ],
+   "statut": "porté"
+  },
+  {
+   "id": "m10-fiche-equipe",
+   "label": "Fiche de mon équipe",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "surveillant"
+   ],
+   "scenarios": [
+    227,
+    228,
+    229,
+    230
+   ],
    "statut": "porté"
   },
   {
@@ -3678,7 +3715,8 @@
    ],
    "scenarios": [
     34,
-    68
+    68,
+    230
    ],
    "statut": "porté"
   },
@@ -3780,7 +3818,8 @@
    "scenarios": [
     27,
     34,
-    109
+    109,
+    212
    ],
    "statut": "porté"
   },
@@ -3948,7 +3987,8 @@
     "surveillant"
    ],
    "scenarios": [
-    110
+    110,
+    223
    ],
    "statut": "porté"
   },
@@ -4025,7 +4065,8 @@
    ],
    "scenarios": [
     8,
-    27
+    27,
+    230
    ],
    "statut": "porté"
   },
@@ -4082,7 +4123,8 @@
    "scenarios": [
     27,
     112,
-    118
+    118,
+    230
    ],
    "statut": "porté"
   },
@@ -4174,7 +4216,10 @@
     24,
     27,
     33,
-    77
+    77,
+    207,
+    227,
+    230
    ],
    "statut": "porté"
   },
@@ -4197,7 +4242,8 @@
     24,
     55,
     77,
-    82
+    82,
+    230
    ],
    "statut": "porté"
   },
@@ -4217,7 +4263,8 @@
    ],
    "scenarios": [
     24,
-    77
+    77,
+    207
    ],
    "statut": "porté"
   },
@@ -4274,7 +4321,8 @@
    "scenarios": [
     24,
     77,
-    89
+    89,
+    207
    ],
    "statut": "porté"
   },
@@ -4342,7 +4390,9 @@
     "agentadmin",
     "assistant_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    206
+   ],
    "statut": "porté"
   },
   {
@@ -4381,7 +4431,13 @@
     "agentadmin",
     "assistant_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    215,
+    216,
+    217,
+    218,
+    219
+   ],
    "statut": "porté"
   },
   {
@@ -4418,7 +4474,9 @@
     "ambulancier",
     "assistant_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    206
+   ],
    "statut": "porté"
   },
   {
@@ -4463,7 +4521,7 @@
     96,
     97
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "m13-maintenance",
@@ -4514,7 +4572,8 @@
     122,
     178,
     186,
-    187
+    187,
+    221
    ],
    "statut": "porté"
   },
@@ -4538,7 +4597,10 @@
     53,
     57,
     95,
-    105
+    105,
+    209,
+    210,
+    211
    ],
    "statut": "porté"
   },
@@ -4559,7 +4621,8 @@
    ],
    "scenarios": [
     53,
-    54
+    54,
+    209
    ],
    "statut": "porté"
   },
@@ -4948,9 +5011,9 @@
     141,
     188,
     190,
-    200,
-    201,
-    202
+    202,
+    203,
+    204
    ],
    "statut": "porté"
   },
@@ -5126,7 +5189,9 @@
    "scenarios": [
     24,
     89,
-    101
+    101,
+    199,
+    222
    ],
    "statut": "porté"
   },
@@ -5173,7 +5238,8 @@
     106,
     193,
     194,
-    196
+    196,
+    222
    ],
    "statut": "porté"
   },
@@ -5316,7 +5382,7 @@
    "scenarios": [
     96
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-accueil",
@@ -7335,7 +7401,8 @@
    ],
    "scenarios": [
     15,
-    119
+    119,
+    200
    ],
    "statut": "porté"
   },
@@ -7504,7 +7571,7 @@
    ],
    "scenarios": [
     189,
-    199
+    201
    ],
    "statut": "porté"
   },

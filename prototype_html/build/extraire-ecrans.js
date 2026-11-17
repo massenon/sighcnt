@@ -26,6 +26,19 @@ const SORTIE = path.join(REPO, 'docs', 'architecture', 'ecrans');
   const page = m.page;
   await page.setViewportSize({ width: 1440, height: 900 });
   const index = [];
+  /* Un écran OUVERT PAR UN GESTE (`parGeste`, lot SURV) n'est vu d'aucun rôle de la session d'extraction tant qu'on ne lui donne pas le geste : la fiche fait foi de CE QUE L'ÉCRAN DIT, pas de qui le voit.
+     On pose donc le geste sur la fiche du rôle de la session, dans la base jetable de l'extraction (réinitialisée à chaque passage), jamais dans la maquette livrée. */
+  const gestesOuvrants = Array.from(new Set(manifeste.ecrans.filter((x) => x.parGeste && ecrans.some((y) => y.id === x.id)).map((x) => x.parGeste)));
+  if (gestesOuvrants.length) {
+    await page.evaluate(async (gestes) => {
+      const S = SIGH.store, col = S.collection('rbac'), role = S.session().role;
+      const f = col.all().filter((y) => y.role === role)[0];
+      const g = Object.assign({}, (f && f.droitsGestes) || {}); gestes.forEach((x) => { g[x] = true; });
+      if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: role, statut: 'actif', droitsGestes: g });
+      if (S.pousserMaintenant) await S.pousserMaintenant();
+    }, gestesOuvrants);
+    await page.waitForTimeout(1500);
+  }
   let n = 0;
   for (const e of ecrans) {
     n++;
