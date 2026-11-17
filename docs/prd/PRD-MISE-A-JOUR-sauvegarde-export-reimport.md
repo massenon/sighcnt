@@ -1,6 +1,31 @@
 # PRD : mettre à jour SIGH-CNT sans perdre les données (sauvegarde, export, réimport, resynchronisation)
 
-Statut : **proposition à valider par la Direction** (17/11/2026). Rédigé à partir de la question de la Direction : « As-tu implémenté l'exportation ou la sauvegarde de la base de données si on doit faire une mise à jour ? À une mise à jour d'une nouvelle version, on peut importer cette base dans le logiciel et faire la synchronisation. »
+Statut : **proposition à valider par la Direction** (17/11/2026), implémentée en partie par le lot MAJ (voir 0). Rédigé à partir de la question de la Direction : « As-tu implémenté l'exportation ou la sauvegarde de la base de données si on doit faire une mise à jour ? À une mise à jour d'une nouvelle version, on peut importer cette base dans le logiciel et faire la synchronisation. »
+
+## 0. État d'implémentation (lot MAJ, 17/11/2026)
+
+Décision de la Direction du 17/11/2026 : « il faut implémenter le manque » ; l'import par l'administrateur ET la Directrice Administrative, sur la mère ET sur un fileul. Détail : écarts E3080 à E3094, section BG des décisions. Les valeurs ci-dessous sont des propositions à valider.
+
+| Exigence | État | Preuve |
+|---|---|---|
+| 1. Préparer la mise à jour (copie chiffrée, restauration vérifiée dans un dossier neuf, comptes, empreintes, journal) | **Service fait**, aucun écran | `maj_poste_test.dart` |
+| 1. Refus `MAJ_SANS_SAUVEGARDE` (copie vérifiée de moins de 24 h, relue sur disque) | **Fait** (service et domaine) | `maj_test.dart`, `maj_poste_test.dart` |
+| 2. Version du format lue à l'ouverture, chaîne de migrations idempotentes avec vecteurs, `DONNEES_PLUS_RECENTES` | **Fait** (M001 repère, M002 migration réelle d'exemple, RG-14 : noms archivés) | `maj_test.dart` |
+| 3. L'installateur ne touche pas au dossier de données ; reprise après coupure | **Fait** (mesuré : `sigh_poste.iss` ne touche pas aux données ; reprise au démarrage de `main.dart`) ; installateur NON essayé sous Windows | `maj_poste_test.dart` (coupure simulée) |
+| 4. Contrôle des comptes et empreintes avant mise en service, rapport « avant, après » | **Fait** (service) | `maj_test.dart`, `maj_poste_test.dart` |
+| 5. Resynchronisation ordonnée : 426 sans perte, fileul mis à jour sans doublon | **Fait** contre la vraie mère Dart et deux fileuls ; **426 non branché au format stocké de l'application** (E3084) | `maj_sync_test.dart` |
+| 6. Retour arrière (dernière copie vérifiée, saisies postérieures listées et gardées) | **Service fait**, écran « Annuler la mise à jour » NON FAIT | `maj_poste_test.dart` |
+| 7. Clé de clinique requise pour tout import | **Fait** (`IMPORT_SANS_CLE`, `IMPORT_AUTRE_CLINIQUE`) | `maj_test.dart`, `maj_poste_test.dart` |
+| 8. Export complet portable (un fichier chiffré, manifeste signé, format, fichiers numérisés), import dans un dossier neuf | **Fait** (service) ; fichiers numérisés en mémoire (E3091) | `maj_poste_test.dart` |
+| 9. Essai à blanc | **Fait** (migration et import, rien n'est écrit) | `maj_poste_test.dart` |
+| 10. Écran de restauration de la clé sur un poste neuf | **NON FAIT** (la fonction existe, E3089) | |
+| 11. Mise à jour du relais : export relu avant migrations, retour arrière, outil de relecture `.jsonl.gz` | **Fait** (`relais:mise-a-jour`, `relais:relire-export`) | `MiseAJourRelaisTest.php` |
+| 12. Mise à jour guidée des fileuls depuis la mère (P2) | Non fait | |
+| 13. Contrôle d'intégrité planifié de la copie hors site (P2) | Non fait | |
+| Droit | Geste réservé `lancer_mise_a_jour`, admin et DAF par défaut, un seul droit pour préparer, migrer, importer, annuler | `maj_poste_test.dart` |
+| Mesure à 18 000 dossiers | Jeu généré (108 000 fiches) : préparer 5,5 s, migrer 18,6 s, export 6,5 s, import 12,8 s (E3094) ; jamais sur la machine de la clinique | `tool/mesure_maj.dart` |
+
+Reste pour fermer le lot : les écrans (mise à jour mère et fileul, annuler, restaurer la clé), brancher le 426, essai sous Windows. Ne pas lire « fait » pour une ligne marquée service seul.
 
 ## 1. Ce qui existe déjà (mesuré dans le dépôt, à confirmer par un lot de mesure)
 

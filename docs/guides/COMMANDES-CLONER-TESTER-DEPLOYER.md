@@ -707,7 +707,69 @@ pg_dump -U postgres --clean --if-exists --no-owner --no-privileges sigh_prototyp
 
 🛑 Une restauration remplace TOUTES les collections. L'état précédent est conservé dans `api/sauvegardes/avant-restauration-<date>.json.gz`. Les `*.sql` ne sont jamais versionnés.
 
-> **Non vérifié ici** : aucun déploiement, aucune construction de l'installateur Windows (pas de Windows, pas d'Inno Setup), aucun appel au relais en ligne. Les commandes viennent de `DEPLOIEMENT-CPANEL.md`, de `apps/web/routes/console.php`, des signatures des commandes `relais:*`, de `build_windows.bat` et de `sigh_poste.iss`. Les lignes cron séparées, la commande `tar`, les `curl` de contrôle, le chemin `~/sigh-relais` et le nom de l'installateur en `/VERYSILENT` sont des propositions. Les valeurs de messagerie sont celles de `.env.example`, jamais essayées sur le serveur de l'hébergeur. Les routes SMS et satisfaction, les variables `RELAIS_SMS_*` et la tâche `relais:sms-envoyer` sont relues dans le code, aucun SMS réel n'a été envoyé, le formulaire public n'a pas été ouvert sur un relais en ligne. Le mode silencieux de l'installateur est décrit par le PRD (R6) ; il n'a pas été essayé. Le retour arrière du relais par restauration de l'export `.jsonl.gz` n'a pas d'outil : seule la restauration d'un export complet de la base est documentée ici.
+> **Non vérifié ici** : aucun déploiement, aucune construction de l'installateur Windows (pas de Windows, pas d'Inno Setup), aucun appel au relais en ligne. Les commandes viennent de `DEPLOIEMENT-CPANEL.md`, de `apps/web/routes/console.php`, des signatures des commandes `relais:*`, de `build_windows.bat` et de `sigh_poste.iss`. Les lignes cron séparées, la commande `tar`, les `curl` de contrôle, le chemin `~/sigh-relais` et le nom de l'installateur en `/VERYSILENT` sont des propositions. Les valeurs de messagerie sont celles de `.env.example`, jamais essayées sur le serveur de l'hébergeur. Les routes SMS et satisfaction, les variables `RELAIS_SMS_*` et la tâche `relais:sms-envoyer` sont relues dans le code, aucun SMS réel n'a été envoyé, le formulaire public n'a pas été ouvert sur un relais en ligne. Le mode silencieux de l'installateur est décrit par le PRD (R6) ; il n'a pas été essayé. Le retour arrière du relais par restauration de l'export `.jsonl.gz` a désormais son outil (`relais:relire-export --restaurer`, 4.7), essayé seulement sur la base de test du relais.
+
+### 4.7 Mettre à jour le logiciel (pas à pas, sans perdre une donnée)
+
+Spécification : `docs/prd/PRD-MISE-A-JOUR-sauvegarde-export-reimport.md`. Écarts E3080 à E3094, décisions section BG. Ordre à respecter : **relais, puis mère, puis fileuls, jamais l'inverse.**
+
+ℹ️ **État honnête du lot MAJ.** Le service de mise à jour du poste (préparer, migrer, essai à blanc, retour arrière, export portable, import) est écrit et testé, mais **aucun écran ne l'appelle encore** et le refus `426` n'est pas branché à l'application. Les étapes 1 à 3 ci-dessous se font donc avec ce qui existe déjà (écran « Sauvegardes et restauration » de la mère, installateur, commandes du relais) ; les étapes marquées **[à venir]** décrivent le parcours cible, elles ne sont pas utilisables aujourd'hui. Aucun essai n'a été fait sous Windows.
+
+**Avant de commencer** : choisir la fenêtre (question ouverte BG 8), prévenir les agents, vérifier que la clé de clinique est sauvegardée sous scellé (sans elle, aucune copie ne se lit, c'est voulu) et que la clé du poste est exportée (« Paramètres système », « Sauvegarder la clé de chiffrement »).
+
+**1. Le relais (si le code du relais change)**
+
+```bash
+cd ~/sigh-relais && /usr/local/bin/php artisan relais:mise-a-jour --essai    # ne fait rien, dit ce qui serait fait
+cd ~/sigh-relais && /usr/local/bin/php artisan relais:mise-a-jour           # exporte, RELIT l'export, puis migrate --force
+```
+
+La commande exporte la base (`--avant-migration`), relit l'export et ne migre PAS si la relecture échoue (`MAJ_SANS_SAUVEGARDE`). Téléversez le nouveau code avant, en conservant `.env` et `storage/` (4.5).
+
+**Retour arrière du relais** : remettre l'ancien code, créer une base neuve, puis relire et restaurer l'export d'avant la migration.
+
+```bash
+cd ~/sigh-relais && /usr/local/bin/php artisan relais:relire-export storage/app/exports/relais-AAAAMMJJ-HHMMSS-avant-migration.jsonl.gz            # relit, ne modifie rien
+cd ~/sigh-relais && /usr/local/bin/php artisan relais:relire-export storage/app/exports/relais-AAAAMMJJ-HHMMSS-avant-migration.jsonl.gz --restaurer # base neuve seulement
+```
+
+Refus nommés : `EXPORT_INTROUVABLE`, `EXPORT_ILLISIBLE`, `EXPORT_ANOMALIES`, `RESTAURATION_BASE_NON_VIDE` (rien n'est écrasé). Avertissement : la restauration ne remet pas les copies de sauvegarde hors site (elles ne sont pas dans l'export).
+
+**2. La mère : une copie vérifiée avant l'installateur**
+
+1. Sur la mère, ouvrez « Sauvegardes et restauration », faites « Sauvegarder maintenant » puis « Vérifier la dernière ». Notez l'heure.
+2. Copiez le dossier `%LOCALAPPDATA%\SIGHCNT\donnees` ET le fichier de clé du poste sur un support externe.
+3. **[à venir]** « Préparer la mise à jour » : copie chiffrée, restauration vérifiée dans un dossier neuf, comptes et empreintes consignés (exigence 1 du PRD). Le service le fait (`ServiceMiseAJour.preparer`), l'écran manque.
+
+**3. Installer la nouvelle version**
+
+Lancez `SIGH_Poste_Setup_<version>.exe` par-dessus l'ancienne version (même `AppId`) : **l'installateur ne touche jamais au dossier de données** (`sigh_poste.iss`). Commencez par la mère, puis chaque fileul. Au premier démarrage, `main.dart` ramène un état interrompu par une coupure aux données d'avant (jamais un état mixte) et refuse nommément des données plus récentes que le logiciel (`DONNEES_PLUS_RECENTES` : réinstaller la version qui les a écrites).
+
+**4. [à venir] Migrer les données, contrôler, puis laisser les fileuls se resynchroniser**
+
+1. « Essai à blanc » : dit ce qui changerait, n'écrit rien.
+2. « Migrer » : refuse `MAJ_SANS_SAUVEGARDE` sans copie vérifiée de moins de 24 h, puis refuse `MAJ_GESTE_RESERVE` sans le droit `lancer_mise_a_jour` (administrateur et Directrice Administrative par défaut). La migration relit et compare : « 108 000 fiches avant, 108 000 après », toute différence nommée ; en cas d'écart, les données d'avant sont remises.
+3. Un fileul de format trop ancien recevra `426 schema_incompatible` : il n'envoie rien, garde ses saisies hors ligne, et dit « mettre à jour ». Une fois mis à jour, il se resynchronise sans doublon.
+
+**5. [à venir] Retour arrière**
+
+« Annuler la mise à jour » montre la dernière copie vérifiée et la LISTE des saisies faites depuis (créées, modifiées), puis restaure. L'état actuel est rangé à part (`avant-retour-…` à côté du magasin) : rien n'est écrasé en silence. Objectif du PRD : moins de 30 minutes (valeur d'attente, non mesurée sur le matériel de la clinique).
+
+**6. [à venir] Changer de machine, ou repartir d'une copie : export portable**
+
+« Exporter toute la base » écrit UN fichier `.sighexp` chiffré par la clé de clinique (base, fichiers numérisés, manifeste signé, version du format). Sur la nouvelle machine ou la nouvelle version : restaurer d'abord la clé (écran de restauration de la clé, **non fait**), préparer une copie, puis « Importer ». Refus nommés : `IMPORT_SANS_CLE`, `IMPORT_AUTRE_CLINIQUE`, `IMPORT_ALTERE`, `DONNEES_PLUS_RECENTES`, `IMPORT_SANS_COPIE_PREALABLE`. Sur un fileul rattaché, la base importée plus ancienne que sa dernière synchronisation déclenche l'avertissement `IMPORT_PLUS_ANCIEN_QUE_SYNC` (non bloquant) : ses saisies postérieures sont listées, puis il rejoue le journal de la mère sans rien écrire à sa place.
+
+**Vérifier le service sans écran** (développement) :
+
+```bash
+export PATH=/tmp/flutter-dl/flutter/bin:$PATH
+cd packages/domaine && dart test test/maj_test.dart
+cd apps/poste && flutter test test/maj_poste_test.dart test/maj_sync_test.dart
+cd apps/poste && dart run tool/mesure_maj.dart 18000          # jeu généré, aucune donnée réelle
+cd apps/web && php vendor/bin/phpunit tests/Feature/MiseAJourRelaisTest.php   # voir la note sur APP_BASE_PATH (arbre de travail)
+```
+
+> **Non vérifié** : Windows, l'installateur avec une vraie migration, DPAPI, deux machines physiques, le matériel de la clinique, les volumes réels de fichiers numérisés. Les écrans et le branchement du `426` ne sont pas faits.
 
 ---
 
