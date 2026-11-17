@@ -76,7 +76,7 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m3-hospitalisation.js') }).catch(() => {});
     await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m3-visites-patients'].render(r); r.remove(); } catch (e) { console.error(e); } });
     for (const nom of COLLECTIONS.filter((n) => !FILTRE.length || FILTRE.includes(n))) {
-      const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
+      const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify((() => { const vus = new Set(); return SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()).filter((x) => { if (!x || x.id === undefined) return true; if (vus.has(x.id)) return false; vus.add(x.id); return true; }); })(), (k, v) => (v === null ? undefined : v))), nom);
       if (nom === 'modulesActifs' && !SOBRE) lignes.push(...FERMETURES_PROPRES_AU_POSTE);
       /* LOT TARIF-FIX : les prestations de prix des PRODUITS (famille PRODUIT, version 1 « reprise ») ne sont pas livrées : la maquette les pose à sa projection, le poste les pose
          lui-même au démarrage de la mère (`TarifsPoste.assurerProduits`, lot TFIN-2). Les exporter changerait l'origine de leur version 1 au poste. */
