@@ -120,6 +120,17 @@ class RefusRejeuCommande {
 bool _validee(Map<String, Object?>? c) =>
     c != null && statutsCommandeValides.contains(c['statutCommande']) && '${c['valideePar'] ?? ''}'.isNotEmpty;
 
+/// LA MÈRE, sur une MODIFICATION reçue d'un autre poste (jamais sur le rejeu d'une création, qui est sans effet) : une référence DÉFINITIVE ne se réécrit jamais (règle 1, une pièce émise ne se
+/// réécrit pas). Sans cette garde, un poste pourrait poser `BC-2026-9999` et décaler le rang définitif de toutes les commandes suivantes (le rang est le plus grand rang définitif de l'année,
+/// plus un). Refus nommé `COMMANDE_REFERENCE_FIGEE`. [avant] : la fiche d'avant ; [apres] : la fiche telle qu'elle serait.
+RefusRejeuCommande? refusRejeuReferenceCommande(Map<String, Object?>? avant, Map<String, Object?> apres) {
+  if (avant != null && estReferenceCommandeDefinitive(avant['reference']) && '${apres['reference'] ?? ''}' != '${avant['reference']}') {
+    return RefusRejeuCommande('COMMANDE_REFERENCE_FIGEE', 'La référence ${avant['reference']} de la commande est définitive : elle ne se réécrit pas (écriture reçue : « ${apres['reference'] ?? ''} »).',
+        'Laisser la référence que la mère a attribuée ; une correction passe par une nouvelle commande, l\'ancienne s\'archive (RG-14).');
+  }
+  return null;
+}
+
 /// La MÈRE refait la garde RG-04 sur ce qu'un AUTRE POSTE écrit (un bouton masqué ne protège rien) : un statut « validée », « transmise », « livrée » ou « soldée » (ou un validateur) qui naît
 /// d'une écriture directe est REFUSÉ ; la validation d'une commande déjà validée ne se réécrit pas. Seule la mère écrit une validation, par l'application d'une décision signée.
 /// [avant] : la fiche d'avant (`null` à la création) ; [apres] : la fiche telle qu'elle serait (fusion de l'existant et de l'écriture).

@@ -60,6 +60,17 @@ void main() {
     expect(refusRejeuValidationCommande(avant, {...avant, 'valideePar': 'Mme DAF'})!.code, 'COMMANDE_VALIDATION_DIRECTE', reason: 'un validateur seul suffit à être refusé');
   });
 
+  test('rejeu à la mère : une référence DÉFINITIVE ne se réécrit jamais (refus nommé), une provisoire peut changer, le rang suivant ne dépend que des références posées', () {
+    final def = {...commande(), 'reference': 'BC-2026-0001'};
+    expect(refusRejeuReferenceCommande(def, {...def, 'reference': 'BC-2026-9999'})!.code, 'COMMANDE_REFERENCE_FIGEE');
+    expect(refusRejeuReferenceCommande(def, {...def, 'reference': 'BC-2026-PF1-0001'})!.code, 'COMMANDE_REFERENCE_FIGEE', reason: 'une provisoire ne remplace pas une définitive');
+    expect(refusRejeuReferenceCommande(def, {...def, 'montant': 12}), isNull, reason: 'une autre correction passe');
+    expect(refusRejeuReferenceCommande(def, {...def}), isNull);
+    final prov = {...commande(), 'reference': 'BC-2026-PF1-0001'};
+    expect(refusRejeuReferenceCommande(prov, {...prov, 'reference': 'BC-2026-PF1-0002'}), isNull, reason: 'tant que le rang n\'est pas attribué, rien n\'est figé');
+    expect(refusRejeuReferenceCommande(null, {...prov}), isNull);
+  });
+
   test('dépôt : sans droit refusé nommé, jamais deux décisions en attente, la cible est l\'identité de synchronisation', () {
     final c = {...commande(), 'idSync': 'CMD-abc'};
     VerdictDepotValidation depot(bool geste, {List<M> demandes = const []}) => commandeDeposerValidation(

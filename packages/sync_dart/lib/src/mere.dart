@@ -27,6 +27,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         cpcRefusRejeuPiece,
         idCollectionOptions,
         referenceCommandeDefinitive,
+        refusRejeuReferenceCommande,
         refusRejeuValidationCommande,
         mobMotifFonctionNonHabilitee,
         mobPeutPrescrire,
@@ -429,7 +430,7 @@ class Mere {
     // LOT CMD : la MÈRE refait la garde RG-04 sur ce qu'un AUTRE POSTE écrit : une validation de commande écrite directement sur la fiche est REFUSÉE au rejeu (refus nommé). Seule la mère écrit une
     // validation, en appliquant une décision signée déposée dans `demandesValidation`.
     if (collection == 'commandes' && app.role != 'mere' && (type == 'creer' || type == 'modifier')) {
-      final r = refusRejeuValidationCommande(f?.data, {...?f?.data, ...champsOp});
+      final r = (type == 'modifier' ? refusRejeuReferenceCommande(f?.data, {...?f?.data, ...champsOp}) : null) ?? refusRejeuValidationCommande(f?.data, {...?f?.data, ...champsOp});
       if (r != null) return refus(r.code, r.motif, r.geste);
     }
 

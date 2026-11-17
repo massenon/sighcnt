@@ -196,6 +196,8 @@ function traiter(op, app) {
   if (op.collection === 'commandes' && app.role !== 'mere' && (op.type === 'creer' || op.type === 'modifier')) {
     const avant = f ? f.data : null; const apres = Object.assign({}, avant || {}, op.champs || {});
     const ref = apres.reference || '';
+    /* Une référence DÉFINITIVE ne se réécrit jamais (même règle que `refusRejeuValidationCommande` du domaine) : sans elle, `BC-2026-9999` décalerait le rang de toutes les suivantes. */
+    if (op.type === 'modifier' && avant && RE_DEF.test(String(avant.reference || '')) && String(apres.reference || '') !== String(avant.reference)) return refus('COMMANDE_REFERENCE_FIGEE', `La référence ${avant.reference} de la commande est définitive : elle ne se réécrit pas (écriture reçue : « ${apres.reference || ''} »).`, 'Laisser la référence que la mère a attribuée ; une correction passe par une nouvelle commande, l\'ancienne s\'archive (RG-14).');
     if (validee(avant)) {
       if (String(avant.valideePar) !== String(apres.valideePar || '') || String(avant.dateValidation || '') !== String(apres.dateValidation || '')) return refus('COMMANDE_VALIDATION_FIGEE', `La validation de la commande ${ref} (${avant.valideePar}) ne se réécrit pas.`, 'Laisser la validation telle que la mère l\'a posée');
     } else if (STATUTS_VALIDES.includes(apres.statutCommande) || apres.valideePar) {

@@ -6,7 +6,7 @@
    sous le rôle de l'auteur, référence provisoire de l'écran) est éprouvé par `apps/poste/test/cmd_commande_sync_test.dart` (VRAIE mère Dart, deux VRAIS fileuls). Ici :
 
      1. une commande créée par F1 avec une référence PROVISOIRE (`BC-AAAA-P<poste>-nnnn`) reçoit à la mère son rang DÉFINITIF ; il revient à F1 et arrive à F2 ;
-     2. deux postes qui tirent le même rang provisoire reçoivent deux rangs définitifs DISTINCTS ; une référence définitive déjà posée ne se réécrit jamais ;
+     2. deux postes qui tirent le même rang provisoire reçoivent deux rangs définitifs DISTINCTS ; une référence définitive déjà posée ne se réécrit jamais (refus nommé COMMANDE_REFERENCE_FIGEE, la numérotation des autres ne bouge pas) ;
      3. une VALIDATION écrite directement sur la fiche par un fileul est REFUSÉE au rejeu (COMMANDE_VALIDATION_DIRECTE) ; une autre correction passe ;
      4. mère TUÉE : F1 et F2 saisissent la MÊME commande (même identité de contenu, deux références provisoires) ; à la reprise, UNE fiche, UN rang, aucun refus à « traiter » ;
      5. la réponse se perd après traitement : le rejeu ne crée aucun doublon ni deuxième rang ;
@@ -46,7 +46,9 @@ module.exports = ({ monde, verifier, attendre, dormir, titre }) => ({
       await attendre(async () => (await ref(f1, 'CMD-b')) === 'BC-2026-0002' && (await ref(f2, 'CMD-b')) === 'BC-2026-0002', 15000), [await ref(f1, 'CMD-b'), await ref(f2, 'CMD-b')]);
     await f1.ecrire({ type: 'modifier', collection: 'commandes', fiche: 'CMD-a', champs: { reference: 'BC-2026-9999' } });
     await dormir(1500);
-    verifier('une tentative de réécrire une référence définitive ne change pas la numérotation des AUTRES commandes (le rang suivant reste BC-2026-0003)',
+    verifier('une tentative de réécrire une référence définitive est REFUSÉE au rejeu en nommant (COMMANDE_REFERENCE_FIGEE) : la fiche garde BC-2026-0001 à la mère et chez F2',
+      await attendre(async () => (await aTraiter()).some((x) => x.code === 'COMMANDE_REFERENCE_FIGEE'), 15000) && (await ref(f2, 'CMD-a')) === 'BC-2026-0001', [await aTraiter(), await ref(f2, 'CMD-a')]);
+    verifier('elle ne change pas la numérotation des AUTRES commandes (le rang suivant reste BC-2026-0003)',
       (await ref(f2, 'CMD-b')) === 'BC-2026-0002', [await ref(f2, 'CMD-b')]);
 
     /* 3. Une validation écrite DIRECTEMENT par un fileul est refusée au rejeu ; une autre correction passe. */
@@ -66,7 +68,7 @@ module.exports = ({ monde, verifier, attendre, dormir, titre }) => ({
     await m.mere.demarrer();
     verifier('mère relancée : la même commande saisie par deux postes coupés ne fait qu\'UNE fiche à la mère et chez chacun, aucun refus à « traiter »',
       await attendre(async () => (await f1.vide()) && (await f2.vide()) && (await compte('commandes')) === 3 && (await f1.liste('commandes')).length === 3 && (await f2.liste('commandes')).length === 3, 20000)
-      && (await aTraiter()).every((x) => x.code === 'COMMANDE_VALIDATION_DIRECTE'), [await compte('commandes'), await aTraiter()]);
+      && (await aTraiter()).every((x) => x.code === 'COMMANDE_VALIDATION_DIRECTE' || x.code === 'COMMANDE_REFERENCE_FIGEE'), [await compte('commandes'), await aTraiter()]);
     verifier('UN seul rang définitif (BC-2026-0003) pour cette commande, identique à la mère, chez F1 et chez F2 (jamais deux rangs ni une référence qui bascule)',
       await attendre(async () => (await ref(f1, 'CMD-c')) === 'BC-2026-0003' && (await ref(f2, 'CMD-c')) === 'BC-2026-0003', 15000), [await ref(f1, 'CMD-c'), await ref(f2, 'CMD-c')]);
 
