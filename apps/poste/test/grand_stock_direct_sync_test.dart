@@ -148,12 +148,23 @@ void main() {
       final r2 = f2.importerLignes(lignesModifiees(), 'modifie.xlsx');
       final id1 = '${r1.demande!['id']}', id2 = '${r2.demande!['id']}', serie2 = '${r2.demande!['serieIdentifiants']}';
       f2.sortir('MED1', 'L1', 10);
+      // L'ORDRE D'ARRIVÉE DES DEUX DEMANDES EST FIXÉ PAR LE TEST, jamais laissé aux boucles d'arrière-plan des fileuls : la mère tranche dans l'ordre du dépôt, et si la demande
+      // de F2 lui parvenait avant celle de F1 (une machine chargée suffit), c'est F1 qui serait refusé et le cas ne mesurerait plus ce qu'il dit. Seul F1 dépose pendant la coupure ;
+      // F2 (sa sortie est déjà faite chez lui) ne dépose qu'APRÈS que la mère a appliqué le premier inventaire.
       for (var i = 0; i < 3; i++) {
         await f1.tour();
-        await f2.tour();
         await Future<void>.delayed(const Duration(milliseconds: 150));
       }
       await c.demarrerMere();
+      final fin = DateTime.now().add(const Duration(seconds: 60));
+      while (f1.demande(id1)?['etat'] != demandeImportAppliquee) {
+        await c.pub.pousser();
+        await c.pontM.cycle();
+        await c.service.traiter();
+        await f1.tour();
+        if (DateTime.now().isAfter(fin)) fail('la mère n\'applique pas le premier inventaire (service ${c.service.derniereErreur})');
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      }
       await c.converger(() => f1.demande(id1)?['etat'] == demandeImportAppliquee && f2.demande(id2)?['etat'] == demandeImportRefusee && f2.demande(id2)?['restitution'] != null, 'la mère tranche', apres: 8);
       final v2 = f2.demande(id2)!;
       expect([v2['resultatCode'], v2['restitution']], ['DOUBLON_MAGASIN', restitutionPartielle]);

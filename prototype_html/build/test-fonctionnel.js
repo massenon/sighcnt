@@ -23032,6 +23032,16 @@ async function viderMessages(page) {
     const e2 = await etat(pe);
     verifier('ANNULATION de la réception : le stock et le CUMP reviennent comme avant, et la proposition ouverte par elle est RETIRÉE (statut « retire », lisible à l’historique)',
       e1.versions.length === 2 && e1.versions[1].statut === 'propose' && e2.stock === e0.stock && e2.cump === e0.cump && e2.versions.length === 2 && e2.versions[1].statut === 'retire', JSON.stringify({ e0: [e0.stock, e0.cump], e1: e1.versions, e2: [e2.stock, e2.cump, e2.versions] }));
+    /* --- 7. L'ANNULATION D'UNE CRÉATION, PIRE ORDRE D'ENVOI : l'envoi global du magasin part AVANT l'archivage nommé (ce que fait une machine chargée au hasard des minuteries). La fiche annulée ne disparaît JAMAIS
+       du serveur (RG-14) et aucun geste n'est refusé (« Aucune fiche … dans livraisons » mettait la page en panne, vague 139 sous charge) : elle y est ARCHIVÉE, lisible. --- */
+    const s7id = await page.evaluate(() => { const r = window.SIGH.store.collection('livraisons', { module: 'M7', entite: 'BonLivraison' }).insert({ reference: 'BL139S', sondeT5b: true, lignes: [], montant: 0 }); window.__s7 = r; return r.record.id; });
+    await attendreEcritures();
+    await page.evaluate(() => { window.__s7.undo(); window.SIGH.store.pousserMaintenant(); });
+    await attendreEcritures(); await pause(600);
+    const s7 = await page.evaluate(async (id) => { const S = window.SIGH.store; const racine = document.documentElement.getAttribute('data-root') || '';
+      const rep = await fetch(racine + 'api/crud.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() || '' }, body: JSON.stringify({ action: 'lire', collection: 'livraisons', id: id }) });
+      const o = await rep.json().catch(() => ({})); return { http: rep.status, statut: o.fiche ? o.fiche.statut : null, panne: !!(document.querySelector('#panne-store, [data-panne]')) }; }, s7id);
+    verifier('Annulation d’une création, envoi global AVANT l’archivage nommé : la fiche est toujours au serveur, ARCHIVÉE (RG-14), et aucune panne n’est levée', s7.http === 200 && s7.statut === 'archive' && !s7.panne, JSON.stringify(s7));
     await B.restituer();
     const e139 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', e139.length === 0, e139.join(' | '));

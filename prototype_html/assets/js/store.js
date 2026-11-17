@@ -4443,8 +4443,13 @@
              que la règle interdit. Elle sort donc de l'écran (retirée du
              miroir) et reste à la corbeille, où le journal la rattache à sa
              création. */
+          /* LA FICHE RESTE AU MIROIR, ARCHIVÉE (comme l'archivage nomme la même chose au serveur) : la retirer du miroir faisait partir l'envoi global du magasin (qui pose la collection
+             ENTIÈRE) sans elle, donc la supprimait PHYSIQUEMENT du serveur (RG-14) et, selon l'ordre des minuteries, l'archivage nommé qui suivait n'y trouvait plus rien :
+             « Aucune fiche … » mettait la page en panne (vague 139, sous charge). Archivée des deux côtés, les deux chemins convergent dans n'importe quel ordre. */
           undo: function () {
-            api._remove(rec.id);
+            if (rec.statut !== 'archive') {
+              rec.statut = 'archive'; rec._archivePar = currentUser(); rec._archiveLe = new Date().toISOString(); rec._motifArchivage = 'Création annulée';
+            }
             transmettre('archiver', name, { id: rec.id, motif: 'Création annulée' });
             save(); emit(name);
           },
