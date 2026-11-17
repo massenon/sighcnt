@@ -17,6 +17,10 @@
    "titre": "Aide & À propos",
    "description": "Documentation d’usage : présentation du logiciel, guide des modules et foire aux questions."
   },
+  "cfg-bareme-aib": {
+   "titre": "Barème de l’AIB",
+   "description": "Taux de l’acompte sur impôt assis sur les bénéfices par situation de l’acheteur, daté, versionné et modifiable sans toucher au code."
+  },
   "cfg-branding": {
    "titre": "Identité & papier à en-tête",
    "description": "Paramétrage de l’identité visuelle et des coordonnées reprises sur tous les documents édités."
@@ -637,6 +641,10 @@
    "titre": "Budgets",
    "description": "Budgétisation par centre de coûts et suivi du réalisé par rapport au prévisionnel."
   },
+  "m12-calendrier-fiscal": {
+   "titre": "Calendrier fiscal mensuel",
+   "description": "Les échéances fiscales et sociales du mois, jour par jour, avec leur état : payée, en retard, à payer, à venir."
+  },
   "m12-cloture": {
    "titre": "Exercices & clôtures",
    "description": "Sélecteur d’exercice, pré-clôture, clôture en deux gestes, à-nouveaux et lettrage des tiers."
@@ -1183,7 +1191,7 @@
   },
   "m7-commandes": {
    "titre": "Bons de commande",
-   "description": "Commandes fournisseurs, validation par la Directrice Administrative et transmission."
+   "description": "Commandes fournisseurs, validation (RG-04) et transmission."
   },
   "m7-ecarts": {
    "titre": "Écarts de livraison",
