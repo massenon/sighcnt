@@ -19,7 +19,7 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `m5` — M5 Laboratoire | 9 | 0 | 135 | 0 |
 | `m6` — M6 Pharmacie & stocks | 8 | 1 | 82 | 0 |
 | `m7` — M7 Achats & fournisseurs | 6 | 4 | 78 | 0 |
-| `m8` — M8 Facturation & caisse | 2 | 1 | 55 | 0 |
+| `m8` — M8 Facturation & caisse | 7 | 2 | 176 | 21 |
 | `m9` — M9 Assurances & créances | 5 | 1 | 60 | 0 |
 | `socle` — Socle commun (référentiels lus par plusieurs modules) | 4 | 0 | 59 | 0 |
 | `sup` — Support | 1 | 0 | 17 | 0 |
@@ -3379,6 +3379,31 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
+### `m8.avoirs_tiers` (collection « avoirsTiers », 1 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `motif` | motif | text |  |
+| `emis_le` | emisLe | timestamptz |  |
+| `numero` | numero | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `emis_par` | emisPar | text |  |
+| `montant` | montant | integer |  |
+| `cree_par` | _creePar | text |  |
+| `tiers_code` | tiersCode | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `sources_cle` | sourcesCle | text |  |
+| `archive_par` | _archivePar | text |  |
+| `modifie_par` | _modifiePar | text |  |
+| `statut_mecef` | statutMecef | text |  |
+| `facture_numero` | factureNumero | text |  |
+| `facture_tiers_id` | factureTiersId | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+
 ### `m8.factures` (collection « factures », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -3440,6 +3465,129 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 | `souscripteur` | souscripteur | text |  |
 
 Table fille `m8.factures_lignes` — 0 lignes : id text, paye_le timestamptz, remise integer, montant integer, paye_par text, acte_code text, quantite integer, categorie text, demande_id text, produit_id text, designation text, montant_brut integer, motif_remise text, part_patient integer, montant_regle integer, part_assureur integer, prix_unitaire integer, part_personnel integer, statut_paiement text, prix_unitaire_net integer, demande_imagerie_id text, taux_remise integer
+
+### `m8.factures_tiers` (collection « facturesTiers », 8 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `ht` | ht | integer |  |
+| `id` | id | text |  |
+| `net` | net | integer |  |
+| `tva` | tva | integer |  |
+| `base` | base | integer |  |
+| `date` | date | date |  |
+| `emis_le` | emisLe | timestamptz |  |
+| `numero` | numero | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `aib_taux` | aibTaux | integer |  |
+| `emis_par` | emisPar | text |  |
+| `cree_par` | _creePar | text |  |
+| `tiers_nom` | tiersNom | text |  |
+| `mode_mecef` | modeMecef | text |  |
+| `patient_id` | patientId | text |  |
+| `propose_le` | proposeLe | timestamptz |  |
+| `tiers_code` | tiersCode | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `aib_montant` | aibMontant | integer |  |
+| `code_retour` | codeRetour | text |  |
+| `patient_nom` | patientNom | text |  |
+| `propose_par` | proposePar | text |  |
+| `sources_cle` | sourcesCle | text |  |
+| `archive_par` | _archivePar | text |  |
+| `modifie_par` | _modifiePar | text |  |
+| `aib_decision` | aibDecision | jsonb |  |
+| `ifu_acheteur` | ifuAcheteur | text |  |
+| `mecef_simule` | mecefSimule | boolean |  |
+| `nom_acheteur` | nomAcheteur | text |  |
+| `numero_mecef` | numeroMecef | text |  |
+| `patient_code` | patientCode | text |  |
+| `statut_mecef` | statutMecef | text |  |
+| `normalise_par` | normalisePar | text |  |
+| `tiers_adresse` | tiersAdresse | text |  |
+| `tiers_version` | tiersVersion | integer |  |
+| `tiers_version_id` | tiersVersionId | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+| `motif_refus_mecef` | motifRefusMecef | text |  |
+| `date_transmission` | dateTransmission | timestamptz |  |
+| `delai_paiement_jours` | delaiPaiementJours | integer |  |
+| `part_patient_restante` | partPatientRestante | integer |  |
+
+Table fille `m8.factures_tiers_lignes` — 9 lignes : ligne_id text, montant integer, facture_id text, designation text, facture_numero text
+
+### `m8.lettrages_tiers` (collection « lettragesTiers », 2 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `montant` | montant | integer |  |
+| `cree_par` | _creePar | text |  |
+| `lettre_par` | lettrePar | text |  |
+| `tiers_code` | tiersCode | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `archive_par` | _archivePar | text |  |
+| `modifie_par` | _modifiePar | text |  |
+| `reglement_id` | reglementId | text |  |
+| `reglement_ref` | reglementRef | text |  |
+| `facture_numero` | factureNumero | text |  |
+| `facture_tiers_id` | factureTiersId | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+| `reglement_numero` | reglementNumero | text |  |
+
+### `m8.reglements_tiers` (collection « reglementsTiers », 1 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `mode` | mode | text |  |
+| `numero` | numero | text |  |
+| `recu_le` | recuLe | timestamptz |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `montant` | montant | integer |  |
+| `recu_par` | recuPar | text |  |
+| `cree_par` | _creePar | text |  |
+| `tiers_code` | tiersCode | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `archive_par` | _archivePar | text |  |
+| `modifie_par` | _modifiePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+| `reference_paiement` | referencePaiement | text |  |
+
+### `m8.tiers_payeurs` (collection « tiersPayeurs », 9 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `ifu` | ifu | text |  |
+| `nom` | nom | text |  |
+| `code` | code | text |  |
+| `type` | type | text |  |
+| `cree_le` | creeLe | timestamptz |  |
+| `statut` | statut | text |  |
+| `cree_le_2` | _creeLe | timestamptz |  |
+| `adresse` | adresse | text |  |
+| `contact` | contact | text |  |
+| `cree_par` | creePar | text |  |
+| `date_fin` | dateFin | date |  |
+| `version` | version | integer |  |
+| `cree_par_2` | _creePar | text |  |
+| `date_effet` | dateEffet | date |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `conditions` | conditions | text |  |
+| `archive_par` | _archivePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+| `delai_paiement_jours` | delaiPaiementJours | integer |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
+| `motif` | motif | text |  |
 
 ### `m9.assureurs` (collection « assureurs », 0 fiches)
 

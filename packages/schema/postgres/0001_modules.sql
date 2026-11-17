@@ -4107,6 +4107,34 @@ CREATE TABLE IF NOT EXISTS "m8"."avoirs" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m8"."avoirs" IS 'Collection « avoirs » — M8 Facturation & caisse';
+CREATE TABLE IF NOT EXISTS "m8"."avoirs_tiers" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "motif" text,
+  "emis_le" timestamptz,
+  "numero" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "emis_par" text,
+  "montant" integer,
+  "cree_par" text,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "sources_cle" text,
+  "archive_par" text,
+  "modifie_par" text,
+  "statut_mecef" text,
+  "facture_numero" text,
+  "facture_tiers_id" text,
+  "motif_archivage" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m8"."avoirs_tiers" IS 'Collection « avoirsTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_date" ON "m8"."avoirs_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_numero" ON "m8"."avoirs_tiers" ("numero");
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_statut" ON "m8"."avoirs_tiers" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_facture_tiers_id" ON "m8"."avoirs_tiers" ("facture_tiers_id");
 CREATE TABLE IF NOT EXISTS "m8"."factures" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -4204,6 +4232,151 @@ CREATE TABLE IF NOT EXISTS "m8"."factures_lignes" (
   FOREIGN KEY ("parent_id") REFERENCES "m8"."factures" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE "m8"."factures_lignes" IS 'Lignes « lignes » de « factures »';
+CREATE TABLE IF NOT EXISTS "m8"."factures_tiers" (
+  "ht" integer,
+  "id" text PRIMARY KEY,
+  "net" integer,
+  "tva" integer,
+  "base" integer,
+  "date" date,
+  "emis_le" timestamptz,
+  "numero" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "aib_taux" integer,
+  "emis_par" text,
+  "cree_par" text,
+  "tiers_nom" text,
+  "mode_mecef" text,
+  "patient_id" text,
+  "propose_le" timestamptz,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "aib_montant" integer,
+  "code_retour" text,
+  "patient_nom" text,
+  "propose_par" text,
+  "sources_cle" text,
+  "archive_par" text,
+  "modifie_par" text,
+  "aib_decision" jsonb,
+  "ifu_acheteur" text,
+  "mecef_simule" boolean,
+  "nom_acheteur" text,
+  "numero_mecef" text,
+  "patient_code" text,
+  "statut_mecef" text,
+  "normalise_par" text,
+  "tiers_adresse" text,
+  "tiers_version" integer,
+  "tiers_version_id" text,
+  "motif_archivage" text,
+  "motif_refus_mecef" text,
+  "date_transmission" timestamptz,
+  "delai_paiement_jours" integer,
+  "part_patient_restante" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m8"."factures_tiers" IS 'Collection « facturesTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_date" ON "m8"."factures_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_numero" ON "m8"."factures_tiers" ("numero");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_statut" ON "m8"."factures_tiers" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_patient_id" ON "m8"."factures_tiers" ("patient_id");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_tiers_version_id" ON "m8"."factures_tiers" ("tiers_version_id");
+CREATE TABLE IF NOT EXISTS "m8"."factures_tiers_lignes" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "ligne_id" text,
+  "montant" integer,
+  "facture_id" text,
+  "designation" text,
+  "facture_numero" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m8"."factures_tiers" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m8"."factures_tiers_lignes" IS 'Lignes « lignes » de « facturesTiers »';
+CREATE TABLE IF NOT EXISTS "m8"."lettrages_tiers" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "statut" text,
+  "cree_le" timestamptz,
+  "montant" integer,
+  "cree_par" text,
+  "lettre_par" text,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "archive_par" text,
+  "modifie_par" text,
+  "reglement_id" text,
+  "reglement_ref" text,
+  "facture_numero" text,
+  "facture_tiers_id" text,
+  "motif_archivage" text,
+  "reglement_numero" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m8"."lettrages_tiers" IS 'Collection « lettragesTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_date" ON "m8"."lettrages_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_statut" ON "m8"."lettrages_tiers" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_reglement_id" ON "m8"."lettrages_tiers" ("reglement_id");
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_facture_tiers_id" ON "m8"."lettrages_tiers" ("facture_tiers_id");
+CREATE TABLE IF NOT EXISTS "m8"."reglements_tiers" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "mode" text,
+  "numero" text,
+  "recu_le" timestamptz,
+  "statut" text,
+  "cree_le" timestamptz,
+  "montant" integer,
+  "recu_par" text,
+  "cree_par" text,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "archive_par" text,
+  "modifie_par" text,
+  "motif_archivage" text,
+  "reference_paiement" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m8"."reglements_tiers" IS 'Collection « reglementsTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_reglements_tiers_date" ON "m8"."reglements_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_reglements_tiers_numero" ON "m8"."reglements_tiers" ("numero");
+CREATE INDEX IF NOT EXISTS "ix_reglements_tiers_statut" ON "m8"."reglements_tiers" ("statut");
+CREATE TABLE IF NOT EXISTS "m8"."tiers_payeurs" (
+  "id" text PRIMARY KEY,
+  "ifu" text,
+  "nom" text,
+  "code" text,
+  "type" text,
+  "cree_le" timestamptz,
+  "statut" text,
+  "cree_le_2" timestamptz,
+  "adresse" text,
+  "contact" text,
+  "cree_par" text,
+  "date_fin" date,
+  "version" integer,
+  "cree_par_2" text,
+  "date_effet" date,
+  "archive_le" timestamptz,
+  "conditions" text,
+  "archive_par" text,
+  "motif_archivage" text,
+  "delai_paiement_jours" integer,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "motif" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m8"."tiers_payeurs" IS 'Collection « tiersPayeurs » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_code" ON "m8"."tiers_payeurs" ("code");
+CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_type" ON "m8"."tiers_payeurs" ("type");
+CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_statut" ON "m8"."tiers_payeurs" ("statut");
 CREATE TABLE IF NOT EXISTS "m9"."assureurs" (
   "n" integer,
   "id" text PRIMARY KEY,

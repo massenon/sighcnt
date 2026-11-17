@@ -6882,6 +6882,54 @@ CREATE TABLE IF NOT EXISTS "m8"."avoirs" (
 );
 ALTER TABLE "m8"."avoirs" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m8"."avoirs" IS 'Collection « avoirs » — M8 Facturation & caisse';
+CREATE TABLE IF NOT EXISTS "m8"."avoirs_tiers" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "motif" text,
+  "emis_le" timestamptz,
+  "numero" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "emis_par" text,
+  "montant" integer,
+  "cree_par" text,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "sources_cle" text,
+  "archive_par" text,
+  "modifie_par" text,
+  "statut_mecef" text,
+  "facture_numero" text,
+  "facture_tiers_id" text,
+  "motif_archivage" text,
+  "extra" jsonb
+);
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "emis_le" timestamptz; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "numero" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "emis_par" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "tiers_code" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "sources_cle" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "statut_mecef" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "facture_numero" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "facture_tiers_id" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "m8"."avoirs_tiers" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."avoirs_tiers" IS 'Collection « avoirsTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_date" ON "m8"."avoirs_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_numero" ON "m8"."avoirs_tiers" ("numero");
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_statut" ON "m8"."avoirs_tiers" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_avoirs_tiers_facture_tiers_id" ON "m8"."avoirs_tiers" ("facture_tiers_id");
 CREATE TABLE IF NOT EXISTS "m8"."factures" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -7057,6 +7105,258 @@ ALTER TABLE "m8"."factures_lignes" ADD COLUMN IF NOT EXISTS "demande_imagerie_id
 ALTER TABLE "m8"."factures_lignes" ADD COLUMN IF NOT EXISTS "taux_remise" integer; -- @montee
 ALTER TABLE "m8"."factures_lignes" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m8"."factures_lignes" IS 'Lignes « lignes » de « factures »';
+CREATE TABLE IF NOT EXISTS "m8"."factures_tiers" (
+  "ht" integer,
+  "id" text PRIMARY KEY,
+  "net" integer,
+  "tva" integer,
+  "base" integer,
+  "date" date,
+  "emis_le" timestamptz,
+  "numero" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "aib_taux" integer,
+  "emis_par" text,
+  "cree_par" text,
+  "tiers_nom" text,
+  "mode_mecef" text,
+  "patient_id" text,
+  "propose_le" timestamptz,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "aib_montant" integer,
+  "code_retour" text,
+  "patient_nom" text,
+  "propose_par" text,
+  "sources_cle" text,
+  "archive_par" text,
+  "modifie_par" text,
+  "aib_decision" jsonb,
+  "ifu_acheteur" text,
+  "mecef_simule" boolean,
+  "nom_acheteur" text,
+  "numero_mecef" text,
+  "patient_code" text,
+  "statut_mecef" text,
+  "normalise_par" text,
+  "tiers_adresse" text,
+  "tiers_version" integer,
+  "tiers_version_id" text,
+  "motif_archivage" text,
+  "motif_refus_mecef" text,
+  "date_transmission" timestamptz,
+  "delai_paiement_jours" integer,
+  "part_patient_restante" integer,
+  "extra" jsonb
+);
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "ht" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "net" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "tva" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "base" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "emis_le" timestamptz; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "numero" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "aib_taux" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "emis_par" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "tiers_nom" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "mode_mecef" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "propose_le" timestamptz; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "tiers_code" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "aib_montant" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "code_retour" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "patient_nom" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "propose_par" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "sources_cle" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "aib_decision" jsonb; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "ifu_acheteur" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "mecef_simule" boolean; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "nom_acheteur" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "numero_mecef" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "patient_code" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "statut_mecef" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "normalise_par" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "tiers_adresse" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "tiers_version" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "tiers_version_id" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "motif_refus_mecef" text; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "date_transmission" timestamptz; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "delai_paiement_jours" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "part_patient_restante" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."factures_tiers" IS 'Collection « facturesTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_date" ON "m8"."factures_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_numero" ON "m8"."factures_tiers" ("numero");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_statut" ON "m8"."factures_tiers" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_patient_id" ON "m8"."factures_tiers" ("patient_id");
+CREATE INDEX IF NOT EXISTS "ix_factures_tiers_tiers_version_id" ON "m8"."factures_tiers" ("tiers_version_id");
+CREATE TABLE IF NOT EXISTS "m8"."factures_tiers_lignes" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "ligne_id" text,
+  "montant" integer,
+  "facture_id" text,
+  "designation" text,
+  "facture_numero" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m8"."factures_tiers" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+ALTER TABLE "m8"."factures_tiers_lignes" ADD COLUMN IF NOT EXISTS "ligne_id" text; -- @montee
+ALTER TABLE "m8"."factures_tiers_lignes" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
+ALTER TABLE "m8"."factures_tiers_lignes" ADD COLUMN IF NOT EXISTS "facture_id" text; -- @montee
+ALTER TABLE "m8"."factures_tiers_lignes" ADD COLUMN IF NOT EXISTS "designation" text; -- @montee
+ALTER TABLE "m8"."factures_tiers_lignes" ADD COLUMN IF NOT EXISTS "facture_numero" text; -- @montee
+ALTER TABLE "m8"."factures_tiers_lignes" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."factures_tiers_lignes" IS 'Lignes « lignes » de « facturesTiers »';
+CREATE TABLE IF NOT EXISTS "m8"."lettrages_tiers" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "statut" text,
+  "cree_le" timestamptz,
+  "montant" integer,
+  "cree_par" text,
+  "lettre_par" text,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "archive_par" text,
+  "modifie_par" text,
+  "reglement_id" text,
+  "reglement_ref" text,
+  "facture_numero" text,
+  "facture_tiers_id" text,
+  "motif_archivage" text,
+  "reglement_numero" text,
+  "extra" jsonb
+);
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "lettre_par" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "tiers_code" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "reglement_id" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "reglement_ref" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "facture_numero" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "facture_tiers_id" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "reglement_numero" text; -- @montee
+ALTER TABLE "m8"."lettrages_tiers" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."lettrages_tiers" IS 'Collection « lettragesTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_date" ON "m8"."lettrages_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_statut" ON "m8"."lettrages_tiers" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_reglement_id" ON "m8"."lettrages_tiers" ("reglement_id");
+CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_facture_tiers_id" ON "m8"."lettrages_tiers" ("facture_tiers_id");
+CREATE TABLE IF NOT EXISTS "m8"."reglements_tiers" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "mode" text,
+  "numero" text,
+  "recu_le" timestamptz,
+  "statut" text,
+  "cree_le" timestamptz,
+  "montant" integer,
+  "recu_par" text,
+  "cree_par" text,
+  "tiers_code" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "archive_par" text,
+  "modifie_par" text,
+  "motif_archivage" text,
+  "reference_paiement" text,
+  "extra" jsonb
+);
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "mode" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "numero" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "recu_le" timestamptz; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "recu_par" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "tiers_code" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "reference_paiement" text; -- @montee
+ALTER TABLE "m8"."reglements_tiers" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."reglements_tiers" IS 'Collection « reglementsTiers » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_reglements_tiers_date" ON "m8"."reglements_tiers" ("date");
+CREATE INDEX IF NOT EXISTS "ix_reglements_tiers_numero" ON "m8"."reglements_tiers" ("numero");
+CREATE INDEX IF NOT EXISTS "ix_reglements_tiers_statut" ON "m8"."reglements_tiers" ("statut");
+CREATE TABLE IF NOT EXISTS "m8"."tiers_payeurs" (
+  "id" text PRIMARY KEY,
+  "ifu" text,
+  "nom" text,
+  "code" text,
+  "type" text,
+  "cree_le" timestamptz,
+  "statut" text,
+  "cree_le_2" timestamptz,
+  "adresse" text,
+  "contact" text,
+  "cree_par" text,
+  "date_fin" date,
+  "version" integer,
+  "cree_par_2" text,
+  "date_effet" date,
+  "archive_le" timestamptz,
+  "conditions" text,
+  "archive_par" text,
+  "motif_archivage" text,
+  "delai_paiement_jours" integer,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "motif" text,
+  "extra" jsonb
+);
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "ifu" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "nom" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "cree_le_2" timestamptz; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "adresse" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "contact" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "date_fin" date; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "cree_par_2" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "conditions" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "delai_paiement_jours" integer; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m8"."tiers_payeurs" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."tiers_payeurs" IS 'Collection « tiersPayeurs » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_code" ON "m8"."tiers_payeurs" ("code");
+CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_type" ON "m8"."tiers_payeurs" ("type");
+CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_statut" ON "m8"."tiers_payeurs" ("statut");
 CREATE TABLE IF NOT EXISTS "m9"."assureurs" (
   "n" integer,
   "id" text PRIMARY KEY,
