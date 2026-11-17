@@ -345,11 +345,14 @@ class _EcranPlanAnnuelState extends State<EcranPlanAnnuel> {
           return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             admLectureSeule(c),
             Wrap(spacing: 12, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              DropdownButton<int>(
-                  key: const Key('plan:exercice'),
-                  value: exos.any((x) => x['annee'] == annee) ? annee : null,
-                  items: [for (final x in exos) DropdownMenuItem(value: (x['annee'] as num).toInt(), child: Text('Exercice ${x['annee']}'))],
-                  onChanged: (v) => setState(() => _annee = v)),
+              SizedBox(
+                  width: 190,
+                  child: SelecteurSigh(
+                      key: const Key('plan:exercice'),
+                      libelle: 'Exercice',
+                      valeur: exos.any((x) => x['annee'] == annee) ? '$annee' : '',
+                      options: [for (final x in exos) OptionChamp('${(x['annee'] as num).toInt()}', 'Exercice ${x['annee']}')],
+                      surChange: (v) => setState(() => _annee = int.tryParse(v)))),
               figee ? BadgeSigh('Adopté le ${dateFR(DateTime.parse('${adoption['dateAdoption']}'))} par ${adoption['adoptePar']}', ton: TonSigh.succes) : const BadgeSigh('Plan non adopté', ton: TonSigh.attention),
               if (figee) Text('Motif : ${adoption['motif']}. Le contenu ne change plus que par version datée.', style: const TextStyle(fontSize: 12, color: JetonsShell.slate500)),
             ]),

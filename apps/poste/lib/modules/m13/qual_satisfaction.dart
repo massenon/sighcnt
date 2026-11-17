@@ -135,13 +135,12 @@ class _EtatSatisfaction extends State<EcranSatisfaction> {
         width: 190,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           LibelleChamp(libelle),
-          DropdownButtonFormField<String>(
+          SelecteurSigh(
               key: Key('qual:an:$cle'),
-              initialValue: valeur,
-              isExpanded: true,
-              decoration: decorationChamp(),
-              items: [for (final o in options) DropdownMenuItem(value: o.$1, child: Text(o.$2, overflow: TextOverflow.ellipsis))],
-              onChanged: (v) => setState(() => surChoix(v ?? ''))),
+              libelle: libelle,
+              valeur: valeur,
+              options: [for (final o in options) OptionChamp(o.$1, o.$2)],
+              surChange: (v) => setState(() => surChoix(v))),
         ]));
     Widget date(String cle, String libelle, String valeur, void Function(String) surChoix) => SizedBox(
         width: 170,

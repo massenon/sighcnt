@@ -339,10 +339,19 @@ void main() {
       formulaire(t).poser('defaut', true);
       await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
       await t.pump(const Duration(milliseconds: 400));
+      // Direction, famille de validation Q4 (lot FISC-2, section AS point 8) : le motif est obligatoire pour TOUTE modification du validateur (le vecteur `modification.enregistre`
+      // date d'avant ce lot : il n'a pas ce champ). Rien n'est écrit tant que le motif manque ; avec lui, la modification est validée du même geste et le motif est porté par la fiche.
+      expect(find.text('Motif de la correction'), findsOneWidget);
+      expect(col.toutes.firstWhere((x) => x['libelle'] == 'Badge visiteur — portrait')['zones'], ['photo', 'nom', 'qr'], reason: 'rien n\'est écrit sans motif');
+      await t.enterText(find.byType(TextField).last, 'Zones relues avec la RH');
+      await t.pump();
+      await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer').last);
+      await t.pump(const Duration(milliseconds: 400));
       // Modifier un modèle EN TANT QU'ADMINISTRATEUR le laisse validé (le profil de la famille valide en enregistrant) : mêmes marquages que la maquette.
       final modifie = col.toutes.firstWhere((x) => x['libelle'] == 'Badge visiteur — portrait');
       expect(modifie['aValider'], false);
-      fichesEgales(modifie, obj(obj(mo['modification'])['enregistre'])['fiche'] as M, ignores: {'validePar'});
+      expect(modifie['motifCorrection'], 'Zones relues avec la RH');
+      fichesEgales(modifie, obj(obj(mo['modification'])['enregistre'])['fiche'] as M, ignores: {'validePar', 'motifCorrection'});
       expect(modifie['validePar'], utilisateurTest);
       // E745 : la maquette ne retire pas l'ancien « par défaut » : les deux le sont.
       expect(col.toutes.where((x) => x['defaut'] == true).length, 2);

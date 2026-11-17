@@ -45,6 +45,8 @@ Magasin poste({List<M> utilisateurs = const [], List<M> rbac = const [], List<M>
       'personnel': jeu('personnel'),
       'soignants': jeu('soignants'),
       'rolesBase': jeu('rolesBase'),
+      // Lot IDENT : l'identité imprimée se lit À LA DATE (30/10/2026 : version 1, RCCM RB/NAT/2016-B-268, comme la maquette qui a tiré les vecteurs) ; sans cette collection la coque retombe sur la semence du jour (version 2, effet 16/11/2026).
+      'identiteLegale': jeu('identiteLegale'),
       'support': const <M>[],
       'jetonsEnquete': jetons,
       'enquetes': enquetes,
