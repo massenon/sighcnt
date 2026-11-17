@@ -126,6 +126,10 @@ Mutations (au moins 8) : verrou retiré, vérification du corps retirée, doublo
 
 **Q1 résolue : TOUTE VENTE EST NORMALISÉE À LA CLINIQUE.** Il n'y a donc **pas de « facture simple »** : le choix « simple ou normalisée » de la documentation d'un autre projet est **retiré**. Quand le mode n'est pas « Désactivé », chaque vente encaissée passe par le boîtier (ou e-MECeF). La fenêtre « Facture normalisée » ne sert plus qu'à saisir l'IFU et le nom de l'acheteur, et le taux d'AIB. Conséquences : la déclaration de TVA retient toutes les ventes ; une vente ne peut être remise que normalisée ; l'état `simple` disparaît (restent `normalisee`, `en_attente`, `a_verifier`, `refusee`, `expiree`) ; en mode « Désactivé » (démonstration seulement) le bandeau DEMO reste.
 
+## 11 ter. Facture à un tiers payeur (Direction, 16/11/2026, lot TIERS)
+
+La facture d'un PATIENT ne porte ni AIB ni IFU d'acheteur (lot FISC-2). La clinique émet en revanche une vente normalisée DISTINCTE, la facture à un tiers payeur (entreprise, assureur ou convention qui prend un patient en charge), avec l'IFU (13 chiffres) et le nom de l'acheteur obligatoires et contrôlés AVANT toute écriture, et l'AIB selon la situation de l'acheteur : le logiciel PROPOSE le taux du barème daté, le comptable DÉCIDE (geste `imputer_aib`), la pièce ne s'émet pas sans cette décision. La normalisation réutilise le moteur de ce PRD (boîtier de démonstration ou e-MECeF vide, aucun numéro simulé, reprise sans doublon) ; une pièce émise ne se réécrit jamais (avoir). Voir `ECARTS-MAQUETTE.md` E3040 à E3047 et `DECISIONS-A-VALIDER.md` section BE.
+
 ## 11. Décisions à valider (Direction)
 
 | # | Question | Proposition |

@@ -390,6 +390,7 @@
     "m8-reliquats",
     "m8-remboursements",
     "m8-facture-avoir",
+    "m8-factures-tiers",
     "m8-caisse",
     "m8-operations",
     "m8-recettes"
@@ -3306,6 +3307,27 @@
    "id": "m8-facture-avoir",
    "label": "Factures d’avoir",
    "icone": "file-minus-2",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-factures-tiers",
+   "label": "Factures aux tiers payeurs",
+   "icone": "building-2",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",

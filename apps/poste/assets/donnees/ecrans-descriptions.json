@@ -1237,6 +1237,10 @@
    "titre": "Factures d’avoir",
    "description": "Contre-passation d’une pièce émise : erreur, interruption de soins, évacuation après paiement."
   },
+  "m8-factures-tiers": {
+   "titre": "Factures aux tiers payeurs",
+   "description": "Facture à l’entreprise, à l’assureur ou à la convention qui prend un patient en charge : pièce propre, IFU et nom de l’acheteur, AIB décidé par le comptable, règlements reçus et lettrage."
+  },
   "m8-factures": {
    "titre": "Factures",
    "description": "Ensemble des factures émises, avec suivi du règlement, de la prise en charge assurance et de la transmission MECeF."
