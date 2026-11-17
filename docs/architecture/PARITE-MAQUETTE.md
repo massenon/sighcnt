@@ -9,7 +9,7 @@
 | Hubs de module (un par module, engendrés) | 23 |
 | Écrans nommés par au moins un scénario de la maquette | 271 (76 %) |
 | Écrans **sans** scénario (recette à écrire) | 87 |
-| Écrans portés | 357 |
+| Écrans portés | 358 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 230 |
 
@@ -19,7 +19,7 @@
 
 | Tranche | Écrans | Avec scénario | Portés | Recettés |
 |---|---|---|---|---|
-| 1 · caisse + MECeF + impression | 18 | 14 | 17 | 0 |
+| 1 · caisse + MECeF + impression | 18 | 14 | 18 | 0 |
 | 2 · pharmacie, stocks, achats | 27 | 24 | 27 | 0 |
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 53 | 67 | 0 |
@@ -39,7 +39,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m8-facturation` | Nouvelle facture | M8 | 7 | 11, 13, 17, 19, 32, 34, 88, 90, 117, 139, 181, 189, 195, 201, 202, 203 | porté |
 | `m8-facture-avoir` | Factures d’avoir | M8 | 8 | 48 | porté |
 | `m8-factures` | Factures | M8 | 8 | 12, 30, 48, 82, 191 | porté |
-| `m8-factures-tiers` | Factures aux tiers payeurs | M8 | 8 | 227, 228, 229, 230 | non commencé |
+| `m8-factures-tiers` | Factures aux tiers payeurs | M8 | 8 | 227, 228, 229, 230 | porté |
 | `m8-operations` | Opérations de caisse | M8 | 8 | 20 | porté |
 | `m8-paiements` | Paiements | M8 | 7 | 88, 99, 100, 195, 202, 204 | porté |
 | `m8-proforma` | Factures pro-forma | M8 | 8 | 123 | porté |

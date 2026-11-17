@@ -10,6 +10,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
 import 'circuit_cloture_poste.dart';
 import 'persistance.dart';
 import 'plan_annuel_poste.dart' show gardePlanAnnuelPoste;
+import 'tiers_poste.dart' show gardeFactureTiersPoste, gardeFigeePoste;
 
 typedef Fiche = Map<String, Object?>;
 
@@ -614,6 +615,12 @@ class Magasin {
         if (nom == 'budgets') c.garder((op, f) => cpcGardeBudgets(collection('exercices').toutes, f['exercice']));
         // Lot PTA : le plan annuel (contrôle d'une action, plan adopté figé) et l'adoption (jamais réécrite) sont tenus AU MOTEUR : masquer un bouton ne protège rien.
         if (nom == 'planAnnuel') c.garder((op, f) => gardePlanAnnuelPoste(this, op, f));
+        // Lot TIERS : la facture à un tiers payeur émise ne se réécrit jamais ; versions de tiers, avoirs, règlements et lettrages non plus (tenu AU MOTEUR, comme `S.garder`).
+        if (nom == 'facturesTiers') c.garder((op, f) => gardeFactureTiersPoste(this, op, f));
+        if (nom == 'tiersPayeurs') c.garder((op, f) => gardeFigeePoste(nom, this, op, f, const ['code', 'version', 'dateEffet', 'nom', 'ifu', 'type', 'adresse', 'contact', 'delaiPaiementJours', 'conditions']));
+        if (nom == 'avoirsTiers') c.garder((op, f) => gardeFigeePoste(nom, this, op, f, const ['numero', 'factureTiersId', 'montant', 'motif', 'date']));
+        if (nom == 'reglementsTiers') c.garder((op, f) => gardeFigeePoste(nom, this, op, f, const ['numero', 'tiersCode', 'montant', 'date', 'referencePaiement', 'mode']));
+        if (nom == 'lettragesTiers') c.garder((op, f) => gardeFigeePoste(nom, this, op, f, const ['reglementId', 'factureTiersId', 'montant', 'date']));
         if (nom == 'adoptionsPlan') {
           c.garder((op, f) => op == 'inserer' ? null : 'ADOPTION_FIGEE : une adoption ne se réécrit pas ni ne s’annule (RG-14) ; le contenu du plan évolue par version datée.');
         }

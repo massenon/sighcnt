@@ -30553,10 +30553,11 @@ async function viderMessages(page) {
       o.creance = T.creance(S.collection('facturesTiers').get(x.id));
       o.pieceIntacte = S.collection('facturesTiers').get(x.id).statut === 'emise' && S.collection('facturesTiers').get(x.id).base === 70000;
       o.lignesLibres = T.lignesFacturables(x.facId).lignes.filter((l) => l.ligneId === 'L002')[0].dejaAuxTiers;
+      o.statutAvoir = S.collection('avoirsTiers').get(r.id).statutMecef; o.numeroAvoir = 'numeroMecef' in S.collection('avoirsTiers').get(r.id);
       return o;
     }, { id: b.id, facId: prep.facId });
     verifier('L’AVOIR est la seule correction : motif obligatoire, refusé sur un brouillon, un seul par pièce ; la pièce reste intacte (émise, 70 000), la créance tombe à 0, les lignes redeviennent facturables à un tiers',
-      av.sansMotif === 'AVOIR_TIERS_MOTIF_ABSENT' && av.brouillon !== 'AVOIR_TIERS_MOTIF_ABSENT' && av.ok && /^AVT-2026-\d{4}$/.test(av.ok.numero) && av.ok.montant === 70700 && av.double === 'AVOIR_TIERS_DEJA_EMIS' && av.creance === 0 && av.pieceIntacte && av.lignesLibres === 0, JSON.stringify(av));
+      av.sansMotif === 'AVOIR_TIERS_MOTIF_ABSENT' && av.brouillon !== 'AVOIR_TIERS_MOTIF_ABSENT' && av.ok && /^AVT-2026-\d{4}$/.test(av.ok.numero) && av.ok.montant === 70700 && av.double === 'AVOIR_TIERS_DEJA_EMIS' && av.creance === 0 && av.pieceIntacte && av.lignesLibres === 0 && av.statutAvoir === 'en_attente' && av.numeroAvoir === false, JSON.stringify(av));
     /* sans le droit d'émettre : le moteur refuse partout */
     await TIERS.geste('caissier', 'emettre_facture_tiers', false);
     await TIERS.session('caissier');

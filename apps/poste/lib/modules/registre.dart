@@ -33,6 +33,7 @@ import 'm8/caisse.dart';
 import 'm8/dashboard.dart';
 import 'm8/facturation.dart';
 import 'm8/factures.dart';
+import 'm8/factures_tiers.dart';
 import 'm8/operations.dart';
 import 'm8/paiements.dart';
 import 'm8/proforma.dart';
@@ -96,6 +97,7 @@ Map<String, ConstruireEcran> ecransPortes(
     'mecef-journal': (c, cfg) => const EcranMecefJournal(),
     'mecef-config': (c, cfg) => const EcranMecefConfig(),
     'm8-facture-avoir': (c, cfg) => const EcranFactureAvoir(),
+    'm8-factures-tiers': (c, cfg) => const EcranFacturesTiers(),
     'm8-remboursements': (c, cfg) => const EcranRemboursements(),
     'm8-factures': (c, cfg) => const EcranFactures(),
     'm8-paiements': (c, cfg) => const EcranPaiements(),

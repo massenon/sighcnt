@@ -160,13 +160,37 @@ int tiersTauxEffectif(Map<String, Object?> facture) {
 String tiersNumeroFacture(Object? date, Iterable<Map<String, Object?>> factures, {required DateTime maintenant}) =>
     referenceAnnuelle('FT-', date, 4, factures, maintenant: maintenant, champ: 'numero');
 
+
+/// Le lien d'un lettrage ou d'un avoir à sa FACTURE : l'identifiant local, ou, entre postes (l'identifiant local d'une fiche reçue n'est pas celui du poste qui l'a créée), le couple
+/// (tiers, numéro de la pièce) que le lettrage ou l'avoir porte.
+bool tiersLieAFacture(Map<String, Object?> piece, Map<String, Object?> f) {
+  if (piece['factureTiersId'] != null && piece['factureTiersId'] == f['id']) return true;
+  final n = _s(piece['factureNumero']);
+  return n.isNotEmpty && n == _s(f['numero']) && _s(piece['tiersCode'] ?? f['tiersCode']) == _s(f['tiersCode']);
+}
+
+/// Le lien d'un lettrage à son RÈGLEMENT : l'identifiant local, ou (tiers, référence du paiement), unique par tiers (`REGLEMENT_TIERS_DEJA_SAISI`).
+bool tiersLieAReglement(Map<String, Object?> lettrage, Map<String, Object?> r) {
+  if (lettrage['reglementId'] != null && lettrage['reglementId'] == r['id']) return true;
+  final ref = _s(lettrage['reglementRef']).toLowerCase();
+  return ref.isNotEmpty && ref == _s(r['referencePaiement']).toLowerCase() && _s(lettrage['tiersCode']) == _s(r['tiersCode']);
+}
+
+/// L'avoir actif d'une facture, ou null.
+Map<String, Object?>? tiersAvoirDe(Iterable<Map<String, Object?>> avoirs, Map<String, Object?> f) {
+  for (final a in avoirs) {
+    if (a['statut'] != 'archive' && tiersLieAFacture(a, f)) return a;
+  }
+  return null;
+}
+
 /// La créance d'UNE facture émise : montant dû (`net`) moins les lettrages actifs ; 0 si un avoir l'annule ou si la pièce n'est pas émise. Jamais négative.
 int tiersCreanceFacture(Map<String, Object?> f, Iterable<Map<String, Object?>> lettrages, Iterable<Map<String, Object?>> avoirs) {
   if (f['statut'] != 'emise') return 0;
-  if (avoirs.any((a) => a['statut'] != 'archive' && a['factureTiersId'] == f['id'])) return 0;
+  if (tiersAvoirDe(avoirs, f) != null) return 0;
   var l = 0;
   for (final x in lettrages) {
-    if (x['statut'] != 'archive' && x['factureTiersId'] == f['id']) l += (x['montant'] as num).toInt();
+    if (x['statut'] != 'archive' && tiersLieAFacture(x, f)) l += (x['montant'] as num).toInt();
   }
   final dette = (f['net'] as num).toInt() - l;
   return dette < 0 ? 0 : dette;
@@ -176,7 +200,7 @@ int tiersCreanceFacture(Map<String, Object?> f, Iterable<Map<String, Object?>> l
 int tiersResteNonLettre(Map<String, Object?> r, Iterable<Map<String, Object?>> lettrages) {
   var l = 0;
   for (final x in lettrages) {
-    if (x['statut'] != 'archive' && x['reglementId'] == r['id']) l += (x['montant'] as num).toInt();
+    if (x['statut'] != 'archive' && tiersLieAReglement(x, r)) l += (x['montant'] as num).toInt();
   }
   return (r['montant'] as num).toInt() - l;
 }
@@ -208,7 +232,7 @@ Map<String, Object?> tiersLettrer({
     if (f['tiersCode'] != reglement['tiersCode']) {
       return aibRefus('LETTRAGE_TIERS_AUTRE_TIERS', 'La facture ${f['numero']} est celle du tiers ${f['tiersCode']}, le règlement vient de ${reglement['tiersCode']}.', 'Lettrer un règlement sur les factures de SON tiers.');
     }
-    if (avoirs.any((x) => x['statut'] != 'archive' && x['factureTiersId'] == f['id'])) {
+    if (tiersAvoirDe(avoirs, f) != null) {
       return aibRefus('LETTRAGE_TIERS_FACTURE_ANNULEE', 'La facture ${f['numero']} est annulée par un avoir.', 'Choisir une facture due.');
     }
     final m = a['montant'] is num ? a['montant'] as num : num.tryParse(_s(a['montant']));
@@ -236,7 +260,7 @@ Map<String, Object?> tiersCreances({
   final par = <String, Map<String, Object?>>{};
   for (final f in factures) {
     if (f['statut'] != 'emise') continue;
-    if (avoirs.any((a) => a['statut'] != 'archive' && a['factureTiersId'] == f['id'])) continue;
+    if (tiersAvoirDe(avoirs, f) != null) continue;
     final dette = tiersCreanceFacture(f, lettrages, avoirs);
     final l = par.putIfAbsent('${f['tiersCode']}',
         () => {'code': f['tiersCode'], 'nom': f['tiersNom'], 'factures': 0, 'facture': 0, 'du': 0, 'moins30': 0, 'de30a90': 0, 'plus90': 0, 'enRetard': 0, 'echeanceIncalculable': 0});

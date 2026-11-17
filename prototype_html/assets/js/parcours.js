@@ -9766,7 +9766,9 @@
     var date = aujIso();
     var numero = C.referenceAnnuelle('AVT-', date, 4, colAvoirsTiers().all(), 'numero');
     var res = colAvoirsTiers().insert({ numero: numero, date: date, factureTiersId: f.id, factureNumero: f.numero, tiersCode: f.tiersCode, montant: f.net, motif: String(motif).trim(),
-      sourcesCle: f.numero, emisPar: acteur(), emisLe: new Date().toISOString(), statutMecef: 'non_certifie' },
+      sourcesCle: f.numero, emisPar: acteur(), emisLe: new Date().toISOString(),
+      /* Même règle que l'avoir du patient : « en attente » de régularisation si la pièce était certifiée, « sans objet » sinon ; AUCUN numéro n'est fabriqué. */
+      statutMecef: f.statutMecef === 'valide' ? 'en_attente' : 'sans_objet' },
       { journal: { action: 'Facture tiers : avoir', module: 'M8', entite: 'avoirsTiers', avant: null, apres: { numero: numero, facture: f.numero, montant: f.net, motif: String(motif).trim() } } });
     return { ok: true, id: res.record.id, numero: numero, montant: f.net, undo: res.undo };
   }
