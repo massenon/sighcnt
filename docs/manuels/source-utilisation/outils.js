@@ -3,7 +3,7 @@
 const path = require('path');
 const ROOT = path.resolve(__dirname, '../../../prototype_html');
 const puppeteer = require(path.join(ROOT, 'node_modules/puppeteer'));
-const PORT = Number(process.env.SIGH_PORT_MANUEL || 8218);
+const PORT = Number(process.env.SIGH_PORT_MANUEL || 8318);
 const CHROME = process.env.CHROME_PATH || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const http = require('http');
 
@@ -28,7 +28,7 @@ async function ouvrirNavigateur() {
   page.setDefaultTimeout(120000); page.setDefaultNavigationTimeout(120000);
   const j = await jeton();
   /* L'horloge de la page est décalée sur la date du jeu de démonstration (16/08/2026), comme le banc. */
-  const decalage = new Date(2026, 7, 16, 10, 30, 0).getTime() - Date.now();
+  const decalage = new Date(2026, 10, 17, 10, 30, 0).getTime() - Date.now();
   await page.evaluateOnNewDocument((jt, dec) => {
     try { if (jt) localStorage.setItem('sigh-cnt:jeton', jt); } catch (e) { /* stockage absent */ }
     try {
@@ -134,6 +134,8 @@ module.exports = { ROOT, PORT, ouvrirNavigateur, poserRole, ouvrir, attendrePein
 /** Remplace dans la page les noms du personnel (collection `personnel`) par un nom neutre : aucune capture ne montre un agent réel. */
 async function masquer(page) {
   await page.evaluate(() => {
+    /* Les initiales d'un avatar disent le nom : elles deviennent « AD » (Agent de démonstration). */
+    document.querySelectorAll('[class*="rounded-full"]').forEach((e) => { if (!e.children.length && /^[A-Z]{2}$/.test(e.textContent.trim())) e.textContent = 'AD'; });
     let noms = [];
     try {
       const P = window.SIGH.store.collection('personnel').all() || [];

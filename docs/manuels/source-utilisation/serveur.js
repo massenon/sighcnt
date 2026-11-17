@@ -1,9 +1,9 @@
 /* Serveur ISOLÉ de la maquette pour les captures du manuel d'utilisation.
-   Base jetable à soi (SIGH_BASE_TEST, par défaut sigh_manuel_essai), port PHP et port HTTP à soi.
+   Base jetable à soi (SIGH_BASE_TEST, par défaut sigh_manu_lot_essai), port PHP et port HTTP à soi.
    Jamais la base sigh_cnt ni sigh_prototype. Usage : node serveur.js (reste vivant ; Ctrl+C l'arrête). */
 'use strict';
-process.env.SIGH_PORT_PHP = process.env.SIGH_PORT_PHP || '8217';
-process.env.SIGH_BASE_TEST = process.env.SIGH_BASE_TEST || 'sigh_manuel_essai';
+process.env.SIGH_PORT_PHP = process.env.SIGH_PORT_PHP || '8317';
+process.env.SIGH_BASE_TEST = process.env.SIGH_BASE_TEST || 'sigh_manu_lot_essai';
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
@@ -14,7 +14,7 @@ for (const [v, d] of [['SIGH_FICHIERS_DIR', 'fichiers'], ['SIGH_SAUVEGARDES_DIR'
 }
 const ROOT = path.resolve(__dirname, '../../../prototype_html');
 const BANC = require(path.join(ROOT, 'build/_banc.js'));
-const PORT = Number(process.env.SIGH_PORT_MANUEL || 8218);
+const PORT = Number(process.env.SIGH_PORT_MANUEL || 8318);
 const MIME = { '.php': 'text/html; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.woff2': 'font/woff2', '.jpeg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.json': 'application/json' };
 (async () => {

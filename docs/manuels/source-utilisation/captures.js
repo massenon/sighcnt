@@ -80,6 +80,27 @@ const PLAN = [
   { id: 'tableau-direction', ecran: 'dash-direction', role: 'direction', cibles: [] },
   { id: 'notifications', ecran: 'dash-caissier', role: 'caissier', cibles: ['#cloche-notifications, button[aria-label*="otification"], button[title*="otification"]'], h: 470 },
   { id: 'exporter', ecran: 'm1-patients', role: 'admin', avant: clic('Exporter'), cibles: ['contient:Tout exporter', 'contient:Excel (.xlsx)'] },
+  /* ---- Édition du 17/11/2026 : écrans des lots SMS-R, SAT, MECEF-M, IDENT, PLAN-INDIV, PTA, FISC-2, CLO-3, CMD, SURV, TIERS ---- */
+  { id: 'fiche-equipe', ecran: 'm10-fiche-equipe', role: 'surveillant', avant: async (page) => {
+    await page.evaluate(() => { const P = window.SIGH.store.collection('personnel').all(); const a = P.find((x) => /GARBA/i.test(x.nomComplet || x.nom || '')) || {};
+      const s = JSON.parse(localStorage.getItem('sigh-cnt:session')); s.nom = a.nomComplet || (a.nom + ' ' + (a.prenom || '')); s.nomComplet = s.nom; localStorage.setItem('sigh-cnt:session', JSON.stringify(s)); });
+    await page.reload({ waitUntil: 'domcontentloaded' }); await O.attendrePeinture(page); await new Promise((r) => setTimeout(r, 1500));
+  }, cibles: [] },
+  { id: 'factures-tiers', ecran: 'm8-factures-tiers', role: 'caissier', cibles: ['texte:Nouvelle facture à un tiers payeur', 'texte:Créances'] },
+  { id: 'facture-tiers-nouvelle', ecran: 'm8-factures-tiers', role: 'caissier', avant: clic('Nouvelle facture à un tiers payeur'), cibles: [] },
+  { id: 'sms-passerelle', ecran: 'cfg-sms', role: 'admin', cibles: ['texte:Enregistrer la passerelle', 'texte:Tester l’envoi'] },
+  { id: 'sms-journal', ecran: 'm13-sms-journal', role: 'admin', cibles: ['contient:Tous les envois', 'contient:Sept derniers jours'] },
+  { id: 'satisfaction', ecran: 'adm-satisfaction', role: 'direction', cibles: ['texte:Exporter'] },
+  { id: 'enquetes-liens', ecran: 'adm-enquetes', role: 'direction', cibles: ['contient:Liens de partage', 'texte:Nouveau modèle'] },
+  { id: 'mecef-modes', ecran: 'mecef-config', role: 'da', cibles: ['texte:Régler le mode', 'texte:Régler l’imprimante', 'texte:Voir la file'] },
+  { id: 'identite-rccm', ecran: 'cfg-fiscalite', role: 'direction', cibles: ['texte:Enregistrer'] },
+  { id: 'identite-papier', ecran: 'cfg-branding', role: 'direction', cibles: ['texte:Enregistrer', 'texte:Prévisualiser un état'] },
+  { id: 'regime-individuel', ecran: 'm10-planning', role: 'da', cibles: ['texte:Nouveau régime', 'texte:Déroger pour un agent'] },
+  { id: 'plan-annuel', ecran: 'm13-plan-annuel', role: 'direction', cibles: ['texte:Nouvelle action', 'texte:Imprimer le plan'] },
+  { id: 'cnss-confirmation', ecran: 'cfg-comptabilite', role: 'da', cibles: ['texte:Confirmer'] },
+  { id: 'aib-imputations', ecran: 'cfg-bareme-aib', role: 'comptable', avant: clic('Imputations'), cibles: [] },
+  { id: 'commande-daf', ecran: 'm7-commandes', role: 'da', cibles: ['texte:Nouvelle commande'] },
+  { id: 'validations-attente', ecran: 'adm-validations', role: 'da', cibles: [] },
   { id: 'menu-actions', ecran: 'dash-receptionniste', role: 'reception', avant: clic('Actions'), cibles: [], h: 620 },
 ];
 
