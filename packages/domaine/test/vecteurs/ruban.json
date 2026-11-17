@@ -412,6 +412,7 @@
         "m14-sessions",
         "m14-audit",
         "m14-sauvegardes",
+        "m14-mise-a-jour",
         "m14-taches"
        ]
       },
@@ -619,6 +620,7 @@
         "m14-sessions",
         "m14-audit",
         "m14-sauvegardes",
+        "m14-mise-a-jour",
         "m14-taches"
        ]
       },
@@ -1920,6 +1922,7 @@
         "m14-sessions",
         "m14-audit",
         "m14-sauvegardes",
+        "m14-mise-a-jour",
         "m14-taches"
        ]
       },
@@ -2112,6 +2115,7 @@
         "m14-sessions",
         "m14-audit",
         "m14-sauvegardes",
+        "m14-mise-a-jour",
         "m14-taches"
        ]
       },

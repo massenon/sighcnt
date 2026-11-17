@@ -448,7 +448,7 @@ void main() {
     final collections = {for (final o in (pull['ops'] as List)) (o as Map)['collection']};
     expect(collections.intersection(collectionsFichiersJamaisMobile), isEmpty, reason: 'un téléphone ne reçoit aucune fiche de fichier : $collections');
     // et le poste, lui, les voit bien dans le journal
-    final pullPoste = jsonDecode((await http.get(Uri.parse('$base/sync/pull?depuis=0&limite=500&epoch=1'), headers: {'authorization': 'Bearer ${f1.moteur.jeton}'})).body) as Map;
+    final pullPoste = jsonDecode((await http.get(Uri.parse('$base/sync/pull?depuis=0&limite=500&epoch=1'), headers: {'authorization': 'Bearer ${f1.moteur.jeton}', 'x-sigh-format': '$formatDonneesCourant'})).body) as Map;
     final cp = {for (final o in (pullPoste['ops'] as List)) (o as Map)['collection']};
     expect(cp, containsAll(['courriers', 'documentsPatient', 'fichiers']));
   }, timeout: const Timeout(Duration(minutes: 3)));

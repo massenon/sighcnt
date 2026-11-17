@@ -1,5 +1,6 @@
 // MESURE (lot MAJ) : temps de « Préparer », de la migration et de l'export sur un jeu GÉNÉRÉ de N dossiers (18 000 par défaut). Jeu synthétique : aucune donnée réelle.
 // Usage : dart run tool/mesure_maj.dart [N]
+// ignore_for_file: avoid_print
 import 'dart:io';
 
 import 'package:sigh_poste/donnees/maj_poste.dart';

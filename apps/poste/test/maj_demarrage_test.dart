@@ -34,7 +34,7 @@ void main() {
   tearDown(() => tmp.deleteSync(recursive: true));
 
   for (final format in [0, 1]) {
-    test('format $format : démarrer ne migre pas en silence ; Préparer, Migrer, redémarrer : format ${formatDonneesCourant}, magasin rouvert sans perdre une fiche', () async {
+    test('format $format : démarrer ne migre pas en silence ; Préparer, Migrer, redémarrer : format $formatDonneesCourant, magasin rouvert sans perdre une fiche', () async {
       final dir = await dossierDAvant(tmp, format: format);
       final avant = await compte('$dir/magasin');
       expect(avant['patients'], greaterThan(0));

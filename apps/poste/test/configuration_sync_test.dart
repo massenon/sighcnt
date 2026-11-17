@@ -251,7 +251,7 @@ void main() {
         final code = (await appel('POST', '/admin/code', corps: {'etiquette': role, 'role': role, ...extra}, entetes: {'x-admin': 'secret-test'}))['code'];
         final uuid = 'dev-$role';
         final jetons = await appel('POST', '/appairage', corps: {'code': code, 'uuid': uuid, 'plateforme': 'test'});
-        final pull = await appel('GET', '/sync/pull?depuis=0&limite=500&epoch=${jetons['epoch']}', entetes: {'authorization': 'Bearer ${jetons['jeton']}'});
+        final pull = await appel('GET', '/sync/pull?depuis=0&limite=500&epoch=${jetons['epoch']}', entetes: {'authorization': 'Bearer ${jetons['jeton']}', 'x-sigh-format': '$formatDonneesCourant'});
         return [for (final o in (pull['ops'] as List)) '${(o as Map)['collection']}'];
       }
 

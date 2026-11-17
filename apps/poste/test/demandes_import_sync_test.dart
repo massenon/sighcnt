@@ -118,7 +118,7 @@ void main() {
         final noms = <String>[];
         var depuis = 0;
         while (true) {
-          final pull = await appel('GET', '/sync/pull?depuis=$depuis&limite=500&epoch=${jetons['epoch']}', entetes: {'authorization': 'Bearer ${jetons['jeton']}'});
+          final pull = await appel('GET', '/sync/pull?depuis=$depuis&limite=500&epoch=${jetons['epoch']}', entetes: {'authorization': 'Bearer ${jetons['jeton']}', 'x-sigh-format': '$formatDonneesCourant'});
           if (pull['ops'] == null) fail('pull de $role à $depuis : $pull');
           final ops = (pull['ops'] as List).cast<Map>();
           for (final o in ops) {

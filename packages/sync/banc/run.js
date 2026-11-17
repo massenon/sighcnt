@@ -380,7 +380,8 @@ const scenarios = {
     verifier('réinitialisation acceptée, époque + 1', ok.status === 200 && ok.json.epoch === 2, ok);
     verifier('une SAUVEGARDE préalable existe', ok.json.sauvegarde && fs.existsSync(ok.json.sauvegarde), ok.json.sauvegarde);
     const perime = await m.mere.direct('POST', '/sync/push', { epoch: 1, horloge: Date.now(), ops: [{ id: 'ancien-1', appareil: brut, epoch: 1, collection: 'patients', fiche: 'zombie', type: 'creer', champs: { nom: 'Zombie', code: 'PROV-x' } }] },
-      { Authorization: 'Bearer ' + jb.jeton });
+      /* lot MAJ : un fileul dit son format de données à chaque requête (`x-sigh-format`, 2 = `formatDonneesCourant` du domaine) ; sans lui la mère répond 426 avant même de regarder l'époque. */
+      { Authorization: 'Bearer ' + jb.jeton, 'x-sigh-format': '2' });
     verifier('un envoi d\'une ANCIENNE époque est refusé (409), sans rien écrire', perime.status === 409 && perime.json.code === 'epoch_inconnue'
       && (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 0, perime);
     m.reseau.regler('ouvert');

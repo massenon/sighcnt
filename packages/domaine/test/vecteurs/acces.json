@@ -1791,6 +1791,10 @@
         "href": "pages/m14-sauvegardes.php"
        },
        {
+        "label": "Mettre à jour le logiciel",
+        "href": "pages/m14-mise-a-jour.php"
+       },
+       {
         "label": "Tâches planifiées",
         "href": "pages/m14-taches.php"
        }
@@ -2450,7 +2454,7 @@
     ]
    }
   ],
-  "pied": "343 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
+  "pied": "344 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2462,7 +2466,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "343"
+    "valeur": "344"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2783,7 +2787,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "343",
+   "344",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",

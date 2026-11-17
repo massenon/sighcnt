@@ -178,7 +178,7 @@ void main() {
     final pull = jsonDecode((await http.get(Uri.parse('$base/sync/pull?depuis=0&limite=500&epoch=1'), headers: {'authorization': 'Bearer ${app['jeton']}'})).body) as Map;
     final collections = {for (final o in (pull['ops'] as List)) (o as Map)['collection']};
     expect(collections, isNot(contains('lecturesOcr')), reason: 'un téléphone ne reçoit AUCUN texte lu : $collections');
-    final pullPoste = jsonDecode((await http.get(Uri.parse('$base/sync/pull?depuis=0&limite=500&epoch=1'), headers: {'authorization': 'Bearer ${f1.moteur.jeton}'})).body) as Map;
+    final pullPoste = jsonDecode((await http.get(Uri.parse('$base/sync/pull?depuis=0&limite=500&epoch=1'), headers: {'authorization': 'Bearer ${f1.moteur.jeton}', 'x-sigh-format': '$formatDonneesCourant'})).body) as Map;
     expect({for (final o in (pullPoste['ops'] as List)) (o as Map)['collection']}, contains('lecturesOcr'), reason: 'un poste, lui, les voit dans le journal');
     expect(collectionsFichiersJamaisMobile, contains('lecturesOcr'));
   }, timeout: const Timeout(Duration(minutes: 3)));
