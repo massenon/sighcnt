@@ -99,6 +99,12 @@ class Fileul {
     base.poserMeta('curseur', 0);
   }
 
+  /// L'instant du dernier tour réussi avec la mère (persisté : un redémarrage ne l'oublie pas), `null` si le poste n'a jamais synchronisé.
+  DateTime? get derniereSynchro {
+    final v = int.tryParse(base.meta('derniere_synchro_ms') ?? '');
+    return v == null ? null : DateTime.fromMillisecondsSinceEpoch(v);
+  }
+
   final Etat etat = Etat();
   final HttpClient _client = HttpClient();
   HttpServer? _serveur;
@@ -366,6 +372,7 @@ class Fileul {
       etat.horsLigne = false;
       etat.tentatives = 0;
       etat.derniereErreur = null;
+      base.poserMeta('derniere_synchro_ms', maintenantMs());
     } on _Suspendu {
       etat.derniereErreur = 'suspendu';
     } on _Epoque {

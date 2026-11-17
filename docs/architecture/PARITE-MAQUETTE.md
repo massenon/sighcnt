@@ -5,11 +5,11 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **359** |
+| Écrans du manifeste (hors hubs de module) | **360** |
 | Hubs de module (un par module, engendrés) | 23 |
 | Écrans nommés par au moins un scénario de la maquette | 272 (76 %) |
-| Écrans **sans** scénario (recette à écrire) | 87 |
-| Écrans portés | 359 |
+| Écrans **sans** scénario (recette à écrire) | 88 |
+| Écrans portés | 360 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 234 |
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 53 | 67 | 0 |
 | 5 · assurances et comptabilité | 32 | 25 | 32 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 191 | 134 | 191 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 192 | 134 | 192 | 0 |
 
 ## Par écran
 
@@ -357,6 +357,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m13-reunions` | Réunions | M13 | 5 | 206 | porté |
 | `m13-sms-journal` | Journal des envois SMS | M13 | 4 | 96, 97 | porté |
 | `m14-audit` | Journal d’audit | M14 | 3 | — | porté |
+| `m14-mise-a-jour` | Mettre à jour le logiciel | M14 | 2 | — | porté |
 | `m14-roles` | Rôles & permissions (RBAC) | M14 | 3 | 21, 32, 34, 125, 153, 175 | porté |
 | `m14-sauvegardes` | Sauvegardes & restauration | M14 | 3 | 24, 90 | porté |
 | `m14-securite-utilisateurs` | Sécurité des utilisateurs | M14 | 1 | 78 | porté |

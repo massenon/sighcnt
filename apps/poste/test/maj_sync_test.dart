@@ -14,7 +14,7 @@ import 'package:sigh_sync/sigh_sync.dart';
 
 /// LOT MAJ contre la VRAIE mère Dart et DEUX fileuls : la mère est mise à jour d'abord ; un fileul de format trop ancien reçoit 426 `schema_incompatible`, n'envoie rien et
 /// garde ses saisies ; une fois mis à jour il se resynchronise sans doublon et la mère ne change que de ce qu'il apporte.
-const port = 9890;
+const port = 9892;
 const admin = 'secret-maj';
 
 Future<List<Map<String, Object?>>> operations(Mere m) async => [for (final r in await m.base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations ORDER BY seq')) {...r}];
@@ -89,6 +89,61 @@ void mainFormat() {
     expect((await operations(mere)).length, 2, reason: 'aucun doublon après d’autres tours');
   });
 
+  test('l’écart toléré se LIT en base : la version datée du paramètre `maj.ecartVersionTolere` posée à la mère l’emporte sur le défaut', () async {
+    final f = await fileul('R', format: 0); // mère à 2 : écart 2, refusé au défaut d'une version
+    f.ecrire('patients', 'pr1', existe: false, champs: {'nom': 'R'});
+    await tours(f, 3);
+    expect(f.refusFormat, isNotNull);
+    expect(await operations(mere), isEmpty);
+    // la Direction règle l'écart à 2 (version datée d'un paramètre de clinique, synchronisée à la mère)
+    await mere.base.exec('INSERT INTO fiches(collection,id,data,fieldseq,archive) VALUES(?,?,?,?,0)', [
+      'parametres',
+      'PAR-1',
+      jsonEncode({'id': 'PAR-1', 'cle': 'maj.ecartVersionTolere', 'famille': 'clinique', 'valeur': 2, 'dateEffet': null, 'statut': 'actif', 'creeLe': '2026-11-17'}),
+      '{}'
+    ]);
+    expect((await mere.reglagesMaj()).ecartVersionTolere, 2);
+    await tours(f, 4);
+    expect(f.refusFormat, isNull);
+    expect((await operations(mere)).map((o) => o['fiche']), ['pr1'], reason: 'la saisie en file est arrivée dès que l’écart est toléré');
+  });
+
+  test('une mère NON MIGRÉE (format stocké 0) refuse un fileul à jour ; elle a son écran pour migrer ; redémarrée au format 2 elle l’accepte, sans perte', () async {
+    await mere.arreter();
+    final cle = List<int>.generate(32, (i) => (i * 13 + 5) & 0xff);
+    final dm = '${tmp.path}/mere/magasin';
+    await PersistanceFichiers(dm, cle: cle).ecrire('patients', [for (var i = 0; i < 6; i++) {'id': 'p$i', 'nom': 'P$i', 'tel': i == 0 ? null : '9$i'}]);
+    final svc = ServiceMiseAJour(dossier: dm, cle: cle);
+    Future<Mere> demarrerMere() async {
+      final m = await Mere.creer(ConfigMere(port: port, dbChemin: '${tmp.path}/mere/mere.db', admin: admin, dossierSauvegardes: '${tmp.path}/sauv', formatDonnees: await svc.formatDonnees()));
+      await m.demarrer();
+      return m;
+    }
+
+    mere = await demarrerMere();
+    expect(await svc.formatDonnees(), 0, reason: 'une mère d’avant le lot : aucun repère');
+    final f = await fileul('N', format: formatDonneesCourant); // un fileul neuf, installé après la mise à jour du logiciel
+    f.ecrire('patients', 'pn1', existe: false, champs: {'nom': 'N'});
+    await tours(f, 3);
+    expect(f.refusFormat!['code_maj'], CodeMaj.ecartDeVersion);
+    expect('${f.refusFormat!['geste']}', contains('la mère d’abord'));
+    expect(await operations(mere), isEmpty);
+    // la mère migre par SON écran (le service que l'écran appelle) : copie vérifiée, migration, comptes identiques
+    await svc.preparer();
+    final r = await svc.migrer(geste: true);
+    expect(r.comptes.ok, isTrue, reason: r.comptes.phrase);
+    expect(await svc.formatDonnees(), formatDonneesCourant);
+    // redémarrage de la mère (l'écran le demande) : le format stocké est repris par main.dart
+    await mere.arreter();
+    mere = await demarrerMere();
+    await tours(f, 5);
+    expect(f.refusFormat, isNull);
+    expect((await operations(mere)).map((o) => o['fiche']), ['pn1'], reason: 'la saisie du fileul, gardée en file pendant le refus, arrive une seule fois');
+    await tours(f, 3);
+    expect((await operations(mere)).length, 1);
+    expect((await PersistanceFichiers(dm, cle: cle).lireTout())['patients']!.length, 6, reason: 'aucune fiche perdue à la migration de la mère');
+  });
+
   test('la mère non mise à jour refuse un fileul PLUS RÉCENT (la mère d’abord) ; l’écart toléré est un réglage en base', () async {
     final futur = await fileul('F', format: 4);
     futur.ecrire('patients', 'pf1', existe: false, champs: {'nom': 'x'});
@@ -102,42 +157,55 @@ void mainFormat() {
 }
 
 /// Un FILEUL qui IMPORTE une base plus ancienne que sa dernière synchronisation (export portable d'avant, réinstallation) : le magasin est remplacé après les contrôles, le journal de la
-/// mère est rejoué (idempotent), le fileul retrouve tout, AUCUN doublon, et la mère n'a pas changé d'un octet (ses opérations sont les mêmes, dans le même ordre).
+/// mère est rejoué (idempotent), le fileul retrouve tout, AUCUN doublon, et la mère n'a pas changé d'un octet (ses opérations sont les mêmes, dans le même ordre). Joué pour le PREMIER fileul,
+/// pour le SECOND, et avec une COUPURE pendant la resynchronisation (le poste redémarre sur un magasin neuf, un pont neuf, la file d'envoi intacte).
+class _Poste {
+  _Poste(this.nom, this.moteur, this.dir, this.magasin, this.pont);
+  final String nom, dir;
+  final MoteurFileul moteur;
+  Magasin magasin;
+  PontActivite pont;
+}
+
 void mainImport() {
-  const portI = 9891;
+  const portI = 9893;
   const adminI = 'secret-maj-import';
   final cle = List<int>.generate(32, (i) => (i * 3 + 9) & 0xff);
 
   Magasin poste() => Magasin({'patients': <Map<String, Object?>>[]});
   TransportFileul tf(MoteurFileul mo) => TransportFileul(lire: mo.liste, ecrireFiche: (c, f, {required existe, required champs}) => mo.ecrire(c, f, existe: existe, champs: champs));
 
-  test('import sur un fileul rattaché : resynchronisation sans doublon, la mère intacte', () async {
+  Future<void> jouer(String qui, {required bool coupure}) async {
     final tmp = await Directory.systemTemp.createTemp('maj-imp-');
     final mere = await Mere.creer(ConfigMere(port: portI, dbChemin: ':memory:', admin: adminI, dossierSauvegardes: '${tmp.path}/sauv'));
     await mere.demarrer();
     final console = ClientMere(base: Uri.parse('http://127.0.0.1:$portI'), secretAdmin: adminI);
-    final moteurA = MoteurFileul.creer(dbChemin: ':memory:', mere: 'http://127.0.0.1:$portI', nom: 'A');
-    final moteurB = MoteurFileul.creer(dbChemin: ':memory:', mere: 'http://127.0.0.1:$portI', nom: 'B');
-    final mm = poste(), mb = poste();
-    var ma = poste();
-    final dirA = '${tmp.path}/A/donnees';
-    await ma.brancherPersistance(PersistanceFichiers(dirA, cle: cle), delai: Duration.zero);
+    final mm = poste();
     final pm = PontActivite(mm, TransportMereLocale(port: portI, admin: adminI), etiquette: 'M');
-    var pa = PontActivite(ma, tf(moteurA), etiquette: 'A');
-    final pb = PontActivite(mb, tf(moteurB), etiquette: 'B');
+    final postes = <String, _Poste>{};
+    for (final nom in ['A', 'B']) {
+      final mo = MoteurFileul.creer(dbChemin: ':memory:', mere: 'http://127.0.0.1:$portI', nom: nom);
+      final m = poste();
+      final dir = '${tmp.path}/$nom/donnees';
+      await m.brancherPersistance(PersistanceFichiers(dir, cle: cle), delai: Duration.zero);
+      postes[nom] = _Poste(nom, mo, dir, m, PontActivite(m, tf(mo), etiquette: nom));
+    }
+    final a = postes['A']!, b = postes['B']!, imp = postes[qui]!, autre = postes[qui == 'A' ? 'B' : 'A']!;
+    Future<void> tour() async {
+      for (final p in [a.pont, b.pont, pm]) {
+        await p.cycle();
+      }
+    }
+
     Future<void> converger(bool Function() fini, String quoi) async {
       final fin = DateTime.now().add(const Duration(seconds: 40));
       while (!fini()) {
-        for (final p in [pa, pb, pm]) {
-          await p.cycle();
-        }
-        if (DateTime.now().isAfter(fin)) fail('$quoi : pas de convergence ${[mm, ma, mb].map((m) => m.collection('patients').toutes.length)} ${pa.erreur.value} ${pb.erreur.value} ${pm.erreur.value}');
+        await tour();
+        if (DateTime.now().isAfter(fin)) fail('$quoi : pas de convergence ${[mm, a.magasin, b.magasin].map((m) => m.collection('patients').toutes.length)} ${a.pont.erreur.value} ${b.pont.erreur.value} ${pm.erreur.value}');
         await Future<void>.delayed(const Duration(milliseconds: 150));
       }
       for (var i = 0; i < 3; i++) {
-        for (final p in [pa, pb, pm]) {
-          await p.cycle();
-        }
+        await tour();
         await Future<void>.delayed(const Duration(milliseconds: 150));
       }
     }
@@ -147,65 +215,87 @@ void mainImport() {
     String nomDe(Magasin m, String debut) => '${parNom(m, debut)?['nom']}';
     void nouveau(Magasin m, String nom) => m.collection('patients').inserer({'code': PlagesCodes.de(m).prochainCode(m.collection('patients').toutes, auj), 'nom': nom}, prefixe: 'PAT');
     try {
-      for (final (mo, nom) in [(moteurA, 'A'), (moteurB, 'B')]) {
-        await mo.rattacher('http://127.0.0.1:$portI', await console.codeAppareil(nom).timeout(const Duration(seconds: 20))).timeout(const Duration(seconds: 20));
-        mo.demarrer();
+      for (final p in [a, b]) {
+        await p.moteur.rattacher('http://127.0.0.1:$portI', await console.codeAppareil(p.nom).timeout(const Duration(seconds: 20))).timeout(const Duration(seconds: 20));
+        p.moteur.demarrer();
       }
       PlagesCodes.de(mm).obtenir = TransportMereLocale(port: portI, admin: adminI).plage;
-      PlagesCodes.de(ma).obtenir = (t, mi) => moteurA.demanderPlage(taille: t, minimum: mi);
-      PlagesCodes.de(mb).obtenir = (t, mi) => moteurB.demanderPlage(taille: t, minimum: mi);
-      for (final m in [mm, ma, mb]) {
+      PlagesCodes.de(a.magasin).obtenir = (t, mi) => a.moteur.demanderPlage(taille: t, minimum: mi);
+      PlagesCodes.de(b.magasin).obtenir = (t, mi) => b.moteur.demanderPlage(taille: t, minimum: mi);
+      for (final m in [mm, a.magasin, b.magasin]) {
         await PlagesCodes.de(m).recharger(maintenant: auj);
       }
-      nouveau(ma, 'Awa');
-      nouveau(mb, 'Koffi');
-      await converger(() => [mm, ma, mb].every((m) => m.collection('patients').toutes.length == 2), 'départ');
-      await ma.ecrireMaintenant();
+      // l'importeur est celui qui crée « Awa », l'autre crée « Koffi » (corrigé plus tard)
+      nouveau(imp.magasin, 'Awa');
+      nouveau(autre.magasin, 'Koffi');
+      await converger(() => [mm, a.magasin, b.magasin].every((m) => m.collection('patients').toutes.length == 2), 'départ');
+      await imp.magasin.ecrireMaintenant();
 
-      // la copie préalable et l'export portable de A, À CE MOMENT
-      final svc = ServiceMiseAJour(dossier: dirA, cle: cle);
+      // la copie préalable et l'export portable de l'importeur, À CE MOMENT
+      final svc = ServiceMiseAJour(dossier: imp.dir, cle: cle);
       await svc.preparer();
-      final export = await svc.exporter('${tmp.path}/export-A.sighexp');
-      final avantSync = DateTime.now();
+      final export = await svc.exporter('${tmp.path}/export-${imp.nom}.sighexp');
 
-      // la clinique continue : B corrige Koffi et ajoute Esther, A ajoute Tardif
-      mb.collection('patients').mettreAJour(parNom(mb, 'Koffi')!['id'], {'nom': 'Koffi corrigé par B'});
-      nouveau(mb, 'Esther');
-      nouveau(ma, 'Tardif');
-      await converger(() => [mm, ma, mb].every((m) => m.collection('patients').toutes.length == 4) && nomDe(mm, 'Koffi') == 'Koffi corrigé par B', 'suite');
-      await ma.ecrireMaintenant();
+      // la clinique continue : l'autre corrige Koffi et ajoute Esther, l'importeur ajoute Tardif
+      autre.magasin.collection('patients').mettreAJour(parNom(autre.magasin, 'Koffi')!['id'], {'nom': 'Koffi corrigé'});
+      nouveau(autre.magasin, 'Esther');
+      nouveau(imp.magasin, 'Tardif');
+      await converger(() => [mm, a.magasin, b.magasin].every((m) => m.collection('patients').toutes.length == 4) && nomDe(mm, 'Koffi') == 'Koffi corrigé', 'suite');
+      await imp.magasin.ecrireMaintenant();
       final operationsAvant = jsonEncode(await operations(mere));
       final miroirMere = jsonEncode(mm.collection('patients').toutes);
 
-      // A importe l'export d'avant (réinstallation) : copie préalable à jour, import, nouveau magasin, rejeu du journal
-      pa.arreter();
+      // l'importeur importe l'export d'avant (réinstallation) : copie préalable à jour, import, nouveau magasin, rejeu du journal
+      imp.pont.arreter();
       await svc.preparer();
       final r = await svc.importer(export, geste: true, fileulRattache: true, derniereSynchro: DateTime.now().add(const Duration(seconds: 1)));
       expect(r.avertissements.single, startsWith('IMPORT_PLUS_ANCIEN_QUE_SYNC'));
-      expect([for (final s in r.saisies) s.nature], contains('creee'), reason: 'les saisies de A absentes de la base importée sont listées');
-      expect(avantSync.isBefore(DateTime.now()), isTrue);
-      ma = poste();
-      await ma.brancherPersistance(PersistanceFichiers(dirA, cle: cle), delai: Duration.zero);
-      expect(ma.collection('patients').toutes.length, 2, reason: 'la base importée est celle d’avant');
-      moteurA.rejouerDepuisLeDebut();
-      pa = PontActivite(ma, tf(moteurA), etiquette: 'A');
-      await converger(() => ma.collection('patients').toutes.length == 4 && nomDe(ma, 'Koffi') == 'Koffi corrigé par B', 'resynchronisation de A');
+      expect([for (final s in r.saisies) s.nature], contains('creee'), reason: 'les saisies de ${imp.nom} absentes de la base importée sont listées');
+      Future<void> redemarrer() async {
+        // le poste redémarre : magasin relu du disque, pont NEUF (rien en mémoire), même base de synchronisation
+        imp.magasin = poste();
+        await imp.magasin.brancherPersistance(PersistanceFichiers(imp.dir, cle: cle), delai: Duration.zero);
+        imp.pont = PontActivite(imp.magasin, tf(imp.moteur), etiquette: imp.nom);
+      }
 
-      // aucun doublon chez A, la mère n'a pas bougé
-      final codes = [for (final f in ma.collection('patients').toutes) f['code']];
+      await redemarrer();
+      expect(imp.magasin.collection('patients').toutes.length, 2, reason: 'la base importée est celle d’avant');
+      imp.moteur.rejouerDepuisLeDebut();
+      if (coupure) {
+        // UN seul tour, puis COUPURE : le poste est tué au milieu de la resynchronisation et repart de ce qu'il a sur disque
+        await imp.pont.cycle();
+        imp.pont.arreter();
+        await imp.magasin.ecrireMaintenant();
+        await redemarrer();
+        // (le pont neuf a pu mettre en file des « créations » de fiches que la mère connaît déjà : la mère les refuse `fiche_existe`, c'est sa garde ; l'assertion finale le prouve)
+        // au démarrage, le poste voit que sa resynchronisation n'était pas finie et rejoue le journal depuis le début (comme `main.dart`)
+        expect(await svc.resyncEnCours(), isTrue, reason: 'le marqueur survit à la coupure');
+        imp.moteur.rejouerDepuisLeDebut();
+      }
+      await converger(() => imp.magasin.collection('patients').toutes.length == 4 && nomDe(imp.magasin, 'Koffi') == 'Koffi corrigé', 'resynchronisation de ${imp.nom}');
+
+      await imp.magasin.ecrireMaintenant();
+      await svc.resyncTerminee();
+      expect(await svc.resyncEnCours(), isFalse);
+      final codes = [for (final f in imp.magasin.collection('patients').toutes) f['code']];
       expect(codes.toSet().length, codes.length, reason: 'aucun doublon : $codes');
-      expect(nomDe(ma, 'Koffi'), 'Koffi corrigé par B', reason: 'la valeur validée par la mère n’a pas été réécrite par l’ancienne base');
+      expect(nomDe(imp.magasin, 'Koffi'), 'Koffi corrigé', reason: 'la valeur validée par la mère n’a pas été réécrite par l’ancienne base');
       expect(jsonEncode(await operations(mere)), operationsAvant, reason: 'la mère n’a reçu AUCUNE opération de l’import');
       expect(jsonEncode(mm.collection('patients').toutes), miroirMere);
-      expect(mb.collection('patients').toutes.length, 4);
+      expect(autre.magasin.collection('patients').toutes.length, 4);
     } finally {
-      pa.arreter();
-      pb.arreter();
+      for (final p in [a, b]) {
+        p.pont.arreter();
+      }
       pm.arreter();
       try {
         await mere.arreter();
       } catch (_) {}
       await tmp.delete(recursive: true);
     }
-  }, timeout: const Timeout(Duration(seconds: 150)));
+  }
+
+  test('import sur le PREMIER fileul rattaché : resynchronisation sans doublon, la mère intacte', () => jouer('A', coupure: false), timeout: const Timeout(Duration(seconds: 150)));
+  test('import sur le SECOND fileul rattaché : même résultat, la mère intacte', () => jouer('B', coupure: false), timeout: const Timeout(Duration(seconds: 150)));
+  test('COUPURE pendant la resynchronisation après l’import : le poste repart de son disque, rejoue le journal, aucun doublon, la mère intacte', () => jouer('A', coupure: true), timeout: const Timeout(Duration(seconds: 150)));
 }

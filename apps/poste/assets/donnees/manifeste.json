@@ -637,6 +637,7 @@
     "m14-sessions",
     "m14-audit",
     "m14-sauvegardes",
+    "m14-mise-a-jour",
     "m14-taches"
    ]
   },
@@ -5384,6 +5385,22 @@
    "roles": [
     "admin",
     "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-mise-a-jour",
+   "label": "Mettre à jour le logiciel",
+   "icone": "package-check",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
     "da"
    ]
   },

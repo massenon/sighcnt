@@ -2049,6 +2049,13 @@
     /* Lot PTA (16/11/2026) : la tolérance avant l'alerte de retard d'une action du plan annuel. Défaut 0 : l'alerte part le lendemain de la fin du trimestre. Bornes : proposition à valider. */
     { cle: 'plan.graceRetardJours', libelle: 'Plan annuel : jours de tolérance après la fin du trimestre avant l’alerte de retard', unite: 'jours', defaut: 0, min: 0, max: 90, module: 'M13',
       aide: 'Une action non réalisée alerte quand son trimestre de fin est passé de plus de ce nombre de jours. Entier de 0 à 90 (0 : dès le lendemain).' },
+    /* Lot MAJ (17/11/2026) : les trois réglages de la mise à jour du logiciel (PRD-MISE-A-JOUR). Valeurs d'attente et bornes : PROPOSITIONS à valider (section BG). Lus au poste, jamais vers un téléphone. */
+    { cle: 'maj.ageMaxCopieHeures', libelle: 'Mise à jour : ancienneté maximale de la copie vérifiée (heures)', unite: 'heures', defaut: 24, min: 1, max: 168, module: 'M14',
+      aide: 'Sans copie vérifiée de moins de ce nombre d’heures, une migration ou un import refuse (MAJ_SANS_SAUVEGARDE). Entier de 1 à 168.' },
+    { cle: 'maj.retourArriereMinutes', libelle: 'Mise à jour : durée visée du retour arrière (minutes)', unite: 'minutes', defaut: 30, min: 5, max: 480, module: 'M14',
+      aide: 'Durée à laquelle la Direction s’attend pour revenir à la dernière copie vérifiée (objectif affiché, jamais un blocage). Entier de 5 à 480.' },
+    { cle: 'maj.ecartVersionTolere', libelle: 'Mise à jour : écart de version de format toléré entre la mère et un fileul', unite: 'version(s)', defaut: 1, min: 0, max: 5, module: 'M14',
+      aide: 'Au-delà de cet écart, la mère répond 426 schema_incompatible et le fileul garde ses saisies hors ligne. Entier de 0 à 5.' },
   ];
   function semenceParametresClinique() {
     return PARAMETRES_CLINIQUE.map(function (d, i) {

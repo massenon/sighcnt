@@ -45,7 +45,7 @@ class ServiceMiseAJour {
   final List<int> _cle;
   final DateTime Function() _horloge;
   /// Les réglages de clinique (lus en base à chaque garde : un réglage changé s'applique à l'opération suivante).
-  final ReglagesMaj Function() reglages;
+  ReglagesMaj Function() reglages;
 
   /// Le dossier des fichiers numérisés (joint à l'export portable, jamais écrasé à l'import). `null` : le poste n'en tient pas.
   final String? dossierFichiers;
@@ -519,6 +519,8 @@ class ServiceMiseAJour {
       final rap = comparerReleves(attendu, relu);
       if (!rap.ok) throw RefusMajException(RefusMaj(CodeMaj.comptesDifferents, 'Le contrôle d’après import refuse : ${rap.phrase}', 'Le magasin d’avant l’import a été remis'));
       final ajoutes = await _extraireFichiers(source);
+      // Un fileul rattaché doit REJOUER le journal de la mère : tant que ce n'est pas fini et écrit, le marqueur dit « resynchronisation en cours » (reprise après coupure, voir `resyncEnCours`).
+      if (fileulRattache) await _resync.writeAsString(jsonEncode({'depuis': _horloge().toUtc().toIso8601String(), 'import': source}), flush: true);
       await _terminer();
       await _journaliser('importer', {'fichier': source, 'formatExport': format, 'rapport': rap.phrase, 'saisies_locales_non_presentes': saisies.length, 'fichiers_ajoutes': ajoutes, 'gardee_dans': avantDir, 'avertissements': j.avertissements});
       return RapportMaj(comptes: comparerReleves(releverCollections(local), relu, modifieesParMigration: {...migre.modifiees, ...relu.keys}), notes: [...migre.notes, '$ajoutes fichier(s) numérisé(s) ajouté(s), aucun écrasé.', 'Le magasin d’avant l’import est gardé dans $avantDir.'], avertissements: j.avertissements, saisies: saisies, etapes: migre.etapes, copie: avantDir);
@@ -526,6 +528,24 @@ class ServiceMiseAJour {
       // une COUPURE (process tué, Error) ne passe pas ici : le marqueur reste et `reprendreSiInterrompu` agit au démarrage suivant
       await reprendreSiInterrompu();
       rethrow;
+    }
+  }
+
+  // --- resynchronisation d'un fileul après un import ---------------------------------------------------------------------------------------------------------------
+  File get _resync => File('$dossierMaj/resync-en-cours.json');
+
+  /// Un import sur un fileul rattaché a-t-il laissé sa resynchronisation inachevée (coupure, fermeture du poste) ? Alors le poste REJOUE le journal de la mère depuis le début au démarrage
+  /// (idempotent : une opération rejouée donne le même état ; la file d'envoi n'est jamais touchée).
+  Future<bool> resyncEnCours() => _resync.exists();
+
+  /// L'instant de l'import qui attend sa resynchronisation (`null` s'il n'y en a pas).
+  Future<DateTime?> resyncDepuis() async => !await _resync.exists() ? null : DateTime.tryParse('${(jsonDecode(await _resync.readAsString()) as Map)['depuis']}');
+
+  /// La resynchronisation est finie ET le magasin écrit sur le disque : le marqueur est rangé (jamais supprimé).
+  Future<void> resyncTerminee() async {
+    if (await _resync.exists()) {
+      await _resync.rename('$dossierMaj/resync-terminee-${_horodatage()}.json');
+      await _journaliser('resynchronisation_terminee', {});
     }
   }
 

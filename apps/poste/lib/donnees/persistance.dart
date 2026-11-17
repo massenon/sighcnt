@@ -49,6 +49,9 @@ class CleLocale {
     return sortie;
   }
 
+  /// Le fichier de clé existe-t-il ? (un poste neuf n'en a pas : il ne la fabrique qu'après avoir demandé, voir `core/demarrage_cle.dart`)
+  bool existe() => File(chemin).existsSync();
+
   /// La clé du poste en service (posée par `main`) : l'écran « Sauvegarder la clé de chiffrement » l'exporte. `null` : poste sans chiffrement.
   static CleLocale? courante;
 

@@ -58,7 +58,7 @@
 
 | Rangée | Module | Type | Écrans | Rôles d'origine |
 |---|---|---|---|---|
-| Sécurité & Utilisateurs | M14 | canonique | 8 | admin, direction, da |
+| Sécurité & Utilisateurs | M14 | canonique | 9 | admin, direction, da |
 | Configuration Clinique | CFG | canonique | 22 | admin, da, direction |
 | Importation de données | IMP | canonique | 26 | admin, da, stock, direction, comptable, aide_comptable, reception, agentadmin, laborantin |
 

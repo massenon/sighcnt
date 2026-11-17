@@ -30,6 +30,7 @@ class MoteurFileul {
   void poserFormatDonnees(int format) => _fileul.poserFormatDonnees(format);
   Map<String, Object?>? get refusFormat => _fileul.etat.refusFormat;
   void rejouerDepuisLeDebut() => _fileul.rejouerDepuisLeDebut();
+  DateTime? get derniereSynchro => _fileul.derniereSynchro;
 
   /// Un tour de synchronisation à la demande (les tests et l'écran de mise à jour ; la boucle de [demarrer] fait la même chose).
   Future<void> cycle() => _fileul.cycle();

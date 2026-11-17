@@ -58,7 +58,7 @@ void main() {
   group('lecture à la date et réglage', () {
     test('défauts SEMÉS en base (90, 30, 90) ; une version datée s\'applique à sa date, l\'ancienne reste lisible ; le statut d\'un lot suit le préavis lu', () {
       final m = magasin(lots: [lot('L100', 100)]);
-      expect(m.collection(parCollectionParametres).toutes.where((v) => v['famille'] == pcFamille).length, 4, reason: 'quatre versions 0 semées (lot PTA : la tolérance de l’alerte du plan annuel s’ajoute aux trois du lot PARAM-CLINIQUE)');
+      expect(m.collection(parCollectionParametres).toutes.where((v) => v['famille'] == pcFamille).length, 7, reason: 'sept versions 0 semées (lot PTA : la tolérance de l’alerte du plan annuel ; lot MAJ : trois réglages de mise à jour)');
       expect(preavisPeremptionPoste(m, auj), 90);
       expect(tranchesCreancesPoste(m, auj).courte, 30);
       expect(tranchesCreancesPoste(m, auj).longue, 90);

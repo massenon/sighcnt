@@ -273,6 +273,16 @@ void main() {
       await attendRefus(s3.importer('${tmp.path}/tronque.sighexp', geste: true), CodeMaj.importAltere);
       expect(await empreinteDossier(m3), avant);
       expect(Directory('${tmp.path}/m3/scans').existsSync(), isFalse);
+      // tronqué PILE à une frontière de morceau : le morceau final (qui compte les morceaux) manque
+      var off = 36;
+      final bornes = <int>[];
+      while (off < brut.length) {
+        bornes.add(off);
+        off += 4 + ((brut[off] << 24) | (brut[off + 1] << 16) | (brut[off + 2] << 8) | brut[off + 3]);
+      }
+      File('${tmp.path}/tronque2.sighexp').writeAsBytesSync(brut.sublist(0, bornes.last));
+      await attendRefus(s3.importer('${tmp.path}/tronque2.sighexp', geste: true), CodeMaj.importAltere);
+      expect(await empreinteDossier(m3), avant);
     });
 
     test('le journal de la mise à jour se verse au journal d’audit UNE fois (repère)', () async {

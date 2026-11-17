@@ -1,0 +1,34 @@
+{
+ "id": "m14-mise-a-jour",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Mettre à jour le logiciel",
+ "acces": "ouvert",
+ "titre": "Mettre à jour le logiciel",
+ "description": "Préparer la mise à jour, essai à blanc, migrer, annuler, exporter et importer la base : sans perdre une donnée.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Mettre à jour le logiciel"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Sécurité des utilisateurs",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "Écran propre au poste. La maquette range ses données dans PostgreSQL : elle n’a ni dossier de données chiffré, ni version de format de fichier, ni migration. Les gestes ci-dessous se jouent au poste (mère et fileul) ; cette page en donne le parcours.",
+  "Un fileul de format trop ancien reçoit 426 schema_incompatible : il n’envoie rien et garde ses saisies hors ligne. Un fileul qui importe une base plus ancienne que sa dernière synchronisation est averti (IMPORT_PLUS_ANCIEN_QUE_SYNC, non bloquant)."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Parcours en six étapes"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

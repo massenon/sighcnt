@@ -757,6 +757,10 @@
    "titre": "Journal d’audit",
    "description": "Traçabilité intégrale : création, modification, validation, archivage et connexions."
   },
+  "m14-mise-a-jour": {
+   "titre": "Mettre à jour le logiciel",
+   "description": "Préparer la mise à jour, essai à blanc, migrer, annuler, exporter et importer la base : sans perdre une donnée."
+  },
   "m14-roles": {
    "titre": "Rôles & permissions (RBAC)",
    "description": "Matrice des droits d’accès par rôle et par module : voir, éditer, annuler. Renommage et archivage des rôles."

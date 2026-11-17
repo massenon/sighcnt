@@ -4944,6 +4944,21 @@
    "statut": "porté"
   },
   {
+   "id": "m14-mise-a-jour",
+   "label": "Mettre à jour le logiciel",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
    "id": "m14-taches",
    "label": "Tâches planifiées",
    "module": "M14",

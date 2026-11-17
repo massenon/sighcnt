@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'audit.dart';
+import 'mise_a_jour.dart';
 import 'roles.dart';
 import 'sauvegardes.dart';
 import 'securite_utilisateurs.dart';
@@ -22,5 +23,6 @@ final Map<String, ConstruireEcran> ecransM14 = {
   'm14-sessions': (c, cfg) => const EcranSessions(),
   'm14-audit': (c, cfg) => const EcranAudit(),
   'm14-sauvegardes': (c, cfg) => const EcranSauvegardes(),
+  'm14-mise-a-jour': (c, cfg) => const EcranMiseAJour(),
   'm14-taches': (c, cfg) => const EcranTaches(),
 };

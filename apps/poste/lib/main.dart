@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:async';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show gesInstaller, CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, smsGesteRegler, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
+import 'package:sigh_domaine/sigh_domaine.dart' show gesInstaller, formatDonneesCourant, parCollectionParametres, parametreDateIso, reglagesMajDe, CpcPosteAppaire, cfbEssentielles, droitsDepuisMatrice, smsGesteRegler, tarCollectionsReferentiel, tarGesteDecider, tarInstallerDroitDecider, valCollectionValidations;
 import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
@@ -24,7 +26,9 @@ import 'sync/service_fichiers.dart';
 import 'sync/service_verdicts_import.dart';
 import 'donnees/tarifs_poste.dart';
 import 'donnees/magasin.dart';
-import 'donnees/maj_poste.dart';
+import 'core/demarrage_cle.dart';
+import 'donnees/demarrage_maj.dart';
+import 'donnees/liaison_maj.dart';
 import 'donnees/persistance.dart';
 import 'modules/cfg/cfb_systeme.dart' show CfbPersistance;
 import 'core/config_poste.dart';
@@ -137,21 +141,35 @@ Future<void> main() async {
   } catch (_) {}
   // LA CLÉ DU POSTE, d'abord : elle chiffre les fichiers du magasin ET les bases SQLite de la synchronisation (la mère et le journal de ce poste), qui portent
   // tout autant les dossiers des patients. Sans chiffrement (`SIGH_CHIFFREMENT=non`), tout reste en clair, pour le développement seulement.
+  if (chiffrementActif != 'non' && cleAbsente('$dossierDonnees/cle-poste.bin')) {
+    // Un poste SANS clé ne la fabrique pas en silence : « créer » (premier poste) ou « restaurer » (poste neuf ou remplacé d'une clinique existante), lot MAJ, exigence 10.
+    final fini = Completer<void>();
+    runApp(MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: EcranDemarrageCle(
+            cle: CleLocale('$dossierDonnees/cle-poste.bin'),
+            choisirFichier: () async => (await FilePicker.pickFile(dialogTitle: 'Sauvegarde de la clé (.cle)', type: FileType.any))?.path,
+            termine: () => fini.complete())));
+    await fini.future;
+  }
   final cle = chiffrementActif != 'non' ? await CleLocale('$dossierDonnees/cle-poste.bin').obtenir() : null;
   final cleSqlite = cle == null ? '' : cle.map((o) => o.toRadixString(16).padLeft(2, '0')).join();
-  // LA MISE À JOUR SANS PERTE (lot MAJ) : AVANT d'ouvrir le magasin, une migration ou un import interrompu par une coupure est ramené aux données d'AVANT (jamais un état mixte) ; un dossier
-  // neuf reçoit le format courant ; des données PLUS RÉCENTES que ce logiciel ne s'ouvrent pas (refus nommé). Le 426 de la mère (`ConfigMere.formatDonnees`, `ConfigFileul.formatDonnees`) n'est PAS encore branché sur le format stocké : tant que l'écran « Mettre à jour le logiciel » qui lance la migration n'existe pas, brancher le 426 bloquerait un fileul neuf devant une mère non migrée (section BG).
+  // LA MISE À JOUR SANS PERTE (lot MAJ) : AVANT d'ouvrir le magasin, `demarrerMiseAJour` ramène une migration ou un import interrompu aux données d'AVANT (jamais un état mixte), marque un dossier neuf, et refuse des données
+  // PLUS RÉCENTES que ce logiciel (refus nommé). Le format STOCKÉ est tenu par la mère et dit par chaque fileul : 426 hors tolérance ; une mère non migrée a son écran « Mettre à jour le logiciel » pour migrer.
+  var formatMaj = formatDonneesCourant;
   if (cle != null) {
-    final maj = ServiceMiseAJour(dossier: '$dossierDonnees/magasin', cle: cle, dossierFichiers: '$dossierDonnees/fichiers');
-    await maj.reprendreSiInterrompu();
-    await maj.marquerNeuf();
-    final plan = await maj.plan();
+    final demarrage = await demarrerMiseAJour(dossierDonnees: dossierDonnees, cle: cle);
+    final maj = demarrage.service;
+    final plan = demarrage.plan;
     if (plan.refus != null) {
       runApp(MaterialApp(
           debugShowCheckedModeBanner: false,
           home: Scaffold(body: Center(child: Padding(padding: const EdgeInsets.all(24), child: SelectableText('SIGH-CNT ne peut pas démarrer.\n\n${plan.refus!.code} : ${plan.refus!.motif}\n\n${plan.refus!.geste}'))))));
       return;
     }
+    // Le format STOCKÉ est celui que la mère tient et que le fileul dit à chaque requête : 426 hors tolérance (une mère non migrée a son écran « Mettre à jour le logiciel » pour migrer).
+    formatMaj = demarrage.format;
+    LiaisonMaj.service = maj;
   }
   final stockage = StockageFichier('$dossierDonnees/poste.json', cle: cle);
   final activation = ActivationMere(
@@ -163,7 +181,8 @@ Future<void> main() async {
         cleStockage: cleSqlite,
         // Lot D5 : les fichiers numérisés de la mère vivent dans le MÊME dossier que ceux de ce poste (adressés par empreinte, même clé) : un scan déposé ici est aussitôt chez la mère.
         dossierFichiers: '$dossierDonnees/fichiers',
-        dossierSauvegardes: '$dossierDonnees/sauvegardes')),
+        dossierSauvegardes: '$dossierDonnees/sauvegardes',
+        formatDonnees: formatMaj)),
     relaisPour: (relais, secret) => RelaisMereHttp(
         base: Uri.parse(relais), secretMere: secret, client: http.Client()),
   );
@@ -185,6 +204,7 @@ Future<void> main() async {
   final moteur = MoteurFileul.creer(
       dbChemin: '$dossierDonnees/poste.db',
       cleStockage: cleSqlite,
+      formatDonnees: formatMaj,
       mere: params.rejoint && params.adresseMere.isNotEmpty ? params.adresseMere : adresseMere)
     ..demarrer();
   final magasin = await Magasin.depuisAssets(Magasin.collectionsDuJeu);
@@ -201,6 +221,42 @@ Future<void> main() async {
   // Un jeu d'origine qui change (nouvelle version) n'écrase rien : ses fiches de référentiel manquantes sont ajoutées au magasin enregistré.
   await magasin.brancherPersistance(persistance, fusionnables: {...cfbEssentielles, valCollectionValidations, ...tarCollectionsReferentiel}.difference({'utilisateurs', 'identifiants'}));
   CfbPersistance.disponible = () => true;
+  // LA MISE À JOUR : les réglages se LISENT en base à chaque garde (paramètres de clinique `maj.*`, datés), les gestes du système se branchent ici, et le journal de la mise à jour est VERSÉ au journal d'audit
+  // (RG-12) au démarrage : le magasin en mémoire n'est jamais réécrit par-dessus une base qu'une opération vient de remplacer, d'où ce versement différé (un repère évite tout doublon).
+  LiaisonMaj.figerMagasin = magasin.ecrireMaintenant;
+  LiaisonMaj.fileulRattache = () => params.rejoint && params.mode != ModePoste.mere;
+  LiaisonMaj.derniereSynchro = () => moteur.derniereSynchro;
+  LiaisonMaj.rejouerJournal = moteur.rejouerDepuisLeDebut;
+  final majSvc = LiaisonMaj.service;
+  if (majSvc != null) {
+    majSvc.reglages = () => reglagesMajDe(magasin.collection(parCollectionParametres).toutes, parametreDateIso(DateTime.now()));
+    // UN IMPORT SUR UN FILEUL : si sa resynchronisation n'a pas fini (coupure), le journal de la mère est rejoué depuis le début ; elle est déclarée finie quand un tour complet a réussi APRÈS
+    // l'import et que le magasin est écrit (rien n'est supposé : tant que ce n'est pas vu, le marqueur reste).
+    if (await majSvc.resyncEnCours()) {
+      moteur.rejouerDepuisLeDebut();
+      Timer.periodic(const Duration(seconds: 8), (t) async {
+        final depuis = await majSvc.resyncDepuis();
+        if (depuis == null) {
+          t.cancel();
+          return;
+        }
+        final d = moteur.derniereSynchro;
+        if (d != null && d.isAfter(depuis.add(const Duration(seconds: 20)))) {
+          await magasin.ecrireMaintenant();
+          await majSvc.resyncTerminee();
+          t.cancel();
+        }
+      });
+    }
+    final aVerser = await majSvc.journalNonVerse();
+    for (final e in aVerser) {
+      magasin.journaliser('Mise à jour du logiciel : ${e['action']}', 'M14', 'miseAJour', '${e['copie'] ?? e['fichier'] ?? e['quand']}', null, e);
+    }
+    if (aVerser.isNotEmpty) {
+      await majSvc.marquerVerses(aVerser.length);
+      unawaited(magasin.ecrireMaintenant());
+    }
+  }
   // LA REPRISE DE L'ORGANIGRAMME (lot ORG2, VERSION 78 de la maquette) : un poste enregistré avant la photo est remplacé par la semence de la photo s'il est INTACT
   // (aucune trace d'écran, identique à l'ancienne semence) ; un poste que la clinique a modifié n'est jamais réécrit. Journalisée une fois, idempotente.
   OrganigrammePoste.reprendre(magasin);

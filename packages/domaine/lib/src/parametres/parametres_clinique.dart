@@ -9,6 +9,7 @@
 // vers un téléphone). Aucun écran ne relit une constante : la valeur se LIT à la date. Les BORNES sont une proposition à valider (aucun document ne les fixe).
 library;
 
+import '../maj/maj.dart' show ReglagesMaj;
 import 'parametres.dart';
 
 /// La famille des paramètres de clinique (réglage de branche, fermée aux téléphones : [parFamillesJamaisMobile]).
@@ -23,6 +24,11 @@ const String pcCleTrancheLongue = 'creances.trancheLongueJours';
 
 /// Lot PTA : la tolérance (jours) après la fin du trimestre d'une action du plan annuel avant l'alerte de retard (défaut 0, bornes à valider).
 const String pcCleGraceRetardPlan = 'plan.graceRetardJours';
+
+/// Lot MAJ (17/11/2026) : les trois réglages de la mise à jour du logiciel, lus au poste par `reglagesMajDe` (valeurs d'attente et bornes à valider, section BG).
+const String pcCleMajAgeCopie = 'maj.ageMaxCopieHeures';
+const String pcCleMajRetourArriere = 'maj.retourArriereMinutes';
+const String pcCleMajEcartVersion = 'maj.ecartVersionTolere';
 
 const String _source = 'Valeur d’avant (constante du code), semée telle quelle : décisions 10 et 14 de la Direction du 15/11/2026 (DECISIONS-A-VALIDER, section AH)';
 
@@ -39,6 +45,9 @@ const List<BornesParametreClinique> pcBornes = [
   BornesParametreClinique(pcCleTrancheCourte, 1, 365),
   BornesParametreClinique(pcCleTrancheLongue, 2, 730),
   BornesParametreClinique(pcCleGraceRetardPlan, 0, 90),
+  BornesParametreClinique(pcCleMajAgeCopie, 1, 168, unite: 'heures'),
+  BornesParametreClinique(pcCleMajRetourArriere, 5, 480, unite: 'minutes'),
+  BornesParametreClinique(pcCleMajEcartVersion, 0, 5, unite: 'version(s)'),
 ];
 
 BornesParametreClinique? pcBornesDe(String cle) {
@@ -94,6 +103,39 @@ const List<DefinitionParametre> pcDefinitions = [
     source: 'Lot PTA (16/11/2026) : défaut 0, bornes à valider par la Direction',
     branche: true,
     appliquePar: 'Lot PTA',
+  ),
+  DefinitionParametre(
+    cle: pcCleMajAgeCopie,
+    famille: pcFamille,
+    type: TypeParametre.entier,
+    defaut: 24,
+    libelle: 'Mise à jour : ancienneté maximale de la copie vérifiée (heures)',
+    aide: 'Sans copie vérifiée de moins de ce nombre d’heures, une migration ou un import refuse (MAJ_SANS_SAUVEGARDE). Entier de 1 à 168.',
+    source: 'Lot MAJ (17/11/2026) : défaut 24 h du PRD, bornes à valider par la Direction',
+    branche: true,
+    appliquePar: 'Lot MAJ',
+  ),
+  DefinitionParametre(
+    cle: pcCleMajRetourArriere,
+    famille: pcFamille,
+    type: TypeParametre.entier,
+    defaut: 30,
+    libelle: 'Mise à jour : durée visée du retour arrière (minutes)',
+    aide: 'Durée à laquelle la Direction s’attend pour revenir à la dernière copie vérifiée (objectif affiché, jamais un blocage). Entier de 5 à 480.',
+    source: 'Lot MAJ (17/11/2026) : valeur d’attente de 30 minutes du PRD, à valider par la Direction',
+    branche: true,
+    appliquePar: 'Lot MAJ',
+  ),
+  DefinitionParametre(
+    cle: pcCleMajEcartVersion,
+    famille: pcFamille,
+    type: TypeParametre.entier,
+    defaut: 1,
+    libelle: 'Mise à jour : écart de version de format toléré entre la mère et un fileul',
+    aide: 'Au-delà de cet écart, la mère répond 426 schema_incompatible et le fileul garde ses saisies hors ligne. Entier de 0 à 5.',
+    source: 'Lot MAJ (17/11/2026) : défaut d’une version, à valider par la Direction',
+    branche: true,
+    appliquePar: 'Lot MAJ',
   ),
 ];
 
@@ -209,3 +251,9 @@ String pcStatutLot(Map<String, Object?> lot, String date, int preavis) {
   final j = (a.difference(b).inHours / 24).round();
   return j < 0 ? 'perime' : (j <= preavis ? 'alerte' : 'actif');
 }
+
+/// Lot MAJ : les réglages de la mise à jour en vigueur à [date] (AAAA-MM-JJ), lus au registre : jamais une constante du code.
+ReglagesMaj reglagesMajDe(List<Map<String, Object?>> versions, String date) => ReglagesMaj(
+    ageMaxCopieHeures: pcValeur(versions, pcCleMajAgeCopie, date),
+    retourArriereMinutes: pcValeur(versions, pcCleMajRetourArriere, date),
+    ecartVersionTolere: pcValeur(versions, pcCleMajEcartVersion, date));

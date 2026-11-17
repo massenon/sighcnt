@@ -28247,9 +28247,9 @@ async function viderMessages(page) {
       return { lus, cellules, boutons: document.querySelectorAll('#page-content [data-regler-parametre]').length, semence: S.collection('parametresClinique').active().filter((v) => !v.dateEffet).length, geste: !!window.SIGH.nav.geste('regler_parametres_clinique'),
         detenteurs: window.SIGH.nav.rolesAvecGeste('regler_parametres_clinique').slice().sort() };
     });
-    verifier('Les quatre paramètres de clinique sont SEMÉS en base (90, 30, 90 et, lot PTA, la tolérance de l’alerte du plan annuel à 0), l’écran « Règles métier versionnées » les montre avec « Régler » ; le geste réservé est au manifeste, détenu d’origine par l’administrateur et la Directrice Administrative',
-      etat0.semence === 4 && etat0.lus['plan.graceRetardJours'] === 0 && etat0.lus['stock.delaiPeremptionJours'] === 90 && etat0.lus['creances.trancheCourteJours'] === 30 && etat0.lus['creances.trancheLongueJours'] === 90
-      && etat0.cellules.length === 4 && etat0.cellules.some((c) => c[0] === 'stock.delaiPeremptionJours' && /^90 jours$/.test(c[1])) && etat0.boutons === 4 && etat0.geste
+    verifier('Les sept paramètres de clinique sont SEMÉS en base (90, 30, 90 et, lot PTA, la tolérance de l’alerte du plan annuel à 0, puis lot MAJ : 24 h, 30 min, une version), l’écran « Règles métier versionnées » les montre avec « Régler » ; le geste réservé est au manifeste, détenu d’origine par l’administrateur et la Directrice Administrative',
+      etat0.semence === 7 && etat0.lus['maj.ageMaxCopieHeures'] === 24 && etat0.lus['plan.graceRetardJours'] === 0 && etat0.lus['stock.delaiPeremptionJours'] === 90 && etat0.lus['creances.trancheCourteJours'] === 30 && etat0.lus['creances.trancheLongueJours'] === 90
+      && etat0.cellules.length === 7 && etat0.cellules.some((c) => c[0] === 'stock.delaiPeremptionJours' && /^90 jours$/.test(c[1])) && etat0.boutons === 7 && etat0.geste
       && JSON.stringify(etat0.detenteurs) === JSON.stringify(['admin', 'da']), JSON.stringify(etat0));
 
     /* un lot qui périme dans 100 jours : « valide » sous le préavis de 90 jours */
@@ -28348,7 +28348,7 @@ async function viderMessages(page) {
     const fileul = await page.evaluate(() => { const S = window.SIGH.store, avant = S.reglage('posteFileul', false); S.setReglage('posteFileul', true);
       const r = window.SIGH.parametresClinique.definir({ cle: 'stock.delaiPeremptionJours', valeur: 30, motif: 'sonde' }); S.setReglage('posteFileul', avant); return r.code; });
     verifier('Sans le geste réservé (gestionnaire de stock, Direction qui lit l’écran) : « Régler » est ABSENT et le moteur refuse PARAMETRE_CLINIQUE_RESERVE ; la Directrice Administrative règle ; un FILEUL est refusé (FILEUL_LECTURE_SEULE : réglage posé à la mère)',
-      sansGeste.peut === false && sansGeste.refus === 'PARAMETRE_CLINIQUE_RESERVE' && da.boutons === 4 && da.peut && dir.cellules === 4 && dir.boutons === 0 && dir.refus === 'PARAMETRE_CLINIQUE_RESERVE' && fileul === 'FILEUL_LECTURE_SEULE', JSON.stringify({ sansGeste, da, dir, fileul }));
+      sansGeste.peut === false && sansGeste.refus === 'PARAMETRE_CLINIQUE_RESERVE' && da.boutons === 7 && da.peut && dir.cellules === 7 && dir.boutons === 0 && dir.refus === 'PARAMETRE_CLINIQUE_RESERVE' && fileul === 'FILEUL_LECTURE_SEULE', JSON.stringify({ sansGeste, da, dir, fileul }));
 
     /* restauration : les versions de la sonde et le lot sont archivés (RG-14), la semence fait de nouveau foi */
     const fin = await page.evaluate((id) => { const S = window.SIGH.store, C = window.SIGH.core, col = S.collection('parametresClinique');
@@ -30942,6 +30942,28 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT SURV FIN */
+
+  /* LOT MAJ (écrans de mise à jour du logiciel : parcours écrit à la maquette, gestes réels au poste) */
+  await etape(async () => {
+    scenario('Vague 340 : lot MAJ, « Mettre à jour le logiciel » : l’écran est au manifeste pour l’administrateur et la Directrice Administrative seuls, le parcours dit ses six étapes et ses refus nommés, le geste réservé lancer_mise_a_jour est à la fiche RBAC (défaut administrateur et DAF), la maquette dit pourquoi l’écran est propre au poste');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN340', nomComplet: 'ADMIN340', fonction: 'direction', identifiant: 's340.admin', secteur: 'DIR' });
+    await ouvrir('m14-mise-a-jour.html');
+    const m340 = await page.evaluate(() => {
+      const N = window.SIGH.nav; const e = N.get('m14-mise-a-jour');
+      const g = N.GESTES.filter((x) => x.id === 'lancer_mise_a_jour')[0];
+      const t = document.body.innerText;
+      return { ouvertAdmin: !!(e && N.can('admin', e)), ouvertDa: !!(e && N.can('da', e)), ouvertReception: !!(e && N.can('reception', e)), defaut: g ? g.rolesDefaut.slice().sort().join(',') : null,
+        etapes: (t.match(/Préparer la mise à jour|Essai à blanc|Migrer les données|Annuler la mise à jour|Exporter la base|Importer une base/g) || []).length,
+        refus: ['MAJ_SANS_SAUVEGARDE', 'DONNEES_PLUS_RECENTES', 'RETOUR_SANS_COPIE_VERIFIEE', 'IMPORT_SANS_CLE', 'IMPORT_AUTRE_CLINIQUE', 'IMPORT_ALTERE', 'IMPORT_SANS_COPIE_PREALABLE', '426 schema_incompatible', 'IMPORT_PLUS_ANCIEN_QUE_SYNC'].filter((c) => t.indexOf(c) >= 0).length,
+        propre: t.indexOf('Écran propre au poste') >= 0, boutons: document.querySelectorAll('main button').length };
+    });
+    verifier('L’écran est ouvert à l’administrateur et à la Directrice Administrative, fermé à la réception ; le geste lancer_mise_a_jour a pour défaut admin et da', m340.ouvertAdmin && m340.ouvertDa && !m340.ouvertReception && m340.defaut === 'admin,da', JSON.stringify(m340));
+    verifier('Le parcours dit ses six étapes et ses neuf refus nommés', m340.etapes >= 6 && m340.refus === 9, JSON.stringify(m340));
+    verifier('La maquette dit que l’écran est propre au poste et ne simule aucun geste de migration', m340.propre, JSON.stringify(m340));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT MAJ FIN */
 
   await browser.close();
   server.close();

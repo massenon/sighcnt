@@ -12,6 +12,10 @@ import 'dart:math';
 import 'package:sigh_domaine/sigh_domaine.dart'
     show
         CodeMaj,
+        pcCleMajAgeCopie,
+        pcCleMajEcartVersion,
+        pcCleMajRetourArriere,
+        pcResoudreFiches,
         ReglagesMaj,
         formatDonneesCourant,
         jugerEcartVersion,
@@ -646,8 +650,27 @@ class Mere {
     return Appareil(a['uuid'] as String, a['role'] as String, a['profil'] as String?, a['fonction'] as String?);
   }
 
-  /// Le réglage « écart de version de format toléré » : en base (méta), défaut semé UNE version, jamais une constante du code.
-  Future<ReglagesMaj> reglagesMaj() async => ReglagesMaj(ecartVersionTolere: await base.metaInt('maj_ecart_tolere', ReglagesMaj.defaut.ecartVersionTolere), ageMaxCopieHeures: await base.metaInt('maj_age_copie_h', ReglagesMaj.defaut.ageMaxCopieHeures));
+  /// Les réglages de la mise à jour, LUS EN BASE : la version datée du paramètre de clinique (collection `parametres`, posée par le poste mère), à défaut la méta de la mère, à défaut
+  /// le défaut semé : jamais une constante du code.
+  Future<ReglagesMaj> reglagesMaj() async {
+    final jour = DateTime.now().toIso8601String().substring(0, 10);
+    final fiches = <Map<String, Object?>>[];
+    try {
+      for (final r in await base.select("SELECT id, data FROM fiches WHERE collection='parametres' AND archive=0")) {
+        fiches.add({...(jsonDecode(r['data'] as String) as Map).cast<String, Object?>(), 'id': r['id']});
+      }
+    } catch (_) {/* collection absente : défaut */}
+    Future<int> lire(String cle, String meta, int defaut) async {
+      final r = pcResoudreFiches(fiches, cle, jour);
+      if (r.origine == 'version' && r.valeur != null) return r.valeur!.toInt();
+      return base.metaInt(meta, defaut);
+    }
+
+    return ReglagesMaj(
+        ecartVersionTolere: await lire(pcCleMajEcartVersion, 'maj_ecart_tolere', ReglagesMaj.defaut.ecartVersionTolere),
+        ageMaxCopieHeures: await lire(pcCleMajAgeCopie, 'maj_age_copie_h', ReglagesMaj.defaut.ageMaxCopieHeures),
+        retourArriereMinutes: await lire(pcCleMajRetourArriere, 'maj_retour_min', ReglagesMaj.defaut.retourArriereMinutes));
+  }
 
   /// 426 : le format des données du fileul est hors tolérance (ou non dit : non calculable n'est pas compatible). Un téléphone n'a pas de base à migrer, il n'est pas concerné.
   /// Le refus est nommé (code de protocole, code MAJ, motif, geste) ; le fileul n'envoie ni ne reçoit rien, ses saisies restent dans sa file.

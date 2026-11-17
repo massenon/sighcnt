@@ -176,10 +176,10 @@
      97 (16/11/2026) : LE PLAN ANNUEL DE TRAVAIL PAR EXERCICE (lot PTA). `planAnnuel` change de forme (exercice, état et axe en CODES des référentiels, responsable par référence au personnel ou
      à un poste, budget prévu et réalisé, indicateur, cible, valeur atteinte, pourcentage borné, version datée) ; trois collections neuves : `referentielsPlan` (axes et états, défauts
      semés), `reglagesPlan` (signataires de l'impression : fonction par référence à un poste, versions datées) et `adoptionsPlan` (adoption par la Direction, une par exercice) ; le geste
-     réservé `adopter_plan_annuel` entre au manifeste, la clé `plan.graceRetardJours` aux paramètres de clinique. Sans incrément, un poste garderait l'ancien plan écrit en dur.     98 (17/11/2026, lot TIERS) : LA FACTURE À UN TIERS PAYEUR. Cinq collections neuves (`tiersPayeurs`, fiches versionnées par date ; `facturesTiers` ; `avoirsTiers` ; `reglementsTiers` ;
+     réservé `adopter_plan_annuel` entre au manifeste, la clé `plan.graceRetardJours` aux paramètres de clinique. Sans incrément, un poste garderait l'ancien plan écrit en dur.     99 (17/11/2026, lot MAJ) : TROIS PARAMÈTRES DE CLINIQUE pour la mise à jour du logiciel (`maj.ageMaxCopieHeures`, `maj.retourArriereMinutes`, `maj.ecartVersionTolere`). Sans incrément, un poste n'aurait pas leurs défauts semés.     98 (17/11/2026, lot TIERS) : LA FACTURE À UN TIERS PAYEUR. Cinq collections neuves (`tiersPayeurs`, fiches versionnées par date ; `facturesTiers` ; `avoirsTiers` ; `reglementsTiers` ;
      `lettragesTiers`) et deux gestes réservés (`emettre_facture_tiers`, `corriger_facture_tiers`) entrent au manifeste. Sans incrément, un poste n'aurait ni les collections ni les droits.
   */
-  var VERSION = 98;
+  var VERSION = 99;
   var db = null;
   var listeners = {};
 

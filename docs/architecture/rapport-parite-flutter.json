@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
- "ecrans_du_manifeste": 359,
- "ecrans_portes": 382,
+ "ecrans_du_manifeste": 360,
+ "ecrans_portes": 383,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -1552,6 +1552,14 @@
    "mesure": true,
    "attendus": 20,
    "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-mise-a-jour",
+   "mesure": true,
+   "attendus": 3,
+   "presents": 3,
    "taux": 1.0,
    "manquants": []
   },

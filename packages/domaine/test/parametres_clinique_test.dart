@@ -23,7 +23,7 @@ void main() {
       expect(def.mobile, isFalse);
     }
     for (final e in lm(v['ecran'])) {
-      expect(e['texte'], '${pcDefinitions.firstWhere((x) => x.cle == e['cle']).defaut} jours', reason: 'l\'écran réel au défaut semé');
+      expect(e['texte'], '${pcDefinitions.firstWhere((x) => x.cle == e['cle']).defaut} ${pcBornesDe('${e['cle']}')!.unite}', reason: 'l\'écran réel au défaut semé');
     }
   });
 

@@ -2203,6 +2203,41 @@
   });
 
   /* ==========================================================================
+   * METTRE À JOUR LE LOGICIEL (lot MAJ, 17/11/2026)
+   * La mise à jour sans perte de données est un mécanisme du POSTE (dossier de données chiffré, version du format des fichiers, migration, export portable SGX2,
+   * clé de clinique) : la maquette range ses données dans PostgreSQL, elle n'a ni dossier de données, ni version de format de fichier, ni migration à jouer. L'écran
+   * de la maquette est donc le PARCOURS écrit (étapes, refus nommés, droit), sans geste simulé ; l'écran réel et ses gestes vivent au poste (mère et fileul).
+   * ======================================================================== */
+  global.SIGH.screen('m14-mise-a-jour', {
+    title: 'Mettre à jour le logiciel',
+    description: 'Préparer la mise à jour, essai à blanc, migrer, annuler, exporter et importer la base : sans perdre une donnée.',
+    regle: 'Aucune mise à jour sans <strong>copie vérifiée</strong> de moins de 24 h ; la <strong>mère</strong> est mise à jour avant les fileuls ; rien n’est supprimé, tout refus est <strong>nommé</strong>. '
+      + 'Réservé au droit <strong>lancer_mise_a_jour</strong> de la fiche RBAC (administrateur et Directrice Administrative par défaut).',
+    render: function (root) {
+      var host = el('div.space-y-4');
+      host.appendChild(K.note('<strong>Écran propre au poste.</strong> La maquette range ses données dans PostgreSQL : elle n’a ni dossier de données chiffré, ni version de format de fichier, ni migration. '
+        + 'Les gestes ci-dessous se jouent au poste (mère et fileul) ; cette page en donne le parcours.', { tone: 'info', icon: 'info' }));
+      var etapes = [
+        ['1', 'Préparer la mise à jour', 'Copie chiffrée, restauration vérifiée dans un dossier neuf, comptes et empreintes consignés au journal d’audit', 'MAJ_SANS_SAUVEGARDE'],
+        ['2', 'Essai à blanc', 'Dit ce qui changerait, sans rien écrire', ''],
+        ['3', 'Migrer les données', 'Contrôle des comptes avant et après : « N fiches avant, N après », toute différence nommée', 'DONNEES_PLUS_RECENTES'],
+        ['4', 'Annuler la mise à jour', 'Dernière copie vérifiée, liste des saisies postérieures, rien écrasé en silence', 'RETOUR_SANS_COPIE_VERIFIEE'],
+        ['5', 'Exporter la base', 'Un fichier chiffré unique (base, fichiers numérisés, manifeste signé, version du format)', ''],
+        ['6', 'Importer une base', 'Sur la mère ET sur un fileul ; la clé de clinique est exigée', 'IMPORT_SANS_CLE, IMPORT_AUTRE_CLINIQUE, IMPORT_ALTERE, IMPORT_SANS_COPIE_PREALABLE'],
+      ];
+      var liste = el('ol.list-decimal.space-y-2.pl-5.text-sm');
+      etapes.forEach(function (e) {
+        liste.appendChild(el('li', {}, [el('strong', {}, e[1]), ' : ' + e[2] + (e[3] ? ' (refus nommés : ' + e[3] + ')' : '')]));
+      });
+      host.appendChild(U.card('Parcours en six étapes', liste));
+      host.appendChild(K.note('Un fileul de format trop ancien reçoit <strong>426 schema_incompatible</strong> : il n’envoie rien et garde ses saisies hors ligne. '
+        + 'Un fileul qui importe une base plus ancienne que sa dernière synchronisation est averti (<strong>IMPORT_PLUS_ANCIEN_QUE_SYNC</strong>, non bloquant).', { tone: 'warning', icon: 'alert-triangle' }));
+      root.appendChild(host);
+      return null;
+    },
+  });
+
+  /* ==========================================================================
    * SAUVEGARDES & RESTAURATION
    * ======================================================================== */
   global.SIGH.screen('m14-sauvegardes', {

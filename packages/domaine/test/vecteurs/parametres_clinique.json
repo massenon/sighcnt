@@ -15,6 +15,18 @@
   {
    "cle": "plan.graceRetardJours",
    "texte": "0 jours"
+  },
+  {
+   "cle": "maj.ageMaxCopieHeures",
+   "texte": "24 heures"
+  },
+  {
+   "cle": "maj.retourArriereMinutes",
+   "texte": "30 minutes"
+  },
+  {
+   "cle": "maj.ecartVersionTolere",
+   "texte": "1 version(s)"
   }
  ],
  "definitions": [
@@ -49,6 +61,30 @@
    "max": 90,
    "unite": "jours",
    "libelle": "Plan annuel : jours de tolérance après la fin du trimestre avant l’alerte de retard"
+  },
+  {
+   "cle": "maj.ageMaxCopieHeures",
+   "defaut": 24,
+   "min": 1,
+   "max": 168,
+   "unite": "heures",
+   "libelle": "Mise à jour : ancienneté maximale de la copie vérifiée (heures)"
+  },
+  {
+   "cle": "maj.retourArriereMinutes",
+   "defaut": 30,
+   "min": 5,
+   "max": 480,
+   "unite": "minutes",
+   "libelle": "Mise à jour : durée visée du retour arrière (minutes)"
+  },
+  {
+   "cle": "maj.ecartVersionTolere",
+   "defaut": 1,
+   "min": 0,
+   "max": 5,
+   "unite": "version(s)",
+   "libelle": "Mise à jour : écart de version de format toléré entre la mère et un fileul"
   }
  ],
  "semence": [
@@ -74,6 +110,24 @@
    "id": "PCL-004",
    "cle": "plan.graceRetardJours",
    "valeur": 0,
+   "dateEffet": null
+  },
+  {
+   "id": "PCL-005",
+   "cle": "maj.ageMaxCopieHeures",
+   "valeur": 24,
+   "dateEffet": null
+  },
+  {
+   "id": "PCL-006",
+   "cle": "maj.retourArriereMinutes",
+   "valeur": 30,
+   "dateEffet": null
+  },
+  {
+   "id": "PCL-007",
+   "cle": "maj.ecartVersionTolere",
+   "valeur": 1,
    "dateEffet": null
   }
  ],
