@@ -15,6 +15,9 @@ typedef CollectionsMaj = Map<String, List<Map<String, Object?>>>;
 const int formatDonneesCourant = 2;
 const int formatSansVersion = 0;
 
+/// Le geste réservé de la fiche RBAC qui couvre toute la chaîne (préparer, migrer, importer, annuler). Défaut semé : administrateur et Directrice Administrative (proposition à valider, BG).
+const String majGeste = 'lancer_mise_a_jour';
+
 /// La collection technique, en ajout seul, où une migration range ce qu'elle retire d'une fiche (jamais de suppression physique).
 const String collectionArchiveMigrations = 'archiveMigrations';
 

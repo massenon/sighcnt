@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/maj_poste.dart';
 import 'package:sigh_poste/donnees/persistance.dart';
 
@@ -45,6 +46,12 @@ Future<void> attendRefus(Future<Object?> f, String code) async {
 }
 
 void main() {
+  test('le geste réservé « lancer_mise_a_jour » est à la fiche RBAC : défaut administrateur et DAF, aucun autre rôle', () {
+    final m = DonneesNavigation.depuisDossier().matrice;
+    final avec = [for (final r in m.rolesBruts) if (m.droitGeste('${r['id']}', majGeste)) '${r['id']}'];
+    expect(avec.toSet(), {'admin', 'da'});
+  });
+
   setUp(() async {
     horloge = DateTime.utc(2026, 11, 17, 10);
     tmp = await Directory.systemTemp.createTemp('maj-');

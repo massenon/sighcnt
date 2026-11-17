@@ -228,6 +228,11 @@
        réglage réservé à l'administrateur et à la DAF a son DROIT PROPRE ; d'origine l'administrateur et la Directrice Administrative, PROPOSITION À VALIDER. Il ne donne aucun écran. */
     { id: 'regler_parametres_clinique', libelle: 'Régler les paramètres de clinique (préavis de péremption, tranches de la balance âgée)', module: 'CFG', ecran: 'cfg-regles',
       rolesDefaut: ['admin', 'da'] },
+    /* Lot MAJ (17/11/2026) : lancer une mise à jour du logiciel sans perte de données (préparer la mise à jour, migrer les données, importer une base ou un export portable, annuler une mise à jour).
+       UN seul droit pour la chaîne : ces quatre gestes ont le même risque (ils remplacent ou transforment le magasin du poste) et se suivent dans un même parcours ; Direction 17/11/2026 :
+       l'administrateur ET la Directrice Administrative, sur la mère comme sur un fileul. D'origine admin et da, PROPOSITION À VALIDER (section BG). Le moteur refuse aussi sans lui (`MAJ_GESTE_RESERVE`). */
+    { id: 'lancer_mise_a_jour', libelle: 'Lancer une mise à jour du logiciel (préparer, migrer, importer une base, annuler une mise à jour)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da'] },
     /* Lot SMS-R (16/11/2026) : régler la passerelle SMS (activer les envois automatiques, calculer et déposer maintenant au relais, tester l'envoi). Droit réservé de la fiche RBAC, défaut
        administrateur et Directrice Administrative (Direction, AQ 27 et 28). Aucun nom de rôle dans un moteur : le poste mère contrôle ce droit à chaque geste. */
     { id: 'regler_passerelle_sms', libelle: 'Régler la passerelle SMS (activer les envois automatiques, calculer et déposer maintenant, tester l’envoi)', module: 'CFG', ecran: 'cfg-sms',
