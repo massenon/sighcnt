@@ -105,7 +105,7 @@ PieceA4 pieceFactureTiers(Fiche f, Fiche? version, {required String utilisateur,
       ])),
       BlocTexte('La part restante du patient (${m(f['partPatientRestante'] ?? 0)}) est facturée séparément à la caisse.', italique: true),
     ],
-    signatures: const [Signature('Le Comptable'), Signature('La Directrice de l’Administration et des Finances', nom: 'TAKI Alimatou')],
+    signatures: const [Signature('Le Comptable'), Signature('La Directrice de l’Administration et des Finances')],
   );
 }
 

@@ -117,6 +117,15 @@ void main() {
   };
   // m10-mes (lot L7) : même session de relevé (l'administrateur est un agent du personnel à la maquette, sans quoi l'espace « Mes » n'a aucune rubrique à dessiner).
   fixtures['m10-mes'] = fixtures['m10-propositions-planning']!;
+  // m10-fiche-equipe (lot SURV) : l'écran est ouvert par un GESTE réservé (`parGeste`), que le rôle admin n'a pas à l'origine (défaut : le Surveillant). La fiche de la maquette dit CE QUE
+  // L'ÉCRAN DIT, pas qui le voit : l'extraction pose le geste sur la fiche du rôle de sa session (`extraire-ecrans.js`). La mesure fait de même, le temps de l'écran, par une fiche RBAC
+  // de l'administrateur (la matrice se superpose à chaud, comme depuis m14-roles), puis la restaure.
+  fixtures['m10-fiche-equipe'] = {
+    'rbac': [
+      for (final e in magasin.collection('rbac').toutes) {...e},
+      {'id': 'RBAC-PARITE-EQUIPE', 'role': 'admin', 'statut': 'actif', 'droitsGestes': {'ouvrir_fiche_personnel_equipe': true}},
+    ],
+  };
   // Les écrans du module RLS lisent le relais PAR LA MÈRE (`/admin/etat`, `/admin/supervision`) : sans appareil, la commande « Révoquer » (une par ligne
   // d'appareil non révoqué) ne se dessine pas, et ses en-têtes de tableau non plus. Une mère qui répond avec un appareil actif, un appareil bloqué et un
   // contrôle de liaison fait DESSINER ces écrans comme le panneau de la maquette.
