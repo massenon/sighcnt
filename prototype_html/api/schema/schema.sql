@@ -692,52 +692,6 @@ CREATE TABLE IF NOT EXISTS "cfg"."rappels" (
 );
 ALTER TABLE "cfg"."rappels" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."rappels" IS 'Collection « rappels » — Configuration';
-CREATE TABLE IF NOT EXISTS "m12"."imputations_aib" (
-  "id" text PRIMARY KEY,
-  "operation" text,
-  "reference" text,
-  "tiers" text,
-  "date_operation" date,
-  "base" integer,
-  "appliquer" boolean,
-  "situation" text,
-  "taux" integer,
-  "montant" integer,
-  "compte" text,
-  "proposition_taux" integer,
-  "proposition_version" text,
-  "proposition_arretee" boolean,
-  "hors_proposition" boolean,
-  "motif" text,
-  "signee_par" text,
-  "signee_role" text,
-  "signee_le" timestamptz,
-  "statut" text,
-  "extra" jsonb
-);
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "operation" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "tiers" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "date_operation" date; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "base" integer; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "appliquer" boolean; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "situation" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "taux" integer; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "compte" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "proposition_taux" integer; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "proposition_version" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "proposition_arretee" boolean; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "hors_proposition" boolean; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "signee_par" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "signee_role" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "signee_le" timestamptz; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
-ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
-COMMENT ON TABLE "m12"."imputations_aib" IS 'Collection « imputationsAib » — Comptabilité';
-CREATE INDEX IF NOT EXISTS "ix_imputations_aib_reference" ON "m12"."imputations_aib" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_imputations_aib_statut" ON "m12"."imputations_aib" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."reglages_aib" (
   "id" text PRIMARY KEY,
   "cle" text,
@@ -2550,6 +2504,52 @@ COMMENT ON TABLE "m12"."immobilisations" IS 'Collection « immobilisations » �
 CREATE INDEX IF NOT EXISTS "ix_immobilisations_etat" ON "m12"."immobilisations" ("etat");
 CREATE INDEX IF NOT EXISTS "ix_immobilisations_statut" ON "m12"."immobilisations" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_immobilisations_reference" ON "m12"."immobilisations" ("reference");
+CREATE TABLE IF NOT EXISTS "m12"."imputations_aib" (
+  "id" text PRIMARY KEY,
+  "operation" text,
+  "reference" text,
+  "tiers" text,
+  "date_operation" date,
+  "base" integer,
+  "appliquer" boolean,
+  "situation" text,
+  "taux" integer,
+  "montant" integer,
+  "compte" text,
+  "proposition_taux" integer,
+  "proposition_version" text,
+  "proposition_arretee" boolean,
+  "hors_proposition" boolean,
+  "motif" text,
+  "signee_par" text,
+  "signee_role" text,
+  "signee_le" timestamptz,
+  "statut" text,
+  "extra" jsonb
+);
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "operation" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "tiers" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "date_operation" date; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "base" integer; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "appliquer" boolean; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "situation" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "taux" integer; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "compte" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "proposition_taux" integer; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "proposition_version" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "proposition_arretee" boolean; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "hors_proposition" boolean; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "signee_par" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "signee_role" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "signee_le" timestamptz; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m12"."imputations_aib" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m12"."imputations_aib" IS 'Collection « imputationsAib » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_imputations_aib_reference" ON "m12"."imputations_aib" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_imputations_aib_statut" ON "m12"."imputations_aib" ("statut");
 CREATE TABLE IF NOT EXISTS "m12"."objectifs_pilotage" (
   "id" text PRIMARY KEY,
   "axe" text,
@@ -3154,6 +3154,22 @@ COMMENT ON TABLE "m13"."plan_annuel" IS 'Collection « planAnnuel » — M13 Adm
 CREATE INDEX IF NOT EXISTS "ix_plan_annuel_statut" ON "m13"."plan_annuel" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_plan_annuel_reference" ON "m13"."plan_annuel" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_plan_annuel_budget_id" ON "m13"."plan_annuel" ("budget_id");
+CREATE TABLE IF NOT EXISTS "m13"."points_collecte" (
+  "id" text PRIMARY KEY,
+  "code" text,
+  "source" text,
+  "statut" text,
+  "libelle" text,
+  "extra" jsonb
+);
+ALTER TABLE "m13"."points_collecte" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "m13"."points_collecte" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "m13"."points_collecte" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."points_collecte" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "m13"."points_collecte" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."points_collecte" IS 'Collection « pointsCollecte » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_points_collecte_code" ON "m13"."points_collecte" ("code");
+CREATE INDEX IF NOT EXISTS "ix_points_collecte_statut" ON "m13"."points_collecte" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."reglages_plan" (
   "id" text PRIMARY KEY,
   "statut" text,
