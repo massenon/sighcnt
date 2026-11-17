@@ -261,7 +261,9 @@ async function viderMessages(page) {
   }
 
   /* Aides communes : retirer (ou accorder) un geste à un rôle par SA FICHE, et la RESTAURER à l'identique. */
-  const fiche = (role, geste, valeur) => page.evaluate((x) => {
+  /* Le retrait ATTEND AUSSI son écriture : le geste nommé (`crud.php`) répond avec la fiche telle qu'il l'a posée ; restaurée avant cette réponse, la fiche retrouvait le droit retiré (Vague 302 derrière la 301). */
+  const fiche = async (role, geste, valeur) => { const r = await ficheBrute(role, geste, valeur); await attendreEcritures(); return r; };
+  const ficheBrute = (role, geste, valeur) => page.evaluate((x) => {
     const S = window.SIGH.store, col = S.collection('rbac'), N = window.SIGH.nav;
     const f = col.all().filter((y) => y.role === x.role && y.statut !== 'archive')[0];
     const avant = f ? JSON.stringify(f.droitsGestes === undefined ? null : f.droitsGestes) : 'SANS_FICHE';
