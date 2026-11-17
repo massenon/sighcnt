@@ -11,6 +11,10 @@ import 'dart:math';
 
 import 'package:sigh_domaine/sigh_domaine.dart'
     show
+        CodeMaj,
+        ReglagesMaj,
+        formatDonneesCourant,
+        jugerEcartVersion,
         MatriceDroits,
         Parametres,
         RefusMobile,
@@ -237,7 +241,11 @@ class ConfigMere {
     this.droits = 'matrice',
     this.matriceChemin = '',
     this.dossierFichiers = '',
+    this.formatDonnees = formatDonneesCourant,
   });
+
+  /// Le format des données de CETTE mère (lot MAJ). La mère se met à jour d'abord : un fileul hors tolérance reçoit `426 schema_incompatible` (jamais d'écriture de sa part).
+  final int formatDonnees;
 
   /// Le dossier des fichiers numérisés de la mère (`<aa>/<sha256>.<ext>`, chiffrés au repos avec [cleStockage]). Vide : la mère ne tient pas de fichiers, ses routes `/fichiers/*`
   /// répondent 503 `FICHIERS_NON_ACTIVES` (un fileul garde ses fichiers chez lui, sans erreur).
@@ -638,6 +646,21 @@ class Mere {
     return Appareil(a['uuid'] as String, a['role'] as String, a['profil'] as String?, a['fonction'] as String?);
   }
 
+  /// Le réglage « écart de version de format toléré » : en base (méta), défaut semé UNE version, jamais une constante du code.
+  Future<ReglagesMaj> reglagesMaj() async => ReglagesMaj(ecartVersionTolere: await base.metaInt('maj_ecart_tolere', ReglagesMaj.defaut.ecartVersionTolere), ageMaxCopieHeures: await base.metaInt('maj_age_copie_h', ReglagesMaj.defaut.ageMaxCopieHeures));
+
+  /// 426 : le format des données du fileul est hors tolérance (ou non dit : non calculable n'est pas compatible). Un téléphone n'a pas de base à migrer, il n'est pas concerné.
+  /// Le refus est nommé (code de protocole, code MAJ, motif, geste) ; le fileul n'envoie ni ne reçoit rien, ses saisies restent dans sa file.
+  Future<void> controlerFormat(HttpRequest req, Appareil app) async {
+    if (app.role == 'mobile') return;
+    final brut = int.tryParse(req.headers.value('x-sigh-format') ?? '');
+    await base.poserMeta('format_appareil_${app.uuid}', brut ?? '');
+    final refus = jugerEcartVersion(formatMere: cfg.formatDonnees, formatFileul: brut, reglages: await reglagesMaj());
+    if (refus == null) return;
+    await evenement('avertissement', 'format', 'Appareil ${app.uuid} refusé (426) : ${refus.motif}');
+    throw Err(426, CodeMaj.protocole426, refus.motif, {'code_maj': refus.code, 'geste': refus.geste, 'format_mere': cfg.formatDonnees});
+  }
+
   void adminOk(HttpRequest req) {
     if (req.headers.value('x-admin') != cfg.admin) throw Err(403, 'admin_requis', 'Accès administrateur requis.');
   }
@@ -758,9 +781,12 @@ class Mere {
         }
         return emettreJetons(a['uuid'] as String);
       case 'POST /sync/push':
-        return pousser(await auth(req), b);
+        final appPush = await auth(req);
+        await controlerFormat(req, appPush);
+        return pousser(appPush, b);
       case 'GET /sync/pull':
         final app = await auth(req);
+        await controlerFormat(req, app);
         final epoch = await base.metaInt('epoch');
         if ((int.tryParse(q['epoch'] ?? '') ?? -1) != epoch) throw Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', {'epoch_mere': epoch});
         final depuis = int.tryParse(q['depuis'] ?? '') ?? 0;

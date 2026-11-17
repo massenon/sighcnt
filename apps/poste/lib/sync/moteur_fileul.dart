@@ -25,6 +25,17 @@ class MoteurFileul {
   /// Lance la boucle de synchronisation (sans serveur de commande : l'application n'expose aucun port).
   void demarrer() => unawaited(_fileul.boucle());
 
+  /// Lot MAJ : le format des données de ce poste (dit à la mère), le refus 426 de la mère s'il y en a un, et le rejeu du journal après un import de base.
+  void poserFormatDonnees(int format) => _fileul.poserFormatDonnees(format);
+  Map<String, Object?>? get refusFormat => _fileul.etat.refusFormat;
+  void rejouerDepuisLeDebut() => _fileul.rejouerDepuisLeDebut();
+
+  /// Un tour de synchronisation à la demande (les tests et l'écran de mise à jour ; la boucle de [demarrer] fait la même chose).
+  Future<void> cycle() => _fileul.cycle();
+
+  /// Le nombre de saisies de ce poste qui attendent d'être envoyées (jamais perdues, même sous un refus 426).
+  int get enAttente => _fileul.base.select("SELECT COUNT(*) AS n FROM file WHERE etat='en_attente'").first['n'] as int;
+
   String get uuid => _fileul.uuid;
 
   /// Le jeton d'appareil auprès de la mère (`null` tant que le poste n'est pas appairé) : pour les tests qui parlent à la mère sans passer par le moteur.

@@ -10,10 +10,15 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:sigh_domaine/sigh_domaine.dart' show formatDonneesCourant;
+
 import 'commun.dart';
 
 class ConfigFileul {
-  ConfigFileul({required this.port, required this.mere, required this.dbChemin, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 150, this.cleStockage = ''});
+  ConfigFileul({required this.port, required this.mere, required this.dbChemin, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 150, this.cleStockage = '', this.formatDonnees = formatDonneesCourant});
+
+  /// Le format des données de CE poste (lot MAJ), dit à la mère à chaque requête (`x-sigh-format`) : hors tolérance, la mère répond `426 schema_incompatible` et le poste GARDE sa file.
+  final int formatDonnees;
 
   /// La clé (hexadécimale, 256 bits) qui chiffre la base du poste au repos ; `''` : base en clair.
   final String cleStockage;
@@ -44,6 +49,9 @@ class Etat {
   bool suspendu = false;
   int cycles = 0;
   String? derniereErreur;
+
+  /// Le refus de format de la mère (`426 schema_incompatible`) : code, motif et geste, tels qu'elle les a dits. Le poste n'envoie rien tant qu'il dure et garde ses saisies.
+  Map<String, Object?>? refusFormat;
   final List<String> exports = [];
 }
 
@@ -78,7 +86,18 @@ class Fileul {
   /// Redirige le fileul vers une autre mère (« rejoindre une clinique » : l'adresse n'est connue qu'à l'exécution). Les requêtes suivantes partent vers
   /// la nouvelle adresse ; l'état de synchronisation déjà tenu (jetons, curseur) n'est pas touché, l'appairage qui suit le renouvelle.
   void rediriger(String mere) => cfg = ConfigFileul(
-      port: cfg.port, mere: mere, dbChemin: cfg.dbChemin, nom: cfg.nom, decalageMs: cfg.decalageMs, intervalleMs: cfg.intervalleMs);
+      port: cfg.port, mere: mere, dbChemin: cfg.dbChemin, nom: cfg.nom, decalageMs: cfg.decalageMs, intervalleMs: cfg.intervalleMs, formatDonnees: cfg.formatDonnees);
+
+  /// Le poste vient d'être mis à jour (nouveau logiciel, nouveau format des données) : il le dit à la mère aux requêtes suivantes ; sa file d'envoi, son curseur et ses jetons ne bougent pas.
+  void poserFormatDonnees(int format) => cfg = ConfigFileul(
+      port: cfg.port, mere: cfg.mere, dbChemin: cfg.dbChemin, nom: cfg.nom, decalageMs: cfg.decalageMs, intervalleMs: cfg.intervalleMs, cleStockage: cfg.cleStockage, formatDonnees: format);
+
+  /// REJOUER LE JOURNAL DEPUIS LE DÉBUT (après un import de base sur ce poste) : le curseur repart de zéro et l'état confirmé est reconstruit depuis la mère. Idempotent (une opération
+  /// rejouée donne le même état) ; la FILE D'ENVOI n'est jamais touchée : une saisie hors ligne en attente part une seule fois, rien n'est écrit à la place de la mère.
+  void rejouerDepuisLeDebut() {
+    base.exec('DELETE FROM confirme');
+    base.poserMeta('curseur', 0);
+  }
 
   final Etat etat = Etat();
   final HttpClient _client = HttpClient();
@@ -193,6 +212,7 @@ class Fileul {
     final jeton = base.meta('jeton');
     final req = await _client.openUrl(methode, Uri.parse('${cfg.mere}$chemin')).timeout(const Duration(milliseconds: 1500));
     req.headers.contentType = ContentType.json;
+    req.headers.set('x-sigh-format', '${cfg.formatDonnees}');
     if (jeton != null && jeton.isNotEmpty) req.headers.set('Authorization', 'Bearer $jeton');
     if (corps != null) req.add(utf8.encode(enJson(corps)));
     final rep = await req.close().timeout(const Duration(milliseconds: 1500));
@@ -212,7 +232,9 @@ class Fileul {
       traiterEpoque(nb(j['epoch_mere']).toInt());
       throw _Epoque();
     }
+    if (rep.statusCode == 426) etat.refusFormat = j;
     if (rep.statusCode >= 400) throw _ErrHttp(rep.statusCode, code, j);
+    if (etat.refusFormat != null && (chemin.startsWith('/sync/'))) etat.refusFormat = null;
     return j;
   }
 
