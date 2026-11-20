@@ -18,7 +18,7 @@
             <p class="vide">Aucun fileul actif déclaré par la mère.</p>
         @else
             @if($mereMuette)<p class="note">La mère ne publie plus : l’état de ses fileuls n’est pas établi. Voir l’alerte de battement.</p>@endif
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Poste</th><th>État</th><th>Dernier contact</th><th class="num">Retard de journal</th><th class="num">Conflits ouverts</th><th class="num">Demandes d’import</th></tr></thead>
                 <tbody>
                 @foreach($fileuls as $f)
@@ -32,7 +32,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
             <p class="note">En retard au-delà de {{ $reglages['fileul_en_retard_min'] }} min ou de {{ $reglages['fileul_retard_journal'] }} opérations, silencieux au-delà de {{ $reglages['fileul_silencieux_min'] }} min (réglages à valider).</p>
         @endif
     </div>
@@ -41,7 +41,7 @@
         @if($mobiles === [])
             <p class="vide">Aucun mobile appairé.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Mobile</th><th>Fonction</th><th>État</th><th>Dernier dépôt</th><th>Dernière relève</th><th class="num">Enveloppes en attente</th></tr></thead>
                 <tbody>
                 @foreach($mobiles as $m)
@@ -55,7 +55,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
             <p class="note">En retard au-delà de {{ $reglages['mobile_en_retard_min'] }} min, silencieux au-delà de {{ $reglages['mobile_silencieux_min'] }} min, boîte qui grossit au-delà de {{ $reglages['boite_enveloppes_max'] }} enveloppes (réglages à valider). Les enveloppes en attente sont celles que le mobile n’a pas encore relevées.</p>
         @endif
     </div>
@@ -75,7 +75,7 @@
         @if($resume->isEmpty())
             <p class="vide">Aucun relevé sur la période choisie.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Appareil</th><th>Nature</th><th class="num">Relevés</th><th class="num">Silence maximal</th><th class="num">Retard de journal maximal</th><th class="num">Enveloppes en attente (maximum)</th></tr></thead>
                 <tbody>
                 @foreach($resume as $l)
@@ -89,9 +89,9 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
             <h3>Derniers relevés</h3>
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Heure</th><th>Appareil</th><th class="num">Silence</th><th class="num">Retard de journal</th><th class="num">Enveloppes en attente</th></tr></thead>
                 <tbody>
                 @foreach($releves as $h)
@@ -104,7 +104,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
 </div>

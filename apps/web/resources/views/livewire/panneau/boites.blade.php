@@ -10,7 +10,7 @@
         @if($boites->isEmpty())
             <p class="vide">Aucune boîte.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Mobile</th><th class="num">Vers le mobile</th><th class="num">Depuis le mobile</th><th class="num">Dernier rang reçu</th><th class="num">Taille</th><th>Plus ancienne</th></tr></thead>
                 <tbody>
                 @foreach($boites as $b)
@@ -23,7 +23,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
 </div>

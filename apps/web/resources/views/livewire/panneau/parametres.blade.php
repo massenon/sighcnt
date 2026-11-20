@@ -2,7 +2,7 @@
     @include('livewire.panneau._entete', ['titre' => 'Paramètres du relais', 'description' => 'Secret de la mère, seuil de battement, rétention de l’audit, crochets du banc d’essai (fermés).', 'regle' => 'Le secret de la mère se pose dans le .env du relais (jamais en base). Les crochets du banc d’essai sont fermés en production. Les paramètres de la clinique (taux, dates, circuits, modes) ne se règlent pas ici : ils se règlent au poste, voyagent chiffrés et ce relais ne les lit pas.'])
     <div class="carte">
         <h2>Paramètres</h2>
-        <table>
+        <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
             <thead><tr><th>Paramètre</th><th>Valeur</th><th>Où</th></tr></thead>
             <tbody>
                 <tr><td>Seuil de battement</td><td>{{ $seuil }} min</td><td><code>RELAIS_SEUIL_BATTEMENT_MS</code></td></tr>
@@ -11,14 +11,14 @@
                 <tr><td>Espace disque minimal</td><td>{{ $disque }} %</td><td><code>RELAIS_SEUIL_DISQUE_PCT</code></td></tr>
                 <tr><td>Crochets du banc</td><td><span class="puce {{ $banc ? 'alerte' : 'ok' }}">{{ $banc ? 'OUVERTS' : 'Fermés' }}</span></td><td><code>RELAIS_BANC={{ $banc ? 'true' : 'false' }}</code></td></tr>
             </tbody>
-        </table>
+        </table></div>
     </div>
     <div class="carte">
         <h2>Synchronisation : conservation et seuils</h2>
         <p class="note">Réglages de l’écran « Synchronisation », enregistrés en base, bornés et journalisés. Toutes les valeurs de départ sont des propositions à valider par la Direction.</p>
         @if($synchroMessage)<p class="message" role="status">{{ $synchroMessage }}</p>@endif
         @foreach($synchroRefus as $refus)<p class="erreur" role="alert">{{ $refus['motif'] }} {{ $refus['geste'] }}</p>@endforeach
-        <table>
+        <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
             <thead><tr><th>Réglage</th><th>Valeur</th><th>Bornes</th></tr></thead>
             <tbody>
             @foreach($reglagesSynchro as $cle => $d)
@@ -29,7 +29,7 @@
                 </tr>
             @endforeach
             </tbody>
-        </table>
+        </table></div>
         <p><button class="btn" type="button" wire:click="enregistrerSynchro">Enregistrer les réglages de synchronisation</button></p>
     </div>
     <div class="carte" wire:ignore x-data="messagerieSmtp('{{ route('panneau.smtp') }}', '{{ route('panneau.smtp.envoi') }}', '{{ route('panneau.smtp.test') }}', '{{ csrf_token() }}')">

@@ -9,7 +9,7 @@
     </div>
     <div class="carte">
         <h2>Ce que le relais voit</h2>
-        <table>
+        <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
             <thead><tr><th>Information</th><th>Visible ?</th></tr></thead>
             <tbody>
                 <tr><td>Identifiant et état de l’appareil</td><td>oui</td></tr>
@@ -22,6 +22,6 @@
                 <tr><td>Nom d’une collection ou d’un champ</td><td><span class="puce ok">non</span></td></tr>
                 <tr><td>La clé de clinique</td><td><span class="puce ok">non</span></td></tr>
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

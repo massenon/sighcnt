@@ -26,7 +26,7 @@
         @if($alertes->isEmpty())
             <p class="vide">Aucune alerte levée.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Quand</th><th>Alerte</th><th>Durée</th></tr></thead>
                 <tbody>
                 @foreach($alertes as $a)
@@ -37,26 +37,26 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
 
     <h2>Volumes par sens</h2>
-    <table>
+    <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
         <thead><tr><th>Sens</th><th class="num">Enveloppes</th><th class="num">Taille (Ko)</th></tr></thead>
         <tbody>
         @foreach(['journal' => 'Journal de la mère (sauvegarde chiffrée)', 'vers_mere' => 'Mobiles → mère', 'vers_mobile' => 'Mère → mobiles'] as $cle => $libelle)
             <tr><td>{{ $libelle }}</td><td class="num">{{ $parSens[$cle]->n ?? 0 }}</td><td class="num">{{ number_format(((int) ($parSens[$cle]->taille ?? 0)) / 1024, 1, ',', ' ') }}</td></tr>
         @endforeach
         </tbody>
-    </table>
+    </table></div>
 
     <h2>Indicateurs de la clinique</h2>
     @if(count($indicateurs))
-        <table>
+        <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
             <thead><tr><th>Indicateur</th><th class="num">Valeur</th></tr></thead>
             <tbody>@foreach($indicateurs as $k => $v)<tr><td>{{ str_replace('_', ' ', $k) }}</td><td class="num">{{ is_scalar($v) ? $v : json_encode($v) }}</td></tr>@endforeach</tbody>
-        </table>
+        </table></div>
     @else
         <p class="vide">Aucun indicateur reçu.</p>
     @endif

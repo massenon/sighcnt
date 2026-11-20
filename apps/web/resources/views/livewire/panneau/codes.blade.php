@@ -10,7 +10,7 @@
         @if($codes->isEmpty())
             <p class="vide">Aucun code déclaré.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Empreinte</th><th>Destiné à</th><th>Créé</th><th>Expire</th><th>État</th></tr></thead>
                 <tbody>
                 @foreach($codes as $c)
@@ -24,7 +24,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
 </div>

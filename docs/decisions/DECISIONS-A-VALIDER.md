@@ -852,3 +852,13 @@ Décisions déjà prises (17/11/2026) : « il faut implémenter le manque » ; q
 14. **Resynchronisation d'un fileul après import** (E3096) : déclarée finie après un tour complet de plus de 20 s suivi de l'écriture du magasin ; tant que non, le journal est rejoué au démarrage. ☐ D'accord ☐ Autre critère de fin.
 15. **P2 non fait** (E3099) : contrôle planifié de la copie hors site avec alerte ; mise à jour guidée des fileuls depuis la mère. ☐ À planifier ☐ Abandonner.
 16. **Paramètres de la mise à jour dans la famille `clinique`** (pas de famille `maj`) : `maj.ageMaxCopieHeures` 24, `maj.retourArriereMinutes` 30, `maj.ecartVersionTolere` 1 (bornes proposées 1 à 168, 5 à 480, 0 à 5). ☐ D'accord ☐ Autres valeurs : ____.
+
+## BH. Lot RELAIS-UI (20/11/2026, relais `apps/web`) : barre latérale, adaptation mobile, charte, ce qui reste à trancher par la Direction
+
+Fait : barre latérale verticale, tiroir mobile, couleurs par les jetons, cibles tactiles de 44 px, aucun débordement horizontal aux quatre largeurs (E3121 à E3125).
+
+1. **Groupes de la barre** (proposition à valider) : Exploitation (tableau, appareils, boîtes, codes, indicateurs, synchronisation, alertes), Administration (journal, comptes, paramètres, hébergement, sauvegarde, SMS), Confidentialité (opacité, consultation). ☐ D'accord ☐ Autre regroupement.
+2. **Gris neutres** : les jetons n'ont pas de gris, le panneau emploie les nuances navy ; ajouter une famille de gris aux jetons (donc à la maquette et au poste) est une décision de charte. ☐ Navy seulement ☐ Ajouter les gris.
+3. **Mode sombre** : aucun jeton ; le panneau reste clair. ☐ D'accord ☐ Demander un mode sombre.
+4. **Police Inter** : nommée par les jetons mais non embarquée (le relais n'a aucune ressource externe) ; repli Segoe UI ou police du système. ☐ D'accord ☐ Embarquer le fichier de police.
+5. **Questionnaire de satisfaction** : passe de l'ancien vert à la couleur de la charte (navy) ; collecte toujours désactivée par défaut. ☐ D'accord ☐ Garder le vert.

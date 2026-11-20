@@ -13,7 +13,7 @@
         @if($historique->isEmpty())
             <p class="vide">Aucun envoi sur les dernières 24 heures.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Heure</th><th class="num">Séquence</th><th class="num">Appareils actifs</th><th class="num">Conflits</th><th class="num">Bloqués</th></tr></thead>
                 <tbody>
                 @foreach($historique as $h)
@@ -24,7 +24,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
 </div>

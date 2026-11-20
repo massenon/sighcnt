@@ -7,11 +7,12 @@
 <meta name="referrer" content="no-referrer">
 <title>{{ $charge['titre'] ?? 'Votre avis' }}</title>
 <style>
-:root{--fond:#f5f7f6;--carte:#fff;--texte:#17302a;--doux:#5a6f68;--accent:#0f6b4f;--accent-texte:#fff;--bord:#c9d5d0;--erreur:#a32121}
-@media (prefers-color-scheme:dark){:root{--fond:#0f1a17;--carte:#17261f;--texte:#e6f0ec;--doux:#9db3ab;--accent:#3fbf93;--accent-texte:#06251b;--bord:#33493f;--erreur:#ff9d9d}}
+{!! file_get_contents(public_path('css/jetons.css')) !!}
+:root{--fond:var(--navy-50);--carte:white;--texte:var(--navy-950);--doux:var(--navy-700);--accent:var(--navy-900);--accent-texte:white;--bord:var(--navy-500);--erreur:var(--danger-700)}
+@media (prefers-color-scheme:dark){:root{--fond:var(--navy-950);--carte:var(--navy-900);--texte:var(--navy-50);--doux:var(--navy-200);--accent:var(--navy-200);--accent-texte:var(--navy-950);--bord:var(--navy-400);--erreur:var(--danger-200)}}
 *{box-sizing:border-box}
-body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;padding:1rem;background:var(--fond);color:var(--texte);line-height:1.5}
-main{max-width:36rem;margin:0 auto;background:var(--carte);border-radius:12px;padding:1.25rem;box-shadow:0 1px 4px #0002}
+body{font-family:var(--police-sans);margin:0;padding:1rem;background:var(--fond);color:var(--texte);line-height:1.5}
+main{max-width:36rem;margin:0 auto;background:var(--carte);border-radius:12px;padding:1.25rem;box-shadow:var(--ombre-card)}
 h1{font-size:1.35rem;margin:0 0 .5rem}
 .mention{font-size:.9rem;color:var(--doux);border-left:3px solid var(--accent);padding-left:.75rem;margin:.75rem 0 1.25rem}
 fieldset{border:0;padding:0;margin:0 0 1.25rem}

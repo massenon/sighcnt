@@ -23,14 +23,14 @@
             <button type="button" @click="charger()">Charger et déchiffrer</button>
             <p class="note" x-text="message" role="status"></p>
             <input type="search" x-model="recherche" @input.debounce.200ms="page = 0; filtrer()" placeholder="Rechercher un dossier" aria-label="Rechercher un dossier">
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Fiche</th><th>Contenu</th><th>Archivé</th></tr></thead>
                 <tbody>
                     <template x-for="f in visibles" :key="f.fiche">
                         <tr><td x-text="f.fiche"></td><td x-text="resume(f)"></td><td x-text="f.archive ? 'oui' : 'non'"></td></tr>
                     </template>
                 </tbody>
-            </table>
+            </table></div>
             <p class="note" role="status" x-show="nbFiltrees > 0" x-text="'Fiches ' + (page * taillePage + 1) + ' à ' + Math.min((page + 1) * taillePage, nbFiltrees) + ' sur ' + nbFiltrees"></p>
             <button type="button" @click="page = Math.max(0, page - 1); filtrer()" :disabled="page === 0">Précédent</button>
             <button type="button" @click="page = page + 1; filtrer()" :disabled="(page + 1) * taillePage >= nbFiltrees">Suivant</button>

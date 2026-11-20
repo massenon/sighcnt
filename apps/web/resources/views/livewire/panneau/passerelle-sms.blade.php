@@ -20,24 +20,24 @@
         <h2>Envois planifiés</h2>
         @if($planifies->isEmpty())<p class="vide">Aucun envoi planifié.</p>
         @else
-            <table><thead><tr><th>Heure d’envoi</th><th>Type</th><th>Numéro</th><th class="num">Tentatives</th></tr></thead>
-            <tbody>@foreach($planifies as $p)<tr><td>{{ $format::date((int) $p->heure_envoi) }}</td><td>{{ $p->type }}</td><td>{{ $p->numero_masque }}</td><td class="num">{{ $p->tentatives }}</td></tr>@endforeach</tbody></table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table><thead><tr><th>Heure d’envoi</th><th>Type</th><th>Numéro</th><th class="num">Tentatives</th></tr></thead>
+            <tbody>@foreach($planifies as $p)<tr><td>{{ $format::date((int) $p->heure_envoi) }}</td><td>{{ $p->type }}</td><td>{{ $p->numero_masque }}</td><td class="num">{{ $p->tentatives }}</td></tr>@endforeach</tbody></table></div>
         @endif
     </div>
     <div class="carte">
         <h2>Journal des envois</h2>
         @if(count($journal) === 0)<p class="vide">Aucun envoi.</p>
         @else
-            <table><thead><tr><th>Mis à jour</th><th>Type</th><th>Numéro</th><th>État</th><th>Code</th></tr></thead>
-            <tbody>@foreach($journal as $j)<tr><td>{{ $format::date($j['maj']) }}</td><td>{{ $j['type'] }}</td><td>{{ $j['numeroMasque'] }}</td><td>{{ $j['etat'] }}</td><td>{{ $j['code'] }}</td></tr>@endforeach</tbody></table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table><thead><tr><th>Mis à jour</th><th>Type</th><th>Numéro</th><th>État</th><th>Code</th></tr></thead>
+            <tbody>@foreach($journal as $j)<tr><td>{{ $format::date($j['maj']) }}</td><td>{{ $j['type'] }}</td><td>{{ $j['numeroMasque'] }}</td><td>{{ $j['etat'] }}</td><td>{{ $j['code'] }}</td></tr>@endforeach</tbody></table></div>
         @endif
         <p class="note">Le journal ne garde ni le numéro en clair ni le texte.</p>
     </div>
     <div class="carte">
         <h2>Limites</h2>
         @if($limitesRefus)<ul class="refus" role="alert">@foreach($limitesRefus as $r)<li>{{ $r }}</li>@endforeach</ul>@endif
-        <table><thead><tr><th>Limite</th><th>Valeur</th></tr></thead>
-        <tbody>@foreach($defauts as $cle => $d)<tr><td><label for="limite-sms-{{ $cle }}">{{ $d['libelle'] }}</label></td><td><input id="limite-sms-{{ $cle }}" type="number" wire:model="limites.{{ $cle }}" min="{{ $d['min'] }}" max="{{ $d['max'] }}" step="1"> {{ $d['unite'] }} <small>(de {{ $d['min'] }} à {{ $d['max'] }})</small></td></tr>@endforeach</tbody></table>
+        <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table><thead><tr><th>Limite</th><th>Valeur</th></tr></thead>
+        <tbody>@foreach($defauts as $cle => $d)<tr><td><label for="limite-sms-{{ $cle }}">{{ $d['libelle'] }}</label></td><td><input id="limite-sms-{{ $cle }}" type="number" wire:model="limites.{{ $cle }}" min="{{ $d['min'] }}" max="{{ $d['max'] }}" step="1"> {{ $d['unite'] }} <small>(de {{ $d['min'] }} à {{ $d['max'] }})</small></td></tr>@endforeach</tbody></table></div>
         <p><button class="btn" type="button" wire:click="enregistrerLimites">Enregistrer les limites</button></p>
     </div>
     <div class="carte">

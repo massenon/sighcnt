@@ -6,7 +6,7 @@
         @if($lignes->isEmpty())
             <p class="vide">Aucun appareil appairé.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Appareil</th><th>Fonction</th><th>Identifiant</th><th>État</th><th>Dernier contact</th><th class="num">En attente</th><th></th></tr></thead>
                 <tbody>
                 @foreach($lignes as $l)
@@ -21,7 +21,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
     <p class="note">Révoquer coupe l'accès <strong>au relais</strong>. La fiche de l'appareil sur la console de la mère reste à mettre à jour : la révocation faite là-bas coupe aussi l'accès ici.</p>

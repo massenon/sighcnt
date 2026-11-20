@@ -9,13 +9,13 @@
     </div>
     <div class="carte">
         <h2>Contrôles</h2>
-        <table>
+        <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
             <thead><tr><th>Contrôle</th><th>État</th><th>Détail</th></tr></thead>
             <tbody>
             @foreach($controles as [$nom, $etat, $detail])
                 <tr><td>{{ $nom }}</td><td><span class="puce {{ $etat }}">{{ $etats[$etat][0] }}</span></td><td>{{ $detail }}</td></tr>
             @endforeach
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>

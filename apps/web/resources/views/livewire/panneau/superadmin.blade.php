@@ -4,7 +4,7 @@
     @if($erreur)<p class="erreur" role="alert">{{ $erreur }}</p>@endif
     <div class="carte">
         <h2>Comptes</h2>
-        <table>
+        <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
             <thead><tr><th>Courriel</th><th>Créé</th><th>Dernière connexion</th><th>Double facteur</th></tr></thead>
             <tbody>
             @foreach($comptes as $c)
@@ -16,24 +16,24 @@
                 </tr>
             @endforeach
             </tbody>
-        </table>
+        </table></div>
     </div>
     <div class="carte">
         <h2>Sessions ouvertes</h2>
         @if($sessions->isEmpty())
             <p class="vide">Aucune session enregistrée.</p>
         @else
-            <table>
+            <div class="defile" role="region" tabindex="0" aria-label="Tableau défilant"><table>
                 <thead><tr><th>Appareil</th><th>Adresse</th><th>Depuis</th></tr></thead>
                 <tbody>
                 @foreach($sessions as $s)
                     <tr><td>{{ \App\Livewire\Panneau\Superadmin::appareil($s->user_agent) }}</td><td>{{ \App\Livewire\Panneau\Superadmin::adresse($s->ip_address) }}</td><td>{{ \App\Relais\Format::depuis((int) $s->last_activity * 1000) }}</td></tr>
                 @endforeach
                 </tbody>
-            </table>
+            </table></div>
         @endif
     </div>
-    <form class="formulaire" style="margin:16px 0" wire:submit="changerMotDePasse">
+    <form class="formulaire" wire:submit="changerMotDePasse">
         <label for="actuel">Mot de passe actuel</label>
         <input id="actuel" type="password" wire:model="actuel" autocomplete="current-password" required>
         <label for="nouveau">Nouveau mot de passe (8 caractères au moins)</label>
