@@ -1,0 +1,59 @@
+{
+ "id": "m6-pertes",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Pertes, casses & rebuts",
+ "acces": "ouvert",
+ "titre": "Pertes, casses & rebuts",
+ "description": "Traçabilité des pertes, bris de flacons, flacons vides et rebuts de stock, avec valorisation comptable de la perte.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Pertes, casses & rebuts"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Chaque perte est valorisée au CUMP et génère une écriture comptable au débit du compte de charges correspondant (module M12)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Événements enregistrés",
+  "Unités perdues",
+  "Valeur des pertes",
+  "Dont péremptions"
+ ],
+ "cartes": [
+  "Registre des pertes et casses"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Produit",
+   "Nature",
+   "Quantité",
+   "Valeur perdue",
+   "Justificatif (RG-03)",
+   "Constaté par"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Déclarer une perte",
+  "Éditer le constat",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

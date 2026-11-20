@@ -1,0 +1,58 @@
+{
+ "id": "m4-comptes-rendus",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Comptes rendus de maternité",
+ "acces": "ouvert",
+ "titre": "Comptes rendus de maternité",
+ "description": "Comptes rendus d’accouchement, de planning familial et d’AMIU.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Comptes rendus de maternité"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [
+  "Les actes de planification familiale — pose et retrait d’implant, de DIU, injectables — sont NON COUVERTS par les assurances selon la grille gynéco-obstétricale de la clinique. La patiente assurée les règle au tarif non assuré, et la facture en porte le motif."
+ ],
+ "onglets": [
+  "d’accouchement",
+  "de planning familial",
+  "d’AMIU"
+ ],
+ "kpis": [
+  "Comptes rendus",
+  "d’accouchement",
+  "de planning familial",
+  "d’AMIU"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Enregistré le",
+   "Patiente",
+   "Rédigé par",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "d’accouchement34",
+  "de planning familial22",
+  "d’AMIU9",
+  "Colonnes",
+  "Exporter",
+  "Nouveau — d’accouchement",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

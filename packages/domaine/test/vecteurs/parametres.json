@@ -1,0 +1,2944 @@
+{
+ "_doc": "ENGENDRÉ par packages/sync/banc/vecteurs-parametres.js : l'attendu est celui de banc/parametres.js. Ne pas éditer.",
+ "famillesJamaisMobile": [
+  "paie",
+  "rh",
+  "fiscal",
+  "bareme_aib",
+  "comptabilite",
+  "mecef",
+  "securite",
+  "relais",
+  "courriel",
+  "sms",
+  "ocr",
+  "horssite",
+  "exercice",
+  "clinique",
+  "satisfaction"
+ ],
+ "cas": [
+  {
+   "nom": "résoudre : sans version, le défaut",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [],
+   "date": "2026-11-09",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant",
+    "origine": "defaut",
+    "version": 0,
+    "dateEffet": null
+   }
+  },
+  {
+   "nom": "résoudre : version 0 semée",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-11-09",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant",
+    "origine": "version",
+    "version": 0,
+    "dateEffet": null
+   }
+  },
+  {
+   "nom": "résoudre : avant la date d'effet",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-11-30",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant",
+    "origine": "version",
+    "version": 0,
+    "dateEffet": null
+   }
+  },
+  {
+   "nom": "résoudre : à la date d'effet",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-12-01",
+   "attendu": {
+    "ok": true,
+    "valeur": "daf",
+    "origine": "version",
+    "version": 1,
+    "dateEffet": "2026-12-01"
+   }
+  },
+  {
+   "nom": "résoudre : après la date d'effet",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2027-06-01",
+   "attendu": {
+    "ok": true,
+    "valeur": "daf",
+    "origine": "version",
+    "version": 1,
+    "dateEffet": "2026-12-01"
+   }
+  },
+  {
+   "nom": "résoudre : à date égale la version la plus haute",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant_puis_daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 2,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-12-02",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant_puis_daf",
+    "origine": "version",
+    "version": 2,
+    "dateEffet": "2026-12-01"
+   }
+  },
+  {
+   "nom": "résoudre : l'ordre des versions ne compte pas",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant_puis_daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 2,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-12-02",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant_puis_daf",
+    "origine": "version",
+    "version": 2,
+    "dateEffet": "2026-12-01"
+   }
+  },
+  {
+   "nom": "résoudre : date illisible",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "9 novembre",
+   "attendu": {
+    "ok": false,
+    "code": "date_invalide",
+    "motif": "Date « 9 novembre » illisible : attendu AAAA-MM-JJ.",
+    "geste": "Fournir la date de la pièce au format AAAA-MM-JJ"
+   }
+  },
+  {
+   "nom": "résoudre : date impossible",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-02-30",
+   "attendu": {
+    "ok": false,
+    "code": "date_invalide",
+    "motif": "Date « 2026-02-30 » illisible : attendu AAAA-MM-JJ.",
+    "geste": "Fournir la date de la pièce au format AAAA-MM-JJ"
+   }
+  },
+  {
+   "nom": "résoudre : version sans version 0, avant la première : défaut de la définition",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-11-01",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant",
+    "origine": "defaut",
+    "version": 0,
+    "dateEffet": null
+   }
+  },
+  {
+   "nom": "résoudre : sans définition ni version",
+   "op": "resoudre",
+   "cle": "inconnu",
+   "definition": null,
+   "versions": [],
+   "date": "2026-11-09",
+   "attendu": {
+    "ok": false,
+    "code": "parametre_inconnu",
+    "motif": "Paramètre « inconnu » inconnu : ni définition ni version.",
+    "geste": "Déclarer le paramètre dans le registre des paramètres"
+   }
+  },
+  {
+   "nom": "résoudre : sans définition, avant la première version",
+   "op": "resoudre",
+   "cle": "planning.circuit",
+   "definition": null,
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-11-01",
+   "attendu": {
+    "ok": false,
+    "code": "aucune_version_en_vigueur",
+    "motif": "« planning.circuit » n'avait aucune valeur en vigueur au 2026-11-01 (première version au 2026-12-01).",
+    "geste": "Déclarer un défaut ou choisir une date postérieure"
+   }
+  },
+  {
+   "nom": "résoudre : une autre clé ne compte pas",
+   "op": "resoudre",
+   "cle": "accueil.delai",
+   "definition": {
+    "cle": "accueil.delai",
+    "famille": "accueil",
+    "type": "entier",
+    "defaut": 15,
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "date": "2026-12-05",
+   "attendu": {
+    "ok": true,
+    "valeur": 15,
+    "origine": "defaut",
+    "version": 0,
+    "dateEffet": null
+   }
+  },
+  {
+   "nom": "proposer : première version datée",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": "daf",
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "planning.circuit@2026-12-01@1",
+    "fiche": {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : sans version 0 connue",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [],
+   "usages": [],
+   "valeur": "daf",
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "planning.circuit@2026-12-01@1",
+    "fiche": {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : valeur hors des choix",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": "personne",
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "valeur_invalide",
+    "motif": "La valeur de « planning.circuit » n'est pas de type choix (surveillant / daf / surveillant_puis_daf).",
+    "geste": "Saisir une valeur du bon type"
+   }
+  },
+  {
+   "nom": "proposer : mauvais type",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": true,
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "valeur_invalide",
+    "motif": "La valeur de « planning.circuit » n'est pas de type choix (surveillant / daf / surveillant_puis_daf).",
+    "geste": "Saisir une valeur du bon type"
+   }
+  },
+  {
+   "nom": "proposer : date impossible",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": "daf",
+   "dateEffet": "2026-02-30",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "date_invalide",
+    "motif": "Date d'effet « 2026-02-30 » illisible : attendu AAAA-MM-JJ.",
+    "geste": "Saisir la date d'effet"
+   }
+  },
+  {
+   "nom": "proposer : sans date d'effet",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": "daf",
+   "dateEffet": null,
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "date_effet_manquante",
+    "motif": "Une nouvelle version porte une date d'effet : seule la version 0 (le défaut semé) en est dépourvue.",
+    "geste": "Fixer une date d'effet"
+   }
+  },
+  {
+   "nom": "proposer : sans auteur",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": "daf",
+   "dateEffet": "2026-12-01",
+   "auteur": "",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "auteur_manquant",
+    "motif": "Le champ « auteur » est obligatoire (RG-12 : aucune action anonyme).",
+    "geste": "Renseigner le champ"
+   }
+  },
+  {
+   "nom": "proposer : valeur déjà utilisée : même jour",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [
+    {
+     "cle": "planning.circuit",
+     "date": "2026-11-08",
+     "piece": "F-1"
+    }
+   ],
+   "valeur": "daf",
+   "dateEffet": "2026-11-08",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "parametre_deja_utilise",
+    "motif": "La valeur de « planning.circuit » a déjà servi à une pièce du 2026-11-08 : une version effective au 2026-11-08 la réécrirait.",
+    "geste": "Fixer une date d'effet postérieure au 2026-11-08"
+   }
+  },
+  {
+   "nom": "proposer : valeur déjà utilisée : date antérieure",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [
+    {
+     "cle": "planning.circuit",
+     "date": "2026-11-08",
+     "piece": "F-1"
+    }
+   ],
+   "valeur": "daf",
+   "dateEffet": "2026-11-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "parametre_deja_utilise",
+    "motif": "La valeur de « planning.circuit » a déjà servi à une pièce du 2026-11-08 : une version effective au 2026-11-01 la réécrirait.",
+    "geste": "Fixer une date d'effet postérieure au 2026-11-08"
+   }
+  },
+  {
+   "nom": "proposer : après la dernière pièce",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [
+    {
+     "cle": "planning.circuit",
+     "date": "2026-11-08",
+     "piece": "F-1"
+    }
+   ],
+   "valeur": "daf",
+   "dateEffet": "2026-11-09",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "planning.circuit@2026-11-09@1",
+    "fiche": {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-11-09",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : plusieurs pièces : la dernière date compte",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [
+    {
+     "cle": "planning.circuit",
+     "date": "2026-10-01",
+     "piece": "F-1"
+    },
+    {
+     "cle": "planning.circuit",
+     "date": "2026-11-20",
+     "piece": "F-2"
+    },
+    {
+     "cle": "planning.circuit",
+     "date": "2026-11-02",
+     "piece": "F-3"
+    }
+   ],
+   "valeur": "daf",
+   "dateEffet": "2026-11-10",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "parametre_deja_utilise",
+    "motif": "La valeur de « planning.circuit » a déjà servi à une pièce du 2026-11-20 : une version effective au 2026-11-10 la réécrirait.",
+    "geste": "Fixer une date d'effet postérieure au 2026-11-20"
+   }
+  },
+  {
+   "nom": "proposer : usage d'une autre clé",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [
+    {
+     "cle": "autre",
+     "date": "2026-11-08",
+     "piece": "F-1"
+    }
+   ],
+   "valeur": "daf",
+   "dateEffet": "2026-11-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "planning.circuit@2026-11-01@1",
+    "fiche": {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-11-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : version suivante numérotée",
+   "op": "proposer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": "surveillant_puis_daf",
+   "dateEffet": "2026-12-15",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "planning.circuit@2026-12-15@2",
+    "fiche": {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant_puis_daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-15",
+     "version": 2,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : booléen accepté",
+   "op": "proposer",
+   "definition": {
+    "cle": "accueil.affichage",
+    "famille": "accueil",
+    "type": "booleen",
+    "defaut": false,
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "accueil.affichage",
+     "famille": "accueil",
+     "type": "booleen",
+     "valeur": false,
+     "defaut": false,
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": true,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": true,
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "accueil.affichage@2026-12-01@1",
+    "fiche": {
+     "cle": "accueil.affichage",
+     "famille": "accueil",
+     "type": "booleen",
+     "valeur": true,
+     "defaut": false,
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": true,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : entier non entier",
+   "op": "proposer",
+   "definition": {
+    "cle": "accueil.delai",
+    "famille": "accueil",
+    "type": "entier",
+    "defaut": 15,
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "accueil.delai",
+     "famille": "accueil",
+     "type": "entier",
+     "valeur": 15,
+     "defaut": 15,
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": 1.5,
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "valeur_invalide",
+    "motif": "La valeur de « accueil.delai » n'est pas de type entier.",
+    "geste": "Saisir une valeur du bon type"
+   }
+  },
+  {
+   "nom": "proposer : entier accepté",
+   "op": "proposer",
+   "definition": {
+    "cle": "accueil.delai",
+    "famille": "accueil",
+    "type": "entier",
+    "defaut": 15,
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "accueil.delai",
+     "famille": "accueil",
+     "type": "entier",
+     "valeur": 15,
+     "defaut": 15,
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": 20,
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "accueil.delai@2026-12-01@1",
+    "fiche": {
+     "cle": "accueil.delai",
+     "famille": "accueil",
+     "type": "entier",
+     "valeur": 20,
+     "defaut": 15,
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : nombre accepté",
+   "op": "proposer",
+   "definition": {
+    "cle": "accueil.ratio",
+    "famille": "accueil",
+    "type": "nombre",
+    "defaut": 0.5,
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "accueil.ratio",
+     "famille": "accueil",
+     "type": "nombre",
+     "valeur": 0.5,
+     "defaut": 0.5,
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": 0.25,
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "accueil.ratio@2026-12-01@1",
+    "fiche": {
+     "cle": "accueil.ratio",
+     "famille": "accueil",
+     "type": "nombre",
+     "valeur": 0.25,
+     "defaut": 0.5,
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : texte accepté",
+   "op": "proposer",
+   "definition": {
+    "cle": "accueil.mot",
+    "famille": "accueil",
+    "type": "texte",
+    "defaut": "rien",
+    "sensible": true,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "versions": [
+    {
+     "cle": "accueil.mot",
+     "famille": "accueil",
+     "type": "texte",
+     "valeur": "rien",
+     "defaut": "rien",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": true,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "valeur": "mot",
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": true,
+    "id": "accueil.mot@2026-12-01@1",
+    "fiche": {
+     "cle": "accueil.mot",
+     "famille": "accueil",
+     "type": "texte",
+     "valeur": "mot",
+     "defaut": "rien",
+     "dateEffet": "2026-12-01",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": true,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "proposer : famille réservée déclarée mobile",
+   "op": "proposer",
+   "definition": {
+    "cle": "paie.exemple",
+    "famille": "paie",
+    "type": "booleen",
+    "defaut": true,
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "versions": [],
+   "usages": [],
+   "valeur": false,
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "mobile_interdit",
+    "motif": "« paie.exemple » ne peut pas aller sur un téléphone : famille « paie » réservée (RG-13).",
+    "geste": "Retirer l'envoi au téléphone de la définition"
+   }
+  },
+  {
+   "nom": "proposer : paramètre sensible déclaré mobile",
+   "op": "proposer",
+   "definition": {
+    "cle": "accueil.confidentiel",
+    "famille": "accueil",
+    "type": "booleen",
+    "defaut": true,
+    "sensible": true,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "versions": [],
+   "usages": [],
+   "valeur": false,
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "mobile_interdit",
+    "motif": "« accueil.confidentiel » ne peut pas aller sur un téléphone : paramètre sensible (RG-13).",
+    "geste": "Retirer l'envoi au téléphone de la définition"
+   }
+  },
+  {
+   "nom": "proposer : sans définition",
+   "op": "proposer",
+   "definition": null,
+   "versions": [],
+   "usages": [],
+   "valeur": "x",
+   "dateEffet": "2026-12-01",
+   "auteur": "admin",
+   "creeLe": "2026-11-09T08:00:00Z",
+   "motif": "vecteur",
+   "attendu": {
+    "ok": false,
+    "code": "parametre_inconnu",
+    "motif": "Aucune définition pour ce paramètre.",
+    "geste": "Déclarer le paramètre dans le registre des paramètres"
+   }
+  },
+  {
+   "nom": "valider : défaut semé",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "surveillant",
+    "defaut": "surveillant",
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [],
+   "usages": [],
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "valider : version 0 avec une date d'effet",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "surveillant",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "version_invalide",
+    "motif": "La version 0 est réservée au défaut semé.",
+    "geste": "Laisser le poste numéroter"
+   }
+  },
+  {
+   "nom": "valider : version sans date autre que 0",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": null,
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "date_effet_manquante",
+    "motif": "Une nouvelle version porte une date d'effet : seule la version 0 (le défaut semé) en est dépourvue.",
+    "geste": "Fixer une date d'effet"
+   }
+  },
+  {
+   "nom": "valider : version 0 réservée",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 0,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "version_invalide",
+    "motif": "La version 0 est réservée au défaut semé.",
+    "geste": "Laisser le poste numéroter"
+   }
+  },
+  {
+   "nom": "valider : numéro de version déjà pris",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-11-15",
+     "version": 1,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "version_deja_prise",
+    "motif": "La version 1 de « planning.circuit » existe déjà.",
+    "geste": "Rafraîchir le poste puis recommencer"
+   }
+  },
+  {
+   "nom": "valider : arrivée dans le désordre : v1 après v2",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant_puis_daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 2,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "valider : type inconnu",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "liste",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "type_inconnu",
+    "motif": "Type « liste » inconnu.",
+    "geste": "Choisir : booleen, texte, choix, entier, nombre"
+   }
+  },
+  {
+   "nom": "valider : champ manquant",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "champ_manquant",
+    "motif": "Le champ « famille » est obligatoire.",
+    "geste": "Renseigner le champ"
+   }
+  },
+  {
+   "nom": "valider : défaut invalide",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": 12,
+    "dateEffet": "2026-12-01",
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "defaut_invalide",
+    "motif": "Le défaut de « planning.circuit » n'est pas de type choix.",
+    "geste": "Corriger la définition du paramètre"
+   }
+  },
+  {
+   "nom": "valider : version non entière",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 1.5,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "version_invalide",
+    "motif": "Le numéro de version est un entier positif ou nul.",
+    "geste": "Laisser le poste numéroter"
+   }
+  },
+  {
+   "nom": "valider : paramètre réservé au mobile",
+   "op": "valider",
+   "fiche": {
+    "cle": "paie.exemple",
+    "famille": "paie",
+    "type": "booleen",
+    "valeur": true,
+    "defaut": true,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "existantes": [],
+   "usages": [],
+   "attendu": {
+    "ok": false,
+    "code": "mobile_interdit",
+    "motif": "« paie.exemple » ne peut pas aller sur un téléphone : famille « paie » réservée (RG-13).",
+    "geste": "Retirer l'envoi au téléphone de la définition"
+   }
+  },
+  {
+   "nom": "valider : usage postérieur à la date d'effet",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [
+    {
+     "cle": "planning.circuit",
+     "date": "2026-12-01",
+     "piece": "F-9"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "parametre_deja_utilise",
+    "motif": "La valeur de « planning.circuit » a déjà servi à une pièce du 2026-12-01 : une version effective au 2026-12-01 la réécrirait.",
+    "geste": "Fixer une date d'effet postérieure au 2026-12-01"
+   }
+  },
+  {
+   "nom": "semer : choix",
+   "op": "semer",
+   "definition": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "defaut": "surveillant",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "attendu": {
+    "id": "planning.circuit@defaut@0",
+    "fiche": {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "semer : booléen mobile",
+   "op": "semer",
+   "definition": {
+    "cle": "accueil.affichage",
+    "famille": "accueil",
+    "type": "booleen",
+    "defaut": false,
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": {
+    "id": "accueil.affichage@defaut@0",
+    "fiche": {
+     "cle": "accueil.affichage",
+     "famille": "accueil",
+     "type": "booleen",
+     "valeur": false,
+     "defaut": false,
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": true,
+     "source": "fixture"
+    }
+   }
+  },
+  {
+   "nom": "téléphone : déclaré, non sensible, famille libre",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "accueil",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": true
+  },
+  {
+   "nom": "téléphone : non déclaré",
+   "op": "mobile",
+   "champs": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "surveillant",
+    "defaut": "surveillant",
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : sensible",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "accueil",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": true,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée paie",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "paie",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée rh",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "rh",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée fiscal",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "fiscal",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée bareme_aib",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "bareme_aib",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée comptabilite",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "comptabilite",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée mecef",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "mecef",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée securite",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "securite",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée relais",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "relais",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée courriel",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "courriel",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée sms",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "sms",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée ocr",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "ocr",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée horssite",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "horssite",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée exercice",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "exercice",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée clinique",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "clinique",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : famille réservée satisfaction",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "satisfaction",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": true,
+    "source": "fixture"
+   },
+   "attendu": false
+  },
+  {
+   "nom": "téléphone : mobile « oui » en chaîne",
+   "op": "mobile",
+   "champs": {
+    "cle": "accueil.affichage",
+    "famille": "accueil",
+    "type": "booleen",
+    "valeur": false,
+    "defaut": false,
+    "dateEffet": null,
+    "version": 0,
+    "auteur": "semis",
+    "creeLe": null,
+    "motif": "Défaut semé",
+    "sensible": false,
+    "mobile": "true",
+    "source": "fixture"
+   },
+   "attendu": false
+  }
+ ]
+}

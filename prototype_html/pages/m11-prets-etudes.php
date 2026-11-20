@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Paie &amp; Primes — Système Intégré de Gestion Hospitalière de la Clinique NASSIERA TOO SARL.">
-  <title>Prêts-études et avances — SIGH Clinique NASSIERA TOO</title>
+  <title>Prêts et avances — SIGH Clinique NASSIERA TOO</title>
   <link rel="icon" href="../assets/img/logo.jpeg">
   <link rel="stylesheet" href="../assets/css/tailwind.css">
 </head>

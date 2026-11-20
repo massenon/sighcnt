@@ -1,0 +1,55 @@
+{
+ "id": "imp-couvertures-assurance",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation des couvertures d’assurance",
+ "acces": "ouvert",
+ "titre": "Importation des couvertures d’assurance",
+ "description": "Changement de couverture d’un assuré à une date d’effet : compagnie, police, motif, expiration de la carte. La couverture en cours est close la veille.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation des couvertures d’assurance"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "La date d’effet et le motif sont OBLIGATOIRES : une date qu’on n’a pas saisie ne s’invente pas (aucune couverture « depuis l’origine » n’est écrite par un import). Le dossier du patient n’est jamais écrit par ce jeu : la fiche suit la couverture en force aujourd’hui, comme à l’écran. Aucune facture n’est écrite ni modifiée.",
+  "Jeu restreint (RG-13). Le fichier est lu et contrôlé ici, mais aucune valeur de cellule n’est recopiée dans l’historique ni dans le rapport : chaque constat porte la ligne, la colonne, le code et le geste de correction. Les lots ne sont visibles que de leur auteur et des profils qui supervisent les importations."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,57 @@
+{
+ "id": "m1-documents",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Documents numérisés",
+ "acces": "ouvert",
+ "titre": "Documents numérisés du patient",
+ "description": "Ordonnances, résultats d’analyses, comptes rendus, consentements et imagerie rattachés au dossier patient.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Documents numérisés"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Plan de numérisation",
+  "Fiche patient"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Documents numérisés",
+  "Validés",
+  "En attente de validation",
+  "Dossiers couverts"
+ ],
+ "cartes": [
+  "Bibliothèque documentaire du patient"
+ ],
+ "tableaux": [
+  [
+   "Référence",
+   "Dossier",
+   "Patient",
+   "Type",
+   "Date",
+   "Fichier",
+   "Déposé par",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Ajouter un document",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

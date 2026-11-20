@@ -115,7 +115,15 @@ function serve() {
       return { role: r, domaines, total, ecrivables };
     });
 
-    return { inventaire, archives, fermes };
+    /* LES IMPORTATIONS PAR RÔLE (lot IMP-A) : le droit d'import est distinct, par jeu ; on le lit de la fonction même qu'appelle le bouton (`N.droitImport`). */
+    const jeuxImport = N.IMPORTS.map((j) => ({ id: j.id, libelle: j.libelle, sensibilite: j.sensibilite, doublon: j.doublon }));
+    const importations = roles.map((r) => ({
+      role: r,
+      droits: jeuxImport.map((j) => { const d = N.droitImport(r.id, j.id); return (d.voir ? 'V' : '') + (d.importer ? 'I' : '') + (d.annuler ? 'A' : ''); }),
+      superviseur: N.superviseImport(r.id), paie: N.capacitePaie(r.id),
+      ruban: (N.treeRuban(r.id).filter((d) => d.domain === 'Système')[0] || { modules: [] }).modules.map((m) => m.code).join(', '),
+    }));
+    return { inventaire, archives, fermes, jeuxImport, importations };
   });
 
   /* --- Restitution ------------------------------------------------------- */
@@ -154,6 +162,18 @@ function serve() {
     L.push('');
   }
 
+  L.push('## Importations par rôle');
+  L.push('');
+  L.push('Le droit d\'import est **distinct, par jeu** (`N.droitImport`), jamais déduit du droit d\'éditer l\'écran qui porte le bouton. **V** voir (modèle, historique de ses lots, rangée du ruban), **I** importer, **A** annuler un lot. Un jeu **restreint** (marqué (r) : patients, personnel, soldes d\'ouverture et les trois jeux du stock qui écrivent des mouvements) ne recopie aucune valeur de cellule dans l\'historique ni dans le rapport.');
+  L.push('');
+  L.push('| Rôle | ' + data.jeuxImport.map((j) => '`' + j.id + '`' + (j.sensibilite === 'restreinte' ? ' (r)' : '')).join(' | ') + ' | Supervise les lots | Capacité paie | Onglet « Système » du ruban |');
+  L.push('|---|' + data.jeuxImport.map(() => ':-:').join('|') + '|:-:|:-:|---|');
+  data.importations.forEach((i) => {
+    L.push('| ' + i.role.label + ' | ' + i.droits.map((d) => d || '·').join(' | ') + ' | ' + (i.superviseur ? 'oui' : '·') + ' | ' + (i.paie ? 'oui' : '·') + ' | ' + (i.ruban || '·') + ' |');
+  });
+  L.push('');
+  L.push('Mode de doublon par jeu : ' + data.jeuxImport.map((j) => '`' + j.id + '` ' + j.doublon).join(' · ') + '.');
+  L.push('');
   L.push('---');
   L.push('');
   data.inventaire.forEach((i) => {

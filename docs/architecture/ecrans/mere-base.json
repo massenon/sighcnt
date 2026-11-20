@@ -1,0 +1,47 @@
+{
+ "id": "mere-base",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Base de données locale",
+ "acces": "ouvert",
+ "titre": "Base de données locale",
+ "description": "PostgreSQL du serveur : état, taille, version de schéma, migrations, parité avec le magasin.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Plateforme locale",
+  "Base de données locale"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Moteur",
+  "Taille",
+  "Schéma",
+  "Parité"
+ ],
+ "cartes": [
+  "Migrations appliquées"
+ ],
+ "tableaux": [
+  [
+   "Version",
+   "Date",
+   "Résumé"
+  ]
+ ],
+ "commandes": [
+  "Vérifier la parité",
+  "Reconstruire les tables"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

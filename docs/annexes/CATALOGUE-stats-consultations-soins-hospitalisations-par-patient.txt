@@ -1,0 +1,70 @@
+Pour concevoir un module complet et performant de "Stats des consultations, soins et hospitalisations par patient", vous devez structurer vos indicateurs selon plusieurs axes d'analyse (dimensions). L'objectif est de permettre aux utilisateurs (médecins, directeurs d'hôpitaux, contrôleurs de gestion) de filtrer et de croiser les données dynamiquement.
+Voici la cartographie complète de toutes les statistiques possibles à intégrer dans votre module, regroupées par grandes thématiques :
+
+1. Statistiques par Pathologies et Maladies (Épidémiologie & Diagnostic)
+
+Cet axe permet de comprendre ce qui est soigné dans l'établissement.
+• Top des pathologies : Classement des maladies les plus fréquentes (par consultation et par hospitalisation).
+• Répartition CIM-10 / CIM-11 : Statistiques basées sur la classification internationale des maladies.
+• Taux de comorbidité : Pourcentage de patients souffrant de plusieurs pathologies simultanément.
+• Corrélation Démographie/Maladie : Distribution des maladies par tranche d'âge, genre et origine géographique (ex: prévalence du diabète chez les plus de 50 ans).
+• Saisonnalité des maladies : Évolution temporelle des diagnostics (ex: pics de grippe ou de gastro-entérite).
+
+2. Statistiques des Consultations (Activité Ambulatoire)
+
+Cet axe mesure le flux et la gestion des patients externes.
+• Volume d'activité : Nombre total de consultations (par jour, semaine, mois, année).
+• Taux de complétion des rendez-vous :
+	• Nombre de rendez-vous honorés vs annulés.
+	• Taux de "No-Show" (patients qui ne se présentent pas).
+• Temps d'attente et de prise en charge :
+	• Délai moyen d'obtention d'un rendez-vous.
+	• Temps d'attente moyen en salle d'attente.
+	• Durée moyenne d'une consultation.
+• Typologie des consultations : Part des premières consultations vs consultations de suivi (contrôle).
+• Activité par médecin/spécialité : Nombre de patients reçus par praticien ou par service (Pédiatrie, Cardiologie, etc.).
+
+3. Statistiques des Soins et Actes Médicaux (Technicité & Procédures)
+
+Cet axe analyse les actions médicales et paramédicales réalisées.
+• Volume d'actes par nature : Nombre d'actes infirmiers (pansements, injections), actes chirurgicaux, examens d'imagerie (radios, IRM), et analyses de laboratoire.
+• Consommation des ressources par soin : Quantité de matériel médical et de médicaments consommés par type de soin.
+• Suivi des soins complexes : Nombre de séances de chimiothérapie, dialyse, ou rééducation par patient.
+• Incidents et événements indésirables : Taux de complications post-actes ou d'infections nosocomiales.
+
+4. Statistiques des Hospitalisations (Gestion des Lits & Séjours)
+
+Cet axe évalue l'efficacité de la gestion des séjours en hébergement.
+• Durée Moyenne de Séjour (DMS) : Nombre moyen de jours passés à l'hôpital (calculé globalement, par service, ou par pathologie).
+• Taux d'occupation des lits : Pourcentage de lits utilisés par rapport à la capacité totale.
+• Taux de réhospitalisation : Pourcentage de patients réadmis dans les 30 jours pour la même pathologie (indicateur clé de qualité).
+• Modes d'entrée et de sortie :
+	• Entrées : Via les urgences, programmées, ou transfert d'un autre établissement.
+	• Sorties : Retour à domicile, transfert, ou décès (Taux de mortalité hospitalière).
+• Rotation des lits : Intervalle de temps moyen entre la sortie d'un patient et l'arrivée d'un autre dans le même lit.
+
+5. Statistiques par Prise en Charge et Financement (Gestion financière)
+
+Cet axe croise le médical et le financier pour analyser la rentabilité et les types de couverture.
+• Répartition par type de Tiers-Payant :
+	• Part des patients pris en charge par l'Assurance Maladie / Sécurité Sociale.
+	• Part des Mutuelles et Assurances privées.
+	• Part des prises en charge spécifiques (CMU, Aide médicale, conventions d'entreprises).
+	• Part du "Reste à charge" (Paiement direct par le patient).
+• Coût moyen par patient / par pathologie : Ce que coûte réellement un patient (médicaments + nuitées + actes) par rapport à ce qui est facturé.
+• Taux de recouvrement : Proportion des factures de soins payées vs factures impayées/litiges.
+• Délai moyen de paiement : Temps mis par les assurances/mutuelles pour rembourser l'établissement.
+
+6. Statistiques Centrées sur le Patient (Parcours Patient)
+
+Ces indicateurs permettent d'avoir une vision "360 degrés" de l'historique d'un individu ou d'une cohorte.
+• Fréquence de recours aux soins : Nombre moyen de visites (consultations + hospitalisations) par patient et par an.
+• Taux de fidélité : Patients qui reviennent dans l'établissement pour leur suivi plutôt que d'aller ailleurs.
+• Profil des patients chroniques : Suivi spécifique des patients ALD (Affections de Longue Durée) : fréquence de leurs crises, coûts de leur prise en charge.
+
+💡 Recommandation pour l'Architecture Technique (UI/UX)
+
+Pour que ce module soit exploitable, évitez de mettre tous les chiffres sur un seul écran. Structurez-le avec :
+1. Un Dashboard Général (KPIs flash) : Chiffres clés du jour/mois (ex: DMS actuelle, taux d'occupation, CA généré, pathologies du moment).
+2. Un système de Filtres Croisés Dynamiques : L'utilisateur doit pouvoir sélectionner : Période + Service + Type de prise en charge + Pathologie pour obtenir un graphique précis.
+3. Des fonctions d'Export : Boutons d'exportation vers Excel (CSV) ou PDF pour les rapports administratifs.

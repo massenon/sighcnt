@@ -1,0 +1,53 @@
+{
+ "id": "m10-evenements",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Événements du personnel",
+ "acces": "ouvert",
+ "titre": "Événements du personnel",
+ "description": "Mariages, naissances, décès et autres événements donnant lieu à une participation du personnel.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Événements du personnel"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Événements enregistrés",
+  "Participations attendues",
+  "Montant collecté",
+  "Reste à collecter"
+ ],
+ "cartes": [
+  "Événements",
+  "Événements par nature",
+  "Montant collecté par événement",
+  "Événements au fil des mois"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Événement",
+   "Nature",
+   "Par agent",
+   "Période de paiement",
+   "Collecte",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvel événement"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

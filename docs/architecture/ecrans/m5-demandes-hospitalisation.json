@@ -1,0 +1,51 @@
+{
+ "id": "m5-demandes-hospitalisation",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Demandes — hospitalisation",
+ "acces": "ouvert",
+ "titre": "Demandes — hospitalisation",
+ "description": "Les demandes d’analyses des patients hospitalisés ou mis en observation.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Demandes — hospitalisation"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Demandes du service",
+  "En attente de règlement",
+  "À prélever / transmettre",
+  "Résultats rendus"
+ ],
+ "cartes": [
+  "Demandes — hospitalisation"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Origine",
+   "Date",
+   "Patient",
+   "Analyse",
+   "Échantillon",
+   "Prescripteur",
+   "Priorité",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

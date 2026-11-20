@@ -11,7 +11,9 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  /** L'identité légale À LA DATE du jour (lot IDENT) : jamais une constante. */
+  function idt() { return C.identiteALaDate(C.iso(C.aujourdhui())); }
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* Rattachement de chaque état à l'écran qui sait le produire. */
   var ECRANS = {
@@ -94,14 +96,14 @@
       var apercu = el('div.grid.gap-4.lg\\:grid-cols-3');
       var mentions = el('div.lg\\:col-span-2');
       mentions.appendChild(U.card('Mentions portées sur tous les états', U.descList([
-        ['Dénomination', C.BRAND.nom],
-        ['Adresse postale', C.BRAND.bp],
-        ['Téléphones', C.BRAND.telephones.join('  /  ')],
-        ['Adresse électronique', C.BRAND.email],
-        ['Autorisation d’ouverture', C.BRAND.autorisation],
-        ['IFU', el('span.font-mono.font-semibold', { text: C.BRAND.ifu })],
-        ['RCCM', el('span.font-mono.font-semibold', { text: C.BRAND.rccm })],
-        ['Devise', C.BRAND.devise],
+        ['Dénomination', idt().nom],
+        ['Adresse postale', idt().bp],
+        ['Téléphones', idt().telephones.join('  /  ')],
+        ['Adresse électronique', idt().email],
+        ['Autorisation d’ouverture', idt().autorisation],
+        ['IFU', el('span.font-mono.font-semibold', { text: idt().ifu })],
+        ['RCCM', el('span.font-mono.font-semibold', { text: idt().rccm })],
+        ['Devise', idt().devise],
       ], 'grid-cols-1 sm:grid-cols-2'), [K.lien('cfg-branding', 'Modifier l’identité', { size: 'sm', icon: 'settings' })]));
       apercu.appendChild(mentions);
 
@@ -172,7 +174,7 @@
         { name: 'sousTitre', label: 'Sous-titre', col: 'full', value: 'Période : ' + C.moisAnnee(AUJ) },
         { name: 'destinataire', label: 'Destinataire', type: 'select', options: ['Direction', 'Conseil de gestion', 'Partenaire technique', 'Usage interne'] },
         { name: 'periode', label: 'Période', type: 'select', required: true, options: ['Journalière', 'Hebdomadaire', 'Mensuelle', 'Trimestrielle', 'Annuelle'], value: 'Mensuelle' },
-        { name: 'dateDebut', label: 'Du', type: 'date', value: C.iso(new Date(2026, 7, 1)) },
+        { name: 'dateDebut', label: 'Du', type: 'date', value: C.iso(new Date(AUJ.getFullYear(), AUJ.getMonth(), 1)) },
         { name: 'dateFin', label: 'Au', type: 'date', value: C.iso(AUJ) },
         { name: 'filigrane', label: 'Filigrane', type: 'select', options: ['', 'Document officiel', 'Confidentiel', 'Brouillon'] },
       ], {});
@@ -301,8 +303,8 @@
           ],
           rh: [
             { k: 'Effectif total', v: C.num(personnel.length) },
-            { k: 'Masse salariale de base', v: C.money(C.sum(personnel, 'salaireBase')) },
-            { k: 'Salaire moyen', v: C.money(personnel.length ? C.sum(personnel, 'salaireBase') / personnel.length : 0) },
+            { k: 'Masse salariale de base', v: C.moneyOu(C.sumOuNul(personnel, 'salaireBase'), 'Non renseignée') },
+            { k: 'Salaire moyen', v: C.moneyOu(C.moyenneOuNul(personnel, 'salaireBase'), 'Non renseigné') },
             { k: 'Services représentés', v: C.num(Object.keys(C.groupBy(personnel, 'service')).length) },
           ],
           comptable: [
@@ -445,7 +447,7 @@
     { id: 'nature', label: 'Par nature de facture', cle: 'type', detail: 'Consultation, maternité, pharmacie…' },
     { id: 'assureur', label: 'Par assureur', cle: 'assureur', detail: 'Compagnies conventionnées' },
     { id: 'article', label: 'Par article', cle: null, detail: 'Chaque produit ou prestation vendu' },
-    { id: 'famille', label: 'Par famille d’articles', cle: null, detail: 'Sept familles de l’inventaire SAGE' },
+    { id: 'famille', label: 'Par famille d’articles', cle: null, detail: 'Sept familles de l’inventaire initial' },
     { id: 'groupe', label: 'Par groupe d’articles', cle: null, detail: 'Regroupement proposé — à valider' },
   ];
 
@@ -581,7 +583,7 @@
 
         if (selAxe.value === 'groupe') {
           vue.appendChild(K.note('Le regroupement en quatre groupes est une <strong>proposition</strong> : '
-            + 'les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. '
+            + 'les documents de la clinique ne définissent que les sept familles de l’inventaire initial. '
             + 'À valider avant usage officiel.', { tone: 'warning', icon: 'help-circle' }));
         }
 

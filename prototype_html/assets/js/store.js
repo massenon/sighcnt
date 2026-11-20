@@ -85,8 +85,101 @@
      tant qu'elle était recopiée dans chacun, elle finissait par diverger :
      la vague 67 a bougé les deux premiers et laissé le troisième à 61, si
      bien qu'un poste hydraté depuis la base ne se ré-amorçait jamais.
-     Incrémenter ce nombre, et lui seul, à toute modification de forme. */
-  var VERSION = 64;
+     Incrémenter ce nombre, et lui seul, à toute modification de forme.
+     69 (06/11/2026) : la configuration fiscale VALIDÉE et DATÉE, trois
+     collections semées au socle (identiteLegale, obligationsFiscales,
+     historiqueObligations), posées d'un coup pour tout le chantier.
+     70 (07/11/2026) : le moteur de validation commun. Les validations du
+     01/09/2026 ne sont plus des constantes pour toute une liste mais des
+     fiches (`valideRole` en plus, mention « validation écrite du 01/09/2026 »),
+     et la collection `validationsReferentiels` (une fiche par artefact du code
+     que le magasin ne porte pas : check-listes du bloc…) est semée au socle.
+     71 (08/11/2026) : fiches RBAC de l'échographiste et du Directeur Médical (le catalogue
+     de l'imagerie s'ouvre à eux en lecture, pour y valider) ; les fiches étant semées.
+     72 (08/11/2026) : passerelle SMS. La fiche RBAC21 (Direction) lit `cfg-sms` et `m13-sms-journal` sans les modifier
+     (écrans nommés) ; la collection `messagesSms` (journal des envois) naît à l'usage, elle est déclarée à la corbeille.
+     73 (08/11/2026) : moteur SMS (étape S2). Le dossier patient porte `consentementSms` (actif par défaut, retirable), `consentementSmsLe` et
+     `consentementSmsPar` ; le journal des envois porte `cle`, `patientId`, `jourCle`, `tentative` ; la file des messages interrompus
+     (`fileSms`, heures calmes et hors ligne) est une collection d'activité, déclarée à la corbeille.
+     74 (09/11/2026) : le barème de l'AIB par situation de l'acheteur. Deux collections semées au socle (`situationsAib`, `baremeAib`,
+     lues par la caisse, la fenêtre MECeF et l'écran de paramétrage), une fiche RBAC22 (comptable) et RBAC21 (Direction) qui nomment
+     `cfg-bareme-aib` ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice.
+     75 (09/11/2026) : le calendrier fiscal corrigé et ouvert à l'avenir (lot A3b). La collection `parametresFiscaux` (délais d'alerte
+     « à payer » et « déclaration », montant de la CCIB : une fiche par version datée) est semée au socle, et l'échéancier est semé
+     sur DEUX exercices (le jeu et le suivant) : sans incrément un poste garderait un seul exercice et des jours plafonnés à 28.
+     76 (10/11/2026) : les réglages de l'AIB (lot L2). La collection `reglagesAib` (charge du prélèvement, branchement sur les achats, comptes
+     d'acompte et de contrepartie : une fiche par version datée) est semée au socle avec les défauts de la Direction ; la famille de validation
+     `bareme_aib` la compte aussi. Sans incrément un poste n'aurait ni les défauts ni la collection.
+     77 (10/11/2026) : le circuit de validation des présences, congés et ordres de mission (lot L5). La fiche RBAC09 (surveillant) OUVRE `m10-conges` et
+     `m10-missions` en lecture pour qu'il tranche (signer n'est pas saisir) ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice.
+     78 (11/11/2026) : l'organigramme suit la photo du papier (lot ORG2). La semence de la collection `postes` change (intitulés, rattachements, identifiants
+     stables) et le personnel porte `titreOrganigramme` (le surveillant général est un infirmier : « SG » est porté par l'agent). Une reprise
+     (`migrerOrganigramme`) réécrit les postes que la clinique n'a pas touchés et JAMAIS les autres.
+     79 (11/11/2026) : le RÉFÉRENTIEL DE PRIX UNIQUE (PRD-TARIFS, lot T1). Deux collections semées au socle, `tarifs` (l'identité d'une prestation tarifée)
+     et `versionsTarif` (une version de prix par ligne, immuable, datée) : la caisse, la prescription, les soins, l'imagerie, les certificats et la
+     caisse manuelle lisent le prix EN VIGUEUR à la date de la pièce. `actes`, `analyses` et `catalogueTarifs` deviennent des PROJECTIONS de lecture.
+     Aucun prix facturé aujourd'hui ne change ; la grille imprimée des analyses arrive en version 2 PROPOSÉE. Une reprise (`migrerTarifsDepuis`) garde
+     les prix des actes que la clinique a corrigés. Sans incrément, un poste n'aurait ni les collections ni les versions.
+     80 (11/11/2026) : le DROIT D'IMPORT par jeu (lot IMP-A). Les fiches RBAC sont SEMÉES, et la matrice d'origine de chaque jeu d'import (`N.IMPORTS` : voir,
+     importer, annuler) change ce qu'un poste voit et peut faire (la rangée « Importation de données » s'ouvre aux postes qui détiennent un jeu). Les défauts
+     vivent au manifeste et se lisent sans fiche : l'incrément est une GARDE (consigne du lot), pas une condition de fonctionnement.
+     81 (12/11/2026) : le PRIX D'ACHAT des produits se versionne par le MÊME moteur que les prestations (PRD-TARIFS, lot T5). `tarifs` et `versionsTarif` portent aussi la famille
+     `PRODUIT` (une prestation par référence, sa version 1 = le prix d'achat tenu aujourd'hui) ; `produits` devient, pour ses champs de PRIX, une projection de lecture ; le jeu d'import
+     `tarifs-produits` s'ajoute à `N.IMPORTS` (fiches RBAC semées). Une reprise garde les prix déjà versionnés et les prix d'achat que la clinique avait corrigés. Sans incrément,
+     un poste n'aurait ni les prestations de produits ni leur version 1.
+     82 (12/11/2026) : les FICHIERS NUMÉRISÉS quittent le magasin (lot DOCS-1, plan documents numérisés). Collection `fichiers` (registre par empreinte SHA-256), champ `fichier` (objet : empreinte, nom,
+     nom normalisé, type, taille, pages, texte indexé) sur `courriers` et `documentsPatient`, `fichiersRetires` (historique d'une pièce retirée) ; `numerise` d'un courrier devient DÉRIVÉ du fichier. Les
+     scans déjà déposés en base64 (`donnees`) sont REPRIS par la montée de version puis rangés dans le dossier de fichiers par une migration qui vérifie l'empreinte avant de retirer le base64.
+     Sans incrément, un poste garderait des scans dans le magasin et aucun écran ne saurait lire la forme neuve.
+     84 (13/11/2026) : la lecture OCR des scans, PRÉPARÉE (lot OCR-prep, aucun moteur livré). Collection `lecturesOcr` (une version de texte lu par machine par fiche, identifiant déterministe, immuable : une relance
+     AJOUTE une version), et le registre `fichiers` porte `texteSource` et l'état de la file de lecture (`ocr`). Le réglage `ocr` (désactivé par défaut) vit dans `_reglages`. Une reprise garde les lectures. Sans
+     incrément, un poste n'aurait pas la collection et la garde d'immuabilité ne couvrirait rien.
+     85 (13/11/2026) : les CONSTANTES D'HOSPITALISATION corrigées à la source (lot B) : la diurèse est en MILLILITRES partout (l'accueil la saisissait en litres) et la tension des relevés
+     au lit et des feuilles d'observation se stocke en DEUX nombres (`tensionSys`, `tensionDia`, cmHg) au lieu du texte « 12/8 » ; la semence est migrée, l'échelle de diurèse de la feuille de
+     température est graduée en mL. Les seuils de variation du laboratoire portent un délai maximal entre deux mesures (`delaiMaxJours`, absent par défaut), et les fiches RBAC peuvent porter
+     `droitsGestes` (valider un seuil). Les postes en version 84 sont ré-amorcés (les seuils survivent, comme avant). Sans incrément, un poste garderait des relevés en texte et la diurèse en litres.
+     86 (14/11/2026) : la CORRECTION SIGNÉE du texte lu par machine (lot C). La collection `lecturesOcr` porte une seconde espèce de version (`texteSource: 'correction'`, `corrigePar`, `corrigeLe`,
+     `corrigeDe`, `remplace`), le droit de corriger est un geste réservé de la fiche RBAC (`corriger_texte_ocr`, `droitsGestes`), et le réglage `ocr` porte un délai de lecture réglable. Une reprise garde
+     les lectures. Sans incrément, un poste n'aurait pas la garde qui refuse une correction non signée. 
+     87 (14/11/2026) : le CIRCUIT DE CLÔTURE ANNUELLE réglable (lot CLO C1). La collection `reglagesCloture` (qui démarre, qui passe l'inventaire, qui clôture, qui rouvre, mois d'ouverture de l'exercice
+     suivant : une fiche par version datée, jamais réécrite) est semée au socle avec les défauts de la Direction ; un geste réservé de la fiche RBAC (`regler_circuit_cloture`) règle le circuit. Sans incrément, un
+     poste n'aurait ni la collection ni les défauts et le moteur refuserait nommément de clôturer.
+     88 (16/11/2026) : DEUX CERTIFICATS D'APTITUDE (lot TARIF-FIX, Direction 14/11 et 15/11/2026). La semence du référentiel de prix porte une prestation de plus, CERT-CA
+     « Certificat d’aptitude » (5 000, couverture SOS seule, code proposé à valider), à côté de CERT-APT « Certificat médical d’aptitude » (7 000, inchangé). La reprise d'un
+     magasin versionné garde ses prestations et ses versions telles quelles et y AJOUTE la prestation nouvelle (aucun prix existant ne change, aucune pièce n'est réécrite).
+     Sans incrément, un poste n'aurait pas la seconde prestation.
+     89 (16/11/2026) : la SORTIE DES TABLEAUX (lot EXP). Le journal d'audit porte une nouvelle espèce d'entrée (`journaliserSortie` : `format`, `perimetre`, `lignes`,
+     `references`, `referencesTotal`) et le geste réservé `exporter_donnees` entre au manifeste ; la limite de lignes par export est un réglage de clinique (`exportLimiteLignes`).
+     Sans incrément, un poste n'aurait pas la garde qui journalise et borne la sortie.
+     90 (16/11/2026) : PRESCRIRE TOUJOURS, BLOQUER SEULEMENT L'ENCAISSEMENT (lot TARIF-FIX-2, décision de la Direction du 16/11/2026). Une ligne d'ordonnance, de demande ou de facture
+     peut porter `prixManquant` (nature, code, libellé, cause, motif, geste) avec prix, montant et parts NULS ; une facture `enAttentePrix` a des totaux nuls (non calculable) ; une
+     ligne valorisée porte `valoriseLe` et `valorisation` ; le réglage de clinique `caisseEncaissementPartielSansPrix` (versions datées, défaut semé « non ») vit dans `_reglages`.
+     Sans incrément, un poste garderait le moteur qui refuse la prescription entière.
+     91 (16/11/2026, après fusion avec TARIF-FIX-2 qui a posé 90) : les PARAMÈTRES DE CLINIQUE datés (lot PARAM-CLINIQUE, décisions 10 et 14 de la Direction du 15/11/2026). La collection `parametresClinique` (préavis de
+     péremption, 90 jours semés ; tranches de la balance âgée, 30 et 90 jours semés : une fiche par version, jamais réécrite) est semée au socle ; le geste réservé
+     `regler_parametres_clinique` entre au manifeste. Sans incrément, un poste n'aurait pas la collection et chaque écran retomberait sur le défaut.
+     Même montée pour la ligne d'inventaire « NON COMPTÉE » (lot INVENT-NC, décision 12) : `nonCompte` sur la ligne (ni physique, ni écart, ni valeur), `nbComptes` et
+     `nbNonComptes` sur l'inventaire ; la feuille part vide et la régularisation ne touche jamais un non compté (RG-03).
+     92 (16/11/2026) : SECOND BARÈME DE L'AIB (lot FISC-2, Direction, section AQ points 8 et 23). `situationsAib` porte une `famille` (`retenue_tiers` pour les deux situations nouvelles,
+     personne physique 3 %, personne morale 5 % ; absente = situation de l'acheteur), `baremeAib` leurs deux versions datées, la collection `imputationsAib` (imputation de l'AIB opération par
+     opération, laissée au comptable) et deux gestes réservés (`confirmer_obligation_fiscale`, `imputer_aib`) entrent au manifeste ; une obligation fiscale confirmée porte `confirmeeLe`,
+     `confirmeePar`, `confirmationReference`. Sans incrément, un poste n'aurait pas le second barème et la caisse ne saurait pas qu'une facture de patient ne porte aucun AIB.
+     93 (16/11/2026, lot IDENT) : l'identité légale est semée en DEUX versions datées (la 1, RCCM d'origine, close au 15/11/2026 ; la 2, RCCM à jour, depuis
+     le 16/11/2026), et `demandesIdentite` (dépôts d'un fileul habilité, appliqués par la mère) entre au socle.
+     94 (16/11/2026, lot SMS-R) : geste réservé `regler_passerelle_sms` (fiches RBAC semées : défaut administrateur et DAF) ; la fiche du personnel porte `dateNaissance`
+     et `consentementSms` (décoché par défaut). Les fiches RBAC étant semées, la version monte.
+     95 (16/11/2026, lot SAT, ADR-0009) : la SATISFACTION EN LIGNE. L'enquête porte des `versions` datées du questionnaire ; la réponse porte sa `version` et son `point` de collecte ; la collection
+     `pointsCollecte` (les sept points de la décision S2) est semée par l'écran des enquêtes ; le lien de partage porte `enLigne` et `point`. Sans incrément, un poste garderait des enquêtes sans version.
+     96 (16/11/2026, lot PLAN-INDIV) : la collection `planningsPersonnalises` (une fiche par version datée), le MODE d'une version de régime individuel (`mode` : déroge ou remplace), la
+     fiche du personnel porte `valeursAttente` (une mention par champ : salaire, catégorie, date d'embauche, numéro CNSS) et les trois gestes réservés `regler_regime_individuel`,
+     `regler_planning_personnalise`, `confirmer_valeur_attente_personnel` entrent au manifeste. Sans incrément, un poste n'aurait ni la collection ni les mentions.
+     97 (16/11/2026) : LE PLAN ANNUEL DE TRAVAIL PAR EXERCICE (lot PTA). `planAnnuel` change de forme (exercice, état et axe en CODES des référentiels, responsable par référence au personnel ou
+     à un poste, budget prévu et réalisé, indicateur, cible, valeur atteinte, pourcentage borné, version datée) ; trois collections neuves : `referentielsPlan` (axes et états, défauts
+     semés), `reglagesPlan` (signataires de l'impression : fonction par référence à un poste, versions datées) et `adoptionsPlan` (adoption par la Direction, une par exercice) ; le geste
+     réservé `adopter_plan_annuel` entre au manifeste, la clé `plan.graceRetardJours` aux paramètres de clinique. Sans incrément, un poste garderait l'ancien plan écrit en dur.     99 (17/11/2026, lot MAJ) : TROIS PARAMÈTRES DE CLINIQUE pour la mise à jour du logiciel (`maj.ageMaxCopieHeures`, `maj.retourArriereMinutes`, `maj.ecartVersionTolere`). Sans incrément, un poste n'aurait pas leurs défauts semés.     98 (17/11/2026, lot TIERS) : LA FACTURE À UN TIERS PAYEUR. Cinq collections neuves (`tiersPayeurs`, fiches versionnées par date ; `facturesTiers` ; `avoirsTiers` ; `reglementsTiers` ;
+     `lettragesTiers`) et deux gestes réservés (`emettre_facture_tiers`, `corriger_facture_tiers`) entrent au manifeste. Sans incrément, un poste n'aurait ni les collections ni les droits.
+  */
+  var VERSION = 99;
   var db = null;
   var listeners = {};
 
@@ -250,6 +343,56 @@
     });
   }
 
+  /* ==========================================================================
+   * REPRISE DE L'ORGANIGRAMME (11/11/2026, lot ORG2)
+   * --------------------------------------------------------------------------
+   * La semence de la collection `postes` suit désormais la photo du papier (intitulés, rattachements). Les magasins déjà amorcés portent l'ancienne :
+   * la reprise la remplace, MAIS ne réécrit jamais ce que la clinique a modifié.
+   *
+   * COMMENT UN POSTE « MODIFIÉ À LA MAIN » SE RECONNAÎT. Deux preuves, et il suffit d'une pour le laisser tel quel :
+   *   1. il porte une trace d'écran : `_modifieLe` / `_modifiePar` (posées par tout `update`), `_archiveLe`, ou il est archivé ;
+   *   2. un seul de ses six champs (intitulé, rattachement, effectif, titulaire, chef de service, rôle) diffère de la ligne correspondante de
+   *      l'ancienne semence (`D.ORGANIGRAMME_PRECEDENT`, retrouvée par l'identifiant).
+   * Seul un poste qui n'a aucune trace ET qui est identique à l'ancienne semence est réécrit ; il reçoit alors `semence: 2` et la reprise ne le
+   * retouche plus jamais (un geste ultérieur de la clinique l'emporte toujours). Le champ `etoile`, qui n'a aucun sens (O5), est retiré de toute fiche.
+   * Idempotente. Rend le bilan, que l'appelant journalise (RG-12).
+   * ======================================================================== */
+  function posteIntact(f, ref) {
+    if (!f || !ref) return false;
+    if (f.statut === 'archive' || f._modifieLe || f._modifiePar || f._archiveLe) return false;
+    return f.poste === ref.poste && (f.parentId || null) === (ref.parentId || null) && Number(f.effectif) === ref.effectif
+      && (f.titulaire || null) === (ref.titulaire || null) && !!f.chef === ref.chef && f.role === ref.role;
+  }
+  function migrerOrganigramme(base) {
+    var bilan = { reecrits: [], gardes: [], etoiles: 0 };
+    if (!base || !Array.isArray(base.postes) || !base.postes.length) return bilan;
+    var precedents = {}, neufs = {};
+    D.ORGANIGRAMME_PRECEDENT.forEach(function (l) { precedents[l.id] = l; });
+    D.postesDeLaSemence().forEach(function (l) { neufs[l.id] = l; });
+    base.postes.forEach(function (f) {
+      if (f.etoile !== undefined) { delete f.etoile; bilan.etoiles++; }
+      if (Number(f.semence) >= 2) return;
+      var ref = precedents[f.id], neuf = neufs[f.id];
+      if (!ref || !neuf) return;
+      if (posteIntact(f, ref)) {
+        ['poste', 'parentId', 'effectif', 'titulaire', 'chef', 'role', 'semence'].forEach(function (k) {
+          if (neuf[k] === null || neuf[k] === undefined) delete f[k]; else f[k] = neuf[k];
+        });
+        bilan.reecrits.push(f.id);
+      } else bilan.gardes.push(f.id);
+    });
+    return bilan;
+  }
+  /** La reprise, journalisée une fois quand elle a touché quelque chose. */
+  function reprendreOrganigramme(base) {
+    var b = migrerOrganigramme(base);
+    if (b.reecrits.length || b.etoiles) {
+      log('Reprise de l’organigramme', 'CFG', 'Poste', 'ORG-REPRISE', { gardes: b.gardes.length },
+        { reecrits: b.reecrits.length, gardes: b.gardes.length, etoiles: b.etoiles });
+    }
+    return b;
+  }
+
   /**
    * Pose la session.
    *
@@ -264,7 +407,11 @@
    */
   function setSession(s) {
     if (s) storage.set('sigh-cnt:session', JSON.stringify(s));
-    else storage.remove('sigh-cnt:session');
+    else {
+      storage.remove('sigh-cnt:session');
+      /* L7 : à la déconnexion, l'état d'affichage de l'espace « Mes » part avec la session (poste partagé : le suivant n'en hérite pas). */
+      try { if (global.SIGH && global.SIGH.espaceMes) global.SIGH.espaceMes.purger(); } catch (e) { /* sans effet */ }
+    }
     if (s && s.jeton) {
       SRV.jeton = s.jeton;
       SRV.promesseSession = global.Promise.resolve(s.jeton);
@@ -471,16 +618,6 @@
      métier en demande cinq : le planning et les présences. */
   var droitsSurveillant = fermerTout({});
 
-  /* L'ingénieur biomédical entretient les automates et le parc technique. Il
-     VOIT le laboratoire pour connaître les analyses en cours sur les appareils
-     dont il a la charge, mais ne rend AUCUN résultat : la validation biologique
-     engage la responsabilité du biologiste, pas celle du technicien qui a
-     étalonné la machine. Il tient la maintenance (M13) et voit le stock des
-     réactifs et consommables. */
-  var droitsBiomedical = fermerTout({
-    M5: VOIR, M6: VOIR, M7: VOIR, M13: EDITER, RAP: VOIR,
-  });
-
   /* L'assistant comptable, d'après ses 30 activités : livres de compte,
      rapprochements, recouvrement des créances chez les particuliers ET les
      compagnies, obligations fiscales, point journalier de la caisse,
@@ -562,6 +699,8 @@
         categorie: ech, salaireBase: salaire,
         dateEmbauche: C.iso(embauche),
         cnss: '2' + C.between(rnd, 100000, 999999) + C.between(rnd, 10, 99),
+        /* Lot PLAN-INDIV : ces quatre valeurs sont TIRÉES pour le jeu, aucune n'est arrêtée par la Direction : chacune porte sa mention « valeur d'attente » (levée par la modification du champ seul, ou par « Confirmer »). */
+        valeursAttente: { salaireBase: true, categorie: true, dateEmbauche: true, cnss: true },
         telephone: '0' + C.between(rnd, 1, 9) + C.between(rnd, 10000000, 99999999),
         situation: C.pick(rnd, ['Célibataire', 'Marié(e)', 'Marié(e)', 'Veuf(ve)']),
         statut: 'actif',
@@ -594,6 +733,9 @@
     add('KINNOU|A. Ganiou', 'tsl', 'Laboratoire', 150000, 'M', 'Biologiste médical — Chef de service');
     add(null, 'tsl', 'Laboratoire', 130000, 'M', 'Biologiste médical');
     add('GARBA|Yahouza', 'infirmier', 'Soins infirmiers', 130000, 'M', 'Surveillant');
+    /* LE SURVEILLANT GÉNÉRAL EST UN INFIRMIER (Direction, 11/11/2026, O3) : le titre « SG » que l'organigramme papier écrit à côté de son nom est
+       porté par l'AGENT, pas par le poste « Infirmiers ». Il ne change aucun droit : le rôle reste celui de la fonction. */
+    out[out.length - 1].titreOrganigramme = 'SG';
     /* Trois infirmiers nommés par la Direction le 25/08/2026 ; les quatre
        autres restent à nommer — l'effectif soignant (7) est confirmé, la liste
        des comptes n'en couvre que trois. */
@@ -753,6 +895,8 @@
 
   function genLots(rnd, produits) {
     var out = [], today = new Date(2026, 7, 16);
+    /* Lot PARAM-CLINIQUE : le préavis de la semence est le DÉFAUT semé du paramètre de clinique (un statut de semence ; les écrans le recalculent à la date). */
+    var preavis = D.definitionParametreClinique('stock.delaiPeremptionJours').defaut;
     produits.forEach(function (p, i) {
       if (p.categorie === 'fourniture' || p.categorie === 'petit_materiel' || p.categorie === 'immobilisation') return;
       var nb = C.between(rnd, 1, 3);
@@ -765,7 +909,7 @@
           datePeremption: C.iso(C.addDays(today, jours)),
           quantiteRestante: C.between(rnd, 0, Math.max(1, Math.round(p.stock / nb))),
           emplacement: p.emplacement,
-          statut: jours < 0 ? 'perime' : (jours < 90 ? 'alerte' : 'actif'),
+          statut: jours < 0 ? 'perime' : (jours < preavis ? 'alerte' : 'actif'),
         });
       }
     });
@@ -846,39 +990,62 @@
    * REPORTÉE au jour ouvrable suivant, jamais avancée — l'administration
    * n'ouvre pas le week-end, et anticiper ferait payer avant d'y être tenu.
    * ======================================================================== */
-  function genEcheances() {
-    var AUJ2 = new Date(2026, 7, 16);
-    function jourOuvrableSuivant(d) {
-      var x = new Date(d.getTime());
-      while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
-      return x;
+  /* LES OBLIGATIONS SONT LUES À LEUR DATE (06/11/2026). Pour chaque mois de
+     l'exercice, c'est la version de l'obligation EN VIGUEUR AU PREMIER DU MOIS
+     qui fixe l'échéance du mois : une version qui change en cours d'exercice
+     ne touche que les échéances postérieures à sa date d'effet. `opts.obligations`
+     impose la liste (le semis la passe : pendant le semis, le magasin n'est pas
+     encore là) ; sinon `D.obligationsALaDate` lit le magasin. `opts.aujourdhui`
+     décide ce qui est réputé réglé (défaut : la date du jeu, 16/08/2026) ;
+     `opts.sansReglement` n'invente aucune quittance (vidage des jeux de test). */
+  function jourOuvrableSuivantGen(d) { return C.reporterJourOuvrable(d); }
+  function obligationsPour(dateRef, opts) {
+    if (opts && Array.isArray(opts.obligations)) {
+      return opts.obligations.filter(function (o) { return o.type !== 'parametres' && o.statut !== 'archive'; });
     }
-    var annee = AUJ2.getFullYear();
-    var out = [], n = 0;
-    (D.CALENDRIER_FISCAL || []).forEach(function (o) {
-      var dates = [];
-      if (o.periodicite === 'mensuelle') {
-        for (var m = 0; m < 12; m++) dates.push(new Date(annee, m, o.jour));
-      } else {
-        dates.push(new Date(annee, o.mois, Math.min(o.jour, 28)));
-      }
-      dates.forEach(function (d) {
+    return D.obligationsALaDate ? D.obligationsALaDate(dateRef) : (D.CALENDRIER_FISCAL || []);
+  }
+  function genEcheances(exercice, opts) {
+    opts = opts || {};
+    var AUJ2 = opts.aujourdhui ? C.toDate(opts.aujourdhui) : new Date(2026, 7, 16);
+    var annee = Number(exercice) || AUJ2.getFullYear();
+    var parCode = {}, ordre = [];
+    for (var m = 0; m < 12; m++) {
+      obligationsPour(new Date(annee, m, 1), opts).forEach(function (o) {
+        var d = null;
+        /* Le jour tombe au dernier jour RÉEL du mois s'il le dépasse (C.jourDuMois) : plus de plafond à 28, plus de
+           débordement sur le mois suivant (E-A3-01, 05, 06). */
+        if (o.periodicite === 'mensuelle') d = C.jourDuMois(annee, m, o.jour);
+        else if (o.mois === m) d = C.jourDuMois(annee, m, o.jour);
+        if (!d) return;
+        if (!parCode[o.code]) { parCode[o.code] = []; ordre.push(o.code); }
+        parCode[o.code].push({ o: o, d: d });
+      });
+    }
+    var out = [], n = Number(opts.depart) || 0;
+    ordre.forEach(function (code) {
+      parCode[code].forEach(function (x) {
+        var o = x.o, d = x.d;
         n++;
-        var echue = jourOuvrableSuivant(d);
+        var echue = jourOuvrableSuivantGen(d);
         var passee = echue < AUJ2;
         out.push({
           id: 'ECH' + C.pad(n, 4), statut: 'actif',
           code: o.code, libelle: o.libelle, famille: o.famille,
           periodicite: o.periodicite, part: o.part, declaration: o.declaration, note: o.note,
           exercice: annee,
+          /* Une mensuelle règle le mois PRÉCÉDENT : celle du 10 janvier porte « décembre » de l'exercice d'avant (E-A3-07). */
           periode: o.periodicite === 'mensuelle'
-            ? C.MOIS[Math.max(0, d.getMonth() - 1)] + ' ' + annee : String(annee),
+            ? C.MOIS[(d.getMonth() + 11) % 12] + ' ' + (d.getMonth() === 0 ? annee - 1 : annee) : String(annee),
           echeance: C.iso(echue),
+          echeanceTheorique: C.iso(d),
           reportee: C.iso(echue) !== C.iso(d),
+          /* La version de l'obligation qui a engendré l'échéance : sa date d'effet (null pour la version d'origine). */
+          versionObligation: o.dateEffet || null,
           /* Les échéances passées sont réputées honorées, SAUF les plus
              récentes — sans quoi l'écran de suivi et le tableau de bord du
              comptable n'auraient jamais rien à montrer. */
-          paye: passee && C.daysBetween(echue, AUJ2) > 25,
+          paye: !opts.sansReglement && passee && C.daysBetween(echue, AUJ2) > 25,
           datePaiement: null, montant: null, reference: null, valideePar: null,
         });
       });
@@ -891,6 +1058,101 @@
       }
     });
     return out;
+  }
+
+  /**
+   * RÉGÉNÈRE LES ÉCHÉANCES D'UNE OBLIGATION après une version datée : les
+   * échéances NON PAYÉES dont la date théorique est >= dateEffet sont archivées
+   * (RG-14) et recréées depuis la version en vigueur ; les PAYÉES ne bougent
+   * pas (une quittance ne se réécrit jamais), ni les non payées antérieures à
+   * la date d'effet. Un seul geste au journal, qui porte les deux listes.
+   * Rend les comptes ; c'est l'appelant (parcours) qui les annonce.
+   */
+  function regenererEcheances(o) {
+    load();
+    var d = String(o.dateEffet).slice(0, 10);
+    var auteur = o.auteur || currentUser();
+    var maintenant = new Date().toISOString();
+    if (!db.echeancesFiscales) db.echeancesFiscales = [];
+    var existantes = db.echeancesFiscales.filter(function (e) { return e.code === o.code && e.statut !== 'archive'; });
+    var exercices = {};
+    existantes.forEach(function (e) { exercices[e.exercice] = true; });
+    var anneeEffet = Number(d.slice(0, 4));
+    exercices[anneeEffet] = true;
+    var conservees = 0, anterieures = 0, archivees = 0, creees = 0, avant = [], apres = [];
+    Object.keys(exercices).map(Number).filter(function (a) { return a >= anneeEffet; }).sort().forEach(function (annee) {
+      /* Les mois (AAAA-MM) qu'une échéance PAYÉE couvre déjà : la nouvelle version n'y recrée rien, sans quoi
+         le mois serait dû deux fois (une quittance et une échéance ouverte pour la même période). */
+      var moisConserves = {};
+      existantes.filter(function (e) { return e.exercice === annee; }).forEach(function (e) {
+        /* Avant la date d'effet, rien ne bouge (payée ou non) ; à partir d'elle, une PAYÉE est conservée, une non payée régénérée. */
+        var theorique = e.echeanceTheorique || e.echeance;
+        if (theorique < d) { anterieures++; return; }
+        if (e.paye) { conservees++; moisConserves[String(theorique).slice(0, 7)] = true; return; }
+        e.statut = 'archive';
+        e._archivePar = auteur;
+        e._archiveLe = maintenant;
+        e._motifArchivage = 'Régénérée : version de ' + o.code + ' en vigueur au ' + C.dateFR(d);
+        avant.push(e.echeance);
+        archivees++;
+      });
+      genEcheances(annee, { sansReglement: true }).filter(function (n) {
+        return n.code === o.code && n.echeanceTheorique >= d && !moisConserves[String(n.echeanceTheorique).slice(0, 7)];
+      }).forEach(function (n) {
+        n.id = 'ECH' + C.uid();
+        n.versionObligation = o.versionObligation !== undefined ? o.versionObligation : d;
+        n.regenereeLe = maintenant;
+        n.regenereePar = auteur;
+        n._creePar = auteur;
+        n._creeLe = maintenant;
+        db.echeancesFiscales.unshift(n);
+        apres.push(n.echeance);
+        creees++;
+      });
+    });
+    log('Régénération des échéances', 'M12', 'EcheancesFiscales', o.code,
+      { avant: avant }, { apres: apres, dateEffet: d, payeesConservees: conservees });
+    save(); emit('echeancesFiscales');
+    return { code: o.code, dateEffet: d, conservees: conservees, anterieures: anterieures, archivees: archivees, creees: creees };
+  }
+
+  /**
+   * ASSURE L'ÉCHÉANCIER D'UN EXERCICE (lot A3b, E-A3-09) : engendre, depuis les obligations en vigueur à chaque mois, les
+   * échéances qui MANQUENT, et seulement celles-là. Une échéance existante (payée, ouverte OU archivée) est reconnue par son
+   * code et sa date théorique et n'est jamais réécrite : un exercice qui s'ouvre ne régénère donc rien et ne touche à aucune
+   * quittance. Aucun règlement n'est inventé. Un exercice clos ne se génère pas (sa lecture est seule). Rend
+   * { exercice, creees, refus? } ; idempotent.
+   */
+  function assurerEcheances(exercice, opts) {
+    load();
+    opts = opts || {};
+    var annee = Number(exercice);
+    if (!(annee >= 2000 && annee <= 2100)) return { exercice: exercice, creees: 0, refus: 'EXERCICE_INVALIDE' };
+    var X = global.SIGH && global.SIGH.exercice;
+    if (X && typeof X.etat === 'function' && X.etat(annee) === 'clos') return { exercice: annee, creees: 0, refus: 'EXERCICE_CLOS' };
+    /* L'échéancier ne s'engendre que pour l'exercice COURANT et le SUIVANT : un exercice passé non clos se remplirait d'échéances « en
+       retard » que personne n'a manquées, et un exercice lointain (une écriture datée par erreur de 2035) d'un échéancier sans objet. */
+    var courante = C.aujourdhui().getFullYear();
+    if (annee < courante) return { exercice: annee, creees: 0, refus: 'EXERCICE_PASSE' };
+    if (annee > courante + 1) return { exercice: annee, creees: 0, refus: 'EXERCICE_LOINTAIN' };
+    /* Un magasin pas encore amorcé (pas de session, pas de semence) n'est jamais écrit d'ici : le semis s'en charge. */
+    if (!db.echeancesFiscales) return { exercice: annee, creees: 0, refus: 'NON_AMORCE' };
+    var connues = {};
+    db.echeancesFiscales.forEach(function (e) {
+      if (Number(e.exercice) === annee) connues[e.code + '|' + (e.echeanceTheorique || e.echeance)] = true;
+    });
+    var neuves = genEcheances(annee, { sansReglement: true }).filter(function (n) { return !connues[n.code + '|' + n.echeanceTheorique]; });
+    if (!neuves.length) return { exercice: annee, creees: 0 };
+    var auteur = opts.auteur || currentUser(), maintenant = new Date().toISOString();
+    neuves.forEach(function (n) {
+      n.id = 'ECH' + C.uid();
+      n._creePar = auteur; n._creeLe = maintenant;
+      db.echeancesFiscales.push(n);
+    });
+    log('Génération des échéances de l’exercice ' + annee, 'M12', 'EcheancesFiscales', String(annee),
+      null, { exercice: annee, creees: neuves.length, codes: neuves.map(function (n) { return n.code; }).filter(function (c, i, t) { return t.indexOf(c) === i; }) });
+    save(); emit('echeancesFiscales');
+    return { exercice: annee, creees: neuves.length };
   }
 
   /* Une remise se JUSTIFIE. Un rabais sans motif au dossier est exactement ce
@@ -909,7 +1171,8 @@
 
     /* Le catalogue réel sert de source : facturer des libellés inventés
        rendrait les statistiques par prestation inexploitables. */
-    var analyses = (D.ANALYSES || []).filter(function (a) { return a.prix; });
+    /* AMORÇAGE (garde-prix) : la SEMENCE d'origine, jamais une lecture du référentiel (qui n'existe pas encore). */
+    var analyses = ((D.TARIFS && D.TARIFS.semence.analyses) || []).filter(function (a) { return a.prix; });
     var actes = (D.ACTES || []).filter(function (a) { return a.prix; });
     var meds = (produits || []).filter(function (x) { return x.prixAchat > 0; });
 
@@ -1285,9 +1548,10 @@
    * Trois fois par jour, aux heures de la feuille papier : 08 h, 14 h et 20 h —
    * matin, midi, soir, les trois colonnes que porte le document.
    *
-   * La diurèse est relevée en MILLILITRES au lit du patient, alors que
-   * l'échelle de la feuille de température est graduée en litres. La conversion
-   * se fait à l'affichage : convertir ici perdrait la précision de la mesure.
+   * La diurèse est relevée en MILLILITRES, ici comme à l'accueil, et l'échelle de la
+   * feuille de température est graduée en millilitres : AUCUNE conversion à
+   * l'affichage (lot B). La tension se stocke en DEUX nombres, `tensionSys` et
+   * `tensionDia` (cmHg), jamais en texte « 12/8 ».
    * ======================================================================== */
   function genReleves(rnd, admissions) {
     var out = [];
@@ -1306,7 +1570,7 @@
               id: 'REL' + C.uid(), statut: 'actif',
               admissionId: a.id, date: C.iso(C.addDays(ref, -j)), heure: h,
               temperature: Number((36.4 + rnd() * 2.2).toFixed(1)),
-              tension: C.between(rnd, 10, 15) + '/' + C.between(rnd, 6, 9),
+              tensionSys: C.between(rnd, 10, 15), tensionDia: C.between(rnd, 6, 9),
               fc: C.between(rnd, 62, 108), spo2: C.between(rnd, 92, 100),
               fr: C.between(rnd, 14, 24), diurese: C.between(rnd, 600, 2200),
               poids: C.between(rnd, 45, 92), taille: C.between(rnd, 150, 188),
@@ -1379,7 +1643,11 @@
   /* ==========================================================================
    * AMORÇAGE
    * ======================================================================== */
-  function seed() {
+  /* LA TRACE DES VALIDATIONS ÉCRITES DU 01/09/2026, au format du moteur de validation (parcours.js). */
+  var VALIDATION_ECRITE_0109 = { valideLe: '2026-09-01', validePar: 'validation écrite du 01/09/2026', valideRole: 'Direction' };
+  /* L'exercice du JEU de démonstration (daté, comme le reste du jeu) : le seul endroit où une année est écrite ; le suivant s'en déduit. */
+  var ANNEE_JEU = 2026;
+  function seedBrut() {
     var rnd = C.seeded(20260716);
     var personnel = genPersonnel(rnd);
     var patients = genPatients(rnd, 180);
@@ -1389,6 +1657,26 @@
     var produits = genProduits(rnd);
     var consultations = genConsultations(rnd, patients, personnel);
     var admissions = genAdmissions(rnd, patients, personnel);
+    /* La configuration fiscale SEMÉE (06/11/2026) : la version 1 de l'identité
+       légale (copie de C.BRAND d'origine, depuis l'ouverture du dossier) et les
+       obligations du calendrier confirmé. Aucune n'est validée : la Direction
+       valide À L'ÉCRAN, à la première configuration. */
+    /* Deux versions DATÉES (lot IDENT, 16/11/2026) : la 1 close au 15/11, jamais réécrite ; la 2 (RCCM à jour,
+       défaut semé de C.BRAND) prend effet le 16/11/2026 (date à confirmer par la Direction). Une pièce émise avant garde l'ancien numéro. */
+    var identiteV1 = Object.assign({
+      id: 'IDL001', statut: 'actif', version: 1, debut: null, fin: '2026-11-15',
+      creeLe: '2026-08-31', creePar: 'core.js (semence)', motif: null,
+      valideLe: null, validePar: null,
+      source: 'core.js, arbitrage du 31/08/2026',
+    }, C.champsIdentite(C.BRAND_ORIGINE), { rccm: 'RB/NAT/2016-B-268' });
+    var identiteV2 = Object.assign({
+      id: 'IDL002', statut: 'actif', version: 2, debut: '2026-11-16', fin: null,
+      creeLe: '2026-11-16', creePar: 'core.js (semence)',
+      motif: 'RCCM à jour NAT/2021/M02-020 (Direction, 16/11/2026, date d’effet à confirmer)',
+      valideLe: null, validePar: null,
+      source: 'core.js, décision de la Direction du 16/11/2026 (DECISIONS-A-VALIDER, section AQ point 15)',
+    }, C.champsIdentite(C.BRAND_ORIGINE));
+    var obligationsSemees = D.semenceObligations();
 
     return {
       /* 39 — phase 1 : catalogue des actes au socle, réunions et GED semées
@@ -1491,8 +1779,24 @@
          données de santé nominatives qu'aucune de ses activités ne demande)
          et passe de TOUT à VOIR sur M12 — écrire et annuler des écritures
          comptables appartient au Comptable. Les fiches RBAC étant SEMÉES,
-         sans incrément un poste garderait l'ancienne matrice. */
+         sans incrément un poste garderait l'ancienne matrice.
+         69 (06/11/2026) : la configuration fiscale VALIDÉE et DATÉE
+         (identiteLegale, obligationsFiscales, historiqueObligations). */
       _version: VERSION,
+      /* L'IDENTITÉ LÉGALE, par versions datées : C.BRAND n'est plus qu'un
+         MIROIR de la version en force (S.appliquerIdentite). Lue par CFG,
+         print.js (toutes les pièces), M8, MECeF : au socle. */
+      identiteLegale: [identiteV1, identiteV2],
+      /* Les OBLIGATIONS FISCALES et les paramètres ORTB, version en vigueur ;
+         les versions antérieures vont dans historiqueObligations (le modèle
+         grillePrimes / historiquePrimes). Lues par CFG, M11 (ORTB), M12
+         (échéances), M13 et les tableaux de bord : au socle. */
+      obligationsFiscales: obligationsSemees,
+      historiqueObligations: [],
+      /* Les validations des artefacts que le code porte et que le magasin ne peut pas marquer (une fiche par cible,
+         `VRF-<cible>`) : les check-listes du bloc, arrêtées par les praticiens le 01/09/2026. */
+      validationsReferentiels: [Object.assign({ id: 'VRF-checklist-bloc', statut: 'actif', famille: 'checklists_bloc',
+        cible: 'checklist-bloc', libelle: 'Check-listes d’entrée et de sortie du bloc' }, VALIDATION_ECRITE_0109)],
       _seededAt: new Date().toISOString(),
       personnel: personnel,
       patients: patients,
@@ -1526,7 +1830,7 @@
       ecritures: genEcritures(rnd),
       planning: genPlanning(rnd, personnel),
       audit: genAudit(rnd, personnel),
-      analyses: D.ANALYSES.map(function (a) { return Object.assign({}, a); }),
+      analyses: D.TARIFS.semence.analyses.map(function (a) { return Object.assign({}, a); }), /* garde-prix : amorçage */
       /* Catalogue des actes — lu par la consultation, l'hospitalisation, la
          facturation, la recherche globale ET le moteur de parcours : amorcé ICI.
          L'amorcer depuis l'écran de configuration laissait la prescription sans
@@ -1547,7 +1851,7 @@
             + 'tarif arrêté par la Direction le 01/09/2026';
         }
         return rec;
-      }).concat(D.TYPES_CHAMBRE.map(function (t, i) {
+      }).concat(D.TARIFS.semence.chambres.map(function (t, i) { /* garde-prix : amorçage */
         return {
           id: 'ACH' + C.pad(i + 1, 3), statut: 'actif',
           code: 'HO' + C.pad(i + 1, 2),
@@ -1563,7 +1867,7 @@
            l'AMIU — la SAA se pratique par aspiration manuelle intra-utérine,
            c'est le même geste. Marqué provisoire : une valeur d'attente ne
            se présente jamais comme un tarif validé. */
-        var amiu = (D.CATALOGUE || []).filter(function (e) { return e.code === 'AMIU'; })[0] || {};
+        var amiu = (D.TARIFS.semence.grille || []).filter(function (e) { return e.code === 'AMIU'; })[0] || {}; /* garde-prix : amorçage */
         return {
           id: 'ACT-SAA', statut: 'actif', code: 'GY-SAA',
           libelle: 'Avortement — Soins Après Avortement (SAA)',
@@ -1609,6 +1913,40 @@
       objectifsPilotage: (D.OBJECTIFS_PILOTAGE || []).map(function (o, i) {
         return Object.assign({ id: 'OBJ' + C.pad(i + 1, 2), statut: 'actif' }, o);
       }),
+
+      /* LE BARÈME DE L'AIB (09/11/2026) : taux PAR SITUATION de l'acheteur, versionné par date d'effet. Au socle : la caisse (fenêtre MECeF),
+         le moteur de validation et l'écran de paramétrage le lisent. La semence (`D.SITUATIONS_AIB`, `D.BAREME_AIB`) est une PROPOSITION
+         à valider, jamais une constante lue par un moteur : le moteur ne lit que ces deux collections. */
+      situationsAib: (D.SITUATIONS_AIB || []).map(function (x, i) {
+        return Object.assign({ id: 'SAI' + C.pad(i + 1, 2), statut: 'actif', creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
+      }),
+      baremeAib: (D.BAREME_AIB || []).map(function (x, i) {
+        return Object.assign({ id: 'BAI' + C.pad(i + 1, 3), statut: 'actif', aValider: true, creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
+      }),
+      /* LES RÉGLAGES DE L'AIB (10/11/2026, lot L2) : une fiche par version datée, jamais réécrite. Les défauts (charge : clinique ; branchement :
+         désactivé) naissent « à valider » ; aucun compte n'est semé. Lus par la caisse, les achats et l'écran de paramétrage, donc au socle. */
+      reglagesAib: (D.REGLAGES_AIB_SEMENCE || []).map(function (x, i) {
+        return Object.assign({ id: 'RAI' + C.pad(i + 1, 3), statut: 'actif', dateFin: null, aValider: true, creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
+      }),
+
+      /* LE CIRCUIT DE CLÔTURE ANNUELLE (14/11/2026, lot CLO C1) : une fiche par version datée, jamais réécrite ; les défauts sont SEMÉS (ils égalent les listes qui étaient
+         écrites dans le moteur, sauf la clôture définitive élargie au comptable par la Direction). Lus par le moteur d'exercice, donc au socle. */
+      reglagesCloture: (D.REGLAGES_CLOTURE_SEMENCE || []).map(function (x, i) {
+        return Object.assign({ id: 'RCL' + C.pad(i + 1, 3), statut: 'actif', dateFin: null, creeLe: '2026-11-14', creePar: 'Semence du socle' }, x);
+      }),
+
+      /* LES PARAMÈTRES DE CLINIQUE (16/11/2026, lot PARAM-CLINIQUE) : le préavis de péremption (RG-05) et les tranches de la balance âgée, une fiche par version datée,
+         jamais réécrite. Trois fiches de semence (une par clé, mesurées : moins d'un kilo-octet). Lus par le stock, les créances, les alertes et les tableaux de bord, donc au socle. */
+      parametresClinique: D.semenceParametresClinique(),
+
+      /* LE PLAN ANNUEL (16/11/2026, lot PTA) : axes et états d'avancement (référentiels en base, lus par l'écran, l'alerte de retard et le poste) et réglage des signataires de l'impression
+         (une fiche par version datée : la FONCTION se désigne par une référence à un poste de l'organigramme, le titulaire se lit au poste, jamais un nom écrit ici). Quinze fiches, mesurées. */
+      /* L'organigramme est lu par le plan annuel (responsable par fonction, signataires de l'impression) en plus de son écran : il s'amorce donc au SOCLE (seize fiches), comme tout
+         référentiel lu par plusieurs écrans ; l'écran « Organisation & organigramme » ne ressème que s'il le trouve vide. */
+      postes: D.postesDeLaSemence(),
+      referentielsPlan: D.PLAN.semenceReferentiels(),
+      reglagesPlan: [{ id: 'RPL-001', statut: 'actif', dateEffet: null, signataires: [{ posteId: 'PST002' }, { posteId: 'PST001' }], motif: 'Défaut semé : la Directrice Administrative et le Directeur Médical, comme l’impression d’avant',
+        creeLe: '2026-11-16', creePar: 'Semence du socle' }],
 
       /* ====================================================================
        * COMPTES DE TRÉSORERIE — d'où l'argent sort
@@ -1658,7 +1996,7 @@
        * pharmacie, facturation, assurances, comptabilité. Le poser dans un
        * écran le rendrait vide partout ailleurs.
        * ==================================================================== */
-      catalogueTarifs: (D.CATALOGUE || []).map(function (t, i) {
+      catalogueTarifs: (D.TARIFS.semence.grille || []).map(function (t, i) { /* garde-prix : amorçage */
         return Object.assign({ id: 'TAR' + C.pad(i + 1, 3) }, t);
       }),
 
@@ -1668,7 +2006,7 @@
        * Le référentiel des variantes d'en-tête est RETIRÉ sur décision de la
        * Direction (Bugs 7/8/13 des Instructions) : toutes les pièces portent
        * désormais l'unique identité légale de C.BRAND — IFU 3201642748214,
-       * RCCM RB/NAT/2016-B-268. Les trois IFU / trois RCCM relevés sur les
+       * RCCM de l’identité légale datée (lot IDENT). Les trois IFU / trois RCCM relevés sur les
        * pièces anciennes restent documentés dans les scans de docs/ ; le
        * logiciel, lui, n'imprime plus qu'un en-tête.
        * ==================================================================== */
@@ -1810,7 +2148,15 @@
        * dit à la Direction qu'il n'y a rien à payer. C'est plus dangereux qu'un
        * tableau de bord absent.
        * ==================================================================== */
-      echeancesFiscales: genEcheances(),
+      echeancesFiscales: (function () {
+        /* L'exercice du jeu (daté, réputé payé jusqu'à la date du jeu) ET le suivant, sans règlement : l'échéancier de l'année
+           qui vient existe avant décembre (E-A3-09). Les identifiants se suivent d'un exercice à l'autre. */
+        var jeu = genEcheances(ANNEE_JEU, { obligations: obligationsSemees });
+        return jeu.concat(genEcheances(ANNEE_JEU + 1, { obligations: obligationsSemees, sansReglement: true, depart: jeu.length }));
+      })(),
+      /* Les paramètres du calendrier fiscal (délais d'alerte, montant de la CCIB), une fiche par version datée : lus par le suivi,
+         la vue mensuelle, cfg-fiscalite, la cloche et le planificateur. Au socle : plusieurs modules et api/cron.php les lisent. */
+      parametresFiscaux: D.semenceParametresFiscaux(),
 
       /* Comptes rendus de maternité : accouchement, planning familial, AMIU.
          Trois pièces aux rubriques propres — un gabarit unique aurait fait
@@ -1971,6 +2317,9 @@
                deux activités — c'est un seul poste, Caissière-Dispensatrice. */
             'dash-caissier': { voir: true, editer: true, annuler: true },
             'dash-pharmacien': { voir: true, editer: true, annuler: true },
+            /* PRD-TARIFS (Q9, réponse de la Direction du 10/11/2026) : il sert, il ne tarife pas. Le référentiel des produits se LIT à la caisse ; le prix d'achat qui
+               fonde le prix de vente (RG-02) se modifie par le gestionnaire de stock (réception, importation) et la Direction. */
+            'm6-produits': { voir: true, editer: false, annuler: false },
 
             /* Le patient s'identifie au guichet ; son dossier ne s'y ouvre pas. */
             'm1-patients': { voir: true, editer: false, annuler: false },
@@ -2002,7 +2351,7 @@
             'm6-mouvements': { voir: false, editer: false, annuler: false },
             'm6-lots': { voir: false, editer: false, annuler: false },
             'm6-inventaire': { voir: true, editer: false, annuler: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
 
             /* L'AVOIR se consulte au guichet — le patient revient avec sa
                pièce — mais son ÉMISSION appartient au Comptable et à la DAF
@@ -2043,7 +2392,7 @@
             'm6-stock-detail': { voir: false },
             'm6-transferts': { voir: false },
             'm6-inventaire': { voir: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
             'm6-point-ventes': { voir: false },
             'm6-point-stock': { voir: false },
             /* Le catalogue et les valeurs de référence du laboratoire sont
@@ -2127,6 +2476,10 @@
             M13: { editer: false, annuler: false },
           },
           droitsEcrans: {
+            /* Arbitrage de la Direction (31/10/2026) : L'ACCUEIL TIENT le répertoire des ambulances à jour — c'est lui qui recueille et
+               vérifie les numéros. Écriture accordée sur CET écran seulement : le reste de M13 (secrétariat) reste fermé à l'accueil.
+               Sans cette surcharge d'écran, M13 en lecture lui rendait le répertoire consultable mais non modifiable. */
+            'm13-repertoire-ambulances': { voir: true, editer: true, annuler: false },
             /* ZONE 1 — identification, coordonnées, couverture, constantes.
                La zone clinique ne lui est pas ouverte (RG-13), et chacune de
                ses consultations du dossier est journalisée. */
@@ -2184,6 +2537,9 @@
             'm1-patients': { voir: true, editer: false, annuler: false },
             'm1-patient-profil': { voir: true, editer: false, annuler: false },
             'm1-externe': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : le biologiste y voit les bornes et unités du laboratoire. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
 
             /* CE QUI EST CLINIQUE — RG-13. */
             'm1-dossier-medical': { voir: false },
@@ -2358,6 +2714,9 @@
             'm2-imagerie-mammographie': { voir: true, editer: true, annuler: true },
             'm2-imagerie-scanner': { voir: true, editer: true, annuler: true },
             'm2-imagerie-irm': { voir: true, editer: true, annuler: true },
+            /* Vague 92 : la famille « imagerie » se valide par l'échographiste ; le catalogue (CFG) lui est OUVERT EN LECTURE, sans le
+               modifier : il y trouve ses examens et le bouton Valider, rien d'autre. */
+            'cfg-imagerie-catalogue': { voir: true, editer: false, annuler: false },
             /* Phase 8 — l'imagerie éclatée : son poste de travail. Le module
                M2 ne le liste pas ; ce sont ces surcharges qui ACCORDENT.
                Sur le registre des demandes, il ÉCRIT — exécuter la demande
@@ -2370,6 +2729,9 @@
             /* Les statistiques de SON activité : PIL lui est fermé au module
                (aucun accès financier), l'écran s'accorde nommément. */
             'm2-stats-echographie': { voir: true, editer: false, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : l'échographiste y voit le catalogue de l'imagerie. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
 
             /* Les écrans de M1 ajoutés depuis, rouverts par héritage du
                module : l'échographiste lit l'indication, il ne tient ni le
@@ -2423,6 +2785,11 @@
             'm10-stats-permanences': { voir: true, editer: false, annuler: false },
             'm10-stats-presence': { voir: true, editer: false, annuler: false },
             'm10-presences': { voir: true, editer: true, annuler: false },
+            /* LE SURVEILLANT VALIDE LES CONGÉS ET LES ORDRES DE MISSION (Direction, 09/11/2026, Planning Q2 et Q3 : le circuit des présences vaut aussi pour eux). Il
+               OUVRE les deux registres pour trancher ; il ne les SAISIT ni ne les modifie (editer: false) : signer n'est pas saisir. La validation est un droit du
+               circuit (moteur : VALIDATION_RESERVEE), pas un droit d'édition du module. */
+            'm10-conges': { voir: true, editer: false, annuler: false },
+            'm10-missions': { voir: true, editer: false, annuler: false },
             /* LA BIBLIOTHÈQUE DES ÉTATS RESTE OUVERTE. Le cahier des charges
                fait de l'impression une exigence de CHAQUE poste, et c'est un
                catalogue : aucune écriture n'y est possible. Les trois écrans
@@ -2506,6 +2873,9 @@
           droits: droitsChirurgien,
           droitsEcrans: {
             'dash-chirurgien': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : le chirurgien y voit les check-listes du bloc. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
             /* Même discipline que le médecin sur le stock et le laboratoire :
                il prescrit, il ne tient ni l'un ni l'autre. */
             'm5-catalogue': { voir: true, editer: false, annuler: false },
@@ -2531,6 +2901,9 @@
           droits: droitsAnesthesiste,
           droitsEcrans: {
             'dash-anesthesiste': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : l'anesthésiste y voit les check-listes du bloc. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
             /* Les constantes se saisissent — c'est son matériau de travail. */
             'm1-constantes': { voir: true, editer: true, annuler: false },
             'm5-catalogue': { voir: true, editer: false, annuler: false },
@@ -2601,7 +2974,9 @@
           droitsEcrans: {
             'm6-stock-gros': { voir: false },
             'm6-transferts': { voir: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
+            /* Vague 92 : le Directeur Médical valide le catalogue de l'imagerie (famille `imagerie`) : écran ouvert en lecture. */
+            'cfg-imagerie-catalogue': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'Direction médicale : écrit le clinique (M1-M5), lit le stock et la caisse, ne les '
@@ -2648,6 +3023,12 @@
             'm10-badges-modeles': { voir: true, editer: true, annuler: true },
             'm10-badges-impression': { voir: true, editer: true, annuler: false },
             'm10-badges-verification': { voir: true, editer: false, annuler: false },
+            /* LA PASSERELLE SMS SE LIT, ELLE NE SE RÈGLE PAS ICI : CFG et M13 sont en écriture pour la Direction, ces deux écrans
+               sont nommés en lecture (le réglage et le test sont le geste de l'administrateur et de la DAF). */
+            'cfg-sms': { voir: true, editer: false, annuler: false },
+            'm13-sms-journal': { voir: true, editer: false, annuler: false },
+            /* LE BARÈME DE L'AIB SE LIT : CFG est en écriture pour la Direction, l'écran est nommé en lecture (le comptable le tient). */
+            'cfg-bareme-aib': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La Direction lit tout et décide : administration, sécurité, configuration, '
@@ -2694,6 +3075,10 @@
             /* La configuration fiscale engage la clinique devant la DGI :
                elle se décide, elle ne se retouche pas au fil des saisies. */
             'mecef-config': { voir: true, editer: false, annuler: false },
+            /* A2 (31/10/2026) : le comptable GÉNÈRE les bulletins, il ne les VALIDE pas. Voir seulement : celui qui calcule ne signe pas. */
+            'm11-validation': { voir: true, editer: false, annuler: false },
+            /* Le barème de l'AIB est une règle comptable datée : le comptable la tient, par surcharge d'écran (il n'a pas CFG au module). */
+            'cfg-bareme-aib': { voir: true, editer: true, annuler: true },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La comptabilité, la caisse (avoirs compris), les créances, la paie et le fiscal. '
@@ -2769,29 +3154,6 @@
           motif: 'Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, '
             + 'rien du dossier au-delà de l’identité du patient transporté.',
         },
-        {
-          /* ARCHIVÉ : le poste n'existe pas. Le rôle est conservé — un rôle
-             s'archive, il ne se supprime jamais (RG-14), et des fiches de
-             maintenance portent sa signature — mais il n'ouvre plus de
-             session. Ses droits sur le parc technique passent à l'agent
-             administratif : un archivage va toujours avec son transfert. */
-          id: 'RBAC11', role: 'biomedical', statut: 'archive', nouveau: true,
-          transfereA: 'agentadmin',
-          libelle: 'Ingénieur biomédical', libelleCourt: 'Ing. biomed.', couleur: 'info',
-          accueil: 'dash-biomedical',
-          droits: droitsBiomedical,
-          droitsEcrans: {
-            /* Il voit les demandes et l'activité des automates, jamais les
-               RÉSULTATS : un résultat n'est opposable qu'après validation
-               biologique, et cette validation n'est pas la sienne. */
-            'm5-resultats': { voir: false },
-          },
-          definiLe: '2026-08-25', definiPar: 'Direction',
-          motif: 'Rôle créé le 25/08/2026 puis laissé SANS TITULAIRE le 26/08 : la Direction a '
-            + 'confirmé que KINNOU A. Ganiou reste au laboratoire comme biologiste médical chef de '
-            + 'service. Le rôle subsiste — la clinique pourra le pourvoir — mais personne ne le porte.',
-          sansTitulaire: true,
-        },
       ],
       /* Emplacements de rangement — rayons et casiers. Amorcés depuis ce que
          les produits portent déjà : le référentiel ne part pas de zéro, il
@@ -2846,13 +3208,6 @@
          *
          * Rien n'est supprimé : rouvrir l'activité rend les écrans en l'état.
          * ============================================================== */
-        { id: 'ACT-BIOMED', statut: 'actif', actif: false,
-          libelle: 'Poste d’ingénieur biomédical',
-          ecrans: ['dash-biomedical'],
-          motif: 'Poste inexistant à la clinique. Le rôle avait été créé sur une lecture erronée de '
-            + 'la liste des comptes ; la Direction a rectifié le 27/08/2026 — l’agent concerné est '
-            + 'biologiste médical. Le parc technique reste ouvert, tenu par l’administration.',
-          fermeLe: '2026-08-27', fermePar: 'Direction' },
 
         {
           id: 'MOD01', code: 'M5-BANQUE', libelle: 'Banque de sang', module: 'M5',
@@ -2874,18 +3229,15 @@
          les valeurs peuvent changer » — d'où leur passage par le magasin. */
       /* Pathologies — lues par la consultation, le dossier patient et les
          statistiques de morbidité, donc amorcées ici. */
-      /* VALIDATIONS ÉCRITES DU 01/09/2026 (vague 51) — les professionnels
-         nommés ont tranché : les pathologies par les médecins (tableau de
-         morbidité), les bornes suppléées par le biologiste médical. La
-         SEMENCE (D.PATHOLOGIES, L.VARIABLES) garde son marquage : elle
-         documente ce qui venait d'un document et ce qui a été suppléé. */
+      /* VALIDATIONS ÉCRITES DU 01/09/2026 (vague 51), RECONDUITES le 07/11/2026
+         sous la forme que le moteur de validation écrit lui-même (`valideLe`,
+         `validePar`, `valideRole`) : la Direction a retenu la mention
+         « validation écrite du 01/09/2026 », jamais un nom de personne
+         inventé. La SEMENCE (D.PATHOLOGIES, L.VARIABLES) garde son marquage :
+         elle documente ce qui venait d'un document et ce qui a été suppléé. */
       pathologies: D.PATHOLOGIES.map(function (x) {
         var rec = Object.assign({}, x);
-        if (rec.aValider) {
-          rec.aValider = false;
-          rec.valideLe = '2026-09-01';
-          rec.validePar = 'Médecins — tableau de morbidité';
-        }
+        if (rec.aValider) Object.assign(rec, { aValider: false }, VALIDATION_ECRITE_0109);
         return rec;
       }),
       examensLabo: L.EXAMENS.map(function (e) { return Object.assign({}, e); }),
@@ -2895,9 +3247,7 @@
       variablesLabo: L.VARIABLES.map(function (v) {
         var rec = Object.assign({}, v);
         if (rec.aValider) {
-          rec.aValider = false;
-          rec.valideLe = '2026-09-01';
-          rec.validePar = 'Biologiste médical';
+          Object.assign(rec, { aValider: false }, VALIDATION_ECRITE_0109);
           rec.source = 'Valeur usuelle, validée par le biologiste médical le 01/09/2026';
         }
         return rec;
@@ -3070,6 +3420,143 @@
     return JSON.parse(raw);
   }
 
+  /* LA SEMENCE BÂTIT LE RÉFÉRENTIEL DE PRIX À PARTIR DES VALEURS D'ORIGINE (PRD-TARIFS, T1). Pendant la semence, les lecteurs de la grille et les
+     propriétés calculées des constantes rendent la valeur d'ORIGINE : lire le référentiel d'un magasin précédent, au moment d'en semer un neuf, ferait
+     porter à la semence les prix qu'un poste avait corrigés. */
+  function seed() {
+    var TA = D.TARIFS;
+    TA.modeSemence(true);
+    try {
+      var o = seedBrut();
+      var m = TA.migrer({ actes: o.actes, grille: TA.semence.grille, analyses: TA.semence.analyses });
+      /* Les PRODUITS : une prestation par référence, version 1 = le prix d'achat de la fiche semée (PRD-TARIFS, lot T5). */
+      var mp = TA.migrerProduits(o.produits);
+      o.tarifs = m.tarifs.concat(mp.tarifs);
+      o.versionsTarif = m.versions.concat(mp.versions);
+      return o;
+    } finally { TA.modeSemence(false); }
+  }
+
+  /* REPRISE D'UN MAGASIN D'AVANT LE RÉFÉRENTIEL : le prix FACTURÉ aujourd'hui est celui de la collection `actes` (la caisse la lit), celui de la constante
+     pour les analyses et pour la grille. Les éditions faites aux collections que personne ne lisait (`analyses`, `catalogueTarifs`) sont LISTÉES, jamais
+     appliquées. Rend { tarifs, versions, ecarts } ; ne touche pas au magasin. */
+  function migrerTarifsDepuis(ancien) {
+    var TA = D.TARIFS;
+    var ecarts = [];
+    var m = TA.migrer({ actes: ancien.actes || [], grille: TA.semence.grille, analyses: TA.semence.analyses, catalogue: ancien.catalogueTarifs || [] });
+    (ancien.analyses || []).forEach(function (a) {
+      var s = TA.semence.analyses.filter(function (x) { return x.code === a.code; })[0];
+      if (s && a.prix !== s.prix) ecarts.push({ type: 'analyses-collection', code: a.code, collection: a.prix, facture: s.prix, detail: 'Prix édité dans la collection analyses sans effet sur la facturation : non repris.' });
+    });
+    m.ecarts = m.ecarts.concat(ecarts);
+    /* Les produits d'un magasin d'AVANT le versionnement du prix d'achat : le prix d'achat tenu aujourd'hui est la version 1 (lot T5). */
+    var mp = TA.migrerProduits(ancien.produits || [], { origine: 'reprise' });
+    m.tarifs = m.tarifs.concat(mp.tarifs);
+    m.versions = m.versions.concat(mp.versions);
+    return m;
+  }
+
+  /* LA REPRISE D'UN MAGASIN DÉJÀ VERSIONNÉ (lot T5) : les prestations et versions tenues sont gardées TELLES QUELLES (une décision de la Direction ne se ré-amorce pas) ; on y ajoute les
+     prestations que la nouvelle semence porte et que l'ancien magasin n'avait pas, et les PRODUITS : la version 1 d'un produit est le prix d'achat qu'il TENAIT (la fiche de l'ancien
+     magasin), à défaut celui de la semence. Rien n'est inventé : un prix absent reste `manquant`. */
+  function reprendreTarifs(g) {
+    var TA = D.TARIFS, vus = {}, ajoutT = [], ajoutV = [], anciens = {};
+    g.tarifs.forEach(function (t) { vus[t.code] = true; });
+    (g.produits || []).forEach(function (p) { if (p && p.code) anciens[p.code] = p; });
+    var mp = TA.migrerProduits((db.produits || []).map(function (p) {
+      var a = anciens[p.code];
+      return a ? Object.assign({}, p, { prixAchat: a.prixAchat, prixVente: a.prixVente }) : p;
+    }), { origine: 'reprise' });
+    var codesPrestations = {};
+    (db.tarifs || []).forEach(function (t) { if (t.famille !== 'PRODUIT' && !vus[t.code]) { ajoutT.push(t); codesPrestations[t.code] = true; } });
+    (db.versionsTarif || []).forEach(function (v) { if (codesPrestations[v.code]) ajoutV.push(v); });
+    mp.tarifs.forEach(function (t) { if (!vus[t.code]) ajoutT.push(t); });
+    mp.versions.forEach(function (v) { if (!vus[v.code]) ajoutV.push(v); });
+    db.tarifs = g.tarifs.concat(ajoutT);
+    db.versionsTarif = g.versions.concat(ajoutV);
+  }
+
+  /* UN PRODUIT SANS PRESTATION DE PRIX (fiche écrite par un chemin qui n'a pas posé sa version 1 : reprise d'un magasin ancien, fiche posée par un outil) reçoit la sienne, ORIGINE
+     « reprise » : le prix d'achat qu'elle tient aujourd'hui, jamais un zéro (un prix absent est `manquant`). Ce n'est pas la voie de la CRÉATION (`PR.creerPrixProduit`, qui
+     passe par `proposerTarif`) : c'est la réparation d'une donnée existante. Rend vrai si quelque chose a été posé. */
+  function assurerTarifProduit(produit) {
+    if (!db || !produit || !produit.code || produit.statut === 'archive') return false;
+    if (!Array.isArray(db.tarifs)) db.tarifs = [];
+    if (!Array.isArray(db.versionsTarif)) db.versionsTarif = [];
+    var h = D.TARIFS.lire();
+    if (h ? h.parCode[produit.code] : db.tarifs.some(function (t) { return t.code === produit.code && t.statut !== 'archive'; })) return false;
+    var m = D.TARIFS.migrerProduits([produit], { origine: 'reprise' });
+    if (!m.tarifs.length) return false;
+    db.tarifs.push(m.tarifs[0]); db.versionsTarif.push(m.versions[0]);
+    D.TARIFS.invalider();
+    return true;
+  }
+
+  /* LA PROJECTION DE LECTURE : `actes`, `analyses` et `catalogueTarifs` portent, pour chaque prestation, le prix EN VIGUEUR AUJOURD'HUI. Ce n'est pas un geste
+     (aucune ligne de journal, rien n'est « modifié » au sens métier) : c'est l'état dérivé du référentiel, reconstruit à l'hydratation, à chaque décision et
+     au changement de jour. Seuls les champs de PRIX sont touchés : un marquage « tarif d'attente », un libellé ou un secteur restent ce qu'ils sont. */
+  function projeterTarifs() {
+    if (!db || !Array.isArray(db.tarifs) || !db.tarifs.length) return 0;
+    /* Les produits sans prestation de prix reçoivent la leur AVANT la projection (lot T5). */
+    (db.produits || []).forEach(function (p) { assurerTarifProduit(p); });
+    var TA = D.TARIFS, h = TA.lire();
+    if (!h) return 0;
+    var n = 0;
+    function projeter(nom, index, correctif, creer) {
+      if (!Array.isArray(db[nom])) db[nom] = [];
+      var vus = {};
+      db[nom].forEach(function (doc) {
+        vus[doc.code] = true;
+        var p = index[doc.code]; if (!p) return;
+        var s = TA.instantane(h, p, null); if (!s) return;
+        var c = correctif(doc, p, s);
+        if (c) { Object.assign(doc, c); n++; }
+      });
+      Object.keys(index).forEach(function (code) {
+        if (vus[code] || !creer) return;
+        var p = index[code], s = TA.instantane(h, p, null);
+        if (!s) return;
+        db[nom].push(creer(p, s)); n++;
+      });
+    }
+    projeter('actes', h.parActe, TA.correctifActe, function (p, s) {
+      var d = { id: 'ACT-' + p.code, statut: 'actif', code: p.code, libelle: p.libelle, secteur: p.secteur || '', prix: s.na, source: p.source || null };
+      if (p.codeGrille) { d.codeTarif = p.codeGrille; d.prixNonAssure = s.na; d.prixAssure = s.nc ? null : s.pa; d.nonCouvert = s.nc; d.assurable = p.assurable; }
+      return d;
+    });
+    projeter('analyses', h.parAnalyse, TA.correctifAnalyse, function (p, s) {
+      return { id: 'ANA-' + p.code, n: db.analyses.length + 1, code: p.code, designation: p.libelle, categorie: '', prix: s.na, echantillon: '', delai: '', statut: 'Actif' };
+    });
+    /* Les PRODUITS : `produits` ne porte plus, pour ses champs de prix, que le prix d'achat et le prix de vente DÉRIVÉ en vigueur aujourd'hui (RG-02) ; jamais de fiche créée d'ici. */
+    projeter('produits', h.parProduit, TA.correctifProduit, null);
+    projeter('catalogueTarifs', h.parGrille, TA.correctifGrille, function (p, s) {
+      return { id: 'TAR-' + p.codeGrille, statut: 'actif', code: p.codeGrille, libelle: p.libelleGrille || p.libelle, famille: p.famille, prixNonAssure: s.na, prixAssure: s.nc ? null : s.pa,
+        nonCouvert: s.nc, assurable: p.assurable, prixAValider: s.na == null, source: p.source || null };
+    });
+    if (n) save();
+    var ecarts = paritesTarifs();
+    if (ecarts.length) { try { console.error('PARITÉ DES TARIFS : ' + ecarts.length + ' fiche(s) de lecture ne disent pas ce que le référentiel dit (' + ecarts.slice(0, 3).map(function (e) { return e.collection + ' ' + e.code; }).join(', ') + ').'); } catch (e) { /* console absente */ } }
+    return n;
+  }
+
+  /* GARDE DE PARITÉ : chaque fiche des trois collections de lecture doit dire ce que le référentiel dit aujourd'hui. Un écart est une ERREUR nommée,
+     jamais un affichage différent. Rend la liste des écarts (vide quand tout concorde). */
+  function paritesTarifs() {
+    var out = [];
+    if (!db || !Array.isArray(db.tarifs) || !db.tarifs.length) return out;
+    var TA = D.TARIFS, h = TA.lire();
+    if (!h) return out;
+    [['actes', h.parActe, TA.correctifActe], ['analyses', h.parAnalyse, TA.correctifAnalyse], ['catalogueTarifs', h.parGrille, TA.correctifGrille], ['produits', h.parProduit, TA.correctifProduit]].forEach(function (x) {
+      (db[x[0]] || []).forEach(function (doc) {
+        var p = x[1][doc.code]; if (!p) return;
+        var s = TA.instantane(h, p, null); if (!s) return;
+        var c = x[2](doc, p, s);
+        if (c) out.push({ collection: x[0], code: doc.code, ecart: c });
+      });
+    });
+    return out;
+  }
+
   function load() {
     if (db && !_provisoire) return db;
     /* Coquille provisoire posée, hydratation toujours en vol : on la garde. */
@@ -3093,6 +3580,8 @@
       db = vide();
       return db;
     }
+    /* LECTURE REFUSÉE (vague 84) : coquille jetable, jamais semée ni poussée au serveur. */
+    if (SRV.sansMagasin) { db = vide(); return db; }
     /* PAS DE SESSION, PAS DE SEMENCE. L'écran de connexion charge le socle
        comme tous les autres ; s'il semait, il écrirait sans session et le
        serveur refuserait — à raison (RG-12). Il n'a besoin que de
@@ -3106,7 +3595,40 @@
     db = seed();
     invaliderManifeste();
     ecrire();
+    appliquerIdentite();
     return db;
+  }
+
+  /* ==========================================================================
+   * L'IDENTITÉ LÉGALE EN FORCE (06/11/2026)
+   * --------------------------------------------------------------------------
+   * `identiteALaDate(date)` : la version dont `debut <= date` (ou `debut` null,
+   * « depuis l'ouverture du dossier ») et (`fin` null ou `date <= fin`) ; une
+   * date antérieure à toute version rend la version 1. Elle ne lit QUE le
+   * magasin chargé : appeler `load()` ici sèmerait en boucle pendant le semis.
+   *
+   * `appliquerIdentite()` écrase C.BRAND EN PLACE avec la version en force
+   * AUJOURD'HUI : print.js et core.js ont capturé la référence, une
+   * réaffectation les laisserait sur l'ancienne identité. Appelée au
+   * chargement, après toute écriture dans `identiteLegale` (abonnement) et à
+   * chaque relecture par le sondage inter-postes (qui émet la collection).
+   * ======================================================================== */
+  function identiteALaDate(date) {
+    if (!db || !Array.isArray(db.identiteLegale)) return null;
+    var liste = db.identiteLegale.filter(function (v) { return v && v.statut !== 'archive'; });
+    if (!liste.length) return null;
+    var d = date ? (typeof date === 'string' ? date.slice(0, 10) : C.iso(date)) : C.iso(C.aujourdhui());
+    var couvrantes = liste.filter(function (v) {
+      return (!v.debut || d >= String(v.debut).slice(0, 10)) && (!v.fin || d <= String(v.fin).slice(0, 10));
+    }).sort(function (a, b) { return (b.version || 0) - (a.version || 0); });
+    if (couvrantes[0]) return couvrantes[0];
+    return liste.slice().sort(function (a, b) { return (a.version || 0) - (b.version || 0); })[0];
+  }
+  function appliquerIdentite() {
+    var v = identiteALaDate();
+    if (!v) return false;
+    Object.assign(C.BRAND, C.champsIdentite(v));
+    return true;
   }
 
   /**
@@ -3181,6 +3703,9 @@
     envoye: {},        /* dernière forme envoyée, par collection */
     meta: {},          /* idem, pour les clés hors collections */
     enVol: false,
+    /* Lot CONT étape 0 : un geste est arrivé pendant qu'un envoi volait. Il n'est PAS envoyé tout de suite (deux envois en vol peuvent arriver dans le désordre, le dernier
+       ARRIVÉ gagnerait, pas le dernier PARTI) : le delta sera calculé à la fin de l'envoi en vol, avec l'état le plus récent. Le geste local, lui, reste immédiat. */
+    reprise: false,
     erreurDite: false,
     /* TENTÉE n'est pas TERMINÉE. `teste` passe à vrai dès le DÉPART de
        l'hydratation ; toute lecture faite pendant la requête voyait donc
@@ -3188,6 +3713,10 @@
        répondait très bien. `repondu` ne vaut vrai qu'une fois la réponse
        reçue — c'est lui, et lui seul, qui autorise à conclure à une panne. */
     repondu: false,
+    /* Vague 84 : la LECTURE du magasin exige une session. Vrai quand la page n'a pas pu (ou pas dû) le lire :
+       pas de jeton, ou jeton refusé par le serveur. Elle travaille alors sur une coquille jetable, qui ne
+       s'écrit JAMAIS vers le serveur (sinon des collections vides remplaceraient les vraies). */
+    sansMagasin: false,
   };
   var CLE_JETON = 'sigh-cnt:jeton';
 
@@ -3207,6 +3736,18 @@
     } catch (e) { return false; }
   }
 
+  /** Ce qu'une montée de version doit garder des FICHIERS numérisés : les trois collections, si une fiche porte un fichier ou un base64 ; sinon rien (le jeu de démonstration se resème). */
+  function fichiersAGarder(o) {
+    var a = (o && o.courriers) || [], b = (o && o.documentsPatient) || [], f = (o && o.fichiers) || [], l = (o && o.lecturesOcr) || [];
+    var porte = function (x) { return x && ((x.fichier && typeof x.fichier === 'object' && x.fichier.sha256) || (typeof x.donnees === 'string' && x.donnees.indexOf('data:') === 0)); };
+    if (!f.length && !l.length && !a.some(porte) && !b.some(porte)) return null;
+    return { courriers: a, documentsPatient: b, fichiers: f, lecturesOcr: l };
+  }
+  /** Reste-t-il un scan en base64 dans le magasin ? C'est la condition de la migration (lot D1). */
+  function migrationFichiersDue() {
+    return !!(db && Array.isArray(db.documentsPatient) && db.documentsPatient.some(function (d) { return typeof d.donnees === 'string' && d.donnees.indexOf('data:') === 0 && !(d.fichier && typeof d.fichier === 'object'); }));
+  }
+
   /**
    * Charge le magasin depuis le serveur. Résout `true` si le magasin vient de
    * la base, `false` si l'on reste sur le stockage du navigateur.
@@ -3217,14 +3758,60 @@
     SRV.teste = true;
     if (!serveurPlausible()) { SRV.repondu = true; return global.Promise.resolve(false); }
 
-    return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json' } })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    /* LA LECTURE EXIGE UNE SESSION (vague 84). Le jeton se lit AVANT la requête : le serveur refuse tout GET sans
+       session valide (401 SESSION_REQUISE). Sans jeton on ne demande même pas : une page de connexion, une erreur
+       ou la page publique d'enquête n'ont aucun magasin à lire, et un refus annoncé d'avance ne pollue pas la
+       console. La session affichée n'est qu'un pointeur : sans jeton qui la soutienne, il est retiré. */
+    function sansLecture() {
+      SRV.repondu = true;
+      _provisoire = false;
+      SRV.actif = true;          /* le serveur est joignable : seule la lecture est refusée */
+      SRV.sansMagasin = true;
+      SRV.jeton = null;
+      try { storage.remove(CLE_JETON); } catch (e) { /* sans effet */ }
+      try { storage.remove('sigh-cnt:session'); } catch (e) { /* sans effet */ }
+      db = null;
+      invaliderManifeste();
+      return false;
+    }
+    try { SRV.jeton = storage.get(CLE_JETON) || null; } catch (e) { SRV.jeton = null; }
+    if (!SRV.jeton) return global.Promise.resolve(sansLecture());
+
+    /* LE CHARGEMENT A UN DÉLAI. Une réponse qui n'arrive jamais laissait la page BLANCHE et muette : l'agent
+       attendait sans rien lire, et le banc d'essai 150 secondes. Chaque tentative est abandonnée au bout de
+       30 s et reprise UNE fois ; au second échec on retombe, comme avant, sur le stockage du navigateur — mais
+       en le disant dans la console. Une tentative qui aboutit n'est jamais coupée : 5 Mo en 30 s, c'est déjà un réseau en panne. */
+    function chargerMagasin(tentative) {
+      var ctl = global.AbortController ? new global.AbortController() : null;
+      var minuterie = ctl ? global.setTimeout(function () { ctl.abort(); }, 30000) : null;
+      return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json', 'X-Sigh-Jeton': SRV.jeton }, signal: ctl ? ctl.signal : undefined })
+        .then(function (r) {
+          if (minuterie) global.clearTimeout(minuterie);
+          /* 401 : la session portée par ce navigateur n'existe plus au serveur (fermée, expirée). */
+          if (r.status === 401) return { _refuse: true };
+          return r.ok ? r.json() : null;
+        })
+        .catch(function (e) {
+          if (minuterie) global.clearTimeout(minuterie);
+          if (tentative < 2) {
+            if (global.console && global.console.warn) global.console.warn('[SIGH] Chargement du magasin sans réponse (tentative ' + tentative + '), nouvel essai :', e && e.name);
+            return chargerMagasin(tentative + 1);
+          }
+          throw e;
+        });
+    }
+    return chargerMagasin(1)
       .then(function (o) {
+        if (o && o._refuse) return sansLecture();
         SRV.repondu = true;
         _provisoire = false;          /* la coquille d'attente a fait son temps */
         if (!o || o.erreur) { invaliderManifeste(); return false; }
         SRV.actif = true;
-        try { SRV.jeton = storage.get(CLE_JETON) || null; } catch (e) { SRV.jeton = null; }
+        /* La séquence des événements au moment de la lecture : tout ce qui arrivera après viendra par
+           le sondage. Ce n'est PAS une donnée du magasin — on la retire avant qu'elle n'y entre. */
+        SYNC.seq = Number(o._seq) || 0;
+        delete o._seq;
+        demarrerSync();
         if (o._vide) {
           /* LA BASE EST VIDE — ET L'ON NE SÈME PAS ICI. Le peuplement écrit
              aussitôt, or la session du poste n'est pas encore ouverte à cet
@@ -3241,8 +3828,36 @@
            pousse le neuf — sinon la base garderait indéfiniment un jeu que
            plus aucun écran ne sait lire. */
         if (!o._version || o._version !== VERSION) {
+          /* LES POSTES DE L'ORGANIGRAMME SURVIVENT AU RÉ-AMORÇAGE (lot ORG2) : c'est un référentiel que la clinique administre ; la reprise remplace ceux
+             qu'elle n'a pas touchés par la semence de la photo, et garde les autres tels quels. */
+          var anciensPostes = Array.isArray(o.postes) && o.postes.length ? o.postes : null;
+          /* LES PRIX DES ACTES SURVIVENT AU RÉ-AMORÇAGE (PRD-TARIFS, T1) : la valeur facturée aujourd'hui devient la version 1 du référentiel. */
+          var anciensTarifs = (!Array.isArray(o.tarifs) || !o.tarifs.length) && Array.isArray(o.actes) && o.actes.length
+            ? { actes: o.actes, analyses: o.analyses, catalogueTarifs: o.catalogueTarifs, produits: o.produits } : null;
+          /* LE RÉFÉRENTIEL DE PRIX DÉJÀ VERSIONNÉ SURVIT AU RÉ-AMORÇAGE (lot T5) : une version décidée est une preuve, on ne la ré-amorce pas. Les prestations nouvelles de la semence et les
+             produits y sont AJOUTÉS (le prix d'achat tenu aujourd'hui devient la version 1). */
+          var gardeTarifs = Array.isArray(o.tarifs) && o.tarifs.length && Array.isArray(o.versionsTarif) && o.versionsTarif.length
+            ? { tarifs: o.tarifs, versions: o.versionsTarif, produits: o.produits } : null;
+          /* LES FICHIERS NUMÉRISÉS SURVIVENT AU RÉ-AMORÇAGE (lot DOCS-1) : un scan déposé est une pièce de la clinique, pas un jeu de démonstration. Les courriers, les documents du patient et le registre
+             des empreintes sont repris TELS QUELS dès qu'une fiche porte un fichier ou un base64 ; la migration range ensuite les base64 dans le dossier de fichiers. */
+          var gardeFichiers = fichiersAGarder(o);
+          /* LES SEUILS DE VARIATION BRUTALE SURVIVENT AU RÉ-AMORÇAGE (lot A2) : un seuil validé est une décision du biologiste médical, tracée ; aucun seuil n'est jamais semé. */
+          var gardeSeuils = Array.isArray(o.seuilsDelta) && o.seuilsDelta.length ? o.seuilsDelta : null;
           db = null;
           load();
+          if (gardeFichiers && db) { Object.keys(gardeFichiers).forEach(function (k) { db[k] = gardeFichiers[k]; }); save(); }
+          if (gardeSeuils && db) { db.seuilsDelta = gardeSeuils; save(); }
+          if (anciensPostes && db) { db.postes = anciensPostes; reprendreOrganigramme(db); save(); }
+          if (gardeTarifs && db) { reprendreTarifs(gardeTarifs); D.TARIFS.invalider(); projeterTarifs(); save(); }
+          if (anciensTarifs && db) {
+            var repris = migrerTarifsDepuis(anciensTarifs);
+            db.tarifs = repris.tarifs; db.versionsTarif = repris.versions;
+            var reels = repris.ecarts.filter(function (e) { return e.type === 'acte-grille' || e.type === 'catalogue-grille' || e.type === 'catalogue-inconnu' || e.type === 'analyses-collection'; });
+            if (reels.length) db._ecartsTarifs = reels;
+            D.TARIFS.invalider();
+            projeterTarifs();
+            save();
+          }
           SRV.envoye = {}; SRV.meta = {};   /* tout est à pousser */
           invaliderManifeste();
           return true;
@@ -3251,12 +3866,16 @@
         /* Ce qui vient d'être lu est, par construction, ce que le serveur a
            déjà : on ne le lui renverra pas au premier geste. */
         marquerEnvoye(db);
+        D.TARIFS.invalider();
+        projeterTarifs();
         /* APRÈS l'affectation, jamais avant : posée plus haut, l'invalidation
            était suivie d'une reconstruction immédiate du cache sur l'ANCIEN
            magasin — mesuré, la surcharge d'écran restait ignorée. */
         invaliderManifeste();
         fusionnerServiceDirection(db);
         normaliserEtatsResultat(db);
+        reprendreOrganigramme(db);
+        appliquerIdentite();
         return true;
       })
       .catch(function () { SRV.repondu = true; return false; });
@@ -3273,12 +3892,22 @@
   }
 
   /** Les collections et clés qui ont changé depuis le dernier envoi. */
+  /* Les créations ANNULÉES, retenues archivées : l'envoi global les joint à leur collection (voir `insert().undo`). */
+  var RETIREES = {};
+  function avecRetirees(k, liste) {
+    var r = RETIREES[k];
+    if (!r || !r.length) return liste;
+    var ids = {};
+    liste.forEach(function (x) { ids[x.id] = true; });
+    var plus = r.filter(function (x) { return !ids[x.id]; });
+    return plus.length ? liste.concat(plus) : liste;
+  }
   function delta() {
     var collections = {}, meta = {}, n = 0;
     Object.keys(db || {}).forEach(function (k) {
       var brut = JSON.stringify(db[k]);
       if (Array.isArray(db[k])) {
-        if (SRV.envoye[k] !== brut) { collections[k] = db[k]; SRV.envoye[k] = brut; n++; }
+        if (SRV.envoye[k] !== brut) { collections[k] = avecRetirees(k, db[k]); SRV.envoye[k] = brut; n++; }
       } else if (SRV.meta[k] !== brut) { meta[k] = db[k]; SRV.meta[k] = brut; n++; }
     });
     return n ? { collections: collections, meta: meta } : null;
@@ -3305,9 +3934,24 @@
     return SRV.promesseSession;
   }
 
-  /** Envoie le delta. Ouvre une session si le serveur la réclame, puis reprend. */
+  /** Envoie le delta. Ouvre une session si le serveur la réclame, puis reprend.
+   *  LOT CONT ÉTAPE 0 : UN SEUL ENVOI EN VOL. `enVol` n'était qu'un drapeau : deux envois parallèles pouvaient ARRIVER dans le désordre (un gros envoi, remise à la semence ou
+   *  amorçage, puis un petit geste : le serveur remplace la collection entière, le dernier arrivé gagne, et le geste posé juste après était écrasé en silence, jamais renvoyé puisque
+   *  le poste croyait l'avoir donné). Désormais `ecrire()` ne calcule PAS le delta tant qu'un envoi vole : il note `reprise`, et la fin de l'envoi en vol (réussi OU échoué) rappelle
+   *  `ecrire()`, qui calcule alors le delta avec l'état le plus récent : ordre conservé, rafales fusionnées, aucun geste perdu. Le geste local n'attend jamais, seul l'envoi attend.
+   *  Seul l'envoi de DÉPART DE PAGE (`urgent`, keepalive) ne peut pas attendre : la page meurt, mieux vaut un envoi de plus qu'un geste perdu. */
   function pousserServeur(charge, reessai, urgent) {
-    SRV.enVol = true;
+    if (!urgent) SRV.enVol = true;
+    return envoyerCharge(charge, reessai, urgent).then(function (o) {
+      if (!urgent) finirEnvoi();
+      return o;
+    }, function (e) { if (!urgent) finirEnvoi(); throw e; });
+  }
+  function finirEnvoi() {
+    SRV.enVol = false;
+    if (SRV.reprise) { SRV.reprise = false; ecrire(); }
+  }
+  function envoyerCharge(charge, reessai, urgent) {
     /* `keepalive` QUAND LA PAGE S'EN VA. Un `fetch` ordinaire meurt avec la
        page qui l'a lancé : l'envoi déclenché par `pagehide` n'arrivait donc
        jamais, et le drapeau « déjà peuplé » avec lui — le jeu se reconstruisait
@@ -3326,14 +3970,13 @@
         var attente = SRV.promesseSession || ouvrirSessionServeur(session());
         return attente.then(function (jeton) {
           if (!jeton) throw new Error('401 — aucune session de poste');
-          return pousserServeur(charge, true);
+          return envoyerCharge(charge, true);
         });
       }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
-    }).then(function (o) { SRV.enVol = false; return o; })
+    }).then(function (o) { SRV.echecs = 0; return o; })
       .catch(function (e) {
-        SRV.enVol = false;
         /* Le delta a été marqué comme envoyé : il ne repartirait jamais. On
            REVIENT donc en arrière, pour que la prochaine écriture le reprenne. */
         Object.keys(charge.collections || {}).forEach(function (k) { delete SRV.envoye[k]; });
@@ -3348,7 +3991,7 @@
         /* UNE SEULE NOUVELLE TENTATIVE, puis on s'arrête en le disant. Le
            delta a été remis en attente ; reprogrammer sans fin ferait tourner
            une boucle muette pendant que l'agent continue de saisir dans le
-           vide. */
+           vide. Les échecs comptés sont les échecs CONSÉCUTIFS (un envoi réussi remet le compte à zéro). */
         SRV.echecs = (SRV.echecs || 0) + 1;
         if (SRV.echecs < 2) { save(); return null; }
         signalerPanne('Le serveur a refusé l’enregistrement à deux reprises — ' + e.message);
@@ -3372,10 +4015,82 @@
    * PENDANT L'AMORÇAGE, elle est MUETTE : semer, c'est dix mille fiches, donc
    * dix mille requêtes. Le peuplement passe par l'envoi du magasin entier.
    * ======================================================================== */
+  /* ==========================================================================
+   * CE QUI A CHANGÉ SUR UN AUTRE POSTE (vague 70)
+   * --------------------------------------------------------------------------
+   * Toutes les ~3 secondes, le poste demande au serveur quels événements ont été
+   * écrits PAR D'AUTRES postes depuis la séquence qu'il connaît. S'il y en a, il
+   * relit seulement les collections concernées et les met en place, puis le dit
+   * aux écrans. Quatre précautions :
+   *  - jamais pendant qu'un geste local part (file, minuterie, envoi en vol) :
+   *    relire alors écraserait ce que l'agent vient de saisir — on diffère ;
+   *  - la forme relue devient la forme « déjà envoyée » : elle ne repart pas
+   *    au serveur comme si elle venait d'être modifiée ici ;
+   *  - hors ligne, le sondage échoue en silence et la pastille le dit ; rien
+   *    n'est perdu, la file locale se vide au retour du serveur ;
+   *  - onglet masqué : on ne sonde pas.
+   * ======================================================================== */
+  var SYNC = { seq: 0, timer: null, enCours: false, dernierSucces: 0, ok: null, depuisKO: 0, aRelire: {}, relectures: 0 };
+  function ecrituresLocalesEnCours() {
+    return FILE.actions.length + (FILE.enCours ? 1 : 0) + (_minuterie ? 1 : 0) + (SRV.enVol ? 1 : 0);
+  }
+  function demarrerSync() {
+    if (SYNC.timer || !SRV.actif || !global.setInterval) return;
+    SYNC.timer = global.setInterval(sonderEvenements, 3000);
+  }
+  function sonderEvenements() {
+    if (SYNC.enCours || !SRV.actif || !SRV.jeton) return global.Promise.resolve(false);
+    if (global.document && global.document.hidden) return global.Promise.resolve(false);
+    SYNC.enCours = true;
+    return global.fetch(urlApi('evenements.php?depuis=' + SYNC.seq), { headers: { 'X-Sigh-Jeton': SRV.jeton, Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        SYNC.ok = true; SYNC.dernierSucces = Date.now(); SYNC.depuisKO = 0;
+        var evs = (o && o.evenements) || [];
+        /* Plus de 200 événements d'un coup : on avance jusqu'au dernier reçu, le reste vient au tour suivant. */
+        SYNC.seq = evs.length >= 200 ? evs[evs.length - 1].seq : (o.seq || SYNC.seq);
+        evs.forEach(function (e) { SYNC.aRelire[e.collection] = true; });
+        return relireDistantes();
+      }, function () {
+        SYNC.ok = false; if (!SYNC.depuisKO) SYNC.depuisKO = Date.now();
+        return false;
+      })
+      .then(function (v) { SYNC.enCours = false; return v; }, function () { SYNC.enCours = false; return false; });
+  }
+  function relireDistantes() {
+    var noms = Object.keys(SYNC.aRelire);
+    if (!noms.length || !db) return global.Promise.resolve(false);
+    if (ecrituresLocalesEnCours() > 0) return global.Promise.resolve(false);   /* on diffère : le tour suivant reprendra */
+    return global.fetch(urlApi('magasin.php?collections=' + encodeURIComponent(noms.join(','))), { headers: { Accept: 'application/json', 'X-Sigh-Jeton': SRV.jeton || '' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        /* Un geste local a pu partir pendant la relecture : on laisse alors tomber, la collection sera relue. */
+        if (ecrituresLocalesEnCours() > 0) return false;
+        var mis = [];
+        noms.forEach(function (n) {
+          if (!Array.isArray(o[n])) return;
+          db[n] = o[n];
+          SRV.envoye[n] = JSON.stringify(o[n]);
+          delete SYNC.aRelire[n];
+          mis.push(n);
+        });
+        if (mis.length) {
+          SYNC.relectures += mis.length;
+          mis.forEach(function (n) { emit(n); });
+          try { if (global.SIGH && global.SIGH.app && global.SIGH.app.surDonneesDistantes) global.SIGH.app.surDonneesDistantes(mis); } catch (e) { console.error(e); }
+        }
+        return mis.length > 0;
+      }, function () { return false; });
+  }
+  function etatSync() {
+    return { actif: SRV.actif, ok: SYNC.ok, dernierSucces: SYNC.dernierSucces, depuisKO: SYNC.depuisKO, seq: SYNC.seq,
+      enAttente: ecrituresLocalesEnCours(), relectures: SYNC.relectures };
+  }
+
   var FILE = { actions: [], enCours: false, minuterie: null };
 
   function transmettre(action, collection, charge) {
-    if (!SRV.actif || _lot > 0 || PANNE.active) return;
+    if (!SRV.actif || SRV.sansMagasin || _lot > 0 || PANNE.active) return;
     if (!session()) return;   /* avant la connexion, rien n'a d'auteur */
     FILE.actions.push(Object.assign({ action: action, collection: collection }, charge));
     if (FILE.minuterie) clearTimeout(FILE.minuterie);
@@ -3417,6 +4132,7 @@
         }
         FILE.enCours = false;
         if (FILE.actions.length) viderFile();
+        else if (_apresFile) { _apresFile = false; ecrire(); }
         return null;
       })
       .catch(function (e) {
@@ -3442,7 +4158,9 @@
       /* Sans session, rien ne part : le serveur refuserait (RG-12) et la
          tentative se reprogrammerait en boucle. Avant la connexion il n'y a
          d'ailleurs aucune donnée d'agent à perdre. */
-      if (!session()) return;
+      if (!session() || SRV.sansMagasin) return;
+      /* Un envoi vole déjà : on n'en lance pas un second (lot CONT étape 0). Le delta sera calculé à sa fin, avec l'état le plus récent. */
+      if (SRV.enVol && !_enPartant) { SRV.reprise = true; return; }
       var charge = delta();
       if (charge) pousserServeur(charge, false, _enPartant);
       return;
@@ -3469,8 +4187,16 @@
       return fn();
     } finally {
       _lot--;
-      if (_lot === 0) ecrire();
+      if (_lot === 0) ecrireQuandLaFileEstVide();
     }
+  }
+  /* L'ENVOI D'UN LOT NE DOUBLE PAS LA FILE (lot T5b). Les gestes nommés encore en file (`crud.php`) portent la fiche TELLE QU'ELLE ÉTAIT quand ils ont été posés : si l'écart du lot
+     arrivait avant eux, une insertion en attente réécrirait au serveur une fiche que le lot venait de modifier (et la modifier ensuite n'arriverait plus : le lot est muet sur la file).
+     L'envoi attend donc que la file soit vide ; `viderFile` le déclenche à sa dernière réponse. File vide, rien ne change : l'envoi part tout de suite, comme avant. */
+  var _apresFile = false;
+  function ecrireQuandLaFileEstVide() {
+    if (SRV.actif && (FILE.actions.length || FILE.enCours) && !PANNE.active) { _apresFile = true; return; }
+    ecrire();
   }
 
   /**
@@ -3500,11 +4226,139 @@
       if (_minuterie) ecrire();
     });
   }
+  /* ==========================================================================
+   * CE QUI SURVIT À UNE RÉINITIALISATION — la liste vit AU SOCLE (vague 68)
+   * --------------------------------------------------------------------------
+   * « Réinitialiser » retire les données ENGENDRÉES pour la démonstration —
+   * patients, consultations, factures, mouvements, écritures — et garde ce qui
+   * fait le logiciel : le paramétrage, les référentiels issus des documents,
+   * les comptes, la matrice des droits, les catalogues, les règles datées.
+   *
+   * La liste vivait dans l'écran des paramètres, et elle était INCOMPLÈTE : la
+   * matrice RBAC, les modules actifs, les catalogues du laboratoire et de
+   * l'imagerie, le barème et la grille des primes n'y figuraient pas. Vider les
+   * jeux de test rouvrait la banque de sang, rendait TOUS les droits à TOUS
+   * les rôles (un rôle sans fiche a tout — vague 36) et privait le laboratoire
+   * de ses examens. C'est ce que « ça n'a pas marché » voulait dire.
+   *
+   * Et le vidage ne TENAIT pas : une quinzaine d'écrans ré-amorcent leur
+   * collection dès qu'ils la trouvent vide (contrats, budgets, avances, poches,
+   * achats…). Ouvrir l'écran suffisait à faire renaître le jeu, écran par
+   * écran. D'où le drapeau `_jeuVide`, posé par le vidage et lu par
+   * `amorcable()` : un amorçage de DÉMONSTRATION ne repart plus sur un magasin
+   * volontairement vidé ; un référentiel DÉRIVÉ d'un document (le calendrier
+   * fiscal) reste libre de se reconstruire, il ne porte aucune invention.
+   * ======================================================================== */
+  var COLLECTIONS_ESSENTIELLES = [
+    /* Paramétrage et référentiels administrés par la clinique */
+    'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes', 'banques',
+    'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel', 'soignants',
+    'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
+    'catalogueTarifs', 'tarifs', 'versionsTarif', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel', 'comptesResultat',
+    /* Comptes, droits et activation des modules */
+    'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
+    /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
+    'regimesTravail', 'regimesIndividuels', 'planningsPersonnalises', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux', 'parametresClinique', 'referentielsPlan', 'reglagesPlan',
+    /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
+    'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
+    'examensImagerie', 'variablesImagerie', 'pathologies',
+    /* Modèles (badges, messages, questionnaires) et emplacements de rangement */
+    'modelesBadge', 'modelesMessage', 'enquetes', 'pointsCollecte', 'emplacements',
+    /* LE JOURNAL D'AUDIT SE GARDE : il trace les tarifs arrêtés, les droits fermés, la
+       grille des primes — tout ce que le vidage CONSERVE. Effacer la trace de ce qu'on
+       garde contredirait RG-12 ; le vidage s'inscrit EN TÊTE du journal conservé. */
+    'audit',
+  ];
+  /* Dérivées d'un référentiel : vidées, elles se reconstruisent depuis leur
+     document — le vidage ne leur retire rien. */
+  var COLLECTIONS_DERIVEES = ['echeancesFiscales'];
+  /* LE PERSONNEL SE GARDE, PAS SA RÉMUNÉRATION DE DÉMONSTRATION (01/11/2026). L'effectif (noms, postes, services)
+     vient de l'organigramme : c'est un référentiel. Le salaire de base, l'échelon et le numéro CNSS sont des valeurs
+     tirées pour le jeu : les garder faisait survivre la masse salariale, le calcul de la paie, les redevances ORTB et
+     le coût de l'agent à « Réinitialiser ». Vidés, ces champs valent `null` : les écrans disent « non renseigné » et
+     la paie dit « non calculable » au lieu d'afficher un zéro. Les fiches de poste ne sont plus conservées non plus :
+     les 26 fiches « à rédiger » étaient recensées d'office depuis l'effectif. */
+  var CHAMPS_DE_TEST_CONSERVES = { personnel: ['salaireBase', 'categorie', 'cnss'] };
+
+  function essentielle(nom) { return COLLECTIONS_ESSENTIELLES.indexOf(nom) >= 0; }
+  /** Le magasin a-t-il été volontairement vidé de ses jeux de test ? */
+  function jeuVide() { load(); return !!(db && db._jeuVide); }
+  /** Un amorçage d'écran a-t-il le droit de peupler cette collection ? */
+  function amorcable(nom) {
+    if (!jeuVide()) return true;
+    return essentielle(nom) || COLLECTIONS_DERIVEES.indexOf(nom) >= 0;
+  }
+  /** Vide les données d'activité, garde l'essentiel, et le DIT au magasin. */
+  function viderActivite(motif) {
+    load();
+    var tables = 0, lignes = 0, vidées = [];
+    Object.keys(db).forEach(function (k) {
+      if (k.charAt(0) === '_' || !Array.isArray(db[k]) || essentielle(k)) return;
+      lignes += db[k].length; tables++; vidées.push(k);
+      db[k] = [];
+    });
+    /* Les référentiels conservés perdent leurs valeurs de démonstration (voir CHAMPS_DE_TEST_CONSERVES). */
+    var champsVides = 0;
+    Object.keys(CHAMPS_DE_TEST_CONSERVES).forEach(function (nom) {
+      (db[nom] || []).forEach(function (r) {
+        CHAMPS_DE_TEST_CONSERVES[nom].forEach(function (ch) {
+          if (r[ch] !== null && r[ch] !== undefined) { r[ch] = null; champsVides++; }
+        });
+      });
+    });
+    /* LE CALENDRIER FISCAL EST DÉRIVÉ D'UN DOCUMENT : il revient aussitôt, SANS règlement
+       inventé — un tableau de bord qui lirait un faux zéro jusqu'à l'ouverture de l'écran
+       des échéances est le défaut documenté de la vague 31. */
+    var anneeVide = C.aujourdhui().getFullYear();
+    var apresVidage = genEcheances(anneeVide, { sansReglement: true });
+    apresVidage = apresVidage.concat(genEcheances(anneeVide + 1, { sansReglement: true, depart: apresVidage.length }));
+    db.echeancesFiscales = apresVidage.map(function (e) {
+      return Object.assign(e, { paye: false, datePaiement: null, reference: null, valideePar: null });
+    });
+    db._jeuVide = true;
+    db._jeuVideLe = new Date().toISOString();
+    /* Le peuplement du parcours transactionnel ne doit pas repartir non plus. */
+    db._parcoursAmorces = true;
+    /* LA CORBEILLE ET LE JOURNAL SONT VIDÉS (Direction, 02/11/2026) : un jeu de test remis à neuf ne garde ni les fiches
+       archivées pendant les essais ni le journal d'audit des essais. Exception explicite à RG-14 et RG-12, limitée à cette
+       commande. Deux collections gardent leurs archives : un RÔLE archivé (rbac) et un COMPTE archivé (utilisateurs)
+       FERMENT un accès, les retirer rouvrirait ce que la Direction a fermé. */
+    var archivees = 0;
+    Object.keys(db).forEach(function (k) {
+      if (k.charAt(0) === '_' || !Array.isArray(db[k]) || k === 'audit' || k === 'rbac' || k === 'utilisateurs') return;
+      var gardees = db[k].filter(function (r) { return !(r && r.statut === 'archive'); });
+      archivees += db[k].length - gardees.length;
+      db[k] = gardees;
+    });
+    var entrees = (db.audit || []).length;
+    db.audit = [];
+    save();
+    /* La première entrée du journal NEUF dit le vidage (RG-12) : il ne s'efface pas lui-même. */
+    log('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
+      { tables: tables, enregistrements: lignes, valeursRetirees: champsVides, archiveesRetirees: archivees, entreesJournalRetirees: entrees, motif: motif || '' });
+    return { tables: tables, enregistrements: lignes, collections: vidées, valeursRetirees: champsVides, archiveesRetirees: archivees, entreesJournalRetirees: entrees };
+  }
+
   function reset() {
     try { storage.remove(KEY); } catch (e) { /* reliquat d'avant la bascule */ }
+    var ancien = db;
     db = seed();
+    /* UNE CLÉ ABSENTE NE PART JAMAIS : le delta n'envoie que ce que le nouveau magasin
+       PORTE. Une collection née après un vidage (badges, évaluations, missions) et absente
+       de la semence survivrait à la régénération, et `_parcoursAmorces`, posé vrai par le
+       vidage, empêcherait le peuplement du parcours de repartir — la base rendait un jeu
+       amputé. On pose donc explicitement ce qui doit être vide ou faux. */
+    Object.keys(ancien || {}).forEach(function (k) {
+      if (Array.isArray(ancien[k]) && !(k in db)) db[k] = [];
+    });
+    db._jeuVide = false;
+    db._jeuVideLe = null;
+    db._parcoursAmorces = false;
+    db._parcoursAmorcesLe = null;
     SRV.envoye = {}; SRV.meta = {};   /* tout est à repousser */
     ecrire();
+    appliquerIdentite();
     return db;
   }
 
@@ -3535,10 +4389,30 @@
   /* --- Abonnements -------------------------------------------------------- */
   function on(name, fn) { (listeners[name] = listeners[name] || []).push(fn); }
   function emit(name) { (listeners[name] || []).forEach(function (fn) { try { fn(); } catch (e) { console.error(e); } }); }
+  /* Toute écriture dans l'identité légale, locale ou relue d'un autre poste, remet C.BRAND au pas. */
+  on('identiteLegale', appliquerIdentite);
 
   /* ==========================================================================
    * API COLLECTION
    * ======================================================================== */
+  /* GARDES D'ÉCRITURE — une règle métier posée SUR la collection, pas sur un
+     écran : l'exercice clos refuse toute écriture, d'où qu'elle vienne. La garde
+     rend un MOTIF (refus nommé) ou rien. */
+  var GARDES = {};
+  function garder(nom, fn) { GARDES[nom] = fn; }
+  /** Un correctif posé SUR la collection avant toute modification (lot PLAN-INDIV) : rend le patch à écrire (le même, complété). */
+  var AVANT_MODIFIER = {};
+  function avantModifier(nom, fn) { AVANT_MODIFIER[nom] = fn; }
+  function refuse(nom, op, rec) {
+    var g = GARDES[nom];
+    if (!g) return null;
+    var motif = g(op, rec);
+    if (!motif) return null;
+    try { log('Écriture refusée', '—', nom, (rec && (rec.id || rec.numero)) || '', null, { op: op, motif: motif }); } catch (e) { /* journal indisponible */ }
+    try { if (global.SIGH.ui && global.SIGH.ui.toast) global.SIGH.ui.toast('Écriture refusée.', { type: 'error', detail: motif }); } catch (e) { /* sans interface */ }
+    return motif;
+  }
+
   function collection(name, meta) {
     load();
     if (!db[name]) db[name] = [];
@@ -3556,7 +4430,10 @@
       },
       count: function () { return api.active().length; },
 
-      insert: function (obj) {
+      /* `opts.journal` : { action, module?, entite?, avant, apres } : la ligne de journal que l'appelant DÉCRIT (une seule, RG-12) remplace la ligne
+         par défaut. Sert l'enregistrement d'un référentiel à valider, dont la ligne porte l'état de validation (lot L1, EF-VAL-05). */
+      insert: function (obj, opts) {
+        if (refuse(name, 'inserer', obj)) return null;
         var rec = Object.assign({
           id: (M.prefix || name.slice(0, 3).toUpperCase()) + C.uid(),
           statut: 'actif',
@@ -3564,7 +4441,8 @@
         rec._creePar = currentUser();
         rec._creeLe = new Date().toISOString();
         db[name].unshift(rec);
-        log('Création', M.module || '—', M.entite || name, rec.id, null, rec);
+        if (opts && opts.journal) log(opts.journal.action || 'Création', opts.journal.module || M.module || '—', opts.journal.entite || M.entite || name, rec.id, opts.journal.avant || null, opts.journal.apres || null);
+        else log('Création', M.module || '—', M.entite || name, rec.id, null, rec);
         transmettre('inserer', name, { fiche: rec });
         save(); emit(name);
         return {
@@ -3575,21 +4453,28 @@
              que la règle interdit. Elle sort donc de l'écran (retirée du
              miroir) et reste à la corbeille, où le journal la rattache à sa
              création. */
+          /* La fiche sort du miroir, mais l'envoi GLOBAL du magasin (qui pose la collection ENTIÈRE) ne doit jamais la retirer du serveur : on la retient archivée (`RETIREES`),
+             `delta()` la joint à la collection envoyée. Sans cela, l'envoi global parti avant l'archivage nommé supprimait la fiche PHYSIQUEMENT (RG-14) et l'archivage qui
+             suivait levait « Aucune fiche … » : la page tombait en panne (vague 139, sous charge). Quel que soit l'ordre d'arrivée, la fiche finit archivée au serveur. */
           undo: function () {
             api._remove(rec.id);
+            (RETIREES[name] = RETIREES[name] || []).push(Object.assign({}, rec, { statut: 'archive', _archivePar: currentUser(), _archiveLe: new Date().toISOString(), _motifArchivage: 'Création annulée' }));
             transmettre('archiver', name, { id: rec.id, motif: 'Création annulée' });
             save(); emit(name);
           },
         };
       },
 
-      update: function (id, patch) {
+      update: function (id, patch, opts) {
         var rec = api.get(id); if (!rec) return null;
+        if (AVANT_MODIFIER[name]) patch = AVANT_MODIFIER[name](rec, patch) || patch;   /* lot PLAN-INDIV : la mention d'attente tombe avec le champ modifié, d'où que vienne l'écriture */
+        if (refuse(name, 'modifier', Object.assign({}, rec, patch))) return null;
         var avant = Object.assign({}, rec);
         Object.assign(rec, patch);
         rec._modifiePar = currentUser();
         rec._modifieLe = new Date().toISOString();
-        log('Modification', M.module || '—', M.entite || name, id, avant, rec);
+        if (opts && opts.journal) log(opts.journal.action || 'Modification', opts.journal.module || M.module || '—', opts.journal.entite || M.entite || name, id, opts.journal.avant || null, opts.journal.apres || null);
+        else log('Modification', M.module || '—', M.entite || name, id, avant, rec);
         transmettre('modifier', name, { id: id, correctif: patch });
         save(); emit(name);
         return {
@@ -3608,14 +4493,17 @@
       },
 
       /** RG-14 — archivage logique, jamais de suppression physique. */
-      archive: function (id, motif) {
+      /* `opts.journal` : { action?, avant, apres } : la ligne de journal que l'appelant DÉCRIT (une seule) remplace la ligne par défaut (lot ORG3 : l'archivage d'un poste y porte son motif et sa cible). */
+      archive: function (id, motif, opts) {
         var rec = api.get(id); if (!rec) return null;
+        if (refuse(name, 'archiver', rec)) return null;
         var avant = rec.statut;
         rec.statut = 'archive';
         rec._archivePar = currentUser();
         rec._archiveLe = new Date().toISOString();
         rec._motifArchivage = motif || null;
-        log('Archivage', M.module || '—', M.entite || name, id, { statut: avant }, { statut: 'archive' });
+        if (opts && opts.journal) log(opts.journal.action || 'Archivage', opts.journal.module || M.module || '—', opts.journal.entite || M.entite || name, id, opts.journal.avant || null, opts.journal.apres || null);
+        else log('Archivage', M.module || '—', M.entite || name, id, { statut: avant }, { statut: 'archive' });
         transmettre('archiver', name, { id: id, motif: motif || null });
         save(); emit(name);
         return {
@@ -3668,8 +4556,9 @@
   /* Libellé lisible de chaque collection : « module | entité ». Une collection
      absente de cette table reste listée sous son nom technique. */
   var LIBELLES = {
-    patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
+    fichiers: 'M13|Fichiers numérisés (registre par empreinte)', lecturesOcr: 'M13|Lectures OCR des scans (texte lu par machine)', lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
     documents: 'GED|Bibliothèque documentaire',
+    archivesExercice: 'M12|Archives de clôture', clotures: 'M12|Clôtures et réouvertures', comptesResultat: 'M12|Comptes de résultat (131, 139)',
     consultations: 'M2|Consultations et rendez-vous', support: 'M2|Registre des appels',
     admissions: 'M3|Admissions', soins: 'M3|Soins', observations: 'M3|Mises en observation', sortiesAvisMedical: 'M3|Sorties contre avis médical',
     suiviMaternite: 'M4|Suivi maternité', accouchements: 'M4|Accouchements',
@@ -3681,12 +4570,22 @@
     soinsCuratifsMaternite: 'M4|Soins curatifs & urgences maternité',
     demandesAnalyses: 'M5|Demandes d’analyses', analyses: 'M5|Catalogue des analyses',
     plagesReactif: 'M5|Plages de référence par lot de réactif',
+    seuilsDelta: 'M5|Seuils de variation brutale du laboratoire',
     actes: 'CFG|Catalogue des actes', ordonnances: 'M2|Ordonnances', taches: 'CFG|Files d’attente',
     certificats: 'CFG|Certificats médicaux', naturesFacture: 'CFG|Natures de facture', centresCouts: 'M12|Centres de coûts',
     objectifsPilotage: 'M12|Objectifs et seuils du pilotage',
+    situationsAib: 'CFG|Situations de l’acheteur (AIB)',
+    baremeAib: 'CFG|Barème de l’AIB par situation',
+    reglagesAib: 'CFG|Réglages de l’AIB',
+    imputationsAib: 'M12|Imputations de l’AIB (opération par opération)',
+    reglagesCloture: 'M12|Réglages de la clôture annuelle',
+    parametresClinique: 'CFG|Paramètres de clinique (préavis de péremption, tranches de la balance âgée)',
+    referentielsPlan: 'M13|Plan annuel : axes et états d’avancement', reglagesPlan: 'M13|Plan annuel : signataires de l’impression', adoptionsPlan: 'M13|Plan annuel : adoptions par la Direction',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
-    avoirs: 'M8|Factures d’avoir', pvReceptions: 'M7|PV de réception',
+    tiersPayeurs: 'M8|Tiers payeurs (fiches versionnées par date)', facturesTiers: 'M8|Factures aux tiers payeurs', avoirsTiers: 'M8|Avoirs des factures aux tiers payeurs',
+    reglementsTiers: 'M8|Règlements reçus des tiers payeurs', lettragesTiers: 'M8|Lettrages des règlements de tiers payeurs',
+    avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',
     secteurs: 'CFG|Secteurs de la clinique', postes: 'CFG|Postes de l’organigramme',
     ressources: 'CFG|Ressources graphiques',
     poches: 'M5|Banque de sang', donneurs: 'M5|Donneurs',
@@ -3703,7 +4602,14 @@
     comptes: 'M12|Plan comptable', ecritures: 'M12|Écritures', budgets: 'M12|Budgets',
     immobilisations: 'M12|Immobilisations', rapprochements: 'M12|Rapprochements bancaires',
     echeancesFiscales: 'M12|Échéances fiscales',
+    identiteLegale: 'CFG|Identité légale (versions datées)',
+    obligationsFiscales: 'CFG|Obligations fiscales et paramètres ORTB',
+    historiqueObligations: 'CFG|Versions antérieures des obligations fiscales',
+    parametresFiscaux: 'CFG|Paramètres du calendrier fiscal (délais d’alerte, montant de la CCIB)',
     regimesTravail: 'M10|Régimes de travail par catégorie',
+    regimesIndividuels: 'M10|Régimes individuels (dérogations ou remplacements datés, une fiche par version)',
+    planningsPersonnalises: 'M10|Plannings personnalisés (hebdomadaires ou mensuels, une fiche par version datée)',
+    propositionsPlanning: 'M10|Propositions de planning des agents',
     modulesActifs: 'CFG|Activité des modules', notifications: 'M14|Notifications',
     emplacements: 'M6|Emplacements de rangement',
     baremeNS131: 'M10|Barème d’évaluation NS 131', historiqueBareme: 'M10|Versions antérieures du barème',
@@ -3712,9 +4618,10 @@
     examensLabo: 'M5|Catalogue des examens', unitesLabo: 'M5|Unités de mesure',
     variablesLabo: 'M5|Variables et valeurs de référence',
     evenements: 'M10|Événements du personnel', participations: 'M10|Participations aux événements',
-    grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes',
+    grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes', beneficiairesPrimes: 'M10|Bénéficiaires des primes fixes',
     rbac: 'M14|Rôles et permissions', tentativesConnexion: 'M14|Tentatives de connexion refusées',
-    courriers: 'M13|Courriers', reunions: 'M13|Réunions',
+    sessionsUtilisateur: 'M14|Sessions de poste', politiqueSecurite: 'M14|Politique de sécurité des comptes',
+    courriers: 'M13|Courriers', reunions: 'M13|Réunions', messagesSms: 'M13|Journal des envois SMS', fileSms: 'M13|File des SMS à reprendre',
     /* Une clé déclarée deux fois dans un littéral écrase la première EN
        SILENCE : « evenements » désignait ici les événements de M13 et effaçait
        l'intitulé de ceux du personnel. Les deux collections sont désormais
@@ -3725,8 +4632,10 @@
     resultatsImagerie: 'M2|Comptes rendus d’imagerie',
     demandesImagerie: 'M2|Demandes d’imagerie',
     enquetes: 'M13|Modèles d’enquête',
+    validationsReferentiels: 'CFG|Validations de référentiels',
     reponsesEnquetes: 'M13|Réponses d’enquête',
     jetonsEnquete: 'M13|Liens de partage des enquêtes',
+    pointsCollecte: 'M13|Points de collecte de la satisfaction',
     badges: 'M10|Badges du personnel', modelesBadge: 'M10|Modèles de badge',
     clichesImagerie: 'M2|Clichés d’échographie',
     examensImagerie: 'CFG|Catalogue des examens d’imagerie',
@@ -3738,11 +4647,11 @@
     rapportsMedicaux: 'M3|Rapports médicaux',
     fileAttente: 'M2|File d’attente',
     fichesPoste: 'M10|Fiches de poste',
-    pretsEtudes: 'M11|Prêts-études et avances',
+    pretsEtudes: 'M11|Prêts et avances',
     facturesMere: 'M9|Factures mères d’assurance',
     ambulances: 'M13|Répertoire des ambulances',
     materiel: 'M13|Parc technique',
-    valorisationsSage: 'M6|Valorisations de la reprise SAGE',
+    valorisationsSage: 'M6|Valorisations de l’inventaire initial (reprise)',
     dossiersConsultation: 'M1|Dossiers de consultation',
     modelesMessage: 'CFG|Modèles de message',
     rappels: 'CFG|Rappels',
@@ -3754,7 +4663,7 @@
     cpa: 'M3|Consultations pré-anesthésiques',
     crAnesthesie: 'M3|Comptes rendus d’anesthésie',
     crMaternite: 'M4|Comptes rendus de maternité',
-    catalogueTarifs: 'CFG|Catalogue tarifaire',
+    catalogueTarifs: 'CFG|Catalogue tarifaire', tarifs: 'CFG|Prestations tarifées', versionsTarif: 'CFG|Versions de prix',
     typesPiece: 'CFG|Types de pièces certifiantes',
     pieces: 'M1|Pièces certifiantes délivrées',
     utilisateurs: 'M14|Utilisateurs', audit: 'M14|Journal d’audit',
@@ -3843,10 +4752,46 @@
     return rec;
   }
 
+  /**
+   * Journalise une SORTIE de tableau (lot EXP, RG-12, PRD des tableaux O5) : un classeur .xlsx, un fichier .csv ou une impression des lignes d'un tableau. Le journal dit
+   * QUI, QUAND, QUEL écran, QUEL format, QUEL périmètre (lignes cochées, filtrées, tout le tableau), COMBIEN de lignes et les IDENTIFIANTS des fiches sorties ; jamais le
+   * contenu d'une cellule (le texte médical ne se recopie pas dans un journal). Les identifiants sont plafonnés à 50 par entrée (le journal garde 400 entrées et pèse sur le
+   * magasin) : `referencesTotal` dit combien il y en avait. Proposition à valider (section AK).
+   */
+  var REFERENCES_SORTIE_MAX = 50;
+  function journaliserSortie(o) {
+    load();
+    var refs = (o.references || []).map(function (x) { return String(x); });
+    var rec = {
+      id: 'LOG' + C.uid(),
+      dateHeure: new Date().toISOString(),
+      utilisateur: currentUser(),
+      action: o.action,
+      module: o.module || 'TAB',
+      entite: 'Tableau',
+      reference: o.ecran || o.nom || 'tableau',
+      format: o.format, perimetre: o.perimetre, lignes: o.lignes,
+      references: refs.slice(0, REFERENCES_SORTIE_MAX), referencesTotal: refs.length,
+      poste: 'POSTE-LOCAL', succes: true,
+    };
+    var sess = session();
+    if (sess && sess.role) rec.role = sess.role;
+    if (o.ecran) rec.ecran = o.ecran;
+    if (o.nom) rec.cible = o.nom;
+    db.audit.unshift(rec);
+    if (db.audit.length > 400) db.audit.length = 400;
+    save();
+    return rec;
+  }
+
   global.SIGH.store = {
     enLot: enLot,
     journaliserAcces: journaliserAcces,
+    journaliserSortie: journaliserSortie,
     load: load, save: save, reset: reset, collection: collection,
+    COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, CHAMPS_DE_TEST_CONSERVES: CHAMPS_DE_TEST_CONSERVES, viderActivite: viderActivite,
+    jeuVide: jeuVide, amorcable: amorcable, migrerOrganigramme: migrerOrganigramme,
+    migrationFichiersDue: migrationFichiersDue,
     hydraterServeur: hydraterServeur,
     surServeur: function () { return SRV.actif; },
     /** LE MAGASIN EN MAIN FAIT-IL AUTORITÉ ? Tant que l'hydratation est en
@@ -3876,14 +4821,153 @@
       if (_minuterie) { clearTimeout(_minuterie); _minuterie = null; ecrire(); }
       viderFile();
     },
+    /** Recharge la page APRÈS que le serveur a reçu tout ce qui attendait.
+     *  Un rechargement immédiat coupe l'envoi en cours : les gestes nommés
+     *  encore en file ne partent qu'en `keepalive` (64 Ko pour toute la page,
+     *  sans ordre garanti), si bien que seule une partie d'une opération qui
+     *  écrit des centaines de fiches arrive. Plafond de 8 s, puis on recharge
+     *  quand même (la file locale reste dans le navigateur). */
+    rechargerQuandEnvoye: function (apres) {
+      var self = this;
+      self.pousserMaintenant();
+      var debut = Date.now();
+      (function attendre() {
+        if (self.fileEnAttente() === 0 || Date.now() - debut > 8000) {
+          if (typeof apres === 'function') apres(); else global.location.reload();
+          return;
+        }
+        setTimeout(attendre, 100);
+      })();
+    },
     jetonServeur: function () { return SRV.jeton; },
+    etatSync: etatSync, sonderEvenements: sonderEvenements,
+    etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db, sansMagasin: SRV.sansMagasin }; },
     log: log, on: on, emit: emit,
-    session: session, setSession: setSession, currentUser: currentUser,
+    projeterTarifs: projeterTarifs, paritesTarifs: paritesTarifs, migrerTarifsDepuis: migrerTarifsDepuis, assurerTarifProduit: assurerTarifProduit,
+    session: session, setSession: setSession, currentUser: currentUser, garder: garder, avantModifier: avantModifier,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
     reglage: reglage, setReglage: setReglage,
     valeurUnitaire: valeurUnitaire,
+    identiteALaDate: identiteALaDate, appliquerIdentite: appliquerIdentite,
+    genEcheances: genEcheances, regenererEcheances: regenererEcheances, assurerEcheances: assurerEcheances,
     storage: storage,
     corbeille: corbeille, libelleCollection: libelleCollection,
     raw: function () { return load(); },
   };
+
+  /* LE RÉFÉRENTIEL DE PRIX : le moteur pur lit les collections du magasin, et une VERSION est immuable (PRD-TARIFS, 4.1). */
+  D.TARIFS.brancher(function () { return db ? { tarifs: db.tarifs, versions: db.versionsTarif } : null; });
+  on('tarifs', D.TARIFS.invalider);
+  on('versionsTarif', D.TARIFS.invalider);
+  /* LES COLLECTIONS DE LECTURE NE S'ÉDITENT PLUS POUR UN PRIX : `actes`, `analyses` et `catalogueTarifs` sont des projections du référentiel, que le moteur
+     reconstruit (écriture directe, hors de ce chemin). Un prix modifié ici serait réécrit à la projection suivante sans que personne l'ait voulu, et ne
+     serait jamais facturé : l'écriture est refusée EN NOMMANT où le proposer. Les autres champs (libellé, échantillon, délai, marquages) restent libres. */
+  var CHAMPS_PRIX_LECTURE = { actes: ['prix', 'prixNonAssure', 'prixAssure', 'nonCouvert'], analyses: ['prix'], catalogueTarifs: ['prixNonAssure', 'prixAssure', 'nonCouvert', 'prixAValider'] };
+  Object.keys(CHAMPS_PRIX_LECTURE).forEach(function (nom) {
+    garder(nom, function (op, rec) {
+      if (op !== 'modifier' || !rec || !db || !D.TARIFS.lire()) return null;
+      var avant = (db[nom] || []).filter(function (x) { return x.id === rec.id; })[0];
+      if (!avant) return null;
+      for (var i = 0; i < CHAMPS_PRIX_LECTURE[nom].length; i++) {
+        var k = CHAMPS_PRIX_LECTURE[nom][i];
+        if (!(avant[k] == null && rec[k] == null) && avant[k] !== rec[k]) return 'Le prix (« ' + k + ' ») ne se modifie plus dans cette liste : elle reflète le référentiel de prix. Le proposer à l’écran « Tarifs et prix » (Oui ou Non, date d’effet).';
+      }
+      return null;
+    });
+  });
+  /* LES PRODUITS (lot T5). Le prix d'achat et le prix de vente DÉRIVÉ d'un produit sont, comme les trois listes de lecture, une projection du référentiel de prix : une fiche ne les
+     modifie plus (le prix d'achat se PROPOSE : « Changer le prix d'achat », date d'effet, Oui ou Non). RG-02 se tient À L'ÉCRITURE, d'où qu'elle vienne : un médicament ne naît
+     jamais avec une marge (corrige E846 : la modification depuis l'ancien écran des tarifs ne contrôlait pas RG-02). */
+  var MESSAGE_RG02 = 'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente ne peut pas être libre. Le prix de vente d’un médicament EST son prix d’achat ; une exception se valide par la Direction.';
+  garder('produits', function (op, rec) {
+    if (!rec || !db) return null;
+    var med = rec.categorie === D.TARIFS.CATEGORIE_SANS_MARGE;
+    if (op === 'inserer') {
+      if (med && rec.prixAchat != null && rec.prixVente != null && rec.prixVente !== rec.prixAchat) return MESSAGE_RG02 + ' (' + rec.code + ' : achat ' + rec.prixAchat + ', vente ' + rec.prixVente + ')';
+      /* Le code d'un article est aussi celui de sa prestation de prix : il ne peut pas reprendre le code d'une autre prestation tarifée. */
+      var hp = D.TARIFS.lire(), pris = hp && rec.code ? hp.parCode[rec.code] : null;
+      if (pris && pris.famille !== 'PRODUIT') return 'Le code « ' + rec.code + ' » est déjà celui d’une prestation tarifée (' + (pris.libelle || pris.code) + ') : un article ne peut pas reprendre le code d’une prestation.';
+      return null;
+    }
+    if (op !== 'modifier' || !D.TARIFS.lire()) return null;
+    var avant = (db.produits || []).filter(function (x) { return x.id === rec.id; })[0];
+    if (!avant) return null;
+    var h = D.TARIFS.lire();
+    if (!h.parProduit[avant.code]) return null;   /* sans prestation de prix, la fiche reste modifiable : sa version 1 naît de ce qu'elle tient */
+    var champs = ['prixAchat', 'prixVente'];
+    for (var i = 0; i < champs.length; i++) {
+      var k = champs[i];
+      if ((avant[k] == null && rec[k] == null) || avant[k] === rec[k]) continue;
+      /* l'ALIGNEMENT d'un médicament sur son prix d'achat n'est pas un changement de prix : c'est RG-02 qui s'applique */
+      if (k === 'prixVente' && med && rec.prixVente === rec.prixAchat && avant.prixAchat === rec.prixAchat) continue;
+      if (med && k === 'prixVente') return MESSAGE_RG02 + ' (' + rec.code + ')';
+      return 'Le prix (« ' + k + ' ») ne se modifie plus sur la fiche du produit : il se PROPOSE (« Changer le prix d’achat » au Référentiel produits : date d’effet, motif, Oui ou Non), '
+        + 'ou s’importe par le jeu « Importation des prix d’achat ». Une fiche garde son ancien prix pour les pièces déjà émises.';
+    }
+    return null;
+  });
+  /* La fiche suit le référentiel : un changement de catégorie ou une décision réaligne le prix de vente dérivé (écriture directe, hors garde, sans ligne de journal). */
+  function projeterProduits() {
+    if (!db || !Array.isArray(db.produits)) return 0;
+    var TA = D.TARIFS, h = TA.lire();
+    if (!h) return 0;
+    var n = 0;
+    db.produits.forEach(function (doc) {
+      var p = h.parProduit[doc.code]; if (!p) return;
+      var s = TA.instantane(h, p, null); if (!s) return;
+      var c = TA.correctifProduit(doc, p, s);
+      if (c) { Object.assign(doc, c); n++; }
+    });
+    if (n) save();
+    return n;
+  }
+  on('produits', projeterProduits);
+  /* UN SEUIL DE VARIATION BRUTALE VALIDÉ EST IMMUABLE (lot A2) : le modifier AJOUTE une version datée, l'ancienne reste lisible (une alerte déjà levée garde le seuil sous lequel elle l'a été).
+     Seul un seuil « enregistré » (sans effet) se remplace ou s'abandonne ; il ne passe à « validé » que par le moteur, qui pose en même temps ses traces. */
+  garder('seuilsDelta', function (op, rec) {
+    var existantes = (db && db.seuilsDelta) || [];
+    var avant = existantes.filter(function (x) { return x.id === rec.id; })[0];
+    if (op === 'inserer') return avant ? 'Le seuil « ' + rec.id + ' » existe déjà : une version ne se réécrit pas.' : null;
+    if (!avant) return null;
+    if (op === 'archiver') return avant.etat === 'valide' ? 'Une version de seuil validée ne s’archive pas : elle se remplace par une nouvelle version, et reste lisible (RG-14).' : null;
+    if (op !== 'modifier') return null;
+    if (avant.etat === 'valide') return 'Un seuil validé est IMMUABLE : le modifier ajoute une version datée, il ne réécrit pas l’ancienne.';
+    if (rec.etat === 'valide' && (!rec.valideLe || !rec.validePar || !String(rec.motifValidation || '').trim())) return 'Un seuil ne devient « validé » qu’avec son auteur, sa date et son motif.';
+    return null;
+  });
+  /* UNE LECTURE OCR NE SE RÉÉCRIT JAMAIS (lot OCR-prep) : une relance ou un autre moteur AJOUTE une version datée, l'ancienne reste lisible. Le texte lu par machine est une trace de ce que le moteur a rendu
+     à une date : le corriger sur place effacerait ce que l'agent a pu lire. Ni modification ni archivage ; l'identifiant est déterministe, un doublon exact est refusé. */
+  garder('lecturesOcr', function (op, rec) {
+    if (op === 'modifier') return 'Une lecture OCR est IMMUABLE : une relance AJOUTE une version datée, elle ne réécrit pas l’ancienne.';
+    if (op === 'archiver') return 'Une lecture OCR ne s’archive pas : elle reste lisible (RG-14), une nouvelle lecture devient la version courante.';
+    /* LOT C : une CORRECTION est une version signée. Sans signataire, sans date, sans la version dont elle part ou sans texte, elle n'entre pas : une correction anonyme ou vide n'a pas de valeur (RG-12). */
+    if (op === 'inserer' && rec.texteSource === 'correction' && (!rec.corrigePar || !rec.corrigeLe || !rec.corrigeDe || !String(rec.texteBrut || '').trim())) {
+      return 'Une correction du texte lu se signe : signataire, date, version dont elle part et texte sont requis.';
+    }
+    var existantes = (db && db.lecturesOcr) || [];
+    if (op === 'inserer' && existantes.some(function (x) { return x.id === rec.id; })) return 'La lecture « ' + rec.id + ' » existe déjà : une version ne se réécrit pas.';
+    return null;
+  });
+  var VERSION_IMMUABLE = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'prixVente', 'origine', 'proposePar', 'proposeLe', 'lot'];
+  garder('versionsTarif', function (op, rec) {
+    if (op === 'archiver') return 'Une version de prix ne s’archive pas : elle se REFUSE ou se RETIRE, et reste lisible (RG-14 : le prix d’une pièce émise doit pouvoir se relire).';
+    var existantes = (db && db.versionsTarif) || [];
+    if (op === 'inserer') {
+      return existantes.some(function (x) { return x.id === rec.id; }) ? 'La version « ' + rec.id + ' » existe déjà : une version ne se réécrit pas.' : null;
+    }
+    if (op !== 'modifier') return null;
+    var avant = existantes.filter(function (x) { return x.id === rec.id; })[0];
+    if (!avant) return null;
+    for (var i = 0; i < VERSION_IMMUABLE.length; i++) {
+      var k = VERSION_IMMUABLE[i];
+      if (!(avant[k] == null && rec[k] == null) && avant[k] !== rec[k]) return 'Une version de prix est IMMUABLE (champ « ' + k + ' ») : une correction AJOUTE une version, elle ne réécrit pas l’ancienne.';
+    }
+    if (avant.statut !== rec.statut && !(avant.statut === 'propose' && ['valide', 'refuse', 'retire'].indexOf(rec.statut) >= 0)) {
+      return 'Une version « ' + avant.statut + ' » ne devient pas « ' + rec.statut + ' » : seule une proposition se décide ; une version validée se remplace par une nouvelle version.';
+    }
+    if (!(avant.dateEffet == null && rec.dateEffet == null) && avant.dateEffet !== rec.dateEffet && !(avant.aDater && rec.statut === 'valide')) {
+      return 'La date d’effet d’une version est immuable (seule la décision d’une proposition « à dater » la fixe).';
+    }
+    return null;
+  });
 })(window);

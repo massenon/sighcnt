@@ -1,0 +1,29 @@
+{
+ "id": "cfg-catalogue",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Catalogue tarifaire (deux prix)",
+ "acces": "ouvert",
+ "titre": "Catalogue tarifaire (deux prix)",
+ "description": "Page de renvoi : les deux prix de chaque prestation figurent à « Tarifs et prix ».",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Catalogue tarifaire (deux prix)"
+ ],
+ "actions": [],
+ "regle": [
+  "Le catalogue tarifaire à deux prix a rejoint le référentiel de prix unique : « Tarifs et prix » porte, pour chaque prestation, le prix non assuré, le prix assuré (ou NON COUVERT), la version en vigueur, l’historique et les changements en attente de décision. Un prix corrigé ici n’aurait atteint aucune facture : il se propose désormais là où la caisse le lit."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Ouvrir « Tarifs et prix »"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

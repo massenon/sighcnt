@@ -176,8 +176,107 @@
   function commande(label, opts) {
     var o = opts || {};
     var d = droits(o.moduleCode);
-    var accorde = o.droit === 'annuler' ? d.annuler : d.editer;
+    /* `droit: 'valider'` : le geste de validation d'un référentiel. Le garde de RÔLE est celui de la famille (boutonValider) ;
+       côté matrice, il suffit au profil d'OUVRIR l'écran, valider n'étant pas modifier la fiche. */
+    var accorde = o.droit === 'annuler' ? d.annuler : (o.droit === 'valider' ? d.voir : d.editer);
     return accorde ? btn(label, o) : null;
+  }
+
+  /* ==========================================================================
+   * « IMPORTER LES DONNÉES » : UNE FABRIQUE, UN DROIT PAR JEU (lot IMP-A)
+   * --------------------------------------------------------------------------
+   * `K.importer(jeux, opts)` rend le bouton, ou `null`. Il est ABSENT sans le droit d'IMPORTER du jeu (`N.droitImport`, lu au moment du rendu), jamais grisé, et ce droit n'est
+   * ni celui d'éditer l'écran hôte ni déduit de lui : un hôte peut être en lecture seule et offrir l'import, ou l'inverse. Plusieurs jeux sur un même écran : UN bouton, dont la
+   * première étape propose ceux que le profil détient. Le moteur (`modules/import.js`, ~120 Ko avec le lecteur .xlsx) ne se charge qu'au CLIC, par le chargeur paresseux de
+   * l'application : aucun hôte ne suppose le moteur déjà là. Le moteur REFUSE aussi (analyse, application, annulation) : masquer un bouton ne protège rien.
+   * `K.crud` le branche par la clé de configuration `importer: 'jeu'` (ou une liste) ; un écran construit à la main l'appelle et pose le résultat dans sa barre d'actions.
+   * ======================================================================== */
+  function moteurImportCharge() { return !!(global.SIGH.importer && global.SIGH.importer.ouvrirFenetre); }
+  function chargerMoteurImport() {
+    if (moteurImportCharge()) return Promise.resolve();
+    var app = A();
+    if (!app || typeof app.chargerScript !== 'function') return Promise.reject(new Error('chargeur indisponible'));
+    return app.chargerScript('assets/js/vendor/xlsx-mini.js').then(function () { return app.chargerScript('assets/js/modules/import.js'); });
+  }
+  function importer(jeux, opts) {
+    var o = opts || {}, N_ = global.SIGH.nav, s = S.session && S.session(), role = s && s.role;
+    if (!N_ || !N_.droitImport) return null;
+    var ids = [].concat(jeux || []).filter(function (id) { return N_.droitImport(role, id).importer; });
+    if (!ids.length) return null;
+    var b = btn(o.label || 'Importer les données', {
+      variant: o.variant || 'secondary', size: o.size || 'sm', icon: 'file-up', title: o.title || 'Modèle à télécharger, vérification sans écriture, puis import',
+      onclick: function () {
+        chargerMoteurImport().then(function () {
+          global.SIGH.importer.ouvrirFenetre(ids, { apres: o.apres || function () {
+            var app = A();
+            if (!(app && app.rafraichir && app.rafraichir())) global.location.reload();
+          } });
+        }, function (e) { U.toast('Le module d’import n’a pas pu être chargé.', { type: 'error', detail: String((e && e.message) || e) }); });
+      },
+    });
+    b.setAttribute('data-importer', ids.join(','));
+    return b;
+  }
+
+  /* ==========================================================================
+   * « HISTORIQUE DE PRIX » D'UN PRODUIT (lot T5) : UNE FABRIQUE, DEUX ÉCRANS (onglet Produits de « Tarifs et prix », « Référentiel produits »)
+   * --------------------------------------------------------------------------
+   * Toutes les versions du prix d'achat d'un produit, la version EN VIGUEUR désignée : prix d'achat, prix de vente DÉRIVÉ (RG-02), date d'effet, version, statut, auteur et date de
+   * proposition, décision, motif, lot d'import. C'est une LECTURE : le bouton est offert à tout profil qui voit la ligne, jamais conditionné à un nom de rôle ; les colonnes de prix
+   * suivent le droit de VOIR l'écran qui l'héberge (aucun droit de lire les prix n'existe à part). Le moteur de version est celui des prestations : les versions se lisent de
+   * `versionsTarif`, jamais de la fiche du produit.
+   * ======================================================================== */
+  function historiquePrix(produit, opts) {
+    var o = opts || {}, PR = global.SIGH.parcours, TA = global.SIGH.data.TARIFS, h = TA.lire();
+    var jour = C.iso(C.aujourdhui());
+    var vs = PR.versionsTarifDe ? PR.versionsTarifDe(produit.code) : [];
+    var enVigueur = h && vs.length ? TA.enVigueur(h, produit.code, jour) : null;
+    var prixVisibles = o.prixVisibles != null ? !!o.prixVisibles : !!droits(o.moduleCode).voir;
+    function achatDe(v) { return v.etatNonAssure === 'manquant' || v.prixNonAssure == null ? null : v.prixNonAssure; }
+    function argent(x) { return x == null ? 'à valider' : C.money(x, false); }
+    function etat(v) {
+      if (v.statut === 'propose') return U.badge('Proposée', 'warning');
+      if (v.statut === 'refuse') return U.badge('Refusée', 'danger');
+      if (v.statut === 'retire') return U.badge('Retirée', 'neutral');
+      if (enVigueur && enVigueur.id === v.id) return U.badge('En vigueur', 'success');
+      if (v.dateEffet && v.dateEffet > jour) return U.badge('À venir', 'info');
+      return U.badge('Remplacée', 'neutral');
+    }
+    var ORIGINES = { migration: 'Reprise des listes d’avant', reprise: 'Reprise de la fiche', creation: 'Création de l’article', ecran: 'Saisie à l’écran', import: 'Importation' };
+    var colonnes = [
+      { key: 'version', label: 'Version', align: 'right', nowrap: true, render: function (v) { return 'v' + v.version; }, text: function (v) { return 'v' + v.version; } },
+      { key: 'dateEffet', label: 'Date d’effet', nowrap: true, render: function (v) { return v.dateEffet ? C.dateFR(v.dateEffet) : 'Depuis l’origine'; }, text: function (v) { return v.dateEffet || 'Depuis l’origine'; } },
+    ];
+    if (prixVisibles) {
+      colonnes.push({ key: 'prixNonAssure', label: 'Prix d’achat', align: 'right', render: function (v) { return argent(achatDe(v)); }, text: function (v) { return argent(achatDe(v)); } });
+      colonnes.push({ key: 'prixVente', label: 'Prix de vente (dérivé)', align: 'right',
+        render: function (v) { return argent(TA.prixVenteProduit(produit.categorie, v)); }, text: function (v) { return argent(TA.prixVenteProduit(produit.categorie, v)); } });
+    }
+    colonnes.push(
+      { key: 'statut', label: 'Statut', render: etat, text: function (v) { return v.statut; } },
+      { key: 'proposePar', label: 'Proposée par', render: function (v) { return v.proposePar ? v.proposePar + (v.proposeLe ? ' le ' + C.dateFR(v.proposeLe) : '') : 'Non renseigné'; }, text: function (v) { return v.proposePar || ''; } },
+      { key: 'decidePar', label: 'Décision', render: function (v) { return v.decidePar ? v.decidePar + (v.roleDecision ? ' (' + v.roleDecision + ')' : '') + (v.decideLe ? ' le ' + C.dateFR(v.decideLe) : '') : (v.statut === 'propose' ? 'En attente' : 'Non renseigné'); }, text: function (v) { return v.decidePar || ''; } },
+      { key: 'motif', label: 'Motif', render: function (v) { return v.motifDecision ? (v.motif ? v.motif + ' / ' : '') + v.motifDecision : (v.motif || 'Non renseigné'); }, text: function (v) { return v.motif || ''; } },
+      { key: 'origine', label: 'Origine', render: function (v) { return (ORIGINES[v.origine] || v.origine || 'Non renseigné'); }, text: function (v) { return v.origine || ''; } },
+      { key: 'lot', label: 'Lot d’import', nowrap: true, render: function (v) { return v.lot || 'Aucun'; }, text: function (v) { return v.lot || ''; } });
+    var corps = el('div.space-y-3', { 'data-historique-produit': produit.code }, [
+      enVigueur
+        ? note('En vigueur aujourd’hui (' + C.dateFR(jour) + ') : <strong>version ' + enVigueur.version + '</strong>' + (enVigueur.dateEffet ? ', depuis le ' + C.dateFR(enVigueur.dateEffet) : ', depuis l’origine')
+          + (prixVisibles ? ', prix d’achat <strong>' + argent(achatDe(enVigueur)) + '</strong>, prix de vente <strong>' + argent(TA.prixVenteProduit(produit.categorie, enVigueur)) + '</strong>' : '')
+          + '. Une pièce déjà émise garde le prix de sa date.', { tone: 'info', icon: 'history' })
+        : note('Aucune version de prix n’est en vigueur aujourd’hui pour cet article : il ne se facture pas (un prix d’achat absent n’est jamais un zéro).', { tone: 'warning', icon: 'triangle-alert' }),
+      vs.length ? U.dataTable({ rows: vs.slice().reverse(), searchable: false, pageSize: 20, columns: colonnes, exportName: 'historique-prix-' + produit.code })
+        : U.empty('Aucune version de prix pour cet article.', { icon: 'history' }),
+    ]);
+    var m = U.modal({ title: 'Historique de prix', subtitle: produit.code + ' : ' + (produit.designation || ''), size: 'xl', body: corps, footer: [btn('Fermer', { onclick: function () { m.close(); } })] });
+    U.icons(document.body);
+    return m;
+  }
+  /** Le bouton de LIGNE « Historique de prix » : une lecture, offerte à tout profil qui voit la ligne. */
+  function boutonHistoriquePrix(produit, opts) {
+    var b = iconBtn('history', 'Historique de prix', function () { historiquePrix(produit, opts); });
+    b.setAttribute('data-historique-prix', produit.code);
+    return b;
   }
 
   /** Même règle pour une commande rendue par une icône seule. */
@@ -186,6 +285,148 @@
     var d = droits(o.moduleCode);
     var accorde = o.droit === 'annuler' ? d.annuler : d.editer;
     return accorde ? iconBtn(icone, titre, onclick, o.variant) : null;
+  }
+
+  /* ==========================================================================
+   * VALIDATION D'UN RÉFÉRENTIEL : UN BOUTON PAR ÉCRAN (Direction, 07/11/2026)
+   * --------------------------------------------------------------------------
+   * `boutonValider(famille, id, opts)` : commande ABSENTE hors des rôles de la
+   * famille (jamais grisée) et pour un artefact déjà validé ; le geste est
+   * unitaire et passe par `validerReferentiel`, qui lit le rôle dans la
+   * SESSION (jamais passé par l'écran). `badgeValidation` dit l'état LU.
+   * `remettre(famille, id)` : à appeler sur tout chemin de modification.
+   * ======================================================================== */
+  function moteurValidation() { return global.SIGH && global.SIGH.validations; }
+  function roleSession() { var s = S.session && S.session(); return (s && s.role) || ''; }
+  function peutValider(familleId) {
+    var V = moteurValidation();
+    var f = V && V.FAMILLES_A_VALIDER.filter(function (x) { return x.id === familleId; })[0];
+    if (f && V.posteFileul() && V.controlerEnregistrement(familleId, {})) return false;   /* fileul : la configuration est tenue par la mère, commande ABSENTE */
+    return !!(f && f.roles.indexOf(roleSession()) >= 0);
+  }
+  function badgeValidation(familleId, id) {
+    var V = moteurValidation();
+    var e = V && V.etatValidation(familleId, id);
+    if (!e) return null;
+    if (e.enAttente) return U.badge('À valider', 'warning');
+    var t = 'Validé';
+    if (e.valideLe) t += ' (' + [e.valideRole, C.dateFR(String(e.valideLe).slice(0, 10))].filter(Boolean).join(', ') + ')';
+    return U.badge(t, 'success');
+  }
+  function boutonValider(familleId, id, opts) {
+    var o = opts || {};
+    var V = moteurValidation();
+    if (!V || !peutValider(familleId)) return null;
+    var e = V.etatValidation(familleId, id);
+    if (!e || !e.enAttente) return null;
+    return commande(o.label || 'Valider', {
+      droit: 'valider', variant: o.variant || 'primary', size: o.size, icon: 'shield-check', moduleCode: o.moduleCode, title: 'Valider « ' + e.libelle + ' »',
+      onclick: function (ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        U.confirm({
+          title: 'Valider « ' + e.libelle + ' »',
+          message: 'La validation atteste que cet élément a été vérifié par un profil habilité (' + e.profil + '). Elle est <strong>journalisée</strong> '
+            + '(RG-12), ne modifie aucune valeur, et toute modification ultérieure le remettra à valider.',
+          confirmLabel: 'Valider',
+        }).then(function (ok) {
+          if (!ok) return;
+          var r = V.validerReferentiel(familleId, id);
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          U.toast('« ' + e.libelle + ' » validé.', { type: 'success', detail: 'Le ' + C.dateHeure(r.valideLe) + ' par ' + r.validePar + '.' });
+          if (o.apres) o.apres(r);
+        });
+      },
+    });
+  }
+  function remettreAValider(familleId, id) {
+    var V = moteurValidation();
+    return V ? V.remettreAValider(familleId, id) : null;
+  }
+
+  /* ==========================================================================
+   * ENREGISTRER = VALIDER POUR LE PROFIL DE LA FAMILLE (Direction, 09/11/2026, lot L1)
+   * --------------------------------------------------------------------------
+   * `ecrireValidable(col, v, record, values)` est l'UNIQUE chemin d'écriture d'un référentiel à valider depuis une modale : le moteur
+   * (`PR.controlerEnregistrement`, `PR.marquageEnregistrement`) décide, le kit écrit UNE fois (une seule ligne de journal, état inclus).
+   * Valeur chiffrée corrigée par la famille : le motif est DEMANDÉ au geste (refus nommé MOTIF_OBLIGATOIRE sinon). Rend une promesse
+   * `{ res, refus, marquage }`. `v` = `{ famille, cible?, siChange? }` ; avec `cible`, l'artefact est tenu ailleurs que dans la fiche écrite
+   * (valorisation lue au produit) : l'écriture reste ordinaire et le moteur SUIT l'artefact.
+   * `boutonValiderModale` : le choix « Valider » du pied de modale, ABSENT hors famille et pour un élément déjà validé.
+   * ======================================================================== */
+  function ecrireValidable(col, v, record, values) {
+    var V = moteurValidation();
+    var ordinaire = function () { return { res: record ? col.update(record.id, values) : col.insert(values) }; };
+    if (!V || !v || !v.famille) return Promise.resolve(ordinaire());
+    function essai(motif) {
+      if (v.cible) {
+        /* Artefact tenu ailleurs (le produit modifié, la valorisation validée) : écriture ordinaire, puis suivi. */
+        var apresV = Object.assign({}, record || {}, values);
+        var modifie = !!record && (!v.siChange || v.siChange(record, apresV));
+        var ctl = V.controlerEnregistrement(v.famille, { chiffres: modifie && v.siChange ? ['valeur'] : [], motif: motif, modifie: modifie });
+        if (ctl) return { refus: ctl };
+        var r = ordinaire();
+        var cibleId = record ? v.cible(record) : null;
+        if (cibleId) V.suivreEnregistrement(v.famille, cibleId, { modifie: modifie, motif: motif });
+        return r;
+      }
+      var chiffres = V.chiffresModifies(v.famille, record, values);
+      var refus = V.controlerEnregistrement(v.famille, { chiffres: chiffres, motif: motif, avant: record, valeurs: values });
+      if (refus) return { refus: refus };
+      var m = V.marquageEnregistrement(v.famille, { avant: record, valeurs: values, motif: motif,
+        modifie: record && v.siChange ? !!v.siChange(record, Object.assign({}, record, values)) : undefined });
+      if (!m.ok) return { refus: m };
+      var patch = Object.assign({}, values, m.patch);
+      var res = record ? col.update(record.id, patch, { journal: m.journal }) : col.insert(patch, { journal: m.journal });
+      return { res: res, marquage: m };
+    }
+    var premier = essai(null);
+    if (premier.refus && premier.refus.code === 'MOTIF_OBLIGATOIRE') {
+      return U.confirm({
+        title: 'Motif de la correction',
+        message: premier.refus.motif,
+        confirmLabel: 'Enregistrer', requireMotif: true,
+      }).then(function (rep) {
+        if (!rep || !String(rep.motif || '').trim()) return { annule: true, refus: premier.refus };
+        return essai(rep.motif);
+      });
+    }
+    return Promise.resolve(premier);
+  }
+  /** Le message de refus d'un enregistrement (toast nommé) ; rend vrai si l'écriture n'a pas eu lieu. */
+  function refusEcriture(r) {
+    if (r && r.annule) { U.toast(r.refus.motif, { type: 'error', detail: r.refus.geste }); return true; }
+    if (r && r.refus) { U.toast(r.refus.motif, { type: 'error', detail: r.refus.geste }); return true; }
+    return false;
+  }
+  /** Garde AVANT un geste qui modifie un artefact tenu hors fiche (constante du code) : refus nommé (fileul), vrai si le geste peut partir. */
+  function gardeValidation(familleId) {
+    var V = moteurValidation();
+    var r = V && V.controlerEnregistrement(familleId, {});
+    if (r) { U.toast(r.motif, { type: 'error', detail: r.geste }); return false; }
+    return true;
+  }
+  /** APRÈS le geste : le profil de la famille valide la pièce (si elle attendait), tout autre profil la remet « à valider ». */
+  function suivreValidation(familleId, cibleId) {
+    var V = moteurValidation();
+    return V ? V.suivreEnregistrement(familleId, cibleId, { modifie: true }) : null;
+  }
+  function boutonValiderModale(v, record, modale, apres) {
+    if (!v || !v.famille || !record) return null;
+    var id = v.cible ? v.cible(record) : record.id;
+    if (!id) return null;
+    var V = moteurValidation();
+    var e = V && V.etatValidation(v.famille, id);
+    if (!e || !e.enAttente || !peutValider(v.famille)) return null;
+    return commande(v.label || 'Valider', {
+      droit: 'valider', variant: 'secondary', icon: 'shield-check', title: 'Valider « ' + e.libelle + ' » sans modifier ses valeurs',
+      onclick: function () {
+        var r = V.validerReferentiel(v.famille, id);
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        modale.close();
+        U.toast('« ' + e.libelle + ' » validé.', { type: 'success', detail: 'Le ' + C.dateHeure(r.valideLe) + ' par ' + r.validePar + '.' });
+        if (apres) apres(r);
+      },
+    });
   }
 
   /** Bandeau affiché quand le profil n'a qu'un droit de lecture sur l'écran. */
@@ -239,6 +480,7 @@
           body: f,
           footer: [
             btn('Annuler', { onclick: function () { m.close(); } }),
+            isEdit && cfg.validation ? boutonValiderModale(cfg.validation, record, m, refresh) : null,
             btn(isEdit ? 'Enregistrer' : 'Créer', {
               variant: 'primary', icon: isEdit ? 'save' : 'plus',
               onclick: function () {
@@ -249,15 +491,25 @@
                   if (err) { U.toast(err, { type: 'error' }); return; }
                 }
                 if (cfg.transform) values = cfg.transform(values, record);
-                var res = isEdit ? col.update(record.id, values) : col.insert(values);
-                m.close(); refresh();
-                U.toast(isEdit ? 'Modifications enregistrées.' : 'Nouveau ' + cfg.entite + ' créé.', {
-                  type: 'success', undo: annulable(res.undo),
-                  detail: res.record.code || res.record.reference || res.record.numero || null,
+                /* Lot L1 : l'enregistrement par le profil de la famille VALIDE (une ligne de journal, état inclus) ; hors famille, l'élément repasse « à valider ». */
+                var ecriture = cfg.validation
+                  ? ecrireValidable(col, cfg.validation, isEdit ? record : null, values)
+                  : Promise.resolve({ res: isEdit ? col.update(record.id, values) : col.insert(values) });
+                ecriture.then(function (w) {
+                  if (refusEcriture(w)) return;
+                  var res = w.res;
+                  /* `apresCreation(fiche)` : ce qui DOIT suivre l'insertion d'une fiche (la version 1 du prix d'achat d'un produit, lot T5). Un texte rendu s'ajoute au détail du message. */
+                  var suite = null;
+                  if (!isEdit && cfg.apresCreation) { try { suite = cfg.apresCreation(res.record); } catch (e) { console.error('[SIGH] apresCreation ' + cfg.collection + ' :', e); } }
+                  m.close(); refresh();
+                  U.toast(isEdit ? 'Modifications enregistrées.' : 'Nouveau ' + cfg.entite + ' créé.', {
+                    type: 'success', undo: annulable(res.undo),
+                    detail: [res.record.code || res.record.reference || res.record.numero || null, suite].filter(Boolean).join(' : ') || null,
+                  });
                 });
               },
             }),
-          ],
+          ].filter(Boolean),
         });
       }
 
@@ -344,6 +596,12 @@
       function openDetail(record) {
         var body = cfg.detail ? cfg.detail(record, { refresh: refresh, edit: function () { openForm(record); } })
           : detailParDefaut(record);
+        /* `detailSup(record, ctx)` : un bloc posé SOUS le détail par défaut (la pièce numérisée d'une fiche : aperçu, dépôt, chemin). `ctx.rouvrir()` referme le tiroir et le rouvre sur la fiche
+           relue : après un dépôt, la fiche a changé. */
+        if (cfg.detailSup) {
+          var sup = cfg.detailSup(record, { refresh: refresh, rouvrir: function () { d.close(); var frais = col.get(record.id); if (frais) openDetail(frais); } });
+          if (sup) body = el('div.space-y-4', null, [body, sup]);
+        }
         var footer = [];
         if (cfg.etat) footer.push(btn('Imprimer', { icon: 'printer', onclick: function () { cfg.etat(record); } }));
         if (peutEditer) footer.push(btn('Modifier', { variant: 'primary', icon: 'pencil', onclick: function () { d.close(); openForm(record); } }));
@@ -381,6 +639,19 @@
 
       if (cfg.intro) host.appendChild(cfg.intro());
 
+      /* La barre du tableau : « Nouveau » selon le droit d'ÉDITER l'écran, « Importer les données » selon le droit d'IMPORTER du jeu (`importer: 'jeu'` ou une liste). Deux droits
+         distincts : l'un n'emporte pas l'autre. */
+      function barreActions() {
+        var acts = [];
+        if (peutEditer) {
+          acts.push(cfg.creerVers
+            ? btn('Nouveau', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { A().go(cfg.creerVers); } })
+            : btn('Nouveau', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { openForm(null); } }));
+        }
+        if (cfg.importer) { var bi = importer(cfg.importer); if (bi) acts.push(bi); }
+        return acts.length ? acts : null;
+      }
+
       /* --- Tableau ----------------------------------------------------------*/
       function makeTable(rowsFn, archived) {
         var columns = (typeof cfg.columns === 'function' ? cfg.columns() : cfg.columns).slice();
@@ -389,42 +660,27 @@
           rows: rowsFn,
           filters: cfg.filters,
           pageSize: cfg.pageSize,
-          selectable: cfg.selectable && !archived,
+          /* Les archives se cochent aussi (pour les sortir) ; elles n'ont pas d'action de groupe. */
+          selectable: cfg.selectable,
           exportName: cfg.collection,
           searchPlaceholder: 'Rechercher un ' + cfg.entite + '…',
+          /* `recherche: { extra(r), indice(q) }` : ce que la recherche lit EN PLUS des colonnes (le texte extrait d'une pièce numérisée), et ce qu'elle ne lit pas. */
+          searchExtra: cfg.recherche && cfg.recherche.extra ? cfg.recherche.extra : null,
+          indiceRecherche: cfg.recherche && cfg.recherche.indice ? cfg.recherche.indice : null,
+          noteRecherche: cfg.recherche && cfg.recherche.note ? cfg.recherche.note : null,
           emptyMessage: archived ? 'Aucun enregistrement archivé.' : 'Aucun ' + cfg.entite + ' enregistré.',
-          emptyHint: archived ? null : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
+          emptyHint: (archived || cfg.readonly) ? null : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
           onRowClick: openDetail,
           defaultSort: cfg.defaultSort, defaultDir: cfg.defaultDir,
           /* `creerVers` : certains écrans ne peuvent pas créer avec le formulaire
              générique — une facture se compose de lignes, de remises et d'une
              répartition. Le bouton conduit alors à l'écran de saisie complet
              plutôt que d'ouvrir une modale qui perdrait l'essentiel. */
-          actions: archived ? null : (!peutEditer ? null : [
-            cfg.creerVers
-              ? btn('Nouveau', {
-                variant: 'primary', size: 'sm', icon: 'plus',
-                onclick: function () { A().go(cfg.creerVers); },
-              })
-              : btn('Nouveau', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { openForm(null); } }),
-          ]),
+          actions: archived ? null : barreActions(),
+          /* « Imprimer la sélection » et « Exporter la sélection » sont posés par le composant de tableau (lot EXP) : colonnes visibles seulement,
+             droit de sortie, journal RG-12. L'ancienne impression d'ici imprimait aussi les colonnes masquées, sans trace. */
           bulkActions: archived ? null : function (getSelected, clear) {
             return [
-              btn('Imprimer la sélection', {
-                size: 'sm', icon: 'printer',
-                onclick: function () {
-                  var sel = getSelected();
-                  P.etat({
-                    titre: 'Sélection — ' + cfg.entiteP,
-                    sousTitre: sel.length + ' enregistrement(s)',
-                    contenu: P.tableau(
-                      (typeof cfg.columns === 'function' ? cfg.columns() : cfg.columns)
-                        .filter(function (c) { return c.key !== '_actions'; })
-                        .map(function (c) { return { label: c.label, align: c.align, value: function (r) { return textOf(c, r); } }; }),
-                      sel),
-                  });
-                },
-              }),
               !peutAnnuler ? null : btn('Archiver', {
                 size: 'sm', variant: 'danger', icon: 'archive',
                 onclick: function () {
@@ -455,6 +711,12 @@
             }
             var acts = [];
             acts.push(iconBtn('eye', 'Consulter', function () { openDetail(r); }));
+            var cibleV = cfg.validation ? (cfg.validation.cible ? cfg.validation.cible(r) : r.id) : null;
+            var bvc = cibleV ? boutonValider(cfg.validation.famille, cibleV, { size: 'sm', moduleCode: cfg.module, apres: refresh, label: cfg.validation.label }) : null;
+            if (bvc) acts.push(bvc);
+            /* `actionsSup(r, refresh)` : des commandes propres à l'écran (validation d'un circuit, par exemple), posées après « Consulter ».
+               L'AUTEUR décide de leur présence (droit propre, jamais le droit d'édition du module). */
+            if (cfg.actionsSup) { (cfg.actionsSup(r, refresh) || []).forEach(function (x) { if (x) acts.push(x); }); }
             if (cfg.etat) acts.push(iconBtn('printer', 'Imprimer l’état', function () { cfg.etat(r); }));
             /* Pas de duplication : un doublon que rien ne distingue de
                l'original est un doublon que quelqu'un modifiera par erreur.
@@ -471,12 +733,6 @@
         return t;
       }
 
-      function textOf(c, r) {
-        var v = c.text ? c.text(r) : (c.value ? c.value(r) : r[c.key]);
-        if (v instanceof Node) v = v.textContent;
-        return v == null ? '' : String(v);
-      }
-
       /* --- Plage de dates (optionnelle) -------------------------------------
          `plageDates: { champ: 'date', aujourdhui?: Date }` — un FILTRE du/au
          avec raccourcis, jamais un tri (la doctrine du laboratoire, portée au
@@ -489,6 +745,8 @@
          et RIEN N’EST RETIRÉ de la collection (RG-14 : un rendez-vous honoré
          EST la consultation, l’archiver effacerait l’acte). */
       function filtreBase(r) {
+        /* `exerciceChamp` : l'écran SUIT l'exercice choisi à la barre supérieure (arbitrage du 05/11/2026). Le choix ne fait que filtrer ce qu'on lit. */
+        if (cfg.exerciceChamp && global.SIGH.exercice && !global.SIGH.exercice.dansExercice(r[cfg.exerciceChamp])) return false;
         return typeof cfg.filtreBase === 'function' ? cfg.filtreBase(r) : true;
       }
 
@@ -543,6 +801,8 @@
         render: function () { return makeTable(function () { return col.archived().filter(dansPlage); }, true); },
       });
 
+      /* `avantTableau(col, refresh)` : un bloc posé ENTRE les indicateurs et le tableau (réglage qui s'applique à l'écran, par exemple). */
+      if (cfg.avantTableau) host.appendChild(cfg.avantTableau(col, refresh));
       host.appendChild(U.tabs(onglets));
       /* Bloc libre sous le tableau : la lecture graphique vient APRÈS les
          données, jamais à leur place. */
@@ -568,7 +828,8 @@
    * ======================================================================== */
   function amorcer(nom, seed) {
     var db = S.raw();
-    if (seed && (!db[nom] || !db[nom].length)) {
+    /* Un magasin volontairement vidé ne se ré-amorce pas écran par écran. */
+    if (seed && (!db[nom] || !db[nom].length) && S.amorcable(nom)) {
       db[nom] = seed() || [];
       S.save();
     }
@@ -653,8 +914,9 @@
           { key: 'detail', label: 'À faire' },
           {
             key: 'montant', label: 'Montant', align: 'right',
-            text: function (r) { return C.money(r.montant || 0, false); },
-            render: function (r) { return C.money(r.montant || 0, false); },
+            /* LOT TARIF-FIX-2 : un montant NUL (ligne sans prix) est « Non calculable », jamais 0. */
+            text: function (r) { return r.montant === null ? 'Non calculable' : C.money(r.montant || 0, false); },
+            render: function (r) { return r.montant === null ? 'Non calculable' : C.money(r.montant || 0, false); },
           },
           {
             key: 'statut', label: 'État', nowrap: true,
@@ -685,6 +947,13 @@
               U.toast('Votre profil consulte cette file sans pouvoir la traiter.', { type: 'warning' });
             })];
           }
+          /* LOT TARIF-FIX-2 : une action que le moteur REFUSERAIT (pièce en attente de prix) est ABSENTE, et son motif est dit à sa place (code, motif, geste). */
+          var emp = cfg.empechement ? cfg.empechement(r) : null;
+          if (emp) {
+            return [el('span.inline-flex.max-w-xs.items-start.gap-1.text-xs.text-warning-800', { 'data-empechement': emp.code || 'refus', title: emp.motif + ' ' + (emp.geste || '') }, [
+              C.icon('triangle-alert', 'h-3.5 w-3.5 shrink-0'), el('span', { text: emp.titre || emp.motif }),
+            ])];
+          }
           return [iconBtn(cfg.icon || 'check', cfg.action || 'Traiter', function () {
             if (cfg.onAction) cfg.onAction(r, dessiner);
           })];
@@ -711,7 +980,7 @@
    * prises en charge issues des factures…) : la donnée y reste corrigible,
    * l'opération est journalisée et annulable.
    */
-  function modifier(col, champs, record, apres, avant, transform) {
+  function modifier(col, champs, record, apres, avant, transform, surMaj, validation) {
     var f = U.form(typeof champs === 'function' ? champs(record) : champs, record);
     var m = U.modal({
       title: 'Modifier l’enregistrement',
@@ -719,6 +988,7 @@
       size: 'lg', body: f,
       footer: [
         btn('Annuler', { onclick: function () { m.close(); } }),
+        validation ? boutonValiderModale(validation, record, m, apres) : null,
         btn('Enregistrer', {
           variant: 'primary', icon: 'save',
           onclick: function () {
@@ -727,17 +997,25 @@
             /* Le contrôle métier de l'appelant : il refuse EN LE DISANT
                (son propre toast) et retourne false — rien n'est écrit. */
             if (typeof avant === 'function' && avant(v, record) === false) return;
-            if (typeof transform === 'function') v = transform(v);
-            var res = col.update(record.id, v);
-            m.close();
-            if (apres) apres();
-            U.toast('Modifications enregistrées.', {
-              type: 'success',
-              undo: function () { res.undo(); if (apres) apres(); },
+            if (typeof transform === 'function') v = transform(v, record);   /* E364 : la fiche corrigée est transmise */
+            /* Lot L1 : la famille enregistre ET valide (une ligne de journal) ; hors famille, l'élément repasse « à valider ». */
+            var ecriture = validation
+              ? ecrireValidable(col, validation, record, v)
+              : Promise.resolve({ res: col.update(record.id, v) });
+            ecriture.then(function (w) {
+              if (refusEcriture(w)) return;
+              var res = w.res;
+              if (typeof surMaj === 'function') surMaj(record);   /* surcharge d'un appelant sans `validation` déclarée */
+              m.close();
+              if (apres) apres();
+              U.toast('Modifications enregistrées.', {
+                type: 'success',
+                undo: function () { res.undo(); if (apres) apres(); },
+              });
             });
           },
         }),
-      ],
+      ].filter(Boolean),
     });
     return m;
   }
@@ -770,14 +1048,21 @@
                    retour false, rien n'est écrit. */
                 if (typeof opts.avant === 'function' && opts.avant(v, null) === false) return;
                 if (opts.transform) v = opts.transform(v);
-                var res = col.insert(v);
-                m.close();
-                if (opts.apres) opts.apres();
-                U.toast((opts.entite || 'Enregistrement') + ' créé.', {
-                  type: 'success',
-                  detail: res.record.libelle || res.record.designation || res.record.code || null,
-                  undo: function () { col.archive(res.record.id); if (opts.apres) opts.apres(); },
-                  undoMessage: 'Création annulée — la fiche est archivée.',
+                /* Lot L1 (Q5) : un élément créé par la famille naît validé ; hors famille, « à valider ». */
+                var ecriture = opts.validation
+                  ? ecrireValidable(col, opts.validation, null, v)
+                  : Promise.resolve({ res: col.insert(v) });
+                ecriture.then(function (w) {
+                  if (refusEcriture(w)) return;
+                  var res = w.res;
+                  m.close();
+                  if (opts.apres) opts.apres();
+                  U.toast((opts.entite || 'Enregistrement') + ' créé.', {
+                    type: 'success',
+                    detail: res.record.libelle || res.record.designation || res.record.code || null,
+                    undo: function () { col.archive(res.record.id); if (opts.apres) opts.apres(); },
+                    undoMessage: 'Création annulée — la fiche est archivée.',
+                  });
                 });
               },
             }),
@@ -818,7 +1103,11 @@
       }
       if (opts.etat) actes.push(iconBtn('printer', 'Imprimer l’état', function () { opts.etat(r); }));
       var dr = droits(opts.module);
-      if (dr.editer) actes.push(iconBtn('pencil', 'Modifier', function () { modifier(col, champs, r, rafraichir, opts.avant, opts.transform); }));
+      var bv = opts.validation ? boutonValider(opts.validation.famille, r.id, { size: 'sm', moduleCode: opts.module, apres: rafraichir, label: opts.validation.label }) : null;
+      if (bv) actes.push(bv);
+      if (dr.editer) actes.push(iconBtn('pencil', 'Modifier', function () {
+        modifier(col, champs, r, rafraichir, opts.avant, opts.transform, null, opts.validation || null);
+      }));
       if (opts.archivable !== false && dr.annuler) {
         actes.push(iconBtn('archive', 'Archiver', function () {
           U.confirm({
@@ -1057,7 +1346,12 @@
       tb.appendChild(tr);
     });
     t.appendChild(tb);
-    return el('div.-mx-5.-mb-5.overflow-x-auto', null, t);
+    /* Lot EXP : l'encart a ses cases et sa commande « Exporter » (lignes cochées ou tout l'encart, .xlsx, .csv, impression), par le moteur commun de
+       sortie (droit `exporter_donnees`, journal, limite). `opts.nom` nomme le fichier ; `opts.sortie === false` n'existe pas : un encart sans sortie
+       se déclare dans la garde (`build/garde-tableaux.js`). */
+    var barre = U.equiperTableau(t, { nom: opts.nom || 'encart', titre: opts.titre || opts.nom || null, colonnes: columns, lignes: rows });
+    barre.classList.add('px-5', 'pb-2');
+    return el('div.-mx-5.-mb-5', null, [barre, el('div.overflow-x-auto', null, t)]);
   }
 
   /* --- Raccourcis d'accès à d'autres écrans -------------------------------- */
@@ -1171,9 +1465,11 @@
   }
 
   /* --- Agrégations fréquentes ---------------------------------------------- */
-  function parMois(rows, dateKey, valueKey, nbMois) {
-    var n = nbMois || 12, labels = G.moisGlissants(n), buckets = new Array(n).fill(0);
-    var ref = new Date(2026, 7, 1);
+  /* LOT MIL (16/11/2026) : la fenêtre glissante se termine au mois de `fin` (une date), le MOIS DU JOUR par défaut ; plus de mois de référence écrit en dur. */
+  function parMois(rows, dateKey, valueKey, nbMois, fin) {
+    var n = nbMois || 12, labels = G.moisGlissants(n, fin), buckets = new Array(n).fill(0);
+    var f0 = fin ? C.toDate(fin) : C.aujourdhui();
+    var ref = new Date(f0.getFullYear(), f0.getMonth(), 1);
     rows.forEach(function (r) {
       var d = C.toDate(r[dateKey]);
       if (isNaN(d)) return;
@@ -1202,6 +1498,46 @@
    * déclaration. C'est le point d'entrée du module, atteint depuis le fil
    * d'Ariane, l'intitulé du module dans le ruban et les raccourcis permanents.
    * ======================================================================== */
+  /** Une carte d'écran (icône, titre, description reprise de sa déclaration) : la MÊME pour les hubs de module et pour « Paramètres système ». */
+  function carteHub(it, mod) {
+      var def = global.SIGH.screens[it.id] || {};
+      var carte = el('a.hub-card.group.flex.gap-3.rounded-xl.border.border-slate-200.bg-white.p-4.shadow-card.transition-all.hover\\:-translate-y-0\\.5.hover\\:border-navy-300.hover\\:shadow-raise',
+        { href: A().href(it.id) });
+      carte.appendChild(el('span.grid.h-10.w-10.shrink-0.place-items-center.rounded-lg.bg-navy-50.text-navy-700.transition-colors.group-hover\\:bg-navy-900.group-hover\\:text-white',
+        null, C.icon(it.icon || mod.icon, 'h-5 w-5')));
+      var corps = el('span.min-w-0.flex-1');
+      corps.appendChild(el('span.block.text-sm.font-semibold.text-slate-900', { text: def.title || it.label }));
+      corps.appendChild(el('span.mt-1.block.text-xs.leading-relaxed.text-slate-500', {
+        text: def.description || 'Écran du module ' + mod.label + '.',
+      }));
+      carte.appendChild(corps);
+      carte.appendChild(C.icon('arrow-right', 'h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-navy-700'));
+      return carte;
+  }
+
+  /* LES GROUPES DE CARTES DE « PARAMÈTRES SYSTÈME » (arbitrage du 05/11/2026) : un groupe par module (titre + cartes en flex qui passent à la ligne), la
+     matière venant de `N.treeParametres(role, domaines)` : déjà filtrée par les droits, donc jamais une carte vers un écran interdit (RG-13). */
+  function groupesCartes(arbre) {
+    var hote = el('div.space-y-5');
+    arbre.forEach(function (d) {
+      d.modules.forEach(function (m) {
+        var groupe = el('section.hub-group');
+        groupe.appendChild(el('h3.mb-2.flex.items-center.gap-2.text-sm.font-semibold.text-slate-700', null,
+          [C.icon(m.icon, 'h-4 w-4 text-navy-700'), el('span', null, [el('span', { text: m.label }), ' ', el('span.text-xs.font-normal.text-slate-400', { text: String(m.items.length) + ' écran(s)' })])]));
+        var flex = el('div.hub-flex.flex.flex-wrap.gap-3');
+        m.items.forEach(function (it) {
+          var carte = carteHub(it, m);
+          carte.classList.add('grow', 'basis-72');
+          flex.appendChild(carte);
+        });
+        groupe.appendChild(flex);
+        hote.appendChild(groupe);
+      });
+    });
+    if (!hote.children.length) return U.empty('Aucun écran de cette rubrique n’est accessible à votre profil.', { icon: 'lock' });
+    return hote;
+  }
+
   function hubCartes(mod, role) {
     var grille = el('div.grid.gap-3.sm\\:grid-cols-2.xl\\:grid-cols-3');
     /* L'IDENTIFIANT DE L'ÉCRAN DOIT ÊTRE PASSÉ. `N.can` interroge
@@ -1216,21 +1552,7 @@
         module: mod.code,
       });
     });
-    visibles.forEach(function (it) {
-      var def = global.SIGH.screens[it.id] || {};
-      var carte = el('a.hub-card.group.flex.gap-3.rounded-xl.border.border-slate-200.bg-white.p-4.shadow-card.transition-all.hover\\:-translate-y-0\\.5.hover\\:border-navy-300.hover\\:shadow-raise',
-        { href: A().href(it.id) });
-      carte.appendChild(el('span.grid.h-10.w-10.shrink-0.place-items-center.rounded-lg.bg-navy-50.text-navy-700.transition-colors.group-hover\\:bg-navy-900.group-hover\\:text-white',
-        null, C.icon(it.icon || mod.icon, 'h-5 w-5')));
-      var corps = el('span.min-w-0.flex-1');
-      corps.appendChild(el('span.block.text-sm.font-semibold.text-slate-900', { text: def.title || it.label }));
-      corps.appendChild(el('span.mt-1.block.text-xs.leading-relaxed.text-slate-500', {
-        text: def.description || 'Écran du module ' + mod.label + '.',
-      }));
-      carte.appendChild(corps);
-      carte.appendChild(C.icon('arrow-right', 'h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-navy-700'));
-      grille.appendChild(carte);
-    });
+    visibles.forEach(function (it) { grille.appendChild(carteHub(it, mod)); });
     if (!visibles.length) return U.empty('Aucun écran de ce module n’est accessible à votre profil.', { icon: 'lock' });
     return grille;
   }
@@ -1564,12 +1886,40 @@
     };
   }
 
+  /** Le tableau des CRÉANCES SUR LES TIERS PAYEURS (balance âgée, tranches lues en base) : partagé avec « Créances » (M9). Lecture seule. */
+  function tiersCreances() {
+    var D = global.SIGH.data, T = global.SIGH.tiers, du = T.creances(C.iso(C.aujourdhui())), lib = D.libellesTranches(du.tranches);
+    var corps = [
+      note('<strong>Créance sur un tiers payeur = montant dû (base + AIB) moins les lettrages.</strong> Les tranches de la balance âgée sont celles des paramètres de clinique. Une échéance sans délai convenu est <strong>non calculable</strong> (ce n’est pas zéro).', { tone: 'info', icon: 'hourglass' }),
+      U.dataTable({
+        title: 'Créances sur les tiers payeurs', rows: du.lignes, pageSize: 15, exportName: 'creances-tiers-payeurs', emptyMessage: 'Aucune créance sur un tiers payeur.',
+        columns: [
+          { key: 'nom', label: 'Tiers payeur', render: function (r) { return el('div', null, [el('p.text-sm.font-medium', { text: r.nom }), el('p.font-mono.text-\\[10px\\].text-slate-400', { text: r.code })]); }, text: function (r) { return r.nom; } },
+          { key: 'factures', label: 'Factures', align: 'right' },
+          { key: 'facture', label: 'Facturé', align: 'right', render: function (r) { return C.money(r.facture, false); }, text: function (r) { return C.money(r.facture, false); } },
+          { key: 'moins30', label: lib.moins30, align: 'right', render: function (r) { return C.money(r.moins30, false); }, text: function (r) { return C.money(r.moins30, false); } },
+          { key: 'de30a90', label: lib['30a90'], align: 'right', render: function (r) { return C.money(r.de30a90, false); }, text: function (r) { return C.money(r.de30a90, false); } },
+          { key: 'plus90', label: lib.plus90, align: 'right', render: function (r) { return C.money(r.plus90, false); }, text: function (r) { return C.money(r.plus90, false); } },
+          { key: 'du', label: 'Total dû', align: 'right', render: function (r) { return el('span.font-semibold.text-warning-700', { text: C.money(r.du, false) }); }, text: function (r) { return C.money(r.du, false); } },
+          { key: 'enRetard', label: 'Échu', align: 'right', render: function (r) { return r.echeanceIncalculable ? U.badge(C.money(r.enRetard, false) + ' + non calculable ' + C.money(r.echeanceIncalculable, false), 'warning') : C.money(r.enRetard, false); }, text: function (r) { return C.money(r.enRetard, false); } },
+        ],
+      }),
+    ];
+    if (du.nonLettre > 0) corps.push(note('<strong>' + C.money(du.nonLettre, false) + ' de règlements reçus ne sont pas lettrés</strong> : ils ne diminuent aucune créance tant qu’ils ne sont pas affectés à une facture.', { tone: 'warning', icon: 'link' }));
+    return el('div.space-y-3', { 'data-creances-tiers': '' }, corps);
+  }
+
   global.SIGH.kit = {
+    tiersCreances: tiersCreances,
     btn: btn, iconBtn: iconBtn, lien: lien,
-    commande: commande, commandeIcone: commandeIcone,
+    commande: commande, commandeIcone: commandeIcone, importer: importer, chargerMoteurImport: chargerMoteurImport,
+    historiquePrix: historiquePrix, boutonHistoriquePrix: boutonHistoriquePrix,
+    boutonValider: boutonValider, badgeValidation: badgeValidation, peutValider: peutValider, remettreAValider: remettreAValider,
+    ecrireValidable: ecrireValidable, refusEcriture: refusEcriture, boutonValiderModale: boutonValiderModale,
+    gardeValidation: gardeValidation, suivreValidation: suivreValidation,
     section: section, grid: grid, row: row, note: note, source: source,
     crud: crud, registre: registre, lectureSeule: lectureSeule, fileAttente: fileAttente,
-    pageFormulaire: pageFormulaire, actionsPageFormulaire: actionsPageFormulaire,
+    pageFormulaire: pageFormulaire, groupesCartes: groupesCartes, actionsPageFormulaire: actionsPageFormulaire,
     droits: droits, bandeauLectureSeule: bandeauLectureSeule,
     modifier: modifier, actionsLigne: actionsLigne, creer: creer,
     dash: dash, charts: charts, ranking: ranking, miniTable: miniTable,

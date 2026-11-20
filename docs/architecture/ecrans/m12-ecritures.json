@@ -1,0 +1,59 @@
+{
+ "id": "m12-ecritures",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Écritures comptables",
+ "acces": "ouvert",
+ "titre": "Écritures comptables",
+ "description": "Saisie, consultation et validation des écritures, avec contrôle d’équilibre.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Écritures comptables"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Écritures enregistrées",
+  "Validées",
+  "En brouillon",
+  "Automatiques"
+ ],
+ "cartes": [
+  "Écritures comptables"
+ ],
+ "tableaux": [
+  [
+   "N° pièce",
+   "Date",
+   "Journal",
+   "Compte",
+   "Libellé de l’opération",
+   "Débit",
+   "Crédit",
+   "Centre de coûts",
+   "Origine",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle écriture",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

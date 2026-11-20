@@ -1,0 +1,383 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "valeur": 0
+   },
+   "sortie": "zéro"
+  },
+  {
+   "entree": {
+    "valeur": 1
+   },
+   "sortie": "un"
+  },
+  {
+   "entree": {
+    "valeur": 2
+   },
+   "sortie": "deux"
+  },
+  {
+   "entree": {
+    "valeur": 10
+   },
+   "sortie": "dix"
+  },
+  {
+   "entree": {
+    "valeur": 11
+   },
+   "sortie": "onze"
+  },
+  {
+   "entree": {
+    "valeur": 16
+   },
+   "sortie": "seize"
+  },
+  {
+   "entree": {
+    "valeur": 17
+   },
+   "sortie": "dix-sept"
+  },
+  {
+   "entree": {
+    "valeur": 19
+   },
+   "sortie": "dix-neuf"
+  },
+  {
+   "entree": {
+    "valeur": 20
+   },
+   "sortie": "vingt"
+  },
+  {
+   "entree": {
+    "valeur": 21
+   },
+   "sortie": "vingt et un"
+  },
+  {
+   "entree": {
+    "valeur": 22
+   },
+   "sortie": "vingt-deux"
+  },
+  {
+   "entree": {
+    "valeur": 30
+   },
+   "sortie": "trente"
+  },
+  {
+   "entree": {
+    "valeur": 31
+   },
+   "sortie": "trente et un"
+  },
+  {
+   "entree": {
+    "valeur": 60
+   },
+   "sortie": "soixante"
+  },
+  {
+   "entree": {
+    "valeur": 61
+   },
+   "sortie": "soixante et un"
+  },
+  {
+   "entree": {
+    "valeur": 70
+   },
+   "sortie": "soixante-dix"
+  },
+  {
+   "entree": {
+    "valeur": 71
+   },
+   "sortie": "soixante et onze"
+  },
+  {
+   "entree": {
+    "valeur": 72
+   },
+   "sortie": "soixante-douze"
+  },
+  {
+   "entree": {
+    "valeur": 77
+   },
+   "sortie": "soixante-dix-sept"
+  },
+  {
+   "entree": {
+    "valeur": 79
+   },
+   "sortie": "soixante-dix-neuf"
+  },
+  {
+   "entree": {
+    "valeur": 80
+   },
+   "sortie": "quatre-vingts"
+  },
+  {
+   "entree": {
+    "valeur": 81
+   },
+   "sortie": "quatre-vingt-un"
+  },
+  {
+   "entree": {
+    "valeur": 90
+   },
+   "sortie": "quatre-vingt-dix"
+  },
+  {
+   "entree": {
+    "valeur": 91
+   },
+   "sortie": "quatre-vingt-onze"
+  },
+  {
+   "entree": {
+    "valeur": 99
+   },
+   "sortie": "quatre-vingt-dix-neuf"
+  },
+  {
+   "entree": {
+    "valeur": 100
+   },
+   "sortie": "cent"
+  },
+  {
+   "entree": {
+    "valeur": 101
+   },
+   "sortie": "cent un"
+  },
+  {
+   "entree": {
+    "valeur": 110
+   },
+   "sortie": "cent dix"
+  },
+  {
+   "entree": {
+    "valeur": 180
+   },
+   "sortie": "cent quatre-vingts"
+  },
+  {
+   "entree": {
+    "valeur": 199
+   },
+   "sortie": "cent quatre-vingt-dix-neuf"
+  },
+  {
+   "entree": {
+    "valeur": 200
+   },
+   "sortie": "deux cents"
+  },
+  {
+   "entree": {
+    "valeur": 201
+   },
+   "sortie": "deux cent un"
+  },
+  {
+   "entree": {
+    "valeur": 280
+   },
+   "sortie": "deux cent quatre-vingts"
+  },
+  {
+   "entree": {
+    "valeur": 300
+   },
+   "sortie": "trois cents"
+  },
+  {
+   "entree": {
+    "valeur": 999
+   },
+   "sortie": "neuf cent quatre-vingt-dix-neuf"
+  },
+  {
+   "entree": {
+    "valeur": 1000
+   },
+   "sortie": "mille"
+  },
+  {
+   "entree": {
+    "valeur": 1001
+   },
+   "sortie": "mille un"
+  },
+  {
+   "entree": {
+    "valeur": 1080
+   },
+   "sortie": "mille quatre-vingts"
+  },
+  {
+   "entree": {
+    "valeur": 1100
+   },
+   "sortie": "mille cent"
+  },
+  {
+   "entree": {
+    "valeur": 2000
+   },
+   "sortie": "deux mille"
+  },
+  {
+   "entree": {
+    "valeur": 2001
+   },
+   "sortie": "deux mille un"
+  },
+  {
+   "entree": {
+    "valeur": 21000
+   },
+   "sortie": "vingt et un mille"
+  },
+  {
+   "entree": {
+    "valeur": 80000
+   },
+   "sortie": "quatre-vingts mille"
+  },
+  {
+   "entree": {
+    "valeur": 80001
+   },
+   "sortie": "quatre-vingts mille un"
+  },
+  {
+   "entree": {
+    "valeur": 100000
+   },
+   "sortie": "cent mille"
+  },
+  {
+   "entree": {
+    "valeur": 101000
+   },
+   "sortie": "cent un mille"
+  },
+  {
+   "entree": {
+    "valeur": 200000
+   },
+   "sortie": "deux cents mille"
+  },
+  {
+   "entree": {
+    "valeur": 999999
+   },
+   "sortie": "neuf cent quatre-vingt-dix-neuf mille neuf cent quatre-vingt-dix-neuf"
+  },
+  {
+   "entree": {
+    "valeur": 1000000
+   },
+   "sortie": "un million"
+  },
+  {
+   "entree": {
+    "valeur": 1000001
+   },
+   "sortie": "un million un"
+  },
+  {
+   "entree": {
+    "valeur": 2000000
+   },
+   "sortie": "deux millions"
+  },
+  {
+   "entree": {
+    "valeur": 2500000
+   },
+   "sortie": "deux millions cinq cents mille"
+  },
+  {
+   "entree": {
+    "valeur": 21000000
+   },
+   "sortie": "vingt et un millions"
+  },
+  {
+   "entree": {
+    "valeur": 80000000
+   },
+   "sortie": "quatre-vingts millions"
+  },
+  {
+   "entree": {
+    "valeur": 190830994
+   },
+   "sortie": "cent quatre-vingt-dix millions huit cent trente mille neuf cent quatre-vingt-quatorze"
+  },
+  {
+   "entree": {
+    "valeur": 1000000000
+   },
+   "sortie": "un milliard"
+  },
+  {
+   "entree": {
+    "valeur": 2000000000
+   },
+   "sortie": "deux milliards"
+  },
+  {
+   "entree": {
+    "valeur": 3000000005
+   },
+   "sortie": "trois milliards cinq"
+  },
+  {
+   "entree": {
+    "valeur": -5
+   },
+   "sortie": "cinq"
+  },
+  {
+   "entree": {
+    "valeur": 12.6
+   },
+   "sortie": "treize"
+  },
+  {
+   "entree": {
+    "valeur": 12.4
+   },
+   "sortie": "douze"
+  },
+  {
+   "entree": {
+    "valeur": "45"
+   },
+   "sortie": "quarante-cinq"
+  },
+  {
+   "entree": {
+    "valeur": null
+   },
+   "sortie": "zéro"
+  }
+ ]
+}

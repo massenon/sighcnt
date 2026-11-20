@@ -1,0 +1,40 @@
+{
+ "id": "m3-demande-examen",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Demande d’examen",
+ "acces": "ouvert",
+ "titre": "Demande d’examen",
+ "description": "La fiche de demande d’examen du service : identité complète, indication, urgence par examen ou bilan entier.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Demande d’examen"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Fiches du service",
+  "En attente de règlement",
+  "Urgentes",
+  "Résultats rendus"
+ ],
+ "cartes": [
+  "Registre des fiches de demande"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle fiche de demande"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

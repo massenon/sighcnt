@@ -1,0 +1,561 @@
+{
+ "_doc": "ENGENDRÉE par build/garde-roles-en-dur.js --initialiser puis --abaisser : liste blanche DÉCROISSANTE des rôles écrits en dur (PRD M12 clôture annuelle, EF-DRO-2). Ne s'écrit que vers le bas.",
+ "sites": {
+  "packages/domaine/lib/src/acces/acc_plan_du_site.dart": {
+   "['admin', 'da']": 1
+  },
+  "packages/domaine/lib/src/acces/acc_secours.dart": {
+   "role == 'admin'": 1
+  },
+  "packages/domaine/lib/src/achats/besoins.dart": {
+   "{ 'comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable' }": 1,
+   "nom TAKI": 1
+  },
+  "packages/domaine/lib/src/achats/pv_reception.dart": {
+   "nom MAMAN": 1,
+   "nom TAKI": 1
+  },
+  "packages/domaine/lib/src/administration/adm_notes_donnees.dart": {
+   "nom BASSONGUI": 2
+  },
+  "packages/domaine/lib/src/comptabilite/aib.dart": {
+   "['comptable', 'admin', 'da']": 1
+  },
+  "packages/domaine/lib/src/configuration/cfa_regles.dart": {
+   "nom TAKI": 1,
+   "nom BASSONGUI": 1
+  },
+  "packages/domaine/lib/src/configuration/cfb_fiscal_date.dart": {
+   "['direction', 'da', 'admin']": 1,
+   "nom KASSA": 1
+  },
+  "packages/domaine/lib/src/configuration/cfb_regles.dart": {
+   "['admin', 'direction', 'dm', 'da']": 1
+  },
+  "packages/domaine/lib/src/configuration/organigramme.dart": {
+   "nom BASSONGUI": 4,
+   "nom TAKI": 2,
+   "nom KASSA": 2,
+   "nom MAMAN": 2,
+   "nom DIEYABIDI": 2,
+   "nom KINNOU": 2
+  },
+  "packages/domaine/lib/src/consultation/cs_moteur.dart": {
+   "session.role == 'chirurgien'": 1
+  },
+  "packages/domaine/lib/src/fichiers/fichiers_donnees.dart": {
+   "['admin', 'dm', 'medecin', 'infirmier', 'chirurgien', 'anesthesiste']": 1
+  },
+  "packages/domaine/lib/src/fichiers/fichiers_regles.dart": {
+   "['admin', 'da']": 1
+  },
+  "packages/domaine/lib/src/fichiers/ocr.dart": {
+   "['admin', 'da']": 1
+  },
+  "packages/domaine/lib/src/mecef/normalisation.dart": {
+   "['caissier', 'da', 'admin']": 1,
+   "['da', 'admin']": 1,
+   "['admin', 'da']": 1
+  },
+  "packages/domaine/lib/src/mere/mrc_regles.dart": {
+   "{'admin', 'da'}": 1
+  },
+  "packages/domaine/lib/src/navigation/manifeste.dart": {
+   "{'admin', 'da'}": 1
+  },
+  "packages/domaine/lib/src/patients/pat_fiche.dart": {
+   "session.role == 'echographiste'": 1,
+   "session.role != 'echographiste'": 1
+  },
+  "packages/domaine/lib/src/rapports/rap_regles.dart": {
+   "['stock']": 1,
+   "['rh']": 1
+  },
+  "packages/domaine/lib/src/rh/espace_mes.dart": {
+   "role == 'admin'": 1,
+   "role == 'da'": 1
+  },
+  "packages/domaine/lib/src/rh/planning_rh.dart": {
+   "['surveillant']": 1,
+   "['surveillant', 'admin']": 1,
+   "['da', 'admin']": 1,
+   "role == 'surveillant'": 2,
+   "role == 'da'": 2,
+   "role == 'admin'": 2,
+   "role != 'surveillant'": 3,
+   "role != 'da'": 4,
+   "role != 'admin'": 4
+  },
+  "packages/domaine/lib/src/rh/pointage_badge.dart": {
+   "['surveillant', 'da', 'admin', 'direction', 'rh']": 1,
+   "role != 'admin'": 1,
+   "role != 'da'": 1
+  },
+  "packages/domaine/lib/src/rh/rhb_regles.dart": {
+   "['medecin']": 1,
+   "['infirmier']": 1,
+   "['aide_soignant']": 1,
+   "nom BASSONGUI": 2,
+   "nom KASSA": 1
+  },
+  "packages/domaine/lib/src/sauvegarde/sauvegarde_horssite.dart": {
+   "['admin', 'da']": 1
+  },
+  "packages/domaine/lib/src/securite/sec_comptes.dart": {
+   "['dm', 'da', 'direction', 'admin']": 1
+  },
+  "packages/domaine/lib/src/securite/verrou_secours.dart": {
+   "['admin', 'da']": 1
+  },
+  "packages/domaine/lib/src/sync/pair.dart": {
+   "['stock', 'da']": 6,
+   "['stock', 'da', 'infirmier', 'pharmacien']": 2,
+   "['stock', 'infirmier', 'medecin', 'da', 'caissier']": 1,
+   "['da']": 2,
+   "['da', 'admin']": 1
+  },
+  "packages/domaine/lib/src/tarifs/tarifs.dart": {
+   "['admin', 'da', 'direction']": 1,
+   "['da', 'direction']": 1
+  },
+  "packages/domaine/lib/src/validation/validation.dart": {
+   "['direction', 'da', 'admin']": 10,
+   "['laborantin']": 1,
+   "['dm', 'medecin']": 1,
+   "['echographiste', 'dm']": 1,
+   "['chirurgien', 'anesthesiste']": 1,
+   "['comptable', 'direction', 'da', 'admin']": 1,
+   "['direction', 'da', 'admin', 'comptable']": 1
+  },
+  "apps/poste/lib/modules/cfg/cfa_commun.dart": {
+   "nom TAKI": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/cfg/cfa_identite.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/cfg/cfa_organisation.dart": {
+   "nom TAKI": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/ged/ged_commun.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m1/documents.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m1/fiche_impression.dart": {
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m10/rha_commun.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m10/rha_missions.dart": {
+   "['surveillant', 'da', 'admin']": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m10/rha_prestataires.dart": {
+   "nom KASSA": 1
+  },
+  "apps/poste/lib/modules/m10/rhb_circuit.dart": {
+   ".role == 'admin'": 1,
+   ".role == 'da'": 1
+  },
+  "apps/poste/lib/modules/m10/rhb_commun.dart": {
+   "nom TAKI": 2,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m10/rhb_evaluations.dart": {
+   "nom TAKI": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m10/rhb_planning.dart": {
+   "['admin', 'da', 'surveillant']": 1
+  },
+  "apps/poste/lib/modules/m10/rhb_presences.dart": {
+   "['surveillant', 'da', 'admin']": 1
+  },
+  "apps/poste/lib/modules/m10/rhb_propositions.dart": {
+   "['surveillant', 'da', 'admin']": 1
+  },
+  "apps/poste/lib/modules/m10/rhc_badges_verification.dart": {
+   ".role == 'admin'": 1,
+   ".role == 'da'": 1
+  },
+  "apps/poste/lib/modules/m10/rhd_mes.dart": {
+   ".role == 'admin'": 1,
+   ".role == 'da'": 1
+  },
+  "apps/poste/lib/modules/m11/pai_commun.dart": {
+   "nom KASSA": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m12/cpa_commun.dart": {
+   "nom KASSA": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m12/cpa_depenses.dart": {
+   "nom TAKI": 2
+  },
+  "apps/poste/lib/modules/m12/cpb_analytique.dart": {
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m12/cpb_commun.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m12/cpc_baseline.dart": {
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m12/cpc_echeances.dart": {
+   "nom KASSA": 1
+  },
+  "apps/poste/lib/modules/m12/cpc_etats.dart": {
+   "nom TAKI": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m12/cpc_ouverture.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m13/adm_registres.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m14/audit.dart": {
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m14/roles.dart": {
+   "nom TAKI": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m14/sauvegardes.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m2/cs_dossiers.dart": {
+   ".role == 'chirurgien'": 1
+  },
+  "apps/poste/lib/modules/m2/cs_pathologies.dart": {
+   "nom BASSONGUI": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m2/img_demandes.dart": {
+   ".role != 'echographiste'": 1
+  },
+  "apps/poste/lib/modules/m4/mat_registres.dart": {
+   "nom BASSONGUI": 2
+  },
+  "apps/poste/lib/modules/m5/cat_commun.dart": {
+   "nom KINNOU": 1,
+   "nom TAKI": 1,
+   "nom MAMAN": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m5/dem_commun.dart": {
+   "nom KINNOU": 1
+  },
+  "apps/poste/lib/modules/m5/res_commun.dart": {
+   "nom KINNOU": 1
+  },
+  "apps/poste/lib/modules/m5/res_stats.dart": {
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/m5/sang_banque.dart": {
+   "nom KINNOU": 1
+  },
+  "apps/poste/lib/modules/m5/sang_donneurs.dart": {
+   "nom KINNOU": 1
+  },
+  "apps/poste/lib/modules/m6/flux_reprise.dart": {
+   "nom MAMAN": 1,
+   "nom DIEYABIDI": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m6/mvt_inventaire.dart": {
+   "nom MAMAN": 1,
+   "nom DIEYABIDI": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m6/mvt_pertes.dart": {
+   "nom MAMAN": 1,
+   "nom KASSA": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m6/mvt_transferts.dart": {
+   "nom MAMAN": 1
+  },
+  "apps/poste/lib/modules/m6/points_commun.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m6/stock_commun.dart": {
+   "nom MAMAN": 1,
+   "nom TAKI": 1,
+   "nom DIEYABIDI": 1
+  },
+  "apps/poste/lib/modules/m7/besoins_commandes.dart": {
+   "nom MAMAN": 1
+  },
+  "apps/poste/lib/modules/m7/besoins_ecarts.dart": {
+   "nom MAMAN": 1
+  },
+  "apps/poste/lib/modules/m7/besoins_expression.dart": {
+   "nom MAMAN": 1
+  },
+  "apps/poste/lib/modules/m7/besoins_livraisons.dart": {
+   "nom MAMAN": 1
+  },
+  "apps/poste/lib/modules/m7/besoins_receptions.dart": {
+   "nom MAMAN": 1,
+   "nom DIEYABIDI": 1
+  },
+  "apps/poste/lib/modules/m7/pv_fournisseurs.dart": {
+   "nom MAMAN": 1
+  },
+  "apps/poste/lib/modules/m8/avoirs.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m8/caisse.dart": {
+   "nom KASSA": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m8/operations.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m8/recettes.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m8/remboursements.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m9/commun.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m9/creances.dart": {
+   "nom KASSA": 1
+  },
+  "apps/poste/lib/modules/m9/relances.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/m9/releve.dart": {
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/mecef/ecrans.dart": {
+   "nom KASSA": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/mere/mrc_sources.dart": {
+   "['role'] == 'admin'": 1
+  },
+  "apps/poste/lib/modules/pil/pil_direction.dart": {
+   "nom BASSONGUI": 1,
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/pil/pil_gestion.dart": {
+   "nom TAKI": 1
+  },
+  "apps/poste/lib/modules/rap/rap_direction.dart": {
+   "nom TAKI": 1,
+   "nom KASSA": 1
+  },
+  "apps/poste/lib/modules/rap/rap_generateur.dart": {
+   "nom TAKI": 1,
+   "nom BASSONGUI": 1
+  },
+  "apps/poste/lib/modules/registre.dart": {
+   "{'admin', 'da'}": 1
+  },
+  "apps/poste/lib/shell/centre_notifications.dart": {
+   "['caissier']": 1,
+   "['pharmacien']": 1,
+   "['comptable', 'assistant_comptable', 'aide_comptable', 'da']": 1,
+   "['direction', 'da', 'dm']": 1,
+   "['echographiste']": 1,
+   "['laborantin']": 3,
+   "['medecin', 'chirurgien', 'anesthesiste', 'dm']": 1,
+   "['infirmier', 'aide_soignant', 'surveillant']": 1,
+   "['infirmier', 'aide_soignant', 'surveillant', 'medecin']": 1,
+   "['comptable', 'da', 'assistant_comptable', 'direction']": 1,
+   "['da', 'comptable', 'direction', 'assistant_comptable', 'aide_comptable']": 1,
+   "['da', 'direction', 'admin']": 1,
+   "['comptable', 'da', 'aide_comptable']": 1,
+   "['direction', 'da', 'comptable', 'admin']": 1,
+   "['direction', 'da', 'admin']": 1
+  },
+  "prototype_html/api/_auth_aide.php": {
+   "['admin', 'da']": 1
+  },
+  "prototype_html/api/auth.php": {
+   "['role'] !== 'admin'": 1,
+   "nom BASSONGUI": 2,
+   "nom TAKI": 1,
+   "nom KINNOU": 1,
+   "nom MAMAN": 1,
+   "nom KASSA": 1,
+   "nom DIEYABIDI": 1
+  },
+  "prototype_html/api/cron.php": {
+   "['admin', 'da']": 3,
+   "['comptable', 'aide_comptable', 'da', 'direction', 'dm', 'admin']": 1,
+   "['stock', 'pharmacien', 'caissier', 'da']": 1,
+   "['stock', 'pharmacien', 'caissier', 'laborantin']": 1,
+   "['reception', 'medecin', 'infirmier', 'dm']": 1,
+   "['da', 'comptable', 'direction', 'agentadmin']": 1
+  },
+  "prototype_html/api/fichiers.php": {
+   "$role !== 'admin'": 1
+  },
+  "prototype_html/api/notifications.php": {
+   "['admin', 'da', 'direction']": 1,
+   "['admin', 'da']": 1,
+   "$role !== 'admin'": 2
+  },
+  "prototype_html/api/parite.php": {
+   "['admin', 'da', 'direction']": 1
+  },
+  "prototype_html/api/sms.php": {
+   "['admin', 'da']": 1,
+   "['admin', 'da', 'direction']": 1,
+   "$role !== 'admin'": 1
+  },
+  "prototype_html/api/sms_client.php": {
+   "['admin', 'da']": 2,
+   "['admin', 'da', 'reception', 'medecin', 'infirmier', 'dm']": 1,
+   "['admin', 'da', 'reception', 'agentadmin']": 3,
+   "['admin', 'da', 'reception', 'laborantin', 'medecin', 'dm']": 1
+  },
+  "prototype_html/api/smtp.php": {
+   "['admin', 'da']": 1,
+   "$role !== 'admin'": 1
+  },
+  "js/app.js": {
+   "nom BASSONGUI": 1
+  },
+  "js/modules/configuration.js": {
+   "nom TAKI": 4,
+   "nom BASSONGUI": 2
+  },
+  "js/modules/dashboards.js": {
+   "nom BASSONGUI": 1,
+   "nom TAKI": 2
+  },
+  "js/modules/ged.js": {
+   "nom TAKI": 2
+  },
+  "js/modules/m1-patients.js": {
+   "session.role === 'echographiste'": 1,
+   "session.role !== 'echographiste'": 1,
+   "nom BASSONGUI": 1,
+   "nom KINNOU": 1,
+   "nom TAKI": 1
+  },
+  "js/modules/m10-rh.js": {
+   "['admin', 'da']": 4,
+   "['admin', 'da', 'surveillant']": 1,
+   "['surveillant', 'da', 'admin']": 3,
+   "['surveillant', 'da', 'admin', 'direction', 'rh']": 1,
+   "nom TAKI": 19,
+   "nom BASSONGUI": 5,
+   "nom KASSA": 1
+  },
+  "js/modules/m11-paie.js": {
+   "nom KASSA": 5,
+   "nom BASSONGUI": 2,
+   "nom TAKI": 4
+  },
+  "js/modules/m12-comptabilite.js": {
+   "nom KASSA": 14,
+   "nom TAKI": 18,
+   "nom BASSONGUI": 3
+  },
+  "js/modules/m13-administration.js": {
+   "nom TAKI": 5
+  },
+  "js/modules/m14-securite.js": {
+   "['dm', 'da', 'direction', 'admin']": 3,
+   "['admin', 'da']": 1,
+   "nom BASSONGUI": 4,
+   "nom TAKI": 3,
+   "nom KASSA": 1,
+   "nom MAMAN": 1,
+   "nom KINNOU": 1,
+   "nom DIEYABIDI": 1
+  },
+  "js/modules/m2-consultations.js": {
+   ".role === 'chirurgien'": 2,
+   ".role === 'echographiste'": 1,
+   "nom BASSONGUI": 1,
+   "nom TAKI": 1
+  },
+  "js/modules/m4-maternite.js": {
+   "nom BASSONGUI": 2
+  },
+  "js/modules/m5-laboratoire.js": {
+   "nom KINNOU": 6,
+   "nom TAKI": 2,
+   "nom BASSONGUI": 2,
+   "nom MAMAN": 1
+  },
+  "js/modules/m6-stock.js": {
+   "nom MAMAN": 8,
+   "nom TAKI": 7,
+   "nom DIEYABIDI": 4,
+   "nom KASSA": 1
+  },
+  "js/modules/m7-achats.js": {
+   "['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']": 1,
+   "nom MAMAN": 6,
+   "nom TAKI": 3
+  },
+  "js/modules/m8-facturation.js": {
+   "nom TAKI": 4,
+   "nom KASSA": 1
+  },
+  "js/modules/m9-assurances.js": {
+   "nom TAKI": 6,
+   "nom BASSONGUI": 1,
+   "nom KASSA": 1
+  },
+  "js/modules/mecef.js": {
+   "nom KASSA": 1,
+   "nom TAKI": 1
+  },
+  "js/modules/mere.js": {
+   "nom DIEYABIDI": 2,
+   "nom KINNOU": 2,
+   "nom MAMAN": 1,
+   "nom KASSA": 1,
+   "nom TAKI": 1
+  },
+  "js/modules/rapports.js": {
+   "['stock']": 1,
+   "['rh']": 1,
+   "nom TAKI": 2,
+   "nom BASSONGUI": 1,
+   "nom KASSA": 1
+  },
+  "js/notifications.js": {
+   "['comptable', 'assistant_comptable', 'aide_comptable', 'da']": 1,
+   "['direction', 'da', 'dm']": 1,
+   "['echographiste']": 1,
+   "['laborantin']": 3,
+   "['medecin', 'chirurgien', 'anesthesiste', 'dm']": 1,
+   "['infirmier', 'aide_soignant', 'surveillant']": 1,
+   "['infirmier', 'aide_soignant', 'surveillant', 'medecin']": 1,
+   "['comptable', 'da', 'assistant_comptable', 'direction']": 2,
+   "['da', 'comptable', 'direction', 'assistant_comptable', 'aide_comptable']": 1,
+   "['comptable', 'da', 'aide_comptable']": 1
+  },
+  "js/parcours.js": {
+   "['admin', 'da', 'surveillant']": 1,
+   "['surveillant']": 1,
+   "['admin', 'da']": 5,
+   "['surveillant', 'da', 'admin']": 4,
+   ".role !== 'reception'": 1
+  },
+  "js/store.js": {
+   "nom BASSONGUI": 2,
+   "nom TAKI": 2,
+   "nom KASSA": 3,
+   "nom KINNOU": 3,
+   "nom DIEYABIDI": 3,
+   "nom MAMAN": 3
+  }
+ }
+}

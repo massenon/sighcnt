@@ -1,0 +1,56 @@
+{
+ "id": "rapports-historique",
+ "module": "RAP",
+ "domaine": "Administration",
+ "libelleManifeste": "Historique des éditions",
+ "acces": "ouvert",
+ "titre": "Historique des éditions",
+ "description": "Journal des documents générés, imprimés et exportés, avec l’utilisateur à l’origine de l’édition.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Rapports & Impression",
+  "Historique des éditions"
+ ],
+ "actions": [
+  "Bibliothèque des états",
+  "États de la Direction",
+  "Rapports & Impression"
+ ],
+ "regle": [
+  "Chaque édition est journalisée avec son identifiant unique de document, l’utilisateur générateur et l’horodatage, conformément à l’exigence de traçabilité (RG-12)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Éditions enregistrées",
+  "Ce mois-ci",
+  "Exports PDF",
+  "Utilisateurs distincts"
+ ],
+ "cartes": [
+  "Journal des éditions",
+  "Éditions par module",
+  "États les plus édités"
+ ],
+ "tableaux": [
+  [
+   "Réf. document",
+   "Horodatage",
+   "État édité",
+   "Module",
+   "Format",
+   "Généré par",
+   "Poste"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

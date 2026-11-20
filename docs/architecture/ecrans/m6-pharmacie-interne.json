@@ -1,0 +1,51 @@
+{
+ "id": "m6-pharmacie-interne",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Pharmacie interne — urgences",
+ "acces": "ouvert",
+ "titre": "Pharmacie interne — urgences",
+ "description": "Produits administrés sur place : injectables, perfusions et solutés remis à la salle de soins.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Pharmacie interne — urgences"
+ ],
+ "actions": [
+  "Pharmacie externe — voie orale",
+  "Tableau de bord stock",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Cette pharmacie sert les soins d’urgence administrés sur place. Les produits partent vers la salle de soins, jamais vers le patient directement — c’est le personnel soignant qui les administre, et la traçabilité de l’administration relève de la prescription de soins."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lignes de cette pharmacie",
+  "À délivrer",
+  "Bloquées faute de règlement",
+  "Non couvertes par le stock"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Ordonnance",
+   "Date",
+   "Patient",
+   "Produit",
+   "Quantité",
+   "Posologie",
+   "Stock",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

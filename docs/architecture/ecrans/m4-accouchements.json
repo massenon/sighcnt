@@ -1,0 +1,60 @@
+{
+ "id": "m4-accouchements",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Accouchements",
+ "acces": "ouvert",
+ "titre": "Accouchements",
+ "description": "Enregistrement des accouchements : voie, durée du travail, complications et issue.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Accouchements"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les accouchements",
+  "Archivés"
+ ],
+ "kpis": [
+  "Accouchements",
+  "Césariennes",
+  "Avec complications",
+  "Issues favorables"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date et heure",
+   "Parturiente",
+   "Type",
+   "Actes associés",
+   "Durée du travail",
+   "Complications",
+   "Praticien",
+   "Issue",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les accouchements48",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,36 @@
+{
+ "id": "cfg-poste",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Ce poste (mode fileul / mère)",
+ "acces": "ouvert",
+ "titre": "Ce poste",
+ "description": "Mode du poste : fileul ou mère. La mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Ce poste (mode fileul / mère)"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "À faire sur le serveur local uniquement. Exige l’adresse du relais, le secret de la mère et la clé de clinique."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Mode de ce poste",
+  "Service de synchronisation"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Activer le mode mère"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 2
+}

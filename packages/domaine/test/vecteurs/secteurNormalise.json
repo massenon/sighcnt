@@ -1,0 +1,307 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "cle": "laboratoire"
+   },
+   "sortie": "Laboratoire"
+  },
+  {
+   "entree": {
+    "cle": "LABO"
+   },
+   "sortie": "Laboratoire"
+  },
+  {
+   "entree": {
+    "cle": "Laboratoire"
+   },
+   "sortie": "Laboratoire"
+  },
+  {
+   "entree": {
+    "cle": "pharmacie"
+   },
+   "sortie": "Pharmacie"
+  },
+  {
+   "entree": {
+    "cle": "Pharmacie"
+   },
+   "sortie": "Pharmacie"
+  },
+  {
+   "entree": {
+    "cle": "dispensation"
+   },
+   "sortie": "Pharmacie"
+  },
+  {
+   "entree": {
+    "cle": "medicament"
+   },
+   "sortie": "Pharmacie"
+  },
+  {
+   "entree": {
+    "cle": "médicament"
+   },
+   "sortie": "Pharmacie"
+  },
+  {
+   "entree": {
+    "cle": "maternité"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "Maternité"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "maternite"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "obstétrique"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "gynéco-obstétrique"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "Gynéco-obstétrique"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "accouchement"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "cpn"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "PF"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "pf"
+   },
+   "sortie": "Maternité"
+  },
+  {
+   "entree": {
+    "cle": "imagerie"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "Imagerie médicale"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "échographie"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "Échographie"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "radiographie"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "ECG"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "scanner"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "IRM"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "mammographie"
+   },
+   "sortie": "Imagerie médicale"
+  },
+  {
+   "entree": {
+    "cle": "consultation"
+   },
+   "sortie": "Consultation"
+  },
+  {
+   "entree": {
+    "cle": "Consultation"
+   },
+   "sortie": "Consultation"
+  },
+  {
+   "entree": {
+    "cle": "médecine générale"
+   },
+   "sortie": "Consultation"
+  },
+  {
+   "entree": {
+    "cle": "accueil"
+   },
+   "sortie": "Consultation"
+  },
+  {
+   "entree": {
+    "cle": "hospitalisation"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "Hospitalisation et soins"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "observation"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "soins"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "Soins et observation"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "chirurgie"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "bloc"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "urgence"
+   },
+   "sortie": "Hospitalisation et soins"
+  },
+  {
+   "entree": {
+    "cle": "direction"
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": "Direction"
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": "entretien"
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": "ambulance"
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": "administration"
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": ""
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": null
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": {
+     "indefini": true
+    }
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": "xyz"
+   },
+   "sortie": null
+  },
+  {
+   "entree": {
+    "cle": "LABORATOIRE D'ANALYSES"
+   },
+   "sortie": "Laboratoire"
+  },
+  {
+   "entree": {
+    "cle": "Hôpital de jour"
+   },
+   "sortie": null
+  }
+ ]
+}

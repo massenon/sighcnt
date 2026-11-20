@@ -1,0 +1,67 @@
+{
+ "id": "m2-prescriptions",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Prescriptions",
+ "acces": "ouvert",
+ "titre": "Prescriptions",
+ "description": "Registre unique des prescriptions d’ordonnance et de soins, quelle qu’en soit l’origine.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Consultations & prescriptions",
+  "Prescriptions"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Une prescription non réglée reste visible mais non exécutable : l’encaissement la débloque. C’est la même règle que pour la délivrance en pharmacie et pour le laboratoire — le poste voit ce qui l’attend sans pouvoir le servir avant paiement."
+ ],
+ "onglets": [
+  "Toutes",
+  "Prescriptions de soins",
+  "Ordonnances",
+  "En cours"
+ ],
+ "kpis": [
+  "Prescriptions",
+  "Ordonnances",
+  "Prescriptions de soins",
+  "En attente de règlement"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date",
+   "Patient",
+   "Type",
+   "Origine",
+   "Destinataire",
+   "Prescripteur",
+   "Montant",
+   "Règlement",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Toutes158",
+  "Prescriptions de soins65",
+  "Ordonnances93",
+  "En cours149",
+  "Colonnes",
+  "Exporter",
+  "Nouvelle prescription de soins",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

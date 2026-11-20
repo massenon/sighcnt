@@ -1,0 +1,63 @@
+{
+ "id": "mecef-config",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "Configuration fiscale",
+ "acces": "ouvert",
+ "titre": "Configuration fiscale",
+ "description": "Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée",
+  "Configuration fiscale"
+ ],
+ "actions": [
+  "Tableau de bord fiscal",
+  "Factures normalisées",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [
+  "Boîtier physique : en attente des réponses du fournisseur. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.",
+  "La liaison réelle n’est pas connue : à vérifier à l’arrière de l’appareil (USB ou Ethernet), puis à régler ici.",
+  "Cette imprimante sort les tickets de caisse (rouleau 80 mm). Elle ne remplace pas le boîtier de certification."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Mode de certification",
+  "État de la caisse",
+  "Imprimante de caisse",
+  "Paramètres fiscaux",
+  "Mentions portées sur chaque facture",
+  "Contrôles automatiques à l’émission"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Régler le mode",
+  "Voir la file",
+  "Régler l’imprimante",
+  "Tester la connexion au dispositif"
+ ],
+ "champs": [
+  "Raison sociale *",
+  "IFU *",
+  "RCCM *",
+  "N° d’autorisation d’ouverture",
+  "Adresse",
+  "Téléphones",
+  "Adresse électronique",
+  "Préfixe des factures",
+  "Préfixe des avoirs",
+  "Préfixe des pro-forma",
+  "Prochain numéro",
+  "Régime de TVA *",
+  "Taux d’AIB (%)",
+  "Devise",
+  "Mode de transmission",
+  "Délai avant nouvelle tentative (minutes)",
+  "Archivage automatique des factures transmises"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

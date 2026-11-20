@@ -1,0 +1,5231 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-dash.js — ne pas éditer. Dix tableaux de bord par poste, lus dans Chrome sur le jeu du poste, horloge 16/08/2026 midi.",
+ "ecrans": {
+  "dash-medecin": {
+   "id": "dash-medecin",
+   "role": "medecin",
+   "nom": null,
+   "titre": "Tableau de bord — Médecin",
+   "description": "Consultations du jour, patients hospitalisés sous responsabilité et prescriptions récentes.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Actes prescrits en attente d’exécution",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Actes prescrits en attente d’exécution Aucun acte prescrit en attente."
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 94 résultat(s) rendu(s) — vous attendent Un résultat n’est visible qu’après validation biologique : ceux-ci le sont. Lire les résultats",
+      "ligne": "94 résultat(s) rendu(s) — vous attendent",
+      "valeur": "94",
+      "note": "Un résultat n’est visible qu’après validation biologique : ceux-ci le sont.",
+      "lien": {
+       "libelle": "Lire les résultats",
+       "ecran": "m5-resultats"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-sky-200 bg-sky-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Nouvelle consultation",
+         "detail": "Diagnostic et prescription",
+         "ecran": "m2-consultation-fiche"
+        },
+        {
+         "libelle": "Prescrire une analyse",
+         "detail": "Demande au laboratoire",
+         "ecran": "m5-demandes"
+        },
+        {
+         "libelle": "Décider une hospitalisation",
+         "detail": "Admission et affectation de lit",
+         "ecran": "m3-admissions"
+        },
+        {
+         "libelle": "Consultation à domicile",
+         "detail": "Planification et facturation",
+         "ecran": "m2-domicile"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Nouvelle consultation Diagnostic et prescription Prescrire une analyse Demande au laboratoire Décider une hospitalisation Admission et affectation de lit Consultation à domicile Planification et facturation"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Vos patients en attente",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [
+        {
+         "titre": "File commune de consultation",
+         "lignes": [],
+         "entetes": []
+        }
+       ],
+       "texte": "Vos patients en attente Aucun patient ne vous est adressé nommément. 0 patient(s) attendent en file commune : le prochain praticien libre les reçoit. File commune de consultation Aucun patient en file commune. 1 patient(s) attendent un autre praticien. Ils figurent au poste de consultation, pas dans votre liste. Ouvrir la file d’attente"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — vos parcours",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Recevoir un patient",
+         "detail": "Le patient est appelé, la consultation commence.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Enregistrer le dossier de consultation",
+           "ecran": "m2-dossiers-consultation",
+           "poste": null,
+           "ferme": false,
+           "detail": "Anamnèse, trois catégories d’antécédents, examen IPPOA par appareil. Les constantes de l’accueil y sont lues, pas ressaisies."
+          },
+          {
+           "rang": "2",
+           "libelle": "Fiche de consultation : diagnostic et prescription",
+           "ecran": "m2-consultation-fiche",
+           "poste": null,
+           "ferme": false,
+           "detail": "Code de pathologie ET diagnostic rédigé ; médicaments, analyses et imagerie — ici seulement."
+          },
+          {
+           "rang": "3",
+           "libelle": "Le patient règle",
+           "ecran": null,
+           "poste": "Caisse",
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Le laboratoire prélève",
+           "ecran": null,
+           "poste": "Laboratoire",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Ouvrir la consultation",
+          "ecran": "m2-dossiers-consultation"
+         }
+        },
+        {
+         "titre": "Lire les résultats",
+         "detail": "Vos prescriptions d’analyses sont revenues.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Consulter les résultats rendus",
+           "ecran": "m5-resultats",
+           "poste": null,
+           "ferme": false,
+           "detail": "Seuls les résultats VALIDÉS BIOLOGIQUEMENT vous sont visibles."
+          },
+          {
+           "rang": "2",
+           "libelle": "Réajuster le traitement",
+           "ecran": "m2-ordonnances",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Programmer le contrôle",
+           "ecran": "m2-rendezvous",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Voir les résultats",
+          "ecran": "m5-resultats"
+         }
+        },
+        {
+         "titre": "Hospitaliser",
+         "detail": "L’état du patient justifie un séjour.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Créer l’admission et attribuer un lit",
+           "ecran": "m3-admissions",
+           "poste": null,
+           "ferme": false,
+           "detail": "Un lit ne porte qu’une admission active à la fois."
+          },
+          {
+           "rang": "2",
+           "libelle": "Prescrire le traitement d’entrée",
+           "ecran": "m2-prescriptions",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Suivre les constantes",
+           "ecran": "m3-surveillance",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Rédiger le rapport médical à la sortie",
+           "ecran": "m3-rapport",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "5",
+           "libelle": "Vérifier le solde avant sortie",
+           "ecran": null,
+           "poste": null,
+           "ferme": true,
+           "detail": "RG-06 — pas de sortie sans solde apuré."
+          }
+         ],
+         "action": {
+          "libelle": "Admettre",
+          "ecran": "m3-admissions"
+         }
+        },
+        {
+         "titre": "Délivrer un certificat",
+         "detail": "Le patient réclame une pièce certifiante.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Établir la pièce",
+           "ecran": "m1-pieces",
+           "poste": null,
+           "ferme": false,
+           "detail": "Quatorze types. Le prénuptial se remplit depuis les résultats validés."
+          },
+          {
+           "rang": "2",
+           "libelle": "Encaisser",
+           "ecran": null,
+           "poste": "Caisse",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Délivrer",
+          "ecran": "m1-pieces"
+         }
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — vos parcours Recevoir un patient Le patient est appelé, la consultation commence. 1 Enregistrer le dossier de consultation Anamnèse, trois catégories d’antécédents, examen IPPOA par appareil. Les constantes de l’accueil y sont lues, pas ressaisies. 2 Fiche de consultation : diagnostic et prescription Code de pathologie ET diagnostic rédigé ; médicaments, analyses et imagerie — ici seulement. 3 Le patient règleCaisse 4 Le laboratoire prélèveLaboratoire Ouvrir la consultation Lire les résultats Vos prescriptions d’analyses sont revenues. 1 Consulter les résultats rendus Seuls les résultats VALIDÉS BIOLOGIQUEMENT vous sont visibles. 2 Réajuster le traitement 3 Programmer le contrôle Voir les résultats Hospitaliser L’état du patient justifie un séjour. 1 Créer l’admission et attribuer un lit Un lit ne porte qu’une admission active à la fois. 2 Prescrire le traitement d’entrée 3 Suivre les constantes 4 Rédiger le rapport médical à la sortie 5 Vérifier le solde avant sortie— fermé à votre profil RG-06 — pas de sortie sans solde apuré. Admettre Délivrer un certificat Le patient réclame une pièce certifiante. 1 Établir la pièce Quatorze types. Le prénuptial se remplit depuis les résultats validés. 2 EncaisserCaisse Délivrer"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Consultations du jour",
+       "valeur": "2",
+       "indice": null
+      },
+      {
+       "label": "En attente",
+       "valeur": "54",
+       "indice": null
+      },
+      {
+       "label": "Patients hospitalisés",
+       "valeur": "14",
+       "indice": null
+      },
+      {
+       "label": "Consultations du mois",
+       "valeur": "43",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "File d’attente et consultations récentes",
+       "tables": [
+        {
+         "entetes": [
+          "DATE",
+          "DOSSIER",
+          "PATIENT",
+          "MOTIF",
+          "STATUT"
+         ],
+         "lignes": [
+          [
+           "26/08/2026 10h00",
+           "CNT/138/26",
+           "YARO Edmond",
+           "Hypertension — contrôle",
+           "Terminée"
+          ],
+          [
+           "26/08/2026 10h00",
+           "CNT/34/26",
+           "SAMBIENI Ganiou",
+           "Douleurs épigastriques",
+           "Terminée"
+          ],
+          [
+           "16/08/2026 17h30",
+           "CNT/67/26",
+           "BAKO Sylvie",
+           "Plaie infectée",
+           "En cours"
+          ],
+          [
+           "16/08/2026 15h30",
+           "CNT/65/26",
+           "TCHANE Idrissou",
+           "Consultation prénatale",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 18h15",
+           "CNT/148/25",
+           "BOUKARI Alassane",
+           "Traumatisme",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 17h00",
+           "CNT/42/26",
+           "YARO Bertine",
+           "Suivi de grossesse",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 16h30",
+           "CNT/74/26",
+           "HOUNKPATIN Salifou",
+           "Plaie infectée",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 10h15",
+           "CNT/10/25",
+           "SEIDOU Rachida",
+           "Contrôle diabète",
+           "Planifiée"
+          ],
+          [
+           "14/08/2026 13h45",
+           "CNT/45/26",
+           "PARAISO Séraphine",
+           "Fièvre persistante",
+           "En cours"
+          ],
+          [
+           "14/08/2026 11h45",
+           "CNT/4/26",
+           "PARAISO Sabi",
+           "Céphalées",
+           "Terminée"
+          ]
+         ],
+         "boutons": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Toutes les consultations",
+         "ecran": "m2-consultations"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "File d’attente et consultations récentes Toutes les consultations DATE DOSSIER PATIENT MOTIF STATUT 26/08/2026 10h00 CNT/138/26 YARO Edmond Hypertension — contrôle Terminée 26/08/2026 10h00 CNT/34/26 SAMBIENI Ganiou Douleurs épigastriques Terminée 16/08/2026 17h30 CNT/67/26 BAKO Sylvie Plaie infectée En cours 16/08/2026 15h30 CNT/65/26 TCHANE Idrissou Consultation prénatale Terminée 15/08/2026 18h15 CNT/148/25 BOUKARI Alassane Traumatisme Terminée 15/08/2026 17h00 CNT/42/26 YARO Bertine Suivi de grossesse Terminée 15/08/2026 16h30 CNT/74/26 HOUNKPATIN Salifou Plaie infectée Terminée 15/08/2026 10h15 CNT/10/25 SEIDOU Rachida Contrôle diabète Planifiée 14/08/2026 13h45 CNT/45/26 PARAISO Séraphine Fièvre persistante En cours 14/08/2026 11h45 CNT/4/26 PARAISO Sabi Céphalées Terminée"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Motifs de consultation les plus fréquents",
+       "tables": [],
+       "classement": [
+        [
+         "Paludisme suspecté",
+         "22"
+        ],
+        [
+         "Céphalées",
+         "20"
+        ],
+        [
+         "Traumatisme",
+         "19"
+        ],
+        [
+         "Suivi de grossesse",
+         "19"
+        ],
+        [
+         "Contrôle diabète",
+         "19"
+        ],
+        [
+         "Toux chronique",
+         "19"
+        ],
+        [
+         "Douleurs abdominales",
+         "18"
+        ],
+        [
+         "Consultation prénatale",
+         "17"
+        ]
+       ],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Motifs de consultation les plus fréquents Paludisme suspecté 22 Céphalées 20 Traumatisme 19 Suivi de grossesse 19 Contrôle diabète 19 Toux chronique 19 Douleurs abdominales 18 Consultation prénatale 17"
+      },
+      {
+       "titre": "Diagnostics posés",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "bar",
+         "etiquettes": [
+          "Plaie en voie de cicatrisation",
+          "Asthénie du sujet âgé",
+          "Déshydratation modérée",
+          "Évolution favorable",
+          "Gastrite",
+          "Plaie contuse de la jambe gauche"
+         ],
+         "series": [
+          {
+           "libelle": "Cas",
+           "donnees": [
+            4,
+            2,
+            2,
+            1,
+            1,
+            2
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Diagnostics posés"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-infirmier": {
+   "id": "dash-infirmier",
+   "role": "infirmier",
+   "nom": null,
+   "titre": "Tableau de bord — Infirmier / Sage-femme",
+   "description": "Patients hospitalisés, relevés de constantes attendus, sorties à préparer et gardes du jour.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 253 administration(s) — reviennent à votre poste Le rang du passage décide du secteur : la première administration d’un traitement hospitalier revient à la salle de soins, les suivantes à l’hospitalisation. Salle de soins",
+      "ligne": "253 administration(s) — reviennent à votre poste",
+      "valeur": "253",
+      "note": "Le rang du passage décide du secteur : la première administration d’un traitement hospitalier revient à la salle de soins, les suivantes à l’hospitalisation.",
+      "lien": {
+       "libelle": "Salle de soins",
+       "ecran": "m2-salle-soins"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-navy-200 bg-navy-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Feuille de température",
+         "detail": "Saisie des constantes",
+         "ecran": "m3-feuille-temperature"
+        },
+        {
+         "libelle": "Nouvelle admission",
+         "detail": "Affecter un lit",
+         "ecran": "m3-admissions"
+        },
+        {
+         "libelle": "Sortie d’hospitalisation",
+         "detail": "RG-06 / RG-07 — signatures",
+         "ecran": "m3-sorties"
+        },
+        {
+         "libelle": "Accouchement",
+         "detail": "Maternité et naissance",
+         "ecran": "m4-accouchements"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Feuille de température Saisie des constantes Nouvelle admission Affecter un lit Sortie d’hospitalisation RG-06 / RG-07 — signatures Accouchement Maternité et naissance"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — vos parcours",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Administrer les soins dus",
+         "detail": "Ce qui revient à votre poste maintenant.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Voir ce qui vous revient",
+           "ecran": "m2-salle-soins",
+           "poste": null,
+           "ferme": false,
+           "detail": "Ambulatoire : tous les passages. Hospitalier : la PREMIÈRE administration."
+          },
+          {
+           "rang": "2",
+           "libelle": "Administrer sous votre nom",
+           "ecran": "m2-salle-soins",
+           "poste": null,
+           "ferme": false,
+           "detail": "Une prescription non réglée reste visible mais non exécutable."
+          },
+          {
+           "rang": "3",
+           "libelle": "Les passages suivants",
+           "ecran": null,
+           "poste": "Hospitalisation",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Salle de soins",
+          "ecran": "m2-salle-soins"
+         }
+        },
+        {
+         "titre": "Surveiller un hospitalisé",
+         "detail": "Relevé des constantes au lit du patient.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Relever les constantes",
+           "ecran": "m1-constantes",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "2",
+           "libelle": "Lire la courbe à cinq échelles",
+           "ecran": "m3-surveillance",
+           "poste": null,
+           "ferme": false,
+           "detail": "Même donnée que la feuille de température, autre présentation."
+          },
+          {
+           "rang": "3",
+           "libelle": "Évaluer la conscience si nécessaire",
+           "ecran": "m3-glasgow",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le score est calculé, borné de 3 à 15."
+          },
+          {
+           "rang": "4",
+           "libelle": "Prévenir le médecin si aggravation",
+           "ecran": null,
+           "poste": "Consultation",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Fiche de surveillance",
+          "ecran": "m1-constantes"
+         }
+        },
+        {
+         "titre": "Poser une transfusion",
+         "detail": "Une poche de PSL est posée.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Ouvrir la fiche de surveillance transfusionnelle",
+           "ecran": "m3-transfusion",
+           "poste": null,
+           "ferme": false,
+           "detail": "Huit temps imposés : avant la pose, 15 min, toutes les 30 min, fin, 1 h, 2 h."
+          },
+          {
+           "rang": "2",
+           "libelle": "Relever à chaque temps",
+           "ecran": "m3-transfusion",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Signaler tout incident immédiatement",
+           "ecran": null,
+           "poste": "Médecin",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Surveiller",
+          "ecran": "m3-transfusion"
+         }
+        },
+        {
+         "titre": "Préparer une sortie",
+         "detail": "Le séjour se termine.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Vérifier le solde",
+           "ecran": null,
+           "poste": null,
+           "ferme": true,
+           "detail": "RG-06."
+          },
+          {
+           "rang": "2",
+           "libelle": "Établir la fiche de sortie",
+           "ecran": "m3-sorties",
+           "poste": null,
+           "ferme": false,
+           "detail": "RG-07 — trois signatures, dont le constat du gardien."
+          },
+          {
+           "rang": "3",
+           "libelle": "Remettre le traitement de sortie",
+           "ecran": null,
+           "poste": "Pharmacie",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": null
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — vos parcours Administrer les soins dus Ce qui revient à votre poste maintenant. 1 Voir ce qui vous revient Ambulatoire : tous les passages. Hospitalier : la PREMIÈRE administration. 2 Administrer sous votre nom Une prescription non réglée reste visible mais non exécutable. 3 Les passages suivantsHospitalisation Salle de soins Surveiller un hospitalisé Relevé des constantes au lit du patient. 1 Relever les constantes 2 Lire la courbe à cinq échelles Même donnée que la feuille de température, autre présentation. 3 Évaluer la conscience si nécessaire Le score est calculé, borné de 3 à 15. 4 Prévenir le médecin si aggravationConsultation Fiche de surveillance Poser une transfusion Une poche de PSL est posée. 1 Ouvrir la fiche de surveillance transfusionnelle Huit temps imposés : avant la pose, 15 min, toutes les 30 min, fin, 1 h, 2 h. 2 Relever à chaque temps 3 Signaler tout incident immédiatementMédecin Surveiller Préparer une sortie Le séjour se termine. 1 Vérifier le solde— fermé à votre profil RG-06. 2 Établir la fiche de sortie RG-07 — trois signatures, dont le constat du gardien. 3 Remettre le traitement de sortiePharmacie"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Patients hospitalisés",
+       "valeur": "14",
+       "indice": null
+      },
+      {
+       "label": "Lits libres",
+       "valeur": "5",
+       "indice": null
+      },
+      {
+       "label": "Relevés de constantes attendus",
+       "valeur": "42",
+       "indice": "3 relevés par patient et par jour"
+      },
+      {
+       "label": "Sorties à préparer",
+       "valeur": "11",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Patients hospitalisés — service",
+       "tables": [
+        {
+         "entetes": [
+          "LIT",
+          "PATIENT",
+          "DOSSIER",
+          "ENTRÉE",
+          "JOURS",
+          "DIAGNOSTIC",
+          "PRISE EN CHARGE"
+         ],
+         "lignes": [
+          [
+           "A1 LIT1",
+           "SAMBIENI Bibata",
+           "CNT/20/26",
+           "07/08/2026",
+           "10",
+           "Paludisme grave",
+           "Plus de 8h"
+          ],
+          [
+           "A1 LIT2",
+           "WOROU Boukari",
+           "CNT/119/26",
+           "11/08/2026",
+           "6",
+           "Infection urinaire basse",
+           "Plus de 8h"
+          ],
+          [
+           "A2 LIT1",
+           "N’TCHA Hervé",
+           "CNT/75/26",
+           "08/08/2026",
+           "9",
+           "Gastro-entérite",
+           "Moins de 8h"
+          ],
+          [
+           "A2 LIT2",
+           "YENI M’PO Florent",
+           "CNT904/25",
+           "07/08/2026",
+           "10",
+           "Dermatose infectieuse",
+           "Moins de 8h"
+          ],
+          [
+           "A3 LIT1",
+           "TCHANE Colette",
+           "CNT/54/26",
+           "07/08/2026",
+           "10",
+           "Bronchite aiguë",
+           "Plus de 8h"
+          ],
+          [
+           "A3 LIT2",
+           "HOUNKPATIN Salifou",
+           "CNT/74/26",
+           "13/08/2026",
+           "4",
+           "Infection urinaire basse",
+           "Moins de 8h"
+          ],
+          [
+           "A4 LIT1",
+           "KASSA Florent",
+           "CNT/57/26",
+           "13/08/2026",
+           "4",
+           "Paludisme simple",
+           "Plus de 8h"
+          ],
+          [
+           "A4 LIT2",
+           "TIGRI Kassim",
+           "CNT/180/25",
+           "11/08/2026",
+           "6",
+           "HTA essentielle",
+           "Moins de 8h"
+          ],
+          [
+           "B1 LIT1",
+           "OROU YO Ganiou",
+           "CNT/88/26",
+           "11/08/2026",
+           "6",
+           "Fièvre typhoïde",
+           "Plus de 8h"
+          ],
+          [
+           "B1 LIT2",
+           "SOULE Nadège",
+           "CNT/97/26",
+           "12/08/2026",
+           "5",
+           "Diabète de type 2",
+           "Moins de 8h"
+          ],
+          [
+           "B2 LIT1",
+           "BASSONGUI Bio",
+           "CNT/167/26",
+           "09/08/2026",
+           "8",
+           "Bronchite aiguë",
+           "Plus de 8h"
+          ],
+          [
+           "B2 LIT2",
+           "TAKI Alimatou",
+           "CNT901/25",
+           "11/08/2026",
+           "6",
+           "Gastro-entérite",
+           "Plus de 8h"
+          ],
+          [
+           "B3 LIT1",
+           "SANNI Nadège",
+           "CNT/174/26",
+           "11/08/2026",
+           "6",
+           "HTA essentielle",
+           "Plus de 8h"
+          ],
+          [
+           "B3 LIT2",
+           "AHOHOU Zakari",
+           "CNT/80/26",
+           "10/08/2026",
+           "7",
+           "Infection respiratoire aiguë",
+           "Plus de 8h"
+          ]
+         ],
+         "boutons": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Plan des lits",
+         "ecran": "m3-plan-lits"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Patients hospitalisés — service Plan des lits LIT PATIENT DOSSIER ENTRÉE JOURS DIAGNOSTIC PRISE EN CHARGE A1 LIT1 SAMBIENI Bibata CNT/20/26 07/08/2026 10 Paludisme grave Plus de 8h A1 LIT2 WOROU Boukari CNT/119/26 11/08/2026 6 Infection urinaire basse Plus de 8h A2 LIT1 N’TCHA Hervé CNT/75/26 08/08/2026 9 Gastro-entérite Moins de 8h A2 LIT2 YENI M’PO Florent CNT904/25 07/08/2026 10 Dermatose infectieuse Moins de 8h A3 LIT1 TCHANE Colette CNT/54/26 07/08/2026 10 Bronchite aiguë Plus de 8h A3 LIT2 HOUNKPATIN Salifou CNT/74/26 13/08/2026 4 Infection urinaire basse Moins de 8h A4 LIT1 KASSA Florent CNT/57/26 13/08/2026 4 Paludisme simple Plus de 8h A4 LIT2 TIGRI Kassim CNT/180/25 11/08/2026 6 HTA essentielle Moins de 8h B1 LIT1 OROU YO Ganiou CNT/88/26 11/08/2026 6 Fièvre typhoïde Plus de 8h B1 LIT2 SOULE Nadège CNT/97/26 12/08/2026 5 Diabète de type 2 Moins de 8h B2 LIT1 BASSONGUI Bio CNT/167/26 09/08/2026 8 Bronchite aiguë Plus de 8h B2 LIT2 TAKI Alimatou CNT901/25 11/08/2026 6 Gastro-entérite Plus de 8h B3 LIT1 SANNI Nadège CNT/174/26 11/08/2026 6 HTA essentielle Plus de 8h B3 LIT2 AHOHOU Zakari CNT/80/26 10/08/2026 7 Infection respiratoire aiguë Plus de 8h"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-pharmacien": {
+   "id": "dash-pharmacien",
+   "role": "pharmacien",
+   "nom": null,
+   "titre": "Tableau de bord — Pharmacie",
+   "description": "Stock de détail, dispensation, alertes de rupture et suivi des péremptions selon le principe FEFO.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ordonnances à délivrer — 51 à traiter, 42 en attente de caisse",
+       "tables": [
+        {
+         "entetes": [
+          "ORIGINE",
+          "PATIENT",
+          "À FAIRE",
+          "MONTANT",
+          "ÉTAT",
+          "ACTIONS"
+         ],
+         "lignes": [
+          [
+           "ORD-2025-00045",
+           "ADAM Rabiatou CNT/82/26",
+           "2 médicament(s) — 344",
+           "344",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00108",
+           "ZIME Salifou CNT/105/26",
+           "1 médicament(s) — 228",
+           "228",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00112",
+           "HOUNKPATIN Salifou CNT/74/26",
+           "2 médicament(s) — 1 972",
+           "1 972",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00113",
+           "BAKO Justine CNT/9/26",
+           "1 médicament(s) — 100",
+           "100",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00056Urgent",
+           "SANNI Nadège CNT/174/26",
+           "3 médicament(s) — 11 700",
+           "11 700",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2026-00023Urgent",
+           "YENI Moussa CNT/18/26",
+           "3 médicament(s) — 3 288",
+           "3 288",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2026-00062",
+           "AGOSSOU Bio CNT/120/26",
+           "2 médicament(s) — 3 976",
+           "3 976",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2026-00122",
+           "MAMAN Yahouza CNT/68/26",
+           "1 médicament(s) — 2 250",
+           "2 250",
+           "À traiter",
+           ""
+          ]
+         ],
+         "boutons": [
+          [
+           "Ouvrir la dispensation"
+          ],
+          [
+           "Ouvrir la dispensation"
+          ],
+          [
+           "Ouvrir la dispensation"
+          ],
+          [
+           "Ouvrir la dispensation"
+          ],
+          [
+           "Ouvrir la dispensation"
+          ],
+          [
+           "Ouvrir la dispensation"
+          ],
+          [
+           "Ouvrir la dispensation"
+          ],
+          [
+           "Ouvrir la dispensation"
+          ]
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [
+        {
+         "titre": "",
+         "lignes": [
+          [
+           "ORD-2025-00045",
+           "ADAM Rabiatou CNT/82/26",
+           "2 médicament(s) — 344",
+           "344",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00108",
+           "ZIME Salifou CNT/105/26",
+           "1 médicament(s) — 228",
+           "228",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00112",
+           "HOUNKPATIN Salifou CNT/74/26",
+           "2 médicament(s) — 1 972",
+           "1 972",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00113",
+           "BAKO Justine CNT/9/26",
+           "1 médicament(s) — 100",
+           "100",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2025-00056Urgent",
+           "SANNI Nadège CNT/174/26",
+           "3 médicament(s) — 11 700",
+           "11 700",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2026-00023Urgent",
+           "YENI Moussa CNT/18/26",
+           "3 médicament(s) — 3 288",
+           "3 288",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2026-00062",
+           "AGOSSOU Bio CNT/120/26",
+           "2 médicament(s) — 3 976",
+           "3 976",
+           "À traiter",
+           ""
+          ],
+          [
+           "ORD-2026-00122",
+           "MAMAN Yahouza CNT/68/26",
+           "1 médicament(s) — 2 250",
+           "2 250",
+           "À traiter",
+           ""
+          ]
+         ],
+         "entetes": [
+          "ORIGINE",
+          "PATIENT",
+          "À FAIRE",
+          "MONTANT",
+          "ÉTAT",
+          "ACTIONS"
+         ]
+        }
+       ],
+       "texte": "Ordonnances à délivrer — 51 à traiter, 42 en attente de caisse Colonnes Exporter ORIGINE PATIENT À FAIRE MONTANT ÉTAT ACTIONS ORD-2025-00045 ADAM Rabiatou CNT/82/26 2 médicament(s) — 344 344 À traiter ORD-2025-00108 ZIME Salifou CNT/105/26 1 médicament(s) — 228 228 À traiter ORD-2025-00112 HOUNKPATIN Salifou CNT/74/26 2 médicament(s) — 1 972 1 972 À traiter ORD-2025-00113 BAKO Justine CNT/9/26 1 médicament(s) — 100 100 À traiter ORD-2025-00056Urgent SANNI Nadège CNT/174/26 3 médicament(s) — 11 700 11 700 À traiter ORD-2026-00023Urgent YENI Moussa CNT/18/26 3 médicament(s) — 3 288 3 288 À traiter ORD-2026-00062 AGOSSOU Bio CNT/120/26 2 médicament(s) — 3 976 3 976 À traiter ORD-2026-00122 MAMAN Yahouza CNT/68/26 1 médicament(s) — 2 250 2 250 À traiter Affichage de 1 à 8 sur 93 enregistrements 1 2 3 4 5"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER Le compte Pharmacie a été fermé — la pharmacie est tenue par la caisse. Décision de la Direction du 24/08/2026 : le stock de détail et la pharmacie d’urgence sont rattachés au compte Caissier. Rien n’a été supprimé — les mouvements signés par ce rôle restent attribuables (RG-14).",
+      "ligne": "Le compte Pharmacie a été fermé — la pharmacie est tenue par la caisse.",
+      "valeur": null,
+      "note": "Décision de la Direction du 24/08/2026 : le stock de détail et la pharmacie d’urgence sont rattachés au compte Caissier. Rien n’a été supprimé — les mouvements signés par ce rôle restent attribuables (RG-14).",
+      "lien": null,
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-emerald-200 bg-emerald-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Dispensation",
+         "detail": "Servir une ordonnance",
+         "ecran": "m6-dispensation"
+        },
+        {
+         "libelle": "Lots & péremptions",
+         "detail": "Application du FEFO",
+         "ecran": "m6-lots"
+        },
+        {
+         "libelle": "Transfert gros → détail",
+         "detail": "Réapprovisionner la pharmacie",
+         "ecran": "m6-transferts"
+        },
+        {
+         "libelle": "Inventaire",
+         "detail": "Physique contre théorique",
+         "ecran": "m6-inventaire"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Dispensation Servir une ordonnance Lots & péremptions Application du FEFO Transfert gros → détail Réapprovisionner la pharmacie Inventaire Physique contre théorique"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Références en pharmacie",
+       "valeur": "68",
+       "indice": null
+      },
+      {
+       "label": "Valeur du stock détail",
+       "valeur": "634 728 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Produits sous seuil",
+       "valeur": "51",
+       "indice": null
+      },
+      {
+       "label": "Lots à péremption proche",
+       "valeur": "37",
+       "indice": "FEFO — RG-05"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Produits à réapprovisionner en priorité",
+       "tables": [
+        {
+         "entetes": [
+          "CODE",
+          "DÉSIGNATION",
+          "STOCK",
+          "SEUIL",
+          "EMPLACEMENT",
+          "ÉTAT"
+         ],
+         "lignes": [
+          [
+           "BIP20",
+           "BIPLATRIX 20 CM",
+           "1",
+           "5",
+           "Rayon D — Casier 6",
+           "Critique"
+          ],
+          [
+           "COT",
+           "COTON HYDROPHYLE 500 G",
+           "1",
+           "5",
+           "Rayon A — Casier 1",
+           "Critique"
+          ],
+          [
+           "SAP6",
+           "SONDE D’ASPIRATION N°06",
+           "1",
+           "5",
+           "Rayon C — Casier 7",
+           "Critique"
+          ],
+          [
+           "SAV",
+           "SAVON LIQUIDE 1 LITRE ET DEMI",
+           "1",
+           "5",
+           "Rayon E — Casier 1",
+           "Critique"
+          ],
+          [
+           "TUBEC",
+           "TUBE BOUCHON CENDRE",
+           "1",
+           "5",
+           "Rayon D — Casier 4",
+           "Critique"
+          ],
+          [
+           "VIC.0",
+           "FIL VICRYL 0",
+           "1",
+           "5",
+           "Rayon D — Casier 2",
+           "Critique"
+          ],
+          [
+           "ABA",
+           "ABAISSE LANGUE",
+           "2",
+           "5",
+           "Rayon A — Casier 1",
+           "Critique"
+          ],
+          [
+           "CANG6",
+           "CANUL DE GUEDEL 6",
+           "2",
+           "5",
+           "Rayon C — Casier 1",
+           "Critique"
+          ],
+          [
+           "CAS",
+           "CASAQUE RENFORCEE",
+           "2",
+           "5",
+           "Rayon F — Casier 4",
+           "Critique"
+          ],
+          [
+           "DRAR18",
+           "DRAIN DE REDON N°18",
+           "2",
+           "5",
+           "Rayon E — Casier 3",
+           "Critique"
+          ]
+         ],
+         "boutons": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Exprimer un besoin",
+         "ecran": "m7-besoins"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Produits à réapprovisionner en priorité Exprimer un besoin CODE DÉSIGNATION STOCK SEUIL EMPLACEMENT ÉTAT BIP20 BIPLATRIX 20 CM 1 5 Rayon D — Casier 6 Critique COT COTON HYDROPHYLE 500 G 1 5 Rayon A — Casier 1 Critique SAP6 SONDE D’ASPIRATION N°06 1 5 Rayon C — Casier 7 Critique SAV SAVON LIQUIDE 1 LITRE ET DEMI 1 5 Rayon E — Casier 1 Critique TUBEC TUBE BOUCHON CENDRE 1 5 Rayon D — Casier 4 Critique VIC.0 FIL VICRYL 0 1 5 Rayon D — Casier 2 Critique ABA ABAISSE LANGUE 2 5 Rayon A — Casier 1 Critique CANG6 CANUL DE GUEDEL 6 2 5 Rayon C — Casier 1 Critique CAS CASAQUE RENFORCEE 2 5 Rayon F — Casier 4 Critique DRAR18 DRAIN DE REDON N°18 2 5 Rayon E — Casier 3 Critique"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Mouvements de stock (12 mois)",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "bar",
+         "etiquettes": [
+          "sept. 25",
+          "octo. 25",
+          "nove. 25",
+          "déce. 25",
+          "janv. 26",
+          "févr. 26",
+          "mars. 26",
+          "avri. 26",
+          "mai. 26",
+          "juin. 26",
+          "juil. 26",
+          "août. 26"
+         ],
+         "series": [
+          {
+           "libelle": "Entrées",
+           "donnees": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            253,
+            593,
+            526,
+            440
+           ]
+          },
+          {
+           "libelle": "Sorties",
+           "donnees": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            215,
+            606,
+            685,
+            189
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Mouvements de stock (12 mois)"
+      },
+      {
+       "titre": "Péremptions à venir",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "doughnut",
+         "etiquettes": [
+          "Périmés",
+          "Moins de 90 jours",
+          "Au-delà de 90 jours"
+         ],
+         "series": [
+          {
+           "libelle": "Répartition",
+           "donnees": [
+            17,
+            37,
+            292
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Péremptions à venir"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-laborantin": {
+   "id": "dash-laborantin",
+   "role": "laborantin",
+   "nom": null,
+   "titre": "Tableau de bord — Laboratoire",
+   "description": "Demandes d’analyses, résultats à saisir, consommation de réactifs et banque de sang.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Prélèvements à réaliser — 78 à traiter, 66 en attente de caisse",
+       "tables": [
+        {
+         "entetes": [
+          "ORIGINE",
+          "PATIENT",
+          "À FAIRE",
+          "MONTANT",
+          "ÉTAT",
+          "ACTIONS"
+         ],
+         "lignes": [
+          [
+           "FE-2026-00372",
+           "SOUMANOU Awaou",
+           "2 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00371",
+           "MOUMOUNI Karim",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00369",
+           "OUOROU Mariam",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00368",
+           "DJATO Émile",
+           "2 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00366",
+           "BIAOU Célestine",
+           "2 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00365",
+           "KOUAGOU Fidèle",
+           "1 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00364",
+           "YOROU Aboubakar",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00363",
+           "N’TCHA Bernadette",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ]
+         ],
+         "boutons": [
+          [
+           "Ouvrir les demandes"
+          ],
+          [
+           "Ouvrir les demandes"
+          ],
+          [
+           "Ouvrir les demandes"
+          ],
+          [
+           "Ouvrir les demandes"
+          ],
+          [
+           "Ouvrir les demandes"
+          ],
+          [
+           "Ouvrir les demandes"
+          ],
+          [
+           "Ouvrir les demandes"
+          ],
+          [
+           "Ouvrir les demandes"
+          ]
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [
+        {
+         "titre": "",
+         "lignes": [
+          [
+           "FE-2026-00372",
+           "SOUMANOU Awaou",
+           "2 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00371",
+           "MOUMOUNI Karim",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00369",
+           "OUOROU Mariam",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00368",
+           "DJATO Émile",
+           "2 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00366",
+           "BIAOU Célestine",
+           "2 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00365",
+           "KOUAGOU Fidèle",
+           "1 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00364",
+           "YOROU Aboubakar",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00363",
+           "N’TCHA Bernadette",
+           "3 examen(s)",
+           "0",
+           "À traiter",
+           ""
+          ]
+         ],
+         "entetes": [
+          "ORIGINE",
+          "PATIENT",
+          "À FAIRE",
+          "MONTANT",
+          "ÉTAT",
+          "ACTIONS"
+         ]
+        }
+       ],
+       "texte": "Prélèvements à réaliser — 78 à traiter, 66 en attente de caisse Colonnes Exporter ORIGINE PATIENT À FAIRE MONTANT ÉTAT ACTIONS FE-2026-00372 SOUMANOU Awaou 2 examen(s) 0 À traiter FE-2026-00371 MOUMOUNI Karim 3 examen(s) 0 À traiter FE-2026-00369 OUOROU Mariam 3 examen(s) 0 À traiter FE-2026-00368 DJATO Émile 2 examen(s) 0 À traiter FE-2026-00366 BIAOU Célestine 2 examen(s) 0 À traiter FE-2026-00365 KOUAGOU Fidèle 1 examen(s) 0 À traiter FE-2026-00364 YOROU Aboubakar 3 examen(s) 0 À traiter FE-2026-00363 N’TCHA Bernadette 3 examen(s) 0 À traiter Affichage de 1 à 8 sur 144 enregistrements 1 2 3 4 5"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 9 résultat(s) — attendent votre validation biologique Entre la validation technique et la vôtre, le résultat existe mais le prescripteur ne le voit pas. C’est votre signature qui le rend opposable. Valider",
+      "ligne": "9 résultat(s) — attendent votre validation biologique",
+      "valeur": "9",
+      "note": "Entre la validation technique et la vôtre, le résultat existe mais le prescripteur ne le voit pas. C’est votre signature qui le rend opposable.",
+      "lien": {
+       "libelle": "Valider",
+       "ecran": "m5-resultats"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-amber-200 bg-amber-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Demandes d’analyses",
+         "detail": "File de prélèvement",
+         "ecran": "m5-demandes"
+        },
+        {
+         "libelle": "Saisir un résultat",
+         "detail": "Validation biologique",
+         "ecran": "m5-resultats"
+        },
+        {
+         "libelle": "Réactifs",
+         "detail": "Consommation et seuils",
+         "ecran": "m5-reactifs"
+        },
+        {
+         "libelle": "Banque de sang",
+         "detail": "Poches et donneurs",
+         "ecran": "m5-banque-sang"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Demandes d’analyses File de prélèvement Saisir un résultat Validation biologique Réactifs Consommation et seuils Banque de sang Poches et donneurs"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — vos parcours",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Recevoir un prélèvement",
+         "detail": "Le patient a réglé, il peut être appelé.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Appeler le patient et prélever",
+           "ecran": "m5-prelevement",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le patient peut repartir dès le prélèvement fait."
+          },
+          {
+           "rang": "2",
+           "libelle": "Acheminer l’échantillon avec son bon",
+           "ecran": "m5-prelevement",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Marquer l’échantillon reçu",
+           "ecran": "m5-prelevement",
+           "poste": null,
+           "ferme": false,
+           "detail": "Aucun résultat ne se saisit sur un prélèvement non reçu."
+          }
+         ],
+         "action": {
+          "libelle": "Salle de prélèvement",
+          "ecran": "m5-prelevement"
+         }
+        },
+        {
+         "titre": "Rendre un résultat",
+         "detail": "Les deux validations, dans l’ordre.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Saisir les variables",
+           "ecran": "m5-resultats",
+           "poste": null,
+           "ferme": false,
+           "detail": "Unités et valeurs de référence pré-insérées ; les bornes suppléées sont marquées."
+          },
+          {
+           "rang": "2",
+           "libelle": "Valider TECHNIQUEMENT",
+           "ecran": "m5-resultats",
+           "poste": null,
+           "ferme": false,
+           "detail": "Atteste la saisie. Le prescripteur ne voit toujours rien."
+          },
+          {
+           "rang": "3",
+           "libelle": "Valider BIOLOGIQUEMENT",
+           "ecran": "m5-resultats",
+           "poste": null,
+           "ferme": false,
+           "detail": "C’est vous qui avez prélevé, c’est vous qui validez : la chaîne ne se rompt pas."
+          },
+          {
+           "rang": "4",
+           "libelle": "Le prescripteur lit",
+           "ecran": null,
+           "poste": "Consultation",
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "5",
+           "libelle": "Remettre au patient externe",
+           "ecran": "m5-resultats",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Saisir",
+          "ecran": "m5-resultats"
+         }
+        },
+        {
+         "titre": "Corriger un résultat rendu",
+         "detail": "Une erreur est découverte après validation.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Rectifier avec motif obligatoire",
+           "ecran": "m5-resultats",
+           "poste": null,
+           "ferme": false,
+           "detail": "La version lue par le médecin est conservée ; la nouvelle est numérotée."
+          },
+          {
+           "rang": "2",
+           "libelle": "Le prescripteur est notifié",
+           "ecran": null,
+           "poste": "Consultation",
+           "ferme": false,
+           "detail": "Il doit savoir que ce qu’il a lu a changé."
+          }
+         ],
+         "action": {
+          "libelle": "Rectifier",
+          "ecran": "m5-resultats"
+         }
+        },
+        {
+         "titre": "Tenir les réactifs",
+         "detail": "Rupture et péremption.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Vérifier les seuils",
+           "ecran": "m5-reactifs",
+           "poste": null,
+           "ferme": false,
+           "detail": "Un seuil non fixé n’est pas un seuil de zéro : aucune alerte n’est possible."
+          },
+          {
+           "rang": "2",
+           "libelle": "Demander le réapprovisionnement",
+           "ecran": null,
+           "poste": "Stock",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Réactifs",
+          "ecran": "m5-reactifs"
+         }
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — vos parcours Recevoir un prélèvement Le patient a réglé, il peut être appelé. 1 Appeler le patient et prélever Le patient peut repartir dès le prélèvement fait. 2 Acheminer l’échantillon avec son bon 3 Marquer l’échantillon reçu Aucun résultat ne se saisit sur un prélèvement non reçu. Salle de prélèvement Rendre un résultat Les deux validations, dans l’ordre. 1 Saisir les variables Unités et valeurs de référence pré-insérées ; les bornes suppléées sont marquées. 2 Valider TECHNIQUEMENT Atteste la saisie. Le prescripteur ne voit toujours rien. 3 Valider BIOLOGIQUEMENT C’est vous qui avez prélevé, c’est vous qui validez : la chaîne ne se rompt pas. 4 Le prescripteur litConsultation 5 Remettre au patient externe Saisir Corriger un résultat rendu Une erreur est découverte après validation. 1 Rectifier avec motif obligatoire La version lue par le médecin est conservée ; la nouvelle est numérotée. 2 Le prescripteur est notifiéConsultation Il doit savoir que ce qu’il a lu a changé. Rectifier Tenir les réactifs Rupture et péremption. 1 Vérifier les seuils Un seuil non fixé n’est pas un seuil de zéro : aucune alerte n’est possible. 2 Demander le réapprovisionnementStock Réactifs"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Analyses au catalogue",
+       "valeur": "48",
+       "indice": "Tarifs de la clinique"
+      },
+      {
+       "label": "Demandes en attente",
+       "valeur": "28",
+       "indice": null
+      },
+      {
+       "label": "Résultats du jour",
+       "valeur": "42",
+       "indice": null
+      },
+      {
+       "label": "Réactifs sous seuil",
+       "valeur": "6",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Analyses les plus demandées",
+       "tables": [],
+       "classement": [
+        [
+         "CRP",
+         "236"
+        ],
+        [
+         "CREATININE",
+         "211"
+        ],
+        [
+         "CHOLESTEROL TOTAL",
+         "191"
+        ],
+        [
+         "ASLO",
+         "157"
+        ],
+        [
+         "CHOLESTEROL HDL",
+         "146"
+        ],
+        [
+         "AKOP",
+         "118"
+        ],
+        [
+         "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+         "109"
+        ],
+        [
+         "AZOTEMIE (UREMIE)",
+         "66"
+        ],
+        [
+         "BU",
+         "53"
+        ],
+        [
+         "CALCEMIE",
+         "25"
+        ]
+       ],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Catalogue des 48 analyses",
+         "ecran": "m5-catalogue"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Analyses les plus demandées Catalogue des 48 analyses CRP 236 CREATININE 211 CHOLESTEROL TOTAL 191 ASLO 157 CHOLESTEROL HDL 146 AKOP 118 BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE) 109 AZOTEMIE (UREMIE) 66 BU 53 CALCEMIE 25"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Analyses réalisées (12 mois)",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "line",
+         "etiquettes": [
+          "sept. 25",
+          "octo. 25",
+          "nove. 25",
+          "déce. 25",
+          "janv. 26",
+          "févr. 26",
+          "mars. 26",
+          "avri. 26",
+          "mai. 26",
+          "juin. 26",
+          "juil. 26",
+          "août. 26"
+         ],
+         "series": [
+          {
+           "libelle": "Analyses",
+           "donnees": [
+            490,
+            384,
+            622,
+            426,
+            710,
+            522,
+            521,
+            563,
+            563,
+            578,
+            424,
+            547
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Analyses réalisées (12 mois)"
+      },
+      {
+       "titre": "Répartition par catégorie d’analyse",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "doughnut",
+         "etiquettes": [
+          "Parasitologie",
+          "Sérologie",
+          "Biochimie",
+          "Immunologie",
+          "Hémostase",
+          "Bactériologie",
+          "Hématologie",
+          "Immuno-hématologie",
+          "Hormonologie",
+          "Andrologie"
+         ],
+         "series": [
+          {
+           "libelle": "Répartition",
+           "donnees": [
+            2,
+            7,
+            17,
+            1,
+            5,
+            3,
+            5,
+            1,
+            4,
+            3
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Répartition par catégorie d’analyse"
+      }
+     ]
+    }
+   ],
+   "dialogue": [
+    "Rappel du laboratoire Ce qui attend votre poste ce matin 49 analyse(s) réglée(s) à la caisse, prélèvement à faire Le patient a payé : il peut être appelé en salle de prélèvement. Tant que le prélèvement n’est pas fait, aucun résultat ne peut être saisi. Salle de prélèvement 22 échantillon(s) reçu(s), résultat à renseigner L’échantillon est parvenu au laboratoire. Le prescripteur ne verra rien tant que le résultat n’est pas saisi PUIS validé biologiquement. Saisie des résultats Ce rappel s’affiche une fois par jour à l’ouverture de votre poste. Le détail reste disponible à tout moment depuis la cloche et depuis vos écrans. J’ai pris connaissance"
+   ]
+  },
+  "dash-stock": {
+   "id": "dash-stock",
+   "role": "stock",
+   "nom": null,
+   "titre": "Tableau de bord — Gestion des stocks",
+   "description": "Stock gros et détail, mouvements, cycle d’achat, inventaires et suivi des écarts.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "alertes": [
+      {
+       "texte": "51 produit(s) sous le seuil d’alerte",
+       "ecran": "m6-alertes"
+      },
+      {
+       "texte": "17 lot(s) périmé(s) à retourner",
+       "ecran": "m6-lots"
+      },
+      {
+       "texte": "37 lot(s) à péremption proche (FEFO)",
+       "ecran": "m6-lots"
+      }
+     ],
+     "texte": "51 produit(s) sous le seuil d’alerte 17 lot(s) périmé(s) à retourner 37 lot(s) à péremption proche (FEFO)"
+    },
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 51 article(s) — sont sous leur seuil d’alerte Un seuil NON FIXÉ n’est pas un seuil de zéro : les articles sans seuil sont comptés à part et ne peuvent déclencher aucune alerte. Voir les alertes",
+      "ligne": "51 article(s) — sont sous leur seuil d’alerte",
+      "valeur": "51",
+      "note": "Un seuil NON FIXÉ n’est pas un seuil de zéro : les articles sans seuil sont comptés à part et ne peuvent déclencher aucune alerte.",
+      "lien": {
+       "libelle": "Voir les alertes",
+       "ecran": "m6-alertes"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-rose-200 bg-rose-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Bons d’expression de besoins",
+         "detail": "Quantité demandée / accordée",
+         "ecran": "m7-besoins"
+        },
+        {
+         "libelle": "Bons de commande",
+         "detail": "Validation DA requise (RG-04)",
+         "ecran": "m7-commandes"
+        },
+        {
+         "libelle": "Inventaire",
+         "detail": "Écarts physique / théorique",
+         "ecran": "m6-inventaire"
+        },
+        {
+         "libelle": "Pertes et casses",
+         "detail": "Valorisation comptable",
+         "ecran": "m6-pertes"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Bons d’expression de besoins Quantité demandée / accordée Bons de commande Validation DA requise (RG-04) Inventaire Écarts physique / théorique Pertes et casses Valorisation comptable"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — vos parcours",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Faire le point du jour",
+         "detail": "Le geste quotidien : ce qui a été vendu, par qui, à qui.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Point journalier des ventes",
+           "ecran": "m6-point-ventes",
+           "poste": null,
+           "ferme": false,
+           "detail": "Détail par client, par article, par groupe. Six périodicités et une plage libre."
+          },
+          {
+           "rang": "2",
+           "libelle": "Imprimer le point détaillé ou global",
+           "ecran": "m6-point-ventes",
+           "poste": null,
+           "ferme": false,
+           "detail": "Les états portent les trois parts : assureur, personnel pris en charge, remises."
+          },
+          {
+           "rang": "3",
+           "libelle": "Point du stock valorisé",
+           "ecran": "m6-point-stock",
+           "poste": null,
+           "ferme": false,
+           "detail": "Restant, reçu, entré, sorti — au magasin et à la pharmacie, avec leur montant."
+          },
+          {
+           "rang": "4",
+           "libelle": "Remettre à la Direction",
+           "ecran": null,
+           "poste": "DAF",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Point des ventes",
+          "ecran": "m6-point-ventes"
+         }
+        },
+        {
+         "titre": "Réapprovisionner",
+         "detail": "Un article est passé sous son seuil.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Lire les alertes de rupture",
+           "ecran": "m6-alertes",
+           "poste": null,
+           "ferme": false,
+           "detail": "Une sortie qui fait passer sous le seuil ouvre la tâche AU MOMENT où elle a lieu."
+          },
+          {
+           "rang": "2",
+           "libelle": "Établir le bon d’expression de besoins",
+           "ecran": "m7-besoins",
+           "poste": null,
+           "ferme": false,
+           "detail": "Quantité demandée et quantité accordée sont deux colonnes distinctes."
+          },
+          {
+           "rang": "3",
+           "libelle": "Faire valider par la Direction",
+           "ecran": null,
+           "poste": "DAF",
+           "ferme": false,
+           "detail": "RG-04."
+          },
+          {
+           "rang": "4",
+           "libelle": "Passer commande",
+           "ecran": "m7-commandes",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "5",
+           "libelle": "Réceptionner et mettre à jour le CUMP",
+           "ecran": "m7-receptions",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Voir les alertes",
+          "ecran": "m6-alertes"
+         }
+        },
+        {
+         "titre": "Transférer vers la pharmacie",
+         "detail": "Le magasin approvisionne le détail.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Composer le bon multi-articles",
+           "ecran": "m6-transferts",
+           "poste": null,
+           "ferme": false,
+           "detail": "Un seul bon pour tout le voyage — pas un bon par référence."
+          },
+          {
+           "rang": "2",
+           "libelle": "Le stock de détail est crédité",
+           "ecran": "m6-produits",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "La pharmacie délivre",
+           "ecran": null,
+           "poste": "Caisse",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Nouveau transfert",
+          "ecran": "m6-transferts"
+         }
+        },
+        {
+         "titre": "Surveiller les péremptions",
+         "detail": "Premier périmé, premier sorti.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Contrôler les lots proches de péremption",
+           "ecran": "m6-lots",
+           "poste": null,
+           "ferme": false,
+           "detail": "RG-05."
+          },
+          {
+           "rang": "2",
+           "libelle": "Déclarer les pertes constatées",
+           "ecran": "m6-pertes",
+           "poste": null,
+           "ferme": false,
+           "detail": "Une perte s’enregistre comme un mouvement : elle n’existe qu’une fois."
+          }
+         ],
+         "action": {
+          "libelle": "FEFO",
+          "ecran": "m6-lots"
+         }
+        },
+        {
+         "titre": "Inventaire",
+         "detail": "Comptage périodique.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Saisir le comptage",
+           "ecran": "m6-inventaire",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "2",
+           "libelle": "Expliquer les écarts",
+           "ecran": "m6-inventaire",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "La Direction valide",
+           "ecran": null,
+           "poste": "DAF",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Inventorier",
+          "ecran": "m6-inventaire"
+         }
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — vos parcours Faire le point du jour Le geste quotidien : ce qui a été vendu, par qui, à qui. 1 Point journalier des ventes Détail par client, par article, par groupe. Six périodicités et une plage libre. 2 Imprimer le point détaillé ou global Les états portent les trois parts : assureur, personnel pris en charge, remises. 3 Point du stock valorisé Restant, reçu, entré, sorti — au magasin et à la pharmacie, avec leur montant. 4 Remettre à la DirectionDAF Point des ventes Réapprovisionner Un article est passé sous son seuil. 1 Lire les alertes de rupture Une sortie qui fait passer sous le seuil ouvre la tâche AU MOMENT où elle a lieu. 2 Établir le bon d’expression de besoins Quantité demandée et quantité accordée sont deux colonnes distinctes. 3 Faire valider par la DirectionDAF RG-04. 4 Passer commande 5 Réceptionner et mettre à jour le CUMP Voir les alertes Transférer vers la pharmacie Le magasin approvisionne le détail. 1 Composer le bon multi-articles Un seul bon pour tout le voyage — pas un bon par référence. 2 Le stock de détail est crédité 3 La pharmacie délivreCaisse Nouveau transfert Surveiller les péremptions Premier périmé, premier sorti. 1 Contrôler les lots proches de péremption RG-05. 2 Déclarer les pertes constatées Une perte s’enregistre comme un mouvement : elle n’existe qu’une fois. FEFO Inventaire Comptage périodique. 1 Saisir le comptage 2 Expliquer les écarts 3 La Direction valideDAF Inventorier"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Références gérées",
+       "valeur": "184",
+       "indice": null
+      },
+      {
+       "label": "Valeur totale du stock",
+       "valeur": "5 373 386 FCFA",
+       "indice": "Valorisation au CUMP"
+      },
+      {
+       "label": "Mouvements du mois",
+       "valeur": "82",
+       "indice": null
+      },
+      {
+       "label": "Alertes actives",
+       "valeur": "68",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Derniers mouvements",
+       "tables": [
+        {
+         "entetes": [
+          "DATE",
+          "PRODUIT",
+          "TYPE",
+          "QUANTITÉ",
+          "JUSTIFICATIF",
+          "OPÉRATEUR"
+         ],
+         "lignes": [
+          [
+           "18/08/2026",
+           "TUBE AKOP",
+           "Transfert — entrée pharmacie",
+           "18",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "TUBE AKOP",
+           "Transfert — sortie magasin",
+           "18",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "TUBE ECBU",
+           "Transfert — entrée pharmacie",
+           "4",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "TUBE ECBU",
+           "Transfert — sortie magasin",
+           "4",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "TBG URINAIRE",
+           "Transfert — entrée pharmacie",
+           "5",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "TBG URINAIRE",
+           "Transfert — sortie magasin",
+           "5",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "HEMOGLOBINE CAPILLAIRE",
+           "Transfert — entrée pharmacie",
+           "1",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "HEMOGLOBINE CAPILLAIRE",
+           "Transfert — sortie magasin",
+           "1",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "ECOUVILLON",
+           "Transfert — entrée pharmacie",
+           "2",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ],
+          [
+           "18/08/2026",
+           "ECOUVILLON",
+           "Transfert — sortie magasin",
+           "2",
+           "Bon de transfert TR-00020",
+           "MAMAN Zoukanéri"
+          ]
+         ],
+         "boutons": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Registre complet",
+         "ecran": "m6-mouvements"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Derniers mouvements Registre complet DATE PRODUIT TYPE QUANTITÉ JUSTIFICATIF OPÉRATEUR 18/08/2026 TUBE AKOP Transfert — entrée pharmacie 18 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 TUBE AKOP Transfert — sortie magasin 18 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 TUBE ECBU Transfert — entrée pharmacie 4 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 TUBE ECBU Transfert — sortie magasin 4 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 TBG URINAIRE Transfert — entrée pharmacie 5 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 TBG URINAIRE Transfert — sortie magasin 5 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 HEMOGLOBINE CAPILLAIRE Transfert — entrée pharmacie 1 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 HEMOGLOBINE CAPILLAIRE Transfert — sortie magasin 1 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 ECOUVILLON Transfert — entrée pharmacie 2 Bon de transfert TR-00020 MAMAN Zoukanéri 18/08/2026 ECOUVILLON Transfert — sortie magasin 2 Bon de transfert TR-00020 MAMAN Zoukanéri"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Valeur du stock par catégorie",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "bar",
+         "etiquettes": [
+          "Consommables médicaux",
+          "Médicaments",
+          "Fournitures administratives",
+          "Petit matériel médical",
+          "Consommables de laboratoire",
+          "Réactifs de laboratoire",
+          "Produits d’entretien"
+         ],
+         "series": [
+          {
+           "libelle": "Valeur (FCFA)",
+           "donnees": [
+            1317667,
+            2607159,
+            50434,
+            9400,
+            948982,
+            262434,
+            177310
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Valeur du stock par catégorie"
+      },
+      {
+       "titre": "Répartition des mouvements",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "doughnut",
+         "etiquettes": [
+          "Transfert — entrée pharmacie",
+          "Transfert — sortie magasin",
+          "Péremption",
+          "Entrée",
+          "Transfert",
+          "Casse / bris",
+          "Régularisation inventaire",
+          "Sortie",
+          "Perte"
+         ],
+         "series": [
+          {
+           "libelle": "Répartition",
+           "donnees": [
+            139,
+            139,
+            53,
+            60,
+            61,
+            64,
+            61,
+            53,
+            48
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Répartition des mouvements"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-caissier": {
+   "id": "dash-caissier",
+   "role": "caissier",
+   "nom": null,
+   "titre": "Tableau de bord — Caisse",
+   "description": "Encaissements du jour, factures à régler, reliquats et répartition des modes de paiement.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Prescriptions à encaisser — 73 à traiter",
+       "tables": [
+        {
+         "entetes": [
+          "ORIGINE",
+          "PATIENT",
+          "À FAIRE",
+          "MONTANT",
+          "ÉTAT",
+          "ACTIONS"
+         ],
+         "lignes": [
+          [
+           "FI-2026-00407",
+           "BANI Zoukanéri",
+           "1 examen(s) — 160 000",
+           "160 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00402",
+           "BAKO Chantal",
+           "1 examen(s) — 85 000",
+           "85 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00397",
+           "ADAM Rabiatou",
+           "1 examen(s) — 35 000",
+           "35 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00392",
+           "KOUAGOU Fidèle",
+           "1 examen(s) — 12 000",
+           "12 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00387",
+           "KINNOU Séko",
+           "1 examen(s) — 10 000",
+           "10 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00382",
+           "DOSSOU Colette",
+           "1 examen(s) — 9 000",
+           "9 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00377",
+           "BOUKARI Nourou",
+           "1 examen(s) — 20 000",
+           "20 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00370",
+           "KPATINDÉ Honorine",
+           "1 examen(s) — 12 000",
+           "12 000",
+           "À traiter",
+           ""
+          ]
+         ],
+         "boutons": [
+          [
+           "Ouvrir la caisse"
+          ],
+          [
+           "Ouvrir la caisse"
+          ],
+          [
+           "Ouvrir la caisse"
+          ],
+          [
+           "Ouvrir la caisse"
+          ],
+          [
+           "Ouvrir la caisse"
+          ],
+          [
+           "Ouvrir la caisse"
+          ],
+          [
+           "Ouvrir la caisse"
+          ],
+          [
+           "Ouvrir la caisse"
+          ]
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [
+        {
+         "titre": "",
+         "lignes": [
+          [
+           "FI-2026-00407",
+           "BANI Zoukanéri",
+           "1 examen(s) — 160 000",
+           "160 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00402",
+           "BAKO Chantal",
+           "1 examen(s) — 85 000",
+           "85 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00397",
+           "ADAM Rabiatou",
+           "1 examen(s) — 35 000",
+           "35 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00392",
+           "KOUAGOU Fidèle",
+           "1 examen(s) — 12 000",
+           "12 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00387",
+           "KINNOU Séko",
+           "1 examen(s) — 10 000",
+           "10 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00382",
+           "DOSSOU Colette",
+           "1 examen(s) — 9 000",
+           "9 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FI-2026-00377",
+           "BOUKARI Nourou",
+           "1 examen(s) — 20 000",
+           "20 000",
+           "À traiter",
+           ""
+          ],
+          [
+           "FE-2026-00370",
+           "KPATINDÉ Honorine",
+           "1 examen(s) — 12 000",
+           "12 000",
+           "À traiter",
+           ""
+          ]
+         ],
+         "entetes": [
+          "ORIGINE",
+          "PATIENT",
+          "À FAIRE",
+          "MONTANT",
+          "ÉTAT",
+          "ACTIONS"
+         ]
+        }
+       ],
+       "texte": "Prescriptions à encaisser — 73 à traiter Colonnes Exporter ORIGINE PATIENT À FAIRE MONTANT ÉTAT ACTIONS FI-2026-00407 BANI Zoukanéri 1 examen(s) — 160 000 160 000 À traiter FI-2026-00402 BAKO Chantal 1 examen(s) — 85 000 85 000 À traiter FI-2026-00397 ADAM Rabiatou 1 examen(s) — 35 000 35 000 À traiter FI-2026-00392 KOUAGOU Fidèle 1 examen(s) — 12 000 12 000 À traiter FI-2026-00387 KINNOU Séko 1 examen(s) — 10 000 10 000 À traiter FI-2026-00382 DOSSOU Colette 1 examen(s) — 9 000 9 000 À traiter FI-2026-00377 BOUKARI Nourou 1 examen(s) — 20 000 20 000 À traiter FE-2026-00370 KPATINDÉ Honorine 1 examen(s) — 12 000 12 000 À traiter Affichage de 1 à 8 sur 73 enregistrements 1 2 3 4 5"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 73 prescription(s) — attendent d’être encaissées Chaque encaissement débloque aussitôt la délivrance en pharmacie et le prélèvement au laboratoire — tant qu’il n’a pas lieu, le patient attend à deux endroits. Encaisser",
+      "ligne": "73 prescription(s) — attendent d’être encaissées",
+      "valeur": "73",
+      "note": "Chaque encaissement débloque aussitôt la délivrance en pharmacie et le prélèvement au laboratoire — tant qu’il n’a pas lieu, le patient attend à deux endroits.",
+      "lien": {
+       "libelle": "Encaisser",
+       "ecran": "m8-caisse"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-amber-200 bg-amber-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Nouvelle facture",
+         "detail": "Consultation, acte, produit",
+         "ecran": "m8-facturation"
+        },
+        {
+         "libelle": "Encaisser un paiement",
+         "detail": "Espèces, mobile money, carte",
+         "ecran": "m8-paiements"
+        },
+        {
+         "libelle": "Reliquats",
+         "detail": "Restes à recouvrer",
+         "ecran": "m8-reliquats"
+        },
+        {
+         "libelle": "État de caisse",
+         "detail": "Arrêté journalier à imprimer",
+         "ecran": "m8-caisse"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Nouvelle facture Consultation, acte, produit Encaisser un paiement Espèces, mobile money, carte Reliquats Restes à recouvrer État de caisse Arrêté journalier à imprimer"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — vos parcours",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Encaisser une prescription",
+         "detail": "Le patient se présente avec son ordonnance.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Cocher les prestations réglées",
+           "ecran": "m8-caisse",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le patient peut ne payer qu’une partie : cochez CE QU’IL RÈGLE."
+          },
+          {
+           "rang": "2",
+           "libelle": "Imprimer le reçu détaillé",
+           "ecran": "m8-caisse",
+           "poste": null,
+           "ferme": false,
+           "detail": "Il NOMME les prestations réglées et celles qui restent dues."
+          },
+          {
+           "rang": "3",
+           "libelle": "Le laboratoire est débloqué",
+           "ecran": null,
+           "poste": "Laboratoire",
+           "ferme": false,
+           "detail": "Exactement les examens payés, pas les autres."
+          },
+          {
+           "rang": "4",
+           "libelle": "La pharmacie est débloquée",
+           "ecran": null,
+           "poste": "Pharmacie",
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "5",
+           "libelle": "L’écriture comptable est posée",
+           "ecran": null,
+           "poste": "Comptabilité",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Encaisser",
+          "ecran": "m8-caisse"
+         }
+        },
+        {
+         "titre": "Le patient revient payer le reste",
+         "detail": "Il avait réglé une partie.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Retrouver sa pièce du jour",
+           "ecran": "m8-caisse",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le registre dit ce qui est réglé et ce qui reste, prestation par prestation."
+          },
+          {
+           "rang": "2",
+           "libelle": "Encaisser le reste",
+           "ecran": "m8-caisse",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Réimprimer le reçu",
+           "ecran": "m8-caisse",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Reprendre",
+          "ecran": "m8-caisse"
+         }
+        },
+        {
+         "titre": "Délivrer un médicament",
+         "detail": "La pharmacie est rattachée à votre compte.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Voie orale — le patient emporte",
+           "ecran": "m6-pharmacie-externe",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "2",
+           "libelle": "Urgence — vers la salle de soins",
+           "ecran": "m6-pharmacie-interne",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le produit ne quitte pas la clinique : c’est le soignant qui l’administre."
+          },
+          {
+           "rang": "3",
+           "libelle": "Le stock est décrémenté avec justificatif",
+           "ecran": null,
+           "poste": null,
+           "ferme": false,
+           "detail": "RG-03."
+          }
+         ],
+         "action": {
+          "libelle": "Pharmacie",
+          "ecran": "m6-pharmacie-externe"
+         }
+        },
+        {
+         "titre": "Arrêter la caisse",
+         "detail": "En fin de journée.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Éditer l’arrêté de caisse",
+           "ecran": "m8-caisse",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "2",
+           "libelle": "Vérifier le point des ventes du jour",
+           "ecran": "m6-point-ventes",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le détail par client : c’est là qu’un écart de caisse se retrouve."
+          },
+          {
+           "rang": "3",
+           "libelle": "Remettre à la Direction",
+           "ecran": null,
+           "poste": "DAF",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Arrêté du jour",
+          "ecran": "m8-caisse"
+         }
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — vos parcours Encaisser une prescription Le patient se présente avec son ordonnance. 1 Cocher les prestations réglées Le patient peut ne payer qu’une partie : cochez CE QU’IL RÈGLE. 2 Imprimer le reçu détaillé Il NOMME les prestations réglées et celles qui restent dues. 3 Le laboratoire est débloquéLaboratoire Exactement les examens payés, pas les autres. 4 La pharmacie est débloquéePharmacie 5 L’écriture comptable est poséeComptabilité Encaisser Le patient revient payer le reste Il avait réglé une partie. 1 Retrouver sa pièce du jour Le registre dit ce qui est réglé et ce qui reste, prestation par prestation. 2 Encaisser le reste 3 Réimprimer le reçu Reprendre Délivrer un médicament La pharmacie est rattachée à votre compte. 1 Voie orale — le patient emporte 2 Urgence — vers la salle de soins Le produit ne quitte pas la clinique : c’est le soignant qui l’administre. 3 Le stock est décrémenté avec justificatif RG-03. Pharmacie Arrêter la caisse En fin de journée. 1 Éditer l’arrêté de caisse 2 Vérifier le point des ventes du jour Le détail par client : c’est là qu’un écart de caisse se retrouve. 3 Remettre à la DirectionDAF Arrêté du jour"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Encaissé aujourd’hui",
+       "valeur": "0 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Factures du jour",
+       "valeur": "0",
+       "indice": null
+      },
+      {
+       "label": "Reliquats en cours",
+       "valeur": "1 121 452 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Factures impayées",
+       "valeur": "73",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Dernières factures",
+       "tables": [
+        {
+         "entetes": [
+          "N° FACTURE",
+          "PATIENT",
+          "TYPE",
+          "MONTANT",
+          "PAYÉ",
+          "RESTE",
+          "STATUT"
+         ],
+         "lignes": [
+          [
+           "FP-2026-00409",
+           "TIGRI Séraphine",
+           "Prescription",
+           "6 598",
+           "0",
+           "—",
+           "Soldée"
+          ],
+          [
+           "FP-2026-00408",
+           "BOUKARI Florent",
+           "Prescription",
+           "5 800",
+           "1 160",
+           "—",
+           "Soldée"
+          ],
+          [
+           "FI-2026-00407",
+           "BANI Zoukanéri",
+           "Imagerie",
+           "160 000",
+           "0",
+           "160 000",
+           "Impayée"
+          ],
+          [
+           "FI-2026-00406",
+           "OROU YO Chantal",
+           "Imagerie",
+           "140 000",
+           "140 000",
+           "—",
+           "Soldée"
+          ],
+          [
+           "FI-2026-00405",
+           "BOUKARI Nourou",
+           "Imagerie",
+           "150 000",
+           "150 000",
+           "—",
+           "Soldée"
+          ],
+          [
+           "FI-2026-00404",
+           "SOUMANOU Awaou",
+           "Imagerie",
+           "150 000",
+           "150 000",
+           "—",
+           "Soldée"
+          ],
+          [
+           "FI-2026-00403",
+           "AGOSSOU Foussena",
+           "Imagerie",
+           "150 000",
+           "150 000",
+           "—",
+           "Soldée"
+          ],
+          [
+           "FI-2026-00402",
+           "BAKO Chantal",
+           "Imagerie",
+           "85 000",
+           "0",
+           "85 000",
+           "Impayée"
+          ],
+          [
+           "FI-2026-00401",
+           "TCHANE Moussa",
+           "Imagerie",
+           "100 000",
+           "100 000",
+           "—",
+           "Soldée"
+          ],
+          [
+           "FI-2026-00400",
+           "YOROU Aboubakar",
+           "Imagerie",
+           "85 000",
+           "85 000",
+           "—",
+           "Soldée"
+          ]
+         ],
+         "boutons": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Nouvelle facture",
+         "ecran": "m8-facturation"
+        },
+        {
+         "libelle": "État de caisse",
+         "ecran": "m8-caisse"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Dernières factures Nouvelle facture État de caisse N° FACTURE PATIENT TYPE MONTANT PAYÉ RESTE STATUT FP-2026-00409 TIGRI Séraphine Prescription 6 598 0 — Soldée FP-2026-00408 BOUKARI Florent Prescription 5 800 1 160 — Soldée FI-2026-00407 BANI Zoukanéri Imagerie 160 000 0 160 000 Impayée FI-2026-00406 OROU YO Chantal Imagerie 140 000 140 000 — Soldée FI-2026-00405 BOUKARI Nourou Imagerie 150 000 150 000 — Soldée FI-2026-00404 SOUMANOU Awaou Imagerie 150 000 150 000 — Soldée FI-2026-00403 AGOSSOU Foussena Imagerie 150 000 150 000 — Soldée FI-2026-00402 BAKO Chantal Imagerie 85 000 0 85 000 Impayée FI-2026-00401 TCHANE Moussa Imagerie 100 000 100 000 — Soldée FI-2026-00400 YOROU Aboubakar Imagerie 85 000 85 000 — Soldée"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Encaissements par mode de paiement",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "bar",
+         "etiquettes": [
+          "Espèces",
+          "undefined",
+          "MTN Mobile Money",
+          "TPE (carte bancaire)",
+          "Moov Money"
+         ],
+         "series": [
+          {
+           "libelle": "Montant encaissé",
+           "donnees": [
+            2495305,
+            0,
+            211758,
+            338502,
+            437631
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Encaissements par mode de paiement"
+      },
+      {
+       "titre": "Recettes quotidiennes du mois",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "line",
+         "etiquettes": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16"
+         ],
+         "series": [
+          {
+           "libelle": "Encaissé",
+           "donnees": [
+            21171,
+            18000,
+            5000,
+            0,
+            10800,
+            15045,
+            500,
+            0,
+            1966,
+            20000,
+            20040,
+            0,
+            0,
+            12530,
+            0,
+            0
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Recettes quotidiennes du mois"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-comptable": {
+   "id": "dash-comptable",
+   "role": "comptable",
+   "nom": null,
+   "titre": "Tableau de bord — Comptabilité",
+   "description": "Écritures SYSCOHADA, équilibre des journaux, créances, dettes et rapprochements bancaires.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 92 écriture(s) en brouillon — attendent votre validation L’encaissement pose l’écriture ; la valider reste un geste humain. Sans cela, la recette se ressaisirait à la main — ce que la clinique fait aujourd’hui entre PERFECTO et la caisse. Valider les écritures",
+      "ligne": "92 écriture(s) en brouillon — attendent votre validation",
+      "valeur": "92",
+      "note": "L’encaissement pose l’écriture ; la valider reste un geste humain. Sans cela, la recette se ressaisirait à la main — ce que la clinique fait aujourd’hui entre PERFECTO et la caisse.",
+      "lien": {
+       "libelle": "Valider les écritures",
+       "ecran": "m12-ecritures"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-amber-200 bg-amber-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Grand livre",
+         "detail": "Par compte SYSCOHADA",
+         "ecran": "m12-grand-livre"
+        },
+        {
+         "libelle": "Balance",
+         "detail": "Générale et âgée",
+         "ecran": "m12-balance"
+        },
+        {
+         "libelle": "Rapprochements",
+         "detail": "Relevés bancaires",
+         "ecran": "m12-banques"
+        },
+        {
+         "libelle": "États financiers",
+         "detail": "Bilan et compte de résultat",
+         "ecran": "m12-etats-financiers"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Grand livre Par compte SYSCOHADA Balance Générale et âgée Rapprochements Relevés bancaires États financiers Bilan et compte de résultat"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — vos parcours",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Valider les écritures du jour",
+         "detail": "La caisse a posé des brouillons.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Relire les écritures en brouillon",
+           "ecran": "m12-ecritures",
+           "poste": null,
+           "ferme": false,
+           "detail": "Chaque encaissement en pose une : 571 Caisse, 411 Clients, 706 Prestations."
+          },
+          {
+           "rang": "2",
+           "libelle": "Vérifier l’équilibre",
+           "ecran": "m12-ecritures",
+           "poste": null,
+           "ferme": false,
+           "detail": "RG-10 — débit = crédit."
+          },
+          {
+           "rang": "3",
+           "libelle": "Valider",
+           "ecran": "m12-ecritures",
+           "poste": null,
+           "ferme": false,
+           "detail": "C’est un geste humain : sans lui, la recette se ressaisirait à la main."
+          }
+         ],
+         "action": {
+          "libelle": "Écritures",
+          "ecran": "m12-ecritures"
+         }
+        },
+        {
+         "titre": "Déclarer et payer",
+         "detail": "Impôts, CNSS, CCIB.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Voir les échéances dues",
+           "ecran": "m12-echeances",
+           "poste": null,
+           "ferme": false,
+           "detail": "Une échéance tombant un week-end est reportée, jamais avancée."
+          },
+          {
+           "rang": "2",
+           "libelle": "Déclarer puis payer",
+           "ecran": "m12-echeances",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Enregistrer la quittance",
+           "ecran": "m12-echeances",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Échéances",
+          "ecran": "m12-echeances"
+         }
+        },
+        {
+         "titre": "Clôturer le mois",
+         "detail": "Arrêté mensuel.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Rapprochement bancaire",
+           "ecran": "m12-banques",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "2",
+           "libelle": "Balance et grand livre",
+           "ecran": "m12-balance",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "États financiers",
+           "ecran": "m12-etats-financiers",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Compte rendu à la hiérarchie",
+           "ecran": null,
+           "poste": "DAF",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "États",
+          "ecran": "m12-banques"
+         }
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — vos parcours Valider les écritures du jour La caisse a posé des brouillons. 1 Relire les écritures en brouillon Chaque encaissement en pose une : 571 Caisse, 411 Clients, 706 Prestations. 2 Vérifier l’équilibre RG-10 — débit = crédit. 3 Valider C’est un geste humain : sans lui, la recette se ressaisirait à la main. Écritures Déclarer et payer Impôts, CNSS, CCIB. 1 Voir les échéances dues Une échéance tombant un week-end est reportée, jamais avancée. 2 Déclarer puis payer 3 Enregistrer la quittance Échéances Clôturer le mois Arrêté mensuel. 1 Rapprochement bancaire 2 Balance et grand livre 3 États financiers 4 Compte rendu à la hiérarchieDAF États"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Écritures de l’exercice",
+       "valeur": "502",
+       "indice": null
+      },
+      {
+       "label": "Total débit",
+       "valeur": "52 634 782 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Total crédit",
+       "valeur": "52 634 782 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Équilibre (RG-10)",
+       "valeur": "Équilibré",
+       "indice": "Débit = Crédit"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Dernières écritures",
+       "tables": [
+        {
+         "entetes": [
+          "N°",
+          "DATE",
+          "JOURNAL",
+          "COMPTE",
+          "LIBELLÉ",
+          "DÉBIT",
+          "CRÉDIT"
+         ],
+         "lignes": [
+          [
+           "CAI-2026-00247",
+           "30/10/2026",
+           "CAI",
+           "706000",
+           "Encaissement facture FP-2026-00408 — BOUKARI Florent",
+           "—",
+           "1 160"
+          ],
+          [
+           "CAI-2026-00247",
+           "30/10/2026",
+           "CAI",
+           "571000",
+           "Encaissement facture FP-2026-00408 — BOUKARI Florent",
+           "1 160",
+           "—"
+          ],
+          [
+           "CAI-2026-00246",
+           "30/10/2026",
+           "CAI",
+           "706000",
+           "Encaissement facture FI-2026-00406 — OROU YO Chantal",
+           "—",
+           "140 000"
+          ],
+          [
+           "CAI-2026-00246",
+           "30/10/2026",
+           "CAI",
+           "571000",
+           "Encaissement facture FI-2026-00406 — OROU YO Chantal",
+           "140 000",
+           "—"
+          ],
+          [
+           "CAI-2026-00245",
+           "30/10/2026",
+           "CAI",
+           "706000",
+           "Encaissement facture FI-2026-00405 — BOUKARI Nourou",
+           "—",
+           "150 000"
+          ],
+          [
+           "CAI-2026-00245",
+           "30/10/2026",
+           "CAI",
+           "571000",
+           "Encaissement facture FI-2026-00405 — BOUKARI Nourou",
+           "150 000",
+           "—"
+          ],
+          [
+           "CAI-2026-00244",
+           "30/10/2026",
+           "CAI",
+           "706000",
+           "Encaissement facture FI-2026-00404 — SOUMANOU Awaou",
+           "—",
+           "150 000"
+          ],
+          [
+           "CAI-2026-00244",
+           "30/10/2026",
+           "CAI",
+           "571000",
+           "Encaissement facture FI-2026-00404 — SOUMANOU Awaou",
+           "150 000",
+           "—"
+          ],
+          [
+           "CAI-2026-00243",
+           "30/10/2026",
+           "CAI",
+           "706000",
+           "Encaissement facture FI-2026-00403 — AGOSSOU Foussena",
+           "—",
+           "150 000"
+          ],
+          [
+           "CAI-2026-00243",
+           "30/10/2026",
+           "CAI",
+           "571000",
+           "Encaissement facture FI-2026-00403 — AGOSSOU Foussena",
+           "150 000",
+           "—"
+          ]
+         ],
+         "boutons": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Toutes les écritures",
+         "ecran": "m12-ecritures"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Dernières écritures Toutes les écritures N° DATE JOURNAL COMPTE LIBELLÉ DÉBIT CRÉDIT CAI-2026-00247 30/10/2026 CAI 706000 Encaissement facture FP-2026-00408 — BOUKARI Florent — 1 160 CAI-2026-00247 30/10/2026 CAI 571000 Encaissement facture FP-2026-00408 — BOUKARI Florent 1 160 — CAI-2026-00246 30/10/2026 CAI 706000 Encaissement facture FI-2026-00406 — OROU YO Chantal — 140 000 CAI-2026-00246 30/10/2026 CAI 571000 Encaissement facture FI-2026-00406 — OROU YO Chantal 140 000 — CAI-2026-00245 30/10/2026 CAI 706000 Encaissement facture FI-2026-00405 — BOUKARI Nourou — 150 000 CAI-2026-00245 30/10/2026 CAI 571000 Encaissement facture FI-2026-00405 — BOUKARI Nourou 150 000 — CAI-2026-00244 30/10/2026 CAI 706000 Encaissement facture FI-2026-00404 — SOUMANOU Awaou — 150 000 CAI-2026-00244 30/10/2026 CAI 571000 Encaissement facture FI-2026-00404 — SOUMANOU Awaou 150 000 — CAI-2026-00243 30/10/2026 CAI 706000 Encaissement facture FI-2026-00403 — AGOSSOU Foussena — 150 000 CAI-2026-00243 30/10/2026 CAI 571000 Encaissement facture FI-2026-00403 — AGOSSOU Foussena 150 000 —"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Écritures par journal",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "bar",
+         "etiquettes": [
+          "CAI",
+          "OD",
+          "VTE",
+          "ACH",
+          "SAL",
+          "BQ"
+         ],
+         "series": [
+          {
+           "libelle": "Écritures",
+           "donnees": [
+            280,
+            56,
+            52,
+            64,
+            24,
+            26
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Écritures par journal"
+      },
+      {
+       "titre": "Charges par centre de coûts",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "doughnut",
+         "etiquettes": [
+          "undefined",
+          "Direction",
+          "Maternité",
+          "Hospitalisation et soins",
+          "Imagerie médicale",
+          "Pharmacie",
+          "Laboratoire",
+          "Consultation"
+         ],
+         "series": [
+          {
+           "libelle": "Répartition",
+           "donnees": [
+            1897782,
+            20239000,
+            7747000,
+            6044000,
+            6270000,
+            2948000,
+            4403000,
+            3086000
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Charges par centre de coûts"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-rh": {
+   "id": "dash-rh",
+   "role": "rh",
+   "nom": null,
+   "titre": "Tableau de bord — Ressources humaines",
+   "description": "Effectif, plannings, présences, évaluations NS 131, primes NS 132 et masse salariale.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER Le compte RH a été fermé — les ressources humaines relèvent de la DAF. Décision de la Direction du 24/08/2026. Le rôle est archivé, non supprimé : la Direction pourra le recréer depuis la matrice des droits sans retoucher le logiciel.",
+      "ligne": "Le compte RH a été fermé — les ressources humaines relèvent de la DAF.",
+      "valeur": null,
+      "note": "Décision de la Direction du 24/08/2026. Le rôle est archivé, non supprimé : la Direction pourra le recréer depuis la matrice des droits sans retoucher le logiciel.",
+      "lien": null,
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-emerald-200 bg-emerald-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Planning & gardes",
+         "detail": "Garde 24h, permanence",
+         "ecran": "m10-planning"
+        },
+        {
+         "libelle": "Évaluations NS 131",
+         "detail": "4 critères, barème de sanction",
+         "ecran": "m10-evaluations"
+        },
+        {
+         "libelle": "Primes NS 132",
+         "detail": "Grille par fonction",
+         "ecran": "m10-primes"
+        },
+        {
+         "libelle": "Calcul de la paie",
+         "detail": "CNSS, ITS, VPS",
+         "ecran": "m11-calcul"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Planning & gardes Garde 24h, permanence Évaluations NS 131 4 critères, barème de sanction Primes NS 132 Grille par fonction Calcul de la paie CNSS, ITS, VPS"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Effectif total",
+       "valeur": "44",
+       "indice": "Organigramme : 44 agents"
+      },
+      {
+       "label": "Masse salariale (base)",
+       "valeur": "4 754 000 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Agents de garde aujourd’hui",
+       "valeur": "10",
+       "indice": null
+      },
+      {
+       "label": "Évaluations du mois",
+       "valeur": "44",
+       "indice": "Barème NS 131"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Effectif par fonction",
+       "tables": [],
+       "classement": [
+        [
+         "Infirmier(ère)",
+         "8"
+        ],
+        [
+         "Aide-soignant(e)",
+         "8"
+        ],
+        [
+         "Médecin",
+         "4"
+        ],
+        [
+         "Sage-femme",
+         "3"
+        ],
+        [
+         "Dispensatrice",
+         "3"
+        ],
+        [
+         "Accueil / Secrétaire médical",
+         "3"
+        ],
+        [
+         "Agent de sécurité",
+         "3"
+        ],
+        [
+         "Agent d’entretien",
+         "3"
+        ],
+        [
+         "Comptable",
+         "2"
+        ],
+        [
+         "TSL (Technicien Supérieur de Laboratoire)",
+         "2"
+        ],
+        [
+         "Caissière",
+         "2"
+        ],
+        [
+         "Direction",
+         "1"
+        ],
+        [
+         "Gestionnaire de stock",
+         "1"
+        ],
+        [
+         "Chauffeur coursier",
+         "1"
+        ]
+       ],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Gérer le personnel",
+         "ecran": "m10-personnel"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Effectif par fonction Gérer le personnel Infirmier(ère) 8 Aide-soignant(e) 8 Médecin 4 Sage-femme 3 Dispensatrice 3 Accueil / Secrétaire médical 3 Agent de sécurité 3 Agent d’entretien 3 Comptable 2 TSL (Technicien Supérieur de Laboratoire) 2 Caissière 2 Direction 1 Gestionnaire de stock 1 Chauffeur coursier 1"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Répartition du personnel par service",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "doughnut",
+         "etiquettes": [
+          "Direction",
+          "Comptabilité",
+          "Médecine générale",
+          "Imagerie / Échographie",
+          "Laboratoire",
+          "Soins infirmiers",
+          "Maternité",
+          "Pharmacie",
+          "Accueil"
+         ],
+         "series": [
+          {
+           "libelle": "Répartition",
+           "donnees": [
+            11,
+            1,
+            2,
+            1,
+            2,
+            16,
+            3,
+            4,
+            4
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Répartition du personnel par service"
+      },
+      {
+       "titre": "Planning du jour",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "bar",
+         "etiquettes": [
+          "Garde 24h",
+          "Repos 48h",
+          "Garde soins",
+          "Garde hospitalisation",
+          "Repos 24h",
+          "Soirée",
+          "Permanence",
+          "Entretien général de la journée"
+         ],
+         "series": [
+          {
+           "libelle": "Agents",
+           "donnees": [
+            10,
+            9,
+            3,
+            3,
+            6,
+            1,
+            1,
+            1
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Planning du jour"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-receptionniste": {
+   "id": "dash-receptionniste",
+   "role": "reception",
+   "nom": null,
+   "titre": "Tableau de bord — Accueil",
+   "description": "Création de dossiers, rendez-vous du jour, visites et orientation des patients.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 14 patient(s) — attendent d’être appelés L’ordre d’arrivée gouverne, sauf urgence. Vérifiez la validité de la carte d’assurance à l’enregistrement : c’est elle qui décide de la facturation (RG-09). File d’attente",
+      "ligne": "14 patient(s) — attendent d’être appelés",
+      "valeur": "14",
+      "note": "L’ordre d’arrivée gouverne, sauf urgence. Vérifiez la validité de la carte d’assurance à l’enregistrement : c’est elle qui décide de la facturation (RG-09).",
+      "lien": {
+       "libelle": "File d’attente",
+       "ecran": "m2-file-attente"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-navy-200 bg-navy-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Répertoire patient",
+         "detail": null,
+         "ecran": "m1-patients"
+        },
+        {
+         "libelle": "Constantes à l’accueil",
+         "detail": null,
+         "ecran": "m1-constantes"
+        },
+        {
+         "libelle": "Agenda et rendez-vous",
+         "detail": null,
+         "ecran": "m2-rendezvous"
+        },
+        {
+         "libelle": "Visites aux hospitalisés",
+         "detail": null,
+         "ecran": "m3-visites-patients"
+        },
+        {
+         "libelle": "File d’attente",
+         "detail": null,
+         "ecran": "m2-file-attente"
+        },
+        {
+         "libelle": "Écran d’appel des patients",
+         "detail": null,
+         "ecran": "m2-affichage"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Répertoire patient Constantes à l’accueil Agenda et rendez-vous Visites aux hospitalisés File d’attente Écran d’appel des patients"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — les parcours de l’accueil",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Nouveau patient",
+         "detail": "Le patient n’a jamais été reçu à la clinique.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Créer le dossier patient",
+           "ecran": "m1-patients",
+           "poste": null,
+           "ferme": false,
+           "detail": "Code CNT/[n°]/[année] attribué automatiquement — RG-01, non modifiable ensuite."
+          },
+          {
+           "rang": "2",
+           "libelle": "Relever les constantes",
+           "ecran": "m1-constantes",
+           "poste": null,
+           "ferme": false,
+           "detail": "Température, TA, pouls, SpO₂, poids, taille. Elles alimentent la feuille de surveillance."
+          },
+          {
+           "rang": "3",
+           "libelle": "Inscrire à la file d’attente",
+           "ecran": "m2-file-attente",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Le soignant ouvre le dossier de consultation",
+           "ecran": null,
+           "poste": "Consultation",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Ouvrir un dossier",
+          "ecran": "m1-patients"
+         }
+        },
+        {
+         "titre": "Rendez-vous de consultation",
+         "detail": "Le patient appelle ou se présente pour une date à venir.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Prendre le rendez-vous",
+           "ecran": "m2-rendezvous",
+           "poste": null,
+           "ferme": false,
+           "detail": "Généraliste et sage-femme sept jours sur sept ; chirurgien-gynécologue les lundi et jeudi."
+          },
+          {
+           "rang": "2",
+           "libelle": "Vérifier ou créer le dossier",
+           "ecran": "m1-patients",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Le jour venu : constantes puis file d’attente",
+           "ecran": "m1-constantes",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Le soignant reçoit",
+           "ecran": null,
+           "poste": "Consultation",
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "5",
+           "libelle": "Règlement",
+           "ecran": null,
+           "poste": "Caisse",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Prendre le rendez-vous",
+          "ecran": "m2-rendezvous"
+         }
+        },
+        {
+         "titre": "Rendez-vous de contrôle",
+         "detail": "Le patient revient après un traitement ou un examen.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Programmer le contrôle",
+           "ecran": "m2-rendezvous",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le motif « contrôle » distingue la venue d’une première consultation."
+          },
+          {
+           "rang": "2",
+           "libelle": "Vérifier que les résultats sont rendus",
+           "ecran": null,
+           "poste": null,
+           "ferme": true,
+           "detail": "Un contrôle sans son résultat fait revenir le patient pour rien."
+          },
+          {
+           "rang": "3",
+           "libelle": "Relever les constantes à l’arrivée",
+           "ecran": "m1-constantes",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Le soignant reçoit",
+           "ecran": null,
+           "poste": "Consultation",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Programmer le contrôle",
+          "ecran": "m2-rendezvous"
+         }
+        },
+        {
+         "titre": "Patient référé par un autre centre",
+         "detail": "Le patient arrive avec sa fiche de référence.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Enregistrer la fiche de référence entrante",
+           "ecran": "m1-reference",
+           "poste": null,
+           "ferme": false,
+           "detail": "La pièce d’origine est conservée et numérisée : elle porte ce que le centre a déjà fait."
+          },
+          {
+           "rang": "2",
+           "libelle": "Créer le dossier local",
+           "ecran": "m1-patients",
+           "poste": null,
+           "ferme": false,
+           "detail": "Sans effacer la pièce d’origine ni sa couverture d’assurance."
+          },
+          {
+           "rang": "3",
+           "libelle": "Numériser la fiche reçue",
+           "ecran": "m1-documents",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Relever les constantes",
+           "ecran": "m1-constantes",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "5",
+           "libelle": "Le soignant reçoit",
+           "ecran": null,
+           "poste": "Consultation",
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "6",
+           "libelle": "Renvoyer la contre-référence au centre d’origine",
+           "ecran": "m1-contre-reference",
+           "poste": null,
+           "ferme": false,
+           "detail": "Elle dit ce qu’il est advenu du patient — c’est ce que le centre attend."
+          }
+         ],
+         "action": {
+          "libelle": "Enregistrer la référence",
+          "ecran": "m1-reference"
+         }
+        },
+        {
+         "titre": "File d’attente et écran d’appel",
+         "detail": "L’ordre d’arrivée gouverne, sauf urgence.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Inscrire et appeler les patients",
+           "ecran": "m2-file-attente",
+           "poste": null,
+           "ferme": false,
+           "detail": "Le rang est calculé : priorité d’abord, heure d’arrivée ensuite. Il ne se saisit pas."
+          },
+          {
+           "rang": "2",
+           "libelle": "Afficher l’écran d’appel en salle d’attente",
+           "ecran": "m2-affichage",
+           "poste": null,
+           "ferme": false,
+           "detail": "Numéros seuls — jamais le nom ni le motif du patient."
+          }
+         ],
+         "action": {
+          "libelle": "Gérer la file",
+          "ecran": "m2-file-attente"
+         }
+        },
+        {
+         "titre": "Sortie d’hospitalisation",
+         "detail": "Le séjour est terminé, le patient rentre chez lui.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Vérifier que le solde est apuré",
+           "ecran": null,
+           "poste": null,
+           "ferme": true,
+           "detail": "RG-06 — aucune sortie tant qu’un reliquat subsiste."
+          },
+          {
+           "rang": "2",
+           "libelle": "Établir la fiche de sortie",
+           "ecran": "m3-sorties",
+           "poste": null,
+           "ferme": false,
+           "detail": "RG-07 — signature du patient, de l’infirmier et constat du gardien."
+          },
+          {
+           "rang": "3",
+           "libelle": "Remettre le traitement de sortie",
+           "ecran": null,
+           "poste": "Pharmacie",
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Programmer le contrôle",
+           "ecran": "m2-rendezvous",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": null
+        },
+        {
+         "titre": "Sortie contre avis médical",
+         "detail": "Le patient part malgré l’avis du médecin.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Recueillir la décharge de responsabilité",
+           "ecran": "m3-sortie-avis-medical",
+           "poste": null,
+           "ferme": false,
+           "detail": "RG-08 — le motif est obligatoire, l’avis du Procureur consigné le cas échéant."
+          },
+          {
+           "rang": "2",
+           "libelle": "Faire signer le patient ou son accompagnant",
+           "ecran": "m3-sortie-avis-medical",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Régulariser le solde",
+           "ecran": null,
+           "poste": null,
+           "ferme": true,
+           "detail": "La sortie contre avis n’efface pas la dette."
+          }
+         ],
+         "action": {
+          "libelle": "Enregistrer la sortie",
+          "ecran": "m3-sortie-avis-medical"
+         }
+        },
+        {
+         "titre": "Registre des appels",
+         "detail": "Appels entrants et sortants du standard.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Consigner l’appel",
+           "ecran": "m2-registre-appels",
+           "poste": null,
+           "ferme": false,
+           "detail": "Objet, interlocuteur, suite donnée."
+          },
+          {
+           "rang": "2",
+           "libelle": "Prendre le rendez-vous si l’appel le demande",
+           "ecran": "m2-rendezvous",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Appeler l’ambulance si l’appel est une urgence",
+           "ecran": "m13-repertoire-ambulances",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Ouvrir le registre",
+          "ecran": "m2-registre-appels"
+         }
+        },
+        {
+         "titre": "Visites aux hospitalisés",
+         "detail": "Les proches se présentent pour un patient hospitalisé.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Vérifier les heures de visite et enregistrer",
+           "ecran": "m3-visites-patients",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "2",
+           "libelle": "Orienter vers la chambre",
+           "ecran": "m3-plan-lits",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Enregistrer une visite",
+          "ecran": "m3-visites-patients"
+         }
+        },
+        {
+         "titre": "Annuaire des ambulances",
+         "detail": "Une évacuation est nécessaire.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Appeler un moyen disponible",
+           "ecran": "m13-repertoire-ambulances",
+           "poste": null,
+           "ferme": false,
+           "detail": "Les disponibles remontent en tête ; le numéro est cliquable."
+          },
+          {
+           "rang": "2",
+           "libelle": "Établir la fiche de référence sortante",
+           "ecran": "m1-reference",
+           "poste": null,
+           "ferme": false,
+           "detail": "Elle part avec le patient et porte ses constantes et ses traitements reçus."
+          },
+          {
+           "rang": "3",
+           "libelle": "Consigner l’intervention",
+           "ecran": null,
+           "poste": "Ambulance",
+           "ferme": true,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Consulter l’annuaire",
+          "ecran": "m13-repertoire-ambulances"
+         }
+        },
+        {
+         "titre": "Certificats et attestations",
+         "detail": "Le patient réclame un certificat.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Délivrer la pièce",
+           "ecran": "m1-pieces",
+           "poste": null,
+           "ferme": false,
+           "detail": "Numérotée par sigle et par année. Les certificats ne sont couverts que par SOS."
+          },
+          {
+           "rang": "2",
+           "libelle": "Encaisser",
+           "ecran": null,
+           "poste": "Caisse",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Délivrer une pièce",
+          "ecran": "m1-pieces"
+         }
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — les parcours de l’accueil Nouveau patient Le patient n’a jamais été reçu à la clinique. 1 Créer le dossier patient Code CNT/[n°]/[année] attribué automatiquement — RG-01, non modifiable ensuite. 2 Relever les constantes Température, TA, pouls, SpO₂, poids, taille. Elles alimentent la feuille de surveillance. 3 Inscrire à la file d’attente 4 Le soignant ouvre le dossier de consultationConsultation Ouvrir un dossier Rendez-vous de consultation Le patient appelle ou se présente pour une date à venir. 1 Prendre le rendez-vous Généraliste et sage-femme sept jours sur sept ; chirurgien-gynécologue les lundi et jeudi. 2 Vérifier ou créer le dossier 3 Le jour venu : constantes puis file d’attente 4 Le soignant reçoitConsultation 5 RèglementCaisse Prendre le rendez-vous Rendez-vous de contrôle Le patient revient après un traitement ou un examen. 1 Programmer le contrôle Le motif « contrôle » distingue la venue d’une première consultation. 2 Vérifier que les résultats sont rendus— fermé à votre profil Un contrôle sans son résultat fait revenir le patient pour rien. 3 Relever les constantes à l’arrivée 4 Le soignant reçoitConsultation Programmer le contrôle Patient référé par un autre centre Le patient arrive avec sa fiche de référence. 1 Enregistrer la fiche de référence entrante La pièce d’origine est conservée et numérisée : elle porte ce que le centre a déjà fait. 2 Créer le dossier local Sans effacer la pièce d’origine ni sa couverture d’assurance. 3 Numériser la fiche reçue 4 Relever les constantes 5 Le soignant reçoitConsultation 6 Renvoyer la contre-référence au centre d’origine Elle dit ce qu’il est advenu du patient — c’est ce que le centre attend. Enregistrer la référence File d’attente et écran d’appel L’ordre d’arrivée gouverne, sauf urgence. 1 Inscrire et appeler les patients Le rang est calculé : priorité d’abord, heure d’arrivée ensuite. Il ne se saisit pas. 2 Afficher l’écran d’appel en salle d’attente Numéros seuls — jamais le nom ni le motif du patient. Gérer la file Sortie d’hospitalisation Le séjour est terminé, le patient rentre chez lui. 1 Vérifier que le solde est apuré— fermé à votre profil RG-06 — aucune sortie tant qu’un reliquat subsiste. 2 Établir la fiche de sortie RG-07 — signature du patient, de l’infirmier et constat du gardien. 3 Remettre le traitement de sortiePharmacie 4 Programmer le contrôle Sortie contre avis médical Le patient part malgré l’avis du médecin. 1 Recueillir la décharge de responsabilité RG-08 — le motif est obligatoire, l’avis du Procureur consigné le cas échéant. 2 Faire signer le patient ou son accompagnant 3 Régulariser le solde— fermé à votre profil La sortie contre avis n’efface pas la dette. Enregistrer la sortie Registre des appels Appels entrants et sortants du standard. 1 Consigner l’appel Objet, interlocuteur, suite donnée. 2 Prendre le rendez-vous si l’appel le demande 3 Appeler l’ambulance si l’appel est une urgence Ouvrir le registre Visites aux hospitalisés Les proches se présentent pour un patient hospitalisé. 1 Vérifier les heures de visite et enregistrer 2 Orienter vers la chambre Enregistrer une visite Annuaire des ambulances Une évacuation est nécessaire. 1 Appeler un moyen disponible Les disponibles remontent en tête ; le numéro est cliquable. 2 Établir la fiche de référence sortante Elle part avec le patient et porte ses constantes et ses traitements reçus. 3 Consigner l’interventionAmbulance— fermé à votre profil Consulter l’annuaire Certificats et attestations Le patient réclame un certificat. 1 Délivrer la pièce Numérotée par sigle et par année. Les certificats ne sont couverts que par SOS. 2 EncaisserCaisse Délivrer une pièce"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Dossiers créés ce mois",
+       "valeur": "22",
+       "indice": null
+      },
+      {
+       "label": "Rendez-vous du jour",
+       "valeur": "2",
+       "indice": null
+      },
+      {
+       "label": "Patients au répertoire",
+       "valeur": "210",
+       "indice": null
+      },
+      {
+       "label": "Cartes d’assurance expirées",
+       "valeur": "43",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Rendez-vous et consultations du jour",
+       "tables": [
+        {
+         "entetes": [
+          "HEURE",
+          "DOSSIER",
+          "PATIENT",
+          "MOTIF",
+          "PRATICIEN",
+          "STATUT"
+         ],
+         "lignes": [
+          [
+           "15h30",
+           "CNT/65/26",
+           "TCHANE Idrissou",
+           "Consultation prénatale",
+           "AHOHOU Rodrigue",
+           "Terminée"
+          ],
+          [
+           "17h30",
+           "CNT/67/26",
+           "BAKO Sylvie",
+           "Plaie infectée",
+           "YENI M’PO Florent",
+           "En cours"
+          ]
+         ],
+         "boutons": [
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Agenda complet",
+         "ecran": "m2-agenda"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Rendez-vous et consultations du jour Agenda complet HEURE DOSSIER PATIENT MOTIF PRATICIEN STATUT 15h30 CNT/65/26 TCHANE Idrissou Consultation prénatale AHOHOU Rodrigue Terminée 17h30 CNT/67/26 BAKO Sylvie Plaie infectée YENI M’PO Florent En cours"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-admin-agent": {
+   "id": "dash-admin-agent",
+   "role": "agentadmin",
+   "nom": null,
+   "titre": "Tableau de bord — Agent administratif",
+   "description": "Courriers, réunions, événements, notes de service et gestion documentaire.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 1 courrier(s) — restent à traiter Proposition à valider par la Direction : ce que l’agent administratif regarde en premier n’a pas été précisé. Courriers",
+      "ligne": "1 courrier(s) — restent à traiter",
+      "valeur": "1",
+      "note": "Proposition à valider par la Direction : ce que l’agent administratif regarde en premier n’a pas été précisé.",
+      "lien": {
+       "libelle": "Courriers",
+       "ecran": "m13-courriers"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-sky-200 bg-sky-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Courriers",
+         "detail": "Départ et arrivée",
+         "ecran": "m13-courriers"
+        },
+        {
+         "libelle": "Réunions",
+         "detail": "Convocations et comptes rendus",
+         "ecran": "m13-reunions"
+        },
+        {
+         "libelle": "Notes de service",
+         "detail": "Versions en vigueur",
+         "ecran": "m13-notes-service"
+        },
+        {
+         "libelle": "Gestion documentaire",
+         "detail": "Bibliothèque et archivage",
+         "ecran": "ged-bibliotheque"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Courriers Départ et arrivée Réunions Convocations et comptes rendus Notes de service Versions en vigueur Gestion documentaire Bibliothèque et archivage"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Courriers du mois",
+       "valeur": "4",
+       "indice": "1 arrivée(s), 3 départ(s)"
+      },
+      {
+       "label": "Réunions planifiées",
+       "valeur": "4",
+       "indice": null
+      },
+      {
+       "label": "Notes de service actives",
+       "valeur": "2",
+       "indice": "NS 131 et NS 132"
+      },
+      {
+       "label": "Documents à valider",
+       "valeur": "38",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Notes de service en vigueur",
+       "tables": [
+        {
+         "entetes": [
+          "RÉFÉRENCE",
+          "OBJET",
+          "SIGNATURE",
+          "STATUT"
+         ],
+         "lignes": [
+          [
+           "NS 131/07/DM/DA/CNT/2026",
+           "Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale",
+           "13/07/2026",
+           "ACTIVE"
+          ],
+          [
+           "NS n° 132/07/DM/DA/CNT/2026",
+           "Primes diverses",
+           "13/07/2026",
+           "ACTIVE"
+          ]
+         ],
+         "boutons": [
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Notes de service en vigueur RÉFÉRENCE OBJET SIGNATURE STATUT NS 131/07/DM/DA/CNT/2026 Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale 13/07/2026 ACTIVE NS n° 132/07/DM/DA/CNT/2026 Primes diverses 13/07/2026 ACTIVE"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-medecin#nomme": {
+   "id": "dash-medecin",
+   "role": "medecin",
+   "nom": "BADO BANI A. B. Zoulehath",
+   "titre": "Tableau de bord — Médecin",
+   "description": "Consultations du jour, patients hospitalisés sous responsabilité et prescriptions récentes.",
+   "blocs": [
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Actes prescrits en attente d’exécution",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Actes prescrits en attente d’exécution Aucun acte prescrit en attente."
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "premierRegard": {
+      "texte": "À REGARDER EN PREMIER 94 résultat(s) rendu(s) — vous attendent Un résultat n’est visible qu’après validation biologique : ceux-ci le sont. Lire les résultats",
+      "ligne": "94 résultat(s) rendu(s) — vous attendent",
+      "valeur": "94",
+      "note": "Un résultat n’est visible qu’après validation biologique : ceux-ci le sont.",
+      "lien": {
+       "libelle": "Lire les résultats",
+       "ecran": "m5-resultats"
+      },
+      "ton": "flex flex-wrap items-center gap-4 rounded-xl border px-5 py-4 border-sky-200 bg-sky-50"
+     }
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Accès rapides",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": [
+        {
+         "libelle": "Nouvelle consultation",
+         "detail": "Diagnostic et prescription",
+         "ecran": "m2-consultation-fiche"
+        },
+        {
+         "libelle": "Prescrire une analyse",
+         "detail": "Demande au laboratoire",
+         "ecran": "m5-demandes"
+        },
+        {
+         "libelle": "Décider une hospitalisation",
+         "detail": "Admission et affectation de lit",
+         "ecran": "m3-admissions"
+        },
+        {
+         "libelle": "Consultation à domicile",
+         "detail": "Planification et facturation",
+         "ecran": "m2-domicile"
+        }
+       ],
+       "sousCartes": [],
+       "texte": "Accès rapides Nouvelle consultation Diagnostic et prescription Prescrire une analyse Demande au laboratoire Décider une hospitalisation Admission et affectation de lit Consultation à domicile Planification et facturation"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Vos patients en attente",
+       "tables": [
+        {
+         "entetes": [
+          "N°",
+          "PATIENT",
+          "PRIORITÉ",
+          "MOTIF",
+          "ARRIVÉ À",
+          "ACTIONS"
+         ],
+         "lignes": [
+          [
+           "C001",
+           "AGOSSOU Yahouza CNT908/25",
+           "Urgence",
+           "Règlement",
+           "07:03",
+           "Recevoir"
+          ]
+         ],
+         "boutons": [
+          [
+           "Recevoir"
+          ]
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [
+        {
+         "titre": "Adressés à BADO BANI A. B. Zoulehath",
+         "lignes": [
+          [
+           "C001",
+           "AGOSSOU Yahouza CNT908/25",
+           "Urgence",
+           "Règlement",
+           "07:03",
+           "Recevoir"
+          ]
+         ],
+         "entetes": [
+          "N°",
+          "PATIENT",
+          "PRIORITÉ",
+          "MOTIF",
+          "ARRIVÉ À",
+          "ACTIONS"
+         ]
+        },
+        {
+         "titre": "",
+         "lignes": [
+          [
+           "C001",
+           "AGOSSOU Yahouza CNT908/25",
+           "Urgence",
+           "Règlement",
+           "07:03",
+           "Recevoir"
+          ]
+         ],
+         "entetes": [
+          "N°",
+          "PATIENT",
+          "PRIORITÉ",
+          "MOTIF",
+          "ARRIVÉ À",
+          "ACTIONS"
+         ]
+        },
+        {
+         "titre": "File commune de consultation",
+         "lignes": [],
+         "entetes": []
+        }
+       ],
+       "texte": "Vos patients en attente 1 patient(s) vous attendent nommément, et 0 patient(s) sont en file commune — le prochain praticien libre les prend. Adressés à BADO BANI A. B. Zoulehath Colonnes Exporter N° PATIENT PRIORITÉ MOTIF ARRIVÉ À ACTIONS C001 AGOSSOU Yahouza CNT908/25 Urgence Règlement 07:03 Recevoir Affichage de 1 à 1 sur 1 enregistrement File commune de consultation Aucun patient en file commune. Ouvrir la file d’attente"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Ce que vous faites ici — vos parcours",
+       "tables": [],
+       "classement": [],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": [
+        {
+         "titre": "Recevoir un patient",
+         "detail": "Le patient est appelé, la consultation commence.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Enregistrer le dossier de consultation",
+           "ecran": "m2-dossiers-consultation",
+           "poste": null,
+           "ferme": false,
+           "detail": "Anamnèse, trois catégories d’antécédents, examen IPPOA par appareil. Les constantes de l’accueil y sont lues, pas ressaisies."
+          },
+          {
+           "rang": "2",
+           "libelle": "Fiche de consultation : diagnostic et prescription",
+           "ecran": "m2-consultation-fiche",
+           "poste": null,
+           "ferme": false,
+           "detail": "Code de pathologie ET diagnostic rédigé ; médicaments, analyses et imagerie — ici seulement."
+          },
+          {
+           "rang": "3",
+           "libelle": "Le patient règle",
+           "ecran": null,
+           "poste": "Caisse",
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Le laboratoire prélève",
+           "ecran": null,
+           "poste": "Laboratoire",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Ouvrir la consultation",
+          "ecran": "m2-dossiers-consultation"
+         }
+        },
+        {
+         "titre": "Lire les résultats",
+         "detail": "Vos prescriptions d’analyses sont revenues.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Consulter les résultats rendus",
+           "ecran": "m5-resultats",
+           "poste": null,
+           "ferme": false,
+           "detail": "Seuls les résultats VALIDÉS BIOLOGIQUEMENT vous sont visibles."
+          },
+          {
+           "rang": "2",
+           "libelle": "Réajuster le traitement",
+           "ecran": "m2-ordonnances",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Programmer le contrôle",
+           "ecran": "m2-rendezvous",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Voir les résultats",
+          "ecran": "m5-resultats"
+         }
+        },
+        {
+         "titre": "Hospitaliser",
+         "detail": "L’état du patient justifie un séjour.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Créer l’admission et attribuer un lit",
+           "ecran": "m3-admissions",
+           "poste": null,
+           "ferme": false,
+           "detail": "Un lit ne porte qu’une admission active à la fois."
+          },
+          {
+           "rang": "2",
+           "libelle": "Prescrire le traitement d’entrée",
+           "ecran": "m2-prescriptions",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "3",
+           "libelle": "Suivre les constantes",
+           "ecran": "m3-surveillance",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "4",
+           "libelle": "Rédiger le rapport médical à la sortie",
+           "ecran": "m3-rapport",
+           "poste": null,
+           "ferme": false,
+           "detail": null
+          },
+          {
+           "rang": "5",
+           "libelle": "Vérifier le solde avant sortie",
+           "ecran": null,
+           "poste": null,
+           "ferme": true,
+           "detail": "RG-06 — pas de sortie sans solde apuré."
+          }
+         ],
+         "action": {
+          "libelle": "Admettre",
+          "ecran": "m3-admissions"
+         }
+        },
+        {
+         "titre": "Délivrer un certificat",
+         "detail": "Le patient réclame une pièce certifiante.",
+         "etapes": [
+          {
+           "rang": "1",
+           "libelle": "Établir la pièce",
+           "ecran": "m1-pieces",
+           "poste": null,
+           "ferme": false,
+           "detail": "Quatorze types. Le prénuptial se remplit depuis les résultats validés."
+          },
+          {
+           "rang": "2",
+           "libelle": "Encaisser",
+           "ecran": null,
+           "poste": "Caisse",
+           "ferme": false,
+           "detail": null
+          }
+         ],
+         "action": {
+          "libelle": "Délivrer",
+          "ecran": "m1-pieces"
+         }
+        }
+       ],
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Ce que vous faites ici — vos parcours Recevoir un patient Le patient est appelé, la consultation commence. 1 Enregistrer le dossier de consultation Anamnèse, trois catégories d’antécédents, examen IPPOA par appareil. Les constantes de l’accueil y sont lues, pas ressaisies. 2 Fiche de consultation : diagnostic et prescription Code de pathologie ET diagnostic rédigé ; médicaments, analyses et imagerie — ici seulement. 3 Le patient règleCaisse 4 Le laboratoire prélèveLaboratoire Ouvrir la consultation Lire les résultats Vos prescriptions d’analyses sont revenues. 1 Consulter les résultats rendus Seuls les résultats VALIDÉS BIOLOGIQUEMENT vous sont visibles. 2 Réajuster le traitement 3 Programmer le contrôle Voir les résultats Hospitaliser L’état du patient justifie un séjour. 1 Créer l’admission et attribuer un lit Un lit ne porte qu’une admission active à la fois. 2 Prescrire le traitement d’entrée 3 Suivre les constantes 4 Rédiger le rapport médical à la sortie 5 Vérifier le solde avant sortie— fermé à votre profil RG-06 — pas de sortie sans solde apuré. Admettre Délivrer un certificat Le patient réclame une pièce certifiante. 1 Établir la pièce Quatorze types. Le prénuptial se remplit depuis les résultats validés. 2 EncaisserCaisse Délivrer"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "kpis": [
+      {
+       "label": "Consultations du jour",
+       "valeur": "2",
+       "indice": null
+      },
+      {
+       "label": "En attente",
+       "valeur": "54",
+       "indice": null
+      },
+      {
+       "label": "Patients hospitalisés",
+       "valeur": "14",
+       "indice": null
+      },
+      {
+       "label": "Consultations du mois",
+       "valeur": "43",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "File d’attente et consultations récentes",
+       "tables": [
+        {
+         "entetes": [
+          "DATE",
+          "DOSSIER",
+          "PATIENT",
+          "MOTIF",
+          "STATUT"
+         ],
+         "lignes": [
+          [
+           "26/08/2026 10h00",
+           "CNT/138/26",
+           "YARO Edmond",
+           "Hypertension — contrôle",
+           "Terminée"
+          ],
+          [
+           "26/08/2026 10h00",
+           "CNT/34/26",
+           "SAMBIENI Ganiou",
+           "Douleurs épigastriques",
+           "Terminée"
+          ],
+          [
+           "16/08/2026 17h30",
+           "CNT/67/26",
+           "BAKO Sylvie",
+           "Plaie infectée",
+           "En cours"
+          ],
+          [
+           "16/08/2026 15h30",
+           "CNT/65/26",
+           "TCHANE Idrissou",
+           "Consultation prénatale",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 18h15",
+           "CNT/148/25",
+           "BOUKARI Alassane",
+           "Traumatisme",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 17h00",
+           "CNT/42/26",
+           "YARO Bertine",
+           "Suivi de grossesse",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 16h30",
+           "CNT/74/26",
+           "HOUNKPATIN Salifou",
+           "Plaie infectée",
+           "Terminée"
+          ],
+          [
+           "15/08/2026 10h15",
+           "CNT/10/25",
+           "SEIDOU Rachida",
+           "Contrôle diabète",
+           "Planifiée"
+          ],
+          [
+           "14/08/2026 13h45",
+           "CNT/45/26",
+           "PARAISO Séraphine",
+           "Fièvre persistante",
+           "En cours"
+          ],
+          [
+           "14/08/2026 11h45",
+           "CNT/4/26",
+           "PARAISO Sabi",
+           "Céphalées",
+           "Terminée"
+          ]
+         ],
+         "boutons": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+         ]
+        }
+       ],
+       "classement": [],
+       "graphiques": [],
+       "liens": [
+        {
+         "libelle": "Toutes les consultations",
+         "ecran": "m2-consultations"
+        }
+       ],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "File d’attente et consultations récentes Toutes les consultations DATE DOSSIER PATIENT MOTIF STATUT 26/08/2026 10h00 CNT/138/26 YARO Edmond Hypertension — contrôle Terminée 26/08/2026 10h00 CNT/34/26 SAMBIENI Ganiou Douleurs épigastriques Terminée 16/08/2026 17h30 CNT/67/26 BAKO Sylvie Plaie infectée En cours 16/08/2026 15h30 CNT/65/26 TCHANE Idrissou Consultation prénatale Terminée 15/08/2026 18h15 CNT/148/25 BOUKARI Alassane Traumatisme Terminée 15/08/2026 17h00 CNT/42/26 YARO Bertine Suivi de grossesse Terminée 15/08/2026 16h30 CNT/74/26 HOUNKPATIN Salifou Plaie infectée Terminée 15/08/2026 10h15 CNT/10/25 SEIDOU Rachida Contrôle diabète Planifiée 14/08/2026 13h45 CNT/45/26 PARAISO Séraphine Fièvre persistante En cours 14/08/2026 11h45 CNT/4/26 PARAISO Sabi Céphalées Terminée"
+      }
+     ]
+    },
+    {
+     "genre": "bloc",
+     "cartes": [
+      {
+       "titre": "Motifs de consultation les plus fréquents",
+       "tables": [],
+       "classement": [
+        [
+         "Paludisme suspecté",
+         "22"
+        ],
+        [
+         "Céphalées",
+         "20"
+        ],
+        [
+         "Traumatisme",
+         "19"
+        ],
+        [
+         "Suivi de grossesse",
+         "19"
+        ],
+        [
+         "Contrôle diabète",
+         "19"
+        ],
+        [
+         "Toux chronique",
+         "19"
+        ],
+        [
+         "Douleurs abdominales",
+         "18"
+        ],
+        [
+         "Consultation prénatale",
+         "17"
+        ]
+       ],
+       "graphiques": [],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Motifs de consultation les plus fréquents Paludisme suspecté 22 Céphalées 20 Traumatisme 19 Suivi de grossesse 19 Contrôle diabète 19 Toux chronique 19 Douleurs abdominales 18 Consultation prénatale 17"
+      },
+      {
+       "titre": "Diagnostics posés",
+       "tables": [],
+       "classement": [],
+       "graphiques": [
+        {
+         "type": "bar",
+         "etiquettes": [
+          "Plaie en voie de cicatrisation",
+          "Asthénie du sujet âgé",
+          "Déshydratation modérée",
+          "Évolution favorable",
+          "Gastrite",
+          "Plaie contuse de la jambe gauche"
+         ],
+         "series": [
+          {
+           "libelle": "Cas",
+           "donnees": [
+            4,
+            2,
+            2,
+            1,
+            1,
+            2
+           ]
+          }
+         ]
+        }
+       ],
+       "liens": [],
+       "vide": null,
+       "parcours": null,
+       "raccourcis": null,
+       "sousCartes": [],
+       "texte": "Diagnostics posés"
+      }
+     ]
+    }
+   ],
+   "dialogue": []
+  },
+  "dash-laborantin#secondPassage": {
+   "dialogue": []
+  }
+ }
+}

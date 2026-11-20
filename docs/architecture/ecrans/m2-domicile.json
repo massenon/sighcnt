@@ -1,0 +1,60 @@
+{
+ "id": "m2-domicile",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Consultations & soins à domicile",
+ "acces": "ouvert",
+ "titre": "Consultations & soins à domicile",
+ "description": "Planification, réalisation et facturation spécifique des prestations réalisées au domicile du patient.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Consultations & soins à domicile"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Cet écran ne présente que les prestations de type Domicile. Les consultations réalisées à la clinique sont gérées depuis l’écran « Consultations »."
+ ],
+ "onglets": [
+  "Tous les interventions à domicile",
+  "Archivés"
+ ],
+ "kpis": [
+  "Interventions à domicile",
+  "Planifiées",
+  "Réalisées",
+  "Recette domicile"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Date",
+   "Patient",
+   "Prestation",
+   "Intervenant",
+   "Montant",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les interventions à domicile282",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

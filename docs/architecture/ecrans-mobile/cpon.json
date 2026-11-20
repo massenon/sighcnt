@@ -1,0 +1,141 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « cpon ». Ne pas éditer à la main.",
+ "titre": "Visite post-natale (CPoN)",
+ "sous": "KPOGNON Rose",
+ "textes": [],
+ "champs": [
+  {
+   "section": "Mère",
+   "id": "jour",
+   "libelle": "Jour post-natal",
+   "requis": true,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "J1",
+    "J3",
+    "J7",
+    "J14",
+    "J42"
+   ],
+   "valeur": "J1"
+  },
+  {
+   "section": "Mère",
+   "id": "ta",
+   "libelle": "TA (ex. 12/8)",
+   "requis": true,
+   "type": "input",
+   "saisie": "text",
+   "clavier": null,
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Mère",
+   "id": "t",
+   "libelle": "T° (°C)",
+   "requis": true,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "decimal",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Mère",
+   "id": "lochies",
+   "libelle": "Lochies",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Normales",
+    "Abondantes",
+    "Malodorantes"
+   ],
+   "valeur": "Normales"
+  },
+  {
+   "section": "Mère",
+   "id": "uterus",
+   "libelle": "Involution utérine",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Normale",
+    "Insuffisante"
+   ],
+   "valeur": "Normale"
+  },
+  {
+   "section": "Nouveau-né",
+   "id": "pb",
+   "libelle": "Poids (g)",
+   "requis": true,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "numeric",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Nouveau-né",
+   "id": "cordon",
+   "libelle": "Cordon",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Propre et sec",
+    "Suintant",
+    "Infecté"
+   ],
+   "valeur": "Propre et sec"
+  },
+  {
+   "section": "Nouveau-né",
+   "id": "allait",
+   "libelle": "Allaitement",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Exclusif",
+    "Mixte",
+    "Difficulté"
+   ],
+   "valeur": "Exclusif"
+  }
+ ],
+ "boutons": [
+  "Enregistrer"
+ ],
+ "onglets": [
+  "Accueil",
+  "Synchro",
+  "À traiter",
+  "Réglages"
+ ],
+ "notes": [],
+ "cartes": [
+  "Mère",
+  "Nouveau-né"
+ ],
+ "items": [],
+ "kpis": []
+}

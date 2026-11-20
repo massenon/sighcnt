@@ -132,7 +132,7 @@ Les référentiels sont transcrits des documents de cadrage, non inventés :
 | NS 132/07/DM/DA/CNT/2026 | Grille des primes par fonction, aux montants exacts | `m10-primes` |
 | Tarifs des analyses (48) | Catalogue de laboratoire | `m5-catalogue` |
 | Tarifs des médicaments (144) | Catalogue tarifaire pharmacie | `cfg-tarifs` |
-| Inventaire « Grand Stock » SAGE 100 | **184 articles**, 12 080 unités, 3 976 459 FCFA — stock initial | `m6-reprise` |
+| Inventaire « Grand Stock » SAGE 100 | **184 articles**, 12 080 unités, 3 976 459 FCFA — stock initial | `m6-import-grand-stock` |
 | Classeur comptable SYSCOHADA | **93 comptes** réellement tenus par la clinique | `m12-plan-comptable` |
 | Compte de résultat 2025 | CA 190 830 994 · charges 160 264 063 · résultat 30 566 931 FCFA | `m12-baseline-2025` |
 | Liste des assurances partenaires | 13 compagnies, téléphones et courriels | `m9-compagnies` |
@@ -156,7 +156,7 @@ Le prototype les expose plutôt que de les masquer :
   valeurs d'attente signalées ; les médicaments sont valorisés au CMUP de
   l'inventaire lorsqu'ils y figurent.
 - **32 articles non valorisés** à l'inventaire SAGE : quantité connue, prix de
-  revient absent (`m6-reprise`, onglet « Points à traiter »).
+  revient absent (`m6-import-grand-stock`, onglet « Points à traiter »).
 - **Seuils d'alerte absents** du document SAGE : le système propose 20 % de la
   quantité relevée, à arrêter article par article.
 - **3 postes de dépense sans numéro de compte** dans le classeur 2025

@@ -1,0 +1,42 @@
+{
+ "id": "m3-sortie-avis-medical",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Sortie contre avis médical",
+ "acces": "ouvert",
+ "titre": "Sortie contre avis médical",
+ "description": "Enregistrement des sorties décidées par le patient contre l’avis du médecin, avec motif et avis du Procureur le cas échéant.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Sortie contre avis médical"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Cette procédure dégage la responsabilité de la clinique. Le motif du refus de soins et la décharge signée du patient sont impératifs."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Sorties contre avis médical",
+  "Avec avis du Procureur",
+  "Patients hospitalisés",
+  "Dossiers clôturés"
+ ],
+ "cartes": [
+  "Registre des sorties contre avis médical"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Enregistrer"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

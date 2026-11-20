@@ -1,0 +1,65 @@
+{
+ "id": "m10-presences",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Présences & absences",
+ "acces": "ouvert",
+ "titre": "Présences & absences",
+ "description": "Pointage quotidien, retards et absences, avec incidence sur l’évaluation mensuelle.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Présences & absences"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Les retards et absences validés et non justifiés alimentent le critère « Ponctualité et assiduité » du barème NS 131, avec incidence directe sur la fiche d’évaluation et le solde du mois. Un pointage à valider est visible mais ne compte pas."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Pointages comptés",
+  "Présences",
+  "Retards",
+  "Absences",
+  "À valider"
+ ],
+ "cartes": [
+  "Réglages du planning et des présences",
+  "Filtres avancés des présences",
+  "Registre des présences — 30/09/2026 au 30/10/2026",
+  "Statistiques"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Régler",
+  "Mois en cours",
+  "Sept derniers jours",
+  "Effacer les filtres",
+  "Colonnes",
+  "Exporter",
+  "Ajouter un pointage",
+  "Imprimer l’état"
+ ],
+ "champs": [
+  "Du",
+  "Au",
+  "Recherche",
+  "Agent",
+  "Matricule",
+  "Service",
+  "État",
+  "Motif codé",
+  "Retard minimal (minutes après 08:00)",
+  "Arrivée de",
+  "Arrivée à",
+  "Validation",
+  "Validé par"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 5
+}

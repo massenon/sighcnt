@@ -76,10 +76,283 @@
        ARCHIVÉ : il n'ouvre plus de session et disparaît des écrans.
        Le parc technique, lui, reste : c'est un besoin réel, tenu par
        l'administration. */
-    biomedical: { id: 'biomedical', label: 'Ingénieur biomédical', short: 'Biomédical', color: 'navy', home: 'dash-biomedical', retire: true },
   };
 
   var ALL = '*';
+
+  /* ==========================================================================
+   * LES JEUX D'IMPORT : DÉCLARÉS ICI, CALCULÉS AILLEURS (lot IMP-A, 11/11/2026)
+   * --------------------------------------------------------------------------
+   * Le manifeste décide des ÉCRANS ; il ne disait rien de qui peut IMPORTER. Le droit d'importer était, par défaut, le droit d'éditer l'écran `imp-*` : un droit
+   * déduit, et déduit du mauvais objet. Il devient un axe propre, PAR JEU, à côté du triplet [voir, éditer, annuler] des écrans et sans le modifier :
+   *   voir     voit le jeu : son modèle, l'historique de SES lots, la rangée « Importation de données » du ruban ;
+   *   importer vérifie un fichier et confirme l'écriture ;
+   *   annuler  annule un lot (le sien ; ceux des autres relèvent de la supervision).
+   * Cette table ne porte que ce qu'il faut pour DÉCIDER sans charger le moteur (`modules/import.js`, 120 Ko) : identité, hôtes du bouton, sensibilité, mode de doublon,
+   * défauts de la matrice. Les colonnes, contrôles et écritures vivent au moteur ; `gen-pages` refuse un jeu du moteur sans déclaration ici, et une déclaration sans hôte.
+   *
+   *   ecran        la page du jeu (modèle, vérification, import, historique) : page de supervision, jamais le seul chemin ;
+   *   module       le module propriétaire des données écrites : fermé, le jeu l'est aussi ;
+   *   hotes        les écrans qui portent le bouton « Importer les données » (fabrique unique `K.importer`) ;
+   *   sensibilite  `courante` ou `restreinte` : un jeu restreint ne recopie JAMAIS une valeur de cellule dans l'historique ni le rapport (RG-13) ;
+   *   doublon      `refuser` (défaut), `ignorer` (liste fermée par la Direction : produits, fournisseurs, emplacements, courriers) ou `versionner` (prix) : déclaré par jeu,
+   *                jamais choisi par l'agent ; `mettre à jour en place` n'existe pas ;
+   *   rolesDefaut  la matrice D'ORIGINE (V voir, I importer, A annuler) : une surcharge de la fiche RBAC accorde autant qu'elle restreint, un rôle créé en exploitation
+   *                n'y figure pas et part de zéro. Ce sont des DÉFAUTS de matrice (comme `roles` des écrans), jamais un masque d'interface : l'interface lit `droitImport`.
+   * ======================================================================== */
+  var IMPORTS = [
+    { id: 'grand-stock', libelle: 'Importation Grand Stock', ecran: 'm6-import-grand-stock', module: 'M6', hotes: ['m6-stock-gros'],
+      sensibilite: 'courante', collections: ['produits', 'lots', 'mouvements'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA', direction: 'V', comptable: 'V', aide_comptable: 'V' } },
+    { id: 'personnel', libelle: 'Importation du personnel', ecran: 'imp-personnel', module: 'M10', hotes: ['m10-personnel'],
+      sensibilite: 'restreinte', collections: ['personnel'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'V' } },
+    { id: 'patients', libelle: 'Importation du répertoire patients', ecran: 'imp-patients', module: 'M1', hotes: ['m1-patients'],
+      sensibilite: 'restreinte', collections: ['patients'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', reception: 'VIA', agentadmin: 'VIA', direction: 'V' } },
+    { id: 'tarifs', libelle: 'Importation des tarifs et prix', ecran: 'imp-actes', module: 'CFG', hotes: ['cfg-tarifs'],
+      sensibilite: 'courante', collections: ['tarifs', 'versionsTarif'], doublon: 'versionner',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'VIA', stock: 'VIA' } },
+    /* LOT T5 (11/11/2026) : les PRIX D'ACHAT des produits, versionnés par date d'effet, écrits par le MÊME chemin que les prix de prestations (`PR.proposerTarif`, famille PRODUIT : alerte Oui/Non,
+       jamais d'écrasement). Le gestionnaire de stock importe (c'est son prix d'achat), la DAF et l'administrateur aussi ; le comptable lit. Le Oui d'un importateur qui ne détient pas le droit de
+       décider vaut proposition. Hôtes : « Tarifs et prix » et « Référentiel produits ». */
+    { id: 'tarifs-produits', libelle: 'Importation des prix d’achat', ecran: 'imp-tarifs-produits', module: 'M6', hotes: ['cfg-tarifs', 'm6-produits'],
+      sensibilite: 'courante', collections: ['tarifs', 'versionsTarif'], doublon: 'versionner',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA', comptable: 'V' } },
+    { id: 'analyses-modele', libelle: 'Importation du modèle des analyses', ecran: 'imp-analyses', module: 'M5', hotes: [],
+      sensibilite: 'courante', collections: ['examensLabo'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', laborantin: 'VIA', direction: 'V' } },
+    { id: 'fournisseurs', libelle: 'Importation des fournisseurs', ecran: 'imp-fournisseurs', module: 'M7', hotes: ['m7-fournisseurs'],
+      sensibilite: 'courante', collections: ['fournisseurs'], doublon: 'ignorer',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'assureurs', libelle: 'Importation des compagnies d’assurance', ecran: 'imp-assureurs', module: 'M9', hotes: ['m9-compagnies'],
+      sensibilite: 'courante', collections: ['assureurs'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'souscripteurs', libelle: 'Importation des souscripteurs', ecran: 'imp-souscripteurs', module: 'M9', hotes: [],
+      sensibilite: 'courante', collections: ['souscripteurs'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'plan-comptable', libelle: 'Importation du plan comptable', ecran: 'imp-plan-comptable', module: 'M12', hotes: ['m12-plan-comptable'],
+      sensibilite: 'courante', collections: ['comptes'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'soldes-ouverture', libelle: 'Importation des soldes d’ouverture', ecran: 'imp-soldes-ouverture', module: 'M12', hotes: ['m12-ouverture'],
+      sensibilite: 'restreinte', collections: ['ecritures'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    /* LOT IMP-B1 (11/11/2026) : les cinq jeux du STOCK que détient le gestionnaire (PRD-IMP 7.2, décisions I6, I8, I13). Aucun autre profil que lui, la DAF et l'administrateur : la matrice
+       d'origine ne donne ni lecture à la Direction ni droit au comptable (qui ne lit que le Grand Stock). Un jeu qui écrit des mouvements ou des stocks est RESTREINT : ses constats ne
+       recopient aucune valeur. `ignorer` n'est admis que pour le référentiel produits et les emplacements (liste fermée de la Direction). */
+    { id: 'produits-referentiel', libelle: 'Importation du référentiel produits', ecran: 'imp-produits-referentiel', module: 'M6', hotes: ['m6-produits'],
+      sensibilite: 'courante', collections: ['produits'], doublon: 'ignorer',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'emplacements', libelle: 'Importation des emplacements de rangement', ecran: 'imp-emplacements', module: 'M6', hotes: ['m6-etiquetage'],
+      sensibilite: 'courante', collections: ['emplacements'], doublon: 'ignorer',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'stock-detail-initial', libelle: 'Importation du stock détail initial', ecran: 'imp-stock-detail-initial', module: 'M6', hotes: ['m6-stock-detail'],
+      sensibilite: 'restreinte', collections: ['produits', 'lots', 'mouvements'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'transfert-lignes', libelle: 'Importation d’un bon de transfert', ecran: 'imp-transfert-lignes', module: 'M6', hotes: ['m6-transferts'],
+      sensibilite: 'restreinte', collections: ['transferts', 'mouvements', 'produits'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'inventaire-comptage', libelle: 'Importation d’un comptage d’inventaire', ecran: 'imp-inventaire-comptage', module: 'M6', hotes: ['m6-inventaire'],
+      sensibilite: 'restreinte', collections: ['inventaires'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    /* LOT IMP-B2 (12/11/2026) : les dix autres référentiels (PRD-IMP 4 et 7.2). Matrice d'origine : l'administrateur et la DAF `VIA` partout ; la Direction `V` partout (elle voit le modèle
+       et ses propres lots, rien d'autre) ; le comptable `VIA` sur ses cinq jeux (immobilisations, budgets, centres de coûts, garanties, couvertures) ; l'assistant comptable `V` sur ceux du
+       comptable et JAMAIS `I` (la matrice peut le lui ouvrir sans code) ; le biologiste `VIA` sur les unités ; l'agent administratif `VIA` sur les courriers. Natures de facture, catalogue de
+       l'imagerie et prestataires : la DAF et l'administrateur seulement (l'échographiste n'écrit pas le catalogue). Quatre jeux sont RESTREINTS (couvertures, immobilisations, budgets,
+       courriers) : aucune valeur de cellule recopiée. `garanties` est en `versionner` (version datée), `courriers` en `ignorer` (décision I8, liste fermée de la Direction). */
+    { id: 'natures-facture', libelle: 'Importation des natures de facture', ecran: 'imp-natures-facture', module: 'CFG', hotes: ['cfg-natures-facture'],
+      sensibilite: 'courante', collections: ['naturesFacture'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'V' } },
+    { id: 'centres-couts', libelle: 'Importation des centres de coûts', ecran: 'imp-centres-couts', module: 'M12', hotes: ['cfg-centres-couts'],
+      sensibilite: 'courante', collections: ['centresCouts'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'catalogue-imagerie', libelle: 'Importation du catalogue de l’imagerie', ecran: 'imp-catalogue-imagerie', module: 'CFG', hotes: ['cfg-imagerie-catalogue'],
+      sensibilite: 'courante', collections: ['examensImagerie'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'V' } },
+    { id: 'unites-labo', libelle: 'Importation des unités de mesure', ecran: 'imp-unites-labo', module: 'M5', hotes: ['m5-unites'],
+      sensibilite: 'courante', collections: ['unitesLabo'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', laborantin: 'VIA', direction: 'V' } },
+    { id: 'prestataires', libelle: 'Importation des prestataires externes', ecran: 'imp-prestataires', module: 'M10', hotes: ['m10-prestataires'],
+      sensibilite: 'courante', collections: ['prestataires'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'V' } },
+    { id: 'garanties', libelle: 'Importation des garanties des souscripteurs', ecran: 'imp-garanties', module: 'M9', hotes: ['m9-conventions'],
+      sensibilite: 'courante', collections: ['garanties'], doublon: 'versionner',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'couvertures-assurance', libelle: 'Importation des couvertures d’assurance', ecran: 'imp-couvertures-assurance', module: 'M9', hotes: ['m9-assures'],
+      sensibilite: 'restreinte', collections: ['couverturesAssurance'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'immobilisations', libelle: 'Importation des immobilisations', ecran: 'imp-immobilisations', module: 'M12', hotes: ['m12-immobilisations'],
+      sensibilite: 'restreinte', collections: ['immobilisations'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'budgets', libelle: 'Importation des budgets', ecran: 'imp-budgets', module: 'M12', hotes: ['m12-budgets'],
+      sensibilite: 'restreinte', collections: ['budgets'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'courriers', libelle: 'Importation des courriers', ecran: 'imp-courriers', module: 'M13', hotes: ['m13-courriers'],
+      sensibilite: 'restreinte', collections: ['courriers'], doublon: 'ignorer',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', agentadmin: 'VIA', direction: 'V' } },
+  ];
+  /* ==========================================================================
+   * LES GESTES RÉSERVÉS PAR DROIT (lot B, 13/11/2026)
+   * --------------------------------------------------------------------------
+   * Un geste qui engage un professionnel nommé n'est pas une liste de rôles écrite dans le code : c'est un DROIT de la fiche RBAC, accordé PAR RÔLE (jamais par agent),
+   * que le manifeste ne donne d'origine qu'à la liste `rolesDefaut`. Valider un seuil de variation brutale du laboratoire reste au Biologiste médical (réponse de la
+   * Direction du 13/11/2026) ; l'administrateur système ne l'a pas, le technicien de laboratoire non plus, MAIS un administrateur peut l'accorder à un rôle (la fiche
+   * `droitsGestes[geste] = true`) comme il peut le retirer (`false`). Le technicien n'a pas de rôle propre dans la matrice d'origine (c'est une FONCTION portée par le
+   * rôle du Biologiste médical) : pour lui accorder le droit, on crée le rôle et on ouvre ce geste à ce rôle. Le droit n'ouvre PAS l'écran : l'écran se règle à part.
+   * ======================================================================== */
+  var GESTES = [
+    { id: 'valider_seuil_labo', libelle: 'Valider un seuil de variation brutale du laboratoire', module: 'M5', ecran: 'm5-valeurs-reference',
+      rolesDefaut: ['laborantin'] },
+    /* Lot C : corriger à la main le texte lu par machine d'un scan (Direction, 13/11/2026 : « par un agent habilité, signée et journalisée »). D'ORIGINE, les rôles qui écrivent sur l'écran
+       d'une pièce numérisée (courriers M13, documents du patient M1) ; la zone du scan reste exigée À PART (un scan médical de zone 2 ne se corrige que par un profil qui le lit), comme le droit
+       d'écrire sur la pièce. Le droit n'ouvre aucun écran. PROPOSITION À VALIDER (aucun document ne nomme les habilités) : la liste est vérifiée contre la matrice par `packages/rbac/test`. */
+    { id: 'corriger_texte_ocr', libelle: 'Corriger le texte lu par machine d\u2019un scan (correction signée et journalisée)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'direction', 'dm', 'da', 'medecin', 'infirmier', 'laborantin', 'reception', 'agentadmin', 'ambulancier', 'assistant_comptable', 'chirurgien'],
+      defautSiEcritSur: ['M13', 'M1'] },
+    /* Lot CLO C1 (14/11/2026) : régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre). PRD M12 section 1 : réservé à l'administrateur et à la Directrice Administrative,
+       PROPOSITION À VALIDER (la Direction n'a pas nommé qui règle). Un droit de la fiche RBAC par RÔLE, jamais un nom de rôle dans le moteur : il ne donne aucun écran. */
+    /* Lot CLO-2 (C6, 15/11/2026) : voir TOUT le centre « Validations en attente » (les files de tous les postes). Les sept profils qui l'ouvraient d'origine le gardent ; les autres (biologiste,
+       échographiste, praticiens du bloc) n'y voient que les familles de référentiels de leur rôle. C'était une liste de rôles écrite dans l'écran, au poste comme à la maquette : c'est
+       désormais un DROIT de la fiche RBAC (migration de `ELARGIS`), réglable par rôle, jamais un nom de rôle dans l'écran. Défaut = l'ancienne liste. */
+    { id: 'voir_toutes_les_validations', libelle: 'Voir toutes les files du centre « Validations en attente » (sinon : les seules familles de référentiels du rôle)', module: 'M13', ecran: 'adm-validations',
+      rolesDefaut: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'] },
+    { id: 'regler_circuit_cloture', libelle: 'Régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre)', module: 'M12', ecran: 'm12-cloture',
+      rolesDefaut: ['admin', 'da'] },
+    /* Lot TARIF-FIX-2 (Direction, 16/11/2026 : « pas de rôle ni validation en dur dans le code ») : DÉCIDER un changement de prix (Oui ou Non, prestation comme prix d'achat), valider
+       en un geste, et régler les réglages de prix de la clinique (validité d'une pro-forma, encaissement d'une pièce en attente de prix). C'était la liste `ROLES_VALIDATION_TARIFS`
+       écrite dans le moteur : c'est désormais un DROIT de la fiche RBAC par rôle, réglable par la Direction. Défaut semé = l'ancienne liste (aucun changement de comportement).
+       Le droit n'ouvre aucun écran (module et écran nuls : il vaut aussi au « Référentiel produits » pour un prix d'achat). */
+    { id: 'decider_prix', libelle: 'Décider un changement de prix (Oui ou Non), valider un prix en un geste, régler les réglages de prix de la clinique', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da', 'direction'] },
+    /* Lot PARAM-CLINIQUE (16/11/2026) : régler les paramètres de clinique datés (préavis de péremption, tranches de la balance âgée). Décision 5 de la Direction du 15/11/2026 : un
+       réglage réservé à l'administrateur et à la DAF a son DROIT PROPRE ; d'origine l'administrateur et la Directrice Administrative, PROPOSITION À VALIDER. Il ne donne aucun écran. */
+    { id: 'regler_parametres_clinique', libelle: 'Régler les paramètres de clinique (préavis de péremption, tranches de la balance âgée)', module: 'CFG', ecran: 'cfg-regles',
+      rolesDefaut: ['admin', 'da'] },
+    /* Lot MAJ (17/11/2026) : lancer une mise à jour du logiciel sans perte de données (préparer la mise à jour, migrer les données, importer une base ou un export portable, annuler une mise à jour).
+       UN seul droit pour la chaîne : ces quatre gestes ont le même risque (ils remplacent ou transforment le magasin du poste) et se suivent dans un même parcours ; Direction 17/11/2026 :
+       l'administrateur ET la Directrice Administrative, sur la mère comme sur un fileul. D'origine admin et da, PROPOSITION À VALIDER (section BG). Le moteur refuse aussi sans lui (`MAJ_GESTE_RESERVE`). */
+    { id: 'lancer_mise_a_jour', libelle: 'Lancer une mise à jour du logiciel (préparer, migrer, importer une base, annuler une mise à jour)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da'] },
+    /* Lot SMS-R (16/11/2026) : régler la passerelle SMS (activer les envois automatiques, calculer et déposer maintenant au relais, tester l'envoi). Droit réservé de la fiche RBAC, défaut
+       administrateur et Directrice Administrative (Direction, AQ 27 et 28). Aucun nom de rôle dans un moteur : le poste mère contrôle ce droit à chaque geste. */
+    { id: 'regler_passerelle_sms', libelle: 'Régler la passerelle SMS (activer les envois automatiques, calculer et déposer maintenant, tester l’envoi)', module: 'CFG', ecran: 'cfg-sms',
+      rolesDefaut: ['admin', 'da'] },
+    /* Lot MECEF-M (16/11/2026) : le mode de facturation normalisée (boîtier ou e-MECeF) et l'imprimante de caisse se règlent par deux gestes RÉSERVÉS de la fiche RBAC, qui remplacent la
+       liste de rôles écrite dans le moteur et l'écran. D'origine l'administrateur et la Directrice Administrative (Direction, 09/11/2026 pour le mode ; l'imprimante suit, PROPOSITION À VALIDER). */
+    { id: 'regler_mode_mecef', libelle: 'Régler le mode de facturation normalisée (boîtier physique ou e-MECeF)', module: 'M8', ecran: 'mecef-config',
+      rolesDefaut: ['admin', 'da'] },
+    { id: 'regler_imprimante_caisse', libelle: 'Régler l’imprimante de caisse (modèle, liaison, nom)', module: 'M8', ecran: 'mecef-config',
+      rolesDefaut: ['admin', 'da'] },
+    /* Lot TIERS (Direction, 16/11/2026, section AQ point 36) : la FACTURE À UN TIERS PAYEUR (entreprise, assureur, convention qui prend un patient en charge) est une vente normalisée DISTINCTE de la
+       facture du patient. DEUX gestes réservés de la fiche RBAC, jamais une liste de rôles dans le moteur ni l'écran : ÉMETTRE (tenir la fiche du tiers, proposer et émettre la facture, enregistrer un règlement
+       reçu) et CORRIGER (avoir, lettrage). D'ORIGINE, PROPOSITION À VALIDER : émettre au caissier, à la Directrice Administrative, au comptable et à l'administrateur ; corriger au comptable, à la
+       Directrice Administrative et à l'administrateur (le canal de l'avoir est celui du comptable et de la DAF). La décision sur l'AIB reste le geste `imputer_aib` : le logiciel propose, il ne décide jamais. */
+    { id: 'emettre_facture_tiers', libelle: 'Émettre une facture à un tiers payeur (fiche du tiers, brouillon, émission normalisée, règlement reçu)', module: 'M8', ecran: 'm8-factures-tiers',
+      rolesDefaut: ['caissier', 'da', 'comptable', 'admin'] },
+    { id: 'corriger_facture_tiers', libelle: 'Corriger une facture à un tiers payeur (avoir, lettrage et délettrage d’un règlement)', module: 'M8', ecran: 'm8-factures-tiers',
+      rolesDefaut: ['comptable', 'da', 'admin'] },
+    /* Lot PTA (16/11/2026) : ADOPTER le plan annuel de travail d'un exercice (date, motif, journal RG-12). Directive de la Direction : « Adoption par la Direction ». Défaut PROPOSÉ, à valider :
+       la Direction et la Directrice Administrative. Après l'adoption, le contenu du plan ne se modifie plus que par version datée ; le suivi (état, pourcentage, réalisé) reste libre. */
+    { id: 'adopter_plan_annuel', libelle: 'Adopter le plan annuel de travail d’un exercice (le contenu ne change plus ensuite que par version datée)', module: 'M13', ecran: 'm13-plan-annuel',
+      rolesDefaut: ['direction', 'da'] },
+    /* Lot CLO-3 (Direction, 16/11/2026, section AH point 3 et AQ point 1) : VALIDER une commande de stock gros (RG-04) est un DROIT de la fiche RBAC par rôle, jamais un nom écrit dans le
+       moteur ni dans l'écran. D'ORIGINE la Directrice Administrative SEULE (l'administrateur et la Direction ne l'ont plus : ils ne valident pas à sa place) ; la fiche l'étend à un autre
+       rôle. Le moteur revérifie (refus nommé qui cite le droit) ; la commande est ABSENTE sans le droit ; le validateur enregistré est l'agent de la session. */
+    { id: 'valider_commande_stock', libelle: 'Valider une commande de stock gros (RG-04) avant sa transmission au fournisseur', module: 'M7', ecran: 'm7-commandes',
+      rolesDefaut: ['da'] },
+    /* Lot CLO-3 point 3 (Direction, 16/11/2026, section AH point 4) : qui ARBITRE un bon de besoins et qui TRAITE un besoin accordé (engagement budgétaire, achat ou distribution) sont des droits
+       de la fiche RBAC, jamais des noms de rôles écrits dans l'écran, le moteur ou la tâche de notification. Défauts semés = les listes d'aujourd'hui (aucun changement de comportement). */
+    { id: 'arbitrer_besoins', libelle: 'Arbitrer un bon de besoins (valider, rejeter avec motif, demander un complément)', module: 'M7', ecran: 'm7-besoins',
+      rolesDefaut: ['da', 'direction', 'admin'] },
+    { id: 'traiter_besoins_accordes', libelle: 'Traiter un besoin accordé (engagement budgétaire et décaissement, achat ou distribution) : reçoit la tâche « besoin accordé »', module: 'M7', ecran: 'm7-besoins',
+      rolesDefaut: ['comptable', 'stock'] },
+    /* Lot CLO-3 point 4 (Direction, 16/11/2026, section AH point 5 et AQ point 17) : UN DROIT PROPRE PAR RÉGLAGE, jamais une liste de rôles écrite dans le moteur ou l'écran. Les trois réglages
+       réservés « administrateur et Directrice Administrative » (taille maximale des fichiers, lecture des scans OCR, mode de certification MECeF), la validation de la configuration fiscale
+       (ex `ROLES_VALIDATION`) et l'autorité de dater un prix dans le passé (ex `ROLES_DATE_PASSEE`). Défauts semés = les listes d'avant le lot ; aucun de ces droits n'ouvre d'écran. */
+    { id: 'regler_fichiers', libelle: 'Régler la taille maximale des fichiers déposés', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
+    { id: 'regler_lecture_scans', libelle: 'Régler la lecture des scans par machine (OCR) de la clinique', module: null, ecran: null, rolesDefaut: ['admin', 'da'] },
+    { id: 'dater_prix_passe', libelle: 'Dater un changement de prix dans le passé (date d\u2019effet antérieure à aujourd\u2019hui, avec un motif)', module: null, ecran: null, rolesDefaut: ['da', 'direction'] },
+    /* Lot CLO-3 point 7 (Direction, 16/11/2026, section AL point 1) : PHARMACIE ET CAISSE SÉPARABLES PAR LA SEULE FICHE RBAC. Aujourd'hui un seul rôle (`caissier`) tient la caisse et la
+       pharmacie, le rôle `pharmacien` est archivé (un rôle archivé ne détient rien : d'origine la pharmacie n'a donc aucun poste propre, ses tâches gardent le rôle déclaré `pharmacien`). Un poste de travail reçoit la tâche de sa file et les
+       notifications de son poste ; rouvrir `pharmacien` avec `poste_pharmacie` seul (et le retirer à `caissier`) sépare les deux sans toucher au code. Ils n'ouvrent aucun écran. La
+       retransmission MECeF d'une vente refusée ou expirée : `retransmettre_mecef` (une fois), `retransmettre_mecef_sans_limite` (autant de fois que nécessaire). Défauts = les listes d'avant. */
+    { id: 'poste_caisse', libelle: 'Tenir le poste de la caisse (reçoit la tâche « Encaisser la prescription » et les notifications de la caisse)', module: null, ecran: null, rolesDefaut: ['caissier'] },
+    { id: 'poste_pharmacie', libelle: 'Tenir le poste de la pharmacie (reçoit la tâche « Délivrer les médicaments » et les notifications de la pharmacie)', module: null, ecran: null, rolesDefaut: ['pharmacien'] },
+    /* Lot EXP (16/11/2026) : sortir les lignes d'un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées ou filtrées). Direction, 15/11/2026 (section AH, point 39) :
+       « droit réservé réglable par rôle, défaut : les rôles qui lisent l'écran ». L'écran se règle à part (le droit n'en ouvre aucun) : d'ORIGINE, chaque rôle de la matrice le
+       détient, la liste est DÉRIVÉE des rôles déclarés (jamais recopiée) ; la fiche RBAC le retire à un rôle (`droitsGestes.exporter_donnees = false`). Un rôle créé en
+       exploitation part de zéro, comme pour tout geste réservé. Le composant de tableau rend la commande ABSENTE sans le droit et le moteur de sortie refuse aussi. */
+    /* Lot PLAN-INDIV (16/11/2026, Direction section AQ points 9 et 10) : trois gestes réservés remplacent le nom de rôle écrit à quatre endroits (moteur et écran de la maquette, domaine,
+       poste). Défaut = les rôles d'avant (administrateur et Directrice Administrative), PROPOSITION À VALIDER : régler le régime individuel d'un agent (déroge OU remplace), définir son planning
+       personnalisé (versions datées), confirmer une valeur d'attente de sa fiche (salaire, catégorie, date d'embauche, numéro CNSS). Aucun ne donne d'écran. */
+    { id: 'regler_regime_individuel', libelle: 'Régler le régime individuel d\u2019un agent (déroge à sa catégorie ou la remplace)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da'] },
+    /* Lot SURV (Direction, 16/11/2026, section AQ point 37) : le Surveillant gère les plannings de SON équipe. Défaut PROPOSÉ : il reçoit le planning personnalisé, rien d'autre. Hors de la
+       lecture complète du personnel, le périmètre est celui de l'équipe (même service, jamais soi-même) : le moteur refuse un agent hors équipe (`AGENT_HORS_EQUIPE`). */
+    { id: 'regler_planning_personnalise', libelle: 'Définir le planning personnalisé d\u2019un agent (hebdomadaire ou mensuel, versions datées)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da', 'surveillant'] },
+    /* Lot SURV : OUVRIR la fiche du personnel de son équipe, en LECTURE RESTREINTE (identité, fonction, poste, service, planning). Jamais le salaire, la catégorie, la date d'embauche, le numéro CNSS,
+       l'assurance ni la paie (RG-13). Ce droit ouvre l'écran `m10-fiche-equipe` (`parGeste`) : l'administrateur le retire au Surveillant ou l'attribue à un autre rôle par la fiche des droits. */
+    { id: 'ouvrir_fiche_personnel_equipe', libelle: 'Ouvrir la fiche du personnel de son équipe (lecture restreinte : identité, fonction, service, planning ; jamais la paie ni la CNSS)', module: 'M10', ecran: 'm10-fiche-equipe',
+      rolesDefaut: ['surveillant'] },
+    { id: 'confirmer_valeur_attente_personnel', libelle: 'Confirmer une valeur d\u2019attente de la fiche du personnel (salaire, catégorie, date d\u2019embauche, numéro CNSS)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da'] },
+    { id: 'exporter_donnees', libelle: 'Exporter ou imprimer les lignes d’un tableau (classeur .xlsx, fichier .csv, impression des lignes cochées)', module: null, ecran: null,
+      rolesDefaut: Object.keys(ROLES) },
+    /* Lot FISC-2 (16/11/2026, Direction, section AQ points 2 et 3) : CONFIRMER une obligation fiscale « à confirmer par la CNSS » (le versement du 15 : le bouton « Confirmer » la fait passer à « confirmée »,
+       référence obligatoire, signé, journalisé, versionné par date). D'ORIGINE les trois profils qui valident la configuration fiscale ; PROPOSITION À VALIDER (la Direction n'a pas nommé qui confirme).
+       Le droit n'ouvre aucun écran. */
+    { id: 'confirmer_obligation_fiscale', libelle: 'Confirmer une obligation fiscale (confirmation par la CNSS ou la DGI : référence, signature, journal)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'da', 'direction'] },
+    /* Lot FISC-2 (Direction, 16/11/2026, section AQ point 8) : IMPUTER l'AIB opération par opération (appliquer ou non, quelle ligne du barème, quel compte). Laissé au comptable : le logiciel
+       propose le taux du barème à la date de l'opération, il ne décide jamais. D'ORIGINE le comptable, la Directrice Administrative et l'administrateur (les profils qui tiennent le barème) ;
+       PROPOSITION À VALIDER. Le droit n'ouvre aucun écran : l'onglet « Imputations » de « Barème de l'AIB » se lit avec l'écran. */
+    { id: 'imputer_aib', libelle: 'Imputer l\u2019AIB opération par opération (appliquer ou non, taux, compte), onglet « Imputations »', module: null, ecran: null,
+      rolesDefaut: ['comptable', 'da', 'admin'] },
+    /* LOT VAL (Direction, 16/11/2026 : « pas de rôle ni de validation en dur dans le code »). Chaque famille de validation de référentiel, la validation de la configuration fiscale, l'écriture du
+       barème de l'AIB, la retransmission MECeF, le mode de facturation normalisée, trancher ou valider un flux de pont, les deux étapes du circuit de validation RH, arbitrer un besoin et la date
+       d'effet antérieure d'un tarif étaient des LISTES DE RÔLES écrites dans le moteur. Ce sont désormais des DROITS de la fiche RBAC par rôle, réglables par la Direction ; défaut semé = la liste
+       d'aujourd'hui, mot pour mot (aucun changement de comportement par défaut). Aucun de ces droits n'ouvre un écran. Le moteur refuse aussi et cite le droit. */
+  ].concat([
+    ['enquetes', 'Modèles d’enquête', 'M13', ['direction', 'da', 'admin']],
+    ['labo_variables', 'Variables et unités du laboratoire (bornes suppléées)', 'M5', ['laborantin']],
+    ['pathologies', 'Pathologies (tableau de morbidité)', 'M2', ['dm', 'medecin']],
+    ['imagerie', 'Catalogue de l’imagerie (examens et variables)', 'CFG', ['echographiste', 'dm']],
+    ['checklists_bloc', 'Check-listes du bloc, échelles ASA et Mallampati', 'M3', ['chirurgien', 'anesthesiste']],
+    ['actes', 'Tarifs des actes (valeurs d’attente)', 'CFG', ['direction', 'da', 'admin']],
+    ['analyses', 'Tarifs des analyses', 'CFG', ['direction', 'da', 'admin']],
+    ['valorisation_sage', 'Valorisation des références de l’inventaire initial', 'M6', ['direction', 'da', 'admin']],
+    ['objectifs_pilotage', 'Objectifs de pilotage', 'M12', ['direction', 'da', 'admin']],
+    ['repartition_charges', 'Répartition fixe et variable des charges', 'M12', ['comptable', 'direction', 'da', 'admin']],
+    ['modeles_badge', 'Modèles de badge', 'M10', ['direction', 'da', 'admin']],
+    ['jeux_import', 'Jeux d’import en proposition', 'IMP', ['direction', 'da', 'admin']],
+    ['modeles_messages', 'Modèles de messages', 'CFG', ['direction', 'da', 'admin']],
+    ['bareme_aib', 'Barème de l’AIB (taux par situation de l’acheteur)', 'CFG', ['direction', 'da', 'admin', 'comptable']],
+    ['bareme_its', 'Barème de l’ITS', 'M11', ['direction', 'da', 'admin']],
+  ].map(function (f) {
+    return { id: 'valider_famille_' + f[0], libelle: 'Valider la famille « ' + f[1] + ' » du centre des validations', module: null, ecran: null, rolesDefaut: f[3] };
+  })).concat([
+    { id: 'valider_configuration_fiscale', libelle: 'Valider l’identité légale et la configuration fiscale (première configuration, versions datées)', module: null, ecran: null, rolesDefaut: ['direction', 'da', 'admin'] },
+    { id: 'ecrire_bareme_aib', libelle: 'Écrire le barème de l’AIB (versions datées, taux par situation de l’acheteur)', module: null, ecran: null, rolesDefaut: ['comptable', 'admin', 'da'] },
+    { id: 'retransmettre_mecef', libelle: 'Retransmettre une vente refusée ou expirée au MECeF (une seule fois sans le droit « sans limite »)', module: null, ecran: null, rolesDefaut: ['caissier', 'da', 'admin'] },
+    { id: 'retransmettre_mecef_sans_limite', libelle: 'Retransmettre au MECeF sans limite d’essais (sinon : une seule retransmission par vente)', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
+    { id: 'trancher_pair', libelle: 'Trancher un conflit de synchronisation entre deux postes', module: null, ecran: null, rolesDefaut: ['da', 'direction', 'admin'] },
+    { id: 'valider_pair', libelle: 'Valider ou rejeter un flux déposé par un poste fileul', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
+    { id: 'valider_etape_surveillant', libelle: 'Signer l’étape « surveillant » du circuit de validation RH (pointages, congés, missions)', module: null, ecran: null, rolesDefaut: ['surveillant', 'admin'] },
+    { id: 'valider_etape_daf', libelle: 'Signer l’étape « Directrice Administrative » du circuit de validation RH', module: null, ecran: null, rolesDefaut: ['da', 'admin'] },
+    { id: 'voir_toutes_les_familles_validation', libelle: 'Voir toutes les familles de référentiels du centre des validations (sinon : celles que le rôle valide)', module: null, ecran: null, rolesDefaut: ['direction', 'da', 'admin'] },
+  ]);
+  var GESTES_INDEX = {};
+  GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });
+  var IMPORTS_INDEX = {};
+  /* Le module « Importation de données » s'ouvre à l'UNION des rôles qui détiennent un jeu par défaut : liste DÉRIVÉE de la déclaration, jamais recopiée. */
+  var ROLES_IMP = [];
+  IMPORTS.forEach(function (j) {
+    IMPORTS_INDEX[j.id] = j;
+    Object.keys(j.rolesDefaut).forEach(function (r) { if (ROLES_IMP.indexOf(r) < 0) ROLES_IMP.push(r); });
+  });
+  /* Les seuls jeux qui admettent « ignorer les existants » (Direction, I8) : la garde de génération refuse tout autre. */
+  var IMPORTS_IGNORER_PERMIS = ['produits-referentiel', 'fournisseurs', 'emplacements', 'courriers'];
 
   /* --- Arborescence des écrans -------------------------------------------- */
   var NAV = [
@@ -146,8 +419,7 @@
         {
           code: 'CFG', label: 'Tarification & information patient', icon: 'tags', alias: true,
           items: [
-            { id: 'cfg-tarifs', label: 'Référentiel tarifaire public', icon: 'tags', alias: true },
-            { id: 'cfg-catalogue', label: 'Catalogue des prestations', icon: 'book-open', alias: true },
+            { id: 'cfg-tarifs', label: 'Tarifs et prix', icon: 'tags', alias: true },
             { id: 'cfg-certificats', label: 'Tarifs des certificats & attestations', icon: 'file-badge', alias: true },
           ],
         },
@@ -187,7 +459,7 @@
             { id: 'm1-constantes', label: 'Constantes à l’accueil', icon: 'thermometer' },
             { id: 'm1-reference', label: 'Fiches de référence', icon: 'share-2' },
             { id: 'm1-contre-reference', label: 'Fiches de contre-référence', icon: 'reply' },
-            { id: 'm1-documents', label: 'Documents numérisés', icon: 'paperclip' },
+            { id: 'm1-documents', label: 'Documents numérisés', icon: 'paperclip', scripts: ['modules/fichiers.js', 'modules/fichiers-ocr.js'] },
             { id: 'm1-numerisation', label: 'Plan de numérisation', icon: 'scan-line' },
           ],
         },
@@ -356,7 +628,6 @@
             { id: 'm6-pertes', label: 'Pertes, casses & rebuts', icon: 'trash-2' },
             { id: 'm6-dispensation', label: 'Dispensation', icon: 'package-open' },
             { id: 'm6-etiquetage', label: 'Étiquetage & emplacements', icon: 'tags' },
-            { id: 'm6-reprise', label: 'Reprise SAGE 100', icon: 'database' },
             /* Les points du gestionnaire de stock. Ouverts aussi à la caisse,
                à la comptabilité et à la Direction : ce sont les mêmes chiffres
                que chacun recompose aujourd'hui à la main de son côté. */
@@ -364,6 +635,12 @@
               roles: ['stock', 'da', 'comptable', 'dm', 'caissier', 'admin', 'direction', 'assistant_comptable'] },
             { id: 'm6-point-stock', label: 'Point du stock valorisé', icon: 'warehouse',
               roles: ['stock', 'da', 'comptable', 'dm', 'pharmacien', 'admin', 'direction', 'assistant_comptable'] },
+            /* Premier jeu du module Importation (IMP) : il vit dans la rangée du Grand Stock, mais son moteur,
+               ses modèles .xlsx et son historique de lots sont ceux du module. `scripts` ajoute à la page les
+               fichiers dont elle a besoin en plus de celui de son module. */
+            { id: 'm6-import-grand-stock', label: 'Importation Grand Stock', icon: 'file-up',
+              roles: ['pharmacien', 'stock', 'da', 'comptable', 'medecin', 'admin', 'direction'],
+              scripts: ['vendor/xlsx-mini.js', 'modules/import.js'] },
           ],
         },
         {
@@ -415,6 +692,8 @@
                le CONSULTE (surcharge d'écran) ; l'émission est au Comptable
                et à la DAF. */
             { id: 'm8-facture-avoir', label: 'Factures d’avoir', icon: 'file-minus-2' },
+            /* Lot TIERS : la facture à l'entreprise (tiers payeur) qui prend un patient en charge, distincte de la facture patient ; sa créance et son lettrage. */
+            { id: 'm8-factures-tiers', label: 'Factures aux tiers payeurs', icon: 'building-2' },
             { id: 'm8-caisse', label: 'État de caisse journalier', icon: 'calculator' },
             { id: 'm8-operations', label: 'Opérations de caisse', icon: 'scroll-text' },
             { id: 'm8-recettes', label: 'Recettes par période', icon: 'trending-up' },
@@ -477,6 +756,8 @@
             { id: 'm12-etats-financiers', label: 'États financiers', icon: 'file-spreadsheet' },
             { id: 'm12-baseline-2025', label: 'Baseline 2025', icon: 'history' },
             { id: 'm12-echeances', label: 'Échéances fiscales & paiements', icon: 'calendar-clock' },
+            /* Une VUE du même registre, en lecture : ses droits sont ceux de m12-echeances (servant), jamais les siens. */
+            { id: 'm12-calendrier-fiscal', label: 'Calendrier fiscal mensuel', icon: 'calendar-days', servant: 'm12-echeances' },
             { id: 'm12-cloture', label: 'Exercices & clôtures', icon: 'lock' },
             /* LE BILAN D'OUVERTURE : sans à-nouveaux, un exercice s'ouvrait
                sur un journal vide et il fallait relire tout l'historique pour
@@ -498,6 +779,8 @@
             { id: 'm10-dashboard', label: 'Tableau de bord RH', icon: 'gauge' },
             { id: 'm10-personnel', label: 'Personnel', icon: 'users' },
             { id: 'm10-employe-profil', label: 'Fiche employé', icon: 'id-card' },
+            /* Lot SURV : la fiche de l'ÉQUIPE, en lecture restreinte. Ouverte par le geste réservé `ouvrir_fiche_personnel_equipe` (`parGeste`), jamais par une liste de rôles ; elle ne porte aucune donnée de paie. */
+            { id: 'm10-fiche-equipe', label: 'Fiche de mon équipe', icon: 'users', parGeste: 'ouvrir_fiche_personnel_equipe' },
             { id: 'm10-contrats', label: 'Contrats', icon: 'file-signature' },
             /* BADGES DU PERSONNEL — le badge est une PIÈCE IMPRIMÉE rattachée
                à un agent : sa place est en M10, où vivent déjà l'agent, sa
@@ -515,6 +798,11 @@
             { id: 'm10-badges-modeles', label: 'Modèles de badge', icon: 'layout-template' },
             { id: 'm10-badges-impression', label: 'Planche d’impression des badges', icon: 'printer' },
             { id: 'm10-planning', label: 'Planning & gardes', icon: 'calendar-days' },
+            /* L'agent PROPOSE une modification ou un échange de son planning, le surveillant valide (lot L6, 09/11/2026). Écran de TOUT agent (`universel`, comme
+               les bons de besoins) : chacun n'y voit que ses propres propositions, le surveillant, la DAF et l'administrateur voient tout et tranchent. */
+            { id: 'm10-propositions-planning', label: 'Propositions de planning', icon: 'calendar-sync', universel: true },
+            /* L'espace « Mes » : les données de l'agent, en lecture (lot L7, 09/11/2026). Écran de TOUT agent connecté sous son propre compte. */
+            { id: 'm10-mes', label: 'Mon espace', icon: 'user-round', universel: true },
             { id: 'm10-stats-gardes', label: 'Statistiques de garde', icon: 'chart-column' },
             { id: 'm10-stats-permanences', label: 'Statistiques des permanences', icon: 'clock-9' },
             { id: 'm10-stats-presence', label: 'Taux de présence par service', icon: 'user-check' },
@@ -535,7 +823,7 @@
           code: 'M11', label: 'Paie & Primes', icon: 'banknote',
           roles: ['rh', 'da', 'comptable', 'admin', 'direction'],
           items: [
-            { id: 'm11-prets-etudes', label: 'Prêts-études et avances', icon: 'graduation-cap' },
+            { id: 'm11-prets-etudes', label: 'Prêts et avances', icon: 'graduation-cap' },
             { id: 'm11-dashboard', label: 'Tableau de bord paie', icon: 'gauge' },
             { id: 'm11-calcul', label: 'Calcul de la paie', icon: 'calculator' },
             { id: 'm11-bulletins', label: 'Bulletins de paie', icon: 'file-text' },
@@ -560,7 +848,7 @@
           roles: ['agentadmin', 'da', 'admin', 'direction', 'ambulancier',
             'assistant_comptable'],
           items: [
-            { id: 'm13-courriers', label: 'Courriers (départ / arrivée)', icon: 'mail' },
+            { id: 'm13-courriers', label: 'Courriers (départ / arrivée)', icon: 'mail', scripts: ['modules/fichiers.js', 'modules/fichiers-ocr.js'] },
             { id: 'm13-reunions', label: 'Réunions', icon: 'users-round' },
             { id: 'm13-evenements', label: 'Événements & notifications', icon: 'calendar-clock' },
             { id: 'm13-plan-annuel', label: 'Plan annuel de travail', icon: 'calendar-range' },
@@ -573,13 +861,19 @@
                rien n'alimentait et renvoyait vers une adresse inexistante.
                Ouvert au biomédical et au laboratoire — c'est le laboratoire
                qui constate qu'un automate ne répond plus. */
+            /* Journal des envois SMS : lecture seule pour les trois profils qui voient la passerelle. */
+            { id: 'm13-sms-journal', label: 'Journal des envois SMS', icon: 'messages-square',
+              roles: ['admin', 'da', 'direction'] },
             { id: 'm13-maintenance', label: 'Parc technique & maintenance', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
+              roles: ['admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
             /* Phase 10 — le questionnaire est une donnée : le formulaire naît
                du modèle (principe KoboCollect, hors ligne). L'accueil
                recueille, la direction lit. */
             { id: 'adm-validations', label: 'Validations en attente', icon: 'list-checks',
-              roles: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'] },
+              /* Le biologiste, l'échographiste et les praticiens du bloc y voient les SEULES familles de leur ressort
+                 (Direction, 07/11/2026) : l'écran filtre par rôle, le manifeste ouvre la porte. */
+              roles: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin',
+                'laborantin', 'echographiste', 'chirurgien', 'anesthesiste'] },
             { id: 'adm-enquetes', label: 'Enquêtes & questionnaires', icon: 'clipboard-list',
               roles: ['agentadmin', 'da', 'admin', 'direction', 'reception'] },
             { id: 'adm-satisfaction', label: 'Satisfaction des patients', icon: 'thumbs-up',
@@ -634,11 +928,14 @@
           roles: ['admin', 'direction', 'da'],
           items: [
             { id: 'm14-utilisateurs', label: 'Utilisateurs', icon: 'user-cog' },
+            { id: 'm14-securite-utilisateurs', label: 'Sécurité des utilisateurs', icon: 'shield-check', roles: ['admin'] },
             { id: 'm14-roles', label: 'Rôles & permissions (RBAC)', icon: 'key-round' },
             { id: 'm14-soignants', label: 'Prescripteurs & exécutants de soins', icon: 'user-round-cog' },
             { id: 'm14-sessions', label: 'Sessions actives', icon: 'monitor' },
             { id: 'm14-audit', label: 'Journal d’audit', icon: 'scroll-text' },
             { id: 'm14-sauvegardes', label: 'Sauvegardes & restauration', icon: 'database-backup' },
+            { id: 'm14-mise-a-jour', label: 'Mettre à jour le logiciel', icon: 'package-check', roles: ['admin', 'da'] },
+            { id: 'm14-taches', label: 'Tâches planifiées', icon: 'timer' },
           ],
         },
         {
@@ -647,8 +944,7 @@
           items: [
             { id: 'cfg-organisation', label: 'Organisation & organigramme', icon: 'network' },
             { id: 'cfg-branding', label: 'Identité & papier à en-tête', icon: 'image' },
-            { id: 'cfg-tarifs', label: 'Référentiel tarifaire', icon: 'tag' },
-            { id: 'cfg-catalogue', label: 'Catalogue tarifaire (deux prix)', icon: 'list-ordered' },
+            { id: 'cfg-tarifs', label: 'Tarifs et prix', icon: 'tag' },
             { id: 'cfg-imagerie-catalogue', label: 'Catalogue de l’imagerie', icon: 'scan-line' },
             { id: 'cfg-entetes', label: 'Papier à en-tête officiel', icon: 'file-badge' },
             { id: 'cfg-types-piece', label: 'Types de pièces certifiantes', icon: 'stamp' },
@@ -659,10 +955,142 @@
             { id: 'cfg-regles', label: 'Règles métier versionnées', icon: 'shield-check' },
             { id: 'cfg-fiscalite', label: 'Paramètres fiscaux (IFU / RCCM)', icon: 'landmark' },
             { id: 'cfg-comptabilite', label: 'Paramètres comptables & obligations', icon: 'book-open-check' },
+            { id: 'cfg-bareme-aib', label: 'Barème de l’AIB', icon: 'percent' },
             { id: 'cfg-notifications', label: 'Notifications', icon: 'bell' },
             { id: 'cfg-compte', label: 'Mon compte', icon: 'circle-user' },
             { id: 'cfg-modules', label: 'Activité des modules', icon: 'toggle-right' },
             { id: 'cfg-systeme', label: 'Paramètres système', icon: 'settings' },
+            { id: 'cfg-poste', label: 'Ce poste (mode fileul / mère)', icon: 'server-cog', roles: ['admin', 'da'] },
+            { id: 'cfg-pair', label: 'Échanges entre postes (mode pair)', icon: 'git-compare-arrows', roles: ['admin', 'da'] },
+            { id: 'cfg-smtp', label: 'Messagerie (SMTP)', icon: 'mail', roles: ['admin', 'da'] },
+            /* PASSERELLE SMS (Direction, 07/11/2026) : l'administrateur et la DAF règlent et testent ; la Direction lit sans modifier
+               (fiche RBAC21, écran nommé). Les autres profils ne voient ni l'écran ni la carte. */
+            { id: 'cfg-sms', label: 'Passerelle SMS', icon: 'message-square', roles: ['admin', 'da', 'direction'] },
+          ],
+        },
+        /* IMPORTATION DE DONNÉES (01/11/2026, lot IMP-A le 11/11/2026) : un moteur, des jeux déclarés plus haut (`IMPORTS`). Un jeu a sa page, qui est la PAGE DE SUPERVISION :
+           modèle, vérification, import et historique de ses lots. Sa visibilité vient du DROIT D'IMPORT du jeu (`jeuImport`, `droitImport`), jamais d'une liste de rôles
+           écrite ici : les `roles` du module sont DÉRIVÉS de la déclaration et ne servent qu'à la matrice par module. La rangée seule est visible des autres postes (Direction,
+           10/11/2026) ; le reste de l'onglet « Système » reste réservé. Le Grand Stock vit dans la rangée M6 (m6-import-grand-stock) et partage ce moteur. */
+        {
+          code: 'IMP', label: 'Importation de données', icon: 'file-up',
+          roles: ROLES_IMP,
+          items: [
+            { id: 'imp-accueil', label: 'Jeux d’import et historique des lots', icon: 'files', jeuImport: '*' },
+            { id: 'imp-patients', label: 'Importation du répertoire patients', icon: 'users', jeuImport: 'patients' },
+            { id: 'imp-personnel', label: 'Importation du personnel', icon: 'id-card', jeuImport: 'personnel' },
+            { id: 'imp-actes', label: 'Importation des tarifs et prix', icon: 'list-ordered', jeuImport: 'tarifs' },
+            { id: 'imp-tarifs-produits', label: 'Importation des prix d’achat', icon: 'banknote', jeuImport: 'tarifs-produits' },
+            { id: 'imp-analyses', label: 'Importation du modèle des analyses', icon: 'flask-conical', jeuImport: 'analyses-modele' },
+            { id: 'imp-fournisseurs', label: 'Importation des fournisseurs', icon: 'truck', jeuImport: 'fournisseurs' },
+            { id: 'imp-assureurs', label: 'Importation des compagnies d’assurance', icon: 'shield', jeuImport: 'assureurs' },
+            { id: 'imp-souscripteurs', label: 'Importation des souscripteurs', icon: 'building', jeuImport: 'souscripteurs' },
+            { id: 'imp-plan-comptable', label: 'Importation du plan comptable', icon: 'book-open', jeuImport: 'plan-comptable' },
+            { id: 'imp-soldes-ouverture', label: 'Importation des soldes d’ouverture', icon: 'scale', jeuImport: 'soldes-ouverture' },
+            { id: 'imp-produits-referentiel', label: 'Importation du référentiel produits', icon: 'package-plus', jeuImport: 'produits-referentiel' },
+            { id: 'imp-emplacements', label: 'Importation des emplacements de rangement', icon: 'grid-3x3', jeuImport: 'emplacements' },
+            { id: 'imp-stock-detail-initial', label: 'Importation du stock détail initial', icon: 'pill', jeuImport: 'stock-detail-initial' },
+            { id: 'imp-transfert-lignes', label: 'Importation d’un bon de transfert', icon: 'arrow-left-right', jeuImport: 'transfert-lignes' },
+            { id: 'imp-inventaire-comptage', label: 'Importation d’un comptage d’inventaire', icon: 'clipboard-list', jeuImport: 'inventaire-comptage' },
+            { id: 'imp-natures-facture', label: 'Importation des natures de facture', icon: 'receipt-text', jeuImport: 'natures-facture' },
+            { id: 'imp-centres-couts', label: 'Importation des centres de coûts', icon: 'target', jeuImport: 'centres-couts' },
+            { id: 'imp-catalogue-imagerie', label: 'Importation du catalogue de l’imagerie', icon: 'scan-line', jeuImport: 'catalogue-imagerie' },
+            { id: 'imp-unites-labo', label: 'Importation des unités de mesure', icon: 'ruler', jeuImport: 'unites-labo' },
+            { id: 'imp-prestataires', label: 'Importation des prestataires externes', icon: 'handshake', jeuImport: 'prestataires' },
+            { id: 'imp-garanties', label: 'Importation des garanties des souscripteurs', icon: 'percent', jeuImport: 'garanties' },
+            { id: 'imp-couvertures-assurance', label: 'Importation des couvertures d’assurance', icon: 'id-card', jeuImport: 'couvertures-assurance' },
+            { id: 'imp-immobilisations', label: 'Importation des immobilisations', icon: 'building', jeuImport: 'immobilisations' },
+            { id: 'imp-budgets', label: 'Importation des budgets', icon: 'wallet', jeuImport: 'budgets' },
+            { id: 'imp-courriers', label: 'Importation des courriers', icon: 'mail', jeuImport: 'courriers' },
+          ],
+        },
+      ],
+    },
+    /* ======================================================================
+     * POSTE MÈRE (30/10/2026) — les 22 modules complémentaires du mode mère.
+     * Un seul module (MERE), cinq rangées : la première est canonique, les
+     * autres sont secondaires (même code, aucun second hub). Réservé à
+     * l administrateur et à la DAF : c est le serveur de la clinique.
+     * Source : docs/architecture/MODULES-COMPLEMENTAIRES-MERE.md
+     * ==================================================================== */
+    {
+      domain: 'Poste mère',
+      icon: 'server',
+      modules: [
+        {
+          code: 'MERE', label: 'Exploitation de la synchronisation', icon: 'refresh-cw', roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-supervision', label: 'Supervision', icon: 'heart-pulse' },
+            { id: 'mere-appareils', label: 'Appareils et appairage', icon: 'monitor-smartphone' },
+            { id: 'mere-conflits', label: 'Conflits et doublons', icon: 'git-compare' },
+            { id: 'mere-a-traiter', label: '« À traiter » consolidé', icon: 'octagon-alert' },
+            { id: 'mere-journal-operations', label: 'Journal des opérations', icon: 'list-ordered' },
+            { id: 'mere-plages-baux', label: 'Plages de numéros et baux de stock', icon: 'hash' },
+            { id: 'mere-lots-tournee', label: 'Lots de tournée (mobiles)', icon: 'package' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Sécurité et continuité', icon: 'shield-check', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-journal-technique', label: 'Journal technique', icon: 'scroll-text' },
+            { id: 'mere-sauvegardes', label: 'Sauvegardes et restauration', icon: 'database-backup' },
+            { id: 'mere-cle-clinique', label: 'Clé de clinique', icon: 'key-round' },
+            { id: 'mere-integrite', label: 'Intégrité et altérations', icon: 'shield-alert' },
+            { id: 'mere-reinit', label: 'Réinitialisation de production', icon: 'trash-2' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Liaison avec le relais', icon: 'cloud', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-relais', label: 'Relais en ligne', icon: 'cloud' },
+            { id: 'mere-indicateurs', label: 'Indicateurs publiés', icon: 'eye-off' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Plateforme locale', icon: 'server-cog', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-service', label: 'Service et démarrage', icon: 'power' },
+            { id: 'mere-base', label: 'Base de données locale', icon: 'database' },
+            { id: 'mere-reseau', label: 'Réseau local', icon: 'network' },
+            { id: 'mere-planificateur', label: 'Planificateur', icon: 'timer' },
+            { id: 'mere-notifications', label: 'Notifications serveur', icon: 'bell-ring' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Cycle de vie', icon: 'rocket', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-mise-en-service', label: 'Assistant de première mise en service', icon: 'wand-sparkles' },
+            { id: 'mere-mises-a-jour', label: 'Mises à jour et compatibilité', icon: 'package-check' },
+            { id: 'mere-import', label: 'Import de migration', icon: 'file-up' },
+          ],
+        },
+      ],
+    },
+    /* ======================================================================
+     * RELAIS EN LIGNE (30/10/2026) — le panneau superadmin de apps/web.
+     * Quatre écrans existent déjà côté Laravel ; les autres sont ceux que
+     * l on attend d un relais exploité. Réservé à l administrateur système.
+     * Source : docs/architecture/MODULES-WEB-RELAIS.md
+     * ==================================================================== */
+    {
+      domain: 'Relais en ligne',
+      icon: 'cloud',
+      modules: [
+        {
+          code: 'RLS', label: 'Relais en ligne (apps/web)', icon: 'cloud', roles: ['admin'],
+          items: [
+            { id: 'rls-tableau', label: 'Tableau de bord du relais', icon: 'layout-dashboard' },
+            { id: 'rls-appareils', label: 'Appareils', icon: 'monitor-smartphone' },
+            { id: 'rls-boites', label: 'Boîtes aux lettres', icon: 'inbox' },
+            { id: 'rls-codes', label: 'Codes d’appairage', icon: 'ticket' },
+            { id: 'rls-indicateurs', label: 'Indicateurs reçus', icon: 'activity' },
+            { id: 'rls-alertes', label: 'Alertes et notifications', icon: 'bell-ring' },
+            { id: 'rls-journal', label: 'Journal d’audit du relais', icon: 'scroll-text' },
+            { id: 'rls-superadmin', label: 'Comptes superadmin', icon: 'user-cog' },
+            { id: 'rls-parametres', label: 'Paramètres du relais', icon: 'sliders-horizontal' },
+            { id: 'rls-hebergement', label: 'Hébergement', icon: 'server' },
+            { id: 'rls-sauvegarde', label: 'Sauvegarde du relais', icon: 'database-backup' },
+            { id: 'rls-opacite', label: 'Preuve d’opacité', icon: 'eye-off' },
           ],
         },
       ],
@@ -760,8 +1188,6 @@
                L'intitulé cesse de nommer un rôle qui n'ouvre plus de session. */
             { id: 'dash-pharmacien', label: 'Pharmacie', icon: 'pill',
               roles: ['caissier', 'stock', 'da', 'admin', 'direction'] },
-            { id: 'dash-biomedical', label: 'Ingénieur biomédical', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'dm'] },
             { id: 'dash-laborantin', label: 'Biologiste médical', icon: 'flask-conical', roles: ['laborantin', 'admin'] },
             { id: 'dash-stock', label: 'Gestionnaire de stock', icon: 'package', roles: ['stock', 'da', 'admin'] },
             { id: 'dash-caissier', label: 'Caisse', icon: 'banknote', roles: ['caissier', 'admin'] },
@@ -814,10 +1240,16 @@
     { id: 'auth-lock', label: 'Écran verrouillé', icon: 'lock' },
     { id: 'error-404', label: 'Page introuvable', icon: 'file-search' },
     { id: 'error-403', label: 'Accès refusé', icon: 'shield-alert' },
-    { id: 'plan-du-site', label: 'Plan du site', icon: 'map' },
+    /* Le plan du site est un écran du manifeste qui ne s'en retire JAMAIS ; son affichage dépend d'un RÉGLAGE en base (`planDuSiteAffiche`, défaut non), lu
+       par `ouvertParReglage` et par `can()` : aucun masquage écrit à côté. */
+    { id: 'plan-du-site', label: 'Plan du site', icon: 'map', sousReglage: 'planDuSiteAffiche' },
     {
       id: 'aide-apropos', label: 'Aide & À propos', icon: 'life-buoy',
       module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: true,
+    },
+    {
+      id: 'parametres-hub', label: 'Paramètres système', icon: 'settings',
+      module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: false,
     },
     {
       id: 'contact-editeur', label: 'Contactez l’éditeur', icon: 'mail',
@@ -870,7 +1302,7 @@
        EXACTEMENT des droits du registre qu'elle alimente. */
     {
       id: 'm6-inventaire-feuille', label: 'Feuille d’inventaire — comptage', icon: 'clipboard-list',
-      servant: 'm6-inventaires',
+      servant: 'm6-inventaire',
       module: 'M6', moduleLabel: 'Pharmacie & Stocks', domain: 'Logistique',
     },
     /* L'ouverture d'un dossier patient : une page, parce qu'on la remplit
@@ -896,6 +1328,12 @@
     {
       id: 'm2-visites', label: 'Registre des visites de suivi clinique', icon: 'user-check',
       module: 'M2', moduleLabel: 'RDV, Visites & Consultations', domain: 'Accueil',
+    },
+    /* Le catalogue tarifaire à deux prix a rejoint « Tarifs et prix » (PRD-TARIFS, lot T2) : un seul référentiel de prix, un seul écran. La page subsiste
+       hors ruban et renvoie ; retirer l'entrée du manifeste casserait tout lien qui la vise. */
+    {
+      id: 'cfg-catalogue', label: 'Catalogue tarifaire (deux prix)', icon: 'list-ordered',
+      module: 'CFG', moduleLabel: 'Configuration Clinique', domain: 'Système',
     },
     /* Les certificats des externes ont rejoint le registre unique : la page
        subsiste et renvoie, elle n'affiche plus de second registre. */
@@ -952,6 +1390,14 @@
       roles: item.roles || mod.roles || ALL,
       /* Un écran que TOUT poste peut ouvrir, quel que soit son module. */
       universel: !!item.universel,
+      /* Un écran ouvert par un GESTE réservé (lecture seule) : sa visibilité vient du droit du geste, jamais d'une liste de rôles (lot SURV). */
+      parGeste: item.parGeste || null,
+      /* Fichiers de script ajoutés à la page en plus de celui de son module. */
+      scripts: item.scripts || null,
+      /* Un écran du ruban qui N'EST QU'UNE AUTRE VUE d'un registre porte ses droits (vue mensuelle du calendrier fiscal). */
+      servant: item.servant || null,
+      /* Un écran de PAGE DE JEU d'import : sa visibilité vient du droit `voir` du jeu (`'*'` : de l'un au moins des jeux), jamais d'une liste de rôles. */
+      jeuImport: item.jeuImport || null,
     };
   }
 
@@ -978,6 +1424,8 @@
         domainIcon: domain.icon,
         roles: mod.roles || ALL,
         hub: true,
+        /* Le hub du module d'import suit la même règle que ses pages : il s'ouvre à qui détient un droit `voir` sur un jeu au moins. */
+        jeuImport: mod.code === 'IMP' ? '*' : null,
       };
       mod.items.forEach(function (item) { indexerEcran(domain, mod, item); });
     });
@@ -1000,6 +1448,8 @@
       /* Le registre qu'une page de saisie alimente : c'est sur LUI que ses
          droits se résolvent, et pas sur son module. */
       servant: item.servant || null,
+      /* Le réglage en base dont dépend l'affichage de l'écran (null : aucun). */
+      sousReglage: item.sousReglage || null,
     };
   });
 
@@ -1047,7 +1497,7 @@
         var fusion = Object.assign({}, deja);
         Object.keys(f).forEach(function (k) {
           if (f[k] === undefined || f[k] === null) return;
-          if (k === 'droits' || k === 'droitsEcrans') {
+          if (k === 'droits' || k === 'droitsEcrans' || k === 'droitsImport' || k === 'droitsGestes') {
             fusion[k] = Object.assign({}, deja[k] || {}, f[k] || {});
             return;
           }
@@ -1114,6 +1564,17 @@
     if (id && d.ecrans[id]) return false;
     if (code && d.modules[code]) return false;
     return true;
+  }
+
+  /**
+   * Un écran peut dépendre d'un RÉGLAGE en base (`sousReglage` au manifeste) : ouvert seulement quand le réglage vaut vrai, quel que soit le rôle. Un écran sans
+   * `sousReglage` est toujours ouvert par ce test. Le réglage est lu à la source à chaque appel, jamais mis en cache.
+   */
+  function ouvertParReglage(id) {
+    var e = id ? INDEX[id] : null;
+    if (!e || !e.sousReglage) return true;
+    var St = magasin();
+    try { return !!(St && St.reglage && St.reglage(e.sousReglage, false) === true); } catch (x) { return false; }
   }
 
   /** La fiche d'activité qui ferme un écran, pour pouvoir le DIRE. */
@@ -1224,11 +1685,77 @@
     return !!(e && e.universel);
   }
 
+  /* ==========================================================================
+   * LE DROIT D'IMPORT, PAR JEU (lot IMP-A)
+   * --------------------------------------------------------------------------
+   * Résolution : rôle archivé, FERMÉ ; module propriétaire des données (ou module d'import) désactivé, FERMÉ pour tous les rôles, administrateur compris ; puis la fiche RBAC
+   * (`droitsImport[jeu]`, champ par champ : UNE SURCHARGE ACCORDE AUTANT QU'ELLE RESTREINT) ; à défaut, la matrice d'origine du jeu. `importer` et `annuler` supposent `voir`.
+   * Un rôle créé en exploitation n'est dans aucune `rolesDefaut` : il part de zéro. Le droit d'ÉDITER l'écran hôte n'est ni nécessaire ni suffisant (le gestionnaire qui édite
+   * `m6-produits` n'importe pas pour autant un jeu qu'il ne détient pas) : cette fonction ne lit JAMAIS `droitsEcran`.
+   * ======================================================================== */
+  function droitImport(roleId, jeuId) {
+    var ferme = { voir: false, importer: false, annuler: false, jeu: jeuId };
+    var j = IMPORTS_INDEX[jeuId];
+    if (!j || !roleId || roleArchive(roleId)) return ferme;
+    if (!ecranActif(j.ecran, j.module) || !moduleActif('IMP')) return ferme;
+    var def = String(j.rolesDefaut[roleId] || '');
+    var f = surcharges()[roleId];
+    var o = f && f.droitsImport && f.droitsImport[jeuId];
+    var d = {
+      voir: o && o.voir != null ? !!o.voir : def.indexOf('V') >= 0,
+      importer: o && o.importer != null ? !!o.importer : def.indexOf('I') >= 0,
+      annuler: o && o.annuler != null ? !!o.annuler : def.indexOf('A') >= 0,
+      jeu: jeuId, origine: !o, surchargeJeu: !!o,
+    };
+    if (!d.voir) { d.importer = false; d.annuler = false; }
+    return d;
+  }
+  /** Les jeux que ce rôle voit : la matière de la rangée « Importation de données » (calculée de la matrice, jamais d'une liste de rôles). */
+  function importsVisibles(roleId) {
+    return IMPORTS.filter(function (j) { return droitImport(roleId, j.id).voir; }).map(function (j) { return j.id; });
+  }
+  /** Les jeux qu'un écran héberge sous le bouton « Importer les données » ET que ce rôle peut importer. */
+  function importsDeLHote(ecranId, roleId) {
+    return IMPORTS.filter(function (j) { return j.hotes.indexOf(ecranId) >= 0 && droitImport(roleId, j.id).importer; });
+  }
+  /** SUPERVISER les lots : détenir le droit d'ANNULER sur CHAQUE jeu déclaré. La liste des superviseurs est TIRÉE DU DROIT (aucun nom de rôle) : un profil qui peut défaire
+      un lot de n'importe quel jeu peut les lire tous. */
+  function superviseImport(roleId) {
+    return IMPORTS.length > 0 && IMPORTS.every(function (j) { return droitImport(roleId, j.id).annuler; });
+  }
+  /** La capacité PAIE, lue de la matrice : écrire dans le module de la paie (M11). Elle décide de la colonne « Salaire de base » du jeu du personnel. */
+  function capacitePaie(roleId) { return !!roleId && !!droits(roleId, 'M11').editer; }
+  /**
+   * Le droit d'un GESTE réservé, pour un rôle : rôle archivé, FERMÉ ; écran ou module désactivé, FERMÉ pour tous ; puis la fiche RBAC (`droitsGestes[geste]`, une
+   * surcharge accorde autant qu'elle restreint, dans les deux sens) ; à défaut, la liste d'origine du manifeste. Un rôle créé en exploitation n'est dans aucune
+   * liste d'origine : il part de zéro. Une fiche qui ne nomme pas le geste suit l'origine (ce n'est PAS « tous les droits » : la doctrine « sans fiche, tous les droits »
+   * vaut pour les écrans, jamais pour un geste réservé). Cette fonction ne lit JAMAIS `droitsEcran`.
+   */
+  function droitGeste(roleId, gesteId) {
+    var g = GESTES_INDEX[gesteId];
+    if (!g || !roleId || roleArchive(roleId)) return false;
+    if (!ecranActif(g.ecran, g.module)) return false;
+    var f = surcharges()[roleId];
+    var o = f && f.droitsGestes && f.droitsGestes[gesteId];
+    if (o === true || o === false) return o;
+    return g.rolesDefaut.indexOf(roleId) >= 0;
+  }
+  /** Les rôles qui détiennent un geste (liste DÉRIVÉE du droit, jamais recopiée). */
+  function rolesAvecGeste(gesteId) {
+    return Object.keys(ROLES).filter(function (r) { return droitGeste(r, gesteId); });
+  }
+
   function droitsEcran(roleId, ecranId, code) {
     var base = droits(roleId, code);
     if (!ecranId) return base;
     var f = surcharges()[roleId];
     var o = f && f.droitsEcrans && f.droitsEcrans[ecranId];
+    var cano = ecranId && INDEX[ecranId];
+    if (!o && cano && cano.parGeste) {
+      /* Écran ouvert par un geste : VOIR seulement (la lecture restreinte), jamais écrire ni annuler ; les commandes de l'écran ont leurs propres gestes. */
+      var vg = droitGeste(roleId, cano.parGeste);
+      return { voir: vg, editer: false, annuler: false, origine: false, parGeste: true, lectureSeule: vg };
+    }
     if (!o && estUniversel(ecranId)) {
       /* Voir et écrire — exprimer un besoin, c'est écrire. Mais jamais
          ANNULER : retirer le bon d'un autre service n'appartient pas à
@@ -1264,7 +1791,7 @@
       if (!f.nouveau || ROLES[r]) return;
       ROLES[r] = {
         id: r, label: f.libelle || r, short: f.libelleCourt || f.libelle || r,
-        color: f.couleur || 'neutral', home: f.accueil || 'plan-du-site',
+        color: f.couleur || 'neutral', home: f.accueil || 'error-404',
         cree: true, creeLe: f.definiLe || null,
       };
     });
@@ -1288,6 +1815,12 @@
    * La propriété entry.module (code) déclenche la consultation des surcharges ;
    * seul le manifeste s'applique — c'est le cas des écrans hors ruban.
    */
+  /** Une surcharge D'ÉCRAN pose-t-elle explicitement un droit ? (le module n'est pas consulté) */
+  function surchargeEcranExplicite(roleId, ecranId) {
+    var f = surcharges()[roleId];
+    var parEcran = f && f.droitsEcrans && ecranId && f.droitsEcrans[ecranId];
+    return parEcran && parEcran.voir != null ? !!parEcran.voir : null;
+  }
   /** Une surcharge pose-t-elle EXPLICITEMENT un droit pour cet écran ? */
   function surchargeExplicite(roleId, ecranId, code) {
     var f = surcharges()[roleId];
@@ -1337,6 +1870,18 @@
      * les cinq appelants sans qu'aucun soit retouché.
      * ==================================================================== */
     var canonique = entry.id ? INDEX[entry.id] : null;
+    /* UNE PAGE DE JEU D'IMPORT se règle sur le DROIT D'IMPORT de son jeu (voir), après l'activité du module ; une surcharge d'écran qui la ferme nommément garde la main. */
+    if (canonique && canonique.jeuImport) {
+      if (!ecranActif(entry.id, canonique.module)) return false;
+      if (surchargeEcranExplicite(roleId, entry.id) === false) return false;
+      return canonique.jeuImport === '*' ? importsVisibles(roleId).length > 0 : droitImport(roleId, canonique.jeuImport).voir;
+    }
+    /* UN ÉCRAN OUVERT PAR UN GESTE (lot SURV) : activité ouverte, puis le droit du geste ; une surcharge d'écran qui le ferme nommément garde la main. Lecture seule (`droitsEcran`). */
+    if (canonique && canonique.parGeste) {
+      if (!ecranActif(entry.id, canonique.module)) return false;
+      if (surchargeEcranExplicite(roleId, entry.id) === false) return false;
+      return droitGeste(roleId, canonique.parGeste);
+    }
     if (canonique && (canonique.universel || canonique.servant)) {
       entry = {
         id: entry.id,
@@ -1356,12 +1901,21 @@
        administrateur compris : ce n'est pas une habilitation, et rien ne la
        rouvre — pas même une surcharge. */
     if (!ecranActif(entry.id, code)) return false;
+    /* Un écran dont l'affichage est un RÉGLAGE se ferme tant que le réglage n'est pas posé (plan du site) : même rang qu'une activité fermée. */
+    if (!ouvertParReglage(entry.id)) return false;
 
     /* LA SURCHARGE DÉCIDE quand elle se prononce — dans les deux sens. Une
        matrice administrable qui ne saurait qu'enlever ne permettrait jamais
        de doter un rôle nouvellement créé : il n'apparaît dans aucune liste du
        manifeste, et resterait inutilisable quoi qu'on lui ouvre. */
-    var explicite = surchargeExplicite(roleId, entry.id, code);
+    /* UN ÉCRAN UNIVERSEL NE CÈDE QUE DEVANT UNE SURCHARGE D'ÉCRAN (29/10/2026). Il ne doit pas céder devant la
+       fermeture de son MODULE : un rôle créé « à zéro » reçoit une fiche qui ferme chaque module nommément, M7
+       compris, et perdait alors « exprimer un besoin » alors que cet écran appartient à TOUT agent. Défaut
+       relevé en extrayant la matrice de la maquette : six rôles (aide-soignante, échographiste, surveillant,
+       assistant de direction, chirurgien, anesthésiste) n'ouvraient pas l'écran des besoins. */
+    var explicite = entry.universel
+      ? surchargeEcranExplicite(roleId, entry.id)
+      : surchargeExplicite(roleId, entry.id, code);
     if (explicite === false) return false;
     if (explicite === true) return true;
 
@@ -1409,6 +1963,34 @@
     }).filter(Boolean);
   }
 
+  /* LE RUBAN ET « PARAMÈTRES SYSTÈME » (arbitrage du 05/11/2026).
+     - « Relais en ligne » QUITTE le ruban : ses écrans deviennent des cartes de hub dans « Paramètres système » (onglet Relais en ligne). Ses pages, ses droits et
+       ses adresses ne bougent pas : on le retire de l'AFFICHAGE du ruban, jamais du manifeste.
+     - L'onglet « Système » du ruban (menu et méga-menu) n'est affiché qu'à l'administrateur système et à la Directrice Administrative. Les autres profils
+       atteignent ce qu'ils ont le droit d'ouvrir par la page « Paramètres système » (cartes de hub, filtrées par droits). Masquer n'est pas fermer : les droits
+       d'un écran restent ceux de la matrice. */
+  var RUBAN_HORS = ['Relais en ligne'];
+  var RUBAN_SYSTEME_ROLES = ['admin', 'da'];
+  /* LA RANGÉE « IMPORTATION DE DONNÉES » SEULE est visible des autres postes (Direction, 10/11/2026, réponse Q1 : la rangée seule, le reste de l'onglet reste réservé). Elle
+     l'est à qui détient un droit `voir` sur un jeu : CALCULÉ de la matrice par `tree()` (une rangée vide n'y paraît jamais), jamais d'une liste de rôles. Un profil hors
+     liste voit donc un onglet « Système » réduit à cette rangée, qui ne montre que ses jeux. */
+  var RUBAN_SYSTEME_MODULES_OUVERTS = ['IMP'];
+  function treeRuban(roleId) {
+    var complet = RUBAN_SYSTEME_ROLES.indexOf(roleId) >= 0;
+    return tree(roleId).map(function (d) {
+      if (RUBAN_HORS.indexOf(d.domain) >= 0) return null;
+      if (d.domain === 'Système' && !complet) {
+        var mods = d.modules.filter(function (m) { return RUBAN_SYSTEME_MODULES_OUVERTS.indexOf(m.code) >= 0; });
+        return mods.length ? Object.assign({}, d, { modules: mods }) : null;
+      }
+      return d;
+    }).filter(Boolean);
+  }
+  /** Les domaines nommés, déjà filtrés par les droits du rôle : la matière des cartes de « Paramètres système ». */
+  function treeParametres(roleId, domaines) {
+    return tree(roleId).filter(function (d) { return domaines.indexOf(d.domain) >= 0; });
+  }
+
   /** Module par son code (M6, MECEF…), enrichi de son domaine et de son hub. */
   function module(code) {
     var canonique = null, domaine = null, tous = [];
@@ -1451,12 +2033,18 @@
    * ici, et nulle part ailleurs, que se déclare un point d'entrée.
    * ======================================================================== */
   var RUBRIQUES = [
-    { ecran: 'cfg-tarifs', onglet: 'produits', label: 'Produits & médicaments',
+    { ecran: 'cfg-tarifs', onglet: 'prestations', label: 'Prestations et actes tarifés',
+      motsCles: 'tarif prix acte actes soin chirurgie accouchement consultation hospitalisation chambre journée certificat prestation deux prix assuré non assuré' },
+    { ecran: 'cfg-tarifs', onglet: 'analyses', label: 'Prix des analyses de laboratoire',
+      motsCles: 'tarif prix analyse laboratoire biologie examen catalogue grille' },
+    { ecran: 'cfg-tarifs', onglet: 'imagerie', label: 'Prix de l’imagerie médicale',
+      motsCles: 'tarif prix imagerie échographie radiographie scanner IRM mammographie examen' },
+    { ecran: 'cfg-tarifs', onglet: 'produits', label: 'Produits et médicaments (lecture)',
       motsCles: 'tarif prix médicament produit pharmacie prix d’achat prix de vente marge RG-02' },
-    { ecran: 'cfg-tarifs', onglet: 'analyses', label: 'Analyses de laboratoire',
-      motsCles: 'tarif prix analyse laboratoire biologie examen catalogue' },
-    { ecran: 'cfg-tarifs', onglet: 'actes', label: 'Actes & hospitalisation',
-      motsCles: 'acte actes soin chirurgie accouchement échographie consultation hospitalisation chambre tarif prix' },
+    { ecran: 'cfg-tarifs', onglet: 'alertes', label: 'Changements de prix en attente',
+      motsCles: 'alerte validation changement de prix proposition Oui Non décision Direction DAF en attente' },
+    { ecran: 'cfg-tarifs', onglet: 'historique', label: 'Historique des prix et versions',
+      motsCles: 'historique version prix date d’effet comparaison ancien nouveau' },
     { ecran: 'cfg-natures-facture', onglet: null, label: 'Natures de facture',
       motsCles: 'nature facture type émission maternité observation consultation CPN spécialiste généraliste' },
     { ecran: 'cfg-centres-couts', onglet: null, label: 'Centres de coûts',
@@ -1529,6 +2117,41 @@
       motsCles: 'enquête lien partage jeton qr questionnaire tiers public satisfaction' },
   ];
 
+  /* ==========================================================================
+   * ACTIONS RAPIDES : le menu « Actions » de la barre supérieure
+   * --------------------------------------------------------------------------
+   * [libellé, icône, écran]. La liste est filtrée par les droits du profil au
+   * moment de l'afficher : un raccourci vers un écran interdit promet une porte
+   * fermée. Elle vit ici, avec le reste des points d'entrée, pour que le poste
+   * Flutter la lise depuis la même source.
+   * ======================================================================== */
+  var ACTIONS_RAPIDES = [
+    ['Nouveau dossier patient', 'user-plus', 'm1-patients'],
+    ['Patient externe : analyses', 'user-round-plus', 'm1-externe'],
+    ['Nouvelle consultation', 'stethoscope', 'm2-consultations'],
+    ['Nouvelle admission', 'bed-double', 'm3-admissions'],
+    ['Nouvelle facture', 'receipt', 'm8-facturation'],
+    ['Encaisser un paiement', 'banknote', 'm8-paiements'],
+    ['Assurés & cartes', 'id-card', 'm9-assures'],
+    ['Demande d’analyse', 'flask-conical', 'm5-demandes'],
+    ['Mouvement de stock', 'package', 'm6-mouvements'],
+    ['Bon d’expression de besoins', 'clipboard-list', 'm7-besoins'],
+    ['Éditer un état', 'printer', 'rapports-bibliotheque'],
+  ];
+
+  /* LES ÉCRANS « À ANNÉE » (arbitrage du 05/11/2026). Le sélecteur d'exercice de la barre supérieure n'apparaît que sur les écrans qui ont une notion d'année ET qui
+     la SUIVENT : un sélecteur sur un écran qui l'ignore promettrait une lecture qu'il ne fait pas. Les écrans du jour (caisse, points de vente, files, tableaux
+     de bord de poste) n'en ont pas besoin. La règle est déclarée ICI, jamais dans chaque écran. */
+  var EXERCICE_MODULES = ['M12'];
+  var EXERCICE_ECRANS = ['mecef-factures', 'mecef-avoirs', 'mecef-transmission', 'mecef-journal', 'm9-factures-assureur', 'm9-historique',
+    'm8-factures', 'm8-facture-avoir', 'm8-factures-tiers', 'm7-commandes', 'm7-factures-fournisseurs', 'm11-bulletins'];
+  var EXERCICE_SAUF = /dashboard|^dash-|^hub-|caisse$|point-ventes|point-stock|^m12-ouverture$/;
+  function aExercice(entry) {
+    if (!entry || !entry.id) return false;
+    if (EXERCICE_SAUF.test(entry.id)) return false;
+    return EXERCICE_MODULES.indexOf(entry.module) >= 0 || EXERCICE_ECRANS.indexOf(entry.id) >= 0;
+  }
+
   global.SIGH = global.SIGH || {};
   global.SIGH.nav = {
     ROLES: ROLES,
@@ -1539,17 +2162,24 @@
     ALL: ALL,
     RACCOURCIS: RACCOURCIS,
     RUBRIQUES: RUBRIQUES,
+    ACTIONS_RAPIDES: ACTIONS_RAPIDES,
     can: can,
+    treeRuban: treeRuban, treeParametres: treeParametres, RUBAN_HORS: RUBAN_HORS, RUBAN_SYSTEME_ROLES: RUBAN_SYSTEME_ROLES,
     droits: droits,
     droitsEcran: droitsEcran,
+    IMPORTS: IMPORTS, IMPORTS_IGNORER_PERMIS: IMPORTS_IGNORER_PERMIS, RUBAN_SYSTEME_MODULES_OUVERTS: RUBAN_SYSTEME_MODULES_OUVERTS,
+    jeuImport: function (id) { return IMPORTS_INDEX[id] || null; },
+    GESTES: GESTES, geste: function (id) { return GESTES_INDEX[id] || null; }, droitGeste: droitGeste, rolesAvecGeste: rolesAvecGeste,
+    droitImport: droitImport, importsVisibles: importsVisibles, importsDeLHote: importsDeLHote, superviseImport: superviseImport, capacitePaie: capacitePaie,
     droitsOrigine: droitsOrigine,
     DROITS: DROITS,
     roleArchive: roleArchive,
-    moduleActif: moduleActif, ecranActif: ecranActif, fermeturePour: fermeturePour,
+    moduleActif: moduleActif, ecranActif: ecranActif, ouvertParReglage: ouvertParReglage, fermeturePour: fermeturePour,
     modulesDesactives: modulesDesactives,
     invaliderModules: invaliderModules,
     invaliderRbac: invaliderRbac,
     appliquerRenommages: appliquerRenommages,
+    aExercice: aExercice,
     tree: tree,
     module: module,
     hubId: hubId,

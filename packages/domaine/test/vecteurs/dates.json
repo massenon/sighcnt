@@ -1,0 +1,125 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "date": [
+     2026,
+     7,
+     16,
+     9,
+     5
+    ]
+   },
+   "sortie": {
+    "dateFR": "16/08/2026",
+    "dateLong": "16 août 2026",
+    "dateJour": "dimanche 16 août 2026",
+    "heure": "09h05",
+    "dateHeure": "16/08/2026 à 09h05",
+    "iso": "2026-08-16",
+    "moisAnnee": "août 2026"
+   }
+  },
+  {
+   "entree": {
+    "date": [
+     2026,
+     0,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "dateFR": "01/01/2026",
+    "dateLong": "1 janvier 2026",
+    "dateJour": "jeudi 1 janvier 2026",
+    "heure": "00h00",
+    "dateHeure": "01/01/2026 à 00h00",
+    "iso": "2026-01-01",
+    "moisAnnee": "janvier 2026"
+   }
+  },
+  {
+   "entree": {
+    "date": [
+     2025,
+     11,
+     31,
+     23,
+     59
+    ]
+   },
+   "sortie": {
+    "dateFR": "31/12/2025",
+    "dateLong": "31 décembre 2025",
+    "dateJour": "mercredi 31 décembre 2025",
+    "heure": "23h59",
+    "dateHeure": "31/12/2025 à 23h59",
+    "iso": "2025-12-31",
+    "moisAnnee": "décembre 2025"
+   }
+  },
+  {
+   "entree": {
+    "date": [
+     2024,
+     1,
+     29,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "dateFR": "29/02/2024",
+    "dateLong": "29 février 2024",
+    "dateJour": "jeudi 29 février 2024",
+    "heure": "12h00",
+    "dateHeure": "29/02/2024 à 12h00",
+    "iso": "2024-02-29",
+    "moisAnnee": "février 2024"
+   }
+  },
+  {
+   "entree": {
+    "date": [
+     2026,
+     2,
+     8,
+     7,
+     30
+    ]
+   },
+   "sortie": {
+    "dateFR": "08/03/2026",
+    "dateLong": "8 mars 2026",
+    "dateJour": "dimanche 8 mars 2026",
+    "heure": "07h30",
+    "dateHeure": "08/03/2026 à 07h30",
+    "iso": "2026-03-08",
+    "moisAnnee": "mars 2026"
+   }
+  },
+  {
+   "entree": {
+    "date": [
+     2000,
+     5,
+     15,
+     18,
+     45
+    ]
+   },
+   "sortie": {
+    "dateFR": "15/06/2000",
+    "dateLong": "15 juin 2000",
+    "dateJour": "jeudi 15 juin 2000",
+    "heure": "18h45",
+    "dateHeure": "15/06/2000 à 18h45",
+    "iso": "2000-06-15",
+    "moisAnnee": "juin 2000"
+   }
+  }
+ ]
+}

@@ -1,0 +1,2717 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : CPN, CPoN, surveillance, orientation, réglages, lot, code PIN, relevés sur les pages du simulateur mobile PILOTÉES dans Chrome. Ne pas éditer à la main.",
+ "cpn": {
+  "cas": [
+   {
+    "saisie": {},
+    "erreurs": {
+     "sa": "Le terme est obligatoire.",
+     "poids": "Le poids est obligatoire.",
+     "sys": "La systolique est obligatoire.",
+     "dia": "La diastolique est obligatoire."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "abc"
+    },
+    "erreurs": {
+     "sa": "Le terme doit être un nombre.",
+     "poids": "Le poids est obligatoire.",
+     "sys": "La systolique est obligatoire.",
+     "dia": "La diastolique est obligatoire."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "3",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {
+     "sa": "Le terme : valeur improbable (4 à 45)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "4",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "4 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "45",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "45 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "46",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {
+     "sa": "Le terme : valeur improbable (4 à 45)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "29",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {
+     "poids": "Le poids : valeur improbable (30 à 200)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "30",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "200",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "200,1",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {
+     "poids": "Le poids : valeur improbable (30 à 200)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "62,5",
+     "sys": "120",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "59",
+     "dia": "80"
+    },
+    "erreurs": {
+     "sys": "La systolique : valeur improbable (60 à 260)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "60",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 60/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "260",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 260/80 · À RISQUE",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "TA élevée ou protéinurie : signalée comme grossesse à risque.",
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "261",
+     "dia": "80"
+    },
+    "erreurs": {
+     "sys": "La systolique : valeur improbable (60 à 260)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "29"
+    },
+    "erreurs": {
+     "dia": "La diastolique : valeur improbable (30 à 160)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "30"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/30",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "160"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/160 · À RISQUE",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "TA élevée ou protéinurie : signalée comme grossesse à risque.",
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "161"
+    },
+    "erreurs": {
+     "dia": "La diastolique : valeur improbable (30 à 160)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "bcf": "59"
+    },
+    "erreurs": {
+     "bcf": "Le BCF : valeur improbable (60 à 220)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "bcf": "60"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "bcf": "220"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "bcf": "221"
+    },
+    "erreurs": {
+     "bcf": "Le BCF : valeur improbable (60 à 220)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "bcf": "x"
+    },
+    "erreurs": {
+     "bcf": "Le BCF doit être un nombre."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "hu": "28"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "hu": "texte"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "139",
+     "dia": "89"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 139/89",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "140",
+     "dia": "80"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 140/80 · À RISQUE",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "TA élevée ou protéinurie : signalée comme grossesse à risque.",
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "90"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/90 · À RISQUE",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "TA élevée ou protéinurie : signalée comme grossesse à risque.",
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "139",
+     "dia": "89",
+     "proteinurie": "+"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 139/89",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "proteinurie": "Traces"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "proteinurie": "++"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80 · À RISQUE",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "TA élevée ou protéinurie : signalée comme grossesse à risque.",
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "proteinurie": "+++"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80 · À RISQUE",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "TA élevée ou protéinurie : signalée comme grossesse à risque.",
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": "28",
+     "poids": "60",
+     "sys": "120",
+     "dia": "80",
+     "sp": "SP 2",
+     "milda": "Non",
+     "presentation": "Siège",
+     "bcf": "140",
+     "hu": "27"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "sa": " 28 ",
+     "poids": " 60 ",
+     "sys": " 120 ",
+     "dia": " 80 "
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpn",
+     "libelle": "CPN — SOUROU Mariam",
+     "detail": "28 SA · TA 120/80",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   }
+  ],
+  "risque": {
+   "p1": {
+    "note": "Âge à risque (hors 18–35 ans).",
+    "sous": "DOSSOU Aline"
+   },
+   "p2": {
+    "note": null,
+    "sous": "KPOGNON Rose"
+   },
+   "p3": {
+    "note": "Âge à risque (hors 18–35 ans).",
+    "sous": "TAMOU Félix"
+   },
+   "p4": {
+    "note": null,
+    "sous": "SOUROU Mariam"
+   }
+  },
+  "sansPatient": "SOUROU Mariam"
+ },
+ "cpon": {
+  "cas": [
+   {
+    "saisie": {},
+    "erreurs": {
+     "ta": "La TA est obligatoire.",
+     "t": "La température est obligatoire.",
+     "pb": "Le poids du bébé est obligatoire."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "",
+     "t": "37",
+     "pb": "3200"
+    },
+    "erreurs": {
+     "ta": "La TA est obligatoire."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "",
+     "pb": "3200"
+    },
+    "erreurs": {
+     "t": "La température est obligatoire."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": ""
+    },
+    "erreurs": {
+     "pb": "Le poids du bébé est obligatoire."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "abc",
+     "pb": "3200"
+    },
+    "erreurs": {
+     "t": "La température doit être un nombre."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "33,9",
+     "pb": "3200"
+    },
+    "erreurs": {
+     "t": "La température : valeur improbable (34 à 43)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "34",
+     "pb": "3200"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 34 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "43",
+     "pb": "3200"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 43 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "43,1",
+     "pb": "3200"
+    },
+    "erreurs": {
+     "t": "La température : valeur improbable (34 à 43)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "38,6",
+     "pb": "3200"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 38,6 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "999"
+    },
+    "erreurs": {
+     "pb": "Le poids du bébé : valeur improbable (1000 à 6000)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "1000"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 37 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "6000"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 37 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "6001"
+    },
+    "erreurs": {
+     "pb": "Le poids du bébé : valeur improbable (1000 à 6000)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "3200,5"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 37 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "x"
+    },
+    "erreurs": {
+     "pb": "Le poids du bébé doit être un nombre."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "3200"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 37 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "3200",
+     "jour": "J7",
+     "lochies": "Abondantes",
+     "uterus": "Insuffisante",
+     "cordon": "Infecté",
+     "allait": "Difficulté"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J7 — KPOGNON Rose",
+     "detail": "T° 37 · cordon infecté",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "12/8",
+     "t": "37",
+     "pb": "3200",
+     "jour": "J42",
+     "cordon": "Suintant"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J42 — KPOGNON Rose",
+     "detail": "T° 37 · cordon suintant",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "ta": "n’importe quoi",
+     "t": "37",
+     "pb": "3200"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "cpon",
+     "libelle": "CPoN J1 — KPOGNON Rose",
+     "detail": "T° 37 · cordon propre et sec",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   }
+  ],
+  "patientParDefaut": "KPOGNON Rose"
+ },
+ "surveillance": {
+  "cas": [
+   {
+    "saisie": {},
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H4",
+     "detail": "mère — · bébé FR —",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "mpouls": "29"
+    },
+    "erreurs": {
+     "mpouls": "Le pouls : valeur improbable (30 à 220)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "mpouls": "30"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H4",
+     "detail": "mère — · bébé FR —",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "mpouls": "220"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H4",
+     "detail": "mère — · bébé FR —",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "mpouls": "221"
+    },
+    "erreurs": {
+     "mpouls": "Le pouls : valeur improbable (30 à 220)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "mpouls": "x"
+    },
+    "erreurs": {
+     "mpouls": "Le pouls doit être un nombre."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "bfr": "9"
+    },
+    "erreurs": {
+     "bfr": "La FR du bébé : valeur improbable (10 à 100)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "bfr": "10"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H4",
+     "detail": "mère — · bébé FR 10",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "bfr": "100"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H4",
+     "detail": "mère — · bébé FR 100",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "bfr": "101"
+    },
+    "erreurs": {
+     "bfr": "La FR du bébé : valeur improbable (10 à 100)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "bt": "33,9"
+    },
+    "erreurs": {
+     "bt": "La T° du bébé : valeur improbable (34 à 41)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "bt": "34"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H4",
+     "detail": "mère — · bébé FR —",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "bt": "41"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H4",
+     "detail": "mère — · bébé FR —",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "bt": "41,1"
+    },
+    "erreurs": {
+     "bt": "La T° du bébé : valeur improbable (34 à 41)."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "bt": "chaud"
+    },
+    "erreurs": {
+     "bt": "La T° du bébé doit être un nombre."
+    },
+    "op": null,
+    "toasts": []
+   },
+   {
+    "saisie": {
+     "heure": "H12",
+     "mta": "12/8",
+     "mpouls": "80",
+     "saign": "Abondant",
+     "bfr": "40",
+     "bt": "36,8",
+     "bcordon": "Suintant"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H12",
+     "detail": "mère 12/8 · bébé FR 40",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "heure": "H24",
+     "mta": "11/7"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H24",
+     "detail": "mère 11/7 · bébé FR —",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "heure": "H8",
+     "bfr": "44"
+    },
+    "erreurs": {},
+    "op": {
+     "type": "surveillance",
+     "libelle": "Surveillance H8",
+     "detail": "mère — · bébé FR 44",
+     "etat": "en_attente"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "saisie": {
+     "mpouls": "300",
+     "bfr": "200",
+     "bt": "50"
+    },
+    "erreurs": {
+     "mpouls": "Le pouls : valeur improbable (30 à 220).",
+     "bfr": "La FR du bébé : valeur improbable (10 à 100).",
+     "bt": "La T° du bébé : valeur improbable (34 à 41)."
+    },
+    "op": null,
+    "toasts": []
+   }
+  ]
+ },
+ "orientation": {
+  "cas": [
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Médecin de garde",
+    "urg": "Normal",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Médecin de garde · Normal"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Médecin de garde",
+    "urg": "Urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Médecin de garde · Urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Médecin de garde",
+    "urg": "Très urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Médecin de garde · Très urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Laboratoire",
+    "urg": "Normal",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Laboratoire · Normal"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Laboratoire",
+    "urg": "Urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Laboratoire · Urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Laboratoire",
+    "urg": "Très urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Laboratoire · Très urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Salle de soins",
+    "urg": "Normal",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Salle de soins · Normal"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Salle de soins",
+    "urg": "Urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Salle de soins · Urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Salle de soins",
+    "urg": "Très urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Salle de soins · Très urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Maternité",
+    "urg": "Normal",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Maternité · Normal"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Maternité",
+    "urg": "Urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Maternité · Urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Maternité",
+    "urg": "Très urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Maternité · Très urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Caisse (dès retour du courant)",
+    "urg": "Normal",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Caisse (dès retour du courant) · Normal"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Caisse (dès retour du courant)",
+    "urg": "Urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Caisse (dès retour du courant) · Urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Caisse (dès retour du courant)",
+    "urg": "Très urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Caisse (dès retour du courant) · Très urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Référence vers un autre établissement",
+    "urg": "Normal",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Référence vers un autre établissement · Normal"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Référence vers un autre établissement",
+    "urg": "Urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Référence vers un autre établissement · Urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   },
+   {
+    "patient": "HOUNKPATIN Ida — PROV-1",
+    "dest": "Référence vers un autre établissement",
+    "urg": "Très urgent",
+    "op": {
+     "type": "orientation",
+     "libelle": "Orientation — HOUNKPATIN Ida",
+     "detail": "Référence vers un autre établissement · Très urgent"
+    },
+    "toasts": [
+     "Enregistré — envoi en cours."
+    ]
+   }
+  ],
+  "sansDossier": {
+   "titre": "Orienter un patient",
+   "sous": null,
+   "textes": [
+    "Ouvrez d’abord un dossier."
+   ],
+   "champs": [],
+   "boutons": [],
+   "onglets": [
+    "Accueil",
+    "Synchro",
+    "À traiter",
+    "Réglages"
+   ],
+   "notes": [],
+   "cartes": [],
+   "items": [],
+   "kpis": [],
+   "vide": "Ouvrez d’abord un dossier."
+  },
+  "fiche": {
+   "titre": "Orienter un patient",
+   "sous": null,
+   "textes": [],
+   "champs": [
+    {
+     "section": null,
+     "id": "pat",
+     "libelle": "Patient",
+     "requis": false,
+     "type": "select",
+     "saisie": null,
+     "clavier": null,
+     "placeholder": null,
+     "options": [
+      "AKPO Marc — CNT/1241/26",
+      "HOUNKPATIN Ida — PROV-1"
+     ],
+     "valeur": "AKPO Marc — CNT/1241/26"
+    },
+    {
+     "section": null,
+     "id": "dest",
+     "libelle": "Orienter vers",
+     "requis": false,
+     "type": "select",
+     "saisie": null,
+     "clavier": null,
+     "placeholder": null,
+     "options": [
+      "Médecin de garde",
+      "Laboratoire",
+      "Salle de soins",
+      "Maternité",
+      "Caisse (dès retour du courant)",
+      "Référence vers un autre établissement"
+     ],
+     "valeur": "Médecin de garde"
+    },
+    {
+     "section": null,
+     "id": "urg",
+     "libelle": "Degré",
+     "requis": false,
+     "type": "select",
+     "saisie": null,
+     "clavier": null,
+     "placeholder": null,
+     "options": [
+      "Normal",
+      "Urgent",
+      "Très urgent"
+     ],
+     "valeur": "Normal"
+    }
+   ],
+   "boutons": [
+    "Envoyer l’orientation"
+   ],
+   "onglets": [
+    "Accueil",
+    "Synchro",
+    "À traiter",
+    "Réglages"
+   ],
+   "notes": [],
+   "cartes": [],
+   "items": [],
+   "kpis": []
+  },
+  "horsLigne": {
+   "etat": "en_attente",
+   "toasts": [
+    "Enregistré sur le téléphone — part dès que le réseau revient."
+   ]
+  },
+  "retour": "accueil-reception.php?os=android&profil=reception"
+ },
+ "fermes": {
+  "cpn/medecin": {
+   "titre": "Visite prénatale (CPN)",
+   "note": "Écran fermé au profil « Médecin ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "cpn/soignant": {
+   "titre": "Visite prénatale (CPN)",
+   "note": "Écran fermé au profil « Soignant (infirmier) ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "cpn/reception": {
+   "titre": "Visite prénatale (CPN)",
+   "note": "Écran fermé au profil « Réception de secours ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "cpon/medecin": {
+   "titre": "Visite post-natale (CPoN)",
+   "note": "Écran fermé au profil « Médecin ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "surveillance/soignant": {
+   "titre": "Surveillance mère-bébé",
+   "note": "Écran fermé au profil « Soignant (infirmier) ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "surveillance/reception": {
+   "titre": "Surveillance mère-bébé",
+   "note": "Écran fermé au profil « Réception de secours ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "orientation/sagefemme": {
+   "titre": "Orienter un patient",
+   "note": "Écran fermé au profil « Sage-femme ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "orientation/soignant": {
+   "titre": "Orienter un patient",
+   "note": "Écran fermé au profil « Soignant (infirmier) ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "orientation/medecin": {
+   "titre": "Orienter un patient",
+   "note": "Écran fermé au profil « Médecin ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  },
+  "lot/reception": {
+   "titre": "Lot de tournée",
+   "note": "Écran fermé au profil « Réception de secours ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.",
+   "bouton": "Retour à l’accueil"
+  }
+ },
+ "reglages": {
+  "profils": {
+   "soignant": {
+    "titre": "Réglages",
+    "sous": null,
+    "textes": [
+     "Profil",
+     "Soignant (infirmier)",
+     "Agent",
+     "BADO BANI A. B. Zoulehath",
+     "Appareil u-06 · version 1.0.1 · schéma v66",
+     "Activé",
+     "Actif",
+     "Activées"
+    ],
+    "champs": [],
+    "boutons": [
+     "Réinitialiser l’appairage"
+    ],
+    "onglets": [
+     "Accueil",
+     "Synchro",
+     "À traiter",
+     "Réglages"
+    ],
+    "notes": [],
+    "cartes": [
+     "Ce téléphone"
+    ],
+    "items": [
+     {
+      "titre": "Verrouillage automatique",
+      "detail": "après 5 minutes d’inactivité",
+      "fin": "Activé"
+     },
+     {
+      "titre": "Effacement à distance",
+      "detail": "à la révocation, au prochain contact",
+      "fin": "Actif"
+     },
+     {
+      "titre": "Notifications",
+      "detail": "réveil seulement — aucune donnée de santé",
+      "fin": "Activées"
+     }
+    ],
+    "kpis": []
+   },
+   "medecin": {
+    "titre": "Réglages",
+    "sous": null,
+    "textes": [
+     "Profil",
+     "Médecin",
+     "Agent",
+     "Dr YENI M’PO Florent",
+     "Appareil u-07 · version 1.0.1 · schéma v66",
+     "Activé",
+     "Actif",
+     "Activées"
+    ],
+    "champs": [],
+    "boutons": [
+     "Réinitialiser l’appairage"
+    ],
+    "onglets": [
+     "Accueil",
+     "Synchro",
+     "À traiter",
+     "Réglages"
+    ],
+    "notes": [],
+    "cartes": [
+     "Ce téléphone"
+    ],
+    "items": [
+     {
+      "titre": "Verrouillage automatique",
+      "detail": "après 5 minutes d’inactivité",
+      "fin": "Activé"
+     },
+     {
+      "titre": "Effacement à distance",
+      "detail": "à la révocation, au prochain contact",
+      "fin": "Actif"
+     },
+     {
+      "titre": "Notifications",
+      "detail": "réveil seulement — aucune donnée de santé",
+      "fin": "Activées"
+     }
+    ],
+    "kpis": []
+   },
+   "sagefemme": {
+    "titre": "Réglages",
+    "sous": null,
+    "textes": [
+     "Profil",
+     "Sage-femme",
+     "Agent",
+     "Sage-femme de garde",
+     "Appareil u-07 · version 1.0.1 · schéma v66",
+     "Activé",
+     "Actif",
+     "Activées"
+    ],
+    "champs": [],
+    "boutons": [
+     "Réinitialiser l’appairage"
+    ],
+    "onglets": [
+     "Accueil",
+     "Synchro",
+     "À traiter",
+     "Réglages"
+    ],
+    "notes": [],
+    "cartes": [
+     "Ce téléphone"
+    ],
+    "items": [
+     {
+      "titre": "Verrouillage automatique",
+      "detail": "après 5 minutes d’inactivité",
+      "fin": "Activé"
+     },
+     {
+      "titre": "Effacement à distance",
+      "detail": "à la révocation, au prochain contact",
+      "fin": "Actif"
+     },
+     {
+      "titre": "Notifications",
+      "detail": "réveil seulement — aucune donnée de santé",
+      "fin": "Activées"
+     }
+    ],
+    "kpis": []
+   },
+   "reception": {
+    "titre": "Réglages",
+    "sous": null,
+    "textes": [
+     "Profil",
+     "Réception de secours",
+     "Agent",
+     "OROU YO Edmond",
+     "Appareil u-07 · version 1.0.1 · schéma v66",
+     "Activé",
+     "Actif",
+     "Activées"
+    ],
+    "champs": [],
+    "boutons": [
+     "Réinitialiser l’appairage"
+    ],
+    "onglets": [
+     "Accueil",
+     "Synchro",
+     "À traiter",
+     "Réglages"
+    ],
+    "notes": [],
+    "cartes": [
+     "Ce téléphone"
+    ],
+    "items": [
+     {
+      "titre": "Verrouillage automatique",
+      "detail": "après 5 minutes d’inactivité",
+      "fin": "Activé"
+     },
+     {
+      "titre": "Effacement à distance",
+      "detail": "à la révocation, au prochain contact",
+      "fin": "Actif"
+     },
+     {
+      "titre": "Notifications",
+      "detail": "réveil seulement — aucune donnée de santé",
+      "fin": "Activées"
+     }
+    ],
+    "kpis": []
+   }
+  },
+  "confirmation": {
+   "type": "confirm",
+   "message": "Les saisies non envoyées seront EXPORTÉES avant effacement. Continuer ?",
+   "urlApres": "parametres.php",
+   "appaire": null
+  },
+  "acceptation": {
+   "urlApres": "appairage.php",
+   "appaire": "false"
+  }
+ },
+ "lot": {
+  "cas": [
+   {
+    "nom": "dans 10 h",
+    "deltaMs": 36030000,
+    "validite": "10 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 90 min",
+    "deltaMs": 5430000,
+    "validite": "2 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 89 min",
+    "deltaMs": 5340000,
+    "validite": "1 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 31 min",
+    "deltaMs": 1860000,
+    "validite": "1 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 29 min",
+    "deltaMs": 1740000,
+    "validite": "0 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 1 min",
+    "deltaMs": 60000,
+    "validite": "0 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 150 min",
+    "deltaMs": 9030000,
+    "validite": "3 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 149 min",
+    "deltaMs": 8940000,
+    "validite": "2 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "dans 48 h",
+    "deltaMs": 172830000,
+    "validite": "48 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "expire à l’instant",
+    "deltaMs": -1000,
+    "validite": "0 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   },
+   {
+    "nom": "expiré depuis 5 h",
+    "deltaMs": -18000000,
+    "validite": "0 h",
+    "dossiers": "4",
+    "note": [
+     "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    ]
+   }
+  ],
+  "defaut": {
+   "titre": "Lot de tournée",
+   "sous": null,
+   "textes": [
+    "Dossiers",
+    "Validité restante"
+   ],
+   "champs": [],
+   "boutons": [],
+   "onglets": [
+    "Accueil",
+    "Synchro",
+    "À traiter",
+    "Réglages"
+   ],
+   "notes": [
+    {
+     "ton": "warn",
+     "texte": "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+    }
+   ],
+   "cartes": [
+    "Lot du jour"
+   ],
+   "items": [
+    {
+     "titre": "DOSSOU Aline",
+     "detail": "CNT/12/26",
+     "fin": ""
+    },
+    {
+     "titre": "KPOGNON Rose",
+     "detail": "CNT/174/26",
+     "fin": ""
+    },
+    {
+     "titre": "TAMOU Félix",
+     "detail": "CNT/1109/26",
+     "fin": ""
+    },
+    {
+     "titre": "SOUROU Mariam",
+     "detail": "CNT/913/25",
+     "fin": ""
+    }
+   ],
+   "kpis": [
+    [
+     "Dossiers",
+     "4"
+    ],
+    [
+     "Validité restante",
+     "10 h"
+    ]
+   ]
+  },
+  "sansDossier": [
+   [
+    "Dossiers",
+    "0"
+   ],
+   [
+    "Validité restante",
+    "10 h"
+   ]
+  ],
+  "pour_medecin": 4,
+  "pour_sagefemme": 4
+ },
+ "pin": {
+  "sequences": [
+   {
+    "profil": "soignant",
+    "touches": [
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "pas": [
+     {
+      "touche": "1",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "4",
+      "msg": null,
+      "points": 0,
+      "url": "accueil-soignant.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "0",
+     "0",
+     "0",
+     "0"
+    ],
+    "pas": [
+     {
+      "touche": "0",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "0",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "0",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "0",
+      "msg": "Code incorrect (1/3).",
+      "points": 0,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "9",
+     "9",
+     "9",
+     "9",
+     "1",
+     "1",
+     "1",
+     "1",
+     "2",
+     "2",
+     "2",
+     "2"
+    ],
+    "pas": [
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (1/3).",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (2/3).",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (2/3).",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (2/3).",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (2/3).",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Trop d’essais — réessayez dans 30 s.",
+      "points": 0,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "9",
+     "9",
+     "9",
+     "9",
+     "1",
+     "1",
+     "1",
+     "1",
+     "2",
+     "2",
+     "2",
+     "2",
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "pas": [
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (1/3).",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (2/3).",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (2/3).",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (2/3).",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (2/3).",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Trop d’essais — réessayez dans 30 s.",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Trop d’essais — réessayez dans 30 s.",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Trop d’essais — réessayez dans 30 s.",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "Trop d’essais — réessayez dans 30 s.",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "4",
+      "msg": "Trop d’essais — réessayez dans 30 s.",
+      "points": 0,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "1",
+     "2",
+     "⌫",
+     "3",
+     "4"
+    ],
+    "pas": [
+     {
+      "touche": "1",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "⌫",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "4",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "1",
+     "2",
+     "⌫",
+     "⌫",
+     "⌫",
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "pas": [
+     {
+      "touche": "1",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "⌫",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "⌫",
+      "msg": "",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "⌫",
+      "msg": "",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "4",
+      "msg": null,
+      "points": 0,
+      "url": "accueil-soignant.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "1",
+     "2",
+     "3"
+    ],
+    "pas": [
+     {
+      "touche": "1",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "1",
+     "2",
+     "3",
+     "⌫"
+    ],
+    "pas": [
+     {
+      "touche": "1",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "⌫",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "⌫"
+    ],
+    "pas": [
+     {
+      "touche": "⌫",
+      "msg": "",
+      "points": 0,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "9",
+     "9",
+     "9",
+     "9",
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "pas": [
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (1/3).",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (1/3).",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "Code incorrect (1/3).",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "4",
+      "msg": null,
+      "points": 0,
+      "url": "accueil-soignant.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "9",
+     "9",
+     "9",
+     "9",
+     "9",
+     "9",
+     "9",
+     "9",
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "pas": [
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (1/3).",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (1/3).",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (1/3).",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (1/3).",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "9",
+      "msg": "Code incorrect (2/3).",
+      "points": 0,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (2/3).",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "Code incorrect (2/3).",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "Code incorrect (2/3).",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "4",
+      "msg": null,
+      "points": 0,
+      "url": "accueil-soignant.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "4",
+     "3",
+     "2",
+     "1"
+    ],
+    "pas": [
+     {
+      "touche": "4",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "1",
+      "msg": "Code incorrect (1/3).",
+      "points": 0,
+      "url": "verrou.php"
+     }
+    ]
+   },
+   {
+    "profil": "soignant",
+    "touches": [
+     "1",
+     "2",
+     "3",
+     "5"
+    ],
+    "pas": [
+     {
+      "touche": "1",
+      "msg": "",
+      "points": 1,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "2",
+      "msg": "",
+      "points": 2,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "3",
+      "msg": "",
+      "points": 3,
+      "url": "verrou.php"
+     },
+     {
+      "touche": "5",
+      "msg": "Code incorrect (1/3).",
+      "points": 0,
+      "url": "verrou.php"
+     }
+    ]
+   }
+  ],
+  "pave": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "6",
+   "7",
+   "8",
+   "9",
+   "",
+   "0",
+   "⌫"
+  ],
+  "invite": "Saisissez votre code à 4 chiffres.",
+  "demo": "Démonstration : 1234",
+  "accueilParProfil": {
+   "soignant": "accueil-soignant",
+   "medecin": "accueil-medecin",
+   "sagefemme": "accueil-sagefemme",
+   "reception": "accueil-reception"
+  },
+  "apresBlocage": "Trop d’essais — réessayez dans 30 s.",
+  "apresRechargement": ""
+ },
+ "ecransProfils": {
+  "soignant": [
+   "appairage",
+   "verrou",
+   "accueil-soignant",
+   "dossier",
+   "constantes",
+   "sync",
+   "a-traiter",
+   "lot",
+   "parametres"
+  ],
+  "medecin": [
+   "appairage",
+   "verrou",
+   "accueil-medecin",
+   "dossier",
+   "constantes",
+   "consultation",
+   "prescription",
+   "demande-analyse",
+   "sync",
+   "a-traiter",
+   "lot",
+   "parametres"
+  ],
+  "sagefemme": [
+   "appairage",
+   "verrou",
+   "accueil-sagefemme",
+   "dossier",
+   "constantes",
+   "cpn",
+   "cpon",
+   "surveillance",
+   "sync",
+   "a-traiter",
+   "lot",
+   "parametres"
+  ],
+  "reception": [
+   "appairage",
+   "verrou",
+   "accueil-reception",
+   "nouveau-dossier",
+   "dossiers-crees",
+   "orientation",
+   "sync",
+   "a-traiter",
+   "parametres"
+  ]
+ },
+ "profils": {
+  "soignant": {
+   "label": "Soignant (infirmier)",
+   "agent": "BADO BANI A. B. Zoulehath",
+   "accueil": "accueil-soignant"
+  },
+  "medecin": {
+   "label": "Médecin",
+   "agent": "Dr YENI M’PO Florent",
+   "accueil": "accueil-medecin"
+  },
+  "sagefemme": {
+   "label": "Sage-femme",
+   "agent": "Sage-femme de garde",
+   "accueil": "accueil-sagefemme"
+  },
+  "reception": {
+   "label": "Réception de secours",
+   "agent": "OROU YO Edmond",
+   "accueil": "accueil-reception"
+  }
+ }
+}

@@ -14,7 +14,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* ==========================================================================
    * LA PART NON ASSURÉE N'EST PAS LA PART PATIENT
@@ -36,6 +36,8 @@
   }
 
   function factures() { return S.collection('factures').active(); }
+
+  var rangSerieFactures = function (prefixe) { return PR.rangSerieFactures(prefixe); };   /* le moteur de série vit au socle (parcours.js) */
   function patients() { return S.collection('patients').active(); }
   function produits() { return S.collection('produits').active(); }
 
@@ -84,15 +86,17 @@
     text: function (f) { return C.dateFR(f.date); },
     render: function (f) { return C.dateFR(f.date); },
   };
+  /* LOT TARIF-FIX-2 : une pièce en attente de prix a un total NON CALCULABLE (nul), jamais 0. */
   var colMontant = {
     key: 'montantTTC', label: 'Montant', align: 'right',
-    text: function (f) { return C.money(f.montantTTC, false); },
-    render: function (f) { return el('span.font-semibold', { text: C.money(f.montantTTC, false) }); },
+    text: function (f) { return f.enAttentePrix ? 'Non calculable' : C.money(f.montantTTC, false); },
+    render: function (f) { return f.enAttentePrix ? el('span.text-xs.font-medium.text-warning-700', { text: 'Non calculable : prix à définir' }) : el('span.font-semibold', { text: C.money(f.montantTTC, false) }); },
   };
   var colReliquat = {
     key: 'reliquat', label: 'Reste dû', align: 'right',
-    text: function (f) { return C.money(f.reliquat, false); },
+    text: function (f) { return f.enAttentePrix ? 'Non calculable' : C.money(f.reliquat, false); },
     render: function (f) {
+      if (f.enAttentePrix) return el('span.text-xs.font-medium.text-warning-700', { text: 'Non calculable' });
       return f.reliquat > 0
         ? el('span.font-semibold.text-danger-600', { text: C.money(f.reliquat, false) })
         : el('span.text-xs.text-slate-400', { text: '—' });
@@ -144,6 +148,25 @@
       ], f.lignes)));
     }
     return wrap;
+  }
+
+  /* --- Plus de bloc « Facture normalisée » (Direction, 16/11/2026, lot FISC-2) ----------------------------------------------------
+     La facture d'un PATIENT ne porte ni IFU de l'acheteur, ni nom de l'acheteur, ni taux d'AIB : le patient paie le montant total, seul affiché
+     sur sa facture de caisse. La vente reste NORMALISÉE (sans acheteur : particulier, AIB nul). Le moteur refuse aussi un taux demandé
+     (`AIB_FACTURE_PATIENT`). L'AIB concerne les règlements de la clinique à des tiers : il s'impute à « Barème de l'AIB », onglet « Imputations ». */
+  /** Ce que la normalisation a rendu, dit au guichet : une pièce refusée ou à vérifier se DIT, avec son code, son motif et son geste. */
+  /** LOT TARIF-FIX-2 : à la place d'une commande « Encaisser » ABSENTE, le motif du refus (code, motif, geste) que le moteur opposerait. */
+  function motifSansPrix(refus) {
+    var m = refus || { code: 'ENCAISSEMENT_PRIX_MANQUANT', motif: 'Ligne sans prix.', geste: '' };
+    return el('span.inline-flex.max-w-xs.items-start.gap-1.text-xs.text-warning-800', { 'data-empechement': m.code, title: m.motif + ' ' + (m.geste || '') }, [
+      C.icon('triangle-alert', 'h-3.5 w-3.5 shrink-0'),
+      el('span', { text: 'En attente de prix : ' + (m.lignes || []).map(function (x) { return '« ' + x.code + ' » ' + (x.nature === 'prix_achat' ? 'prix à valoriser' : 'prix à définir'); }).join(', ') }),
+    ]);
+  }
+  function annonceNormalisation(n) {
+    if (!n || n.ignore) return;
+    if (n.ok) { U.toast('Vente normalisée : ' + n.numero + '.', { type: 'success', detail: 'Numéro de démonstration, non fiscal (simulation de la maquette).' }); return; }
+    U.toast('Normalisation non aboutie (' + n.code + ') : la vente est encaissée mais pas normalisée.', { type: 'warning', detail: n.motif + ' ' + n.geste, duration: 12000 });
   }
 
   /* --- Facture normalisée imprimable --------------------------------------- */
@@ -264,8 +287,8 @@
         el('div.grid.h-16.w-16.shrink-0.place-items-center.border.border-slate-400.text-\\[8px\\].text-slate-400', { text: 'QR MECeF' }),
         el('div', null, [
           el('p.text-\\[9px\\].font-semibold', { text: 'Identifiant fiscal MECeF : ' + f.numeroMecef }),
-          el('p.text-\\[9px\\]', { text: 'IFU : ' + C.BRAND.ifu + ' — RCCM : ' + C.BRAND.rccm }),
-          el('p.text-\\[9px\\]', { text: 'Statut de transmission : ' + (f.statutMecef === 'valide' ? 'validée par l’administration fiscale' : f.statutMecef) }),
+          el('p.text-\\[9px\\]', { text: 'IFU : ' + C.identiteALaDate(f.date).ifu + ' — RCCM : ' + C.identiteALaDate(f.date).rccm }),
+          el('p.text-\\[9px\\]', { text: 'Statut de transmission : ' + (f.statutMecef === 'valide' ? 'validée par l’administration fiscale' : ((PR.mecef.fiche(PR.mecef.etat(f)) || {}).libelle || f.statutMecef)) }),
         ]),
       ]));
     }
@@ -278,6 +301,8 @@
       titre: o.proforma ? 'Facture pro-forma' : 'Facture normalisée',
       sousTitre: f.numero + (f.numeroMecef && !o.proforma ? ' — ' + f.numeroMecef : ''),
       filigrane: o.proforma ? 'Pro-forma' : null,
+      /* L'en-tête légal est celui de la DATE de la pièce : une facture émise sous l'ancien RCCM le garde. */
+      date: f.date,
       cartouche: [
         ['Facture n°', f.numero],
         ['Date', C.dateFR(f.date)],
@@ -286,8 +311,8 @@
         ['Nature', f.type],
         ['Assurance', f.assureur ? f.assureur + (f.souscripteur ? ' — ' + f.souscripteur : '') : 'Aucune'],
         ['N° de police', f.numeroPolice || '—'],
-        /* Les pièces de caisse portent l'autre RCCM (relevé sur les factures réelles). */
-        ['RCCM', C.BRAND.rccm],
+        /* Le RCCM du CORPS est celui de la DATE de la pièce, comme l'en-tête (lot IDENT). */
+        ['RCCM', C.identiteALaDate(f.date).rccm],
       ],
       contenu: contenu,
       /* Pas de signature patient sur une pièce de caisse : c'est la caisse
@@ -360,7 +385,7 @@
                 render: function () {
                   var jours = [], data = [];
                   for (var d = 1; d <= AUJ.getDate(); d++) {
-                    var jour = new Date(2026, 7, d);
+                    var jour = new Date(AUJ.getFullYear(), AUJ.getMonth(), d);
                     jours.push(String(d));
                     data.push(factures().filter(function (f) { return C.iso(f.date) === C.iso(jour); }).length);
                   }
@@ -551,27 +576,28 @@
             liste = [{ label: 'Aucun acte tarifé — voir le référentiel tarifaire', prix: 0 }];
           }
         } else if (nature === 'analyse') {
-          liste = D.ANALYSES.map(function (a) { return { label: a.designation, prix: a.prix }; });
+          liste = D.ANALYSES.map(function (a) { return { label: a.designation, prix: PR.prixAnalyseALaDate(a.code, null, false) }; });
         } else if (nature === 'medicament') {
+          /* Le prix de vente DÉRIVÉ (RG-02) de la version EN VIGUEUR (PRD-TARIFS, lot T5) ; un prix d'achat absent ne se vend jamais à zéro : `prix: null`, la ligne se refuse. */
           liste = produits().filter(function (p) { return p.stockDetail > 0; })
-            .map(function (p) { return { label: p.designation + ' (' + p.stockDetail + ' ' + p.unite + ')', prix: p.prixVente, produitId: p.id }; });
+            .map(function (p) { var px = PR.prixProduitALaDate(p, new Date().toISOString()); return { label: p.designation + ' (' + p.stockDetail + ' ' + p.unite + ')', prix: px.absent ? null : px.vente, produitId: p.id, motifPrix: px.absent ? px.motif : null }; });
         } else if (nature === 'hospitalisation') {
-          liste = D.TYPES_CHAMBRE.map(function (t) { return { label: 'Journée — chambre ' + t.label, prix: t.tarif }; });
+          liste = D.TYPES_CHAMBRE.map(function (t) { return { label: 'Journée — chambre ' + t.label, prix: PR.prixChambreALaDate(t.id, null) }; });
         }
         selArticle.setOptions(liste.map(function (x, i) {
-          return { value: String(i), label: x.label, detail: C.money(x.prix, false) };
+          return { value: String(i), label: x.label, detail: x.prix == null ? 'prix à valider' : C.money(x.prix, false) };
         }));
         if (liste.length) selArticle.value = '0';
         selArticle._liste = liste;
         var visible = nature !== 'libre';
         if (wrapArticle) wrapArticle.hidden = !visible;
         if (wrapLibre) wrapLibre.hidden = visible;
-        if (visible && liste.length) pu.value = liste[0].prix;
+        if (visible && liste.length) pu.value = liste[0].prix == null ? '' : liste[0].prix;
       }
       selNature.addEventListener('change', remplirArticles);
       selArticle.addEventListener('change', function () {
         var x = (selArticle._liste || [])[Number(selArticle.value)];
-        if (x) pu.value = x.prix;
+        if (x) pu.value = x.prix == null ? '' : x.prix;
       });
 
       wrapArticle = el('div.min-w-\\[16rem\\].flex-1', null, [el('label.label', { text: 'Prestation' }), selArticle]);
@@ -601,6 +627,7 @@
               var x = (selArticle._liste || [])[Number(selArticle.value)];
               if (!x) { U.toast('Sélectionner une prestation.', { type: 'error' }); return; }
               designation = x.label; produitId = x.produitId || null;
+              if (produitId && x.prix == null) { U.toast(x.motifPrix || 'Prix d’achat absent.', { type: 'error', detail: 'Renseigner le prix d’achat au Référentiel produits (« Changer le prix d’achat ») : un article ne se vend jamais à zéro.' }); return; }
             }
             var q = Number(qte.value) || 0, prix = Number(pu.value) || 0;
             if (q <= 0) { U.toast('La quantité doit être positive.', { type: 'error' }); return; }
@@ -702,7 +729,7 @@
           dissocier,
           el('span.text-xs.text-slate-600', { text: 'Opération de caisse détachée du dossier patient (vente au comptoir)' }),
         ]),
-      ])));
+      ].filter(Boolean))));
 
       /* La répartition n'est plus un taux unique appliqué au total : le moteur
          de prise en charge traite chaque ligne selon sa catégorie, son plafond,
@@ -856,6 +883,13 @@
         }
 
         var creees = [], annulations = [];
+        /* Le rang part du nombre de factures AVANT l'émission : le relire dans la boucle compterait deux fois la pièce -A
+           déjà insérée et laisserait un trou entre -A et -B (écart E6b, corrigé le 30/10/2026). */
+        var datePiece = C.iso(C.aujourdhui());
+        var prefixePiece = (proforma ? 'PRO-' : 'FN-') + datePiece.slice(0, 4) + '-';
+        /* E6 (corrigé le 31/10/2026) : le millésime est lu sur la DATE de la pièce et le rang est celui de la série de
+           l'année (jamais le nombre total de factures : le 1ᵉʳ janvier la série repart à 00001). */
+        var rangDebut = rangSerieFactures(prefixePiece) - 1;
         pieces.forEach(function (piece, rang) {
           var totalPiece = C.sum(piece.lignes, 'montant');
           var assPiece = C.sum(piece.lignes, 'partAssureur');
@@ -866,20 +900,35 @@
           var reglePiece = proforma ? 0 : Math.min(aRegler, patPiece);
           if (rang > 0) reglePiece = Math.max(0, Math.min(aRegler - C.sum(creees, 'montantPaye'), patPiece));
 
+          /* LES LIGNES PORTENT L'ÉTAT DE RÈGLEMENT (écart corrigé le 06/11/2026) : id et statutPaiement, comme PR.prescrire.
+             Le versement saisi couvre les lignes dans l'ordre de la pièce, une ligne n'étant réglée que si elle l'est ENTIÈREMENT
+             (la règle du moteur d'encaissement). Sans cela le reçu, le registre et « Encaisser le reste » lisaient des lignes
+             sans identifiant ni état. */
+          var resteAAllouer = reglePiece;
+          piece.lignes = piece.lignes.map(function (l, i) {
+            var due = l.partPatient || 0;
+            var payee = !proforma && due > 0 && due <= resteAAllouer;
+            if (payee) resteAAllouer -= due;
+            var r = Object.assign({}, l, { id: 'L' + C.pad(i + 1, 3), statutPaiement: payee ? 'paye' : 'du' });
+            if (payee) { r.montantRegle = due; r.payeLe = new Date().toISOString(); r.payePar = S.currentUser(); }
+            return r;
+          });
+
           var suffixe = piece.volet === 'couvert' ? '-A' : (piece.volet === 'non_couvert' ? '-B' : '');
           var f = {
-            numero: (proforma ? 'PRO-2026-' : 'FN-2026-') + C.pad(factures().length + 1 + rang, 5) + suffixe,
+            numero: prefixePiece + C.pad(rangDebut + 1 + rang, 5) + suffixe,
             /* Point fiscal : la MECeF ne normalise que la part réglée par le
                patient. Une pièce entièrement à la charge de l'assureur n'y va
                pas, et les remises n'y entrent jamais. */
-            numeroMecef: (proforma || patPiece === 0) ? null : 'MECEF' + C.between(C.seeded(Date.now() % 100000 + rang), 1000000, 9999999),
+            /* Le numéro fiscal vient de la normalisation (faux boîtier), jamais d'un tirage à l'émission : une vente non soldée n'en porte pas. */
+            numeroMecef: null,
             baseMecef: proforma ? 0 : reglePiece,
             patientId: patientCourant.id, patient: patientCourant.nom + ' ' + patientCourant.prenom,
             patientCode: dissocier.checked ? null : patientCourant.code,
             /* Le cahier de charge demande de pouvoir détacher l'opération de
                caisse du numéro de dossier (vente au comptoir). */
             operationDissociee: !!dissocier.checked,
-            date: C.iso(AUJ), type: selType.value,
+            date: datePiece, type: selType.value,
             volet: piece.volet,
             libelleVolet: piece.volet === 'couvert' ? 'Prestations couvertes par l’assurance'
               : (piece.volet === 'non_couvert' ? 'Prestations non couvertes — à la charge du patient' : null),
@@ -894,12 +943,25 @@
             montantPaye: reglePiece, reliquat: patPiece - reglePiece,
             modePaiement: selMode.value,
             statutPaiement: proforma ? 'impayee' : (reglePiece >= patPiece ? 'soldee' : (reglePiece > 0 ? 'partielle' : 'impayee')),
-            statutMecef: (proforma || patPiece === 0) ? 'en_attente' : 'valide',
+            statutMecef: 'en_attente',
             proforma: !!proforma,
           };
           var res = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert(f);
           creees.push(res.record);
           annulations.push(res.undo);
+          /* LE COMPTABLE EST INFORMÉ DÈS L'ÉMISSION (E2260) : « Enregistrer et encaisser » n'écrivait RIEN au journal. L'écriture est celle du moteur
+             d'encaissement (débit 571 de ce que le patient verse, débit 411 de la part assureur, crédit 706 du total), équilibrée (RG-10) et en
+             brouillon. Une pro-forma n'est pas une pièce comptable. Annuler l'émission archive ses écritures (RG-14). */
+          if (!proforma) {
+            var posees = PR.ecrireEncaissement(res.record, reglePiece);
+            annulations.push(function () { posees.forEach(function (e) { S.collection('ecritures').archive(e.id); }); });
+            /* TOUTE VENTE SOLDÉE EST NORMALISÉE ; une pièce à la charge de l'assureur seul (part patient nulle) n'a rien à normaliser. */
+            if (res.record.statutPaiement === 'soldee' && patPiece > 0) {
+              var norm = PR.mecef.normaliser(res.record.id, {});
+              annonceNormalisation(norm);
+              creees[creees.length - 1] = S.collection('factures').get(res.record.id);
+            }
+          }
         });
 
         /* Sortie automatique du stock pour les médicaments facturés (CDCT §10.7) */
@@ -913,7 +975,7 @@
               stock: Math.max(0, prod.stock - l.quantite),
             });
             var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-              reference: C.nextRef('M', 6), date: C.iso(AUJ),
+              reference: C.nextRef('M', 6), date: C.iso(C.aujourdhui()),
               produitId: prod.id, produit: prod.designation,
               type: 'sortie', typeLabel: 'Sortie', quantite: l.quantite, stockType: 'detail',
               justificatif: 'Facture ' + creees[0].numero, utilisateur: S.currentUser(),
@@ -1117,6 +1179,14 @@
                 if (!v) return;
                 var ecart = v.compte - theorique;
                 m.close();
+                /* L'ARRÊTÉ EST CONSERVÉ avant d'être imprimé (RG-12) : sans fiche on ne pouvait ni relire un inventaire passé
+                   ni retrouver un écart expliqué. L'insertion journalise ; la fiche ne se supprime pas (RG-14). */
+                S.collection('inventairesCaisse', { module: 'M8', entite: 'InventaireCaisse' }).insert({
+                  periodicite: selPeriode.value, debut: C.iso(b.debut), fin: C.iso(b.fin),
+                  operations: ops.length, theorique: theorique, compte: v.compte, ecart: ecart,
+                  agent: v.agent, observation: v.observation || null,
+                  arreteLe: new Date().toISOString(), arretePar: S.currentUser(),
+                });
                 P.etat({
                   titre: 'Inventaire de caisse — ' + b.label.toLowerCase(),
                   sousTitre: C.dateFR(b.debut) + ' au ' + C.dateFR(b.fin),
@@ -1135,8 +1205,6 @@
                   signatures: [{ role: 'L’agent de caisse', nom: v.agent },
                     { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
                 });
-                S.log('Inventaire de caisse', 'M8', 'Caisse', C.iso(b.fin), null,
-                  { theorique: theorique, compte: v.compte, ecart: ecart });
               },
             }),
           ],
@@ -1319,7 +1387,7 @@
       ];
     },
     render: K.crud({
-      collection: 'factures', entite: 'facture', entiteP: 'factures', module: 'M8',
+      collection: 'factures', entite: 'facture', entiteP: 'factures', module: 'M8', exerciceChamp: 'date',
       /* Le formulaire générique du kit n'exposerait ni les lignes, ni les
          remises, ni la répartition : la création passe par l'écran d'émission. */
       creerVers: 'm8-facturation',
@@ -1349,7 +1417,7 @@
         {
           key: 'statutMecef', label: 'MECeF',
           render: function (f) {
-            var m = { valide: ['Validée', 'success'], en_attente: ['En attente', 'warning'], rejete: ['Rejetée', 'danger'] };
+            var m = {}; PR.mecef.ETATS.forEach(function (e) { m[e.stocke] = [e.libelle, e.ton]; });
             var x = m[f.statutMecef] || ['—', 'neutral'];
             return U.badge(x[0], x[1]);
           },
@@ -1385,14 +1453,17 @@
         v.montantPaye = Math.min(Number(v.montantPaye) || 0, v.partPatient);
         v.reliquat = v.partPatient - v.montantPaye;
         v.statutPaiement = v.reliquat <= 0 ? 'soldee' : (v.montantPaye > 0 ? 'partielle' : 'impayee');
-        if (!v.numero) v.numero = 'FN-2026-' + C.pad(factures().length + 1, 5);
+        if (!v.numero) {
+          var prefixeCree = 'FN-' + String(v.date || C.iso(C.aujourdhui())).slice(0, 4) + '-';
+          v.numero = prefixeCree + C.pad(rangSerieFactures(prefixeCree), 5);
+        }
         if (!v.statutMecef) v.statutMecef = 'en_attente';
         return v;
       },
       filters: [
         { name: 'statutPaiement', label: 'Règlement', options: [{ value: 'soldee', label: 'Soldée' }, { value: 'partielle', label: 'Partielle' }, { value: 'impayee', label: 'Impayée' }] },
         { name: 'type', label: 'Nature', options: ['Consultation', 'Hospitalisation', 'Laboratoire', 'Pharmacie', 'Soins à domicile'] },
-        { name: 'statutMecef', label: 'MECeF', options: [{ value: 'valide', label: 'Validée' }, { value: 'en_attente', label: 'En attente' }, { value: 'rejete', label: 'Rejetée' }] },
+        { name: 'statutMecef', label: 'MECeF', options: PR.mecef.ETATS.map(function (e) { return { value: e.stocke, label: e.libelle }; }) },
         {
           name: 'assurance', label: 'Couverture',
           options: [{ value: 'oui', label: 'Avec assurance' }, { value: 'non', label: 'Sans assurance' }],
@@ -1419,9 +1490,13 @@
     title: 'Factures pro-forma',
     description: 'Estimations remises au patient ou à l’assureur avant réalisation des prestations.',
     regle: 'La facture pro-forma n’a <strong>aucune valeur fiscale</strong> : elle ne peut ni servir de justificatif comptable ni être transmise au dispositif MECeF.',
-    render: function (root) {
+    render: function render(root) {
       var rows = factures().filter(function (f) { return f.proforma || String(f.numero).indexOf('PRO-') === 0; });
       var host = el('div.space-y-4');
+      var PRC = global.SIGH.parcours;
+      host.appendChild(K.note('<strong>Convertie en vente, une pro-forma se facture au prix du jour</strong>, l’écart avec son prix étant affiché (bouton « Prix à la conversion »), '
+        + 'sauf pendant <strong>' + PRC.validiteProformaJours() + ' jours</strong> : dans ce délai le prix de la pro-forma est tenu. Cette durée est un réglage en base, <strong>à valider</strong> par la Direction (proposition : '
+        + PRC.VALIDITE_PROFORMA_DEFAUT + ' jours).', { tone: 'info', icon: 'scale' }));
 
       host.appendChild(U.kpiGrid([
         { label: 'Pro-forma établies', value: C.num(rows.length), icon: 'file-text', tone: 'navy' },
@@ -1440,11 +1515,52 @@
           colMontant,
         ],
         onRowClick: function (f) { U.drawer({ title: f.numero, subtitle: f.patient, body: detailFacture(f), footer: [K.btn('Imprimer', { variant: 'primary', icon: 'printer', onclick: function () { etatFacture(f, { proforma: true }); } })] }); },
-        rowActions: function (f) { return [K.iconBtn('printer', 'Imprimer', function () { etatFacture(f, { proforma: true }); })]; },
-        actions: [K.droits().editer ? K.lien('m8-facturation', 'Nouvelle pro-forma', { size: 'sm', variant: 'primary', icon: 'plus' }) : null],
+        rowActions: function (f) {
+          return [K.iconBtn('printer', 'Imprimer', function () { etatFacture(f, { proforma: true }); }),
+            K.iconBtn('scale', 'Prix à la conversion', function () { ecartConversion(f); })];
+        },
+        actions: [K.droits().editer ? K.lien('m8-facturation', 'Nouvelle pro-forma', { size: 'sm', variant: 'primary', icon: 'plus' }) : null,
+          global.SIGH.parcours.peutDeciderTarif() ? K.btn('Durée de validité', { size: 'sm', icon: 'timer', onclick: function () { reglerValidite(rafraichir); } }) : null],
       }));
+      function rafraichir() { C.clear(root); render(root); U.icons(root); }
       root.appendChild(host);
       return null;
+
+      /* L'écart de prix d'une pro-forma à sa conversion, ligne par ligne, et la règle qui s'applique (durée de validité). */
+      function ecartConversion(f) {
+        var r = PRC.ecartProforma(f.id);
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        var table = K.miniTable(['Ligne', 'Prix de la pro-forma', 'Prix du jour', 'Écart', 'Prix retenu'], r.lignes.map(function (l) {
+          return [l.designation + (l.sansTarif ? ' (' + l.sansTarif + ')' : ''), C.money(l.ancien, false), l.nouveau == null ? '—' : C.money(l.nouveau, false), l.nouveau == null ? '—' : (l.ecart > 0 ? '+' : '') + C.money(l.ecart, false), C.money(l.retenu, false)];
+        }));
+        var mo = U.modal({
+          title: 'Prix à la conversion : ' + r.numero, size: 'lg',
+          body: el('div.space-y-3', { 'data-ecart-proforma': r.regle }, [
+            K.note('Pro-forma du ' + C.dateFR(r.jourProforma) + ', conversion le ' + C.dateFR(r.jourConversion) + ' (' + r.ageJours + ' jour(s)). '
+              + (r.regle === 'prix_de_la_proforma' ? 'Dans la durée de validité (' + r.validiteJours + ' jours) : le <strong>prix de la pro-forma est tenu</strong>, l’écart est affiché pour information.'
+                : 'Au-delà de la durée de validité (' + r.validiteJours + ' jours) : la vente se facture au <strong>prix du jour</strong>, l’écart est affiché.'), { tone: r.regle === 'prix_de_la_proforma' ? 'info' : 'warning', icon: 'scale' }),
+            table,
+            el('p.text-sm.font-semibold.text-slate-800', { text: 'Écart total : ' + (r.ecartTotal > 0 ? '+' : '') + C.money(r.ecartTotal, false) }),
+          ]),
+          footer: [K.btn('Fermer', { onclick: function () { mo.close(); } })],
+        });
+        U.icons(document.body);
+      }
+      function reglerValidite(apres) {
+        var fm = U.form([
+          { name: 'jours', label: 'Durée de validité d’une pro-forma (jours)', type: 'number', required: true, min: 0, max: 365, col: 'full', help: 'Entier de 0 à 365. Valeur d’attente de ' + PRC.VALIDITE_PROFORMA_DEFAUT + ' jours : aucun document ne la fixe, à valider par la Direction.' },
+          { name: 'motif', label: 'Motif (facultatif)', col: 'full' },
+        ], { jours: PRC.validiteProformaJours() });
+        var mo = U.modal({ title: 'Durée de validité d’une pro-forma', size: 'md', body: fm, footer: [
+          K.btn('Annuler', { onclick: function () { mo.close(); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+            var v = fm.collect(); if (!v) return;
+            var r = PRC.definirValiditeProforma({ jours: v.jours, motif: v.motif });
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            mo.close(); U.toast('Durée de validité réglée à ' + r.jours + ' jour(s).', { type: 'success' }); apres();
+          } }),
+        ] });
+      }
     },
   });
 
@@ -1462,7 +1578,36 @@
       var host = el('div.space-y-4');
       var table;
 
-      function aRegler() { return factures().filter(function (f) { return f.reliquat > 0; }); }
+      /* LOT TARIF-FIX-2 : une pièce en attente de prix reste VISIBLE parmi celles à encaisser (son reste dû est non calculable, jamais absent). Les pièces dont le
+         prix est désormais en vigueur à leur date se valorisent à l'ouverture de l'écran. */
+      PR.valoriserEnAttente();
+      function aRegler() { return factures().filter(function (f) { return f.reliquat > 0 || (f.enAttentePrix && f.statutPaiement !== 'soldee'); }); }
+
+      /* Le RÉGLAGE de la clinique (en base, versionné par date, défaut semé « non ») : une pièce en attente de prix s'encaisse-t-elle en partie ? */
+      var regP = PR.encaissementPartielALaDate(null);
+      var nbAttente = factures().filter(function (f) { return f.enAttentePrix && f.statutPaiement !== 'soldee'; }).length;
+      host.appendChild(el('div', { 'data-reglage-encaissement-partiel': regP.valeur }, [K.note('<strong>Pièces en attente de prix : ' + C.num(nbAttente) + '.</strong> '
+        + (regP.partiel ? 'Réglage de la clinique : le reste de la pièce s’encaisse ; une ligne sans prix ne s’encaisse jamais.'
+          : 'Réglage de la clinique : la pièce entière attend le prix (rien ne s’encaisse tant qu’une ligne est sans prix).')
+        + ' En vigueur depuis le ' + C.dateFR(regP.dateEffet) + (regP.source ? ' (' + C.escapeHtml(regP.source) + ')' : '') + '.', { tone: nbAttente ? 'warning' : 'info', icon: 'scale' }),
+        PR.peutDeciderTarif() ? K.btn('Régler l’encaissement partiel', { size: 'sm', icon: 'settings-2', onclick: reglerPartiel }) : null]));
+      function reglerPartiel() {
+        var fm = U.form([
+          { name: 'valeur', label: 'Une pièce en attente de prix', type: 'select', required: true, col: 'full', options: [
+            { value: 'non', label: 'Attend le prix en entier (rien ne s’encaisse)' }, { value: 'oui', label: 'S’encaisse pour le reste (la ligne sans prix attend)' }] },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: C.iso(C.aujourdhui()) },
+          { name: 'motif', label: 'Motif', required: true, col: 'full' },
+        ], { valeur: regP.valeur, dateEffet: C.iso(C.aujourdhui()) });
+        var mo = U.modal({ title: 'Encaissement d’une pièce en attente de prix', size: 'md', body: fm, footer: [
+          K.btn('Annuler', { onclick: function () { mo.close(); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+            var v = fm.collect(); if (!v) return;
+            var r = PR.definirEncaissementPartiel(v);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            mo.close(); U.toast('Réglage enregistré : nouvelle version à effet du ' + C.dateFR(r.dateEffet) + '.', { type: 'success' }); global.SIGH.app.go('m8-paiements');
+          } }),
+        ] });
+      }
 
       host.appendChild(U.kpiGrid(D.MODES_PAIEMENT.slice(0, 4).map(function (m) {
         var f = factures().filter(function (x) { return x.modePaiement === m.id; });
@@ -1482,6 +1627,9 @@
                 colReliquat, colStatutPaiement,
               ],
               rowActions: function (f) {
+                /* Une pièce que le moteur refuserait d'encaisser (ligne sans prix) n'a PAS de commande « Encaisser » : le motif est dit à sa place. */
+                var ep = PR.etatCaissePrix(f);
+                if (!ep.encaissable) return [motifSansPrix(ep.refus)];
                 return [K.commande('Encaisser', { size: 'sm', variant: 'primary', icon: 'banknote', onclick: function () { encaisser(f); } })];
               },
             });
@@ -1514,8 +1662,10 @@
       return null;
 
       function encaisser(f) {
+        var epf = PR.etatCaissePrix(f);
+        var resteCalc = epf.manques.length ? C.sum((f.lignes || []).filter(function (l) { return !PR.ligneSansPrix(l) && l.statutPaiement !== 'paye'; }), 'partPatient') : f.reliquat;
         var form = U.form([
-          { name: 'montant', label: 'Montant encaissé (FCFA)', type: 'money', required: true, min: 1, value: f.reliquat },
+          { name: 'montant', label: 'Montant encaissé (FCFA)', type: 'money', required: true, min: 1, value: resteCalc },
           { name: 'modePaiement', label: 'Mode de règlement', type: 'select', required: true, options: D.MODES_PAIEMENT.slice(0, 4).map(function (m) { return { value: m.id, label: m.label }; }) },
           { name: 'reference', label: 'Référence de la transaction', help: 'N° de transaction Mobile Money ou ticket TPE, le cas échéant.' },
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
@@ -1526,7 +1676,7 @@
             ['Montant total', C.money(f.montantTTC)], ['Part patient', C.money(f.partPatient)],
             ['Déjà réglé', C.money(f.montantPaye)], ['Reste à payer', C.money(f.reliquat)]], 'grid-cols-2'),
           form,
-        ]);
+        ].filter(Boolean));
 
         var m = U.modal({
           title: 'Encaissement', subtitle: f.numero + ' — ' + f.patient, size: 'md', body: body,
@@ -1537,21 +1687,28 @@
               onclick: function () {
                 var v = form.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-                if (v.montant > f.reliquat) { U.toast('Le montant dépasse le reste dû (' + C.money(f.reliquat) + ').', { type: 'error' }); return; }
-                var nouveau = f.montantPaye + v.montant;
-                var res = col.update(f.id, {
-                  montantPaye: nouveau, reliquat: f.partPatient - nouveau,
-                  modePaiement: v.modePaiement,
-                  statutPaiement: (f.partPatient - nouveau) <= 0 ? 'soldee' : 'partielle',
-                });
+                if (v.montant > resteCalc) { U.toast('Le montant dépasse le reste dû (' + C.money(resteCalc) + ').', { type: 'error' }); return; }
+                /* L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval ouvertes, base MECeF et
+                   ÉCRITURE comptable. Il écrivait la facture seule : ni journal, ni déblocage, ni créance de l'assureur. Un versement refusé
+                   (au-delà du dû) l'est en le disant. Un encaissement ne s'annule pas : la correction passe par un remboursement ou un avoir. */
+                var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement });
+                if (r.refus) { U.toast(r.refus, { type: 'error', duration: 9000 }); return; }
+                if (!(r.montantRegle > 0)) { U.toast('Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.', { type: 'error' }); return; }
+                /* La référence et l'observation du versement s'ÉCRIVENT sur la facture (même champ que m8-caisse) : sans cela elles
+                   ne vivaient que sur le reçu imprimé une fois, et la réimpression affichait « — ». */
+                var patchReglement = {};
+                if (v.reference) patchReglement.referenceTransaction = v.reference;
+                if (v.observation) patchReglement.observationReglement = v.observation;
+                if (Object.keys(patchReglement).length) S.collection('factures').update(f.id, patchReglement);
                 m.close();
                 if (table) table.refresh();
-                U.toast('Encaissement de ' + C.money(v.montant) + ' enregistré.', {
+                annonceNormalisation(r.normalisation);
+                U.toast('Encaissement de ' + C.money(r.montantRegle) + ' enregistré.', {
                   type: 'success',
-                  detail: res.record.reliquat > 0 ? 'Reliquat de ' + C.money(res.record.reliquat) + '.' : 'Facture soldée.',
-                  undo: function () { res.undo(); if (table) table.refresh(); },
+                  detail: (r.restantDu > 0 ? 'Reliquat de ' + C.money(r.restantDu) + '.' : 'Facture soldée.')
+                    + (r.ecritures.length ? ' Écriture comptable posée en brouillon.' : ''),
                 });
-                recu(res.record, v);
+                recu(r.facture, v);
               },
             }),
           ],
@@ -1591,11 +1748,13 @@
         P.etat({
           titre: 'Reçu de paiement',
           sousTitre: f.numero,
+          /* L'identité imprimée est celle de la date du versement. */
+          date: (f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ),
           cartouche: [['Facture', f.numero], ['Patient', f.patient], ['Dossier', f.patientCode],
             ['Date', C.dateFR(AUJ)], ['Mode de règlement', modeLabel(v ? v.modePaiement : f.modePaiement)],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
-            ['Référence transaction', (v && v.reference) || '—'],
-            ['RCCM', C.BRAND.rccm]],
+            ['Référence transaction', (v && v.reference) || f.referenceTransaction || '—'],
+            ['RCCM', C.identiteALaDate((f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ)).rccm]],
           contenu: el('div.space-y-3', null, [
             payees.length ? el('div', null, [
               el('p.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Prestations réglées' }),
@@ -1739,7 +1898,7 @@
           },
           { name: 'dateEngagement', label: 'Date de règlement promise', type: 'date', required: true, value: C.iso(C.addDays(AUJ, 30)) },
           { name: 'tranches', label: 'Nombre de tranches', type: 'number', min: 1, max: 12, value: 1 },
-          { name: 'recuPar', label: 'Engagement reçu par', required: true, value: 'KASSA Augustin' },
+          { name: 'recuPar', label: 'Engagement reçu par', required: true, value: S.currentUser() },
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
         ], {});
 
@@ -1918,7 +2077,7 @@
           { name: 'date', label: 'Date', type: 'date', required: true, value: C.iso(AUJ) },
           { name: 'montant', label: 'Montant (FCFA)', type: 'money', required: true, min: 1 },
           { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full', help: 'Obligatoire — consigné au journal d’audit (RG-12).' },
-          { name: 'autorisePar', label: 'Autorisé par', required: true, value: 'TAKI Alimatou' },
+          { name: 'autorisePar', label: 'Autorisé par', required: true, value: S.currentUser() },
         ], {});
 
         var m = U.modal({
@@ -1930,40 +2089,46 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+                /* E10 (corrigé le 31/10/2026) : un remboursement, un avoir ou une annulation de 0 FCFA ne corrige rien, et le `min: 1` du
+                   champ n'est pas un contrôle (la valeur 0 passait). Le refus est NOMMÉ. */
+                if (!(Number(v.montant) > 0)) {
+                  U.toast('Opération refusée.', { type: 'error', detail: 'Le montant doit être strictement supérieur à 0 FCFA.' });
+                  return;
+                }
                 var fac = factures().filter(function (x) { return x.id === v.factureId; })[0];
                 if (fac) { v.factureNumero = fac.numero; v.patient = fac.patient; v.patientCode = fac.patientCode; }
-                v.reference = C.nextRef('RB-', 5);
+                v.reference = referenceSuivante('RB-', 5, col.all()); /* série lue sur les opérations existantes (E8) */
+                var avoirEmis = null;
+                if (v.nature === 'Facture avoir') {
+                  /* B10 (31/10/2026) : UN SEUL canal d'avoir. La nature « Facture avoir » n'écrit plus une pièce négative dans
+                     `factures` : elle APPELLE le moteur `PR.emettreAvoir` (collection `avoirs`, plafond cumulé, ligne nommée,
+                     contre-passation en brouillon, registre MECeF). Une facture ne se réécrit pas ; l'opération garde le lien. */
+                  if (!fac) { U.toast('Choisir la facture concernée.', { type: 'error' }); return; }
+                  var MOTIFS_ENGINE = { erreur: 'Erreur de facturation', non_rendu: 'Prestation non réalisée',
+                    remboursement: 'Autre (préciser en observations)', annulation: 'Prestation non réalisée' };
+                  var motifMoteur = MOTIFS_ENGINE[v.motifAvoir] || 'Autre (préciser en observations)';
+                  var emis = PR.emettreAvoir(fac.id, {
+                    date: v.date,
+                    lignes: [{ designation: 'Avoir sur facture ' + fac.numero + ' : ' + (v.motif || motifMoteur), montant: Number(v.montant) }],
+                    motif: motifMoteur,
+                    observations: v.motif,
+                    remboursement: v.motifAvoir === 'remboursement' ? 'especes' : 'creance',
+                    origine: 'caisse',
+                  });
+                  if (emis.erreur) { U.toast('Avoir refusé.', { type: 'error', detail: emis.erreur, duration: 9000 }); return; }
+                  avoirEmis = emis.record;
+                  v.avoirId = avoirEmis.id;
+                  v.avoirNumero = avoirEmis.reference;
+                }
                 var res = col.insert(v);
                 var majF = null;
-                if (v.nature === 'Facture avoir' && fac) {
-                  /* L'avoir est une pièce à part entière : montant négatif,
-                     rattachée à la facture d'origine, transmise à la MECeF.
-                     Il ne supprime pas la facture — RG-14. */
-                  v.reference = C.nextRef('AV-', 5);
-                  var avoir = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert({
-                    numero: 'AV-2026-' + C.pad(factures().length + 1, 5),
-                    numeroMecef: 'MECEF' + C.between(C.seeded(Date.now() % 90000), 1000000, 9999999),
-                    avoirDe: fac.id, avoirDeNumero: fac.numero,
-                    motifAvoir: v.motifAvoir, refacturation: v.refacturation,
-                    patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
-                    date: v.date, type: 'Avoir',
-                    montantHT: -Math.abs(v.montant), montantTTC: -Math.abs(v.montant),
-                    partAssurance: 0, partPatient: -Math.abs(v.montant),
-                    montantPaye: 0, reliquat: 0,
-                    baseMecef: -Math.abs(v.montant),
-                    statutPaiement: 'soldee', statutMecef: 'valide',
-                    lignes: [{ designation: 'Avoir sur facture ' + fac.numero + ' — ' + (v.motif || ''), quantite: 1, prixUnitaire: -Math.abs(v.montant), montant: -Math.abs(v.montant) }],
-                  });
-                  v.avoirId = avoir.record.id;
-                  v.avoirNumero = avoir.record.numero;
-                  majF = { undo: avoir.undo };
-                } else if (v.nature === 'Annulation' && fac) {
+                if (v.nature === 'Annulation' && fac) {
                   majF = S.collection('factures').update(fac.id, { statutPaiement: 'impayee', statutMecef: 'rejete', annulee: true });
                 }
                 m.close(); table.refresh();
                 U.toast(v.nature + ' de ' + C.money(v.montant) + ' enregistré(e).', {
                   type: 'success',
-                  undo: function () { res.undo(); if (majF) majF.undo(); table.refresh(); },
+                  undo: function () { res.undo(); if (majF) majF.undo(); if (avoirEmis) PR.retirerAvoir(avoirEmis.id); table.refresh(); },
                 });
               },
             }),
@@ -2016,11 +2181,21 @@
       var vue = el('div.space-y-4');
 
       /* --- Ce que les prescriptions du jour ont adressé à la caisse -------- */
+      /* LOT TARIF-FIX-2 : les pièces dont le prix est désormais en vigueur à leur date se valorisent à l'ouverture de la caisse ; une pièce qui attend encore un
+         prix n'a PAS de commande « Encaisser » (le moteur la refuserait) : le motif est dit à sa place. */
+      PR.valoriserEnAttente();
       var file = K.fileAttente('encaissement', {
         titre: 'Prescriptions à encaisser',
         vide: 'Aucune prescription en attente de règlement.',
         icon: 'coins', action: 'Encaisser',
         onAction: function (tache, refresh) { encaisser(tache, refresh); },
+        empechement: function (tache) {
+          var fac = tache.factureId ? S.collection('factures').get(tache.factureId) : null;
+          if (!fac) return null;
+          var ep = PR.etatCaissePrix(fac);
+          if (ep.encaissable) return null;
+          return Object.assign({}, ep.refus, { titre: 'En attente de prix : ' + ep.manques.map(function (x) { return '« ' + x.code + ' » ' + (x.nature === 'prix_achat' ? 'prix à valoriser' : 'prix à définir'); }).join(', ') });
+        },
       });
       host.appendChild(file);
 
@@ -2035,7 +2210,9 @@
       function encaisser(tache, refresh) {
         var fac = S.collection('factures').get(tache.factureId);
         if (!fac) { U.toast('Facture introuvable.', { type: 'error' }); return; }
-        var lignes = (fac.lignes || []).filter(function (l) { return l.statutPaiement !== 'paye'; });
+        /* LOT TARIF-FIX-2 : une ligne sans prix (encaissement du reste réglé par la clinique) est montrée, sans case : elle ne s'encaisse pas. */
+        var sansPrix = (fac.lignes || []).filter(function (l) { return PR.ligneSansPrix(l) && l.statutPaiement !== 'paye'; });
+        var lignes = (fac.lignes || []).filter(function (l) { return l.statutPaiement !== 'paye' && !PR.ligneSansPrix(l); });
         var deja = (fac.lignes || []).filter(function (l) { return l.statutPaiement === 'paye'; });
 
         /* Le caissier COCHE les prestations que le patient règle. Le total
@@ -2082,6 +2259,17 @@
           tr.appendChild(el('td.text-right.text-sm.font-semibold', { text: C.money(l.partPatient, false) }));
           tb.appendChild(tr);
         });
+        sansPrix.forEach(function (l) {
+          tb.appendChild(el('tr', { 'data-ligne-sans-prix': l.prixManquant.code }, [
+            el('td', null, C.icon('triangle-alert', 'h-4 w-4 text-warning-600')),
+            el('td', null, el('div.min-w-0', null, [
+              el('p.truncate.text-sm.font-medium.text-slate-800', { text: l.designation }),
+              el('p.text-xs.text-warning-700', { text: l.prixManquant.motif }),
+            ])),
+            el('td.text-right.text-xs.text-slate-500', { text: '—' }),
+            el('td.text-right.text-xs.font-medium.text-warning-700', { text: l.prixManquant.nature === 'prix_achat' ? 'Prix à valoriser' : 'Prix à définir' }),
+          ]));
+        });
         t.appendChild(tb);
         tableau.appendChild(t);
 
@@ -2097,12 +2285,13 @@
             ? 'Reste dû après ce règlement : ' + C.money(reste) + ' — '
               + C.num(lignes.length - sel.length) + ' prestation(s) non réglée(s), non exécutable(s).'
             : 'La facture sera intégralement soldée.';
+          if (sansPrix.length) resteLigne.textContent = (reste > 0 ? resteLigne.textContent + ' ' : '') + C.num(sansPrix.length) + ' prestation(s) sans prix restent dues (reste non calculable).';
         }
 
         var corps = el('div.space-y-3', null, [
           U.descList([
             ['Patient', fac.patient], ['Dossier', fac.patientCode],
-            ['Prescription', tache.reference],
+            ['Prescription', tache.reference || '—'],
             ['Montant total', C.money(fac.montantTTC)],
             ['Part assureur', fac.assureur ? C.money(fac.partAssurance) + ' — ' + fac.assureur : 'Sans assurance'],
             ['Déjà réglé', deja.length ? C.money(C.sum(deja, 'partPatient')) + ' — ' + C.num(deja.length) + ' prestation(s)' : 'Rien'],
@@ -2129,7 +2318,7 @@
         recalculer();
 
         var m = U.modal({
-          title: 'Encaisser ' + tache.reference, subtitle: fac.numero, size: 'xl', body: corps,
+          title: 'Encaisser ' + (tache.reference || 'la prescription'), subtitle: fac.numero, size: 'xl', body: corps,
           footer: [
             K.btn('Annuler', { onclick: function () { m.close(); } }),
             lignes.length ? K.btn('Tout cocher', {
@@ -2158,12 +2347,14 @@
                     mode: selMode.value, utilisateur: S.currentUser(),
                   });
                 } catch (e) { U.toast('Encaissement impossible : ' + e.message, { type: 'error' }); return; }
+                if (res.refus) { U.toast('Encaissement refusé.', { type: 'error', detail: res.refus, duration: 9000 }); return; }
                 if (champRef.value) {
                   S.collection('factures').update(fac.id, { referenceTransaction: champRef.value });
                 }
                 m.close();
                 refresh();
                 afficher();
+                annonceNormalisation(res.normalisation);
 
                 var suite = (res.demandesLiberees || []).length
                   ? C.num(res.demandesLiberees.length) + ' examen(s) transmis au laboratoire'
@@ -2233,10 +2424,11 @@
         }
         P.etat({
           titre: 'Reçu de paiement', sousTitre: f.numero,
+          date: (f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ),
           cartouche: [['Facture', f.numero], ['Patient', f.patient], ['Dossier', f.patientCode],
             ['Date', C.dateFR(AUJ)], ['Mode de règlement', (f.modePaiement || '—')],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
-            ['RCCM', C.BRAND.rccm]],
+            ['RCCM', C.identiteALaDate((f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ)).rccm]],
           contenu: el('div.space-y-3', null, [
             payees.length ? el('div', null, [
               el('p.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Prestations réglées' }),
@@ -2359,6 +2551,8 @@
                 render: function (r) { return C.money(r.montantPaye); } },
               { key: 'reliquat', label: 'Reste dû', align: 'right',
                 render: function (r) {
+                  /* LOT TARIF-FIX-2 : une pièce en attente de prix n'est pas « soldée » : son reste dû est non calculable. */
+                  if (r.enAttentePrix && r.statutPaiement !== 'soldee') return el('span.text-xs.font-medium.text-warning-700', { text: 'Non calculable' });
                   return r.reliquat > 0
                     ? el('span.font-semibold.text-amber-700', { text: C.money(r.reliquat) })
                     : U.badge('soldée', 'success');
@@ -2370,7 +2564,8 @@
               })];
               /* Reprendre l'encaissement : c'est la demande exacte de la
                  Direction pour le patient qui revient. */
-              if (r.reliquat > 0 && K.droits('M8').editer) {
+              /* LOT TARIF-FIX-2 : une pièce en attente de prix ne propose « Encaisser le reste » que si le moteur l'accepterait (réglage de la clinique). */
+              if ((r.reliquat > 0 || (r.enAttentePrix && r.statutPaiement !== 'soldee' && PR.etatCaissePrix(r).encaissable)) && K.droits('M8').editer) {
                 actes.push(K.btn('Encaisser le reste', {
                   variant: 'primary', size: 'sm', icon: 'coins',
                   onclick: function () {
@@ -2488,101 +2683,13 @@
   var MOTIFS_AVOIR = ['Erreur de facturation', 'Interruption de soins',
     'Évacuation vers un autre centre', 'Prestation non réalisée', 'Autre (préciser en observations)'];
 
-  /** Le moteur d'émission — séparé de la modale pour être SONDABLE.
-      Retourne { record, ecritureIds } ou { erreur } : un refus se lit, il ne
-      se devine pas. */
-  function emettreAvoir(factureId, params) {
-    var fac = factures().filter(function (f) { return f.id === factureId; })[0];
-    if (!fac) return { erreur: 'Facture introuvable.' };
+  var referenceSuivante = C.referenceSuivante;   /* le moteur de série vit au socle (core.js) : mecef.js s'en sert aussi */
 
-    /* UNE FILLE CONSOLIDÉE EST FIGÉE : la mère émise porte son numéro, et la
-       compagnie détient la pièce. L'avoir est refusé EN NOMMANT la mère. */
-    var mere = S.collection('facturesMere').active().filter(function (m) {
-      return (m.piecesFilles || []).indexOf(fac.numero) !== -1;
-    })[0];
-    if (mere) {
-      return { erreur: 'La facture ' + fac.numero + ' est consolidée dans la facture mère '
-        + mere.numero + ' (' + (mere.compagnie || '') + '), déjà émise : la corriger passerait '
-        + 'derrière le dos de la compagnie. Émettre l\u2019avoir au niveau de la mère, par avenant.' };
-    }
-
-    var lignes = params.lignes || [];
-    if (!lignes.length) return { erreur: 'Un avoir se rapporte à des LIGNES nommées — en cocher au moins une.' };
-    var montant = C.sum(lignes, 'montant');
-    if (!(montant > 0)) return { erreur: 'Le montant de l\u2019avoir doit être positif.' };
-
-    var dejaAvoirs = colAvoirs().active().filter(function (a) { return a.factureId === fac.id; });
-    var dejaMontant = C.sum(dejaAvoirs, 'montant');
-    if (montant + dejaMontant > (fac.montantTTC || 0)) {
-      return { erreur: 'Le cumul des avoirs (' + C.money(montant + dejaMontant)
-        + ') excéderait la facture (' + C.money(fac.montantTTC) + ').' };
-    }
-
-    var rec = colAvoirs().insert({
-      reference: C.nextRef('AV-2026-', 4),
-      date: params.date || C.iso(AUJ),
-      factureId: fac.id, factureNumero: fac.numero,
-      patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
-      montant: montant,
-      motif: params.motif,
-      observations: params.observations || '',
-      lignesAnnulees: lignes,
-      remboursement: params.remboursement || 'creance',
-      origine: 'caisse',
-      /* Le registre fiscal : une facture normalisée validée exige la
-         régularisation MECeF ; une pièce non transmise n'en relève pas. */
-      statutMecef: fac.statutMecef === 'valide' ? 'en_attente' : 'sans_objet',
-      emisPar: S.currentUser(),
-    }).record;
-
-    /* LA CONTRE-PASSATION — écritures PLATES en brouillon, comme partout :
-       débit 706 Prestations (la recette diminue), crédit 571 Caisse si l'on
-       rembourse en espèces, crédit 411 Clients sinon (la créance diminue). */
-    var colEcr = S.collection('ecritures', { module: 'M12', entite: 'écriture' });
-    var base = {
-      numero: rec.reference, date: rec.date,
-      journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
-      pieceId: rec.id, pieceNumero: rec.reference,
-      origine: 'Facture d\u2019avoir',
-      statut: 'brouillon',
-    };
-    var contre = params.remboursement === 'especes'
-      ? { compte: '571000', libelle: 'Remboursement en espèces — avoir ' + rec.reference }
-      : { compte: '411000', libelle: 'Créance réduite — avoir ' + rec.reference };
-    var ecritures = [
-      Object.assign({}, base, {
-        compte: '706000', compteLibelle: 'Prestations de services',
-        libelle: 'Contre-passation — ' + fac.numero + ' (' + params.motif + ')',
-        debit: montant, credit: 0,
-      }),
-      Object.assign({}, base, {
-        compte: contre.compte, compteLibelle: contre.compte === '571000' ? 'Caisse' : 'Clients',
-        libelle: contre.libelle,
-        debit: 0, credit: montant,
-      }),
-    ];
-    var debit = C.sum(ecritures, 'debit'), credit = C.sum(ecritures, 'credit');
-    if (debit !== credit) {
-      colAvoirs().archive(rec.id);
-      return { erreur: 'RG-10 — contre-passation déséquilibrée (débit ' + C.money(debit)
-        + ', crédit ' + C.money(credit) + ') : rien n\u2019est écrit.' };
-    }
-    var ids = ecritures.map(function (l) { return colEcr.insert(l).record.id; });
-    colAvoirs().update(rec.id, { ecritureIds: ids });
-
-    /* La facture PORTE ses avoirs — elle n'est jamais réécrite : la pièce
-       d'origine et sa correction doivent pouvoir se lire côte à côte. */
-    S.collection('factures').update(fac.id, {
-      avoirIds: (fac.avoirIds || []).concat([rec.id]),
-      montantAvoirs: (fac.montantAvoirs || 0) + montant,
-    });
-
-    S.log('Facture d\u2019avoir émise', 'M8', 'Avoir', rec.reference, null,
-      { facture: fac.numero, montant: montant, motif: params.motif });
-    return { record: colAvoirs().get(rec.id), ecritureIds: ids };
-  }
-  /* Exposé pour la sonde fonctionnelle : le scénario appelle le moteur, pas
-     une copie de sa logique. */
+  /** LE MOTEUR D'ÉMISSION VIT AU SOCLE (`PR.emettreAvoir`, parcours.js) depuis le 31/10/2026 : l'écran de facturation (nature
+      « Facture avoir »), l'avoir MECeF et cet écran l'appellent, sur une seule collection `avoirs` (décision B10). */
+  function emettreAvoir(factureId, params) { return PR.emettreAvoir(factureId, params); }
+  function referenceAvoir(date) { return PR.referenceAvoir(date); }
+  /* Exposé pour la sonde fonctionnelle : le scénario appelle le moteur, pas une copie de sa logique. */
   global.SIGH.emettreAvoir = emettreAvoir;
 
   global.SIGH.screen('m8-facture-avoir', {
@@ -2601,7 +2708,7 @@
 
       function afficher() {
         C.clear(vue);
-        var rows = colAvoirs().active();
+        var rows = colAvoirs().active().filter(function (a) { return global.SIGH.exercice.dansExercice(a.date); });   /* suit l'exercice de la barre supérieure */
         var caisse = rows.filter(function (a) { return a.origine === 'caisse'; });
 
         vue.appendChild(U.kpiGrid([
@@ -2779,6 +2886,7 @@
           titre: 'FACTURE D\u2019AVOIR',
           sousTitre: a.reference + ' — rectifie ' + a.factureNumero,
           filigrane: 'AVOIR',
+          date: a.date,
           cartouche: [['N° avoir', a.reference], ['Date', C.dateFR(a.date)],
             ['Facture rectifiée', a.factureNumero],
             ['Client', a.patient || '—'], ['Motif', a.motif || '—'],
@@ -2798,6 +2906,315 @@
             { role: 'La Directrice de l\u2019Administration et des Finances', nom: 'TAKI Alimatou' }],
         });
       }
+    },
+  });
+
+  /* ==========================================================================
+   * FACTURES AUX TIERS PAYEURS (lot TIERS, Direction, 16/11/2026, section AQ point 36)
+   * --------------------------------------------------------------------------
+   * La vente normalisée DISTINCTE de la facture du patient : l'entreprise, l'assureur ou la convention qui prend un patient en charge reçoit SA facture (IFU de 13 chiffres et nom de
+   * l'acheteur, AIB selon le barème daté ET la décision du comptable). Tout vit au moteur `SIGH.tiers` (socle) : l'écran n'a aucune règle. Les commandes d'écriture sont ABSENTES sans le
+   * geste réservé de la fiche RBAC (`emettre_facture_tiers`, `corriger_facture_tiers`, `imputer_aib`), et le moteur refuse aussi.
+   * ======================================================================== */
+  global.SIGH.screen('m8-factures-tiers', {
+    title: 'Factures aux tiers payeurs',
+    description: 'Facture à l’entreprise, à l’assureur ou à la convention qui prend un patient en charge : pièce propre, IFU et nom de l’acheteur, AIB décidé par le comptable, règlements reçus et lettrage.',
+    regle: 'Cette facture est <strong>distincte de la facture du patient</strong> : elle se rattache à des lignes de prestations prises en charge, la <strong>part restante du patient</strong> se facture séparément à la caisse. '
+      + 'L’IFU (13 chiffres) et le nom de l’acheteur sont obligatoires et contrôlés avant toute écriture. <strong>Le logiciel propose le taux de l’AIB, le comptable décide</strong>. Une pièce émise ne se réécrit jamais : elle se corrige par un avoir.',
+    render: function (root) {
+      var T = global.SIGH.tiers, B = global.SIGH.baremeAib;
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      var ongletCourant = 'factures';
+      dessiner();
+      return null;
+
+      function refuser(r) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 12000 }); }
+      function nom(code) { var v = T.aLaDate(code, C.iso(AUJ)) || T.versions(code).slice(-1)[0]; return v ? v.nom : code; }
+      function badgeMecef(f) {
+        if (f.statut === 'brouillon') return U.badge('Brouillon', 'warning');
+        if (T.avoirDe(f.id)) return U.badge('Annulée par avoir', 'neutral');
+        if (f.statutMecef === 'sans_objet') return U.badge('Sans normalisation (mode désactivé)', 'neutral');
+        var e = PR.mecef.fiche(PR.mecef.etat(f));
+        return e ? U.badge(e.libelle, e.ton) : U.badge('Non transmise', 'warning');
+      }
+      function libAib(f) {
+        if (f.statut === 'brouillon') return f.aibDecision ? (f.aibDecision.appliquer ? 'À émettre : ' + f.aibDecision.taux + ' %' : 'À émettre : non appliqué') : 'À décider';
+        return f.aibTaux ? f.aibTaux + ' %' : 'Non appliqué';
+      }
+
+      function dessiner() {
+        C.clear(host);
+        var du = T.creances(C.iso(AUJ));
+        var fs = T.factures();
+        var droit = K.droits('M8');
+        if (droit.lectureSeule) host.appendChild(K.bandeauLectureSeule(droit));
+        host.appendChild(U.kpiGrid([
+          { label: 'Tiers payeurs', value: C.num(T.codes().length), icon: 'building-2', tone: 'navy' },
+          { label: 'Factures émises', value: C.num(fs.filter(function (f) { return f.statut === 'emise'; }).length), icon: 'receipt', tone: 'success' },
+          { label: 'Brouillons à décider ou émettre', value: C.num(fs.filter(function (f) { return f.statut === 'brouillon'; }).length), icon: 'file-pen', tone: fs.some(function (f) { return f.statut === 'brouillon'; }) ? 'warning' : 'neutral' },
+          { label: 'Créance sur les tiers', value: C.money(du.total, false), icon: 'hourglass', tone: du.total > 0 ? 'warning' : 'neutral', hint: du.nonLettre > 0 ? C.money(du.nonLettre, false) + ' de règlements non lettrés' : 'Montant dû moins les lettrages' },
+        ]));
+        var onglets = U.tabs([
+          { id: 'factures', label: 'Factures', badge: fs.length || undefined, render: ongletFactures },
+          { id: 'tiers', label: 'Tiers payeurs', badge: T.codes().length || undefined, render: ongletTiers },
+          { id: 'reglements', label: 'Règlements et lettrage', badge: T.reglements().length || undefined, render: ongletReglements },
+          { id: 'creances', label: 'Créances', render: ongletCreances },
+        ], { onChange: function (id) { ongletCourant = id; } });
+        host.appendChild(onglets);
+        if (ongletCourant !== 'factures') setTimeout(function () { onglets.selectTab(ongletCourant); }, 20);
+        U.icons(host);
+      }
+
+      /* ---------------- Factures ---------------- */
+      function ongletFactures() {
+        var lignes = T.factures().slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)) || String(b.numero || '').localeCompare(String(a.numero || '')); });
+        return U.dataTable({
+          title: 'Factures aux tiers payeurs', rows: lignes, pageSize: 15, searchable: true, exportName: 'factures-tiers-payeurs',
+          emptyMessage: 'Aucune facture à un tiers payeur.', onRowClick: consulter,
+          filters: [{ name: 'statut', label: 'État', options: [{ value: 'brouillon', label: 'Brouillon' }, { value: 'emise', label: 'Émise' }], match: function (f, v) { return f.statut === v; } }],
+          columns: [
+            { key: 'numero', label: 'N° facture', nowrap: true, render: function (f) { return el('span.font-mono.text-xs.font-semibold.text-navy-800', { text: f.numero || 'Brouillon' }); }, text: function (f) { return f.numero || 'Brouillon'; } },
+            { key: 'date', label: 'Date', render: function (f) { return C.dateFR(f.date); }, text: function (f) { return C.dateFR(f.date); } },
+            { key: 'tiersNom', label: 'Tiers payeur', render: function (f) { return el('div', null, [el('p.text-sm.font-medium', { text: f.tiersNom }), el('p.font-mono.text-\\[10px\\].text-slate-400', { text: 'IFU ' + f.ifuAcheteur })]); }, text: function (f) { return f.tiersNom + ' ' + f.ifuAcheteur; } },
+            { key: 'patientNom', label: 'Patient', render: function (f) { return f.patientNom || 'Non renseigné'; }, text: function (f) { return f.patientNom || ''; } },
+            { key: 'base', label: 'Base', align: 'right', render: function (f) { return C.money(f.base, false); }, text: function (f) { return C.money(f.base, false); } },
+            { key: 'aib', label: 'AIB', render: libAib, text: libAib },
+            { key: 'net', label: 'Net à payer', align: 'right', render: function (f) { return f.statut === 'emise' ? C.money(f.net, false) : 'Non calculable'; }, text: function (f) { return f.statut === 'emise' ? C.money(f.net, false) : ''; } },
+            { key: 'creance', label: 'Reste dû', align: 'right', render: function (f) { return f.statut === 'emise' ? C.money(T.creance(f), false) : 'Non calculable'; }, text: function (f) { return f.statut === 'emise' ? C.money(T.creance(f), false) : ''; } },
+            { key: 'mecef', label: 'MECeF', render: badgeMecef, text: function (f) { return f.statut; } },
+          ],
+          rowActions: function (f) {
+            var a = [K.iconBtn('eye', 'Consulter', function () { consulter(f); })];
+            if (f.statut === 'emise') a.push(K.iconBtn('printer', 'Imprimer la facture (A4)', function () { imprimer(f); }));
+            if (f.statut === 'brouillon' && B && global.SIGH.imputationAib.peut()) a.push(K.commandeIcone('scale', 'Décider de l’AIB', function () { decider(f); }, { moduleCode: 'M8' }));
+            if (f.statut === 'brouillon' && T.peutEmettre()) a.push(K.commandeIcone('send', 'Émettre la facture', function () { emettre(f); }, { moduleCode: 'M8' }));
+            if (f.statut === 'brouillon' && T.peutEmettre()) a.push(K.commandeIcone('archive', 'Abandonner le brouillon', function () { abandonner(f); }, { moduleCode: 'M8', variant: 'ghost' }));
+            if (f.statut === 'emise' && !T.avoirDe(f.id) && ['en_attente', 'rejete', 'expiree'].indexOf(f.statutMecef) >= 0 && T.peutEmettre()) a.push(K.commandeIcone('refresh-cw', 'Retransmettre au MECeF', function () { retransmettre(f); }, { moduleCode: 'M8' }));
+            if (f.statut === 'emise' && !T.avoirDe(f.id) && T.peutCorriger()) a.push(K.commandeIcone('file-minus-2', 'Émettre un avoir', function () { avoir(f); }, { moduleCode: 'M8', variant: 'ghost' }));
+            return a.filter(Boolean);
+          },
+          actions: [T.peutEmettre() ? K.commande('Nouvelle facture à un tiers payeur', { variant: 'primary', size: 'sm', icon: 'plus', moduleCode: 'M8', onclick: formulaireFacture }) : null].filter(Boolean),
+        });
+      }
+      function consulter(f) {
+        var l = f.lignes || [];
+        var dec = f.aibDecision;
+        var corps = el('div.space-y-3', null, [
+          K.miniTable(['Prestation du patient', 'Facture du patient', 'Pris en charge par le tiers'], l.map(function (x) { return [x.designation, x.factureNumero, C.money(x.montant, false)]; })),
+          el('div.grid.grid-cols-2.gap-2.text-sm', null, [
+            el('p', { text: 'Acheteur : ' + f.nomAcheteur + ' (IFU ' + f.ifuAcheteur + ')' }),
+            el('p', { text: 'Base : ' + C.money(f.base, false) + (f.statut === 'emise' ? ' · AIB ' + C.money(f.aibMontant || 0, false) + ' · net ' + C.money(f.net, false) : '') }),
+            el('p', { text: 'Part restante du patient (à facturer séparément à la caisse) : ' + C.money(f.partPatientRestante || 0, false) }),
+            el('p', { text: 'AIB : ' + (dec ? (dec.appliquer ? 'appliqué à ' + dec.taux + ' % (proposition ' + (dec.propositionTaux == null ? 'sans barème' : dec.propositionTaux + ' %') + ')' : 'non appliqué : ' + dec.motif) + ', décidé par ' + dec.decidePar + ' (' + dec.decideRole + ')' : 'à décider par le comptable') }),
+            el('p', { text: f.numeroMecef ? 'Numéro MECeF : ' + f.numeroMecef + (f.mecefSimule ? ' (appareil de démonstration)' : '') : 'Aucun numéro MECeF : ' + (f.motifRefusMecef || 'la pièce n’est pas transmise') }),
+          ]),
+        ]);
+        var m = U.modal({ title: (f.numero || 'Brouillon') + ' · ' + f.tiersNom, size: 'lg', body: corps, footer: [K.btn('Fermer', { onclick: function () { m.close(); } })] });
+      }
+      function imprimer(f) {
+        var tv = T.versions(f.tiersCode).filter(function (v) { return v.id === f.tiersVersionId; })[0] || {};
+        P.etat({
+          titre: 'Facture à un tiers payeur', sousTitre: f.numero, date: f.date, filtres: false,
+          cartouche: [['N° facture', f.numero], ['Date', C.dateFR(f.date)], ['Acheteur', f.nomAcheteur], ['IFU de l’acheteur', f.ifuAcheteur], ['Adresse', tv.adresse || f.tiersAdresse || 'Non renseignée'],
+            ['Patient pris en charge', f.patientNom || 'Non renseigné'], ['Numéro MECeF', f.numeroMecef ? f.numeroMecef + (f.mecefSimule ? ' (démonstration)' : '') : 'Non transmise'], ['Conditions', tv.conditions || (f.delaiPaiementJours != null ? 'Paiement à ' + f.delaiPaiementJours + ' jours' : '—')]],
+          contenu: [
+            P.tableau([{ label: 'Facture du patient' }, { label: 'Prestation' }, { label: 'Montant pris en charge', align: 'right' }],
+              f.lignes.map(function (x) { return [x.factureNumero, x.designation, C.money(x.montant, false)]; })),
+            el('div.mt-3.ml-auto.w-72.space-y-1.text-\\[11px\\]', null, [
+              el('p.flex.justify-between', null, [el('span', { text: 'Montant hors taxes' }), el('span', { text: C.money(f.ht, false) })]),
+              el('p.flex.justify-between', null, [el('span', { text: 'TVA' }), el('span', { text: C.money(f.tva, false) })]),
+              el('p.flex.justify-between', null, [el('span', { text: 'Total de la facture' }), el('span', { text: C.money(f.base, false) })]),
+              el('p.flex.justify-between', null, [el('span', { text: 'AIB' + (f.aibTaux ? ' (' + f.aibTaux + ' %)' : '') }), el('span', { text: C.money(f.aibMontant || 0, false) })]),
+              el('p.flex.justify-between.border-t.border-slate-400.pt-1.font-bold', null, [el('span', { text: 'Net à payer' }), el('span', { text: C.money(f.net, false) })]),
+            ]),
+            el('p.mt-3.text-\\[10px\\].italic.text-slate-600', { text: 'La part restante du patient (' + C.money(f.partPatientRestante || 0, false) + ') est facturée séparément à la caisse.' }),
+          ],
+        });
+      }
+      function decider(f) {
+        var prop = T.proposerAib(f.id);
+        var fm = U.form([
+          { name: 'appliquer', label: 'Appliquer l’AIB à cette facture ?', type: 'select', required: true, col: 'full', value: '', options: [{ value: '', label: 'À décider par le comptable' }, { value: 'oui', label: 'Oui, appliquer' }, { value: 'non', label: 'Non, ne pas appliquer' }] },
+          { name: 'situation', label: 'Ligne du barème (situation de l’acheteur)', type: 'select', col: 'full', value: '', options: [{ value: '', label: 'Choisir (si appliqué)' }].concat(B.situations('acheteur').map(function (x) { return { value: x.code, label: x.libelle }; })), condition: { controle: 'appliquer', quand: ['oui'] } },
+          { name: 'taux', label: 'Taux retenu (%)', type: 'number', min: 0, max: 100, step: 1, col: 'third', condition: { controle: 'appliquer', quand: ['oui'] } },
+          { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, col: 'full', help: 'Obligatoire pour ne pas appliquer, ou si le taux retenu n’est pas celui du barème.' },
+        ], {});
+        var m = U.modal({ title: 'Décider de l’AIB de ' + f.tiersNom, size: 'lg', body: el('div.space-y-3', null, [
+          K.note('<strong>Le logiciel propose, le comptable décide.</strong> Proposition du barème au ' + C.dateFR(f.date) + ' pour cet acheteur (IFU ' + f.ifuAcheteur + ') : ' + (prop.ok ? prop.taux + ' %' + (prop.arrete ? '' : ' (version pas encore arrêtée)') : 'aucune (' + prop.motif + ')') + '.', { tone: 'info', icon: 'scale' }), fm,
+        ]), footer: [K.btn('Annuler', { onclick: function () { m.close(); } }), K.btn('Enregistrer la décision', { variant: 'primary', icon: 'check', onclick: function () {
+          var v = fm.collect(); if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+          var r = T.deciderAib(f.id, { appliquer: v.appliquer === 'oui' ? true : (v.appliquer === 'non' ? false : undefined), situation: v.situation, taux: v.taux, motif: v.motif });
+          if (!r.ok) { refuser(r); return; }
+          m.close(); U.toast('Décision de l’AIB enregistrée.', { type: 'success' }); dessiner();
+        } })] });
+      }
+      function emettre(f) {
+        var r = T.emettre(f.id);
+        if (!r.ok) { refuser(r); return; }
+        var mec = r.mecef || {};
+        U.toast('Facture ' + r.numero + ' émise' + (mec.ok === false ? ' ; normalisation en attente : ' + mec.motif : (mec.numero ? ' et normalisée (' + mec.numero + ')' : '')) + '.', { type: mec.ok === false ? 'warning' : 'success' });
+        dessiner();
+      }
+      function abandonner(f) {
+        U.confirm({ title: 'Abandonner le brouillon', message: 'Le brouillon est archivé avec son motif (RG-14) ; les lignes redeviennent facturables.', confirmLabel: 'Abandonner', requireMotif: true }).then(function (rep) {
+          if (!rep || !String(rep.motif || '').trim()) return;
+          var r = T.abandonner(f.id, rep.motif); if (!r.ok) { refuser(r); return; } dessiner();
+        });
+      }
+      function retransmettre(f) { var r = T.retransmettre(f.id); if (!r.ok) { refuser(r); } else { U.toast('Facture normalisée (' + r.numero + ').', { type: 'success' }); } dessiner(); }
+      function avoir(f) {
+        U.confirm({ title: 'Avoir total de ' + f.numero, message: 'Une pièce émise ne se réécrit jamais : un avoir total annule la facture (' + C.money(f.net, false) + ').', confirmLabel: 'Émettre l’avoir', danger: true, requireMotif: true }).then(function (rep) {
+          if (!rep || !String(rep.motif || '').trim()) return;
+          var r = T.avoir(f.id, rep.motif); if (!r.ok) { refuser(r); return; } U.toast('Avoir ' + r.numero + ' émis.', { type: 'success' }); dessiner();
+        });
+      }
+      function formulaireFacture() {
+        var tiers = T.actifs(C.iso(AUJ));
+        if (!tiers.length) { U.toast('Aucun tiers payeur : en créer un d’abord (onglet « Tiers payeurs »).', { type: 'warning' }); return; }
+        var selTiers = U.combo(tiers.map(function (t) { return { value: t.code, label: t.nom, detail: t.code + (t.ifu ? ' · IFU ' + t.ifu : ' · IFU absent') }; }), { placeholder: 'Tiers payeur', searchPlaceholder: 'Nom, code…' });
+        var date = el('input.input', { type: 'date', value: C.iso(AUJ) });
+        var candidates = C.sortBy(S.collection('factures').active().filter(function (f) { return !f.proforma && (f.montantTTC || 0) > 0 && (f.lignes || []).length; }), 'date', 'desc').slice(0, 300);
+        var selFac = U.combo(candidates.map(function (f) { return { value: f.id, label: f.numero + ' · ' + (f.patient || 'Sans dossier'), detail: C.dateFR(f.date) + ' · ' + C.money(f.montantTTC, false) }; }), { placeholder: 'Facture du patient', searchPlaceholder: 'Numéro, patient…' });
+        var zone = el('div.mt-3'), champs = [];
+        function lignes() {
+          C.clear(zone); champs = [];
+          if (!selFac.value) { zone.appendChild(el('p.text-xs.text-slate-400', { text: 'Choisir la facture du patient pour voir ses prestations.' })); return; }
+          var lf = T.lignesFacturables(selFac.value);
+          if (!lf.ok) { zone.appendChild(K.note(lf.motif, { tone: 'warning', icon: 'alert-triangle' })); return; }
+          zone.appendChild(el('p.label', { text: 'Prestations prises en charge par le tiers' }));
+          lf.lignes.forEach(function (l) {
+            var cb = el('input.checkbox', { type: 'checkbox', disabled: l.disponible == null || l.disponible === 0 });
+            var inp = el('input.input.w-32', { type: 'number', min: 1, step: 1, value: l.disponible || '', disabled: l.disponible == null || l.disponible === 0 });
+            champs.push({ cb: cb, inp: inp, ligne: l });
+            zone.appendChild(el('label.flex.items-center.justify-between.gap-3.rounded-lg.border.border-slate-200.px-3.py-2.text-sm', null, [
+              el('span.flex.items-center.gap-2', null, [cb, el('span', { text: l.designation })]),
+              el('span.flex.items-center.gap-2', null, [el('span.text-xs.text-slate-500', { text: l.disponible == null ? 'prix à valoriser' : 'facturable ' + C.money(l.disponible, false) }), inp]),
+            ]));
+          });
+        }
+        selFac.addEventListener('change', lignes); lignes();
+        var m = U.modal({ title: 'Nouvelle facture à un tiers payeur', size: 'lg', body: el('div.space-y-3', null, [
+          K.note('La facture se rattache aux prestations d’<strong>un patient</strong>. L’IFU et le nom de l’acheteur viennent de la fiche du tiers payeur à la date de la pièce et sont contrôlés avant toute écriture. L’AIB se décide ensuite (le comptable), avant l’émission.', { tone: 'info', icon: 'building-2' }),
+          el('div', null, [el('label.label', { text: 'Tiers payeur *' }), selTiers]), el('div', null, [el('label.label', { text: 'Date de la facture *' }), date]),
+          el('div', null, [el('label.label', { text: 'Facture du patient *' }), selFac]), zone,
+        ]), footer: [K.btn('Annuler', { onclick: function () { m.close(); } }), K.commande('Créer le brouillon', { variant: 'primary', icon: 'check', moduleCode: 'M8', onclick: function () {
+          var l = champs.filter(function (c) { return c.cb.checked; }).map(function (c) { return { factureId: selFac.value, ligneId: c.ligne.ligneId, montant: Number(c.inp.value) }; });
+          var r = T.proposer({ tiersCode: selTiers.value, date: date.value, lignes: l });
+          if (!r.ok) { refuser(r); return; }
+          m.close(); U.toast('Brouillon créé : décider de l’AIB, puis émettre.', { type: 'success' }); dessiner();
+        } })] });
+      }
+
+      /* ---------------- Tiers payeurs ---------------- */
+      function ongletTiers() {
+        var rows = T.codes().map(function (c) { return T.aLaDate(c, C.iso(AUJ)) || T.versions(c).slice(-1)[0]; }).filter(Boolean);
+        return U.dataTable({
+          title: 'Tiers payeurs (version en vigueur)', rows: rows, pageSize: 15, searchable: true, exportName: 'tiers-payeurs', emptyMessage: 'Aucun tiers payeur.',
+          columns: [
+            { key: 'code', label: 'Code', render: function (t) { return el('span.font-mono.text-xs.font-semibold', { text: t.code }); }, text: function (t) { return t.code; } },
+            { key: 'nom', label: 'Nom' },
+            { key: 'type', label: 'Type', render: function (t) { var x = T.TYPES.filter(function (y) { return y.value === t.type; })[0]; return x ? x.label : t.type; }, text: function (t) { return t.type; } },
+            { key: 'ifu', label: 'IFU', render: function (t) { return t.ifu ? el('span.font-mono.text-xs', { text: t.ifu }) : U.badge('IFU à renseigner', 'warning'); }, text: function (t) { return t.ifu || ''; } },
+            { key: 'adresse', label: 'Adresse', render: function (t) { return t.adresse || 'Non renseignée'; }, text: function (t) { return t.adresse || ''; } },
+            { key: 'delaiPaiementJours', label: 'Délai', align: 'right', render: function (t) { return t.delaiPaiementJours == null ? 'Non convenu' : t.delaiPaiementJours + ' j'; }, text: function (t) { return t.delaiPaiementJours == null ? '' : String(t.delaiPaiementJours); } },
+            { key: 'version', label: 'Version', align: 'right', render: function (t) { return 'v' + t.version + ' depuis le ' + C.dateFR(t.dateEffet); }, text: function (t) { return 'v' + t.version; } },
+          ],
+          rowActions: function (t) { return [T.peutEmettre() ? K.commandeIcone('pencil', 'Nouvelle version datée', function () { formulaireTiers(t); }, { moduleCode: 'M8' }) : null].filter(Boolean); },
+          actions: [T.peutEmettre() ? K.commande('Nouveau tiers payeur', { variant: 'primary', size: 'sm', icon: 'plus', moduleCode: 'M8', onclick: function () { formulaireTiers(null); } }) : null].filter(Boolean),
+        });
+      }
+      function formulaireTiers(t) {
+        var fm = U.form([
+          { name: 'nom', label: 'Nom', required: true, col: 'full', value: t ? t.nom : '' },
+          { name: 'type', label: 'Type', type: 'select', required: true, options: T.TYPES, value: t ? t.type : 'entreprise' },
+          { name: 'ifu', label: 'IFU (13 chiffres)', value: t && t.ifu ? t.ifu : '', help: 'Exigé à la première facture : une vente normalisée à un professionnel porte son IFU.' },
+          { name: 'adresse', label: 'Adresse', col: 'full', value: t && t.adresse ? t.adresse : '' },
+          { name: 'delaiPaiementJours', label: 'Délai de paiement (jours)', type: 'number', min: 0, max: 365, step: 1, value: t && t.delaiPaiementJours != null ? t.delaiPaiementJours : '', help: 'Vide : délai non convenu, l’échéance est non calculable.' },
+          { name: 'conditions', label: 'Conditions', type: 'textarea', rows: 2, col: 'full', value: t && t.conditions ? t.conditions : '' },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', value: C.iso(AUJ) },
+          t ? { name: 'motif', label: 'Motif de la nouvelle version', type: 'textarea', rows: 2, col: 'full', required: true } : null,
+        ].filter(Boolean), {});
+        var m = U.modal({ title: t ? 'Nouvelle version de ' + t.code : 'Nouveau tiers payeur', size: 'lg', body: fm, footer: [K.btn('Annuler', { onclick: function () { m.close(); } }), K.commande('Enregistrer', { variant: 'primary', icon: 'check', moduleCode: 'M8', onclick: function () {
+          var v = fm.collect(); if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+          var r = t ? T.nouvelleVersion(t.code, v) : T.creerTiers(v);
+          if (!r.ok) { refuser(r); return; }
+          m.close(); U.toast('Fiche enregistrée.', { type: 'success' }); dessiner();
+        } })] });
+      }
+
+      /* ---------------- Règlements et lettrage ---------------- */
+      function ongletReglements() {
+        var rows = T.reglements().slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+        var l = T.lettrages().slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+        return el('div.space-y-4', null, [
+          U.dataTable({
+            title: 'Règlements reçus des tiers payeurs', rows: rows, pageSize: 10, searchable: true, exportName: 'reglements-tiers', emptyMessage: 'Aucun règlement reçu.',
+            columns: [
+              { key: 'numero', label: 'N°', render: function (r) { return el('span.font-mono.text-xs', { text: r.numero }); }, text: function (r) { return r.numero; } },
+              { key: 'date', label: 'Date', render: function (r) { return C.dateFR(r.date); }, text: function (r) { return C.dateFR(r.date); } },
+              { key: 'tiersCode', label: 'Tiers', render: function (r) { return nom(r.tiersCode); }, text: function (r) { return nom(r.tiersCode); } },
+              { key: 'mode', label: 'Mode' }, { key: 'referencePaiement', label: 'Référence' },
+              { key: 'montant', label: 'Montant', align: 'right', render: function (r) { return C.money(r.montant, false); }, text: function (r) { return C.money(r.montant, false); } },
+              { key: 'reste', label: 'Reste à lettrer', align: 'right', render: function (r) { var x = T.resteNonLettre(r); return x > 0 ? U.badge(C.money(x, false), 'warning') : U.badge('Lettré', 'success'); }, text: function (r) { return String(T.resteNonLettre(r)); } },
+            ],
+            rowActions: function (r) { return [T.peutCorriger() && T.resteNonLettre(r) > 0 ? K.commandeIcone('link', 'Lettrer sur des factures', function () { formulaireLettrage(r); }, { moduleCode: 'M8' }) : null].filter(Boolean); },
+            actions: [T.peutEmettre() ? K.commande('Enregistrer un règlement reçu', { variant: 'primary', size: 'sm', icon: 'plus', moduleCode: 'M8', onclick: formulaireReglement }) : null].filter(Boolean),
+          }),
+          U.dataTable({
+            title: 'Lettrages', rows: l, pageSize: 10, exportName: 'lettrages-tiers', emptyMessage: 'Aucun lettrage.',
+            columns: [
+              { key: 'date', label: 'Date', render: function (x) { return C.dateFR(x.date); }, text: function (x) { return C.dateFR(x.date); } },
+              { key: 'reglementNumero', label: 'Règlement' }, { key: 'factureNumero', label: 'Facture' },
+              { key: 'montant', label: 'Montant lettré', align: 'right', render: function (x) { return C.money(x.montant, false); }, text: function (x) { return C.money(x.montant, false); } },
+              { key: 'lettrePar', label: 'Par' },
+            ],
+            rowActions: function (x) { return [T.peutCorriger() ? K.commandeIcone('unlink', 'Délettrer', function () { delettrer(x); }, { moduleCode: 'M8', variant: 'ghost' }) : null].filter(Boolean); },
+          }),
+        ]);
+      }
+      function formulaireReglement() {
+        var tiers = T.codes().map(function (c) { return { value: c, label: nom(c) }; });
+        var fm = U.form([
+          { name: 'tiersCode', label: 'Tiers payeur', type: 'select', required: true, col: 'full', value: '', options: [{ value: '', label: 'Choisir' }].concat(tiers) },
+          { name: 'date', label: 'Date de réception', type: 'date', required: true, value: C.iso(AUJ) },
+          { name: 'montant', label: 'Montant reçu (FCFA)', type: 'money', required: true, min: 1 },
+          { name: 'mode', label: 'Mode', type: 'select', required: true, value: 'virement', options: [{ value: 'virement', label: 'Virement' }, { value: 'cheque', label: 'Chèque' }, { value: 'especes', label: 'Espèces' }] },
+          { name: 'referencePaiement', label: 'Référence du paiement', required: true, help: 'Numéro de chèque, de virement ou de bordereau.' },
+        ], {});
+        var m = U.modal({ title: 'Règlement reçu d’un tiers payeur', size: 'lg', body: fm, footer: [K.btn('Annuler', { onclick: function () { m.close(); } }), K.commande('Enregistrer', { variant: 'primary', icon: 'check', moduleCode: 'M8', onclick: function () {
+          var v = fm.collect(); if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+          var r = T.reglement({ tiersCode: v.tiersCode, date: v.date, montant: Number(v.montant), mode: v.mode, referencePaiement: v.referencePaiement });
+          if (!r.ok) { refuser(r); return; }
+          m.close(); U.toast('Règlement ' + r.numero + ' enregistré, à lettrer.', { type: 'success' }); dessiner();
+        } })] });
+      }
+      function formulaireLettrage(r) {
+        var dues = T.factures().filter(function (f) { return f.statut === 'emise' && f.tiersCode === r.tiersCode && T.creance(f) > 0; });
+        if (!dues.length) { U.toast('Aucune facture due pour ce tiers.', { type: 'warning' }); return; }
+        var reste = T.resteNonLettre(r), champs = [];
+        var corps = el('div.space-y-2', null, [K.note('Reste à lettrer sur ' + r.numero + ' : <strong>' + C.money(reste, false) + '</strong>. Un lettrage ne dépasse ni ce reste ni ce qui est dû sur la facture.', { tone: 'info', icon: 'link' })]);
+        dues.forEach(function (f) {
+          var inp = el('input.input.w-32', { type: 'number', min: 0, step: 1, value: '' });
+          champs.push({ f: f, inp: inp });
+          corps.appendChild(el('label.flex.items-center.justify-between.gap-3.rounded-lg.border.border-slate-200.px-3.py-2.text-sm', null, [
+            el('span', { text: f.numero + ' · reste dû ' + C.money(T.creance(f), false) }), inp]));
+        });
+        var m = U.modal({ title: 'Lettrer ' + r.numero, size: 'lg', body: corps, footer: [K.btn('Annuler', { onclick: function () { m.close(); } }), K.commande('Lettrer', { variant: 'primary', icon: 'check', moduleCode: 'M8', onclick: function () {
+          var aff = champs.filter(function (c) { return Number(c.inp.value) > 0; }).map(function (c) { return { factureTiersId: c.f.id, montant: Number(c.inp.value) }; });
+          var x = T.lettrer({ reglementId: r.id, affectations: aff }); if (!x.ok) { refuser(x); return; }
+          m.close(); U.toast('Lettrage enregistré.', { type: 'success' }); dessiner();
+        } })] });
+      }
+      function delettrer(l) {
+        U.confirm({ title: 'Défaire le lettrage', message: 'Le lettrage est archivé avec son motif (RG-14) ; la facture redevient due.', confirmLabel: 'Délettrer', requireMotif: true }).then(function (rep) {
+          if (!rep || !String(rep.motif || '').trim()) return;
+          var r = T.delettrer(l.id, rep.motif); if (!r.ok) { refuser(r); return; } dessiner();
+        });
+      }
+
+      /* ---------------- Créances ---------------- */
+      function ongletCreances() { return K.tiersCreances(); }
     },
   });
 

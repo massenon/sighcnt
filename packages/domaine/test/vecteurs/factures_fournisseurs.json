@@ -1,0 +1,1110 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-m7-achats.js — l'écran m7-factures-fournisseurs pilotés dans la maquette. Ne pas éditer.",
+ "jeu": {
+  "factures": [
+   {
+    "id": "FF0001",
+    "statut": "actif",
+    "reference": "FF-2026-0001",
+    "numeroFournisseur": "FN537295",
+    "date": "2026-06-26",
+    "blRef": "26LNA18031",
+    "commandeRef": "BC-2026-0001",
+    "fournisseur": "NATIFOURN",
+    "fournisseurNom": "NATI Fournitures",
+    "montantLivraison": 94650,
+    "montantFacture": 94650,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "payee",
+    "echeance": "2026-07-26"
+   },
+   {
+    "id": "FF0002",
+    "statut": "actif",
+    "reference": "FF-2026-0002",
+    "numeroFournisseur": "FN432862",
+    "date": "2026-05-14",
+    "blRef": "26LNA32344",
+    "commandeRef": "BC-2026-0002",
+    "fournisseur": "NATIFOURN",
+    "fournisseurNom": "NATI Fournitures",
+    "montantLivraison": 1177940,
+    "montantFacture": 1177940,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "impayee",
+    "echeance": "2026-06-13"
+   },
+   {
+    "id": "FF0003",
+    "statut": "actif",
+    "reference": "FF-2026-0003",
+    "numeroFournisseur": "FN276346",
+    "date": "2026-08-01",
+    "blRef": "26LNA57906",
+    "commandeRef": "BC-2026-0003",
+    "fournisseur": "MEDIPLUS",
+    "fournisseurNom": "MEDIPLUS Équipements",
+    "montantLivraison": 859198,
+    "montantFacture": 859198,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "payee",
+    "echeance": "2026-08-31"
+   },
+   {
+    "id": "FF0004",
+    "statut": "actif",
+    "reference": "FF-2026-0004",
+    "numeroFournisseur": "FN442746",
+    "date": "2026-03-31",
+    "blRef": "26LNA37378",
+    "commandeRef": "BC-2026-0004",
+    "fournisseur": "MEDIPLUS",
+    "fournisseurNom": "MEDIPLUS Équipements",
+    "montantLivraison": 287010,
+    "montantFacture": 287010,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "payee",
+    "echeance": "2026-04-30"
+   },
+   {
+    "id": "FF0005",
+    "statut": "actif",
+    "reference": "FF-2026-0005",
+    "numeroFournisseur": "FN592854",
+    "date": "2026-04-09",
+    "blRef": "26LNA26669",
+    "commandeRef": "BC-2026-0005",
+    "fournisseur": "MEDIPLUS",
+    "fournisseurNom": "MEDIPLUS Équipements",
+    "montantLivraison": 1449289,
+    "montantFacture": 1421668,
+    "ecart": -27621,
+    "statutRappro": "anomalie",
+    "statutPaiement": "payee",
+    "echeance": "2026-05-09"
+   },
+   {
+    "id": "FF0006",
+    "statut": "actif",
+    "reference": "FF-2026-0006",
+    "numeroFournisseur": "FN804394",
+    "date": "2026-08-05",
+    "blRef": "26LNA23265",
+    "commandeRef": "BC-2026-0006",
+    "fournisseur": "NATIFOURN",
+    "fournisseurNom": "NATI Fournitures",
+    "montantLivraison": 104140,
+    "montantFacture": 104140,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "payee",
+    "echeance": "2026-09-04"
+   },
+   {
+    "id": "FF0007",
+    "statut": "actif",
+    "reference": "FF-2026-0007",
+    "numeroFournisseur": "FN488850",
+    "date": "2026-03-14",
+    "blRef": "26LNA83955",
+    "commandeRef": "BC-2026-0007",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "montantLivraison": 512192,
+    "montantFacture": 512192,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "partielle",
+    "echeance": "2026-04-13"
+   },
+   {
+    "id": "FF0008",
+    "statut": "actif",
+    "reference": "FF-2026-0008",
+    "numeroFournisseur": "FN921222",
+    "date": "2026-02-18",
+    "blRef": "26LNA50670",
+    "commandeRef": "BC-2026-0008",
+    "fournisseur": "LABOTECH",
+    "fournisseurNom": "LABOTECH Réactifs",
+    "montantLivraison": 613500,
+    "montantFacture": 613500,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "impayee",
+    "echeance": "2026-03-20"
+   },
+   {
+    "id": "FF0009",
+    "statut": "actif",
+    "reference": "FF-2026-0009",
+    "numeroFournisseur": "FN676512",
+    "date": "2026-06-29",
+    "blRef": "26LNA56113",
+    "commandeRef": "BC-2026-0009",
+    "fournisseur": "NATIFOURN",
+    "fournisseurNom": "NATI Fournitures",
+    "montantLivraison": 242500,
+    "montantFacture": 242500,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "impayee",
+    "echeance": "2026-07-29"
+   },
+   {
+    "id": "FF0010",
+    "statut": "actif",
+    "reference": "FF-2026-0010",
+    "numeroFournisseur": "FN129718",
+    "date": "2026-05-28",
+    "blRef": "26LNA49567",
+    "commandeRef": "BC-2026-0012",
+    "fournisseur": "NATIFOURN",
+    "fournisseurNom": "NATI Fournitures",
+    "montantLivraison": 130200,
+    "montantFacture": 130200,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "payee",
+    "echeance": "2026-06-27"
+   },
+   {
+    "id": "FF0011",
+    "statut": "actif",
+    "reference": "FF-2026-0011",
+    "numeroFournisseur": "FN555841",
+    "date": "2026-08-13",
+    "blRef": "26LNA07664",
+    "commandeRef": "BC-2026-0014",
+    "fournisseur": "LABOTECH",
+    "fournisseurNom": "LABOTECH Réactifs",
+    "montantLivraison": 670502,
+    "montantFacture": 670502,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "impayee",
+    "echeance": "2026-09-12"
+   }
+  ],
+  "rendu": {
+   "erreur": null,
+   "etat": {
+    "kpis": [
+     [
+      "Factures fournisseurs",
+      "11"
+     ],
+     [
+      "Rapprochées",
+      "10"
+     ],
+     [
+      "Anomalies",
+      "1"
+     ],
+     [
+      "Impayées",
+      "3 216 634 FCFA"
+     ]
+    ],
+    "note": null,
+    "entetes": [
+     "N° interne",
+     "N° fournisseur",
+     "Date",
+     "Fournisseur",
+     "BL rattaché",
+     "Montant livré",
+     "Montant facturé",
+     "Écart",
+     "Échéance",
+     "Règlement",
+     "Actions"
+    ],
+    "lignes": [
+     [
+      "FF-2026-0011",
+      "FN555841",
+      "13/08/2026",
+      "LABOTECH Réactifs",
+      "26LNA07664",
+      "670 502",
+      "670 502",
+      "Conforme",
+      "12/09/2026",
+      "Impayée",
+      ""
+     ],
+     [
+      "FF-2026-0006",
+      "FN804394",
+      "05/08/2026",
+      "NATI Fournitures",
+      "26LNA23265",
+      "104 140",
+      "104 140",
+      "Conforme",
+      "04/09/2026",
+      "Payée",
+      ""
+     ],
+     [
+      "FF-2026-0003",
+      "FN276346",
+      "01/08/2026",
+      "MEDIPLUS Équipements",
+      "26LNA57906",
+      "859 198",
+      "859 198",
+      "Conforme",
+      "31/08/2026",
+      "Payée",
+      ""
+     ],
+     [
+      "FF-2026-0009",
+      "FN676512",
+      "29/06/2026",
+      "NATI Fournitures",
+      "26LNA56113",
+      "242 500",
+      "242 500",
+      "Conforme",
+      "29/07/2026",
+      "Impayée",
+      ""
+     ],
+     [
+      "FF-2026-0001",
+      "FN537295",
+      "26/06/2026",
+      "NATI Fournitures",
+      "26LNA18031",
+      "94 650",
+      "94 650",
+      "Conforme",
+      "26/07/2026",
+      "Payée",
+      ""
+     ],
+     [
+      "FF-2026-0010",
+      "FN129718",
+      "28/05/2026",
+      "NATI Fournitures",
+      "26LNA49567",
+      "130 200",
+      "130 200",
+      "Conforme",
+      "27/06/2026",
+      "Payée",
+      ""
+     ],
+     [
+      "FF-2026-0002",
+      "FN432862",
+      "14/05/2026",
+      "NATI Fournitures",
+      "26LNA32344",
+      "1 177 940",
+      "1 177 940",
+      "Conforme",
+      "13/06/2026",
+      "Impayée",
+      ""
+     ],
+     [
+      "FF-2026-0005",
+      "FN592854",
+      "09/04/2026",
+      "MEDIPLUS Équipements",
+      "26LNA26669",
+      "1 449 289",
+      "1 421 668",
+      "-27 621",
+      "09/05/2026",
+      "Payée",
+      ""
+     ],
+     [
+      "FF-2026-0004",
+      "FN442746",
+      "31/03/2026",
+      "MEDIPLUS Équipements",
+      "26LNA37378",
+      "287 010",
+      "287 010",
+      "Conforme",
+      "30/04/2026",
+      "Payée",
+      ""
+     ],
+     [
+      "FF-2026-0007",
+      "FN488850",
+      "14/03/2026",
+      "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "26LNA83955",
+      "512 192",
+      "512 192",
+      "Conforme",
+      "13/04/2026",
+      "Partielle",
+      ""
+     ],
+     [
+      "FF-2026-0008",
+      "FN921222",
+      "18/02/2026",
+      "LABOTECH Réactifs",
+      "26LNA50670",
+      "613 500",
+      "613 500",
+      "Conforme",
+      "20/03/2026",
+      "Impayée",
+      ""
+     ]
+    ],
+    "vide": false,
+    "noteTexte": "1 anomalie(s) de rapprochement détectée(s) : le montant facturé diffère du montant livré. Vérification requise avant règlement."
+   }
+  }
+ },
+ "cas": [
+  {
+   "nom": "aucune facture",
+   "factures": [],
+   "rendu": {
+    "erreur": null,
+    "etat": {
+     "kpis": [
+      [
+       "Factures fournisseurs",
+       "0"
+      ],
+      [
+       "Rapprochées",
+       "0"
+      ],
+      [
+       "Anomalies",
+       "0"
+      ],
+      [
+       "Impayées",
+       "0 FCFA"
+      ]
+     ],
+     "note": null,
+     "entetes": [],
+     "lignes": [],
+     "vide": true,
+     "noteTexte": null
+    }
+   },
+   "bfr": {
+    "dettes": 0,
+    "nbDettes": 0,
+    "incomplet": [
+     "les factures fournisseurs"
+    ]
+   }
+  },
+  {
+   "nom": "mélange : payée, impayée, partielle (anomalie), impayée (anomalie)",
+   "factures": [
+    {
+     "id": "FACxmvv9sdvprk7b1",
+     "statut": "actif",
+     "reference": "FF-T-4",
+     "numeroFournisseur": "FN4",
+     "date": "2026-09-14",
+     "blRef": "BL4",
+     "commandeRef": "BC4",
+     "fournisseur": "SOBAPS",
+     "fournisseurNom": "SoBAPS SA",
+     "montantLivraison": 800,
+     "montantFacture": 500,
+     "ecart": -300,
+     "statutRappro": "anomalie",
+     "statutPaiement": "impayee",
+     "echeance": "2026-10-14"
+    },
+    {
+     "id": "FACxmvv9sdvph5z12",
+     "statut": "actif",
+     "reference": "FF-T-3",
+     "numeroFournisseur": "FN3",
+     "date": "2026-09-13",
+     "blRef": "BL3",
+     "commandeRef": "BC3",
+     "fournisseur": "SOBAPS",
+     "fournisseurNom": "SoBAPS SA",
+     "montantLivraison": 2500,
+     "montantFacture": 3000,
+     "ecart": 500,
+     "statutRappro": "anomalie",
+     "statutPaiement": "partielle",
+     "echeance": "2026-10-13"
+    },
+    {
+     "id": "FACxmvv9sdvp71t67",
+     "statut": "actif",
+     "reference": "FF-T-2",
+     "numeroFournisseur": "FN2",
+     "date": "2026-09-12",
+     "blRef": "BL2",
+     "commandeRef": "BC2",
+     "fournisseur": "SOBAPS",
+     "fournisseurNom": "SoBAPS SA",
+     "montantLivraison": 2000,
+     "montantFacture": 2000,
+     "ecart": 0,
+     "statutRappro": "rapproche",
+     "statutPaiement": "impayee",
+     "echeance": "2026-10-12"
+    },
+    {
+     "id": "FACxmvv9sdvpjlvuc",
+     "statut": "actif",
+     "reference": "FF-T-1",
+     "numeroFournisseur": "FN1",
+     "date": "2026-09-11",
+     "blRef": "BL1",
+     "commandeRef": "BC1",
+     "fournisseur": "SOBAPS",
+     "fournisseurNom": "SoBAPS SA",
+     "montantLivraison": 1000,
+     "montantFacture": 1000,
+     "ecart": 0,
+     "statutRappro": "rapproche",
+     "statutPaiement": "payee",
+     "echeance": "2026-10-11"
+    }
+   ],
+   "rendu": {
+    "erreur": null,
+    "etat": {
+     "kpis": [
+      [
+       "Factures fournisseurs",
+       "4"
+      ],
+      [
+       "Rapprochées",
+       "2"
+      ],
+      [
+       "Anomalies",
+       "2"
+      ],
+      [
+       "Impayées",
+       "5 500 FCFA"
+      ]
+     ],
+     "note": null,
+     "entetes": [
+      "N° interne",
+      "N° fournisseur",
+      "Date",
+      "Fournisseur",
+      "BL rattaché",
+      "Montant livré",
+      "Montant facturé",
+      "Écart",
+      "Échéance",
+      "Règlement",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "FF-T-4",
+       "FN4",
+       "14/09/2026",
+       "SoBAPS SA",
+       "BL4",
+       "800",
+       "500",
+       "-300",
+       "14/10/2026",
+       "Impayée",
+       ""
+      ],
+      [
+       "FF-T-3",
+       "FN3",
+       "13/09/2026",
+       "SoBAPS SA",
+       "BL3",
+       "2 500",
+       "3 000",
+       "+500",
+       "13/10/2026",
+       "Partielle",
+       ""
+      ],
+      [
+       "FF-T-2",
+       "FN2",
+       "12/09/2026",
+       "SoBAPS SA",
+       "BL2",
+       "2 000",
+       "2 000",
+       "Conforme",
+       "12/10/2026",
+       "Impayée",
+       ""
+      ],
+      [
+       "FF-T-1",
+       "FN1",
+       "11/09/2026",
+       "SoBAPS SA",
+       "BL1",
+       "1 000",
+       "1 000",
+       "Conforme",
+       "11/10/2026",
+       "Payée",
+       ""
+      ]
+     ],
+     "vide": false,
+     "noteTexte": "2 anomalie(s) de rapprochement détectée(s) : le montant facturé diffère du montant livré. Vérification requise avant règlement."
+    }
+   },
+   "bfr": {
+    "dettes": 5500,
+    "nbDettes": 3,
+    "incomplet": []
+   }
+  },
+  {
+   "nom": "une seule anomalie, tout est payé",
+   "factures": [
+    {
+     "id": "FACxmvv9sdwxyt2z4",
+     "statut": "actif",
+     "reference": "FF-T-5",
+     "numeroFournisseur": "FN5",
+     "date": "2026-09-15",
+     "blRef": "BL5",
+     "commandeRef": "BC5",
+     "fournisseur": "SOBAPS",
+     "fournisseurNom": "SoBAPS SA",
+     "montantLivraison": 600,
+     "montantFacture": 700,
+     "ecart": 100,
+     "statutRappro": "anomalie",
+     "statutPaiement": "payee",
+     "echeance": "2026-10-15"
+    }
+   ],
+   "rendu": {
+    "erreur": null,
+    "etat": {
+     "kpis": [
+      [
+       "Factures fournisseurs",
+       "1"
+      ],
+      [
+       "Rapprochées",
+       "0"
+      ],
+      [
+       "Anomalies",
+       "1"
+      ],
+      [
+       "Impayées",
+       "0 FCFA"
+      ]
+     ],
+     "note": null,
+     "entetes": [
+      "N° interne",
+      "N° fournisseur",
+      "Date",
+      "Fournisseur",
+      "BL rattaché",
+      "Montant livré",
+      "Montant facturé",
+      "Écart",
+      "Échéance",
+      "Règlement",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "FF-T-5",
+       "FN5",
+       "15/09/2026",
+       "SoBAPS SA",
+       "BL5",
+       "600",
+       "700",
+       "+100",
+       "15/10/2026",
+       "Payée",
+       ""
+      ]
+     ],
+     "vide": false,
+     "noteTexte": "1 anomalie(s) de rapprochement détectée(s) : le montant facturé diffère du montant livré. Vérification requise avant règlement."
+    }
+   },
+   "bfr": {
+    "dettes": 0,
+    "nbDettes": 0,
+    "incomplet": []
+   }
+  },
+  {
+   "nom": "pièce de génération antérieure : « soldee » (le BFR l'accepte, l'écran ?)",
+   "factures": [
+    {
+     "id": "FACxmvv9sdy14eit6",
+     "statut": "actif",
+     "reference": "FF-T-7",
+     "numeroFournisseur": "FN7",
+     "date": "2026-09-17",
+     "blRef": "BL7",
+     "commandeRef": "BC7",
+     "fournisseur": "SOBAPS",
+     "fournisseurNom": "SoBAPS SA",
+     "montantLivraison": 1000,
+     "montantFacture": 100,
+     "ecart": 0,
+     "statutRappro": "rapproche",
+     "statutPaiement": "impayee",
+     "echeance": "2026-10-17"
+    },
+    {
+     "id": "FACxmvv9sdy1ow1eg",
+     "statut": "actif",
+     "reference": "FF-T-6",
+     "numeroFournisseur": "FN6",
+     "date": "2026-09-16",
+     "blRef": "BL6",
+     "commandeRef": "BC6",
+     "fournisseur": "SOBAPS",
+     "fournisseurNom": "SoBAPS SA",
+     "montantLivraison": 1000,
+     "montantFacture": 900,
+     "ecart": 0,
+     "statutRappro": "rapproche",
+     "statutPaiement": "soldee",
+     "echeance": "2026-10-16"
+    }
+   ],
+   "rendu": {
+    "erreur": "Cannot read properties of undefined (reading '0')",
+    "etat": null
+   },
+   "bfr": {
+    "dettes": 100,
+    "nbDettes": 1,
+    "incomplet": []
+   }
+  }
+ ],
+ "editions": [
+  {
+   "nom": "modifier le règlement seul : numéro (vide au départ) à ressaisir",
+   "saisie": {
+    "numero": "F-2026-001",
+    "statutPaiement": "partielle"
+   },
+   "actionsLigne": [
+    "Modifier",
+    "Archiver"
+   ],
+   "champsModale": [
+    "numero",
+    "date",
+    "fournisseur",
+    "montant",
+    "echeance",
+    "statutPaiement"
+   ],
+   "valeursInitiales": {
+    "numero": "",
+    "date": "2026-09-18",
+    "fournisseur": "SOBAPS",
+    "montant": "",
+    "echeance": "2026-10-18",
+    "statutPaiement": "impayee"
+   },
+   "optionsReglement": [
+    "— Sélectionner —",
+    "Impayée",
+    "Partielle",
+    "Payée"
+   ],
+   "avant": {
+    "id": "FACxmvv9sdy7th08l",
+    "statut": "actif",
+    "reference": "FF-T-8",
+    "numeroFournisseur": "FN8",
+    "date": "2026-09-18",
+    "blRef": "BL8",
+    "commandeRef": "BC8",
+    "fournisseur": "SOBAPS",
+    "fournisseurNom": "SoBAPS SA",
+    "montantLivraison": 4000,
+    "montantFacture": 5000,
+    "ecart": 1000,
+    "statutRappro": "anomalie",
+    "statutPaiement": "impayee",
+    "echeance": "2026-10-18"
+   },
+   "diff": {
+    "statutPaiement": "partielle",
+    "numero": "F-2026-001",
+    "montant": null
+   },
+   "messages": [
+    {
+     "message": "Modifications enregistrées.",
+     "type": "success",
+     "detail": null
+    }
+   ],
+   "apres": {
+    "kpis": [
+     [
+      "Factures fournisseurs",
+      "1"
+     ],
+     [
+      "Rapprochées",
+      "0"
+     ],
+     [
+      "Anomalies",
+      "1"
+     ],
+     [
+      "Impayées",
+      "5 000 FCFA"
+     ]
+    ],
+    "lignes": [
+     [
+      "FF-T-8",
+      "FN8",
+      "18/09/2026",
+      "SoBAPS SA",
+      "BL8",
+      "4 000",
+      "5 000",
+      "+1 000",
+      "18/10/2026",
+      "Partielle",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "nom": "modifier sans ressaisir le numéro -> formulaire en erreur",
+   "saisie": {
+    "statutPaiement": "payee",
+    "numero": ""
+   },
+   "actionsLigne": [
+    "Modifier",
+    "Archiver"
+   ],
+   "champsModale": [
+    "numero",
+    "date",
+    "fournisseur",
+    "montant",
+    "echeance",
+    "statutPaiement"
+   ],
+   "valeursInitiales": {
+    "numero": "F-2026-001",
+    "date": "2026-09-18",
+    "fournisseur": "SOBAPS",
+    "montant": "",
+    "echeance": "2026-10-18",
+    "statutPaiement": "partielle"
+   },
+   "optionsReglement": [
+    "— Sélectionner —",
+    "Impayée",
+    "Partielle",
+    "Payée"
+   ],
+   "avant": {
+    "id": "FACxmvv9sdy7th08l",
+    "statut": "actif",
+    "reference": "FF-T-8",
+    "numeroFournisseur": "FN8",
+    "date": "2026-09-18",
+    "blRef": "BL8",
+    "commandeRef": "BC8",
+    "fournisseur": "SOBAPS",
+    "fournisseurNom": "SoBAPS SA",
+    "montantLivraison": 4000,
+    "montantFacture": 5000,
+    "ecart": 1000,
+    "statutRappro": "anomalie",
+    "statutPaiement": "partielle",
+    "echeance": "2026-10-18",
+    "numero": "F-2026-001",
+    "montant": null
+   },
+   "diff": {},
+   "messages": [
+    {
+     "message": "Le formulaire comporte des erreurs.",
+     "type": "error",
+     "detail": null
+    }
+   ],
+   "apres": {
+    "kpis": [
+     [
+      "Factures fournisseurs",
+      "1"
+     ],
+     [
+      "Rapprochées",
+      "0"
+     ],
+     [
+      "Anomalies",
+      "1"
+     ],
+     [
+      "Impayées",
+      "5 000 FCFA"
+     ]
+    ],
+    "lignes": [
+     [
+      "FF-T-8",
+      "FN8",
+      "18/09/2026",
+      "SoBAPS SA",
+      "BL8",
+      "4 000",
+      "5 000",
+      "+1 000",
+      "18/10/2026",
+      "Partielle",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "nom": "modifier le montant : le champ « montant » n'est pas la colonne « montantFacture »",
+   "saisie": {
+    "numero": "F-2026-002",
+    "montant": "4000",
+    "statutPaiement": "payee"
+   },
+   "actionsLigne": [
+    "Modifier",
+    "Archiver"
+   ],
+   "champsModale": [
+    "numero",
+    "date",
+    "fournisseur",
+    "montant",
+    "echeance",
+    "statutPaiement"
+   ],
+   "valeursInitiales": {
+    "numero": "F-2026-001",
+    "date": "2026-09-18",
+    "fournisseur": "SOBAPS",
+    "montant": "",
+    "echeance": "2026-10-18",
+    "statutPaiement": "partielle"
+   },
+   "optionsReglement": [
+    "— Sélectionner —",
+    "Impayée",
+    "Partielle",
+    "Payée"
+   ],
+   "avant": {
+    "id": "FACxmvv9sdy7th08l",
+    "statut": "actif",
+    "reference": "FF-T-8",
+    "numeroFournisseur": "FN8",
+    "date": "2026-09-18",
+    "blRef": "BL8",
+    "commandeRef": "BC8",
+    "fournisseur": "SOBAPS",
+    "fournisseurNom": "SoBAPS SA",
+    "montantLivraison": 4000,
+    "montantFacture": 5000,
+    "ecart": 1000,
+    "statutRappro": "anomalie",
+    "statutPaiement": "partielle",
+    "echeance": "2026-10-18",
+    "numero": "F-2026-001",
+    "montant": null
+   },
+   "diff": {
+    "statutPaiement": "payee",
+    "numero": "F-2026-002",
+    "montant": 4000
+   },
+   "messages": [
+    {
+     "message": "Modifications enregistrées.",
+     "type": "success",
+     "detail": null
+    }
+   ],
+   "apres": {
+    "kpis": [
+     [
+      "Factures fournisseurs",
+      "1"
+     ],
+     [
+      "Rapprochées",
+      "0"
+     ],
+     [
+      "Anomalies",
+      "1"
+     ],
+     [
+      "Impayées",
+      "0 FCFA"
+     ]
+    ],
+    "lignes": [
+     [
+      "FF-T-8",
+      "FN8",
+      "18/09/2026",
+      "SoBAPS SA",
+      "BL8",
+      "4 000",
+      "5 000",
+      "+1 000",
+      "18/10/2026",
+      "Payée",
+      ""
+     ]
+    ]
+   }
+  }
+ ],
+ "tiroirs": [
+  {
+   "reference": "FF-T-9",
+   "fiche": {
+    "id": "FACxmvv9secq48ozr",
+    "statut": "actif",
+    "reference": "FF-T-9",
+    "numeroFournisseur": "FN9",
+    "date": "2026-09-19",
+    "blRef": "BL9",
+    "commandeRef": "BC9",
+    "fournisseur": "SOBAPS",
+    "fournisseurNom": "SoBAPS SA",
+    "montantLivraison": 4000,
+    "montantFacture": 5000,
+    "ecart": 1000,
+    "statutRappro": "anomalie",
+    "statutPaiement": "impayee",
+    "echeance": "2026-10-19",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:52:35.498Z"
+   },
+   "texte": [
+    "Facture FF-T-9",
+    "SoBAPS SA — 19/09/2026",
+    "Référence interne",
+    "FF-T-9",
+    "N° fournisseur",
+    "FN9",
+    "Fournisseur",
+    "SoBAPS SA",
+    "Date",
+    "19/09/2026",
+    "Commande",
+    "BC9",
+    "Bordereau de livraison",
+    "BL9",
+    "Montant livré",
+    "4 000 FCFA",
+    "Montant facturé",
+    "5 000 FCFA",
+    "Écart",
+    "1 000 FCFA",
+    "Échéance",
+    "19/10/2026",
+    "Anomalie de rapprochement.",
+    "Le montant facturé ne correspond pas au montant effectivement livré. Le règlement doit être suspendu jusqu’à régularisation avec le fournisseur."
+   ]
+  },
+  {
+   "reference": "FF-T-10",
+   "fiche": {
+    "id": "FACxmvv9secquslva",
+    "statut": "actif",
+    "reference": "FF-T-10",
+    "numeroFournisseur": "FN10",
+    "date": "2026-09-20",
+    "blRef": "BL10",
+    "commandeRef": "BC10",
+    "fournisseur": "SOBAPS",
+    "fournisseurNom": "SoBAPS SA",
+    "montantLivraison": 1000,
+    "montantFacture": 1000,
+    "ecart": 0,
+    "statutRappro": "rapproche",
+    "statutPaiement": "payee",
+    "echeance": "2026-10-20",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:52:35.498Z"
+   },
+   "texte": [
+    "Facture FF-T-10",
+    "SoBAPS SA — 20/09/2026",
+    "Référence interne",
+    "FF-T-10",
+    "N° fournisseur",
+    "FN10",
+    "Fournisseur",
+    "SoBAPS SA",
+    "Date",
+    "20/09/2026",
+    "Commande",
+    "BC10",
+    "Bordereau de livraison",
+    "BL10",
+    "Montant livré",
+    "1 000 FCFA",
+    "Montant facturé",
+    "1 000 FCFA",
+    "Écart",
+    "Conforme",
+    "Échéance",
+    "20/10/2026",
+    "Rapprochement conforme : commande, livraison et facture concordent."
+   ]
+  }
+ ]
+}

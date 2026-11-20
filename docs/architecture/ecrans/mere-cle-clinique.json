@@ -1,0 +1,49 @@
+{
+ "id": "mere-cle-clinique",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Clé de clinique",
+ "acces": "ouvert",
+ "titre": "Clé de clinique",
+ "description": "La clé qui chiffre tout ce qui quitte le serveur : empreinte de contrôle, copie papier sous scellé, QR d’appairage mobile, rotation.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Sécurité et continuité",
+  "Clé de clinique"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration.",
+  "Détenteur de la copie papier non désigné. Tant qu’il ne l’est pas, la perte du serveur et de son disque serait définitive pour tout ce qui a été sauvegardé."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Empreinte (SHA-256, 8 premiers)",
+  "Créée le",
+  "Copie papier"
+ ],
+ "cartes": [
+  "Attestation de la copie papier"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Détenteur",
+   "Scellé n°",
+   "Contrôlé par"
+  ]
+ ],
+ "commandes": [
+  "Imprimer la copie papier",
+  "Afficher le QR d’appairage mobile",
+  "Faire tourner la clé"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

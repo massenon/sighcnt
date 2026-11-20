@@ -1,0 +1,48 @@
+{
+ "id": "mere-integrite",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Intégrité et altérations",
+ "acces": "ouvert",
+ "titre": "Intégrité et altérations",
+ "description": "Enveloppes altérées ou manquantes, appareils bloqués, décisions de l’administrateur.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Sécurité et continuité",
+  "Intégrité et altérations"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration.",
+  "Avant de débloquer : vérifier l’appareil en personne (perdu ? volé ? relais compromis ?). Débloquer sans vérifier annule le contrôle."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Appareils bloqués",
+  "Enveloppes altérées (30 j)",
+  "Trous détectés"
+ ],
+ "cartes": [
+  "Appareils bloqués"
+ ],
+ "tableaux": [
+  [
+   "Appareil",
+   "Cause",
+   "Détecté",
+   "Rang"
+  ]
+ ],
+ "commandes": [
+  "Débloquer",
+  "Révoquer"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

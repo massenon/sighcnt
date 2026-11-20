@@ -12,7 +12,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours,
       L = global.SIGH.labo;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function patients() { return S.collection('patients').active(); }
   function laborantins() {
@@ -30,22 +30,35 @@
       return { value: p.code, label: p.code + ' — ' + p.nom + ' ' + p.prenom };
     });
   }
+  /* Le catalogue des analyses vit au MAGASIN (administrable depuis m5-catalogue) ;
+     D.ANALYSES n'en est que la semence. Lire la constante, c'était ignorer un tarif corrigé. */
+  function analysesCatalogue() {
+    var c = S.collection('analyses').active();
+    return c.length ? c : D.ANALYSES;
+  }
   function optionsAnalyses() {
-    return D.ANALYSES.map(function (a) { return { value: a.code, label: a.code + ' — ' + a.designation }; });
+    return analysesCatalogue().map(function (a) { return { value: a.code, label: a.code + ' — ' + a.designation }; });
   }
   function analyseParCode(code) {
-    return D.ANALYSES.filter(function (a) { return a.code === code; })[0] || null;
+    return analysesCatalogue().filter(function (a) { return a.code === code; })[0] || null;
+  }
+  /* LOT TARIF-FIX : le prix d'une analyse du catalogue, lu au référentiel à la date du jour ; « sans prix » se dit avec la date d'effet quand un prix décidé arrive. */
+  function tarifCatalogue(r) { return PR.prixLignePrescription(r.code, null, false, 'analyse'); }
+  function texteSansPrix(t) {
+    return t.effectifLe ? 'prix à définir, effectif le ' + C.dateFR(t.effectifLe) : 'sans prix : à tarifier dans Tarifs et prix';
   }
 
   /* --- Amorçage ------------------------------------------------------------ */
   function amorcer() {
     var dem = S.collection('demandesAnalyses', { module: 'M5', entite: 'DemandeAnalyse' });
-    if (dem.all().length) return;
+    if (dem.all().length || !S.amorcable('demandesAnalyses')) return;
     var rnd = C.seeded(601);
     var pats = patients(), labs = laborantins(), meds = medecins();
+    /* Un répertoire vide ne s'amorce pas : C.pick sur [] rend undefined et l'écran tombait. */
+    if (!pats.length || !labs.length || !meds.length) return;
     for (var i = 0; i < 160; i++) {
       var p = C.pick(rnd, pats);
-      var a = C.pick(rnd, D.ANALYSES);
+      var a = C.pick(rnd, D.TARIFS.semence.analyses); /* garde-prix : amorçage */
       var d = C.addDays(AUJ, -C.between(rnd, 0, 120));
       d.setHours(C.between(rnd, 7, 17), C.pick(rnd, [0, 15, 30, 45]));
       var statut = C.pick(rnd, ['valide', 'valide', 'valide', 'en_cours', 'en_attente']);
@@ -255,13 +268,16 @@
     ]));
   }
 
-  function transformerDemande(v) {
+  function transformerDemande(v, record) {
     var p = patients().filter(function (x) { return x.code === v.patientCode; })[0];
     /* Pas de dossier choisi : on en OUVRE un, par la fabrique unique du
        parcours — jamais en recopiant ici la création d'un patient. */
     if (!p && String(v.nom || '').trim() && PR.dossierExterne) {
       p = PR.dossierExterne({
         nom: v.nom, prenom: v.prenom, sexe: v.sexe, dateNaissance: v.dateNaissance,
+        /* L'âge DÉCLARÉ se transmet à la fabrique : le formulaire le demande (K.champsAge), et le laisser
+           tomber ici écrivait un dossier sans âge ni date de naissance (écart E143). */
+        age: v.age,
         telephone: v.telephone, residence: v.residence,
         prescripteur: v.prescripteur,
         origineDossier: 'Patient externe — laboratoire',
@@ -269,17 +285,21 @@
       v.patientCode = p.code;
       v.origineDemande = 'externe';
     }
-    ['nom', 'prenom', 'sexe', 'dateNaissance', 'telephone', 'residence'].forEach(function (k) { delete v[k]; });
+    ['nom', 'prenom', 'sexe', 'dateNaissance', 'naissanceConnue', 'age', 'telephone', 'residence'].forEach(function (k) { delete v[k]; });
     if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; }
     var a = analyseParCode(v.analyseCode);
     if (a) {
       v.analyse = a.designation; v.categorie = a.categorie;
       v.echantillon = a.echantillon; v.delai = a.delai; v.prix = a.prix;
     }
-    if (!v.reference) v.reference = C.nextRef('LAB-', 5);
+    /* Le rang suit le REGISTRE (C.referenceSuivante), jamais un compteur de page : C.nextRef repart à 1 à chaque
+       chargement et émettait un LAB-00001 déjà attribué (écart E142). */
+    /* À la MODIFICATION, la référence et le code d'analyse déjà attribués sont conservés : le formulaire ne les porte pas,
+       et `!v.reference` les faisait réattribuer à chaque édition (écart E149). */
+    if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all());
     /* Le code d'analyse vient de la fabrique UNIQUE du parcours — le poser
        ici en dur recréerait la règle en deux exemplaires. */
-    if (!v.codeAnalyse && PR.codeAnalyse) v.codeAnalyse = PR.codeAnalyse(v.dateHeure);
+    if (!v.codeAnalyse && PR.codeAnalyse) v.codeAnalyse = (record && record.codeAnalyse) || PR.codeAnalyse(v.dateHeure);
     return v;
   }
 
@@ -307,16 +327,27 @@
         vide: 'Aucun prélèvement en attente.',
         icon: 'flask-conical', action: 'Prendre en charge',
         onAction: function (tache, refresh) {
-          var dem = S.collection('demandesAnalyses').all().filter(function (d) {
-            return d.ordonnanceId === tache.ordonnanceId;
-          });
-          dem.forEach(function (d) {
-            if (d.etatAnalyse === 'en_attente') S.collection('demandesAnalyses').update(d.id, { etatAnalyse: 'en_cours' });
-          });
+          /* Les demandes de la tâche se lisent par la FACTURE (lignes payables
+             portant demandeId), jamais par un ordonnanceId : celui d'un patient
+             externe est absent et `undefined === undefined` aurait pris toutes
+             les demandes sans ordonnance. */
+          var fac = tache.factureId ? S.collection('factures').get(tache.factureId) : null;
+          var ids = {};
+          ((fac && fac.lignes) || []).forEach(function (l) { if (l.demandeId) ids[l.demandeId] = true; });
+          var dem = S.collection('demandesAnalyses').all().filter(function (d) { return ids[d.id]; });
+          if (!dem.length) {
+            U.toast('Prise en charge refusée : aucune demande d’analyse liée à cette tâche.', {
+              type: 'error', detail: 'Code SANS_DEMANDE. Vérifier la pièce de caisse ' + (tache.factureNumero || tache.reference || '') + '.',
+            });
+            return;
+          }
+          /* Prendre en charge n'avance AUCUNE demande : le prélèvement puis la réception
+             se constatent depuis « Salle de prélèvement » (m5-prelevement). */
           PR.terminer(tache.id);
           refresh();
-          U.toast(dem.length + ' analyse(s) prise(s) en charge.', {
-            type: 'success', detail: 'Saisir les résultats depuis l’écran « Saisie des résultats ».',
+          U.toast(dem.length + ' analyse(s) prise(s) en charge, à prélever.', {
+            type: 'success',
+            detail: 'Constater le prélèvement puis la réception depuis « Salle de prélèvement » avant la saisie des résultats.',
           });
         },
       }));
@@ -341,7 +372,7 @@
             name: 'etatAnalyse', label: 'État',
             options: [{ value: 'en_attente', label: 'En attente' }, { value: 'en_cours', label: 'En cours' }, { value: 'valide', label: 'Validé' }],
           },
-          { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(D.ANALYSES, 'categorie')).sort() },
+          { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
           { name: 'urgent', label: 'Priorité', options: [{ value: 'true', label: 'Urgentes' }], match: function (r) { return !!r.urgent; } },
         ],
         kpis: function (rows) {
@@ -598,11 +629,19 @@
                   },
                 },
                 { key: 'valideTechniquePar', label: 'Validation technique' },
+                {
+                  key: 'variationBrutale', label: 'Variation brutale',
+                  value: function (r) { return alertesDe(r).length; },
+                  render: function (r) {
+                    var n = alertesDe(r).length;
+                    return n ? el('span', { 'data-alerte-validation': String(n) }, U.badge(C.num(n) + ' variable(s) signalée(s)', 'warning')) : el('span.text-xs.text-slate-300', { text: '—' });
+                  },
+                },
               ]),
               onRowClick: function (r) {
                 U.drawer({
                   title: r.analyse, subtitle: r.patient + ' — ' + r.reference,
-                  body: detailDemande(r),
+                  body: el('div.space-y-3', null, [noteAlertes(r), detailDemande(r)].filter(Boolean)),
                   footer: [K.btn('Relire et corriger', { icon: 'pencil', onclick: function () { ouvrirSaisie(r); } })],
                 });
               },
@@ -652,7 +691,12 @@
                       title: 'Valider biologiquement ' + C.num(sel.length) + ' résultat(s) ?',
                       message: 'Une fois validés, ces résultats sont <strong>visibles du prescripteur</strong> '
                         + 'et font foi. Toute correction ultérieure donnera une version rectificative dont il '
-                        + 'sera averti.<br><br>Avez-vous relu l’ensemble ?',
+                        + 'sera averti.<br><br>'
+                        + (sel.filter(function (x) { return alertesDe(x).length; }).length
+                          ? '<strong>Variation brutale signalée sur ' + C.num(sel.filter(function (x) { return alertesDe(x).length; }).length)
+                            + ' résultat(s) de la sélection</strong> : le signalement n’empêche pas la validation, mais demande une relecture.<br><br>'
+                          : '')
+                        + 'Avez-vous relu l’ensemble ?',
                       confirmLabel: 'Valider biologiquement',
                     }).then(function (ok) {
                       if (!ok) return;
@@ -709,7 +753,9 @@
               rowActions: function (r) {
                 return [
                   K.iconBtn('file-text', 'Compte rendu complet du patient', function () {
-                    compteRendu(r.patientId, col.active().filter(function (d) { return d.patientId === r.patientId; }));
+                    /* Le compte rendu ne reprend que ce que le profil a le droit de lire (RBAC métier) : sans ce filtre, la fiche imprimée
+                       d'une sage-femme portait aussi les résultats des autres secteurs (écart E2511). */
+                    compteRendu(r.patientId, PR.filtrerResultats(col.active().filter(function (d) { return d.patientId === r.patientId; })));
                   }),
                   K.iconBtn('printer', 'Imprimer ce seul résultat', function () { etatResultat(r); }),
                   K.iconBtn('pencil', 'Corriger', function () { ouvrirSaisie(r); }),
@@ -769,6 +815,16 @@
           title: interim ? 'Valider par intérim ?' : 'Validation biologique',
           message: 'Le résultat de <strong>' + r.analyse + '</strong> pour ' + r.patient
             + ' deviendra <strong>visible du prescripteur</strong> et fera foi.<br><br>'
+            + (alertesDe(r).length
+              ? '<strong>Variation brutale signalée</strong> (seuils validés) : '
+                + alertesDe(r).map(function (x) { return x.variable.libelle + ' ' + texteVariation(x.variation, x.suffixe); }).join(' ; ')
+                + '. Ce signalement n’empêche pas la validation : relire avant de signer.<br><br>'
+              : '')
+            + (evaluationsDe(r).filter(function (x) { return x.alerte.nonEvalue === 'delai'; }).length
+              ? '<strong>Variation non évaluée</strong> (« non évalué » ne veut pas dire « pas d’alerte ») : '
+                + evaluationsDe(r).filter(function (x) { return x.alerte.nonEvalue === 'delai'; }).map(function (x) { return x.variable.libelle + ' (' + texteNonEvalue(x.alerte).replace('Variation non évaluée : ', '') + ')'; }).join(' ; ')
+                + '. Cela n’empêche pas la validation.<br><br>'
+              : '')
             + (interim
               ? 'Vous portez cette validation <strong>en l’absence du biologiste médical</strong> : '
                 + 'votre qualité d’intérimaire sera portée sur le compte rendu.<br><br>'
@@ -799,7 +855,7 @@
        * prescripteur averti. Écraser en silence laisserait le médecin avec
        * une valeur qui n'existe plus nulle part.
        * ================================================================== */
-      function demanderRectification(r, valeurs, commentaire) {
+      function demanderRectification(r, valeurs, commentaire, derives) {
         var f = U.form([
           {
             name: 'motif', label: 'Motif de la rectification', type: 'textarea', rows: 2,
@@ -847,6 +903,10 @@
                     motif: v.motif, commentaireGeneral: commentaire, utilisateur: S.currentUser(),
                   });
                 } catch (e) { U.toast('Rectification impossible : ' + e.message, { type: 'error' }); return; }
+                /* Les champs dérivés lus par les tableaux, le tiroir et l'état imprimé
+                   (résumé, conclusion, nombre de valeurs hors référence, saisisseur)
+                   suivent la nouvelle version : sans eux, la pièce montrait l'ancienne valeur. */
+                if (derives) S.collection('demandesAnalyses').update(r.id, derives);
                 m.close();
                 afficher();
                 U.toast('Version rectificative v' + res.version + ' émise.', {
@@ -965,6 +1025,8 @@
         });
 
         t.appendChild(tb);
+        /* Lot EXP : les résultats d'une demande se cochent et s'exportent (garde-tableaux : consultation). */
+        corps.appendChild(U.equiperTableau(t, { nom: 'resultats-demande', titre: 'Résultats de la demande' }));
         tableau.appendChild(t);
         corps.appendChild(tableau);
 
@@ -1043,7 +1105,12 @@
              biologiquement — jamais un écrasement. */
           if (D.resultatRendu(r.etatAnalyse)) {
             m.close();
-            demanderRectification(r, saisies, txtGeneral.value);
+            demanderRectification(r, saisies, txtGeneral.value, {
+              resultat: resume || null,
+              conclusion: anormales.length ? 'Anormal' : 'Normal',
+              anormales: anormales.length,
+              laborantin: selValideur.value,
+            });
             return;
           }
 
@@ -1159,7 +1226,8 @@
     title: 'Catalogue des analyses',
     description: 'Référentiel des 48 analyses réalisées par le laboratoire de la clinique, avec catégorie, échantillon, délai et tarif.',
     regle: 'Les désignations reprennent fidèlement le document « Tarifs des analyses de laboratoire » de la clinique. '
-      + 'Les <strong>tarifs</strong> portés ici sont des valeurs d’attente : le document source ne renseigne pas la colonne des prix et ceux-ci doivent être confirmés avant recette.',
+      + 'Le laboratoire tient ici la désignation, la catégorie, l’échantillon et le délai. Le <strong>prix</strong> se propose et se décide à l’écran « Tarifs et prix » (référentiel de prix unique) : '
+      + 'la colonne Tarif ci-dessous le lit, elle ne le modifie pas.',
     render: K.crud({
       collection: 'analyses', entite: 'analyse', entiteP: 'analyses', module: 'M5',
       defaultSort: 'n', pageSize: 20,
@@ -1172,11 +1240,21 @@
         { key: 'echantillon', label: 'Échantillon' },
 
         {
-          key: 'prix', label: 'Tarif', align: 'right',
-          text: function (r) { return C.money(r.prix, false); },
+          /* LOT TARIF-FIX : le tarif se LIT au référentiel de prix à la date du jour (`PR.prixLignePrescription`, la même lecture que la prescription), jamais la
+             projection. Une analyse créée ici n'a pas de prix tant qu'aucune prestation famille Analyses de MÊME code n'est décidée dans « Tarifs et prix » : la ligne
+             le DIT, avec le lien vers l'écran pour qui a le droit d'y proposer un prix (ABSENT sinon, jamais grisé). */
+          key: 'prix', label: 'Tarif (lecture)', align: 'right',
+          text: function (r) { var t = tarifCatalogue(r); return t.ok ? C.money(t.montant, false) : texteSansPrix(t); },
           render: function (r) {
+            var t = tarifCatalogue(r);
+            if (!t.ok) {
+              return el('span.inline-flex.flex-wrap.items-center.justify-end.gap-2', { 'data-sans-prix': r.code, title: t.motif + ' ' + t.geste }, [
+                el('span.text-xs.italic.text-rose-600', { text: texteSansPrix(t) }),
+                PR.peutProposerTarif() ? K.lien('cfg-tarifs', 'Tarifer', { size: 'sm', icon: 'coins', variant: 'ghost' }) : null,
+              ]);
+            }
             return el('span.inline-flex.items-center.gap-1', null, [
-              el('span.font-semibold', { text: C.money(r.prix, false) }),
+              el('span.font-semibold', { text: C.money(t.montant, false) }),
               r.tarifProvisoire ? el('span.text-warning-500', { title: 'Tarif à confirmer' }, C.icon('help-circle', 'h-3.5 w-3.5')) : null,
             ]);
           },
@@ -1186,20 +1264,21 @@
       fields: [
         { name: 'code', label: 'Code', required: true },
         { name: 'designation', label: 'Désignation', required: true, col: 'full' },
-        { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: Object.keys(C.groupBy(D.ANALYSES, 'categorie')).sort() },
-        { name: 'echantillon', label: 'Type d’échantillon', type: 'select', options: Object.keys(C.groupBy(D.ANALYSES, 'echantillon')).sort() },
+        { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
+        { name: 'echantillon', label: 'Type d’échantillon', type: 'select', options: Object.keys(C.groupBy(analysesCatalogue(), 'echantillon')).sort() },
         { name: 'delai', label: 'Délai de rendu', type: 'select', options: ['Immédiat', '1 h', '2 h', '4 h', '6 h', '24 h', '48 h', '72 h'] },
-        { name: 'prix', label: 'Tarif (FCFA)', type: 'money', required: true, min: 0 },
       ],
       filters: [
-        { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(D.ANALYSES, 'categorie')).sort() },
-        { name: 'echantillon', label: 'Échantillon', options: Object.keys(C.groupBy(D.ANALYSES, 'echantillon')).sort() },
+        { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
+        { name: 'echantillon', label: 'Échantillon', options: Object.keys(C.groupBy(analysesCatalogue(), 'echantillon')).sort() },
       ],
       kpis: function (rows) {
         return [
           { label: 'Analyses au catalogue', value: C.num(rows.length), icon: 'list-checks', tone: 'navy' },
           { label: 'Catégories', value: C.num(Object.keys(C.groupBy(rows, 'categorie')).length), icon: 'layers', tone: 'info' },
-          { label: 'Tarif moyen', value: C.money(rows.length ? C.sum(rows, 'prix') / rows.length : 0), icon: 'coins', tone: 'success' },
+          { label: 'Tarif moyen', value: C.moneyOu(C.moyenneOuNul(rows.filter(function (r) { return tarifCatalogue(r).ok; }).map(function (r) { return { prix: tarifCatalogue(r).montant }; }), 'prix')), icon: 'coins', tone: 'success' },
+          { label: 'Analyses sans prix', value: C.num(rows.filter(function (r) { return !tarifCatalogue(r).ok; }).length), icon: 'circle-alert', tone: 'danger',
+            hint: 'Sans prix : à tarifier dans « Tarifs et prix » (Nouvelle prestation, famille Analyses de laboratoire, même code).' },
           { label: 'Tarifs à confirmer', value: C.num(rows.filter(function (r) { return r.tarifProvisoire; }).length), icon: 'help-circle', tone: 'warning' },
         ];
       },
@@ -1340,6 +1419,17 @@
     t.appendChild(thead);
     var tb = el('tbody');
     var anormales = 0;
+    var masqueesImprimees = 0;
+
+    /* LA COLONNE « ANTÉRIORITÉS » (EF-ANT-5) : la mesure et la date de l'antériorité la plus récente, par variable. Jamais un blanc :
+       une variable sans antériorité imprime « Aucune antériorité », une variable de traçabilité (réactif, lot) « Sans objet ». */
+    function texteAnteriorite(v, demande) {
+      if (v.accompagnement) return 'Sans objet';
+      var ant = derniereValeurAnterieure(demande, v.code);
+      if (!ant) return 'Aucune antériorité';
+      var u = symbole(v.unite);
+      return String(ant.valeur) + (u === '—' ? '' : ' ' + u) + ' (' + C.dateFR(ant.demande.dateHeure) + ')';
+    }
 
     ordre.forEach(function (sec) {
       var groupe = parSection[sec];
@@ -1365,9 +1455,12 @@
 
         if (!variables.length) {
           /* Résultat antérieur au modèle structuré : on rend ce qu'on a. */
-          tb.appendChild(ligneResultat(g.demande.analyse, g.demande.resultat || '—', '', null));
+          tb.appendChild(ligneResultat(g.demande.analyse, g.demande.resultat || '—', '', null, 'Non comparable (résultat non structuré)'));
           return;
         }
+        /* Les antériorités se lisent UNE fois par examen (lot A1) : la plus récente mesure RENDUE et lisible, par variable. */
+        var anterieures = anterieuresDe(g.demande, Infinity);
+        masqueesImprimees += anterieures.masquees;
 
         variables.forEach(function (v) {
           var val = valeurs[v.code];
@@ -1379,7 +1472,7 @@
           var u = symbole(v.unite);
           var affiche = String(val) + (u === '—' ? '' : ' ' + u);
           tb.appendChild(ligneResultat(v.libelle, affiche,
-            referenceALaDate(v, g.demande.dateHeure), ecart));
+            referenceALaDate(v, g.demande.dateHeure), ecart, texteAnteriorite(v, g.demande)));
         });
       });
     });
@@ -1400,7 +1493,8 @@
       style: 'margin-top:10px;font-size:9px;font-style:italic;',
       text: 'Les valeurs en gras sont hors des bornes de référence. Les résultats doivent être interprétés '
         + 'par le clinicien en fonction du contexte. Les valeurs de référence dépendent du réactif et de '
-        + 'l’automate employés.',
+        + 'l’automate employés. La colonne Antériorités reprend la mesure rendue la plus récente du même examen.'
+        + (masqueesImprimees ? ' ' + C.num(masqueesImprimees) + ' antériorité(s) hors du périmètre du profil qui édite ne sont pas reprises.' : ''),
     }));
 
     var valides = rendus.filter(function (d) { return d.etatAnalyse === 'valide'; }).length;
@@ -1419,7 +1513,7 @@
     }
 
     /** Une ligne de résultat. Le gras signale l'écart, comme sur le document. */
-    function ligneResultat(libelle, valeur, reference, ecart) {
+    function ligneResultat(libelle, valeur, reference, ecart, anteriorite) {
       return el('tr', null, [
         el('td', { style: 'padding:2px 4px;', text: libelle }),
         el('td', {
@@ -1427,7 +1521,7 @@
           text: String(valeur),
         }),
         el('td', { style: 'padding:2px 4px;text-align:center;font-size:9px;', text: reference || '' }),
-        el('td', { style: 'padding:2px 4px;text-align:center;font-size:9px;', text: '' }),
+        el('td', { style: 'padding:2px 4px;text-align:center;font-size:9px;', 'data-anteriorite': '', text: anteriorite || 'Aucune antériorité' }),
       ]);
     }
   }
@@ -1491,6 +1585,174 @@
     plagePour: plagePour, variableALaDate: variableALaDate, referenceALaDate: referenceALaDate,
   };
 
+  /* ==========================================================================
+   * ANTÉRIORITÉS D'UN EXAMEN (lot A1, EF-ANT-1 à EF-ANT-6)
+   * --------------------------------------------------------------------------
+   * Une antériorité est une mesure RENDUE du même examen, pour le même
+   * patient, antérieure à la mesure lue. Quatre règles, toutes tenues ici et
+   * nulle part ailleurs (le comparatif, la courbe, la fiche imprimée et, au
+   * lot A2, l'écran de validation biologique les appellent) :
+   *   1. RENDUE seulement (`D.resultatRendu` : validé biologiquement ou
+   *      rectifié). Un résultat saisi, même validé techniquement, n'entre
+   *      JAMAIS dans une antériorité : le prescripteur ne le voit pas encore,
+   *      et le comparer reviendrait à lire par-dessus l'épaule du laboratoire.
+   *   2. Dans le périmètre du RBAC métier (`PR.peutVoirResultat`) : on ne
+   *      compare que ce qu'on a le droit de voir. Ce qui est masqué est COMPTÉ
+   *      et son motif est rendu, pour que l'écran le dise.
+   *   3. Ordre chronologique (date de la demande, puis référence).
+   *   4. Au plus TROIS à l'écran ; la fiche imprimée n'en lit qu'une, la plus
+   *      récente, par variable.
+   * Chaque mesure se juge aux bornes de SON époque (`variableALaDate`).
+   * ======================================================================== */
+  var NB_ANTERIORITES = 3;
+  var TYPES_QUALITATIFS = ['binaire', 'ternaire', 'liste', 'titre'];
+  function valeurVide(x) { return x == null || x === ''; }
+  function cleChrono(d) { return String(d.dateHeure || d.date || '') + '#' + String(d.reference || d.id || ''); }
+
+  /** Les mesures rendues d'un examen pour un patient : { visibles (chronologiques), cachees, motif }. */
+  function mesuresRendues(patientId, codeExamen) {
+    var toutes = S.collection('demandesAnalyses').active().filter(function (r) {
+      return r.patientId === patientId && D.resultatRendu(r.etatAnalyse)
+        && r.valeurs && Object.keys(r.valeurs).length && codeExamenDeStatique(r) === codeExamen;
+    }).sort(function (a, b) { return cleChrono(a).localeCompare(cleChrono(b)); });
+    var visibles = PR.filtrerResultats(toutes);
+    var cachees = toutes.filter(function (r) { return visibles.indexOf(r) < 0; });
+    return { visibles: visibles, cachees: cachees, motif: cachees.length ? PR.peutVoirResultat(cachees[0]).motif : null };
+  }
+
+  /** Les antériorités d'une mesure : { toutes (chronologiques), mesures (les n plus récentes), masquees, motif }. */
+  function anterieuresDe(demande, n) {
+    var m = mesuresRendues(demande.patientId, codeExamenDeStatique(demande));
+    var cle = cleChrono(demande);
+    var avant = function (x) { return x.id !== demande.id && cleChrono(x) < cle; };
+    var toutes = m.visibles.filter(avant), cachees = m.cachees.filter(avant);
+    return {
+      toutes: toutes, mesures: toutes.slice(-(n == null ? NB_ANTERIORITES : n)),
+      masquees: cachees.length, motif: cachees.length ? PR.peutVoirResultat(cachees[0]).motif : null,
+    };
+  }
+
+  /** La mesure précédente d'UNE variable : la plus récente des antériorités qui porte une valeur pour elle. */
+  function derniereValeurAnterieure(demande, codeVariable) {
+    var a = anterieuresDe(demande, Infinity).toutes;
+    for (var i = a.length - 1; i >= 0; i--) {
+      var v = (a[i].valeurs || {})[codeVariable];
+      if (!valeurVide(v)) return { valeur: v, demande: a[i] };
+    }
+    return null;
+  }
+
+  /**
+   * La variation d'une variable entre deux mesures (EF-ANT-2). Trois natures :
+   *   numérique   : sens, écart signé, pourcentage ; une valeur précédente NULLE ne se divise pas, elle le dit
+   *                 (`divisionParZero`, `pourcent` vaut null : jamais un pourcentage inventé) ;
+   *   qualitative : comparaison en TEXTE (« Négatif » puis « Positif »), jamais de pourcentage ;
+   *   aucune      : variable de traçabilité (réactif, lot), texte libre : rien à comparer.
+   */
+  function variationEntre(variable, avant, apres) {
+    if (!variable || valeurVide(avant) || valeurVide(apres)) return null;
+    if (variable.accompagnement) return null;
+    var qualitative = estQualitative(variable);
+    var a = Number(avant), b = Number(apres);
+    if (!qualitative && variable.type === 'numerique' && isFinite(a) && isFinite(b)) {
+      var ecart = Math.round((b - a) * 1e6) / 1e6;
+      return {
+        mode: 'numerique', avant: a, apres: b, ecart: ecart, ecartAbsolu: Math.abs(ecart),
+        sens: ecart > 0 ? 'hausse' : (ecart < 0 ? 'baisse' : 'egal'),
+        divisionParZero: a === 0,
+        pourcent: a === 0 ? null : Math.round(ecart / Math.abs(a) * 10000) / 100,
+      };
+    }
+    if (qualitative || variable.type === 'numerique') {
+      var ta = String(avant).trim(), tb = String(apres).trim();
+      return { mode: 'texte', avant: ta, apres: tb, sens: ta.toLowerCase() === tb.toLowerCase() ? 'egal' : 'change' };
+    }
+    return null;
+  }
+  function estQualitative(variable) { return TYPES_QUALITATIFS.indexOf(variable.type) !== -1; }
+
+  /** La phrase d'une variation, pour l'écran comme pour la pièce imprimée. */
+  function texteVariation(variation, suffixe) {
+    if (!variation) return 'Aucune antériorité';
+    if (variation.mode === 'texte') {
+      return variation.sens === 'egal' ? 'Inchangé (' + variation.apres + ')' : variation.avant + ' puis ' + variation.apres;
+    }
+    var signe = variation.sens === 'hausse' ? '↑ +' : (variation.sens === 'baisse' ? '↓ ' : '= ');
+    var t = signe + (Math.round(variation.ecart * 100) / 100) + (suffixe || '');
+    if (variation.divisionParZero) return t + ' (écart relatif non calculable : valeur précédente nulle)';
+    return t + ' (' + (variation.pourcent > 0 ? '+' : '') + C.num(variation.pourcent, 1) + ' %)';
+  }
+
+  /* --------------------------------------------------------------------------
+   * ALERTE DE VARIATION BRUTALE (lot A2) : le moteur des seuils vit au socle (`SIGH.laboSeuils`), ici on ne fait que LIRE.
+   * Une mesure se juge au seuil Validé en vigueur à la date de sa validation biologique, à aujourd'hui tant qu'elle n'est pas rendue.
+   * L'alerte SIGNALE : elle ne bloque rien, et n'est lue que du comparatif et de l'écran de validation biologique.
+   * ----------------------------------------------------------------------- */
+  function seuils() { return global.SIGH.laboSeuils; }
+  function dateJugementMesure(d) { return D.resultatRendu(d.etatAnalyse) ? String(d.valideLe || d.dateHeure || '').slice(0, 10) : C.iso(AUJ); }
+  /** « variation de 1 G/l ou de 20 % » : ce que dit un seuil, dans l'unité de la variable. */
+  function texteSeuil(s, suffixe) {
+    var t = [];
+    if (s.ecartAbsolu != null) t.push(s.ecartAbsolu + (suffixe || ''));
+    if (s.ecartRelatif != null) t.push(s.ecartRelatif + ' %');
+    return t.join(' ou ');
+  }
+  /** L'ÂGE de la mesure précédente, en jours entiers de calendrier entre sa date et celle de la mesure jugée (jamais négatif) ; null quand une des deux dates manque. Toujours affiché. */
+  function ageEntreMesures(precedente, courante) {
+    var jour = function (d) { var t = String((d && (d.dateHeure || d.date)) || '').slice(0, 10); return /^\d{4}-\d{2}-\d{2}$/.test(t) ? Date.UTC(+t.slice(0, 4), +t.slice(5, 7) - 1, +t.slice(8, 10)) : null; };
+    var a = jour(precedente), b = jour(courante);
+    return a == null || b == null ? null : Math.max(0, Math.round((b - a) / 86400000));
+  }
+  function textePluriel(n, mot) { return C.num(n) + ' ' + mot + (n > 1 ? 's' : ''); }
+  /** « mesure précédente il y a 12 jours » : l'âge de la mesure précédente, avec ou sans délai réglé. */
+  function texteAge(age) { return age == null ? null : (age === 0 ? 'mesure précédente le même jour' : 'mesure précédente il y a ' + textePluriel(age, 'jour')); }
+  /** Le message d'une variation NON ÉVALUÉE faute de délai : le verdict nomme l'âge et le délai réglé. */
+  function texteNonEvalue(a) { return 'Variation non évaluée : mesure précédente trop ancienne (' + textePluriel(a.ageJours, 'jour') + ', délai réglé ' + C.num(a.delaiMaxJours) + ' jour' + (a.delaiMaxJours > 1 ? 's' : '') + ')'; }
+  /** Le délai d'un seuil, pour l'écran de réglage (vide quand aucun délai n'est réglé). */
+  function texteDelai(s) { return s && s.delaiMaxJours != null ? 'délai entre deux mesures : ' + textePluriel(s.delaiMaxJours, 'jour') : ''; }
+  function texteAlerte(a, suffixe) {
+    return 'Variation brutale : seuil de ' + texteSeuil(a.seuil, suffixe) + ' atteint (seuil validé, version ' + a.seuil.version + ' du ' + C.dateFR(a.seuil.dateEffet) + ')';
+  }
+  /** Les variations brutales d'UNE mesure (variables numériques seulement) : [{ variable, variation, alerte, precedente, suffixe }]. */
+  function alertesDe(demande) { return evaluationsDe(demande).filter(function (x) { return x.alerte.alerte; }); }
+  /** Les variations d'UNE mesure que le seuil a ÉVALUÉES ou DÉCLARÉES NON ÉVALUÉES faute de délai : alerte levée, ou `nonEvalue === 'delai'`. */
+  function evaluationsDe(demande) {
+    var code = codeExamenDeStatique(demande);
+    if (!code || !seuils()) return [];
+    var out = [];
+    variablesDe(code).filter(function (v) { return v.actif !== false && !v.accompagnement && v.type === 'numerique'; }).forEach(function (v) {
+      var val = (demande.valeurs || {})[v.code];
+      if (valeurVide(val)) return;
+      var prec = derniereValeurAnterieure(demande, v.code);
+      if (!prec) return;
+      var variation = variationEntre(v, prec.valeur, val);
+      var a = seuils().alerteVariation(v, variation, dateJugementMesure(demande), { ageJours: ageEntreMesures(prec.demande, demande) });
+      if (a && (a.alerte || a.nonEvalue)) { var u = symbole(v.unite); out.push({ variable: v, variation: variation, alerte: a, precedente: prec.demande, suffixe: u === '—' ? '' : ' ' + u }); }
+    });
+    return out;
+  }
+  function noteAlertes(demande) {
+    var ev = evaluationsDe(demande);
+    var al = ev.filter(function (x) { return x.alerte.alerte; }), non = ev.filter(function (x) { return x.alerte.nonEvalue === 'delai'; });
+    if (!al.length && !non.length) return null;
+    var html = [];
+    if (al.length) {
+      html.push('<strong>Variation brutale signalée sur ' + C.num(al.length) + ' variable(s)</strong> par rapport à la mesure précédente rendue. Ce signalement n’empêche pas la validation : il demande une relecture avant de signer.<br>'
+        + al.map(function (x) { return x.variable.libelle + ' : ' + texteVariation(x.variation, x.suffixe) + '. ' + texteAlerte(x.alerte, x.suffixe) + '.'; }).join('<br>'));
+    }
+    if (non.length) {
+      html.push('<span data-variation-non-evaluee=""><strong>Variation non évaluée sur ' + C.num(non.length) + ' variable(s)</strong> : « non évalué » ne veut pas dire « pas d’alerte ».<br>'
+        + non.map(function (x) { return x.variable.libelle + ' : ' + texteNonEvalue(x.alerte) + '.'; }).join('<br>') + '</span>');
+    }
+    return K.note(html.join('<br>'), { tone: al.length ? 'warning' : 'info', icon: 'activity' });
+  }
+
+  global.SIGH.laboAnteriorites = {
+    NB_ANTERIORITES: NB_ANTERIORITES, mesuresRendues: mesuresRendues, anterieuresDe: anterieuresDe,
+    derniereValeurAnterieure: derniereValeurAnterieure, variationEntre: variationEntre, texteVariation: texteVariation, alertesDe: alertesDe, evaluationsDe: evaluationsDe,
+    ageEntreMesures: ageEntreMesures,
+  };
+
   /** Les variables d'un examen, dans l'ordre de rendu, telles que paramétrées. */
   function variablesDe(codeExamen) {
     return colVariables().active()
@@ -1514,8 +1776,8 @@
       + '« g/dl » — et non les notations normalisées 10⁹/L ou g/L. Le laboratoire lit ce qu’il écrit : '
       + 'lui imposer une autre notation, plus « correcte », l’obligerait à traduire à chaque lecture.',
     render: K.crud({
-      collection: 'unitesLabo', entite: 'unité', entiteP: 'unités', module: 'M5',
-      pageSize: 25, defaultSort: 'domaine',
+      collection: 'unitesLabo', entite: 'unité', entiteP: 'unités', module: 'M5', importer: 'unites-labo',
+      pageSize: 25, defaultSort: 'domaine', validation: { famille: 'labo_variables' },
       columns: [
         {
           key: 'symbole', label: 'Symbole', nowrap: true,
@@ -1527,8 +1789,8 @@
           key: 'aValider', label: 'Provenance',
           text: function (u) { return u.aValider ? 'à confirmer' : 'documentée'; },
           render: function (u) {
-            return u.aValider
-              ? U.badge('À confirmer', 'warning')
+            return u.aValider || u.valideLe
+              ? K.badgeValidation('labo_variables', u.id)
               : el('span.text-xs.text-slate-500', { text: u.source || 'Fiche de résultats CNT' });
           },
         },
@@ -1541,7 +1803,7 @@
         { name: 'libelle', label: 'Intitulé complet', type: 'text', required: true, col: 'full' },
         {
           name: 'domaine', label: 'Domaine', type: 'select', required: true,
-          options: ['Hématologie', 'Biochimie', 'Hormonologie', 'Bactériologie', 'Parasitologie', 'Hémostase', 'Andrologie', 'Général'],
+          options: D.DOMAINES_UNITES_LABO,
         },
       ],
       kpis: function (rows) {
@@ -1570,13 +1832,15 @@
     regle: 'Les bornes <strong>dépendent du réactif et de l’automate</strong> : elles se modifient ici, sans toucher au code. '
       + 'Celles reprises de la fiche de résultats du 21/08/2026 sont marquées <strong>documentées</strong> ; '
       + 'les valeurs usuelles suppléées ont reçu la <strong>validation écrite du biologiste médical le '
-      + '01/09/2026</strong> et le portent — les deux provenances ne se confondent jamais. Une variable '
-      + 'créée ou modifiée depuis repart « à valider ».',
+      + '01/09/2026</strong> et le portent — les deux provenances ne se confondent jamais. Enregistrée par le '
+      + '<strong>biologiste médical</strong>, une variable est arrêtée du même geste (le motif est demandé quand une borne change) ; '
+      + 'créée ou modifiée par un autre profil, elle attend sa relecture.',
     render: function (root) {
       var vue = el('div.space-y-4');
       var selSection = el('select.select');
       var selExamen = el('select.select');
       var selEtat = el('select.select');
+      var selSeuil = el('select.select', { 'data-filtre-seuil': '' });
 
       selSection.appendChild(el('option', { value: '' }, 'Toutes les sections'));
       L.SECTIONS.forEach(function (x) { selSection.appendChild(el('option', { value: x.id }, x.label)); });
@@ -1584,6 +1848,9 @@
       selEtat.appendChild(el('option', { value: 'documente' }, 'Documentées'));
       selEtat.appendChild(el('option', { value: 'valider' }, 'À valider'));
       selEtat.appendChild(el('option', { value: 'ferme' }, 'Fermées'));
+      [['', 'Tous les seuils'], ['aucun', 'Sans seuil configuré'], ['enregistre', 'Enregistrés (sans effet)'], ['valide', 'Validés (en vigueur)']].forEach(function (o) {
+        selSeuil.appendChild(el('option', { value: o[0] }, o[1]));
+      });
       remplirExamens();
 
       var barre = el('div.card');
@@ -1591,10 +1858,11 @@
         el('div.min-w-\[12rem\]', null, [el('label.label', { text: 'Section' }), selSection]),
         el('div.min-w-\[16rem\]', null, [el('label.label', { text: 'Examen' }), selExamen]),
         el('div', null, [el('label.label', { text: 'État' }), selEtat]),
+        el('div', null, [el('label.label', { text: 'Seuils de variation' }), selSeuil]),
         K.btn('Imprimer le référentiel', { icon: 'printer', onclick: imprimer }),
       ]));
       selSection.addEventListener('change', function () { remplirExamens(); afficher(); });
-      [selExamen, selEtat].forEach(function (x) { x.addEventListener('change', afficher); });
+      [selExamen, selEtat, selSeuil].forEach(function (x) { x.addEventListener('change', afficher); });
 
       root.appendChild(el('div.space-y-4', null, [barre, vue]));
       afficher();
@@ -1697,8 +1965,7 @@
               },
               render: function (v) {
                 if (v.actif === false) return U.badge('Fermée', 'neutral');
-                if (v.aValider) return U.badge('À valider', 'warning');
-                if (v.valideLe) return U.badge('Validée (biologiste)', 'info');
+                if (v.aValider || v.valideLe) return K.badgeValidation('labo_variables', v.id);
                 return U.badge('Documentée', 'success');
               },
             },
@@ -1708,6 +1975,8 @@
           })] : [],
           rowActions: function (v) {
             var actes = [];
+            /* Un geste unitaire, réservé au biologiste : ABSENT pour tout autre profil. */
+            actes.push(K.boutonValider('labo_variables', v.id, { size: 'sm', moduleCode: 'M5', apres: afficher }));
             if (K.droits('M5').editer) {
               actes.push(K.iconBtn('pencil', 'Modifier les paramètres', function () { editer(v); }));
               if (v.retractable) {
@@ -1716,7 +1985,7 @@
                   function () { basculer(v); }));
               }
             }
-            return actes;
+            return actes.filter(Boolean);
           },
         }));
 
@@ -1780,7 +2049,222 @@
             ];
           },
         }));
+        vue.appendChild(sectionSeuils());
         U.icons(vue);
+      }
+
+      /* ------------------------------------------------------------------
+       * SEUILS DE VARIATION BRUTALE (lot A2)
+       * ------------------------------------------------------------------
+       * Un seuil par variable numérique, VIDE par défaut : aucun document n'en donne, c'est une décision du biologiste médical. Enregistré
+       * (sans effet) puis Validé (en vigueur) ; modifier un seuil validé ajoute une version datée, l'ancienne reste lisible. Le MOTEUR
+       * (`SIGH.laboSeuils`) refuse aussi ce que l'écran n'offre pas : une commande interdite est ABSENTE, et un geste forcé reçoit un refus nommé.
+       * ---------------------------------------------------------------- */
+      function lignesSeuils() {
+        return colVariables().active().filter(function (v) {
+          if (v.type !== 'numerique' || v.accompagnement || v.actif === false) return false;
+          if (selSection.value && v.section !== selSection.value) return false;
+          if (selExamen.value && v.examen !== selExamen.value) return false;
+          var e = seuils().etat(v.id).etat;
+          if (selSeuil.value === 'aucun') return e === 'aucun';
+          if (selSeuil.value === 'enregistre') return e === 'enregistre' || e === 'enregistre_sur_valide';
+          if (selSeuil.value === 'valide') return e === 'valide' || e === 'enregistre_sur_valide';
+          return true;
+        });
+      }
+      function suffixeDe(v) { var u = symbole(v.unite); return u === '—' ? '' : ' ' + u; }
+      function etatSeuilBadge(e) {
+        if (e.etat === 'enregistre') return U.badge('Enregistré (sans effet)', 'warning');
+        if (e.etat === 'enregistre_sur_valide') return U.badge('Enregistré, la version validée reste en force', 'warning');
+        if (e.etat === 'valide') return U.badge('Validé', 'success');
+        return U.badge(e.retire ? 'Alerte retirée' : 'Aucun seuil', 'neutral');
+      }
+      function sectionSeuils() {
+        var tous = colVariables().active().filter(function (v) { return v.type === 'numerique' && !v.accompagnement && v.actif !== false; });
+        var etats = tous.map(function (v) { return seuils().etat(v.id).etat; });
+        var bloc = el('div.space-y-4', { 'data-seuils-variation': '' });
+        bloc.appendChild(U.kpiGrid([
+          { label: 'Variables numériques', value: C.num(tous.length), icon: 'hash', tone: 'navy' },
+          { label: 'Seuils validés', value: C.num(etats.filter(function (x) { return x === 'valide' || x === 'enregistre_sur_valide'; }).length), icon: 'shield-check', tone: 'success', hint: 'En vigueur' },
+          { label: 'Seuils enregistrés', value: C.num(etats.filter(function (x) { return x === 'enregistre' || x === 'enregistre_sur_valide'; }).length), icon: 'save', tone: 'warning', hint: 'Sans effet tant qu’ils ne sont pas validés' },
+          { label: 'Sans seuil', value: C.num(etats.filter(function (x) { return x === 'aucun'; }).length), icon: 'bell-off', tone: 'neutral', hint: 'Pas d’alerte configurée' },
+        ]));
+        bloc.appendChild(K.note('<strong>Seuils de variation brutale.</strong> Aucun seuil n’est proposé : un seuil vide veut dire « pas d’alerte configurée », jamais zéro. '
+          + 'Un seuil <strong>Enregistré</strong> est sans effet ; seul un seuil <strong>Validé</strong> par le biologiste médical alerte, au comparatif et à l’écran de validation biologique, '
+          + 'jamais sur le résultat que lit le prescripteur. Modifier un seuil validé ajoute une version datée : l’ancienne reste lisible et les alertes déjà levées gardent leur seuil.',
+        { tone: 'info', icon: 'activity' }));
+        bloc.appendChild(U.dataTable({
+          title: 'Seuils de variation brutale', rows: lignesSeuils(), exportName: 'seuils-variation', pageSize: 12, searchable: true,
+          emptyMessage: 'Aucune variable numérique ne correspond à ce filtre.',
+          columns: [
+            {
+              key: 'libelle', label: 'Variable',
+              render: function (v) {
+                return el('div.min-w-0', { 'data-seuil-variable': v.code }, [
+                  el('p.truncate.text-sm.font-medium.text-slate-800', { text: v.libelle }),
+                  el('p.text-xs.text-slate-400', { text: v.examenLibelle }),
+                ]);
+              },
+            },
+            { key: 'unite', label: 'Unité', align: 'right', text: function (v) { return symbole(v.unite); }, render: function (v) { return el('span.font-mono.text-xs', { text: symbole(v.unite) }); } },
+            {
+              key: 'enVigueur', label: 'Seuil en vigueur', value: function (v) { var e = seuils().etat(v.id); return e.enVigueur ? texteSeuil(e.enVigueur, suffixeDe(v)) : ''; },
+              render: function (v) {
+                var e = seuils().etat(v.id);
+                if (!e.enVigueur) return el('span.text-xs.text-slate-400', { text: e.retire ? 'Alerte retirée' : 'Aucun seuil configuré' });
+                return el('div', { 'data-seuil-vigueur': v.code }, [
+                  el('p.text-sm', { text: texteSeuil(e.enVigueur, suffixeDe(v)) }),
+                  e.enVigueur.delaiMaxJours != null ? el('p.text-[10px].text-slate-500', { 'data-delai-seuil': String(e.enVigueur.delaiMaxJours), text: texteDelai(e.enVigueur) }) : null,
+                  el('p.text-[10px].text-slate-400', { text: 'version ' + e.enVigueur.version + ', depuis le ' + C.dateFR(e.enVigueur.dateEffet) }),
+                ]);
+              },
+            },
+            {
+              key: 'etat', label: 'État', value: function (v) { return seuils().etat(v.id).etat; },
+              render: function (v) { return el('span', { 'data-seuil-etat': v.code }, etatSeuilBadge(seuils().etat(v.id))); },
+            },
+            {
+              key: 'brouillon', label: 'Enregistré en attente', value: function (v) { var b = seuils().etat(v.id).brouillon; return b ? texteSeuil(b, suffixeDe(v)) : ''; },
+              render: function (v) {
+                var b = seuils().etat(v.id).brouillon;
+                if (!b) return el('span.text-xs.text-slate-300', { text: '—' });
+                return el('div', null, [
+                  el('p.text-sm', { text: b.retrait ? 'Retrait de l’alerte' : texteSeuil(b, suffixeDe(v)) }),
+                  el('p.text-[10px].text-slate-400', { text: 'à partir du ' + C.dateFR(b.dateEffet) }),
+                ]);
+              },
+            },
+          ],
+          rowActions: function (v) {
+            var e = seuils().etat(v.id), actes = [];
+            if (K.droits('M5').editer) {
+              var br = K.iconBtn('sliders-horizontal', 'Régler le seuil de ' + v.libelle, function () { reglerSeuil(v); });
+              br.setAttribute('data-regler-seuil', v.code); actes.push(br);
+            }
+            /* Valider : ABSENT pour tout profil hors de la famille du laboratoire, et le moteur refuse aussi. */
+            if (e.brouillon && seuils().peutValider()) {
+              var bv = K.btn('Valider', { size: 'sm', variant: 'primary', icon: 'shield-check', onclick: function () { validerLeSeuil(v); } });
+              bv.setAttribute('data-valider-seuil', v.code); actes.push(bv);
+            }
+            if (e.brouillon && K.droits('M5').editer) {
+              var ba = K.iconBtn('x', 'Abandonner le seuil enregistré', function () { abandonnerLeSeuil(v); });
+              ba.setAttribute('data-abandonner-seuil', v.code); actes.push(ba);
+            }
+            if (e.versions.length) {
+              var bh = K.iconBtn('history', 'Historique des versions du seuil', function () { historiqueSeuil(v); });
+              bh.setAttribute('data-historique-seuil', v.code); actes.push(bh);
+            }
+            return actes;
+          },
+        }));
+        return bloc;
+      }
+
+      function refusSeuilToast(r) { U.toast(r.motif, { type: 'error', detail: r.geste }); }
+
+      function validerLeSeuil(v, apres) {
+        var b = seuils().brouillon(v.id);
+        if (!b) return Promise.resolve(false);
+        return U.confirm({
+          title: 'Valider le seuil de « ' + v.libelle + ' » ?',
+          message: 'Le seuil <strong>' + (b.retrait ? 'retire l’alerte' : texteSeuil(b, suffixeDe(v))) + '</strong> entrera en vigueur le <strong>' + C.dateFR(b.dateEffet)
+            + '</strong>. À partir de là, une variation au moins égale à ce seuil est <strong>signalée</strong> au comparatif et à l’écran de validation biologique ; '
+            + 'elle n’empêche jamais de valider. La version validée ne se réécrit plus : la modifier ajoutera une version.<br><br>Le motif dit sur quoi le seuil s’appuie.',
+          confirmLabel: 'Valider le seuil', requireMotif: true,
+        }).then(function (rep) {
+          if (!rep) return false;
+          /* Un motif vide n'est pas ignoré en silence : le moteur le refuse en le nommant (MOTIF_OBLIGATOIRE). */
+          var r = seuils().valider(v.id, { motif: rep.motif });
+          if (!r.ok) { refusSeuilToast(r); return false; }
+          afficher();
+          U.toast('Seuil validé.', { type: 'success', detail: v.libelle + ' : en vigueur le ' + C.dateFR(b.dateEffet) + ', validé par ' + r.validePar + '.' });
+          if (apres) apres();
+          return true;
+        });
+      }
+
+      function abandonnerLeSeuil(v) {
+        U.confirm({
+          title: 'Abandonner le seuil enregistré de « ' + v.libelle + ' » ?',
+          message: 'Le seuil enregistré (sans effet) est archivé. La version validée, s’il y en a une, reste en force.',
+          confirmLabel: 'Abandonner', danger: true,
+        }).then(function (ok) {
+          if (!ok) return;
+          var r = seuils().abandonner(v.id, { motif: 'Brouillon abandonné' });
+          if (!r.ok) { refusSeuilToast(r); return; }
+          afficher();
+          U.toast('Seuil abandonné.', { type: 'success' });
+        });
+      }
+
+      function historiqueSeuil(v) {
+        var e = seuils().etat(v.id);
+        var t = el('table.tbl', { 'data-historique-seuils': v.code });
+        t.appendChild(el('thead', null, el('tr', null, ['Version', 'État', 'Seuil', 'Date d’effet', 'Enregistré par', 'Validé par', 'Motif'].map(function (x) { return el('th', { text: x }); }))));
+        var tb = el('tbody');
+        e.versions.slice().reverse().forEach(function (x) {
+          tb.appendChild(el('tr', null, [
+            el('td', { text: 'v' + x.version }),
+            el('td', { text: x.etat === 'valide' ? 'Validé' : 'Enregistré (sans effet)' }),
+            el('td', { text: x.retrait ? 'Retrait de l’alerte' : texteSeuil(x, suffixeDe(v)) + (x.delaiMaxJours != null ? ' (' + texteDelai(x) + ')' : '') }),
+            el('td', { text: C.dateFR(x.dateEffet) }),
+            el('td', { text: (x.enregistrePar || '') + (x.enregistreLe ? ', le ' + C.dateFR(x.enregistreLe) : '') }),
+            el('td', { text: x.etat === 'valide' ? x.validePar + ' (' + x.valideRole + '), le ' + C.dateFR(x.valideLe) : '' }),
+            el('td', { text: x.motifValidation || '' }),
+          ]));
+        });
+        t.appendChild(tb);
+        var m = U.modal({
+          title: 'Versions du seuil : ' + v.libelle, subtitle: v.examenLibelle, size: 'xl',
+          body: el('div.space-y-3', null, [K.note('Une version validée ne se réécrit jamais : une alerte déjà levée garde le seuil sous lequel elle l’a été.', { tone: 'info', icon: 'history' }), U.equiperTableau(t, { nom: 'historique-seuil', titre: 'Historique du seuil' }), el('div.card', null, el('div.overflow-x-auto', null, t))]),
+          footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+        });
+      }
+
+      function reglerSeuil(v) {
+        var e = seuils().etat(v.id), base = e.brouillon || e.enVigueur || {};
+        var u = symbole(v.unite);
+        var jour = C.iso(AUJ);
+        var champsS = [
+          { name: 'ecartAbsolu', label: 'Variation absolue d’au moins' + (u === '—' ? '' : ' (' + u + ')'), type: 'number', step: 'any', hint: 'Vide : pas d’alerte sur l’écart absolu' },
+          { name: 'ecartRelatif', label: 'Variation relative d’au moins (%)', type: 'number', step: 'any', hint: 'Vide : pas d’alerte sur le pourcentage' },
+          { name: 'delaiMaxJours', label: 'Délai maximal entre deux mesures (jours)', type: 'number', step: 1, min: 1, hint: 'Vide : aucun délai. Au-delà, la variation n’est pas évaluée et le comparatif le dit ; rien n’est bloqué.' },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, hint: 'Aujourd’hui ou plus tard : un seuil ne s’applique jamais en arrière' },
+          { name: 'note', label: 'Note', type: 'text', col: 'full' },
+        ];
+        if (e.enVigueur) champsS.push({ name: 'retrait', label: 'Retirer l’alerte à partir de la date d’effet (vider les deux seuils)', type: 'checkbox', col: 'full' });
+        var f = U.form(champsS, {
+          ecartAbsolu: base.retrait ? null : base.ecartAbsolu, ecartRelatif: base.retrait ? null : base.ecartRelatif, delaiMaxJours: base.retrait ? null : base.delaiMaxJours,
+          dateEffet: base.dateEffet && base.dateEffet >= jour ? base.dateEffet : jour, note: base.note || '', retrait: !!(e.brouillon && e.brouillon.retrait),
+        });
+        var m;
+        function enregistrer(apres) {
+          var val = f.collect();
+          if (!val) return;
+          var r = seuils().enregistrer(v.id, { ecartAbsolu: val.ecartAbsolu, ecartRelatif: val.ecartRelatif, delaiMaxJours: val.delaiMaxJours, dateEffet: val.dateEffet, note: val.note, retrait: val.retrait === true });
+          if (!r.ok) { refusSeuilToast(r); return; }
+          m.close();
+          afficher();
+          if (apres) apres(); else U.toast('Seuil enregistré : sans effet tant qu’il n’est pas validé.', { type: 'success', detail: v.libelle + ' : ' + (r.seuil.retrait ? 'retrait de l’alerte' : texteSeuil(r.seuil, suffixeDe(v))) + ', à partir du ' + C.dateFR(r.seuil.dateEffet) + '.' });
+        }
+        m = U.modal({
+          title: 'Seuil de variation brutale : ' + v.libelle, subtitle: v.examenLibelle, size: 'lg',
+          body: el('div.space-y-3', { 'data-modale-seuil': v.code }, [
+            e.enVigueur ? K.note('Version <strong>' + e.enVigueur.version + '</strong> en vigueur depuis le ' + C.dateFR(e.enVigueur.dateEffet) + ' : <strong>' + texteSeuil(e.enVigueur, suffixeDe(v))
+              + '</strong>. Enregistrer ajoute une nouvelle version sans effet ; la version en vigueur reste en force jusqu’à la validation de la nouvelle.', { tone: 'info', icon: 'shield-check' })
+              : K.note('Aucun seuil n’est validé sur cette variable : aucune alerte n’est configurée. Un seuil enregistré reste sans effet tant qu’il n’est pas validé.', { tone: 'info', icon: 'bell-off' }),
+            f,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer', { variant: 'secondary', icon: 'save', onclick: function () { enregistrer(null); } }),
+            /* Valider : ABSENT hors de la famille du laboratoire (le moteur refuse aussi). */
+            seuils().peutValider() ? K.btn('Valider', {
+              variant: 'primary', icon: 'shield-check',
+              onclick: function () { enregistrer(function () { validerLeSeuil(v); }); },
+            }) : null,
+          ].filter(Boolean),
+        });
       }
 
       function editerPlage(p) {
@@ -1886,6 +2370,7 @@
           ].filter(Boolean)),
           footer: [
             K.btn('Annuler', { onclick: function () { m.close(); } }),
+            creation ? null : K.boutonValiderModale({ famille: 'labo_variables' }, v, m, afficher),
             K.btn(creation ? 'Créer' : 'Enregistrer', {
               variant: 'primary', icon: creation ? 'plus' : 'save',
               onclick: function () {
@@ -1902,26 +2387,30 @@
                   val.actif = true;
                   val.aValider = true;
                   val.source = 'Créée dans l’application le ' + C.dateFR(AUJ) + ' — à valider';
-                  colVariables().insert(val);
                 } else {
                   /* Modifier une borne la fait sortir du document : on le dit
                      dans la source plutôt que de laisser croire qu'elle en vient. */
-                  var bougee = val.min !== v.min || val.max !== v.max || val.normal !== v.normal;
+                  /* Une valeur ABSENTE (null, undefined, '') n'est pas une valeur déplacée : le formulaire rend '' pour la borne qualitative d'une
+                     variable numérique, et la comparer brute marquait « modifiée » toute fiche dont on corrigeait seulement l'intitulé (écart E182). */
+                  var vide = function (x) { return x == null || x === '' ? null : x; };
+                  var bougee = vide(val.min) !== vide(v.min) || vide(val.max) !== vide(v.max) || vide(val.normal) !== vide(v.normal);
                   if (bougee) {
                     val.source = 'Modifiée par ' + S.currentUser() + ' le ' + C.dateFR(AUJ)
                       + ' — précédemment : ' + (L.libelleReference(v) || '—');
                   }
-                  colVariables().update(v.id, val);
                 }
-                S.log(creation ? 'Création d’une variable de résultat' : 'Modification d’une valeur de référence',
-                  'M5', 'Variable', val.code, v ? { min: v.min, max: v.max } : null, { min: val.min, max: val.max });
-                m.close(); afficher();
-                U.toast(creation ? 'Variable créée.' : 'Paramètres enregistrés.', {
-                  type: 'success', detail: val.libelle + ' — ' + (L.libelleReference(val) || 'sans référence'),
+                /* Lot L1 : le biologiste qui enregistre VALIDE (motif demandé si une borne change) ; hors famille, la variable repasse « à valider ».
+                   UNE ligne de journal, portée par le moteur. */
+                K.ecrireValidable(colVariables(), { famille: 'labo_variables' }, creation ? null : v, val).then(function (w) {
+                  if (K.refusEcriture(w)) return;
+                  m.close(); afficher();
+                  U.toast(creation ? 'Variable créée.' : 'Paramètres enregistrés.', {
+                    type: 'success', detail: val.libelle + ' — ' + (L.libelleReference(val) || 'sans référence'),
+                  });
                 });
               },
             }),
-          ],
+          ].filter(Boolean),
         });
       }
 
@@ -1971,9 +2460,12 @@
             ], rows),
             el('p.mt-3.text-\[10px\].italic', {
               text: 'Les valeurs marquées « documentées » sont reprises de la fiche de résultats de la clinique '
-                + 'éditée le 21/08/2026. Celles marquées « à valider » sont des valeurs usuelles de la biologie '
-                + 'médicale, portées à titre d’attente : elles dépendent du réactif et de l’automate employés et '
-                + 'doivent être arrêtées par le biologiste médical avant mise en service.',
+                + 'éditée le 21/08/2026.'
+                + (rows.some(function (v) { return v.aValider; })
+                  ? ' Celles marquées « à valider » sont des valeurs usuelles de la biologie '
+                    + 'médicale, portées à titre d’attente : elles dépendent du réactif et de l’automate employés et '
+                    + 'doivent être arrêtées par le biologiste médical avant mise en service.'
+                  : ' Les autres ont été arrêtées par le biologiste médical.'),
             }),
           ]),
           signatures: [{ role: 'Le Biologiste médical' },
@@ -2035,7 +2527,9 @@
 
       /** Une demande est-elle réglée ? Le parcours pose `bloquee` tant que non. */
       function reglee(r) {
-        return !r.bloquee && r.statutPaiement !== 'impaye';
+        /* `bloqueParPaiement` est le champ que le parcours pose et que l'encaissement lève ; l'ancien test (`bloquee`,
+           inexistant) tenait toutes les demandes pour réglées et laissait prélever sans caisse (écart E140). */
+        return !r.bloquee && !r.bloqueParPaiement && r.statutPaiement !== 'impaye';
       }
 
       function afficher() {
@@ -2170,9 +2664,16 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
+                /* prelevePar / preleveParId : ce que lit la continuité (PR.continuiteRespectee).
+                   Sans eux, le verrou « celui qui a prélevé valide » restait mort. */
+                var agentPreleveur = S.collection('personnel').all()
+                  .filter(function (e) { return e.nomComplet === v.preleveur; })[0];
                 var res = col.update(r.id, Object.assign({}, v, {
                   preleveLe: new Date().toISOString(),
-                  etatAnalyse: r.etatAnalyse === 'attente' ? 'preleve' : r.etatAnalyse,
+                  prelevePar: v.preleveur,
+                  preleveParId: agentPreleveur ? agentPreleveur.id : null,
+                  /* Les états AMONT du référentiel (D.ETATS_RESULTAT) : 'attente' n'en est pas un. */
+                  etatAnalyse: ['en_attente', 'attente_prelevement'].indexOf(r.etatAnalyse) !== -1 ? 'preleve' : r.etatAnalyse,
                 }));
                 S.log('Prélèvement effectué', 'M5', 'DemandeAnalyse', r.reference, null,
                   { preleveur: v.preleveur });
@@ -2536,7 +3037,7 @@
     description: 'Suivi des stocks de réactifs, consommation rattachée aux analyses réalisées et carnet de demande.',
     regle: 'Le <strong>coût unitaire moyen pondéré (CUMP)</strong> est calculé automatiquement pour les réactifs '
       + 'et consommables de laboratoire (CDCT §10.1). Le <strong>seuil d’alerte est fixé par la clinique</strong>, '
-      + 'référence par référence : le document SAGE d’origine ne le renseigne pas, et un seuil unique n’aurait '
+      + 'référence par référence : le document d’inventaire initial ne le renseigne pas, et un seuil unique n’aurait '
       + 'aucun sens entre un réactif à péremption courte et un consommable de fond de rayon.',
     render: function (root) {
       var colProduits = S.collection('produits', { module: 'M6', entite: 'Produit' });
@@ -2549,9 +3050,11 @@
       var selPeriode = el('select.select');
       PERIODES_LABO.forEach(function (x) { selPeriode.appendChild(el('option', { value: x.id }, x.label)); });
       selPeriode.value = 'mois';
+      /* La périodicité doit COMMANDER le classement des plus consommés (écart E183 : le sélecteur n'écoutait rien). */
+      selPeriode.addEventListener('change', function () { rendreGraphes(); });
 
       rendreTout();
-      host.appendChild(K.source('Inventaire SAGE « Grand Stock » — les seuils d’alerte y sont absents et se '
+      host.appendChild(K.source('Inventaire initial (reprise) « Grand Stock » — les seuils d’alerte y sont absents et se '
         + 'définissent ici, référence par référence.'));
       root.appendChild(host);
       return null;
@@ -2573,7 +3076,7 @@
           { name: 'stock', label: 'Stock actuel', type: 'number', required: true, min: 0 },
           {
             name: 'seuilAlerte', label: 'Seuil d’alerte', type: 'number', required: true, min: 0,
-            hint: 'À partir de quelle quantité la clinique veut être prévenue. Absent du document SAGE : '
+            hint: 'À partir de quelle quantité la clinique veut être prévenue. Absent de l’inventaire initial : '
               + 'c’est à l’établissement de l’arrêter.',
           },
           {
@@ -2587,6 +3090,25 @@
             options: L.EXAMENS.map(function (e) { return { value: e.code, label: e.designation }; }),
             hint: 'Sert à rattacher la consommation aux examens réalisés.' },
         ];
+      }
+
+      /** RG-03 : le stock ne peut jamais être négatif. Le champ déclarait `min: 0`, que le formulaire n'applique pas : un stock de −1 s'enregistrait (écart E185). */
+      function refuserStockNegatif(v) {
+        if (Number(v.stock) < 0) {
+          U.toast('Le stock ne peut pas être négatif.', { type: 'error', detail: 'RG-03 — corriger la quantité saisie.' });
+          return false;
+        }
+        return true;
+      }
+
+      /** `LAB-NNNN` : le plus grand rang déjà écrit au registre des produits, plus un (écart E180). */
+      function codeReactifSuivant() {
+        var max = 0;
+        colProduits.all().forEach(function (p) {
+          var c = String(p.code || '');
+          if (c.indexOf('LAB-') === 0) max = Math.max(max, parseInt(c.slice(4), 10) || 0);
+        });
+        return 'LAB-' + String(max + 1).padStart(4, '0');
       }
 
       function rendreTout() { rendreKpi(); rendreTable(); rendreGraphes(); }
@@ -2608,7 +3130,7 @@
         if (sansSeuil.length) {
           blocKpi.appendChild(K.note('<strong>' + C.num(sansSeuil.length) + ' référence(s) sans seuil d’alerte.</strong> '
             + 'Tant qu’un seuil n’est pas fixé, aucune alerte ne peut être émise sur ces articles — '
-            + 'le document SAGE d’origine ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.',
+            + 'le document d’inventaire initial ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.',
           { tone: 'warning', icon: 'alert-triangle' }));
         }
         U.icons(blocKpi);
@@ -2621,7 +3143,7 @@
         rows: function () { return produits(); },
         exportName: 'reactifs-laboratoire', pageSize: 15, searchable: true,
         rowActions: K.actionsLigne(colProduits, champsReactif(), {
-          module: 'M5', archivable: false, refresh: rendreTout,
+          module: 'M5', archivable: false, refresh: rendreTout, avant: refuserStockNegatif,
         }),
         filters: [
           {
@@ -2672,13 +3194,15 @@
         ],
         actions: [
           K.creer(colProduits, champsReactif(), {
-          module: 'M5', label: 'Nouveau réactif', titre: 'Nouveau réactif ou consommable', entite: 'Référence',
+          module: 'M5', label: 'Nouveau réactif', titre: 'Nouveau réactif ou consommable', entite: 'Référence', avant: refuserStockNegatif,
           defauts: function () { return { categorie: 'reactif', stock: 0, seuilAlerte: 10, cump: 0 }; },
           transform: function (v) {
-            if (!v.code) v.code = C.nextRef('LAB-', 4);
+            /* Le code suit le REGISTRE des produits (plus grand rang LAB- + 1), jamais un compteur de page qui repart à 1 à chaque chargement
+               et émettait un code déjà attribué (écart E180, même défaut que E8 / E142). */
+            if (!v.code) v.code = codeReactifSuivant();
             v.stock = Number(v.stock) || 0;
             v.seuilAlerte = v.seuilAlerte === '' ? null : Number(v.seuilAlerte);
-            v.seuilCritique = v.seuilCritique === '' ? null : Number(v.seuilCritique);
+            v.seuilCritique = v.seuilCritique === '' || v.seuilCritique == null ? null : Number(v.seuilCritique);   /* facultatif : vide ≠ 0 (écart E184) */
             v.cump = Number(v.cump) || 0;
             v.seuilDefiniPar = S.currentUser();
             v.seuilDefiniLe = C.iso(AUJ);
@@ -2974,15 +3498,105 @@
   });
 
   /* --------------------------------------------------------------------------
-   * COMPARATIF DES RÉSULTATS — BI-PANNEAU (les « Antériorités » de la fiche)
+   * COMPARATIF DES RÉSULTATS (lot A1 : jusqu'à trois antériorités, variation, courbe)
+   * --------------------------------------------------------------------------
+   * La mesure COMPARÉE se choisit ; ses antériorités sont les (au plus) trois mesures rendues
+   * qui la précèdent, dans l'ordre chronologique, chacune jugée aux bornes de SON époque.
+   * La variation se lit à la mesure précédente DE LA VARIABLE (celle qui porte une valeur),
+   * pas forcément à la colonne voisine. Le modèle est construit une fois (`modeleComparatif`)
+   * et sert l'écran, la pièce imprimée et, au lot A2, l'alerte de variation brutale.
    * ----------------------------------------------------------------------- */
+  function modeleComparatif(code, b) {
+    var ant = anterieuresDe(b);
+    var colonnes = ant.mesures.concat([b]);
+    var lignes = [];
+    variablesDe(code).filter(function (v) { return v.actif !== false && !v.accompagnement; }).forEach(function (v) {
+      var valeurs = colonnes.map(function (m) { return (m.valeurs || {})[v.code]; });
+      if (valeurs.every(valeurVide)) return;
+      var u = symbole(v.unite);
+      var suffixe = u === '—' ? '' : ' ' + u;
+      var cellules = colonnes.map(function (m, i) {
+        var val = valeurs[i];
+        return {
+          demande: m, valeur: val,
+          ecart: valeurVide(val) ? null : L.ecart(variableALaDate(v, m.dateHeure), val),
+          reference: referenceALaDate(v, m.dateHeure) || '',
+        };
+      });
+      var vb = valeurs[valeurs.length - 1];
+      var prec = valeurVide(vb) ? null : derniereValeurAnterieure(b, v.code);
+      var variation = prec ? variationEntre(v, prec.valeur, vb) : null;
+      lignes.push({
+        variable: v, suffixe: suffixe, cellules: cellules, precedente: prec ? prec.demande : null, variation: variation,
+        ageJours: prec ? ageEntreMesures(prec.demande, b) : null,
+        alerte: variation && seuils() ? seuils().alerteVariation(v, variation, dateJugementMesure(b), { ageJours: prec ? ageEntreMesures(prec.demande, b) : null }) : null,
+      });
+    });
+    return { colonnes: colonnes, lignes: lignes, anterieures: ant, comparee: b };
+  }
+
+  /** Le texte d'une cellule de valeur (valeur et unité, ou un tiret quand la variable n'a pas été mesurée ce jour là). */
+  function texteCellule(ligne, cellule) {
+    return valeurVide(cellule.valeur) ? '—' : String(cellule.valeur) + ligne.suffixe;
+  }
+
+  /** La courbe de tendance d'une variable numérique : TOUTES les mesures rendues et lisibles du patient pour cet examen (EF-ANT-4). */
+  function ouvrirTendance(patientId, code, variable) {
+    var m = mesuresRendues(patientId, code);
+    var u = symbole(variable.unite);
+    var points = m.visibles.filter(function (r) {
+      var x = (r.valeurs || {})[variable.code];
+      return !valeurVide(x) && isFinite(Number(x));
+    }).map(function (r) {
+      var borne = variableALaDate(variable, r.dateHeure);
+      return { demande: r, valeur: Number((r.valeurs || {})[variable.code]), min: borne.min, max: borne.max, reference: referenceALaDate(variable, r.dateHeure) || '' };
+    });
+    var corps = el('div.space-y-3');
+    if (points.length < 2) {
+      corps.appendChild(U.empty('Moins de deux mesures rendues : aucune courbe à tracer.', { icon: 'line-chart' }));
+    } else {
+      var series = [{ label: variable.libelle + (u === '—' ? '' : ' (' + u + ')'), data: points.map(function (p) { return p.valeur; }), fill: false, points: true, tension: 0 }];
+      if (points.some(function (p) { return p.min != null; })) series.push({ label: 'Borne basse', data: points.map(function (p) { return p.min == null ? null : p.min; }), fill: false, dash: true, relier: true });
+      if (points.some(function (p) { return p.max != null; })) series.push({ label: 'Borne haute', data: points.map(function (p) { return p.max == null ? null : p.max; }), fill: false, dash: true, relier: true });
+      var g = el('div', { 'data-tendance-courbe': variable.code });
+      g.appendChild(G.ligne(points.map(function (p) { return C.dateFR(p.demande.dateHeure); }), series, { height: 280, scales: { y: { beginAtZero: false } } }));
+      corps.appendChild(g);
+    }
+    var t = el('table.tbl', { 'data-tendance-valeurs': variable.code });
+    t.appendChild(el('thead', null, el('tr', null, [
+      el('th', { text: 'Date' }), el('th', { text: 'Code d’analyse' }), el('th.text-right', { text: 'Valeur' }), el('th.text-right', { text: 'Références de l’époque' }),
+    ])));
+    var tb = el('tbody');
+    points.forEach(function (p) {
+      tb.appendChild(el('tr', null, [
+        el('td', { text: C.dateFR(p.demande.dateHeure) }),
+        el('td', null, el('span.font-mono.text-xs', { text: p.demande.codeAnalyse || p.demande.reference || '' })),
+        el('td.text-right', { text: String(p.valeur) + (u === '—' ? '' : ' ' + u) }),
+        el('td.text-right', null, el('span.text-xs.text-slate-500', { text: p.reference || '—' })),
+      ]));
+    });
+    t.appendChild(tb);
+    /* Lot EXP : les valeurs d'une tendance se cochent et s'exportent (garde-tableaux : consultation). */
+    corps.appendChild(U.equiperTableau(t, { nom: 'tendance-valeurs', titre: 'Valeurs de la tendance' }));
+    corps.appendChild(el('div.card', null, el('div.overflow-x-auto', null, t)));
+    if (m.cachees.length) {
+      corps.appendChild(K.note(C.num(m.cachees.length) + ' mesure(s) rendue(s) de cet examen sont hors de votre périmètre et ne figurent pas sur la courbe : ' + m.motif + '.',
+        { tone: 'info', icon: 'shield-check' }));
+    }
+    var modale = U.modal({
+      title: 'Tendance : ' + variable.libelle, subtitle: points.length ? C.num(points.length) + ' mesure(s) rendue(s)' : null, size: 'lg', body: corps,
+      footer: [K.btn('Fermer', { onclick: function () { modale.close(); } })],
+    });
+    U.icons(corps);
+  }
+
   global.SIGH.screen('m5-resultats-comparatif', {
     title: 'Comparatif des résultats',
-    description: 'Deux mesures du même examen côte à côte, variable par variable — la colonne « Antériorités » de la fiche de résultats, à l’écran.',
+    description: 'Une mesure du même examen face à ses trois dernières antériorités, variable par variable, avec la variation et la courbe de tendance.',
     regle: 'La fiche de résultats de la clinique porte une colonne <strong>Antériorités</strong> : c’est elle '
       + 'que cet écran développe. Seuls les résultats <strong>rendus</strong> (validés biologiquement) se '
-      + 'comparent — comparer une saisie non validée reviendrait à lire par-dessus l’épaule du laboratoire. '
-      + 'Le périmètre est celui du RBAC métier : chacun ne compare que ce qu’il a le droit de voir.',
+      + 'comparent : comparer une saisie non validée reviendrait à lire par-dessus l’épaule du laboratoire. '
+      + 'Le périmètre est celui du RBAC métier : chacun ne compare que ce qu’il a le droit de voir, et l’écran dit ce qu’il ne montre pas.',
     render: function (root) {
       amorcer();
       var col = S.collection('demandesAnalyses');
@@ -3001,7 +3615,7 @@
 
       var selPatient = U.combo(Object.keys(parPatient).map(function (pid) {
         var l = parPatient[pid];
-        return { value: pid, label: l[0].patient + ' (' + l[0].patientCode + ') — ' + C.num(l.length) + ' résultat(s)' };
+        return { value: pid, label: l[0].patient + ' (' + l[0].patientCode + ') : ' + C.num(l.length) + ' résultat(s)' };
       }), { placeholder: '— Choisir un patient —' });
       var selExamen = el('select.select');
       var zone = el('div.space-y-4');
@@ -3018,7 +3632,7 @@
         - rows.length;
       if (masques > 0) {
         host.appendChild(K.note(C.num(masques) + ' résultat(s) rendus sont hors de votre périmètre '
-          + 'et n’apparaissent pas ici — restriction du RBAC métier, pas donnée manquante.',
+          + 'et n’apparaissent pas ici : restriction du RBAC métier, pas donnée manquante.',
         { tone: 'info', icon: 'shield-check' }));
       }
 
@@ -3035,7 +3649,7 @@
 
       function siens() {
         return (parPatient[selPatient.value] || []).slice().sort(function (a, b) {
-          return String(a.dateHeure).localeCompare(String(b.dateHeure));
+          return cleChrono(a).localeCompare(cleChrono(b));
         });
       }
 
@@ -3059,95 +3673,152 @@
       function comparer() {
         var code = selExamen.value;
         if (!code) { vider('Choisir un examen.'); return; }
-        var mesures = siens().filter(function (r) { return codeExamenDeStatique(r) === code; });
+        var mesures = mesuresRendues(selPatient.value, code);
 
         C.clear(zone);
-        if (mesures.length < 2) {
+        if (mesures.cachees.length) {
+          zone.appendChild(K.note(C.num(mesures.cachees.length) + ' mesure(s) rendue(s) de cet examen sont hors de votre périmètre : '
+            + mesures.motif + '. Elles n’entrent ni dans les colonnes, ni dans la variation, ni dans la courbe.',
+          { tone: 'info', icon: 'shield-check' }));
+        }
+        var liste = mesures.visibles;
+        if (liste.length < 2) {
           zone.appendChild(U.empty('Une seule mesure de cet examen : aucune antériorité à comparer. '
             + 'La colonne « Antériorités » se remplira à la prochaine mesure.', { icon: 'history' }));
           U.icons(zone);
           return;
         }
 
-        /* Les deux plus récentes par défaut ; l'utilisateur choisit. */
-        var selA = el('select.select'), selB = el('select.select');
-        mesures.forEach(function (r, i) {
-          var lbl = C.dateFR(r.dateHeure) + ' — ' + (r.codeAnalyse || r.reference)
+        /* La plus récente par défaut ; l'utilisateur choisit la mesure comparée, ses antériorités s'en déduisent. */
+        var selB = el('select.select', { 'data-mesure-comparee': '' });
+        liste.forEach(function (r, i) {
+          var lbl = C.dateFR(r.dateHeure) + ' : ' + (r.codeAnalyse || r.reference)
             + (r.etatAnalyse === 'rectifie' ? ' (rectifié v' + (r.version || 2) + ')' : '');
-          selA.appendChild(el('option', { value: String(i) }, lbl));
           selB.appendChild(el('option', { value: String(i) }, lbl));
         });
-        selA.value = String(mesures.length - 2);
-        selB.value = String(mesures.length - 1);
+        selB.value = String(liste.length - 1);
 
-        var deux = el('div.card');
-        deux.appendChild(el('div.card-body.grid.gap-3.md:grid-cols-2', null, [
-          el('div', null, [el('label.label', { text: 'Antériorité (colonne gauche)' }), selA]),
-          el('div', null, [el('label.label', { text: 'Mesure comparée (colonne droite)' }), selB]),
+        var choix = el('div.card');
+        choix.appendChild(el('div.card-body.flex.flex-wrap.items-end.gap-3', null, [
+          el('div.min-w-\[16rem\]', null, [el('label.label', { text: 'Mesure comparée' }), selB]),
+          el('p.text-xs.text-slate-500.max-w-md', { text: 'Ses antériorités sont les ' + NB_ANTERIORITES + ' mesures rendues qui la précèdent, de la plus ancienne à la plus récente.' }),
+          K.btn('Imprimer le comparatif', { icon: 'printer', onclick: function () { imprimer(); } }),
         ]));
-        zone.appendChild(deux);
+        zone.appendChild(choix);
         var tableau = el('div');
         zone.appendChild(tableau);
-        [selA, selB].forEach(function (x) { x.addEventListener('change', peindre); });
+        selB.addEventListener('change', peindre);
+        var courant = null;
         peindre();
 
         function peindre() {
           C.clear(tableau);
-          var a = mesures[+selA.value], b = mesures[+selB.value];
-          if (!a || !b) return;
-          var variables = variablesDe(code).filter(function (v) { return v.actif !== false && !v.accompagnement; });
-          var t = el('table.tbl');
-          t.appendChild(el('thead', null, el('tr', null, [
-            el('th', { text: 'Variable' }),
-            el('th.text-right', { text: C.dateFR(a.dateHeure) }),
-            el('th.text-right', { text: C.dateFR(b.dateHeure) }),
-            el('th.text-right', { text: 'Évolution' }),
-            el('th.text-right', { text: 'Références' }),
-          ])));
+          var b = liste[+selB.value];
+          if (!b) return;
+          var mod = courant = modeleComparatif(code, b);
+          if (!mod.anterieures.mesures.length) {
+            tableau.appendChild(U.empty('Cette mesure est la plus ancienne rendue : aucune antériorité. Choisir une mesure plus récente.', { icon: 'history' }));
+            U.icons(tableau);
+            return;
+          }
+          var nb = mod.colonnes.length;
+          var nbAlertes = mod.lignes.filter(function (l) { return l.alerte && l.alerte.alerte; }).length;
+          if (nbAlertes) {
+            tableau.appendChild(K.note('<strong>' + C.num(nbAlertes) + ' variable(s) en variation brutale</strong> à la mesure comparée, selon les seuils validés par le biologiste médical. Le signalement n’invalide aucun résultat.',
+              { tone: 'warning', icon: 'activity' }));
+          }
+          var t = el('table.tbl', { 'data-comparatif': code });
+          t.appendChild(el('thead', null, el('tr', null, [el('th', { text: 'Variable' })]
+            .concat(mod.colonnes.map(function (m, i) {
+              return el('th.text-right', { 'data-col': i === nb - 1 ? 'b' : 'a' + i }, [
+                el('span', { text: C.dateFR(m.dateHeure) }),
+                el('p.text-[10px].font-normal.text-slate-400', { text: i === nb - 1 ? 'Mesure comparée' : 'Antériorité ' + (i + 1) }),
+              ]);
+            }))
+            .concat([
+              el('th.text-right', { text: 'Variation à la mesure précédente' }),
+              el('th.text-right', { text: 'Références (mesure comparée)' }),
+              el('th', { text: 'Tendance' }),
+            ]))));
           var tb = el('tbody');
-          variables.forEach(function (v) {
-            var va = (a.valeurs || {})[v.code], vb = (b.valeurs || {})[v.code];
-            if ((va == null || va === '') && (vb == null || vb === '')) return;
-            var eA = L.ecart(variableALaDate(v, a.dateHeure), va);
-            var eB = L.ecart(variableALaDate(v, b.dateHeure), vb);
-            var u = symbole(v.unite);
-            var suffixe = u === '—' ? '' : ' ' + u;
-            var delta = null;
-            if (v.type === 'numerique' && va !== '' && vb !== '' && va != null && vb != null
-              && !isNaN(Number(va)) && !isNaN(Number(vb))) {
-              delta = Number(vb) - Number(va);
+          mod.lignes.forEach(function (ligne) {
+            var v = ligne.variable;
+            var refB = ligne.cellules[nb - 1].reference;
+            var cells = [el('td', null, el('p.text-sm', {
+              class: v.parent ? 'pl-4 text-slate-600' : 'font-medium text-slate-800',
+              text: (v.parent ? '↳ ' : '') + v.libelle,
+            }))];
+            ligne.cellules.forEach(function (c, i) {
+              var enfant = [el('span.text-sm', { class: c.ecart ? 'font-bold text-danger-700' : 'text-slate-700', text: texteCellule(ligne, c) })];
+              /* Chaque antériorité est jugée aux bornes de SON époque : quand elles diffèrent de celles de la mesure comparée, la cellule les nomme. */
+              if (i < nb - 1 && !valeurVide(c.valeur) && c.reference && c.reference !== refB) {
+                enfant.push(el('p.text-[10px].text-slate-400', { 'data-reference-epoque': '', text: 'réf. ' + c.reference }));
+              }
+              cells.push(el('td.text-right', { 'data-var': v.code, 'data-col': i === nb - 1 ? 'b' : 'a' + i, 'data-hors': c.ecart ? '1' : '0' }, enfant));
+            });
+            var ton = !ligne.variation ? 'text-slate-400'
+              : (ligne.variation.sens === 'hausse' ? 'text-danger-700' : (ligne.variation.sens === 'baisse' ? 'text-info-700' : 'text-slate-500'));
+            var cVar = el('td.text-right', { 'data-var': v.code, 'data-col': 'variation' }, [
+              el('span.text-xs.font-medium', { class: ton, text: texteVariation(ligne.variation, ligne.suffixe) }),
+            ]);
+            if (ligne.variation && ligne.precedente && ligne.precedente !== mod.anterieures.mesures[mod.anterieures.mesures.length - 1]) {
+              cVar.appendChild(el('p.text-[10px].text-slate-400', { text: 'à la mesure du ' + C.dateFR(ligne.precedente.dateHeure) }));
             }
-            tb.appendChild(el('tr', null, [
-              el('td', null, el('p.text-sm', {
-                class: v.parent ? 'pl-4 text-slate-600' : 'font-medium text-slate-800',
-                text: (v.parent ? '↳ ' : '') + v.libelle,
-              })),
-              el('td.text-right', null, el('span.text-sm', {
-                class: eA ? 'font-bold text-danger-700' : 'text-slate-700',
-                text: va == null || va === '' ? '—' : String(va) + suffixe,
-              })),
-              el('td.text-right', null, el('span.text-sm', {
-                class: eB ? 'font-bold text-danger-700' : 'text-slate-700',
-                text: vb == null || vb === '' ? '—' : String(vb) + suffixe,
-              })),
-              el('td.text-right', null, delta == null
-                ? el('span.text-xs.text-slate-300', { text: '—' })
-                : el('span.text-xs.font-medium', {
-                  class: delta > 0 ? 'text-danger-700' : (delta < 0 ? 'text-info-700' : 'text-slate-500'),
-                  text: (delta > 0 ? '↑ +' : (delta < 0 ? '↓ ' : '= ')) + (Math.round(delta * 100) / 100) + suffixe,
-                })),
-              el('td.text-right', null, el('span.text-xs.text-slate-500', {
-                text: referenceALaDate(v, b.dateHeure) || '—',
-              })),
-            ]));
+            /* L'ÂGE de la mesure précédente s'affiche TOUJOURS (avec ou sans délai réglé) ; au-delà du délai réglé, le comparatif DIT que la variation n'est pas évaluée. */
+            if (ligne.variation && ligne.ageJours != null) {
+              cVar.appendChild(el('p.text-[10px].text-slate-400', { 'data-age-precedente': String(ligne.ageJours), text: texteAge(ligne.ageJours) }));
+            }
+            if (ligne.alerte && ligne.alerte.alerte) {
+              cVar.appendChild(el('p.mt-1.text-xs.font-semibold.text-warning-700', { 'data-alerte-variation': '', text: texteAlerte(ligne.alerte, ligne.suffixe) }));
+            } else if (ligne.alerte && ligne.alerte.nonEvalue === 'delai') {
+              cVar.appendChild(el('p.mt-1.text-xs.font-medium.text-slate-600', { 'data-variation-non-evaluee': '', text: texteNonEvalue(ligne.alerte) }));
+            } else if (ligne.alerte && ligne.alerte.nonEvaluable) {
+              cVar.appendChild(el('p.mt-1.text-[10px].text-slate-400', { 'data-alerte-nonevaluable': '', text: 'Seuil relatif non évaluable : valeur précédente nulle.' }));
+            }
+            cells.push(cVar);
+            cells.push(el('td.text-right', null, el('span.text-xs.text-slate-500', { text: refB || '—' })));
+            var tend = el('td');
+            if (v.type === 'numerique') {
+              var bt = K.iconBtn('line-chart', 'Courbe de tendance de ' + v.libelle, function () { ouvrirTendance(selPatient.value, code, v); });
+              bt.setAttribute('data-tendance', v.code);
+              tend.appendChild(bt);
+            }
+            cells.push(tend);
+            tb.appendChild(el('tr', null, cells));
           });
           t.appendChild(tb);
-          tableau.appendChild(el('div.card', null,
-            el('div.overflow-x-auto', null, t)));
-          tableau.appendChild(K.note('L’<strong>évolution</strong> se lit de gauche à droite. Les valeurs en '
+          /* Lot EXP : le comparatif se coche et s'exporte (garde-tableaux : consultation). */
+          tableau.appendChild(U.equiperTableau(t, { nom: 'comparatif', titre: 'Comparatif des antériorités' }));
+          tableau.appendChild(el('div.card', null, el('div.overflow-x-auto', null, t)));
+          tableau.appendChild(K.note('Les colonnes se lisent de gauche à droite, de la plus ancienne à la mesure comparée. Les valeurs en '
             + 'gras sont hors des références <strong>de leur époque</strong> : chaque colonne se compare aux '
-            + 'bornes du lot de réactif en service à sa date.', { tone: 'info', icon: 'git-compare-arrows' }));
+            + 'bornes du lot de réactif en service à sa date. Une valeur qualitative se compare en texte, sans pourcentage ; '
+            + 'un pourcentage n’est calculé que sur une valeur précédente non nulle.', { tone: 'info', icon: 'git-compare-arrows' }));
           U.icons(tableau);
+        }
+
+        function imprimer() {
+          if (!courant) return;
+          var mod = courant, b = mod.comparee, nb = mod.colonnes.length;
+          var cols = [{ label: 'Variable', value: function (l) { return l.variable.libelle; } }];
+          mod.colonnes.forEach(function (m, i) {
+            cols.push({ label: C.dateFR(m.dateHeure) + (i === nb - 1 ? ' (comparée)' : ''), align: 'right', value: function (l) { return texteCellule(l, l.cellules[i]); } });
+          });
+          cols.push({ label: 'Variation à la mesure précédente', value: function (l) { return texteVariation(l.variation, l.suffixe) + (l.alerte && l.alerte.alerte ? ' : variation brutale' : ''); } });
+          cols.push({ label: 'Références', value: function (l) { return l.cellules[nb - 1].reference || '—'; } });
+          var pat = patients().filter(function (x) { return x.id === b.patientId; })[0];
+          P.etat({
+            titre: 'Comparatif des résultats',
+            sousTitre: b.analyse + ' : ' + (pat ? pat.nom + ' ' + pat.prenom : b.patient),
+            cartouche: [['Patient', b.patient], ['Dossier', b.patientCode], ['Mesure comparée', C.dateFR(b.dateHeure)],
+              ['Antériorités', C.num(mod.anterieures.mesures.length)], ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
+            contenu: el('div.space-y-3', null, [
+              P.tableau(cols, mod.lignes),
+              el('p.mt-3.text-\[10px\].italic', { text: 'Seules les mesures rendues (validées biologiquement) et lisibles par le profil qui édite entrent dans ce comparatif.'
+                + (mod.anterieures.masquees ? ' ' + C.num(mod.anterieures.masquees) + ' antériorité(s) hors du périmètre de ce profil ne sont pas reprises.' : '') }),
+            ]),
+            signatures: [{ role: 'Le Biologiste médical' }],
+          });
         }
       }
     },
@@ -3203,7 +3874,9 @@
   ecranDemandesService('m5-demandes-maternite', 'Demandes — maternité',
     'Les demandes d’analyses prescrites par la maternité : CPN, bilans d’admission, suites de couches.',
     function (r) {
-      return /MATERN/i.test(String(r.secteurDemandeur || '')) || r.serviceDemandeur === 'maternite';
+      /* Le service se lit AUSSI dans son libellé : le jeu écrit « Maternité » là où la fiche du service écrit
+         l'identifiant `maternite` — le test strict sur l'identifiant laissait la vue vide (écart E145). */
+      return /MATERN/i.test(String(r.secteurDemandeur || '')) || /MATERN/i.test(String(r.serviceDemandeur || ''));
     },
     'La sage-femme y suit ses bilans ; le RBAC métier continue de décider qui lit les résultats.');
 
@@ -3259,7 +3932,7 @@
       if (sansSeuil.length) {
         host.appendChild(K.note('<strong>' + C.num(sansSeuil.length) + ' référence(s) sans seuil d’alerte.</strong> '
           + 'Sans seuil, aucune alerte n’est possible : le seuil se fixe référence par référence à l’écran '
-          + '« Réactifs & consommables » — le document SAGE ne renseigne pas cette colonne.',
+          + '« Réactifs & consommables » — l’inventaire initial ne renseigne pas cette colonne.',
         { tone: 'warning', icon: 'triangle-alert' }));
       }
 
@@ -3319,7 +3992,7 @@
     description: 'Gestion des poches de sang par groupe, dates de péremption et demandes de transfusion.',
     render: function (root) {
       var col = S.collection('poches', { module: 'M5', entite: 'PocheSang' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('poches')) {
         var rnd = C.seeded(701);
         D.GROUPES_SANGUINS.forEach(function (g) {
           var n = C.between(rnd, 2, 9);
@@ -3434,7 +4107,7 @@
     description: 'Registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément.',
     render: function (root) {
       var col = S.collection('donneurs', { module: 'M5', entite: 'DonneurSang' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('donneurs')) {
         var rnd = C.seeded(809);
         var pats = patients();
         for (var i = 0; i < 60; i++) {
@@ -3484,7 +4157,9 @@
           { name: 'eligible', label: 'Donneur éligible', type: 'checkbox' },
         ],
         onCreate: function () { return { eligible: true, nbDons: 1, type: 'Bénévole', dernierDon: C.iso(AUJ) }; },
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('DON-', 4); return v; },
+        /* Le rang suivant se lit sur les fiches EXISTANTES (archivées comprises) : `C.nextRef` est un compteur de page qui repart à 1 à chaque
+           chargement — un registre de 60 donneurs en créait un 61ᵉ nommé DON-0001, doublon du premier (écart E200, même défaut que E8/E120). */
+        transform: function (v) { if (!v.reference) v.reference = C.referenceSuivante('DON-', 4, col.all()); return v; },
         filters: [
           { name: 'groupe', label: 'Groupe', options: D.GROUPES_SANGUINS },
           { name: 'type', label: 'Type de don', options: ['Bénévole', 'Familial', 'Compensation'] },

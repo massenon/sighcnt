@@ -1,0 +1,77 @@
+{
+ "id": "enquete-publique",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Fiche d’enquête (lien partagé)",
+ "acces": "ouvert",
+ "autonome": true,
+ "titre": "Satisfaction des patients",
+ "titreOnglet": "Fiche d’enquête (lien partagé) — SIGH Clinique NASSIERA TOO",
+ "description": [
+  "CLINIQUE NASSIERA TOO",
+  "Votre santé, notre raison de vivre",
+  "Recueil à la sortie.",
+  "Questionnaire ANONYME : votre réponse n’est reliée ni à votre nom, ni à votre dossier. Aucune question ne porte sur votre santé.",
+  "CLINIQUE NASSIERA TOO SARL — BP : 507 NATITINGOU (Rép. du Bénin)",
+  "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268."
+ ],
+ "cartes": [],
+ "champs": [
+  "Qualité de l’accueil (1 à 5) *",
+  "1",
+  "Recommanderiez-vous la clinique ? *",
+  "Oui",
+  "Ce que nous pourrions améliorer"
+ ],
+ "commandes": [
+  "Envoyer ma réponse"
+ ],
+ "fixtureEnquete": {
+  "enquete": {
+   "id": "ENQxmvux6yvo38wb7",
+   "statut": "actif",
+   "reference": "ENQ-SAT",
+   "titre": "Satisfaction des patients",
+   "description": "Recueil à la sortie.",
+   "questions": [
+    {
+     "code": "Q_ACCUEIL",
+     "libelle": "Qualité de l’accueil",
+     "type": "note"
+    },
+    {
+     "code": "Q_RECO",
+     "libelle": "Recommanderiez-vous la clinique ?",
+     "type": "choix",
+     "options": [
+      "Oui",
+      "Non"
+     ]
+    },
+    {
+     "code": "Q_LIBRE",
+     "libelle": "Ce que nous pourrions améliorer",
+     "type": "texte"
+    }
+   ],
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T12:00:00.276Z"
+  },
+  "jeton": {
+   "id": "JETxmvux6yvotsvp9",
+   "statut": "actif",
+   "jeton": "uht7wrvx59kgjcfzr9bxzvhc",
+   "enqueteId": "ENQxmvux6yvo38wb7",
+   "enqueteTitre": "Satisfaction des patients",
+   "anonyme": true,
+   "usage": "Lien",
+   "creeLe": "2026-10-30",
+   "expireLe": "2099-12-31",
+   "revoqueLe": null,
+   "note": null,
+   "ouvertPar": "extraction",
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T12:00:00.276Z"
+  }
+ }
+}

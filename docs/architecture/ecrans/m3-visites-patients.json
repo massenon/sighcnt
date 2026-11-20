@@ -1,0 +1,57 @@
+{
+ "id": "m3-visites-patients",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Visites aux hospitalisés",
+ "acces": "ouvert",
+ "titre": "Visites aux patients hospitalisés",
+ "description": "Enregistrement des visites du personnel traitant et des visites familiales, avec dates et heures.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Visites aux hospitalisés"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les visites",
+  "Archivés"
+ ],
+ "kpis": [
+  "Visites enregistrées",
+  "Visites familiales",
+  "Visites du personnel",
+  "Patients visités"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Date",
+   "Heure",
+   "Lit",
+   "Patient",
+   "Type",
+   "Visiteur",
+   "Observation",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les visites41",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

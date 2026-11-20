@@ -1,0 +1,2375 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-etiquetage.js — m6-etiquetage piloté. Ne pas éditer.",
+ "entree": {
+  "emplacements": [
+   {
+    "id": "E3",
+    "code": "R9",
+    "libelle": "Réserve fond",
+    "zone": "Réserve",
+    "temperature": "Ambiante",
+    "source": "test"
+   },
+   {
+    "id": "E2",
+    "code": "F1",
+    "libelle": "Réfrigérateur 1",
+    "zone": "Chaîne du froid",
+    "temperature": "2 à 8 °C",
+    "capacite": 10,
+    "source": "test"
+   },
+   {
+    "id": "E1",
+    "code": "A1",
+    "libelle": "Rayon A — Casier 1",
+    "zone": "Rayonnage sec",
+    "temperature": "Ambiante",
+    "capacite": 2,
+    "source": "test"
+   }
+  ],
+  "produits": [
+   {
+    "id": "Q12",
+    "code": "Q12",
+    "designation": "ARTICLE DE RESERVE 12",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 22,
+    "stockDetail": 22,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q11",
+    "code": "Q11",
+    "designation": "ARTICLE DE RESERVE 11",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 21,
+    "stockDetail": 21,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q10",
+    "code": "Q10",
+    "designation": "ARTICLE DE RESERVE 10",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 20,
+    "stockDetail": 20,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q9",
+    "code": "Q9",
+    "designation": "ARTICLE DE RESERVE 9",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 19,
+    "stockDetail": 19,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q8",
+    "code": "Q8",
+    "designation": "ARTICLE DE RESERVE 8",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 18,
+    "stockDetail": 18,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q7",
+    "code": "Q7",
+    "designation": "ARTICLE DE RESERVE 7",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 17,
+    "stockDetail": 17,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q6",
+    "code": "Q6",
+    "designation": "ARTICLE DE RESERVE 6",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 16,
+    "stockDetail": 16,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q5",
+    "code": "Q5",
+    "designation": "SPARADRAP",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 7,
+    "stockDetail": 7,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2
+   },
+   {
+    "id": "Q4",
+    "code": "Q4",
+    "designation": "COTON HYDROPHILE 500 G",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 0,
+    "stockDetail": 0,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "R9"
+   },
+   {
+    "id": "Q3",
+    "code": "Q3",
+    "designation": "VACCIN HEPATITE B INJ",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 8,
+    "stockDetail": 8,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 2500,
+    "cump": 100,
+    "seuilAlerte": 2,
+    "emplacement": "F1"
+   },
+   {
+    "id": "Q2",
+    "code": "Q2",
+    "designation": "GANT STERILE",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 3,
+    "stockDetail": 3,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 5,
+    "emplacement": "A1"
+   },
+   {
+    "id": "Q1",
+    "code": "Q1",
+    "designation": "ARTESUNATE 60 MG INJ",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "stock": 12,
+    "stockDetail": 12,
+    "stockGros": 0,
+    "prixAchat": 100,
+    "prixVente": 150,
+    "cump": 100,
+    "seuilAlerte": 5,
+    "emplacement": "A1"
+   }
+  ],
+  "lots": [
+   {
+    "id": "LQ3",
+    "produitId": "Q3",
+    "numeroLot": "V-77",
+    "datePeremption": "2027-01-31",
+    "quantite": 5
+   },
+   {
+    "id": "LQ2",
+    "produitId": "Q1",
+    "numeroLot": "LOT-A",
+    "datePeremption": "2026-12-15",
+    "quantite": 5
+   },
+   {
+    "id": "LQ1",
+    "produitId": "Q1",
+    "numeroLot": "LOT-B",
+    "datePeremption": "2027-03-01",
+    "quantite": 5
+   }
+  ]
+ },
+ "lu": {
+  "kpi": [
+   "3",
+   "12",
+   "1",
+   "3"
+  ],
+  "tables": [
+   {
+    "entetes": [
+     "CASIER",
+     "INTITULÉ",
+     "ZONE",
+     "CONSERVATION",
+     "ARTICLES RANGÉS",
+     "ACTIONS"
+    ],
+    "lignes": [
+     {
+      "cellules": [
+       "A1",
+       "Rayon A — Casier 1",
+       "Rayonnage sec",
+       "Ambiante",
+       "2 / 2",
+       ""
+      ],
+      "actions": [
+       "Modifier|",
+       "Archiver|"
+      ]
+     },
+     {
+      "cellules": [
+       "F1",
+       "Réfrigérateur 1",
+       "Chaîne du froid",
+       "2 à 8 °C",
+       "1 / 10",
+       ""
+      ],
+      "actions": [
+       "Modifier|",
+       "Archiver|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Réserve fond",
+       "Réserve",
+       "Ambiante",
+       "8",
+       ""
+      ],
+      "actions": [
+       "Modifier|",
+       "Archiver|"
+      ]
+     }
+    ]
+   },
+   {
+    "entetes": [
+     "EMPLACEMENT",
+     "CODE",
+     "DÉSIGNATION",
+     "UNITÉ",
+     "STOCK",
+     "ÉTAT",
+     "ACTIONS"
+    ],
+    "lignes": [
+     {
+      "cellules": [
+       "A1",
+       "Q2",
+       "GANT STERILE Médicaments — Unité",
+       "Unité",
+       "3",
+       "Critique",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "A1",
+       "Q1",
+       "ARTESUNATE 60 MG INJ Médicaments — Unité",
+       "Unité",
+       "12",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "F1",
+       "Q3",
+       "VACCIN HEPATITE B INJ Médicaments — Unité",
+       "Unité",
+       "8",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q12",
+       "ARTICLE DE RESERVE 12 Médicaments — Unité",
+       "Unité",
+       "22",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q11",
+       "ARTICLE DE RESERVE 11 Médicaments — Unité",
+       "Unité",
+       "21",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q10",
+       "ARTICLE DE RESERVE 10 Médicaments — Unité",
+       "Unité",
+       "20",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q9",
+       "ARTICLE DE RESERVE 9 Médicaments — Unité",
+       "Unité",
+       "19",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q8",
+       "ARTICLE DE RESERVE 8 Médicaments — Unité",
+       "Unité",
+       "18",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q7",
+       "ARTICLE DE RESERVE 7 Médicaments — Unité",
+       "Unité",
+       "17",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q6",
+       "ARTICLE DE RESERVE 6 Médicaments — Unité",
+       "Unité",
+       "16",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "R9",
+       "Q4",
+       "COTON HYDROPHILE 500 G Médicaments — Unité",
+       "Unité",
+       "0",
+       "Rupture",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     },
+     {
+      "cellules": [
+       "—",
+       "Q5",
+       "SPARADRAP Médicaments — Unité",
+       "Unité",
+       "7",
+       "Normal",
+       ""
+      ],
+      "actions": [
+       "Modifier|"
+      ]
+     }
+    ]
+   }
+  ],
+  "cartes": [
+   {
+    "titre": "A1",
+    "badge": "2 articles",
+    "lignes": [
+     "GANT STERILE 3",
+     "ARTESUNATE 60 MG INJ 12"
+    ]
+   },
+   {
+    "titre": "F1",
+    "badge": "1 article",
+    "lignes": [
+     "VACCIN HEPATITE B INJ 8"
+    ]
+   },
+   {
+    "titre": "R9",
+    "badge": "8 articles",
+    "lignes": [
+     "ARTICLE DE RESERVE 12 22",
+     "ARTICLE DE RESERVE 11 21",
+     "ARTICLE DE RESERVE 10 20",
+     "ARTICLE DE RESERVE 9 19",
+     "ARTICLE DE RESERVE 8 18",
+     "ARTICLE DE RESERVE 7 17",
+     "+ 2 autre(s)"
+    ]
+   },
+   {
+    "titre": "Sans emplacement",
+    "badge": "1 article",
+    "lignes": [
+     "SPARADRAP 7"
+    ]
+   }
+  ],
+  "textes": [
+   "Lots classés FEFO",
+   "Le rangement suit le principe FEFO : à l’intérieur de chaque casier, les lots sont classés par date de péremption croissante. Les sérums sont rangés par planches avec identification du type par emplacement."
+  ]
+ },
+ "gestes": {
+  "etiquettesCasiers": [
+   {
+    "titre": "Étiquettes produits",
+    "textes": [
+     [
+      "CNT",
+      "GANT STERILE",
+      "Code : Q2",
+      "Emplacement : A1",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "ARTESUNATE 60 MG INJ",
+      "Code : Q1",
+      "Emplacement : A1",
+      "Lot : LOT-A",
+      "Péremption : 15/12/2026",
+      "P.U. : 150"
+     ]
+    ],
+    "entete": "Étiquettes produits Réf. CNT-20261030-0001 Imprimer / Enregistrer en PDF Archiver Fermer CLINIQUE NASSIERA TOO BP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20 AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020 IFU : 3201642748214 RCCM : RB/NAT/2016-B-268 E-mail : cliniquenassiera@gmail.com Votre santé, notre raison de vivre ÉTIQUETTES PR"
+   },
+   {
+    "titre": "Étiquettes produits",
+    "textes": [
+     [
+      "CNT",
+      "VACCIN HEPATITE B INJ",
+      "Code : Q3",
+      "Emplacement : F1",
+      "Lot : V-77",
+      "Péremption : 31/01/2027",
+      "P.U. : 2 500"
+     ]
+    ],
+    "entete": "Étiquettes produits Réf. CNT-20261030-0002 Imprimer / Enregistrer en PDF Archiver Fermer CLINIQUE NASSIERA TOO BP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20 AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020 IFU : 3201642748214 RCCM : RB/NAT/2016-B-268 E-mail : cliniquenassiera@gmail.com Votre santé, notre raison de vivre ÉTIQUETTES PR"
+   },
+   {
+    "titre": "Étiquettes produits",
+    "textes": [
+     [
+      "CNT",
+      "ARTICLE DE RESERVE 12",
+      "Code : Q12",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "ARTICLE DE RESERVE 11",
+      "Code : Q11",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "ARTICLE DE RESERVE 10",
+      "Code : Q10",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "ARTICLE DE RESERVE 9",
+      "Code : Q9",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "ARTICLE DE RESERVE 8",
+      "Code : Q8",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "ARTICLE DE RESERVE 7",
+      "Code : Q7",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "ARTICLE DE RESERVE 6",
+      "Code : Q6",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ],
+     [
+      "CNT",
+      "COTON HYDROPHILE 500 G",
+      "Code : Q4",
+      "Emplacement : R9",
+      "P.U. : 150"
+     ]
+    ],
+    "entete": "Étiquettes produits Réf. CNT-20261030-0003 Imprimer / Enregistrer en PDF Archiver Fermer CLINIQUE NASSIERA TOO BP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20 AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020 IFU : 3201642748214 RCCM : RB/NAT/2016-B-268 E-mail : cliniquenassiera@gmail.com Votre santé, notre raison de vivre ÉTIQUETTES PR"
+   },
+   {
+    "titre": "Étiquettes produits",
+    "textes": [
+     [
+      "CNT",
+      "SPARADRAP",
+      "Code : Q5",
+      "Emplacement : —",
+      "P.U. : 150"
+     ]
+    ],
+    "entete": "Étiquettes produits Réf. CNT-20261030-0004 Imprimer / Enregistrer en PDF Archiver Fermer CLINIQUE NASSIERA TOO BP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20 AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020 IFU : 3201642748214 RCCM : RB/NAT/2016-B-268 E-mail : cliniquenassiera@gmail.com Votre santé, notre raison de vivre ÉTIQUETTES PR"
+   }
+  ],
+  "etiquettesTout": {
+   "titre": "Étiquettes produits",
+   "textes": [
+    [
+     "CNT",
+     "ARTICLE DE RESERVE 12",
+     "Code : Q12",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "ARTICLE DE RESERVE 11",
+     "Code : Q11",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "ARTICLE DE RESERVE 10",
+     "Code : Q10",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "ARTICLE DE RESERVE 9",
+     "Code : Q9",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "ARTICLE DE RESERVE 8",
+     "Code : Q8",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "ARTICLE DE RESERVE 7",
+     "Code : Q7",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "ARTICLE DE RESERVE 6",
+     "Code : Q6",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "SPARADRAP",
+     "Code : Q5",
+     "Emplacement : —",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "COTON HYDROPHILE 500 G",
+     "Code : Q4",
+     "Emplacement : R9",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "VACCIN HEPATITE B INJ",
+     "Code : Q3",
+     "Emplacement : F1",
+     "Lot : V-77",
+     "Péremption : 31/01/2027",
+     "P.U. : 2 500"
+    ],
+    [
+     "CNT",
+     "GANT STERILE",
+     "Code : Q2",
+     "Emplacement : A1",
+     "P.U. : 150"
+    ],
+    [
+     "CNT",
+     "ARTESUNATE 60 MG INJ",
+     "Code : Q1",
+     "Emplacement : A1",
+     "Lot : LOT-A",
+     "Péremption : 15/12/2026",
+     "P.U. : 150"
+    ]
+   ],
+   "entete": "Étiquettes produits Réf. CNT-20261030-0005 Imprimer / Enregistrer en PDF Archiver Fermer CLINIQUE NASSIERA TOO BP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20 AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020 IFU : 3201642748214 RCCM : RB/NAT/2016-B-268 E-mail : cliniquenassiera@gmail.com Votre santé, notre raison de vivre ÉTIQUETTES PR"
+  },
+  "creation": {
+   "modale": "Nouvel emplacement de rangement Les champs marqués d’un astérisque sont obligatoires. Code du casier * Court et stable — c’est lui qui figure sur l’étiquette. Intitulé * Zone * Rayonnage sec Chaîne du froid Armoire sécurisée Réserve Salle de soins Température de conservation — Sélectionner — Ambiante 2 à 8 °C − 20 °C Sous clé, ambiante Capacité (références) Observation Annuler Créer",
+   "champs": [
+    "f_code=",
+    "f_libelle=",
+    "f_zone=Rayonnage sec",
+    "f_temperature=Ambiante",
+    "f_capacite=",
+    "f_observation="
+   ]
+  },
+  "creationVide": {
+   "toasts": [
+    [
+     "Le formulaire comporte des erreurs."
+    ]
+   ],
+   "compte": 3
+  },
+  "creationOk": {
+   "toasts": [
+    [
+     "Emplacement créé.",
+     "Armoire sécurisée 2"
+    ]
+   ],
+   "cree": {
+    "code": "B2",
+    "libelle": "Armoire sécurisée 2",
+    "zone": "Armoire sécurisée",
+    "temperature": "Sous clé, ambiante",
+    "capacite": 4,
+    "observation": "Stupéfiants",
+    "source": "Créé dans l’application le 30/10/2026"
+   },
+   "compte": 4,
+   "lu": {
+    "kpi": [
+     "4",
+     "12",
+     "1",
+     "3"
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "CASIER",
+       "INTITULÉ",
+       "ZONE",
+       "CONSERVATION",
+       "ARTICLES RANGÉS",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "A1",
+         "Rayon A — Casier 1",
+         "Rayonnage sec",
+         "Ambiante",
+         "2 / 2",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "B2",
+         "Armoire sécurisée 2",
+         "Armoire sécurisée",
+         "Sous clé, ambiante",
+         "vide",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "F1",
+         "Réfrigérateur 1",
+         "Chaîne du froid",
+         "2 à 8 °C",
+         "1 / 10",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Réserve fond",
+         "Réserve",
+         "Ambiante",
+         "8",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       }
+      ]
+     },
+     {
+      "entetes": [
+       "EMPLACEMENT",
+       "CODE",
+       "DÉSIGNATION",
+       "UNITÉ",
+       "STOCK",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "A1",
+         "Q2",
+         "GANT STERILE Médicaments — Unité",
+         "Unité",
+         "3",
+         "Critique",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "A1",
+         "Q1",
+         "ARTESUNATE 60 MG INJ Médicaments — Unité",
+         "Unité",
+         "12",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "F1",
+         "Q3",
+         "VACCIN HEPATITE B INJ Médicaments — Unité",
+         "Unité",
+         "8",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q12",
+         "ARTICLE DE RESERVE 12 Médicaments — Unité",
+         "Unité",
+         "22",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q11",
+         "ARTICLE DE RESERVE 11 Médicaments — Unité",
+         "Unité",
+         "21",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q10",
+         "ARTICLE DE RESERVE 10 Médicaments — Unité",
+         "Unité",
+         "20",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q9",
+         "ARTICLE DE RESERVE 9 Médicaments — Unité",
+         "Unité",
+         "19",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q8",
+         "ARTICLE DE RESERVE 8 Médicaments — Unité",
+         "Unité",
+         "18",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q7",
+         "ARTICLE DE RESERVE 7 Médicaments — Unité",
+         "Unité",
+         "17",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q6",
+         "ARTICLE DE RESERVE 6 Médicaments — Unité",
+         "Unité",
+         "16",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q4",
+         "COTON HYDROPHILE 500 G Médicaments — Unité",
+         "Unité",
+         "0",
+         "Rupture",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "—",
+         "Q5",
+         "SPARADRAP Médicaments — Unité",
+         "Unité",
+         "7",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       }
+      ]
+     }
+    ],
+    "cartes": [
+     {
+      "titre": "A1",
+      "badge": "2 articles",
+      "lignes": [
+       "GANT STERILE 3",
+       "ARTESUNATE 60 MG INJ 12"
+      ]
+     },
+     {
+      "titre": "F1",
+      "badge": "1 article",
+      "lignes": [
+       "VACCIN HEPATITE B INJ 8"
+      ]
+     },
+     {
+      "titre": "R9",
+      "badge": "8 articles",
+      "lignes": [
+       "ARTICLE DE RESERVE 12 22",
+       "ARTICLE DE RESERVE 11 21",
+       "ARTICLE DE RESERVE 10 20",
+       "ARTICLE DE RESERVE 9 19",
+       "ARTICLE DE RESERVE 8 18",
+       "ARTICLE DE RESERVE 7 17",
+       "+ 2 autre(s)"
+      ]
+     },
+     {
+      "titre": "Sans emplacement",
+      "badge": "1 article",
+      "lignes": [
+       "SPARADRAP 7"
+      ]
+     }
+    ],
+    "textes": [
+     "Lots classés FEFO",
+     "Le rangement suit le principe FEFO : à l’intérieur de chaque casier, les lots sont classés par date de péremption croissante. Les sérums sont rangés par planches avec identification du type par emplacement."
+    ]
+   }
+  },
+  "creationSansCapacite": {
+   "cree": {
+    "code": "Z0",
+    "libelle": "Sans capacité",
+    "zone": "Rayonnage sec",
+    "temperature": "Ambiante",
+    "capacite": 0,
+    "observation": "",
+    "source": "Créé dans l’application le 30/10/2026"
+   }
+  },
+  "modification": {
+   "modale": "Modifier l’enregistrement A1 Code du casier * Court et stable — c’est lui qui figure sur l’étiquette. Intitulé * Zone * Rayonnage sec Chaîne du froid Armoire sécurisée Réserve Salle de soins Température de conservation — Sélectionner — Ambiante 2 à 8 °C − 20 °C Sous clé, ambiante Capacité (références) Observation Annuler Enregistrer",
+   "champs": [
+    "f_code=A1",
+    "f_libelle=Rayon A — Casier 1",
+    "f_zone=Rayonnage sec",
+    "f_temperature=Ambiante",
+    "f_capacite=2",
+    "f_observation="
+   ],
+   "apres": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "code": "A1",
+     "libelle": "Rayon A — Casier 1 (réorganisé)",
+     "zone": "Rayonnage sec",
+     "temperature": "Ambiante",
+     "capacite": 1,
+     "source": "test",
+     "observation": ""
+    },
+    "lu": {
+     "kpi": [
+      "5",
+      "12",
+      "1",
+      "3"
+     ],
+     "tables": [
+      {
+       "entetes": [
+        "CASIER",
+        "INTITULÉ",
+        "ZONE",
+        "CONSERVATION",
+        "ARTICLES RANGÉS",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "A1",
+          "Rayon A — Casier 1 (réorganisé)",
+          "Rayonnage sec",
+          "Ambiante",
+          "2 / 1",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        },
+        {
+         "cellules": [
+          "B2",
+          "Armoire sécurisée 2",
+          "Armoire sécurisée",
+          "Sous clé, ambiante",
+          "vide",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        },
+        {
+         "cellules": [
+          "F1",
+          "Réfrigérateur 1",
+          "Chaîne du froid",
+          "2 à 8 °C",
+          "1 / 10",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Réserve fond",
+          "Réserve",
+          "Ambiante",
+          "8",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        },
+        {
+         "cellules": [
+          "Z0",
+          "Sans capacité",
+          "Rayonnage sec",
+          "Ambiante",
+          "vide",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        }
+       ]
+      },
+      {
+       "entetes": [
+        "EMPLACEMENT",
+        "CODE",
+        "DÉSIGNATION",
+        "UNITÉ",
+        "STOCK",
+        "ÉTAT",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "A1",
+          "Q2",
+          "GANT STERILE Médicaments — Unité",
+          "Unité",
+          "3",
+          "Critique",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "A1",
+          "Q1",
+          "ARTESUNATE 60 MG INJ Médicaments — Unité",
+          "Unité",
+          "12",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "F1",
+          "Q3",
+          "VACCIN HEPATITE B INJ Médicaments — Unité",
+          "Unité",
+          "8",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q12",
+          "ARTICLE DE RESERVE 12 Médicaments — Unité",
+          "Unité",
+          "22",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q11",
+          "ARTICLE DE RESERVE 11 Médicaments — Unité",
+          "Unité",
+          "21",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q10",
+          "ARTICLE DE RESERVE 10 Médicaments — Unité",
+          "Unité",
+          "20",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q9",
+          "ARTICLE DE RESERVE 9 Médicaments — Unité",
+          "Unité",
+          "19",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q8",
+          "ARTICLE DE RESERVE 8 Médicaments — Unité",
+          "Unité",
+          "18",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q7",
+          "ARTICLE DE RESERVE 7 Médicaments — Unité",
+          "Unité",
+          "17",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q6",
+          "ARTICLE DE RESERVE 6 Médicaments — Unité",
+          "Unité",
+          "16",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q4",
+          "COTON HYDROPHILE 500 G Médicaments — Unité",
+          "Unité",
+          "0",
+          "Rupture",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "—",
+          "Q5",
+          "SPARADRAP Médicaments — Unité",
+          "Unité",
+          "7",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        }
+       ]
+      }
+     ],
+     "cartes": [
+      {
+       "titre": "A1",
+       "badge": "2 articles",
+       "lignes": [
+        "GANT STERILE 3",
+        "ARTESUNATE 60 MG INJ 12"
+       ]
+      },
+      {
+       "titre": "F1",
+       "badge": "1 article",
+       "lignes": [
+        "VACCIN HEPATITE B INJ 8"
+       ]
+      },
+      {
+       "titre": "R9",
+       "badge": "8 articles",
+       "lignes": [
+        "ARTICLE DE RESERVE 12 22",
+        "ARTICLE DE RESERVE 11 21",
+        "ARTICLE DE RESERVE 10 20",
+        "ARTICLE DE RESERVE 9 19",
+        "ARTICLE DE RESERVE 8 18",
+        "ARTICLE DE RESERVE 7 17",
+        "+ 2 autre(s)"
+       ]
+      },
+      {
+       "titre": "Sans emplacement",
+       "badge": "1 article",
+       "lignes": [
+        "SPARADRAP 7"
+       ]
+      }
+     ],
+     "textes": [
+      "Lots classés FEFO",
+      "Le rangement suit le principe FEFO : à l’intérieur de chaque casier, les lots sont classés par date de péremption croissante. Les sérums sont rangés par planches avec identification du type par emplacement."
+     ]
+    }
+   }
+  },
+  "archivageSansMotif": {
+   "code": "R9",
+   "modale": "Archiver cet enregistrement ? Archivage logique (RG-14) : la donnée reste consultable et l’opération est annulable. Motif (consigné dans le journal d’audit) Annuler Archiver",
+   "toasts": [
+    [
+     "Enregistrement archivé."
+    ]
+   ],
+   "actifs": 4,
+   "fiche": {
+    "statut": "archive",
+    "code": "R9",
+    "libelle": "Réserve fond",
+    "zone": "Réserve",
+    "temperature": "Ambiante",
+    "source": "test",
+    "_archivePar": "BASSONGUI Chabi Séko",
+    "_archiveLe": "2026-10-30T17:57:15.805Z",
+    "_motifArchivage": null
+   },
+   "lu": {
+    "kpi": [
+     "4",
+     "12",
+     "1",
+     "3"
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "CASIER",
+       "INTITULÉ",
+       "ZONE",
+       "CONSERVATION",
+       "ARTICLES RANGÉS",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "A1",
+         "Rayon A — Casier 1 (réorganisé)",
+         "Rayonnage sec",
+         "Ambiante",
+         "2 / 1",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "B2",
+         "Armoire sécurisée 2",
+         "Armoire sécurisée",
+         "Sous clé, ambiante",
+         "vide",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "F1",
+         "Réfrigérateur 1",
+         "Chaîne du froid",
+         "2 à 8 °C",
+         "1 / 10",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "Z0",
+         "Sans capacité",
+         "Rayonnage sec",
+         "Ambiante",
+         "vide",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       }
+      ]
+     },
+     {
+      "entetes": [
+       "EMPLACEMENT",
+       "CODE",
+       "DÉSIGNATION",
+       "UNITÉ",
+       "STOCK",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "A1",
+         "Q2",
+         "GANT STERILE Médicaments — Unité",
+         "Unité",
+         "3",
+         "Critique",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "A1",
+         "Q1",
+         "ARTESUNATE 60 MG INJ Médicaments — Unité",
+         "Unité",
+         "12",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "F1",
+         "Q3",
+         "VACCIN HEPATITE B INJ Médicaments — Unité",
+         "Unité",
+         "8",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q12",
+         "ARTICLE DE RESERVE 12 Médicaments — Unité",
+         "Unité",
+         "22",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q11",
+         "ARTICLE DE RESERVE 11 Médicaments — Unité",
+         "Unité",
+         "21",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q10",
+         "ARTICLE DE RESERVE 10 Médicaments — Unité",
+         "Unité",
+         "20",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q9",
+         "ARTICLE DE RESERVE 9 Médicaments — Unité",
+         "Unité",
+         "19",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q8",
+         "ARTICLE DE RESERVE 8 Médicaments — Unité",
+         "Unité",
+         "18",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q7",
+         "ARTICLE DE RESERVE 7 Médicaments — Unité",
+         "Unité",
+         "17",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q6",
+         "ARTICLE DE RESERVE 6 Médicaments — Unité",
+         "Unité",
+         "16",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q4",
+         "COTON HYDROPHILE 500 G Médicaments — Unité",
+         "Unité",
+         "0",
+         "Rupture",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "—",
+         "Q5",
+         "SPARADRAP Médicaments — Unité",
+         "Unité",
+         "7",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       }
+      ]
+     }
+    ],
+    "cartes": [
+     {
+      "titre": "A1",
+      "badge": "2 articles",
+      "lignes": [
+       "GANT STERILE 3",
+       "ARTESUNATE 60 MG INJ 12"
+      ]
+     },
+     {
+      "titre": "F1",
+      "badge": "1 article",
+      "lignes": [
+       "VACCIN HEPATITE B INJ 8"
+      ]
+     },
+     {
+      "titre": "R9",
+      "badge": "8 articles",
+      "lignes": [
+       "ARTICLE DE RESERVE 12 22",
+       "ARTICLE DE RESERVE 11 21",
+       "ARTICLE DE RESERVE 10 20",
+       "ARTICLE DE RESERVE 9 19",
+       "ARTICLE DE RESERVE 8 18",
+       "ARTICLE DE RESERVE 7 17",
+       "+ 2 autre(s)"
+      ]
+     },
+     {
+      "titre": "Sans emplacement",
+      "badge": "1 article",
+      "lignes": [
+       "SPARADRAP 7"
+      ]
+     }
+    ],
+    "textes": [
+     "Lots classés FEFO",
+     "Le rangement suit le principe FEFO : à l’intérieur de chaque casier, les lots sont classés par date de péremption croissante. Les sérums sont rangés par planches avec identification du type par emplacement."
+    ]
+   }
+  },
+  "archivageAvecMotif": {
+   "code": "F1",
+   "modale": "Archiver cet enregistrement ? Archivage logique (RG-14) : la donnée reste consultable et l’opération est annulable. Motif (consigné dans le journal d’audit) Annuler Archiver",
+   "toasts": [
+    [
+     "Enregistrement archivé."
+    ]
+   ],
+   "actifs": 3,
+   "fiche": {
+    "statut": "archive",
+    "code": "F1",
+    "libelle": "Réfrigérateur 1",
+    "zone": "Chaîne du froid",
+    "temperature": "2 à 8 °C",
+    "capacite": 10,
+    "source": "test",
+    "_archivePar": "BASSONGUI Chabi Séko",
+    "_archiveLe": "2026-10-30T17:57:15.920Z",
+    "_motifArchivage": "Local désaffecté"
+   },
+   "lu": {
+    "kpi": [
+     "3",
+     "12",
+     "1",
+     "3"
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "CASIER",
+       "INTITULÉ",
+       "ZONE",
+       "CONSERVATION",
+       "ARTICLES RANGÉS",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "A1",
+         "Rayon A — Casier 1 (réorganisé)",
+         "Rayonnage sec",
+         "Ambiante",
+         "2 / 1",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "B2",
+         "Armoire sécurisée 2",
+         "Armoire sécurisée",
+         "Sous clé, ambiante",
+         "vide",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       },
+       {
+        "cellules": [
+         "Z0",
+         "Sans capacité",
+         "Rayonnage sec",
+         "Ambiante",
+         "vide",
+         ""
+        ],
+        "actions": [
+         "Modifier|",
+         "Archiver|"
+        ]
+       }
+      ]
+     },
+     {
+      "entetes": [
+       "EMPLACEMENT",
+       "CODE",
+       "DÉSIGNATION",
+       "UNITÉ",
+       "STOCK",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "A1",
+         "Q2",
+         "GANT STERILE Médicaments — Unité",
+         "Unité",
+         "3",
+         "Critique",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "A1",
+         "Q1",
+         "ARTESUNATE 60 MG INJ Médicaments — Unité",
+         "Unité",
+         "12",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "F1",
+         "Q3",
+         "VACCIN HEPATITE B INJ Médicaments — Unité",
+         "Unité",
+         "8",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q12",
+         "ARTICLE DE RESERVE 12 Médicaments — Unité",
+         "Unité",
+         "22",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q11",
+         "ARTICLE DE RESERVE 11 Médicaments — Unité",
+         "Unité",
+         "21",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q10",
+         "ARTICLE DE RESERVE 10 Médicaments — Unité",
+         "Unité",
+         "20",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q9",
+         "ARTICLE DE RESERVE 9 Médicaments — Unité",
+         "Unité",
+         "19",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q8",
+         "ARTICLE DE RESERVE 8 Médicaments — Unité",
+         "Unité",
+         "18",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q7",
+         "ARTICLE DE RESERVE 7 Médicaments — Unité",
+         "Unité",
+         "17",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q6",
+         "ARTICLE DE RESERVE 6 Médicaments — Unité",
+         "Unité",
+         "16",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "R9",
+         "Q4",
+         "COTON HYDROPHILE 500 G Médicaments — Unité",
+         "Unité",
+         "0",
+         "Rupture",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       },
+       {
+        "cellules": [
+         "—",
+         "Q5",
+         "SPARADRAP Médicaments — Unité",
+         "Unité",
+         "7",
+         "Normal",
+         ""
+        ],
+        "actions": [
+         "Modifier|"
+        ]
+       }
+      ]
+     }
+    ],
+    "cartes": [
+     {
+      "titre": "A1",
+      "badge": "2 articles",
+      "lignes": [
+       "GANT STERILE 3",
+       "ARTESUNATE 60 MG INJ 12"
+      ]
+     },
+     {
+      "titre": "F1",
+      "badge": "1 article",
+      "lignes": [
+       "VACCIN HEPATITE B INJ 8"
+      ]
+     },
+     {
+      "titre": "R9",
+      "badge": "8 articles",
+      "lignes": [
+       "ARTICLE DE RESERVE 12 22",
+       "ARTICLE DE RESERVE 11 21",
+       "ARTICLE DE RESERVE 10 20",
+       "ARTICLE DE RESERVE 9 19",
+       "ARTICLE DE RESERVE 8 18",
+       "ARTICLE DE RESERVE 7 17",
+       "+ 2 autre(s)"
+      ]
+     },
+     {
+      "titre": "Sans emplacement",
+      "badge": "1 article",
+      "lignes": [
+       "SPARADRAP 7"
+      ]
+     }
+    ],
+    "textes": [
+     "Lots classés FEFO",
+     "Le rangement suit le principe FEFO : à l’intérieur de chaque casier, les lots sont classés par date de péremption croissante. Les sérums sont rangés par planches avec identification du type par emplacement."
+    ]
+   }
+  },
+  "article": {
+   "champs": [
+    "f_designation=ARTESUNATE 60 MG INJ",
+    "f_emplacement=A1",
+    "f_unite=Unité",
+    "f_seuilAlerte=5"
+   ],
+   "boutons": [
+    [
+     "Modifier"
+    ]
+   ],
+   "apres": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "code": "Q1",
+     "designation": "ARTESUNATE 60 MG INJ",
+     "unite": "Unité",
+     "categorie": "medicament",
+     "stock": 12,
+     "stockDetail": 12,
+     "stockGros": 0,
+     "prixAchat": 100,
+     "prixVente": 150,
+     "cump": 100,
+     "seuilAlerte": 9,
+     "emplacement": "F1"
+    },
+    "lu": {
+     "kpi": [
+      "3",
+      "12",
+      "1",
+      "3"
+     ],
+     "tables": [
+      {
+       "entetes": [
+        "CASIER",
+        "INTITULÉ",
+        "ZONE",
+        "CONSERVATION",
+        "ARTICLES RANGÉS",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "A1",
+          "Rayon A — Casier 1 (réorganisé)",
+          "Rayonnage sec",
+          "Ambiante",
+          "2 / 1",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        },
+        {
+         "cellules": [
+          "B2",
+          "Armoire sécurisée 2",
+          "Armoire sécurisée",
+          "Sous clé, ambiante",
+          "vide",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        },
+        {
+         "cellules": [
+          "Z0",
+          "Sans capacité",
+          "Rayonnage sec",
+          "Ambiante",
+          "vide",
+          ""
+         ],
+         "actions": [
+          "Modifier|",
+          "Archiver|"
+         ]
+        }
+       ]
+      },
+      {
+       "entetes": [
+        "EMPLACEMENT",
+        "CODE",
+        "DÉSIGNATION",
+        "UNITÉ",
+        "STOCK",
+        "ÉTAT",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "A1",
+          "Q2",
+          "GANT STERILE Médicaments — Unité",
+          "Unité",
+          "3",
+          "Critique",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "F1",
+          "Q3",
+          "VACCIN HEPATITE B INJ Médicaments — Unité",
+          "Unité",
+          "8",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "F1",
+          "Q1",
+          "ARTESUNATE 60 MG INJ Médicaments — Unité",
+          "Unité",
+          "12",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q12",
+          "ARTICLE DE RESERVE 12 Médicaments — Unité",
+          "Unité",
+          "22",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q11",
+          "ARTICLE DE RESERVE 11 Médicaments — Unité",
+          "Unité",
+          "21",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q10",
+          "ARTICLE DE RESERVE 10 Médicaments — Unité",
+          "Unité",
+          "20",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q9",
+          "ARTICLE DE RESERVE 9 Médicaments — Unité",
+          "Unité",
+          "19",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q8",
+          "ARTICLE DE RESERVE 8 Médicaments — Unité",
+          "Unité",
+          "18",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q7",
+          "ARTICLE DE RESERVE 7 Médicaments — Unité",
+          "Unité",
+          "17",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q6",
+          "ARTICLE DE RESERVE 6 Médicaments — Unité",
+          "Unité",
+          "16",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "R9",
+          "Q4",
+          "COTON HYDROPHILE 500 G Médicaments — Unité",
+          "Unité",
+          "0",
+          "Rupture",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        },
+        {
+         "cellules": [
+          "—",
+          "Q5",
+          "SPARADRAP Médicaments — Unité",
+          "Unité",
+          "7",
+          "Normal",
+          ""
+         ],
+         "actions": [
+          "Modifier|"
+         ]
+        }
+       ]
+      }
+     ],
+     "cartes": [
+      {
+       "titre": "A1",
+       "badge": "2 articles",
+       "lignes": [
+        "GANT STERILE 3",
+        "ARTESUNATE 60 MG INJ 12"
+       ]
+      },
+      {
+       "titre": "F1",
+       "badge": "1 article",
+       "lignes": [
+        "VACCIN HEPATITE B INJ 8"
+       ]
+      },
+      {
+       "titre": "R9",
+       "badge": "8 articles",
+       "lignes": [
+        "ARTICLE DE RESERVE 12 22",
+        "ARTICLE DE RESERVE 11 21",
+        "ARTICLE DE RESERVE 10 20",
+        "ARTICLE DE RESERVE 9 19",
+        "ARTICLE DE RESERVE 8 18",
+        "ARTICLE DE RESERVE 7 17",
+        "+ 2 autre(s)"
+       ]
+      },
+      {
+       "titre": "Sans emplacement",
+       "badge": "1 article",
+       "lignes": [
+        "SPARADRAP 7"
+       ]
+      }
+     ],
+     "textes": [
+      "Lots classés FEFO",
+      "Le rangement suit le principe FEFO : à l’intérieur de chaque casier, les lots sont classés par date de péremption croissante. Les sérums sont rangés par planches avec identification du type par emplacement."
+     ]
+    }
+   }
+  }
+ },
+ "debugA1": [
+  "<button class=\"btn btn-icon btn-sm btn-ghost\" type=\"button\" title=\"Modifier\" aria-label=\"Modifier\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke",
+  "<button class=\"btn btn-icon btn-sm btn-ghost\" type=\"button\" title=\"Archiver\" aria-label=\"Archiver\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke"
+ ]
+}

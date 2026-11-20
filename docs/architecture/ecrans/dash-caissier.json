@@ -1,0 +1,73 @@
+{
+ "id": "dash-caissier",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Caisse",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Caisse",
+ "description": "Encaissements du jour, factures à régler, reliquats et répartition des modes de paiement.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Caisse"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Encaissé aujourd’hui",
+  "Factures du jour",
+  "Reliquats en cours",
+  "Factures impayées"
+ ],
+ "cartes": [
+  "Prescriptions à encaisser — 73 à traiter",
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Dernières factures",
+  "Encaissements par mode de paiement",
+  "Recettes quotidiennes du mois"
+ ],
+ "tableaux": [
+  [
+   "Origine",
+   "Patient",
+   "À faire",
+   "Montant",
+   "État",
+   "Actions"
+  ],
+  [
+   "N° facture",
+   "Patient",
+   "Type",
+   "Montant",
+   "Payé",
+   "Reste",
+   "Statut"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "Encaisser",
+  "Reprendre",
+  "Pharmacie",
+  "Arrêté du jour",
+  "Nouvelle facture",
+  "État de caisse"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

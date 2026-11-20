@@ -1,0 +1,55 @@
+{
+ "id": "imp-inventaire-comptage",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation d’un comptage d’inventaire",
+ "acces": "ouvert",
+ "titre": "Importation d’un comptage d’inventaire",
+ "description": "Un comptage physique déjà fait : une ligne par article et par magasin nommé (gros ou détail), avec la quantité comptée.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation d’un comptage d’inventaire"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "L’import crée une feuille d’inventaire « comptage importé » et NE TOUCHE À AUCUN STOCK : la régularisation reste un geste humain, au registre des inventaires (un mouvement par écart, RG-03). Les deux magasins se comptent séparément : une feuille par magasin nommé. Si le stock a bougé entre le comptage et la régularisation, celle-ci est refusée.",
+  "Jeu restreint (RG-13). Le fichier est lu et contrôlé ici, mais aucune valeur de cellule n’est recopiée dans l’historique ni dans le rapport : chaque constat porte la ligne, la colonne, le code et le geste de correction. Les lots ne sont visibles que de leur auteur et des profils qui supervisent les importations."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

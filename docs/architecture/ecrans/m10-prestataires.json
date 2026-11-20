@@ -1,0 +1,63 @@
+{
+ "id": "m10-prestataires",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Prestataires externes",
+ "acces": "ouvert",
+ "titre": "Prestataires externes",
+ "description": "Intervenants extérieurs rémunérés à l’acte : circoncision, hydrotubation, accouchement, analyses, hospitalisation.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Prestataires externes"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Un prestataire sans facture normalisée expose la clinique : la charge n’est pas déductible et la dépense reste hors du circuit MECeF. Ces lignes apparaissent en rouge au classement ci-dessus."
+ ],
+ "onglets": [
+  "Tous les prestataires",
+  "Archivés"
+ ],
+ "kpis": [
+  "Prestataires référencés",
+  "Actes du mois",
+  "Montant à régler",
+  "Sans facture normalisée"
+ ],
+ "cartes": [
+  "Montant dû par spécialité",
+  "Actes réalisés par spécialité",
+  "Facture normalisée",
+  "Les huit prestataires les plus rémunérés"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Prestataire",
+   "Spécialité / acte",
+   "Téléphone",
+   "Tarif par acte",
+   "Actes réalisés",
+   "Montant dû",
+   "IFU",
+   "Facture normalisée",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les prestataires14",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

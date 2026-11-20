@@ -1,0 +1,38 @@
+{
+ "id": "m2-echographie-galerie",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Galerie des clichés",
+ "acces": "ouvert",
+ "titre": "Galerie des clichés",
+ "description": "Les clichés d’échographie conservés au poste, rattachés au patient et au compte rendu.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Imagerie médicale",
+  "Galerie des clichés"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Clichés conservés",
+  "Patients concernés",
+  "Liés à un compte rendu",
+  "Sans compte rendu lié"
+ ],
+ "cartes": [
+  "Galerie"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Ajouter un cliché"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

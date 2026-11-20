@@ -1,0 +1,55 @@
+{
+ "id": "imp-stock-detail-initial",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation du stock détail initial",
+ "acces": "ouvert",
+ "titre": "Importation du stock détail initial",
+ "description": "Situation initiale de la pharmacie d’urgence : quantité de chaque article, avec son lot et sa péremption pour un médicament ou un réactif.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation du stock détail initial"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Un stock détail initial ne se pose qu’UNE FOIS par article, tant qu’aucun mouvement n’existe pour lui (comme le Grand Stock) : ensuite le détail naît d’un transfert du magasin central. Il est refusé si l’article porte déjà du stock détail ou si ses stocks gros et détail ne s’additionnent pas déjà au stock total.",
+  "Jeu restreint (RG-13). Le fichier est lu et contrôlé ici, mais aucune valeur de cellule n’est recopiée dans l’historique ni dans le rapport : chaque constat porte la ligne, la colonne, le code et le geste de correction. Les lots ne sont visibles que de leur auteur et des profils qui supervisent les importations."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

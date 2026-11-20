@@ -1,0 +1,54 @@
+{
+ "id": "m4-sonu",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Registre SONUB / SONUC",
+ "acces": "ouvert",
+ "titre": "Registre SONUB / SONUC",
+ "description": "Urgences obstétricales et néonatales : les 10 fonctions officielles, gestes horodatés, évolution.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Registre SONUB / SONUC"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les urgences obstétricales",
+  "Archivés"
+ ],
+ "kpis": [
+  "Urgences enregistrées",
+  "Avec fonction SONUC",
+  "Réanimations nouveau-né (f7)",
+  "Évolutions favorables"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Arrivée",
+   "Patiente",
+   "Provenance",
+   "Fonctions SONU posées",
+   "Évolution",
+   "Agent",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les urgences obstétricales10",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

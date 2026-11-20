@@ -1,0 +1,47 @@
+{
+ "id": "m10-stats-gardes",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Statistiques de garde",
+ "acces": "ouvert",
+ "titre": "Statistiques de garde",
+ "description": "Nombre de gardes effectuées par agent, par service et par type de vacation, sur la période choisie.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Statistiques de garde"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Vacations travaillées",
+  "Gardes",
+  "Agents concernés",
+  "Moyenne par agent"
+ ],
+ "cartes": [
+  "Statistiques de garde"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Appliquer",
+  "Imprimer l’état"
+ ],
+ "champs": [
+  "Périodicité",
+  "Du",
+  "Au",
+  "Agent",
+  "Service",
+  "Type de vacation",
+  "Fonction"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -24,7 +24,7 @@ const BANC = require('./_banc');
 const http = require('http');
 const puppeteer = require('puppeteer');
 const ROOT = path.resolve(__dirname, '..');
-const PORT = 8161;
+const PORT = Number(process.env.SIGH_PORT_AUDIT) || 8161;
 function findBrowser() {
   const c = [process.env.CHROME_PATH, 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
@@ -59,7 +59,9 @@ const PROFILS = [
   ['comptable', 'comptable'], ['da', 'direction'], ['dm', 'medecin'],
   ['aide_soignant', 'aide_soignant'], ['echographiste', 'medecin'],
   ['surveillant', 'infirmier'], ['assistant_comptable', 'comptable'],
-  ['biomedical', 'stock'], ['agentadmin', 'entretien'], ['ambulancier', 'chauffeur'],
+  ['agentadmin', 'entretien'], ['ambulancier', 'chauffeur'],
+  /* Ajoutés le 07/11/2026 : l'audit ne sondait que 15 des 22 rôles, et les trois créés à la phase 2 (31/08) n'avaient jamais été sondés. */
+  ['direction', 'direction'], ['chirurgien', 'medecin'], ['anesthesiste', 'medecin'], ['aide_comptable', 'comptable'],
 ];
 
 /* Ce qu'on considère comme une commande d'ÉCRITURE. */
@@ -119,7 +121,12 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
   const cachees = [];     /* droit accordé, aucune commande */
   let sondes = 0;
 
+  /* --roles=admin,da : ne sonder que ces profils (l'audit complet dépasse la demi-heure sous charge). */
+  const SEULS = ((process.argv.find((a) => a.startsWith('--roles=')) || '').slice(8)).split(',').filter(Boolean);
+  /* --pages=m2-pathologies,cfg-tarifs : ne sonder que ces écrans (lot touchant quelques écrans : l'audit complet n'a pas à être rejoué). */
+  const PAGES = ((process.argv.find((a) => a.startsWith('--pages=')) || '').slice(8)).split(',').filter(Boolean);
   for (const [role, fonction] of PROFILS) {
+    if (SEULS.length && SEULS.indexOf(role) < 0) continue;
     await page.evaluate((r, f) => localStorage.setItem('sigh-cnt:session', JSON.stringify({
       role: r, nom: 'Audit ' + r, nomComplet: 'Audit ' + r, identifiant: 'audit', fonction: f,
     })), role, fonction);
@@ -129,15 +136,29 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
        cache : sonder sans recharger mesurerait l'état d'avant. On repasse
        donc par une page neutre, qui ré-hydrate et reconstruit le cache sous
        le nouveau rôle. */
-    await page.goto('http://127.0.0.1:' + PORT + '/pages/dash-admin.php',
+    /* LA PAGE NEUTRE NE DOIT PAS REBONDIR (10/11/2026, E2336). `dash-admin` est fermée à presque tous les profils : le garde d'accès la renvoie à `error-403`
+       APRÈS un premier rendu, ce qui faisait (1) attendre 180 s, à chaque profil, un `#page-content` que cette page autonome n'a jamais, et (2) détruire le contexte
+       en plein relevé quand le rebond tombait entre deux attentes (« page instable » au profil dm sous charge). On passe directement par `error-403`, page autonome
+       qui monte sans garde, ne rebondit pas, et ré-hydrate le magasin ; l'attente est celle de l'AUTORITÉ du magasin (`faitAutorite`), pas d'un contenu. */
+    await page.goto('http://127.0.0.1:' + PORT + '/pages/error-403.php',
       { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => {
-      const c = document.getElementById('page-content');
-      return !!(window.SIGH && window.SIGH.store && c && c.children.length > 0);
-    }, { timeout: 180000 }).catch(() => null);
+    await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav && window.SIGH.store.faitAutorite()),
+      { timeout: 120000 }).catch(() => null);
 
     /* Les écrans que ce profil peut ouvrir, et ses droits sur chacun. */
-    const accessibles = await page.evaluate((r) => {
+    /* Une page que le profil n'ouvre pas rebondit (403, son propre tableau) APRÈS le
+       premier rendu : le contexte est alors détruit en plein évaluate. On
+       attend la page d'arrivée et on réessaie, au lieu de faire tomber l'audit. */
+    for (let essai = 0; essai < 5; essai++) {
+      try { await page.evaluate(() => !!window.SIGH); break; }
+      catch (e) { await new Promise((r) => setTimeout(r, 1500)); }
+    }
+    /* Le cadre peut être détaché par le rebond lui-même : l'attente lève alors de façon SYNCHRONE, que `.catch` ne rattrape pas. */
+    for (let essai = 0; essai < 5; essai++) {
+      try { await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav), { timeout: 60000 }); break; }
+      catch (e) { await new Promise((r) => setTimeout(r, 1500)); }
+    }
+    const sonderAccessibles = (r) => {
       const N = window.SIGH.nav;
       const out = [];
       (N.NAV || []).forEach((dom) => (dom.modules || []).forEach((mod) => {
@@ -159,9 +180,16 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
         });
       }));
       return out;
-    }, role);
+    };
+    let accessibles = null;
+    for (let essai = 0; essai < 6 && accessibles === null; essai++) {
+      try { accessibles = await page.evaluate(sonderAccessibles, role); }
+      catch (e) { await new Promise((r) => setTimeout(r, 2000)); try { await page.waitForFunction(() => !!(window.SIGH && window.SIGH.nav), { timeout: 60000 }); } catch (e2) { /* cadre détaché par le rebond : on réessaie au tour suivant */ } }
+    }
+    if (accessibles === null) throw new Error('profil ' + role + ' : page instable, sondage impossible');
 
     for (const e of accessibles) {
+      if (PAGES.length && PAGES.indexOf(e.id) < 0) continue;
       await page.goto('http://127.0.0.1:' + PORT + '/pages/' + e.id + '.php', { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => {
         const c = document.getElementById('page-content');
@@ -188,7 +216,13 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
             inerte: b.getAttribute('aria-disabled') === 'true' || b.disabled
               || /opacity-50/.test(b.className || ''),
           }))
-          .filter((b) => b.texte || b.titre);
+          .filter((b) => b.texte || b.titre)
+          /* Le bouton de VALIDATION d'un référentiel (K.boutonValider, titre « Valider « … »») n'est pas une écriture de la fiche : il se garde
+             par le rôle de la famille et l'ouverture de l'écran (« signer n'est pas saisir »). La Vague 92 le sonde à part. */
+          .filter((b) => !/^Valider «/.test(b.titre))
+          /* La VALIDATION du circuit RH (lot L5 : pointage, congé, ordre de mission ; lot L6 : proposition de planning) est un droit PROPRE, tenu au moteur (VALIDATION_RESERVEE) :
+             le surveillant OUVRE ces registres pour trancher sans les saisir (editer: false). La Vague 107 et la Vague 108 la sondent à part, rôle par rôle. */
+          .filter((b) => !/^Valider (ce pointage|cette demande de congé|cet ordre de mission|cette proposition)/.test(b.titre));
         const nom = (b) => (b.texte || b.titre).trim();
         return {
           ecriture: cmd.filter((b) => re.test(nom(b)) && !b.inerte).map(nom),
@@ -226,6 +260,49 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
     process.stdout.write('  ' + role + ' : ' + accessibles.length + ' écran(s)\n');
   }
 
+  /* ==========================================================================
+   * SONDE DU DROIT D'IMPORT (PRD-IMP 7.6, lot IMP-A) : « Importer les données » est présent SI ET SEULEMENT SI le profil détient `droitImport(jeu).importer`.
+   * Les deux fautes, comme pour les écritures : PROMETTRE un bouton sans le droit (il mène à un refus du moteur), CACHER un bouton accordé (l'agent ressaisit
+   * ailleurs). Elle ouvre chaque écran hôte du bouton (`[data-importer]`) et chaque page de jeu (`input[data-import-fichier]`, qui n'existe que pour qui importe),
+   * sous chaque profil qui peut ouvrir l'écran, y compris l'administrateur système (que la liste des profils de l'audit ne contient pas).
+   * ======================================================================== */
+  const promessesImport = [], cacheesImport = [];
+  let sondesImport = 0;
+  const jeuxImport = await page.evaluate(() => window.SIGH.nav.IMPORTS.map((j) => ({ jeu: j.id, hotes: j.hotes, ecran: j.ecran })));
+  for (const [role, fonction] of PROFILS.concat([['admin', 'direction']])) {
+    if (SEULS.length && SEULS.indexOf(role) < 0) continue;
+    await page.evaluate((r, f) => localStorage.setItem('sigh-cnt:session', JSON.stringify({
+      role: r, nom: 'Audit ' + r, nomComplet: 'Audit ' + r, identifiant: 'audit', fonction: f,
+    })), role, fonction);
+    await page.goto('http://127.0.0.1:' + PORT + '/pages/error-403.php', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav && window.SIGH.store.faitAutorite()), { timeout: 120000 }).catch(() => null);
+    for (const j of jeuxImport) {
+      const cibles = j.hotes.map((h) => ({ id: h, genre: 'hote' })).concat([{ id: j.ecran, genre: 'page' }]);
+      for (const c of cibles) {
+        if (PAGES.length && PAGES.indexOf(c.id) < 0) continue;
+        const ouvre = await page.evaluate((r, id) => { const N = window.SIGH.nav, e = N.get(id); return !!e && N.can(r, { id: id, roles: e.roles, module: e.module }); }, role, c.id).catch(() => false);
+        if (!ouvre) continue;
+        await page.goto('http://127.0.0.1:' + PORT + '/pages/' + c.id + '.php', { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => {
+          const x = document.getElementById('page-content');
+          return !!(window.SIGH && window.SIGH.store && window.SIGH.store.faitAutorite && window.SIGH.store.faitAutorite() && x && x.children.length > 0);
+        }, { timeout: 180000 }).catch(() => null);
+        await new Promise((r) => setTimeout(r, 150));
+        sondesImport++;
+        const v = await page.evaluate((jeu, genre, r) => {
+          const droit = window.SIGH.nav.droitImport(r, jeu).importer;
+          const present = genre === 'hote'
+            ? [...document.querySelectorAll('[data-importer]')].filter((x) => x.offsetParent !== null).some((x) => x.getAttribute('data-importer').split(',').indexOf(jeu) >= 0)
+            : !!document.querySelector('input[data-import-fichier="' + jeu + '"]');
+          return { droit: droit, present: present };
+        }, j.jeu, c.genre, role);
+        if (v.present && !v.droit) promessesImport.push({ role, ecran: c.id, jeu: j.jeu });
+        if (!v.present && v.droit) cacheesImport.push({ role, ecran: c.id, jeu: j.jeu });
+      }
+    }
+    process.stdout.write('  import ' + role + ' : sondé\n');
+  }
+
   console.log('\n' + '─'.repeat(72));
   console.log('AUDIT DES ACTIONS PAR PROFIL');
   console.log('─'.repeat(72));
@@ -245,6 +322,11 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
   Object.keys(parEcran).sort((a, b) => parEcran[b].length - parEcran[a].length).slice(0, 25)
     .forEach((k) => console.log('  · ' + k.padEnd(30) + parEcran[k].join(', ')));
 
+  console.log('\nSONDE DU DROIT D\'IMPORT (7.6) : ' + sondesImport + ' sondage(s) (écran hôte ou page de jeu × profil)');
+  console.log('  PROMETTRE : « Importer les données » présent sans le droit d\'importer : ' + promessesImport.length);
+  promessesImport.slice(0, 20).forEach((p) => console.log('    ✗ ' + p.role.padEnd(20) + p.ecran.padEnd(26) + p.jeu));
+  console.log('  CACHER : droit d\'importer accordé, aucun bouton : ' + cacheesImport.length);
+  cacheesImport.slice(0, 20).forEach((p) => console.log('    ✗ ' + p.role.padEnd(20) + p.ecran.padEnd(26) + p.jeu));
   console.log('\nErreurs JS : ' + erreurs.length);
   erreurs.slice(0, 5).forEach((e) => console.log('   ' + e));
   console.log('─'.repeat(72));

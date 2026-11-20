@@ -1,0 +1,37 @@
+{
+ "id": "auth-lock",
+ "module": "AUTH",
+ "domaine": "Système",
+ "libelleManifeste": "Écran verrouillé",
+ "acces": "ouvert",
+ "autonome": true,
+ "titre": "Système Intégré de Gestion Hospitalière",
+ "titreOnglet": "Écran verrouillé — SIGH Clinique NASSIERA TOO",
+ "description": [
+  "CLINIQUE NASSIERA TOO",
+  "Natitingou — République du Bénin",
+  "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+  "Traçabilité intégrale des actions (journal d’audit)",
+  "Alertes de rupture et de péremption automatiques (FEFO)",
+  "Facture normalisée conforme au dispositif MECeF",
+  "Comptabilité SYSCOHADA alimentée automatiquement",
+  "« Votre santé, notre raison de vivre »",
+  "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+  "Verrouillage automatique après 15 minutes d’inactivité, sur les postes partagés — accueil et caisse (CDCT §12.2).",
+  "BC",
+  "BASSONGUI Chabi Séko",
+  "Administrateur système",
+  "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268."
+ ],
+ "cartes": [
+  "Session verrouillée"
+ ],
+ "champs": [
+  "Mot de passe",
+  "••••••••"
+ ],
+ "commandes": [
+  "Déverrouiller",
+  "Se connecter avec un autre compte"
+ ]
+}

@@ -1,0 +1,5286 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-bloc.js — ne pas éditer. Horloge : 16/08/2026 10 h.",
+ "referentiels": {
+  "cpaChamps": [
+   "Patient *",
+   "Date de la consultation *",
+   "Classe ASA *",
+   "Score de Mallampati *",
+   "Technique d’anesthésie proposée *",
+   "Antécédents anesthésiques *",
+   "Allergies *",
+   "Consigne de jeûne pré-opératoire donnée",
+   "Conclusion *",
+   "Observations et réserves",
+   "Anesthésiste *"
+  ],
+  "asa": [
+   [
+    "I",
+    "ASA I — patient sain"
+   ],
+   [
+    "II",
+    "ASA II — maladie systémique légère"
+   ],
+   [
+    "III",
+    "ASA III — maladie systémique sévère"
+   ],
+   [
+    "IV",
+    "ASA IV — menace vitale constante"
+   ],
+   [
+    "V",
+    "ASA V — moribond, survie improbable sans intervention"
+   ]
+  ],
+  "mallampati": [
+   [
+    "I",
+    "Mallampati I — piliers, voile et luette visibles"
+   ],
+   [
+    "II",
+    "Mallampati II — luette partiellement masquée"
+   ],
+   [
+    "III",
+    "Mallampati III — seul le voile est visible"
+   ],
+   [
+    "IV",
+    "Mallampati IV — voile non visible"
+   ]
+  ],
+  "techniques": [
+   [
+    "Anesthésie générale",
+    "Anesthésie générale"
+   ],
+   [
+    "Rachianesthésie",
+    "Rachianesthésie"
+   ],
+   [
+    "Péridurale",
+    "Péridurale"
+   ],
+   [
+    "Anesthésie locale",
+    "Anesthésie locale"
+   ],
+   [
+    "Sédation",
+    "Sédation"
+   ]
+  ],
+  "conclusions": [
+   [
+    "Apte à l’anesthésie",
+    "Apte à l’anesthésie"
+   ],
+   [
+    "Apte avec réserves",
+    "Apte avec réserves"
+   ],
+   [
+    "Intervention à reporter",
+    "Intervention à reporter"
+   ]
+  ],
+  "cpaDefauts": {
+   "patientCode": "CNT/1/25",
+   "date": "",
+   "asa": "I",
+   "mallampati": "I",
+   "technique": "Anesthésie générale",
+   "antecedentsAnesthesiques": "",
+   "allergies": "",
+   "jeuneConsigne": false,
+   "conclusion": "Apte à l’anesthésie",
+   "observations": "",
+   "anesthesiste": ""
+  },
+  "craChamps": [
+   "Patient *",
+   "Date de l’intervention *",
+   "Compte rendu opératoire lié",
+   "Technique employée *",
+   "Agents et produits employés *",
+   "Heure d’induction *",
+   "Heure de fin d’anesthésie *",
+   "Incidents per-opératoires *",
+   "Surveillance per-opératoire (constantes, remplissage)",
+   "Arrivée en salle de réveil *",
+   "État au réveil *",
+   "Décision de sortie de salle de réveil *",
+   "Anesthésiste *"
+  ],
+  "decisions": [
+   [
+    "Retour dans le service",
+    "Retour dans le service"
+   ],
+   [
+    "Surveillance prolongée en salle de réveil",
+    "Surveillance prolongée en salle de réveil"
+   ],
+   [
+    "Transfert / évacuation",
+    "Transfert / évacuation"
+   ]
+  ],
+  "craTechniques": [
+   [
+    "Anesthésie générale",
+    "Anesthésie générale"
+   ],
+   [
+    "Rachianesthésie",
+    "Rachianesthésie"
+   ],
+   [
+    "Péridurale",
+    "Péridurale"
+   ],
+   [
+    "Anesthésie locale",
+    "Anesthésie locale"
+   ],
+   [
+    "Sédation",
+    "Sédation"
+   ]
+  ],
+  "craDefauts": {
+   "patientCode": "CNT/1/25",
+   "dateOperation": "",
+   "croReference": "",
+   "technique": "Anesthésie générale",
+   "decisionSortie": "Retour dans le service"
+  },
+  "checklist": {
+   "entree": [
+    "Identité du patient confirmée par le patient lui-même",
+    "Intervention et site opératoire confirmés",
+    "Consentement opératoire signé et présent au dossier",
+    "Site opératoire marqué",
+    "Jeûne préopératoire respecté",
+    "Allergies connues vérifiées et signalées à l’équipe",
+    "Voie veineuse posée et perméable",
+    "Groupe sanguin et rhésus disponibles au dossier",
+    "Matériel d’anesthésie vérifié et fonctionnel",
+    "Risque hémorragique évalué",
+    "Antibioprophylaxie administrée si indiquée",
+    "Équipe au complet, chacun s’étant présenté par son nom et sa fonction"
+   ],
+   "sortie": [
+    "Nature de l’intervention réellement pratiquée énoncée à voix haute",
+    "Comptage des compresses, aiguilles et instruments exact",
+    "Étiquetage des prélèvements vérifié (nom du patient, nature)",
+    "Incidents ou difficultés per-opératoires signalés et consignés",
+    "Drains et sondes en place recensés",
+    "Prescriptions post-opératoires rédigées",
+    "Surveillance post-opératoire prescrite et transmise au service",
+    "Compte rendu opératoire rédigé et signé",
+    "Dysfonctionnement matériel éventuel signalé"
+   ],
+   "aValider": false,
+   "arreteLe": "2026-09-01",
+   "arretePar": "Praticiens du bloc"
+  },
+  "servicesDemandeurs": [
+   {
+    "id": "maternite",
+    "label": "Maternité",
+    "ordre": 1
+   },
+   {
+    "id": "medecine",
+    "label": "Médecine",
+    "ordre": 2
+   },
+   {
+    "id": "specialite",
+    "label": "Médecine et spécialité",
+    "ordre": 3
+   }
+  ],
+  "niveauxUrgence": [
+   {
+    "id": "aucune",
+    "label": "Examen courant",
+    "tone": "neutral",
+    "delaiHeures": null
+   },
+   {
+    "id": "examen",
+    "label": "Un examen urgent",
+    "tone": "warning",
+    "delaiHeures": 2,
+    "aide": "Seul l’examen coché est traité en urgence ; le reste du bilan suit le circuit courant."
+   },
+   {
+    "id": "bilan",
+    "label": "Bilan entier en urgence",
+    "tone": "danger",
+    "delaiHeures": 1,
+    "aide": "Tout le bilan est traité en urgence — à réserver aux situations qui l’exigent."
+   }
+  ],
+  "actesGyneco": 31
+ },
+ "amorcageCpa": {
+  "admissions": [
+   {
+    "id": "ADM1",
+    "statut": "en_cours",
+    "reference": "H00001",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-15",
+    "dateSortie": null,
+    "diagnosticEntree": "D0",
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM2",
+    "statut": "en_cours",
+    "reference": "H00002",
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-14",
+    "dateSortie": null,
+    "diagnosticEntree": "D1",
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM3",
+    "statut": "en_cours",
+    "reference": "H00003",
+    "patientId": "PAT0003",
+    "patient": "N’TCHA Yacoubou",
+    "patientCode": "CNT/3/26",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-13",
+    "dateSortie": null,
+    "diagnosticEntree": "D2",
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM4",
+    "statut": "en_cours",
+    "reference": "H00004",
+    "patientId": "PAT0004",
+    "patient": "PARAISO Sabi",
+    "patientCode": "CNT/4/26",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-12",
+    "dateSortie": null,
+    "diagnosticEntree": "D3",
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM5",
+    "statut": "en_cours",
+    "reference": "H00005",
+    "patientId": "PAT0005",
+    "patient": "TAKI Ganiou",
+    "patientCode": "CNT/5/26",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-11",
+    "dateSortie": null,
+    "diagnosticEntree": "D4",
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM6",
+    "statut": "en_cours",
+    "reference": "H00006",
+    "patientId": "PAT0006",
+    "patient": "DIEYABIDI Bibata",
+    "patientCode": "CNT/6/25",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-10",
+    "dateSortie": null,
+    "diagnosticEntree": "D5",
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM7",
+    "statut": "en_cours",
+    "reference": "H00007",
+    "patientId": "PAT0007",
+    "patient": "OROU YO Adissa",
+    "patientCode": "CNT/7/25",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-09",
+    "dateSortie": null,
+    "diagnosticEntree": "D6",
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM8",
+    "statut": "sortie",
+    "reference": "H00008",
+    "patientId": "PAT0008",
+    "patient": "DOSSOU Salifou",
+    "patientCode": "CNT/8/25",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-08",
+    "dateSortie": null,
+    "diagnosticEntree": "D7",
+    "infirmier": "GARBA Yahouza"
+   }
+  ],
+  "cpa": [
+   {
+    "id": "CPA0001",
+    "statut": "actif",
+    "reference": "CPA-2026-0001",
+    "date": "2026-08-15",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "asa": "I",
+    "mallampati": "II",
+    "technique": "Rachianesthésie",
+    "antecedentsAnesthesiques": "Aucun",
+    "allergies": "Aucune connue",
+    "jeuneConsigne": true,
+    "conclusion": "Apte à l’anesthésie",
+    "observations": "",
+    "anesthesiste": "Anesthésiste de la clinique"
+   },
+   {
+    "id": "CPA0002",
+    "statut": "actif",
+    "reference": "CPA-2026-0002",
+    "date": "2026-08-14",
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26",
+    "asa": "II",
+    "mallampati": "I",
+    "technique": "Rachianesthésie",
+    "antecedentsAnesthesiques": "Aucun",
+    "allergies": "Pénicilline",
+    "jeuneConsigne": true,
+    "conclusion": "Apte à l’anesthésie",
+    "observations": "",
+    "anesthesiste": "Anesthésiste de la clinique"
+   },
+   {
+    "id": "CPA0003",
+    "statut": "actif",
+    "reference": "CPA-2026-0003",
+    "date": "2026-08-13",
+    "patientId": "PAT0003",
+    "patient": "N’TCHA Yacoubou",
+    "patientCode": "CNT/3/26",
+    "asa": "I",
+    "mallampati": "I",
+    "technique": "Sédation",
+    "antecedentsAnesthesiques": "Rachianesthésie en 2024, sans incident",
+    "allergies": "Aucune connue",
+    "jeuneConsigne": true,
+    "conclusion": "Apte à l’anesthésie",
+    "observations": "",
+    "anesthesiste": "Anesthésiste de la clinique"
+   },
+   {
+    "id": "CPA0004",
+    "statut": "actif",
+    "reference": "CPA-2026-0004",
+    "date": "2026-08-12",
+    "patientId": "PAT0004",
+    "patient": "PARAISO Sabi",
+    "patientCode": "CNT/4/26",
+    "asa": "II",
+    "mallampati": "I",
+    "technique": "Péridurale",
+    "antecedentsAnesthesiques": "Aucun",
+    "allergies": "Pénicilline",
+    "jeuneConsigne": true,
+    "conclusion": "Apte à l’anesthésie",
+    "observations": "",
+    "anesthesiste": "Anesthésiste de la clinique"
+   },
+   {
+    "id": "CPA0005",
+    "statut": "actif",
+    "reference": "CPA-2026-0005",
+    "date": "2026-08-11",
+    "patientId": "PAT0005",
+    "patient": "TAKI Ganiou",
+    "patientCode": "CNT/5/26",
+    "asa": "I",
+    "mallampati": "III",
+    "technique": "Rachianesthésie",
+    "antecedentsAnesthesiques": "Rachianesthésie en 2024, sans incident",
+    "allergies": "Aucune connue",
+    "jeuneConsigne": true,
+    "conclusion": "Apte avec réserves",
+    "observations": "HTA à équilibrer avant l’intervention.",
+    "anesthesiste": "Anesthésiste de la clinique"
+   },
+   {
+    "id": "CPA0006",
+    "statut": "actif",
+    "reference": "CPA-2026-0006",
+    "date": "2026-08-10",
+    "patientId": "PAT0006",
+    "patient": "DIEYABIDI Bibata",
+    "patientCode": "CNT/6/25",
+    "asa": "II",
+    "mallampati": "III",
+    "technique": "Sédation",
+    "antecedentsAnesthesiques": "Rachianesthésie en 2024, sans incident",
+    "allergies": "Pénicilline",
+    "jeuneConsigne": true,
+    "conclusion": "Apte à l’anesthésie",
+    "observations": "",
+    "anesthesiste": "Anesthésiste de la clinique"
+   }
+  ],
+  "kpis": [
+   {
+    "libelle": "CPA enregistrées",
+    "valeur": "6",
+    "indice": null
+   },
+   {
+    "libelle": "Aptes sans réserve",
+    "valeur": "5",
+    "indice": null
+   },
+   {
+    "libelle": "Avec réserves ou report",
+    "valeur": "1",
+    "indice": null
+   },
+   {
+    "libelle": "Interventions sans CPA",
+    "valeur": "0",
+    "indice": "Signalées, jamais bloquées — l’urgence n’attend pas"
+   }
+  ],
+  "tableaux": [
+   {
+    "entetes": [
+     "RÉFÉRENCE",
+     "DATE",
+     "PATIENT",
+     "ASA",
+     "MALLAMPATI",
+     "TECHNIQUE PROPOSÉE",
+     "CONCLUSION",
+     "ACTIONS"
+    ],
+    "lignes": [
+     [
+      "CPA-2026-0001",
+      "15/08/2026",
+      "TCHANE Bertine — CNT/1/25",
+      "ASA I",
+      "II",
+      "Rachianesthésie",
+      "Apte à l’anesthésie",
+      ""
+     ],
+     [
+      "CPA-2026-0002",
+      "14/08/2026",
+      "BAKO Boukari — CNT/2/26",
+      "ASA II",
+      "I",
+      "Rachianesthésie",
+      "Apte à l’anesthésie",
+      ""
+     ],
+     [
+      "CPA-2026-0003",
+      "13/08/2026",
+      "N’TCHA Yacoubou — CNT/3/26",
+      "ASA I",
+      "I",
+      "Sédation",
+      "Apte à l’anesthésie",
+      ""
+     ],
+     [
+      "CPA-2026-0004",
+      "12/08/2026",
+      "PARAISO Sabi — CNT/4/26",
+      "ASA II",
+      "I",
+      "Péridurale",
+      "Apte à l’anesthésie",
+      ""
+     ],
+     [
+      "CPA-2026-0005",
+      "11/08/2026",
+      "TAKI Ganiou — CNT/5/26",
+      "ASA I",
+      "III",
+      "Rachianesthésie",
+      "Apte avec réserves",
+      ""
+     ],
+     [
+      "CPA-2026-0006",
+      "10/08/2026",
+      "DIEYABIDI Bibata — CNT/6/25",
+      "ASA II",
+      "III",
+      "Sédation",
+      "Apte à l’anesthésie",
+      ""
+     ]
+    ]
+   }
+  ]
+ },
+ "cpa": {
+  "jeu": {
+   "cpa": [
+    {
+     "id": "CPA1",
+     "statut": "actif",
+     "reference": "CPA-2026-0001",
+     "date": "2026-08-15",
+     "asa": "I",
+     "mallampati": "II",
+     "technique": "Rachianesthésie",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Aucune connue",
+     "jeuneConsigne": true,
+     "conclusion": "Apte à l’anesthésie",
+     "observations": "",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    {
+     "id": "CPA2",
+     "statut": "actif",
+     "reference": "CPA-2026-0002",
+     "date": "2026-08-14",
+     "asa": "III",
+     "mallampati": "II",
+     "technique": "Rachianesthésie",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Aucune connue",
+     "jeuneConsigne": true,
+     "conclusion": "Apte avec réserves",
+     "observations": "HTA à équilibrer",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    },
+    {
+     "id": "CPA3",
+     "statut": "actif",
+     "reference": "CPA-2026-0003",
+     "date": "2026-08-13",
+     "asa": "II",
+     "mallampati": "II",
+     "technique": "Rachianesthésie",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Aucune connue",
+     "jeuneConsigne": true,
+     "conclusion": "Intervention à reporter",
+     "observations": "Fièvre",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    }
+   ],
+   "cro": [
+    {
+     "id": "CRO1",
+     "statut": "actif",
+     "reference": "CRO-0001",
+     "dateOperation": "2026-08-13",
+     "nip": "N1",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I1",
+     "anesthesie": "A",
+     "cro": "Récit 1",
+     "operateurId": "SOI03",
+     "operateur": "TAKI Orou",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    {
+     "id": "CRO2",
+     "statut": "actif",
+     "reference": "CRO-0002",
+     "dateOperation": "2026-08-14",
+     "nip": "N2",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I2",
+     "anesthesie": "A",
+     "cro": "Récit 2",
+     "operateurId": "SOI03",
+     "operateur": "TAKI Orou",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "patientCode": "CNT/4/26"
+    },
+    {
+     "id": "CRO3",
+     "statut": "actif",
+     "reference": "CRO-0003",
+     "dateOperation": "2026-08-15",
+     "nip": "N3",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I3",
+     "anesthesie": "A",
+     "cro": "Récit 3",
+     "operateurId": "SOI03",
+     "operateur": "TAKI Orou",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "patientCode": "CNT/4/26"
+    },
+    {
+     "id": "CRO4",
+     "statut": "actif",
+     "reference": "CRO-0004",
+     "dateOperation": "2026-08-15",
+     "nip": "N4",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I4",
+     "anesthesie": "A",
+     "cro": "Récit 4",
+     "operateurId": "SOI03",
+     "operateur": "TAKI Orou",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0005",
+     "patient": "TAKI Ganiou",
+     "patientCode": "CNT/5/26"
+    },
+    {
+     "id": "CRO5",
+     "statut": "actif",
+     "reference": "CRO-0005",
+     "dateOperation": "2026-08-16",
+     "nip": "N5",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I5",
+     "anesthesie": "A",
+     "cro": "Récit 5",
+     "operateurId": "SOI03",
+     "operateur": "TAKI Orou",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": null,
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    }
+   ]
+  },
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "CPA enregistrées",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Aptes sans réserve",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Avec réserves ou report",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Interventions sans CPA",
+     "valeur": "3",
+     "indice": "Signalées, jamais bloquées — l’urgence n’attend pas"
+    }
+   ],
+   "notes": [
+    "Les échelles ASA et Mallampati et la liste des techniques sont des arrêtées par les praticiens du bloc le 01/09/2026 — proposées à l’origine, aucun document de la clinique ne les fixait ; la provenance reste dite. Les fiches déjà saisies conservent leurs valeurs telles quelles."
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "DATE",
+      "PATIENT",
+      "ASA",
+      "MALLAMPATI",
+      "TECHNIQUE PROPOSÉE",
+      "CONCLUSION",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "CPA-2026-0001",
+       "15/08/2026",
+       "TCHANE Bertine — CNT/1/25",
+       "ASA I",
+       "II",
+       "Rachianesthésie",
+       "Apte à l’anesthésie",
+       ""
+      ],
+      [
+       "CPA-2026-0002",
+       "14/08/2026",
+       "BAKO Boukari — CNT/2/26",
+       "ASA III",
+       "II",
+       "Rachianesthésie",
+       "Apte avec réserves",
+       ""
+      ],
+      [
+       "CPA-2026-0003",
+       "13/08/2026",
+       "N’TCHA Yacoubou — CNT/3/26",
+       "ASA II",
+       "II",
+       "Rachianesthésie",
+       "Intervention à reporter",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Nouvelle CPA",
+    "Tout désélectionner",
+    "Imprimer la fiche",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Imprimer la fiche",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ],
+   "boutonsLigne": [
+    "Imprimer la fiche",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "detail": {
+   "texte": "CPA-2026-0002 RÉFÉRENCE CPA-2026-0002 DATE 14/08/2026 PATIENT BAKO Boukari DOSSIER CNT/2/26 CLASSE ASA ASA III MALLAMPATI II TECHNIQUE PROPOSÉE Rachianesthésie JEÛNE CONSIGNÉ Oui ANESTHÉSISTE ADAM Colette Antécédents anesthésiques Aucun Allergies Aucune connue Conclusion Apte avec réserves HTA à équilibrer",
+   "boutons": [
+    "Fermer"
+   ]
+  },
+  "impression": {
+   "titre": "CONSULTATION PRÉ-ANESTHÉSIQUE",
+   "sousTitre": "CPA-2026-0002 — BAKO Boukari",
+   "cartouche": [
+    [
+     "Patient",
+     "BAKO Boukari"
+    ],
+    [
+     "Dossier",
+     "CNT/2/26"
+    ],
+    [
+     "Date",
+     "14/08/2026"
+    ],
+    [
+     "Classe ASA",
+     "ASA III"
+    ],
+    [
+     "Mallampati",
+     "II"
+    ],
+    [
+     "Technique proposée",
+     "Rachianesthésie"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’anesthésiste",
+     "nom": "ADAM Colette"
+    }
+   ],
+   "texte": "Antécédents anesthésiques : AucunAllergies : Aucune connueConsigne de jeûne pré-opératoire : donnéeConclusion : Apte avec réservesRéserves : HTA à équilibrer",
+   "tableaux": []
+  },
+  "creation": {
+   "modale": "Consultation pré-anesthésique Les champs marqués d’un astérisque sont obligatoires. Patient * CNT/1/25 — TCHANE Bertine Date de la consultation * Classe ASA * ASA I — patient sain ASA II — maladie sys",
+   "refusReserves": {
+    "toasts": [
+     [
+      "Conclusion avec réserves : les nommer.",
+      "Une CPA « Apte avec réserves » doit dire quelles réserves — c’est elles que le bloc doit lire."
+     ]
+    ],
+    "total": 3
+   },
+   "creeAvecReserves": {
+    "toasts": [
+     [
+      "CPA créé."
+     ]
+    ],
+    "fiche": {
+     "id": "CPAxmsvmvr40l32ai",
+     "statut": "actif",
+     "patientCode": "CNT/2/26",
+     "date": "2026-08-16",
+     "asa": "I",
+     "mallampati": "I",
+     "technique": "Anesthésie générale",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Aucune connue",
+     "jeuneConsigne": false,
+     "conclusion": "Apte avec réserves",
+     "observations": "Hypertendue : équilibrer la tension",
+     "anesthesiste": "ADAM Colette",
+     "reference": "CPA-2026-0004",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari"
+    },
+    "total": 4
+   },
+   "apres": {
+    "kpis": [
+     {
+      "libelle": "CPA enregistrées",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Aptes sans réserve",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Avec réserves ou report",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Interventions sans CPA",
+      "valeur": "3",
+      "indice": "Signalées, jamais bloquées — l’urgence n’attend pas"
+     }
+    ]
+   },
+   "creeApte": {
+    "toasts": [
+     [
+      "CPA créé."
+     ]
+    ],
+    "fiche": {
+     "id": "CPAxmsvmvr40are5p",
+     "statut": "actif",
+     "patientCode": "CNT/4/26",
+     "date": "2026-08-16",
+     "asa": "I",
+     "mallampati": "I",
+     "technique": "Anesthésie générale",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Pénicilline",
+     "jeuneConsigne": true,
+     "conclusion": "Apte à l’anesthésie",
+     "observations": "",
+     "anesthesiste": "ADAM Colette",
+     "reference": "CPA-2026-0005",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi"
+    },
+    "kpis": [
+     {
+      "libelle": "CPA enregistrées",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Aptes sans réserve",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Avec réserves ou report",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Interventions sans CPA",
+      "valeur": "1",
+      "indice": "Signalées, jamais bloquées — l’urgence n’attend pas"
+     }
+    ]
+   }
+  },
+  "modification": {
+   "titre": "Modifier l’enregistrement CPA-2026-0002 Patient * CNT/2/26 — BAKO Boukari Date de la consultation * Classe ASA * ASA I —",
+   "valeurs": {
+    "patientCode": "CNT/2/26",
+    "date": "2026-08-14",
+    "asa": "III",
+    "mallampati": "II",
+    "technique": "Rachianesthésie",
+    "conclusion": "Apte avec réserves",
+    "observations": "HTA à équilibrer",
+    "jeuneConsigne": true
+   },
+   "refus": {
+    "toasts": [
+     [
+      "Conclusion avec réserves : les nommer.",
+      "Une CPA « Apte avec réserves » doit dire quelles réserves — c’est elles que le bloc doit lire."
+     ]
+    ],
+    "fiche": {
+     "id": "CPA2",
+     "statut": "actif",
+     "reference": "CPA-2026-0002",
+     "date": "2026-08-14",
+     "asa": "III",
+     "mallampati": "II",
+     "technique": "Rachianesthésie",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Aucune connue",
+     "jeuneConsigne": true,
+     "conclusion": "Apte avec réserves",
+     "observations": "HTA à équilibrer",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    }
+   },
+   "enregistre": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "id": "CPA2",
+     "statut": "actif",
+     "reference": "CPA-2026-0002",
+     "date": "2026-08-14",
+     "asa": "IV",
+     "mallampati": "II",
+     "technique": "Rachianesthésie",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Aucune connue",
+     "jeuneConsigne": true,
+     "conclusion": "Apte avec réserves",
+     "observations": "HTA équilibrée",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    }
+   },
+   "autrePatient": {
+    "fiche": {
+     "id": "CPA1",
+     "statut": "actif",
+     "reference": "CPA-2026-0001",
+     "date": "2026-08-15",
+     "asa": "I",
+     "mallampati": "II",
+     "technique": "Rachianesthésie",
+     "antecedentsAnesthesiques": "Aucun",
+     "allergies": "Aucune connue",
+     "jeuneConsigne": true,
+     "conclusion": "Apte à l’anesthésie",
+     "observations": "",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0006",
+     "patient": "DIEYABIDI Bibata",
+     "patientCode": "CNT/6/25"
+    }
+   }
+  },
+  "archivage": {
+   "toasts": [
+    [
+     "Enregistrement archivé."
+    ],
+    [
+     "Modifications enregistrées."
+    ]
+   ],
+   "fiche": {
+    "id": "CPA3",
+    "statut": "archive",
+    "reference": "CPA-2026-0003",
+    "date": "2026-08-13",
+    "asa": "II",
+    "mallampati": "II",
+    "technique": "Rachianesthésie",
+    "antecedentsAnesthesiques": "Aucun",
+    "allergies": "Aucune connue",
+    "jeuneConsigne": true,
+    "conclusion": "Intervention à reporter",
+    "observations": "Fièvre",
+    "anesthesiste": "ADAM Colette",
+    "patientId": "PAT0003",
+    "patient": "N’TCHA Yacoubou",
+    "patientCode": "CNT/3/26",
+    "_motifArchivage": "Doublon"
+   },
+   "kpis": [
+    {
+     "libelle": "CPA enregistrées",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Aptes sans réserve",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Avec réserves ou report",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Interventions sans CPA",
+     "valeur": "2",
+     "indice": "Signalées, jamais bloquées — l’urgence n’attend pas"
+    }
+   ]
+  },
+  "cro": {
+   "ecran": {
+    "kpis": [
+     {
+      "libelle": "Comptes rendus",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Ce mois-ci",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Sans aide-opérateur",
+      "valeur": "5",
+      "indice": "l’aide-opérateur n’est pas obligatoire"
+     },
+     {
+      "libelle": "Interventions au catalogue",
+      "valeur": "31",
+      "indice": "actes gynéco-obstétricaux"
+     }
+    ],
+    "tableaux": [
+     {
+      "entetes": [
+       "RÉFÉRENCE",
+       "DATE",
+       "PATIENT",
+       "INTERVENTION",
+       "OPÉRATEUR",
+       "ANESTHÉSISTE",
+       "ACTIONS"
+      ],
+      "lignes": [
+       [
+        "CRO-0005",
+        "16/08/2026",
+        "TCHANE Bertine — NIP N5",
+        "I5",
+        "TAKI Orou",
+        "ADAM Colette",
+        ""
+       ],
+       [
+        "CRO-0004",
+        "15/08/2026",
+        "TAKI Ganiou — NIP N4",
+        "I4",
+        "TAKI Orou",
+        "ADAM Colette",
+        ""
+       ],
+       [
+        "CRO-0003",
+        "15/08/2026",
+        "PARAISO Sabi — NIP N3",
+        "I3",
+        "TAKI Orou",
+        "ADAM Colette",
+        ""
+       ],
+       [
+        "CRO-0002",
+        "14/08/2026",
+        "PARAISO Sabi — NIP N2",
+        "I2",
+        "TAKI Orou",
+        "ADAM Colette",
+        ""
+       ],
+       [
+        "CRO-0001",
+        "13/08/2026",
+        "TCHANE Bertine — NIP N1",
+        "I1",
+        "TAKI Orou",
+        "ADAM Colette",
+        ""
+       ]
+      ]
+     }
+    ],
+    "boutons": [
+     "Colonnes",
+     "Exporter",
+     "Nouveau compte rendu",
+     "Tout désélectionner",
+     "Imprimer le compte rendu",
+     "Consulter",
+     "Modifier",
+     "Archiver",
+     "Imprimer le compte rendu",
+     "Consulter"
+    ],
+    "boutonsLigne": [
+     "Imprimer le compte rendu",
+     "Consulter",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "detail": {
+    "texte": "CRO-0002 RÉFÉRENCE CRO-0002 DATE 14/08/2026 PATIENT PARAISO Sabi NIP N2 OPÉRATEUR TAKI Orou AIDE-OPÉRATEUR — ANESTHÉSISTE ADAM Colette Diagnostic peropératoire D Intervention chirurgicale I2 Anesthésie A Compte rendu opératoire Récit 2",
+    "boutons": [
+     "Fermer"
+    ]
+   },
+   "impression": {
+    "titre": "COMPTE RENDU OPÉRATOIRE",
+    "sousTitre": "CRO-0002 — PARAISO Sabi",
+    "cartouche": [
+     [
+      "Patient",
+      "PARAISO Sabi"
+     ],
+     [
+      "NIP",
+      "N2"
+     ],
+     [
+      "Dossier",
+      "CNT/4/26"
+     ],
+     [
+      "Date de l’intervention",
+      "14/08/2026"
+     ],
+     [
+      "Opérateur",
+      "TAKI Orou"
+     ],
+     [
+      "Aide-opérateur",
+      "—"
+     ],
+     [
+      "Anesthésiste",
+      "ADAM Colette"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "L’opérateur",
+      "nom": "TAKI Orou"
+     },
+     {
+      "role": "L’aide-opérateur",
+      "nom": "—"
+     },
+     {
+      "role": "L’anesthésiste",
+      "nom": "ADAM Colette"
+     }
+    ],
+    "texte": "Diagnostic peropératoireDIntervention chirurgicaleI2AnesthésieACompte rendu opératoireRécit 2",
+    "tableaux": []
+   },
+   "creation": {
+    "champs": [
+     "Patient *",
+     "NIP *",
+     "Date de l’intervention *",
+     "Diagnostic peropératoire *",
+     "Intervention chirurgicale *",
+     "Anesthésie *",
+     "Compte rendu opératoire proprement dit *",
+     "Opérateur *",
+     "Aide-opérateur",
+     "Anesthésiste *"
+    ],
+    "optsOperateur": [
+     [
+      "SOI01",
+      "BASSONGUI Chabi Séko — Directeur Médical"
+     ],
+     [
+      "SOI02",
+      "YENI M’PO Florent — Médecin Généraliste"
+     ],
+     [
+      "SOI03",
+      "TAKI Orou — Médecin Généraliste"
+     ],
+     [
+      "SOI04",
+      "AHOHOU Rodrigue — Échographiste"
+     ]
+    ],
+    "optsAide": [
+     [
+      "",
+      "— aucun —"
+     ],
+     [
+      "SOI01",
+      "BASSONGUI Chabi Séko — Directeur Médical"
+     ],
+     [
+      "SOI02",
+      "YENI M’PO Florent — Médecin Généraliste"
+     ],
+     [
+      "SOI03",
+      "TAKI Orou — Médecin Généraliste"
+     ],
+     [
+      "SOI04",
+      "AHOHOU Rodrigue — Échographiste"
+     ],
+     [
+      "SOI05",
+      "GARBA Yahouza — Surveillant"
+     ],
+     [
+      "SOI06",
+      "IDRISSOU ANIKI Baba-Toundé — Infirmier"
+     ],
+     [
+      "SOI07",
+      "NKOUÉ Jean — Infirmier"
+     ],
+     [
+      "SOI08",
+      "BAGRI Elvyre — Infirmière"
+     ],
+     [
+      "SOI09",
+      "PARAISO Abdoul — Infirmier(ère)"
+     ],
+     [
+      "SOI10",
+      "OURTCHA Bertine — Infirmier(ère)"
+     ],
+     [
+      "SOI11",
+      "DOSSOU Moussa — Infirmier(ère)"
+     ],
+     [
+      "SOI12",
+      "OROU YO Alimatou — Infirmier(ère)"
+     ],
+     [
+      "SOI13",
+      "BADO BANI A. B. Zoulehath — Sage-femme"
+     ],
+     [
+      "SOI14",
+      "BOUKARI Nadège — Sage-femme"
+     ],
+     [
+      "SOI15",
+      "ADAM Colette — Sage-femme"
+     ]
+    ],
+    "optsAnesthesiste": [
+     [
+      "SOI01",
+      "BASSONGUI Chabi Séko — Directeur Médical"
+     ],
+     [
+      "SOI02",
+      "YENI M’PO Florent — Médecin Généraliste"
+     ],
+     [
+      "SOI03",
+      "TAKI Orou — Médecin Généraliste"
+     ],
+     [
+      "SOI04",
+      "AHOHOU Rodrigue — Échographiste"
+     ],
+     [
+      "SOI05",
+      "GARBA Yahouza — Surveillant"
+     ],
+     [
+      "SOI06",
+      "IDRISSOU ANIKI Baba-Toundé — Infirmier"
+     ],
+     [
+      "SOI07",
+      "NKOUÉ Jean — Infirmier"
+     ],
+     [
+      "SOI08",
+      "BAGRI Elvyre — Infirmière"
+     ],
+     [
+      "SOI09",
+      "PARAISO Abdoul — Infirmier(ère)"
+     ],
+     [
+      "SOI10",
+      "OURTCHA Bertine — Infirmier(ère)"
+     ],
+     [
+      "SOI11",
+      "DOSSOU Moussa — Infirmier(ère)"
+     ],
+     [
+      "SOI12",
+      "OROU YO Alimatou — Infirmier(ère)"
+     ],
+     [
+      "SOI13",
+      "BADO BANI A. B. Zoulehath — Sage-femme"
+     ],
+     [
+      "SOI14",
+      "BOUKARI Nadège — Sage-femme"
+     ],
+     [
+      "SOI15",
+      "ADAM Colette — Sage-femme"
+     ]
+    ],
+    "defauts": {
+     "patientCode": "CNT/1/25",
+     "nip": "",
+     "dateOperation": "",
+     "operateurId": "SOI01",
+     "aideOperateurId": "",
+     "anesthesisteId": "SOI01"
+    },
+    "refusVide": {
+     "toasts": [
+      [
+       "Le formulaire comporte des erreurs."
+      ]
+     ],
+     "total": 5
+    },
+    "cree": {
+     "toasts": [
+      [
+       "Compte rendu opératoire créé."
+      ]
+     ],
+     "fiche": {
+      "id": "CROxmsvmvr40tl8l3",
+      "statut": "actif",
+      "patientCode": "CNT/3/26",
+      "nip": "NIP-9",
+      "dateOperation": "2026-08-16",
+      "diagnosticPeroperatoire": "Kyste",
+      "intervention": "Kystectomie",
+      "anesthesie": "Rachianesthésie",
+      "cro": "Ligne 1\nLigne 2",
+      "operateurId": "SOI03",
+      "aideOperateurId": "SOI12",
+      "anesthesisteId": "SOI15",
+      "reference": "CRO-0006",
+      "patientId": "PAT0003",
+      "patient": "N’TCHA Yacoubou",
+      "operateur": "TAKI Orou",
+      "aideOperateur": "OROU YO Alimatou",
+      "anesthesiste": "ADAM Colette"
+     },
+     "kpis": [
+      {
+       "libelle": "Comptes rendus",
+       "valeur": "6",
+       "indice": null
+      },
+      {
+       "libelle": "Ce mois-ci",
+       "valeur": "6",
+       "indice": null
+      },
+      {
+       "libelle": "Sans aide-opérateur",
+       "valeur": "5",
+       "indice": "l’aide-opérateur n’est pas obligatoire"
+      },
+      {
+       "libelle": "Interventions au catalogue",
+       "valeur": "31",
+       "indice": "actes gynéco-obstétricaux"
+      }
+     ]
+    },
+    "sansAide": {
+     "fiche": {
+      "id": "CROxmsvmvr40vqvx3",
+      "statut": "actif",
+      "patientCode": "CNT/3/26",
+      "nip": "NIP-10",
+      "dateOperation": "2026-07-30",
+      "diagnosticPeroperatoire": "x",
+      "intervention": "y",
+      "anesthesie": "z",
+      "cro": "w",
+      "operateurId": "SOI03",
+      "aideOperateurId": "",
+      "anesthesisteId": "SOI15",
+      "reference": "CRO-0007",
+      "patientId": "PAT0003",
+      "patient": "N’TCHA Yacoubou",
+      "operateur": "TAKI Orou",
+      "aideOperateur": null,
+      "anesthesiste": "ADAM Colette"
+     },
+     "kpis": [
+      {
+       "libelle": "Comptes rendus",
+       "valeur": "7",
+       "indice": null
+      },
+      {
+       "libelle": "Ce mois-ci",
+       "valeur": "6",
+       "indice": null
+      },
+      {
+       "libelle": "Sans aide-opérateur",
+       "valeur": "6",
+       "indice": "l’aide-opérateur n’est pas obligatoire"
+      },
+      {
+       "libelle": "Interventions au catalogue",
+       "valeur": "31",
+       "indice": "actes gynéco-obstétricaux"
+      }
+     ]
+    }
+   },
+   "modification": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "id": "CRO2",
+     "statut": "actif",
+     "reference": "CRO-0002",
+     "dateOperation": "2026-08-14",
+     "nip": "N2",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I2",
+     "anesthesie": "A",
+     "cro": "Récit 2",
+     "operateurId": "SOI04",
+     "operateur": "AHOHOU Rodrigue",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "patientCode": "CNT/4/26",
+     "aideOperateurId": "",
+     "aideOperateur": null
+    }
+   },
+   "archivage": {
+    "toasts": [
+     [
+      "Enregistrement archivé."
+     ],
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "id": "CRO3",
+     "statut": "archive",
+     "reference": "CRO-0003",
+     "dateOperation": "2026-08-15",
+     "nip": "N3",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I3",
+     "anesthesie": "A",
+     "cro": "Récit 3",
+     "operateurId": "SOI03",
+     "operateur": "TAKI Orou",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "patientCode": "CNT/4/26",
+     "_motifArchivage": "Erreur de saisie"
+    },
+    "kpis": [
+     {
+      "libelle": "Comptes rendus",
+      "valeur": "6",
+      "indice": null
+     },
+     {
+      "libelle": "Ce mois-ci",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Sans aide-opérateur",
+      "valeur": "5",
+      "indice": "l’aide-opérateur n’est pas obligatoire"
+     },
+     {
+      "libelle": "Interventions au catalogue",
+      "valeur": "31",
+      "indice": "actes gynéco-obstétricaux"
+     }
+    ]
+   }
+  }
+ },
+ "cra": {
+  "jeu": {
+   "cra": [
+    {
+     "id": "CRA1",
+     "statut": "actif",
+     "reference": "CRA-2026-0001",
+     "dateOperation": "2026-08-15",
+     "croReference": "CRO-0001",
+     "technique": "Rachianesthésie",
+     "agents": "Bupivacaïne",
+     "heureInduction": "08:00",
+     "heureFin": "09:30",
+     "incidents": "Aucun incident",
+     "surveillancePerop": "TA stable\nSpO2 98 %",
+     "heureArriveeReveil": "09:40",
+     "etatReveil": "Éveillé",
+     "decisionSortie": "Retour dans le service",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    {
+     "id": "CRA2",
+     "statut": "actif",
+     "reference": "CRA-2026-0002",
+     "dateOperation": "2026-08-14",
+     "croReference": "",
+     "technique": "Rachianesthésie",
+     "agents": "Bupivacaïne",
+     "heureInduction": "08:00",
+     "heureFin": "09:30",
+     "incidents": "Hypotension transitoire traitée",
+     "surveillancePerop": "",
+     "heureArriveeReveil": "09:40",
+     "etatReveil": "Éveillé",
+     "decisionSortie": "Surveillance prolongée en salle de réveil",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    },
+    {
+     "id": "CRA3",
+     "statut": "actif",
+     "reference": "CRA-2026-0003",
+     "dateOperation": "2026-08-13",
+     "croReference": "CRO-0001",
+     "technique": "Rachianesthésie",
+     "agents": "Bupivacaïne",
+     "heureInduction": "08:00",
+     "heureFin": "09:30",
+     "incidents": "aucun",
+     "surveillancePerop": "",
+     "heureArriveeReveil": "09:40",
+     "etatReveil": "Éveillé",
+     "decisionSortie": "Transfert / évacuation",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    },
+    {
+     "id": "CRA4",
+     "statut": "actif",
+     "reference": "CRA-2026-0004",
+     "dateOperation": "2026-08-12",
+     "croReference": "",
+     "technique": "Rachianesthésie",
+     "agents": "Bupivacaïne",
+     "heureInduction": "08:00",
+     "heureFin": "09:30",
+     "incidents": "Aucune difficulté",
+     "surveillancePerop": "",
+     "heureArriveeReveil": "09:40",
+     "etatReveil": "Éveillé",
+     "decisionSortie": "Retour dans le service",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    }
+   ],
+   "cro": [
+    {
+     "id": "CRO1",
+     "statut": "actif",
+     "reference": "CRO-0001",
+     "dateOperation": "2026-08-15",
+     "nip": "N",
+     "diagnosticPeroperatoire": "D",
+     "intervention": "I",
+     "anesthesie": "A",
+     "cro": "R",
+     "operateurId": "SOI03",
+     "operateur": "TAKI Orou",
+     "anesthesisteId": "SOI15",
+     "anesthesiste": "ADAM Colette",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    }
+   ],
+   "cpa": [
+    {
+     "id": "CPAX",
+     "statut": "actif",
+     "reference": "CPA-2026-0001",
+     "date": "2026-08-11",
+     "asa": "I",
+     "conclusion": "Apte à l’anesthésie"
+    }
+   ]
+  },
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Comptes rendus",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Avec incident nommé",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Surveillances prolongées",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "CRO liés",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "notes": [],
+   "tableaux": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "DATE",
+      "PATIENT",
+      "TECHNIQUE",
+      "INCIDENTS",
+      "SORTIE DE RÉVEIL",
+      "ANESTHÉSISTE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "CRA-2026-0001",
+       "15/08/2026",
+       "TCHANE Bertine",
+       "Rachianesthésie",
+       "Aucun",
+       "Retour dans le service",
+       "ADAM Colette",
+       ""
+      ],
+      [
+       "CRA-2026-0002",
+       "14/08/2026",
+       "BAKO Boukari",
+       "Rachianesthésie",
+       "Incident nommé",
+       "Surveillance prolongée en salle de réveil",
+       "ADAM Colette",
+       ""
+      ],
+      [
+       "CRA-2026-0003",
+       "13/08/2026",
+       "N’TCHA Yacoubou",
+       "Rachianesthésie",
+       "Aucun",
+       "Transfert / évacuation",
+       "ADAM Colette",
+       ""
+      ],
+      [
+       "CRA-2026-0004",
+       "12/08/2026",
+       "BAKO Boukari",
+       "Rachianesthésie",
+       "Aucun",
+       "Retour dans le service",
+       "ADAM Colette",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Nouveau compte rendu",
+    "Tout désélectionner",
+    "Imprimer le compte rendu",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Imprimer le compte rendu",
+    "Consulter"
+   ],
+   "boutonsLigne": [
+    "Imprimer le compte rendu",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "detail": {
+   "texte": "CRA-2026-0001 RÉFÉRENCE CRA-2026-0001 DATE 15/08/2026 PATIENT TCHANE Bertine CRO LIÉ CRO-0001 TECHNIQUE Rachianesthésie INDUCTION 08:00 FIN 09:30 ARRIVÉE EN RÉVEIL 09:40 DÉCISION DE SORTIE Retour dans le service ANESTHÉSISTE ADAM Colette Agents et produits Bupivacaïne Incidents per-opératoires Aucun incident Surveillance per-opératoire TA stable SpO2 98 % État au réveil Éveillé",
+   "boutons": [
+    "Fermer"
+   ]
+  },
+  "impression": {
+   "titre": "COMPTE RENDU D’ANESTHÉSIE",
+   "sousTitre": "CRA-2026-0001 — TCHANE Bertine",
+   "cartouche": [
+    [
+     "Patient",
+     "TCHANE Bertine"
+    ],
+    [
+     "Dossier",
+     "CNT/1/25"
+    ],
+    [
+     "Date de l’intervention",
+     "15/08/2026"
+    ],
+    [
+     "CRO lié",
+     "CRO-0001"
+    ],
+    [
+     "Technique",
+     "Rachianesthésie"
+    ],
+    [
+     "Induction — fin",
+     "08:00 — 09:30"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’anesthésiste",
+     "nom": "ADAM Colette"
+    },
+    {
+     "role": "L’opérateur",
+     "mention": "Pour information"
+    }
+   ],
+   "texte": "Agents et produits : BupivacaïneIncidents per-opératoires : Aucun incidentSurveillance per-opératoire : TA stable SpO2 98 %Arrivée en salle de réveil : 09:40État au réveil : ÉveilléDécision de sortie : Retour dans le service",
+   "tableaux": []
+  },
+  "creation": {
+   "optsCro": [
+    [
+     "",
+     "— Sélectionner —"
+    ],
+    [
+     "",
+     "— aucun (acte sans CRO) —"
+    ],
+    [
+     "CRO-0001",
+     "CRO-0001 — TCHANE Bertine"
+    ]
+   ],
+   "refusVide": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 4
+   },
+   "cree": {
+    "toasts": [
+     [
+      "Compte rendu d’anesthésie créé."
+     ]
+    ],
+    "fiche": {
+     "id": "CRAxmsvmvr40a6eoa",
+     "statut": "actif",
+     "patientCode": "CNT/4/26",
+     "dateOperation": "2026-08-16",
+     "croReference": "CRO-0001",
+     "technique": "Anesthésie générale",
+     "agents": "Kétamine",
+     "heureInduction": "10:00",
+     "heureFin": "11:00",
+     "incidents": "Aucun incident",
+     "surveillancePerop": "",
+     "heureArriveeReveil": "11:10",
+     "etatReveil": "Éveillé",
+     "decisionSortie": "Surveillance prolongée en salle de réveil",
+     "anesthesiste": "ADAM Colette",
+     "reference": "CRA-2026-0005",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi"
+    },
+    "kpis": [
+     {
+      "libelle": "Comptes rendus",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Avec incident nommé",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Surveillances prolongées",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "CRO liés",
+      "valeur": "3",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "modification": {
+   "toasts": [
+    [
+     "Modifications enregistrées."
+    ]
+   ],
+   "fiche": {
+    "id": "CRA4",
+    "statut": "actif",
+    "reference": "CRA-2026-0004",
+    "dateOperation": "2026-08-12",
+    "croReference": "",
+    "technique": "Rachianesthésie",
+    "agents": "Bupivacaïne",
+    "heureInduction": "08:00",
+    "heureFin": "09:30",
+    "incidents": "Désaturation brève",
+    "surveillancePerop": "",
+    "heureArriveeReveil": "09:40",
+    "etatReveil": "Éveillé",
+    "decisionSortie": "Retour dans le service",
+    "anesthesiste": "ADAM Colette",
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26"
+   },
+   "kpis": [
+    {
+     "libelle": "Comptes rendus",
+     "valeur": "5",
+     "indice": null
+    },
+    {
+     "libelle": "Avec incident nommé",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Surveillances prolongées",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "CRO liés",
+     "valeur": "3",
+     "indice": null
+    }
+   ]
+  },
+  "archivage": {
+   "fiche": {
+    "id": "CRA2",
+    "statut": "archive",
+    "reference": "CRA-2026-0002",
+    "dateOperation": "2026-08-14",
+    "croReference": "",
+    "technique": "Rachianesthésie",
+    "agents": "Bupivacaïne",
+    "heureInduction": "08:00",
+    "heureFin": "09:30",
+    "incidents": "Hypotension transitoire traitée",
+    "surveillancePerop": "",
+    "heureArriveeReveil": "09:40",
+    "etatReveil": "Éveillé",
+    "decisionSortie": "Surveillance prolongée en salle de réveil",
+    "anesthesiste": "ADAM Colette",
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26",
+    "_motifArchivage": "Doublon"
+   },
+   "kpis": [
+    {
+     "libelle": "Comptes rendus",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Avec incident nommé",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Surveillances prolongées",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "CRO liés",
+     "valeur": "3",
+     "indice": null
+    }
+   ]
+  }
+ },
+ "checklist": {
+  "jeu": [
+   {
+    "id": "CKL1",
+    "statut": "actif",
+    "reference": "CKL-0001",
+    "moment": "entree",
+    "dateHeure": "2026-08-15T01:00:00.000Z",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "responsableId": "SOI14",
+    "responsable": "BOUKARI Nadège",
+    "items": [
+     {
+      "label": "Identité du patient confirmée par le patient lui-même",
+      "coche": true
+     },
+     {
+      "label": "Intervention et site opératoire confirmés",
+      "coche": true
+     },
+     {
+      "label": "Consentement opératoire signé et présent au dossier",
+      "coche": true
+     },
+     {
+      "label": "Site opératoire marqué",
+      "coche": true
+     },
+     {
+      "label": "Jeûne préopératoire respecté",
+      "coche": true
+     },
+     {
+      "label": "Allergies connues vérifiées et signalées à l’équipe",
+      "coche": true
+     },
+     {
+      "label": "Voie veineuse posée et perméable",
+      "coche": true
+     },
+     {
+      "label": "Groupe sanguin et rhésus disponibles au dossier",
+      "coche": true
+     },
+     {
+      "label": "Matériel d’anesthésie vérifié et fonctionnel",
+      "coche": true
+     },
+     {
+      "label": "Risque hémorragique évalué",
+      "coche": true
+     },
+     {
+      "label": "Antibioprophylaxie administrée si indiquée",
+      "coche": true
+     },
+     {
+      "label": "Équipe au complet, chacun s’étant présenté par son nom et sa fonction",
+      "coche": true
+     }
+    ],
+    "coches": 12,
+    "total": 12
+   },
+   {
+    "id": "CKL2",
+    "statut": "actif",
+    "reference": "CKL-0002",
+    "moment": "sortie",
+    "dateHeure": "2026-08-14T02:00:00.000Z",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "responsableId": "SOI14",
+    "responsable": "BOUKARI Nadège",
+    "items": [
+     {
+      "label": "Nature de l’intervention réellement pratiquée énoncée à voix haute",
+      "coche": true
+     },
+     {
+      "label": "Comptage des compresses, aiguilles et instruments exact",
+      "coche": true
+     },
+     {
+      "label": "Étiquetage des prélèvements vérifié (nom du patient, nature)",
+      "coche": true
+     },
+     {
+      "label": "Incidents ou difficultés per-opératoires signalés et consignés",
+      "coche": true
+     },
+     {
+      "label": "Drains et sondes en place recensés",
+      "coche": true
+     },
+     {
+      "label": "Prescriptions post-opératoires rédigées",
+      "coche": true
+     },
+     {
+      "label": "Surveillance post-opératoire prescrite et transmise au service",
+      "coche": true
+     },
+     {
+      "label": "Compte rendu opératoire rédigé et signé",
+      "coche": true
+     },
+     {
+      "label": "Dysfonctionnement matériel éventuel signalé",
+      "coche": true
+     }
+    ],
+    "coches": 9,
+    "total": 9
+   },
+   {
+    "id": "CKL3",
+    "statut": "actif",
+    "reference": "CKL-0003",
+    "moment": "entree",
+    "dateHeure": "2026-08-13T03:00:00.000Z",
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "responsableId": "SOI14",
+    "responsable": "BOUKARI Nadège",
+    "items": [
+     {
+      "label": "Identité du patient confirmée par le patient lui-même",
+      "coche": true
+     },
+     {
+      "label": "Intervention et site opératoire confirmés",
+      "coche": true
+     },
+     {
+      "label": "Consentement opératoire signé et présent au dossier",
+      "coche": true
+     },
+     {
+      "label": "Site opératoire marqué",
+      "coche": true
+     },
+     {
+      "label": "Jeûne préopératoire respecté",
+      "coche": true
+     },
+     {
+      "label": "Allergies connues vérifiées et signalées à l’équipe",
+      "coche": true
+     },
+     {
+      "label": "Voie veineuse posée et perméable",
+      "coche": true
+     },
+     {
+      "label": "Groupe sanguin et rhésus disponibles au dossier",
+      "coche": true
+     },
+     {
+      "label": "Matériel d’anesthésie vérifié et fonctionnel",
+      "coche": true
+     },
+     {
+      "label": "Risque hémorragique évalué",
+      "coche": true
+     },
+     {
+      "label": "Antibioprophylaxie administrée si indiquée",
+      "coche": false
+     },
+     {
+      "label": "Équipe au complet, chacun s’étant présenté par son nom et sa fonction",
+      "coche": false
+     }
+    ],
+    "coches": 10,
+    "total": 12
+   },
+   {
+    "id": "CKL4",
+    "statut": "actif",
+    "reference": "CKL-0004",
+    "moment": "sortie",
+    "dateHeure": "2026-08-12T04:00:00.000Z",
+    "patientId": "PAT0003",
+    "patient": "N’TCHA Yacoubou",
+    "responsableId": "SOI14",
+    "responsable": "BOUKARI Nadège",
+    "items": [
+     {
+      "label": "Nature de l’intervention réellement pratiquée énoncée à voix haute",
+      "coche": true
+     },
+     {
+      "label": "Comptage des compresses, aiguilles et instruments exact",
+      "coche": true
+     },
+     {
+      "label": "Étiquetage des prélèvements vérifié (nom du patient, nature)",
+      "coche": true
+     },
+     {
+      "label": "Incidents ou difficultés per-opératoires signalés et consignés",
+      "coche": true
+     },
+     {
+      "label": "Drains et sondes en place recensés",
+      "coche": false
+     },
+     {
+      "label": "Prescriptions post-opératoires rédigées",
+      "coche": false
+     },
+     {
+      "label": "Surveillance post-opératoire prescrite et transmise au service",
+      "coche": false
+     },
+     {
+      "label": "Compte rendu opératoire rédigé et signé",
+      "coche": false
+     },
+     {
+      "label": "Dysfonctionnement matériel éventuel signalé",
+      "coche": false
+     }
+    ],
+    "coches": 4,
+    "total": 9
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Check-listes remplies",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Entrée",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Sortie",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Incomplètes",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "notes": [
+    "Check-listes arrêtées par les praticiens du bloc le 01/09/2026 (validation écrite). Proposées à l’origine faute de document remis — la provenance reste dite."
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "DATE ET HEURE",
+      "PATIENT",
+      "RESPONSABLE",
+      "VÉRIFIÉ",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "CKL-0001",
+       "15/08/2026 à 01h00",
+       "TCHANE Bertine",
+       "BOUKARI Nadège",
+       "12 / 12",
+       ""
+      ],
+      [
+       "CKL-0003",
+       "13/08/2026 à 03h00",
+       "BAKO Boukari",
+       "BOUKARI Nadège",
+       "10 / 12",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Check-liste d’entrée2",
+    "Check-liste de sortie2",
+    "Colonnes",
+    "Exporter",
+    "Remplir la check-liste",
+    "Tout désélectionner",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ],
+   "onglets": [
+    "Check-liste d’entrée2",
+    "Check-liste de sortie2"
+   ],
+   "boutonsLigne": [
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "detail": {
+   "texte": "CKL-0001 RÉFÉRENCE CKL-0001 MOMENT Entrée DATE ET HEURE 15/08/2026 à 01h00 PATIENT TCHANE Bertine RESPONSABLE BOUKARI Nadège Points vérifiés POINT VÉRIFIÉ Identité du patient confirmée par le patient lui-même Oui Intervention et site opératoire confirmés Oui Consentement opératoire signé et présent au dossier Oui Site opératoire marqué Oui Jeûne préopératoire respecté Oui Allergies connues vérifiées et signalées à l’équipe Oui Voie veineuse posée et perméable Oui Groupe sanguin et rhésus disponibles au dossier Oui Matériel d’anesthésie vérifié et fonctionnel Oui Risque hémorragique évalué Oui Antibioprophylaxie administrée si indiquée Oui Équipe au complet, chacun s’étant présenté par son nom et sa fonction Oui",
+   "boutons": [
+    "Fermer"
+   ]
+  },
+  "sortieOnglet": {
+   "tableaux": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "DATE ET HEURE",
+      "PATIENT",
+      "RESPONSABLE",
+      "VÉRIFIÉ",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "CKL-0002",
+       "14/08/2026 à 02h00",
+       "TCHANE Bertine",
+       "BOUKARI Nadège",
+       "9 / 9",
+       ""
+      ],
+      [
+       "CKL-0004",
+       "12/08/2026 à 04h00",
+       "N’TCHA Yacoubou",
+       "BOUKARI Nadège",
+       "4 / 9",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Check-liste d’entrée2",
+    "Check-liste de sortie2",
+    "Colonnes",
+    "Exporter",
+    "Remplir la check-liste",
+    "Tout désélectionner",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "remplirSortie": {
+   "champs": [
+    "Patient *",
+    "Responsable de la vérification *",
+    "Nature de l’intervention réellement pratiquée énoncée à voix haute",
+    "Comptage des compresses, aiguilles et instruments exact",
+    "Étiquetage des prélèvements vérifié (nom du patient, nature)",
+    "Incidents ou difficultés per-opératoires signalés et consignés",
+    "Drains et sondes en place recensés",
+    "Prescriptions post-opératoires rédigées",
+    "Surveillance post-opératoire prescrite et transmise au service",
+    "Compte rendu opératoire rédigé et signé",
+    "Dysfonctionnement matériel éventuel signalé"
+   ],
+   "titre": "Check-liste de sortie Avant la sortie de salle — cocher chaque point vérifié. Patient * CNT/1/25 — TCHANE Bertine Responsable de la vérifica",
+   "optsResponsable": [
+    [
+     "SOI01",
+     "BASSONGUI Chabi Séko — Directeur Médical"
+    ],
+    [
+     "SOI02",
+     "YENI M’PO Florent — Médecin Généraliste"
+    ],
+    [
+     "SOI03",
+     "TAKI Orou — Médecin Généraliste"
+    ],
+    [
+     "SOI04",
+     "AHOHOU Rodrigue — Échographiste"
+    ],
+    [
+     "SOI05",
+     "GARBA Yahouza — Surveillant"
+    ],
+    [
+     "SOI06",
+     "IDRISSOU ANIKI Baba-Toundé — Infirmier"
+    ],
+    [
+     "SOI07",
+     "NKOUÉ Jean — Infirmier"
+    ],
+    [
+     "SOI08",
+     "BAGRI Elvyre — Infirmière"
+    ],
+    [
+     "SOI09",
+     "PARAISO Abdoul — Infirmier(ère)"
+    ],
+    [
+     "SOI10",
+     "OURTCHA Bertine — Infirmier(ère)"
+    ],
+    [
+     "SOI11",
+     "DOSSOU Moussa — Infirmier(ère)"
+    ],
+    [
+     "SOI12",
+     "OROU YO Alimatou — Infirmier(ère)"
+    ],
+    [
+     "SOI13",
+     "BADO BANI A. B. Zoulehath — Sage-femme"
+    ],
+    [
+     "SOI14",
+     "BOUKARI Nadège — Sage-femme"
+    ],
+    [
+     "SOI15",
+     "ADAM Colette — Sage-femme"
+    ]
+   ],
+   "rienCoche": {
+    "toasts": [
+     [
+      "Check-liste enregistrée — 9 point(s) NON vérifié(s).",
+      "CKL-0005"
+     ]
+    ],
+    "fiche": {
+     "id": "CKLxmsvmvr40ui6c4",
+     "statut": "actif",
+     "reference": "CKL-0005",
+     "moment": "sortie",
+     "dateHeure": "2026-08-16T10:00:00.000Z",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "responsableId": "SOI01",
+     "responsable": "BASSONGUI Chabi Séko",
+     "items": [
+      {
+       "label": "Nature de l’intervention réellement pratiquée énoncée à voix haute",
+       "coche": false
+      },
+      {
+       "label": "Comptage des compresses, aiguilles et instruments exact",
+       "coche": false
+      },
+      {
+       "label": "Étiquetage des prélèvements vérifié (nom du patient, nature)",
+       "coche": false
+      },
+      {
+       "label": "Incidents ou difficultés per-opératoires signalés et consignés",
+       "coche": false
+      },
+      {
+       "label": "Drains et sondes en place recensés",
+       "coche": false
+      },
+      {
+       "label": "Prescriptions post-opératoires rédigées",
+       "coche": false
+      },
+      {
+       "label": "Surveillance post-opératoire prescrite et transmise au service",
+       "coche": false
+      },
+      {
+       "label": "Compte rendu opératoire rédigé et signé",
+       "coche": false
+      },
+      {
+       "label": "Dysfonctionnement matériel éventuel signalé",
+       "coche": false
+      }
+     ],
+     "coches": 0,
+     "total": 9
+    },
+    "total": 1,
+    "kpis": [
+     {
+      "libelle": "Check-listes remplies",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Entrée",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Sortie",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Incomplètes",
+      "valeur": "3",
+      "indice": null
+     }
+    ]
+   },
+   "incomplete": {
+    "toasts": [
+     [
+      "Check-liste enregistrée — 6 point(s) NON vérifié(s).",
+      "CKL-0006"
+     ]
+    ],
+    "fiche": {
+     "id": "CKLxmsvmvr40n00kd",
+     "statut": "actif",
+     "reference": "CKL-0006",
+     "moment": "sortie",
+     "dateHeure": "2026-08-16T10:00:00.000Z",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "responsableId": "SOI14",
+     "responsable": "BOUKARI Nadège",
+     "items": [
+      {
+       "label": "Nature de l’intervention réellement pratiquée énoncée à voix haute",
+       "coche": true
+      },
+      {
+       "label": "Comptage des compresses, aiguilles et instruments exact",
+       "coche": true
+      },
+      {
+       "label": "Étiquetage des prélèvements vérifié (nom du patient, nature)",
+       "coche": true
+      },
+      {
+       "label": "Incidents ou difficultés per-opératoires signalés et consignés",
+       "coche": false
+      },
+      {
+       "label": "Drains et sondes en place recensés",
+       "coche": false
+      },
+      {
+       "label": "Prescriptions post-opératoires rédigées",
+       "coche": false
+      },
+      {
+       "label": "Surveillance post-opératoire prescrite et transmise au service",
+       "coche": false
+      },
+      {
+       "label": "Compte rendu opératoire rédigé et signé",
+       "coche": false
+      },
+      {
+       "label": "Dysfonctionnement matériel éventuel signalé",
+       "coche": false
+      }
+     ],
+     "coches": 3,
+     "total": 9
+    },
+    "kpis": [
+     {
+      "libelle": "Check-listes remplies",
+      "valeur": "6",
+      "indice": null
+     },
+     {
+      "libelle": "Entrée",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Sortie",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Incomplètes",
+      "valeur": "4",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "remplirEntree": {
+   "toasts": [
+    [
+     "Check-liste complète enregistrée.",
+     "CKL-0007"
+    ]
+   ],
+   "fiche": {
+    "id": "CKLxmsvmvr40463u3",
+    "statut": "actif",
+    "reference": "CKL-0007",
+    "moment": "entree",
+    "dateHeure": "2026-08-16T10:00:00.000Z",
+    "patientId": "PAT0005",
+    "patient": "TAKI Ganiou",
+    "responsableId": "SOI15",
+    "responsable": "ADAM Colette",
+    "items": [
+     {
+      "label": "Identité du patient confirmée par le patient lui-même",
+      "coche": true
+     },
+     {
+      "label": "Intervention et site opératoire confirmés",
+      "coche": true
+     },
+     {
+      "label": "Consentement opératoire signé et présent au dossier",
+      "coche": true
+     },
+     {
+      "label": "Site opératoire marqué",
+      "coche": true
+     },
+     {
+      "label": "Jeûne préopératoire respecté",
+      "coche": true
+     },
+     {
+      "label": "Allergies connues vérifiées et signalées à l’équipe",
+      "coche": true
+     },
+     {
+      "label": "Voie veineuse posée et perméable",
+      "coche": true
+     },
+     {
+      "label": "Groupe sanguin et rhésus disponibles au dossier",
+      "coche": true
+     },
+     {
+      "label": "Matériel d’anesthésie vérifié et fonctionnel",
+      "coche": true
+     },
+     {
+      "label": "Risque hémorragique évalué",
+      "coche": true
+     },
+     {
+      "label": "Antibioprophylaxie administrée si indiquée",
+      "coche": true
+     },
+     {
+      "label": "Équipe au complet, chacun s’étant présenté par son nom et sa fonction",
+      "coche": true
+     }
+    ],
+    "coches": 12,
+    "total": 12
+   },
+   "kpis": [
+    {
+     "libelle": "Check-listes remplies",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "Entrée",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Sortie",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Incomplètes",
+     "valeur": "4",
+     "indice": null
+    }
+   ]
+  },
+  "modifier": {
+   "erreurs": [
+    "Uncaught TypeError: Cannot read properties of null (reading 'forEach')"
+   ],
+   "modale": ""
+  }
+ },
+ "demandeExamen": {
+  "jeu": [
+   {
+    "id": "D1",
+    "statut": "actif",
+    "reference": "LAB-00001",
+    "codeAnalyse": "00001-2026",
+    "patientId": "PAT0001",
+    "patientCode": "CNT/1/25",
+    "patient": "TCHANE Bertine",
+    "analyseCode": "L24",
+    "analyse": "NFS",
+    "categorie": "Hématologie",
+    "prix": 4000,
+    "dateHeure": "2026-08-01T10:00:00.000Z",
+    "prescripteur": "Dr X",
+    "origine": "service",
+    "origineDemande": "service",
+    "serviceDemandeur": "maternite",
+    "etatAnalyse": "en_attente",
+    "urgent": false
+   },
+   {
+    "id": "D2",
+    "statut": "actif",
+    "reference": "LAB-00002",
+    "codeAnalyse": "00002-2026",
+    "patientId": "PAT0001",
+    "patientCode": "CNT/1/25",
+    "patient": "TCHANE Bertine",
+    "analyseCode": "L24",
+    "analyse": "NFS",
+    "categorie": "Hématologie",
+    "prix": 4000,
+    "dateHeure": "2026-08-02T10:00:00.000Z",
+    "prescripteur": "Dr X",
+    "origine": "service",
+    "origineDemande": "service",
+    "serviceDemandeur": "maternite",
+    "etatAnalyse": "attente_prelevement",
+    "urgent": true
+   },
+   {
+    "id": "D3",
+    "statut": "actif",
+    "reference": "LAB-00003",
+    "codeAnalyse": "00003-2026",
+    "patientId": "PAT0001",
+    "patientCode": "CNT/1/25",
+    "patient": "TCHANE Bertine",
+    "analyseCode": "L24",
+    "analyse": "NFS",
+    "categorie": "Hématologie",
+    "prix": 4000,
+    "dateHeure": "2026-08-03T10:00:00.000Z",
+    "prescripteur": "Dr X",
+    "origine": "service",
+    "origineDemande": "service",
+    "serviceDemandeur": "maternite",
+    "etatAnalyse": "valide",
+    "urgent": false
+   },
+   {
+    "id": "D4",
+    "statut": "actif",
+    "reference": "LAB-00004",
+    "codeAnalyse": "00004-2026",
+    "patientId": "PAT0001",
+    "patientCode": "CNT/1/25",
+    "patient": "TCHANE Bertine",
+    "analyseCode": "L24",
+    "analyse": "NFS",
+    "categorie": "Hématologie",
+    "prix": 4000,
+    "dateHeure": "2026-08-04T10:00:00.000Z",
+    "prescripteur": "Dr X",
+    "origine": "ordonnance",
+    "origineDemande": "consultation",
+    "serviceDemandeur": "maternite",
+    "etatAnalyse": "en_attente",
+    "urgent": false
+   },
+   {
+    "id": "D5",
+    "statut": "actif",
+    "reference": "LAB-00005",
+    "codeAnalyse": "00005-2026",
+    "patientId": "PAT0001",
+    "patientCode": "CNT/1/25",
+    "patient": "TCHANE Bertine",
+    "analyseCode": "L24",
+    "analyse": "NFS",
+    "categorie": "Hématologie",
+    "prix": 4000,
+    "dateHeure": "2026-08-05T10:00:00.000Z",
+    "prescripteur": "Dr X",
+    "origine": "service",
+    "origineDemande": "service",
+    "serviceDemandeur": "maternite",
+    "etatAnalyse": "valide_technique",
+    "urgent": false
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Fiches du service",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "En attente de règlement",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Urgentes",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Résultats rendus",
+     "valeur": "1",
+     "indice": null
+    }
+   ],
+   "cartes": [
+    "Registre des fiches de demande"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "DATE",
+      "PATIENT",
+      "EXAMEN",
+      "SERVICE",
+      "URGENCE",
+      "ÉTAT"
+     ],
+     "lignes": [
+      [
+       "LAB-00005 00005-2026",
+       "05/08/2026",
+       "TCHANE Bertine — CNT/1/25",
+       "NFS",
+       "Maternité",
+       "Courant",
+       "valide_technique"
+      ],
+      [
+       "LAB-00003 00003-2026",
+       "03/08/2026",
+       "TCHANE Bertine — CNT/1/25",
+       "NFS",
+       "Maternité",
+       "Courant",
+       "Validé"
+      ],
+      [
+       "LAB-00002 00002-2026",
+       "02/08/2026",
+       "TCHANE Bertine — CNT/1/25",
+       "NFS",
+       "Maternité",
+       "Urgent",
+       "attente_prelevement"
+      ],
+      [
+       "LAB-00001 00001-2026",
+       "01/08/2026",
+       "TCHANE Bertine — CNT/1/25",
+       "NFS",
+       "Maternité",
+       "Courant",
+       "En attente"
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Nouvelle fiche de demande",
+    "Tout désélectionner"
+   ]
+  },
+  "modale": {
+   "champs": [
+    "Patient *",
+    "Résidence *",
+    "Service demandeur *",
+    "Prescripteur *",
+    "Prescripteur extérieur — nom, qualification et structure",
+    "Indication clinique *",
+    "Examens demandés *",
+    "Urgence *",
+    "Examen urgent (si « un examen urgent »)",
+    "Patient hospitalisé"
+   ],
+   "titre": "Fiche de demande d’examen Tous les champs de la fiche papier sont obligatoires. Patient * CNT/1/25 — TCHANE Bertine Résidence * Reprise du dossier au choix du p",
+   "defauts": {
+    "patientCode": "CNT/1/25",
+    "residence": "",
+    "serviceDemandeur": "maternite",
+    "prescripteur": "BASSONGUI Chabi Séko",
+    "urgence": "aucune",
+    "examenUrgent": "",
+    "hospitalise": false,
+    "indication": ""
+   },
+   "optsService": [
+    [
+     "maternite",
+     "Maternité"
+    ],
+    [
+     "medecine",
+     "Médecine"
+    ],
+    [
+     "specialite",
+     "Médecine et spécialité"
+    ]
+   ],
+   "optsUrgence": [
+    [
+     "aucune",
+     "Examen courant"
+    ],
+    [
+     "examen",
+     "Un examen urgent"
+    ],
+    [
+     "bilan",
+     "Bilan entier en urgence"
+    ]
+   ],
+   "optsPrescripteur": [
+    [
+     "BASSONGUI Chabi Séko",
+     "BASSONGUI Chabi Séko — Directeur Médical"
+    ],
+    [
+     "YENI M’PO Florent",
+     "YENI M’PO Florent — Médecin Généraliste"
+    ],
+    [
+     "TAKI Orou",
+     "TAKI Orou — Médecin Généraliste"
+    ],
+    [
+     "BADO BANI A. B. Zoulehath",
+     "BADO BANI A. B. Zoulehath — Sage-femme"
+    ],
+    [
+     "BOUKARI Nadège",
+     "BOUKARI Nadège — Sage-femme"
+    ],
+    [
+     "ADAM Colette",
+     "ADAM Colette — Sage-femme"
+    ],
+    [
+     "EXTERNE",
+     "— Prescripteur extérieur à la clinique —"
+    ]
+   ]
+  },
+  "analyses": [
+   {
+    "code": "L01",
+    "designation": "AKOP",
+    "prix": 2000,
+    "echantillon": "Selles"
+   },
+   {
+    "code": "L02",
+    "designation": "ASLO",
+    "prix": 4000,
+    "echantillon": "Sang"
+   },
+   {
+    "code": "L03",
+    "designation": "AZOTEMIE (UREMIE)",
+    "prix": 2500,
+    "echantillon": "Sang"
+   }
+  ],
+  "refusVide": {
+   "toasts": [
+    [
+     "Le formulaire comporte des erreurs."
+    ]
+   ],
+   "demandes": 5
+  },
+  "refusExamenNonNomme": {
+   "toasts": [
+    [
+     "Nommer L’EXAMEN urgent.",
+     "« Un examen urgent » sans le nommer laisserait le laboratoire deviner."
+    ]
+   ],
+   "demandes": 5
+  },
+  "emission": {
+   "toasts": [
+    [
+     "Fiche émise — 2 examen(s).",
+     "Facture FE-2026-00001 à la caisse ; le prélèvement suivra le règlement."
+    ]
+   ],
+   "demandes": [
+    {
+     "id": "DEMxmsvmvr404nitl",
+     "statut": "actif",
+     "reference": "LAB-00007",
+     "codeAnalyse": "00007-2026",
+     "patientId": "PAT0002",
+     "patientCode": "CNT/2/26",
+     "patient": "BAKO Boukari",
+     "analyseCode": "L02",
+     "analyse": "ASLO",
+     "categorie": "Sérologie",
+     "echantillon": "Sang",
+     "delai": "24 h",
+     "prix": 4000,
+     "dateHeure": "2026-08-16T10:00:00.000Z",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": null,
+     "urgent": true,
+     "etatAnalyse": "en_attente",
+     "origine": "service",
+     "origineDemande": "service",
+     "serviceDemandeur": "maternite",
+     "secteurDemandeur": "MATERNITÉ",
+     "indication": "Anémie",
+     "hospitalise": true,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmsvmvr406ju49",
+     "factureNumero": "FE-2026-00001"
+    },
+    {
+     "id": "DEMxmsvmvr40nj7ke",
+     "statut": "actif",
+     "reference": "LAB-00006",
+     "codeAnalyse": "00006-2026",
+     "patientId": "PAT0002",
+     "patientCode": "CNT/2/26",
+     "patient": "BAKO Boukari",
+     "analyseCode": "L01",
+     "analyse": "AKOP",
+     "categorie": "Parasitologie",
+     "echantillon": "Selles",
+     "delai": "24 h",
+     "prix": 2000,
+     "dateHeure": "2026-08-16T10:00:00.000Z",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": null,
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "origine": "service",
+     "origineDemande": "service",
+     "serviceDemandeur": "maternite",
+     "secteurDemandeur": "MATERNITÉ",
+     "indication": "Anémie",
+     "hospitalise": true,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmsvmvr406ju49",
+     "factureNumero": "FE-2026-00001"
+    }
+   ],
+   "factures": [
+    {
+     "id": "FACxmsvmvr406ju49",
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "prixUnitaireNet": 2000,
+       "montantBrut": 2000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 2000,
+       "partAssureur": 1400,
+       "partPersonnel": 0,
+       "partPatient": 600,
+       "demandeId": "DEMxmsvmvr40nj7ke",
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      },
+      {
+       "id": "L002",
+       "categorie": "analyse",
+       "designation": "ASLO",
+       "quantite": 1,
+       "prixUnitaire": 4000,
+       "prixUnitaireNet": 4000,
+       "montantBrut": 4000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 4000,
+       "partAssureur": 2800,
+       "partPersonnel": 0,
+       "partPatient": 1200,
+       "demandeId": "DEMxmsvmvr404nitl",
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FE-2026-00001",
+     "numeroMecef": null,
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26",
+     "date": "2026-08-16",
+     "type": "Analyses — patient externe",
+     "montantHT": 6000,
+     "montantTTC": 6000,
+     "montantBrut": 6000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": "SUNU",
+     "tauxPriseEnCharge": 70,
+     "partAssurance": 4200,
+     "partPatient": 1800,
+     "montantPaye": 0,
+     "reliquat": 1800,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "origineDemande": "externe",
+     "prescripteurExterieur": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "taches": [
+    {
+     "id": "TCHxmsvmvr40g21s6",
+     "statut": "bloque",
+     "type": "prelevement",
+     "poste": "laboratoire",
+     "libelle": "Patient externe — BAKO Boukari",
+     "detail": "2 examen(s)",
+     "reference": "FE-2026-00001",
+     "factureId": "FACxmsvmvr406ju49",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "creeLe": "2026-08-16T10:00:00.000Z"
+    },
+    {
+     "id": "TCHxmsvmvr40k011z",
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Patient externe — BAKO Boukari",
+     "detail": "2 examen(s) — 6 000",
+     "reference": "FE-2026-00001",
+     "factureId": "FACxmsvmvr406ju49",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "montant": 6000,
+     "creeLe": "2026-08-16T10:00:00.000Z"
+    }
+   ],
+   "impression": {
+    "titre": "FICHE DE DEMANDE D’EXAMEN",
+    "sousTitre": "00006-2026",
+    "cartouche": [
+     [
+      "Nom",
+      "BAKO"
+     ],
+     [
+      "Prénoms",
+      "Boukari"
+     ],
+     [
+      "Âge",
+      "56 ans"
+     ],
+     [
+      "Sexe",
+      "Masculin"
+     ],
+     [
+      "Résidence",
+      "Natitingou"
+     ],
+     [
+      "Service demandeur",
+      "Maternité"
+     ],
+     [
+      "Prescripteur",
+      "BASSONGUI Chabi Séko"
+     ],
+     [
+      "Hospitalisé",
+      "Oui"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "Le prescripteur",
+      "nom": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "texte": "Indication clinique : AnémieUrgence : Un examen urgent — L02CodeExamen demandéÉchantillonTarifL01AKOPSelles2 000L02ASLOSang4 000TOTAL6 000",
+    "tableaux": [
+     {
+      "entetes": [
+       "Code",
+       "Examen demandé",
+       "Échantillon",
+       "Tarif"
+      ],
+      "lignes": [
+       [
+        "L01",
+        "AKOP",
+        "Selles",
+        "2 000"
+       ],
+       [
+        "L02",
+        "ASLO",
+        "Sang",
+        "4 000"
+       ]
+      ],
+      "pied": [
+       [
+        "TOTAL",
+        "",
+        "",
+        "6 000"
+       ]
+      ]
+     }
+    ]
+   },
+   "kpis": [
+    {
+     "libelle": "Fiches du service",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "libelle": "En attente de règlement",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Urgentes",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Résultats rendus",
+     "valeur": "1",
+     "indice": null
+    }
+   ]
+  },
+  "bilan": {
+   "toasts": [
+    [
+     "Fiche émise — 1 examen(s).",
+     "Facture FE-2026-00002 à la caisse ; le prélèvement suivra le règlement."
+    ]
+   ],
+   "demandes": [
+    {
+     "id": "DEMxmsvmvr40oflvg",
+     "statut": "actif",
+     "reference": "LAB-00008",
+     "codeAnalyse": "00008-2026",
+     "patientId": "PAT0003",
+     "patientCode": "CNT/3/26",
+     "patient": "N’TCHA Yacoubou",
+     "analyseCode": "L03",
+     "analyse": "AZOTEMIE (UREMIE)",
+     "categorie": "Biochimie",
+     "echantillon": "Sang",
+     "delai": "4 h",
+     "prix": 2500,
+     "dateHeure": "2026-08-16T10:00:00.000Z",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": null,
+     "urgent": true,
+     "etatAnalyse": "en_attente",
+     "origine": "service",
+     "origineDemande": "service",
+     "serviceDemandeur": "medecine",
+     "secteurDemandeur": null,
+     "indication": "Anémie",
+     "hospitalise": false,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmsvmvr40bts6o",
+     "factureNumero": "FE-2026-00002"
+    }
+   ]
+  },
+  "externe": {
+   "champs": [
+    "Prescripteur extérieur — nom, qualification et structure"
+   ],
+   "demandes": [
+    {
+     "id": "DEMxmsvmvr407ztnt",
+     "statut": "actif",
+     "reference": "LAB-00009",
+     "codeAnalyse": "00009-2026",
+     "patientId": "PAT0004",
+     "patientCode": "CNT/4/26",
+     "patient": "PARAISO Sabi",
+     "analyseCode": "L01",
+     "analyse": "AKOP",
+     "categorie": "Parasitologie",
+     "echantillon": "Selles",
+     "delai": "24 h",
+     "prix": 2000,
+     "dateHeure": "2026-08-16T10:00:00.000Z",
+     "prescripteur": "Dr SALIFOU Aminou, Centre de santé de Perma (extérieur)",
+     "laborantin": null,
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "origine": "service",
+     "origineDemande": "service",
+     "serviceDemandeur": "maternite",
+     "secteurDemandeur": "MATERNITÉ",
+     "indication": "Anémie",
+     "hospitalise": false,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmsvmvr40lvd4w",
+     "factureNumero": "FE-2026-00003"
+    }
+   ]
+  },
+  "reprise": {
+   "residence": "Santa, Natitingou",
+   "adresse": "Santa, Natitingou",
+   "quartier": "Kotopounga"
+  }
+ },
+ "pansements": {
+  "actes": [
+   {
+    "code": "CH04",
+    "libelle": "Pansement chirurgical",
+    "prix": 5000,
+    "tarifProvisoire": false
+   },
+   {
+    "code": "SO09",
+    "libelle": "Pansement",
+    "prix": 9000,
+    "tarifProvisoire": false
+   }
+  ],
+  "patientNonAssure": {
+   "code": "CNT/1/25",
+   "assureur": null
+  },
+  "vide": {
+   "kpis": [
+    {
+     "libelle": "Bons émis",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Séances en attente de règlement",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Types au catalogue",
+     "valeur": "2",
+     "indice": "Pansement (SO09) et pansement chirurgical (CH04)"
+    },
+    {
+     "libelle": "Tarif du pansement",
+     "valeur": "9 000 FCFA",
+     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)"
+    }
+   ],
+   "cartes": [
+    "Registre des bons"
+   ],
+   "tableaux": [],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Nouveau bon de pansement",
+    "Tout désélectionner"
+   ]
+  },
+  "modale": {
+   "champs": [
+    "Patient *",
+    "Prescripteur *",
+    "Type de pansement *",
+    "Nombre de séances *",
+    "Indication *"
+   ],
+   "defauts": {
+    "patientCode": "CNT/1/25",
+    "medecin": "BASSONGUI Chabi Séko",
+    "acteCode": "CH04",
+    "seances": "1",
+    "indication": ""
+   },
+   "optsActe": [
+    [
+     "CH04",
+     "Pansement chirurgical"
+    ],
+    [
+     "SO09",
+     "Pansement"
+    ]
+   ],
+   "optsPrescripteur": [
+    [
+     "BASSONGUI Chabi Séko",
+     "BASSONGUI Chabi Séko — Directeur Médical"
+    ],
+    [
+     "YENI M’PO Florent",
+     "YENI M’PO Florent — Médecin Généraliste"
+    ],
+    [
+     "TAKI Orou",
+     "TAKI Orou — Médecin Généraliste"
+    ],
+    [
+     "BADO BANI A. B. Zoulehath",
+     "BADO BANI A. B. Zoulehath — Sage-femme"
+    ],
+    [
+     "BOUKARI Nadège",
+     "BOUKARI Nadège — Sage-femme"
+    ],
+    [
+     "ADAM Colette",
+     "ADAM Colette — Sage-femme"
+    ]
+   ]
+  },
+  "refusVide": {
+   "toasts": [
+    [
+     "Le formulaire comporte des erreurs."
+    ]
+   ],
+   "ordonnances": 0
+  },
+  "emission": {
+   "toasts": [
+    [
+     "Bon ORD-2026-00001 émis — 3 séance(s).",
+     "Facture FP-2026-00001 à la caisse ; la salle de soins est informée, exécutable après encaissement."
+    ]
+   ],
+   "ordonnances": [
+    {
+     "id": "ORDxmsvmvr40zbvi0",
+     "statut": "actif",
+     "numero": "ORD-2026-00001",
+     "date": "2026-08-16T10:00:00.000Z",
+     "patientId": "PAT0001",
+     "patientCode": "CNT/1/25",
+     "patient": "TCHANE Bertine",
+     "medecin": "BASSONGUI Chabi Séko",
+     "diagnostic": "Plaie du pied",
+     "consultationId": null,
+     "dossierConsultationId": null,
+     "medicaments": [],
+     "analyses": [],
+     "actes": [
+      {
+       "code": "SO09",
+       "libelle": "Pansement",
+       "secteur": "Soins et observation",
+       "prix": 9000,
+       "tarifValide": true
+      },
+      {
+       "code": "SO09",
+       "libelle": "Pansement",
+       "secteur": "Soins et observation",
+       "prix": 9000,
+       "tarifValide": true
+      },
+      {
+       "code": "SO09",
+       "libelle": "Pansement",
+       "secteur": "Soins et observation",
+       "prix": 9000,
+       "tarifValide": true
+      }
+     ],
+     "imagerie": [],
+     "montantMedicaments": 0,
+     "montantAnalyses": 0,
+     "montantActes": 27000,
+     "montantImagerie": 0,
+     "montant": 27000,
+     "urgent": false,
+     "statutPaiement": "impayee",
+     "statutDispensation": "sans_objet",
+     "statutAnalyses": "sans_objet",
+     "statutActes": "en_attente",
+     "statutImagerie": "sans_objet",
+     "factureId": "FACxmsvmvr40460g5",
+     "factureNumero": "FP-2026-00001"
+    }
+   ],
+   "factures": [
+    {
+     "id": "FACxmsvmvr40460g5",
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "acte",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "SO09",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      },
+      {
+       "id": "L002",
+       "categorie": "acte",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "SO09",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      },
+      {
+       "id": "L003",
+       "categorie": "acte",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": "SO09",
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FP-2026-00001",
+     "numeroMecef": null,
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25",
+     "date": "2026-08-16",
+     "type": "Prescription",
+     "montantHT": 27000,
+     "montantTTC": 27000,
+     "montantBrut": 27000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 27000,
+     "montantPaye": 0,
+     "reliquat": 27000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "ordonnanceId": "ORDxmsvmvr40zbvi0",
+     "ordonnanceNumero": "ORD-2026-00001",
+     "dossierConsultationId": null
+    }
+   ],
+   "taches": [
+    {
+     "id": "TCHxmsvmvr40uvecx",
+     "statut": "bloque",
+     "type": "acte",
+     "role": "infirmier",
+     "module": "M3",
+     "ecran": "m3-soins",
+     "titre": "Exécuter les actes prescrits",
+     "icon": "stethoscope",
+     "reference": "ORD-2026-00001",
+     "ordonnanceId": "ORDxmsvmvr40zbvi0",
+     "factureId": "FACxmsvmvr40460g5",
+     "factureNumero": "FP-2026-00001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25",
+     "date": "2026-08-16T10:00:00.000Z",
+     "urgent": false,
+     "faitLe": null,
+     "faitPar": null,
+     "detail": "Pansement, Pansement, Pansement",
+     "montant": 27000
+    },
+    {
+     "id": "TCHxmsvmvr404a0jq",
+     "statut": "en_attente",
+     "type": "encaissement",
+     "role": "caissier",
+     "module": "M8",
+     "ecran": "m8-caisse",
+     "titre": "Encaisser la prescription",
+     "icon": "coins",
+     "reference": "ORD-2026-00001",
+     "ordonnanceId": "ORDxmsvmvr40zbvi0",
+     "factureId": "FACxmsvmvr40460g5",
+     "factureNumero": "FP-2026-00001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25",
+     "date": "2026-08-16T10:00:00.000Z",
+     "urgent": false,
+     "faitLe": null,
+     "faitPar": null,
+     "detail": "3 acte(s)",
+     "montant": 27000
+    }
+   ],
+   "impression": {
+    "titre": "BON DE PANSEMENT",
+    "sousTitre": "ORD-2026-00001 — TCHANE Bertine",
+    "cartouche": [
+     [
+      "Patient",
+      "TCHANE Bertine"
+     ],
+     [
+      "Dossier",
+      "CNT/1/25"
+     ],
+     [
+      "Date",
+      "16/08/2026"
+     ],
+     [
+      "Prescripteur",
+      "BASSONGUI Chabi Séko"
+     ],
+     [
+      "Facture",
+      "FP-2026-00001"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "Le prescripteur",
+      "nom": "BASSONGUI Chabi Séko"
+     },
+     {
+      "role": "L’exécutant",
+      "mention": "Salle de soins"
+     }
+    ],
+    "texte": "Indication : Plaie du piedSéanceActeTarifSéance 1Pansement9 000Séance 2Pansement9 000Séance 3Pansement9 000TOTAL27 000Chaque séance se règle à la caisse ; la salle de soins n’exécute que les séances réglées, sur présentation du présent bon.",
+    "tableaux": [
+     {
+      "entetes": [
+       "Séance",
+       "Acte",
+       "Tarif"
+      ],
+      "lignes": [
+       [
+        "Séance 1",
+        "Pansement",
+        "9 000"
+       ],
+       [
+        "Séance 2",
+        "Pansement",
+        "9 000"
+       ],
+       [
+        "Séance 3",
+        "Pansement",
+        "9 000"
+       ]
+      ],
+      "pied": [
+       [
+        "TOTAL",
+        "",
+        "27 000"
+       ]
+      ]
+     }
+    ]
+   },
+   "kpis": [
+    {
+     "libelle": "Bons émis",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Séances en attente de règlement",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Types au catalogue",
+     "valeur": "2",
+     "indice": "Pansement (SO09) et pansement chirurgical (CH04)"
+    },
+    {
+     "libelle": "Tarif du pansement",
+     "valeur": "9 000 FCFA",
+     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)"
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "DATE",
+      "PATIENT",
+      "PRESCRIPTEUR",
+      "SÉANCES RÉGLÉES",
+      "MONTANT",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "ORD-2026-00001",
+       "16/08/2026",
+       "TCHANE Bertine — CNT/1/25",
+       "BASSONGUI Chabi Séko",
+       "0 / 3",
+       "27 000",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  "partiel": {
+   "ok": true,
+   "lignes": [
+    {
+     "id": "L001",
+     "acteCode": "SO09",
+     "statutPaiement": "paye",
+     "montantRegle": 9000,
+     "partPatient": 9000
+    },
+    {
+     "id": "L002",
+     "acteCode": "SO09",
+     "statutPaiement": "du",
+     "montantRegle": 0,
+     "partPatient": 9000
+    },
+    {
+     "id": "L003",
+     "acteCode": "SO09",
+     "statutPaiement": "du",
+     "montantRegle": 0,
+     "partPatient": 9000
+    }
+   ]
+  },
+  "apresPartiel": {
+   "kpis": [
+    {
+     "libelle": "Bons émis",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Séances en attente de règlement",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Types au catalogue",
+     "valeur": "2",
+     "indice": "Pansement (SO09) et pansement chirurgical (CH04)"
+    },
+    {
+     "libelle": "Tarif du pansement",
+     "valeur": "9 000 FCFA",
+     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)"
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "DATE",
+      "PATIENT",
+      "PRESCRIPTEUR",
+      "SÉANCES RÉGLÉES",
+      "MONTANT",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "ORD-2026-00001",
+       "16/08/2026",
+       "TCHANE Bertine — CNT/1/25",
+       "BASSONGUI Chabi Séko",
+       "1 / 3",
+       "27 000",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  "impressionBon": {
+   "titre": "BON DE PANSEMENT",
+   "sousTitre": "ORD-2026-00001 — TCHANE Bertine",
+   "cartouche": [
+    [
+     "Patient",
+     "TCHANE Bertine"
+    ],
+    [
+     "Dossier",
+     "CNT/1/25"
+    ],
+    [
+     "Date",
+     "16/08/2026"
+    ],
+    [
+     "Prescripteur",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "Facture",
+     "FP-2026-00001"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le prescripteur",
+     "nom": "BASSONGUI Chabi Séko"
+    },
+    {
+     "role": "L’exécutant",
+     "mention": "Salle de soins"
+    }
+   ],
+   "texte": "Indication : Plaie du piedSéanceActeTarifSéance 1Pansement9 000Séance 2Pansement9 000Séance 3Pansement9 000TOTAL27 000Chaque séance se règle à la caisse ; la salle de soins n’exécute que les séances réglées, sur présentation du présent bon.",
+   "tableaux": [
+    {
+     "entetes": [
+      "Séance",
+      "Acte",
+      "Tarif"
+     ],
+     "lignes": [
+      [
+       "Séance 1",
+       "Pansement",
+       "9 000"
+      ],
+      [
+       "Séance 2",
+       "Pansement",
+       "9 000"
+      ],
+      [
+       "Séance 3",
+       "Pansement",
+       "9 000"
+      ]
+     ],
+     "pied": [
+      [
+       "TOTAL",
+       "",
+       "27 000"
+      ]
+     ]
+    }
+   ]
+  },
+  "tiroir": {
+   "texte": "Bon ORD-2026-00001 TCHANE Bertine PATIENT TCHANE Bertine PRESCRIPTEUR BASSONGUI Chabi Séko DATE 16/08/2026 SÉANCES 1 réglée(s) sur 3 FACTURE FP-2026-00001 MONTANT 27 000 FCFA La salle de soins n’exécute que les séances RÉGLÉES : 2 séance(s) attendent la caisse.",
+   "boutons": [
+    "Fermer"
+   ]
+  },
+  "assure": {
+   "code": "CNT/2/26",
+   "assureur": "SUNU",
+   "prescription": {
+    "montant": 18000,
+    "lignes": [
+     {
+      "acteCode": "SO09",
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000
+     },
+     {
+      "acteCode": "SO09",
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000
+     }
+    ]
+   }
+  },
+  "tarifAssure": [
+   {
+    "nom": "carte valide : 6 000 la séance (grille, colonnes inversées)",
+    "carteExpiration": "2099-12-31",
+    "montant": 12000,
+    "actes": [
+     {
+      "code": "SO09",
+      "prix": 6000
+     },
+     {
+      "code": "SO09",
+      "prix": 6000
+     }
+    ],
+    "lignes": [
+     {
+      "acteCode": "SO09",
+      "montant": 6000,
+      "partAssureur": 4800,
+      "partPatient": 1200
+     },
+     {
+      "acteCode": "SO09",
+      "montant": 6000,
+      "partAssureur": 4800,
+      "partPatient": 1200
+     }
+    ],
+    "partPatient": 2400,
+    "partAssurance": 9600
+   },
+   {
+    "nom": "carte expirée : 9 000 la séance (non assuré)",
+    "carteExpiration": "2000-01-01",
+    "montant": 18000,
+    "actes": [
+     {
+      "code": "SO09",
+      "prix": 9000
+     },
+     {
+      "code": "SO09",
+      "prix": 9000
+     }
+    ],
+    "lignes": [
+     {
+      "acteCode": "SO09",
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000
+     },
+     {
+      "acteCode": "SO09",
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000
+     }
+    ],
+    "partPatient": 18000,
+    "partAssurance": 0
+   }
+  ]
+ },
+ "sorties": {
+  "jeu": {
+   "admissions": [
+    {
+     "id": "ADM1",
+     "statut": "en_cours",
+     "reference": "H00001",
+     "chambre": "A1",
+     "lit": "A1 LIT1",
+     "dateEntree": "2026-08-06",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 1",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    {
+     "id": "ADM2",
+     "statut": "en_cours",
+     "reference": "H00002",
+     "chambre": "C1",
+     "lit": "C1 LIT1",
+     "dateEntree": "2026-08-14",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 2",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    },
+    {
+     "id": "ADM3",
+     "statut": "sortie",
+     "reference": "H00003",
+     "chambre": "A2",
+     "lit": "A2 LIT1",
+     "dateEntree": "2026-07-27",
+     "dateSortie": "2026-08-02",
+     "diagnosticEntree": "Diagnostic 3",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    },
+    {
+     "id": "ADM4",
+     "statut": "en_cours",
+     "reference": "H00004",
+     "chambre": "D1",
+     "lit": "D1 LIT1",
+     "dateEntree": "2026-08-16",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 4",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "patientCode": "CNT/4/26"
+    },
+    {
+     "id": "ADM5",
+     "statut": "archive",
+     "reference": "H00005",
+     "chambre": "B1",
+     "lit": "B1 LIT1",
+     "dateEntree": "2026-08-13",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 5",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0005",
+     "patient": "TAKI Ganiou",
+     "patientCode": "CNT/5/26"
+    }
+   ],
+   "factures": [
+    {
+     "id": "F1",
+     "statut": "actif",
+     "numero": "FA-2026-00001",
+     "montantTTC": 10000,
+     "reliquat": 15000,
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    {
+     "id": "F2",
+     "statut": "actif",
+     "numero": "FA-2026-00002",
+     "montantTTC": 10000,
+     "reliquat": 5000,
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    {
+     "id": "F3",
+     "statut": "actif",
+     "numero": "FA-2026-00003",
+     "montantTTC": 10000,
+     "reliquat": 0,
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    },
+    {
+     "id": "F4",
+     "statut": "actif",
+     "numero": "FA-2026-00004",
+     "montantTTC": 10000,
+     "reliquat": 7000,
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    },
+    {
+     "id": "F5",
+     "statut": "actif",
+     "numero": "FA-2026-00005",
+     "montantTTC": 10000,
+     "reliquat": 0,
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "patientCode": "CNT/4/26"
+    }
+   ]
+  },
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Patients hospitalisés",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Sorties finalisables",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Bloquées par le solde",
+     "valeur": "1",
+     "indice": "RG-06"
+    },
+    {
+     "libelle": "Sorties réalisées",
+     "valeur": "1",
+     "indice": null
+    }
+   ],
+   "cartes": [
+    "Patients en cours d’hospitalisation"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "LIT",
+      "PATIENT",
+      "ENTRÉE",
+      "SÉJOUR",
+      "DIAGNOSTIC",
+      "SOLDE (RG-06)",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "A1 LIT1",
+       "TCHANE Bertine CNT/1/25",
+       "06/08/2026",
+       "10 j",
+       "Diagnostic 1",
+       "20 000",
+       "Préparer la sortie"
+      ],
+      [
+       "C1 LIT1",
+       "BAKO Boukari CNT/2/26",
+       "14/08/2026",
+       "2 j",
+       "Diagnostic 2",
+       "Apuré",
+       "Préparer la sortie"
+      ],
+      [
+       "D1 LIT1",
+       "PARAISO Sabi CNT/4/26",
+       "16/08/2026",
+       "0 j",
+       "Diagnostic 4",
+       "Apuré",
+       "Préparer la sortie"
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Tout désélectionner",
+    "Préparer la sortie",
+    "Préparer la sortie",
+    "Préparer la sortie"
+   ],
+   "boutonsLigne": [
+    "Préparer la sortie"
+   ]
+  },
+  "fiche": {
+   "tiroir": {
+    "texte": "Sortie d’hospitalisation TCHANE Bertine — lit A1 LIT1 Patient TCHANE Bertine Dossier CNT/1/25 Lit A1 LIT1 Entrée 06/08/2026 Durée du séjour 10 jour(s) Diagnostic Diagnostic 1 RG-06 — vérification financière non satisfaite. Solde restant dû : 20 000 FCFA. La sortie exige soit l’encaissement du solde à la caisse, soit une dérogation motivée de la Direction, qui sera tracée dans le journal d’audit. Date de sortie * État à la sortie * Guéri Amélioré Stationnaire Transféré Sortie contre avis médical Consignes de sortie et suivi SIGNATURES ET CONSTAT (RG-07) Signature du patient recueillie Signature de l’infirmier traitant Constat du gardien effectué Dérogation de la Direction (si solde non apuré) Éditer le bon de sortie Finaliser la sortie",
+    "boutons": [
+     "Fermer",
+     "Éditer le bon de sortie",
+     "Finaliser la sortie"
+    ]
+   },
+   "champs": [
+    "Date de sortie *",
+    "État à la sortie *",
+    "Consignes de sortie et suivi",
+    "Signature du patient recueillie",
+    "Signature de l’infirmier traitant",
+    "Constat du gardien effectué",
+    "Dérogation de la Direction (si solde non apuré)"
+   ],
+   "defauts": {
+    "dateSortie": "2026-08-16",
+    "etatSortie": "Guéri",
+    "consignes": "",
+    "sigPatient": false,
+    "sigInfirmier": false,
+    "constatGardien": false,
+    "derogation": ""
+   },
+   "optsEtat": [
+    [
+     "Guéri",
+     "Guéri"
+    ],
+    [
+     "Amélioré",
+     "Amélioré"
+    ],
+    [
+     "Stationnaire",
+     "Stationnaire"
+    ],
+    [
+     "Transféré",
+     "Transféré"
+    ],
+    [
+     "Sortie contre avis médical",
+     "Sortie contre avis médical"
+    ]
+   ]
+  },
+  "refus": {
+   "sansSignatures": {
+    "toasts": [
+     [
+      "RG-07 — les trois signatures sont obligatoires.",
+      "Patient, infirmier traitant et constat du gardien."
+     ]
+    ]
+   },
+   "deuxSignatures": {
+    "toasts": [
+     [
+      "RG-07 — les trois signatures sont obligatoires.",
+      "Patient, infirmier traitant et constat du gardien."
+     ]
+    ]
+   },
+   "soldeSansDerogation": {
+    "toasts": [
+     [
+      "RG-06 — solde non apuré : une dérogation motivée est requise.",
+      "Encaisser le solde à la caisse ou saisir la dérogation de la Direction."
+     ]
+    ],
+    "admission": {
+     "id": "ADM1",
+     "statut": "en_cours",
+     "reference": "H00001",
+     "chambre": "A1",
+     "lit": "A1 LIT1",
+     "dateEntree": "2026-08-06",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 1",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    }
+   },
+   "derogationBlanche": {
+    "toasts": [
+     [
+      "RG-06 — solde non apuré : une dérogation motivée est requise.",
+      "Encaisser le solde à la caisse ou saisir la dérogation de la Direction."
+     ]
+    ]
+   }
+  },
+  "bonSortie": {
+   "titre": "Bon de sortie d’hospitalisation",
+   "sousTitre": "Référence H00001",
+   "cartouche": [
+    [
+     "Patient",
+     "TCHANE Bertine"
+    ],
+    [
+     "Dossier",
+     "CNT/1/25"
+    ],
+    [
+     "Date d’entrée",
+     "06/08/2026"
+    ],
+    [
+     "Date de sortie",
+     "16/08/2026"
+    ],
+    [
+     "Lit",
+     "A1 LIT1"
+    ],
+    [
+     "Durée du séjour",
+     "10 jour(s)"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Patient",
+     "mention": "Signature"
+    },
+    {
+     "role": "L’Infirmier traitant",
+     "nom": "GARBA Yahouza",
+     "mention": "Signature"
+    },
+    {
+     "role": "Le Gardien",
+     "mention": "Constat de sortie"
+    }
+   ],
+   "texte": "RubriqueInformationDiagnostic d’entréeDiagnostic 1État à la sortieAmélioréConsignes de sortieRepos 7 joursVérification financière (RG-06)Solde restant dû : 20 000 FCFADérogation Direction Conformément à la règle RG-07, la présente sortie requiert la signature du patient, celle de l’infirmier traitant et le constat du gardien.",
+   "tableaux": [
+    {
+     "entetes": [
+      "Rubrique",
+      "Information"
+     ],
+     "lignes": [
+      [
+       "Diagnostic d’entrée",
+       "Diagnostic 1"
+      ],
+      [
+       "État à la sortie",
+       "Amélioré"
+      ],
+      [
+       "Consignes de sortie",
+       "Repos 7 jours"
+      ],
+      [
+       "Vérification financière (RG-06)",
+       "Solde restant dû : 20 000 FCFA"
+      ],
+      [
+       "Dérogation Direction",
+       ""
+      ]
+     ],
+     "pied": []
+    }
+   ]
+  },
+  "finalisation": {
+   "toasts": [
+    [
+     "Sortie finalisée — le lit A1 LIT1 est libéré."
+    ]
+   ],
+   "admission": {
+    "id": "ADM1",
+    "statut": "sortie",
+    "reference": "H00001",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "dateEntree": "2026-08-06",
+    "dateSortie": "2026-08-16",
+    "diagnosticEntree": "Diagnostic 1",
+    "infirmier": "GARBA Yahouza",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "etatSortie": "Amélioré",
+    "consignes": "Repos 7 jours",
+    "derogation": "Accord de la Directrice Administrative",
+    "signaturePatient": true,
+    "signatureInfirmier": true,
+    "constatGardien": true
+   },
+   "kpis": [
+    {
+     "libelle": "Patients hospitalisés",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Sorties finalisables",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Bloquées par le solde",
+     "valeur": "0",
+     "indice": "RG-06"
+    },
+    {
+     "libelle": "Sorties réalisées",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "LIT",
+      "PATIENT",
+      "ENTRÉE",
+      "SÉJOUR",
+      "DIAGNOSTIC",
+      "SOLDE (RG-06)",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "C1 LIT1",
+       "BAKO Boukari CNT/2/26",
+       "14/08/2026",
+       "2 j",
+       "Diagnostic 2",
+       "Apuré",
+       "Préparer la sortie"
+      ],
+      [
+       "D1 LIT1",
+       "PARAISO Sabi CNT/4/26",
+       "16/08/2026",
+       "0 j",
+       "Diagnostic 4",
+       "Apuré",
+       "Préparer la sortie"
+      ]
+     ]
+    }
+   ]
+  },
+  "apure": {
+   "tiroir": "Sortie d’hospitalisation BAKO Boukari — lit C1 LIT1 Patient BAKO Boukari Dossier CNT/2/26 Lit C1 LIT1 Entrée 14/08/2026 Durée du séjour 2 jour(s) Diagnostic Diagnostic 2 RG-06 — Vérification financière satisfaite : le solde du patient est apuré. Date de sortie * État à la sortie * Guéri Amélioré Stationnaire Transféré Sortie contre avis médical Consignes de sortie et suivi SIGNATURES ET CONSTAT (RG-07) Signature du patient recueillie Signature de l’infirmier traitant Constat du gardien effectué Dérogation de la Direction (si solde non apuré) Éditer le bon de sortie Finaliser la sortie",
+   "sortie": {
+    "toasts": [
+     [
+      "Sortie finalisée — le lit C1 LIT1 est libéré."
+     ]
+    ],
+    "admission": {
+     "id": "ADM2",
+     "statut": "sortie",
+     "reference": "H00002",
+     "chambre": "C1",
+     "lit": "C1 LIT1",
+     "dateEntree": "2026-08-14",
+     "dateSortie": "2026-08-16",
+     "diagnosticEntree": "Diagnostic 2",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26",
+     "etatSortie": "Guéri",
+     "consignes": "",
+     "derogation": null,
+     "signaturePatient": true,
+     "signatureInfirmier": true,
+     "constatGardien": true
+    },
+    "kpis": [
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Sorties finalisables",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Bloquées par le solde",
+      "valeur": "0",
+      "indice": "RG-06"
+     },
+     {
+      "libelle": "Sorties réalisées",
+      "valeur": "3",
+      "indice": null
+     }
+    ]
+   },
+   "annulee": {
+    "admission": {
+     "id": "ADM2",
+     "statut": "en_cours",
+     "reference": "H00002",
+     "chambre": "C1",
+     "lit": "C1 LIT1",
+     "dateEntree": "2026-08-14",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 2",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26",
+     "etatSortie": "Guéri",
+     "consignes": "",
+     "derogation": null,
+     "signaturePatient": true,
+     "signatureInfirmier": true,
+     "constatGardien": true
+    },
+    "kpis": [
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Sorties finalisables",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Bloquées par le solde",
+      "valeur": "0",
+      "indice": "RG-06"
+     },
+     {
+      "libelle": "Sorties réalisées",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   }
+  }
+ },
+ "avisMedical": {
+  "jeu": {
+   "sorties": [
+    {
+     "id": "SAM0001",
+     "statut": "actif",
+     "reference": "SAM0001",
+     "dateSortie": "2026-08-11",
+     "heureSortie": "14:00",
+     "motif": "Raisons familiales",
+     "risques": "Aggravation",
+     "avisProcureur": true,
+     "referenceProcureur": "PR-12",
+     "decharge": true,
+     "cloture": true,
+     "admissionId": "ADMX",
+     "lit": "B1 LIT1",
+     "patientId": "PAT0004",
+     "patient": "PARAISO Sabi",
+     "patientCode": "CNT/4/26"
+    },
+    {
+     "id": "SAM0002",
+     "statut": "actif",
+     "reference": "SAM0002",
+     "dateSortie": "2026-08-12",
+     "heureSortie": "",
+     "motif": "Coût",
+     "risques": "",
+     "avisProcureur": false,
+     "decharge": false,
+     "cloture": false,
+     "admissionId": "ADMY",
+     "lit": "B2 LIT1",
+     "patientId": "PAT0005",
+     "patient": "TAKI Ganiou",
+     "patientCode": "CNT/5/26"
+    }
+   ],
+   "admissions": [
+    {
+     "id": "ADM1",
+     "statut": "en_cours",
+     "reference": "H00001",
+     "chambre": "A1",
+     "lit": "A1 LIT1",
+     "dateEntree": "2026-08-15",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 1",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    {
+     "id": "ADM2",
+     "statut": "en_cours",
+     "reference": "H00002",
+     "chambre": "C1",
+     "lit": "C1 LIT1",
+     "dateEntree": "2026-08-14",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 2",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    },
+    {
+     "id": "ADM3",
+     "statut": "en_cours",
+     "reference": "H00003",
+     "chambre": "A2",
+     "lit": "A2 LIT1",
+     "dateEntree": "2026-08-13",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 3",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    }
+   ]
+  },
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Sorties contre avis médical",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Avec avis du Procureur",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Patients hospitalisés",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Dossiers clôturés",
+     "valeur": "1",
+     "indice": null
+    }
+   ],
+   "notes": [
+    "Cette procédure dégage la responsabilité de la clinique. Le motif du refus de soins et la décharge signée du patient sont impératifs."
+   ],
+   "cartes": [
+    "Registre des sorties contre avis médical"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "PATIENT",
+      "DATE DE SORTIE",
+      "MOTIF INVOQUÉ",
+      "PROCUREUR",
+      "DÉCHARGE",
+      "DOSSIER",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "SAM0001",
+       "PARAISO Sabi",
+       "11/08/2026",
+       "Raisons familiales",
+       "Avis consigné",
+       "Signée",
+       "Clôturé",
+       ""
+      ],
+      [
+       "SAM0002",
+       "TAKI Ganiou",
+       "12/08/2026",
+       "Coût",
+       "Sans objet",
+       "Manquante",
+       "Ouvert",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Enregistrer",
+    "Tout désélectionner",
+    "Imprimer le document",
+    "Modifier",
+    "Archiver",
+    "Imprimer le document",
+    "Modifier",
+    "Archiver"
+   ],
+   "boutonsLigne": [
+    "Imprimer le document",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "impression": {
+   "titre": "Sortie contre avis médical",
+   "sousTitre": "Décharge de responsabilité — SAM0001",
+   "cartouche": [
+    [
+     "Patient",
+     "PARAISO Sabi"
+    ],
+    [
+     "Dossier",
+     "CNT/4/26"
+    ],
+    [
+     "Lit",
+     "B1 LIT1"
+    ],
+    [
+     "Date de sortie",
+     "11/08/2026"
+    ],
+    [
+     "Heure",
+     "14:00"
+    ],
+    [
+     "Référence",
+     "SAM0001"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Patient ou son représentant",
+     "mention": "Signature précédée de la mention « lu et approuvé »"
+    },
+    {
+     "role": "Le Médecin",
+     "mention": "Signature"
+    },
+    {
+     "role": "La Direction",
+     "mention": "Visa"
+    }
+   ],
+   "texte": "RubriqueInformationMotif invoqué par le patientRaisons familialesRisques exposés au patientAggravationAvis du ProcureurConsigné — PR-12Décharge signéeOuiJe soussigné(e), patient(e) ou représentant légal, déclare quitter la CLINIQUE NASSIERA TOO SARL contre l’avis du médecin traitant. J’ai été pleinement informé(e) des risques encourus pour ma santé et je décharge l’établissement ainsi que son personnel de toute responsabilité quant aux conséquences de cette décision.",
+   "tableaux": [
+    {
+     "entetes": [
+      "Rubrique",
+      "Information"
+     ],
+     "lignes": [
+      [
+       "Motif invoqué par le patient",
+       "Raisons familiales"
+      ],
+      [
+       "Risques exposés au patient",
+       "Aggravation"
+      ],
+      [
+       "Avis du Procureur",
+       "Consigné — PR-12"
+      ],
+      [
+       "Décharge signée",
+       "Oui"
+      ]
+     ],
+     "pied": []
+    }
+   ]
+  },
+  "creation": {
+   "champs": [
+    "Patient hospitalisé *",
+    "Date de sortie *",
+    "Heure",
+    "Motif invoqué par le patient *",
+    "Risques exposés au patient",
+    "Avis du Procureur requis et consigné",
+    "Référence de l’avis du Procureur",
+    "Décharge signée par le patient",
+    "Dossier clôturé"
+   ],
+   "titre": "Sortie contre avis médical RG-08 — motif obligatoire, avis du Procureur si la situation l’exige. Patient hospitalisé * A1 LIT1 — TCHANE Bertine (CNT/1/25) C1 LI",
+   "defauts": {
+    "admissionId": "ADM1",
+    "dateSortie": "2026-08-16",
+    "heureSortie": "",
+    "avisProcureur": false,
+    "decharge": false,
+    "cloture": false
+   },
+   "optsAdmission": [
+    [
+     "ADM1",
+     "A1 LIT1 — TCHANE Bertine (CNT/1/25)"
+    ],
+    [
+     "ADM2",
+     "C1 LIT1 — BAKO Boukari (CNT/2/26)"
+    ],
+    [
+     "ADM3",
+     "A2 LIT1 — N’TCHA Yacoubou (CNT/3/26)"
+    ]
+   ],
+   "refusMotif": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 2
+   },
+   "refusProcureur": {
+    "toasts": [
+     [
+      "La référence de l’avis du Procureur est obligatoire."
+     ]
+    ],
+    "total": 2
+   },
+   "cree": {
+    "toasts": [
+     [
+      "Sortie contre avis médical consignée."
+     ]
+    ],
+    "fiche": {
+     "id": "SORxmsvmvr407n0gl",
+     "statut": "actif",
+     "admissionId": "ADM1",
+     "dateSortie": "2026-08-16",
+     "heureSortie": "",
+     "motif": "Veut rentrer au village",
+     "risques": "Infection",
+     "avisProcureur": true,
+     "referenceProcureur": "PR-2026-41",
+     "decharge": true,
+     "cloture": false,
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25",
+     "lit": "A1 LIT1",
+     "reference": "SAM0003"
+    },
+    "admission": {
+     "id": "ADM1",
+     "statut": "sortie",
+     "reference": "H00001",
+     "chambre": "A1",
+     "lit": "A1 LIT1",
+     "dateEntree": "2026-08-15",
+     "dateSortie": "2026-08-16",
+     "diagnosticEntree": "Diagnostic 1",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25"
+    },
+    "kpis": [
+     {
+      "libelle": "Sorties contre avis médical",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Avec avis du Procureur",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Dossiers clôturés",
+      "valeur": "1",
+      "indice": null
+     }
+    ]
+   },
+   "optsApres": [
+    [
+     "ADM2",
+     "C1 LIT1 — BAKO Boukari (CNT/2/26)"
+    ],
+    [
+     "ADM3",
+     "A2 LIT1 — N’TCHA Yacoubou (CNT/3/26)"
+    ]
+   ],
+   "sansDecharge": {
+    "toasts": [
+     [
+      "Sortie contre avis médical consignée."
+     ]
+    ],
+    "fiche": {
+     "id": "SORxmsvmvr40ym0in",
+     "statut": "actif",
+     "admissionId": "ADM2",
+     "dateSortie": "2026-08-16",
+     "heureSortie": "",
+     "motif": "Départ non motivé",
+     "risques": "",
+     "avisProcureur": false,
+     "referenceProcureur": "",
+     "decharge": false,
+     "cloture": false,
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26",
+     "lit": "C1 LIT1",
+     "reference": "SAM0004"
+    },
+    "admission": {
+     "id": "ADM2",
+     "statut": "sortie",
+     "reference": "H00002",
+     "chambre": "C1",
+     "lit": "C1 LIT1",
+     "dateEntree": "2026-08-14",
+     "dateSortie": "2026-08-16",
+     "diagnosticEntree": "Diagnostic 2",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26"
+    },
+    "kpis": [
+     {
+      "libelle": "Sorties contre avis médical",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Avec avis du Procureur",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Dossiers clôturés",
+      "valeur": "1",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "annulation": {
+   "avant": {
+    "admission": {
+     "id": "ADM3",
+     "statut": "sortie",
+     "reference": "H00003",
+     "chambre": "A2",
+     "lit": "A2 LIT1",
+     "dateEntree": "2026-08-13",
+     "dateSortie": "2026-08-16",
+     "diagnosticEntree": "Diagnostic 3",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    },
+    "actives": 5
+   },
+   "apres": {
+    "admission": {
+     "id": "ADM3",
+     "statut": "en_cours",
+     "reference": "H00003",
+     "chambre": "A2",
+     "lit": "A2 LIT1",
+     "dateEntree": "2026-08-13",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 3",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    },
+    "fiche": {},
+    "actives": 4,
+    "kpis": [
+     {
+      "libelle": "Sorties contre avis médical",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Avec avis du Procureur",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Dossiers clôturés",
+      "valeur": "1",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "modifierCreee": {
+   "valeurs": {
+    "admissionId": "ADM1",
+    "dateSortie": "2026-08-16",
+    "motif": "Veut rentrer au village"
+   },
+   "optsAdmission": [
+    [
+     "ADM1",
+     "A1 LIT1 — TCHANE Bertine (CNT/1/25)"
+    ],
+    [
+     "ADM3",
+     "A2 LIT1 — N’TCHA Yacoubou (CNT/3/26)"
+    ]
+   ],
+   "enregistre": {
+    "toasts": [
+     [
+      "Procédure mise à jour."
+     ]
+    ],
+    "fiche": {
+     "id": "SORxmsvmvr407n0gl",
+     "statut": "actif",
+     "admissionId": "ADM1",
+     "dateSortie": "2026-08-16",
+     "heureSortie": "",
+     "motif": "Veut rentrer au village (corrigé)",
+     "risques": "Infection",
+     "avisProcureur": true,
+     "referenceProcureur": "PR-2026-41",
+     "decharge": true,
+     "cloture": false,
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25",
+     "lit": "A1 LIT1",
+     "reference": "SAM0003"
+    },
+    "kpis": [
+     {
+      "libelle": "Sorties contre avis médical",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Avec avis du Procureur",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Dossiers clôturés",
+      "valeur": "1",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "modification": {
+   "titre": "Modifier la procédure RG-08 — motif obligatoire, avis du Procureur si la situation l’exige. Patient hospitalisé * B2 LIT1 — TAKI Ganiou (CNT",
+   "valeurs": {
+    "admissionId": "ADMY",
+    "dateSortie": "2026-08-12",
+    "motif": "Coût",
+    "avisProcureur": false,
+    "decharge": false
+   },
+   "enregistre": {
+    "toasts": [
+     [
+      "Procédure mise à jour."
+     ]
+    ],
+    "fiche": {
+     "id": "SAM0002",
+     "statut": "actif",
+     "reference": "SAM0002",
+     "dateSortie": "2026-08-12",
+     "heureSortie": "",
+     "motif": "Coût",
+     "risques": "",
+     "avisProcureur": false,
+     "decharge": true,
+     "cloture": true,
+     "admissionId": "ADMY",
+     "lit": "B2 LIT1",
+     "patientId": "PAT0005",
+     "patient": "TAKI Ganiou",
+     "patientCode": "CNT/5/26",
+     "referenceProcureur": ""
+    },
+    "kpis": [
+     {
+      "libelle": "Sorties contre avis médical",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Avec avis du Procureur",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Dossiers clôturés",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "archivage": {
+   "toasts": [
+    [
+     "Enregistrement archivé."
+    ],
+    [
+     "Procédure mise à jour."
+    ]
+   ],
+   "fiche": {
+    "id": "SAM0001",
+    "statut": "archive",
+    "reference": "SAM0001",
+    "dateSortie": "2026-08-11",
+    "heureSortie": "14:00",
+    "motif": "Raisons familiales",
+    "risques": "Aggravation",
+    "avisProcureur": true,
+    "referenceProcureur": "PR-12",
+    "decharge": true,
+    "cloture": true,
+    "admissionId": "ADMX",
+    "lit": "B1 LIT1",
+    "patientId": "PAT0004",
+    "patient": "PARAISO Sabi",
+    "patientCode": "CNT/4/26",
+    "_motifArchivage": null
+   },
+   "kpis": [
+    {
+     "libelle": "Sorties contre avis médical",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Avec avis du Procureur",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Patients hospitalisés",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Dossiers clôturés",
+     "valeur": "1",
+     "indice": null
+    }
+   ],
+   "modale": ""
+  }
+ }
+}

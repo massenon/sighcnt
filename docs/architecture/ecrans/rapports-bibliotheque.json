@@ -1,0 +1,57 @@
+{
+ "id": "rapports-bibliotheque",
+ "module": "RAP",
+ "domaine": "Administration",
+ "libelleManifeste": "Bibliothèque des états",
+ "acces": "ouvert",
+ "titre": "Bibliothèque des états",
+ "description": "Catalogue de tous les états et rapports éditables par le système, avec accès direct à l’écran producteur.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Rapports & Impression",
+  "Bibliothèque des états"
+ ],
+ "actions": [
+  "États de la Direction",
+  "Générateur de rapports",
+  "Rapports & Impression"
+ ],
+ "regle": [
+  "Historique médicalÉditer",
+  "Parcours de soinsÉditer",
+  "Compte rendu de consultationÉditer"
+ ],
+ "onglets": [],
+ "kpis": [
+  "États au catalogue",
+  "Domaines couverts",
+  "Éditables dans le prototype",
+  "Modèle d’entête"
+ ],
+ "cartes": [
+  "Mentions portées sur tous les états",
+  "Pied de page normalisé",
+  "Patients / Soins — 8 état(s)",
+  "Hospitalisation — 6 état(s)",
+  "Maternité & Décès — 5 état(s)",
+  "Laboratoire — 5 état(s)",
+  "Stock / Pharmacie — 8 état(s)",
+  "Facturation — 6 état(s)",
+  "Assurances — 4 état(s)",
+  "RH — 7 état(s)",
+  "Paie — 7 état(s)",
+  "Comptabilité — 9 état(s)",
+  "Administration — 4 état(s)",
+  "Pilotage — 5 état(s)",
+  "Sécurité — 2 état(s)"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Modifier l’identité",
+  "Éditer"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

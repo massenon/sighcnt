@@ -1,0 +1,191 @@
+{
+ "_doc": "m5-demandes : file des prélèvements à réaliser, action « Prendre en charge »",
+ "cas": [
+  {
+   "nom": "trois demandes en attente : toutes passent « en cours »",
+   "etats": [
+    "en_attente",
+    "en_attente",
+    "en_attente"
+   ],
+   "tacheStatut": "en_attente",
+   "boutonPresent": true,
+   "verrouPresent": false,
+   "avant": [
+    "en_attente",
+    "en_attente",
+    "en_attente",
+    "en_attente"
+   ],
+   "apres": [
+    "en_cours",
+    "en_cours",
+    "en_cours",
+    "en_attente"
+   ],
+   "tache": {
+    "id": "TCH-F1",
+    "statut": "fait",
+    "type": "prelevement",
+    "role": "laborantin",
+    "module": "M5",
+    "ecran": "m5-demandes",
+    "titre": "Prélever et analyser",
+    "reference": "ORD-F",
+    "ordonnanceId": "ORD-F",
+    "patient": "TEST F",
+    "patientCode": "CNT/1/26",
+    "date": "2026-10-29T08:00:00.000Z",
+    "detail": "x",
+    "montant": 1000,
+    "faitLe": "2026-10-30T19:24:49.591Z",
+    "faitPar": "BASSONGUI Chabi Séko",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-10-30T19:24:49.591Z"
+   },
+   "toasts": [
+    [
+     "3 analyse(s) prise(s) en charge.",
+     "Saisir les résultats depuis l’écran « Saisie des résultats »."
+    ]
+   ],
+   "titreFile": "Prélèvements à réaliser"
+  },
+  {
+   "nom": "demandes déjà débloquées par la caisse (attente_prelevement) : aucune n'est touchée, la tâche est pourtant close",
+   "etats": [
+    "attente_prelevement",
+    "attente_prelevement"
+   ],
+   "tacheStatut": "en_attente",
+   "boutonPresent": true,
+   "verrouPresent": false,
+   "avant": [
+    "attente_prelevement",
+    "attente_prelevement",
+    "en_attente"
+   ],
+   "apres": [
+    "attente_prelevement",
+    "attente_prelevement",
+    "en_attente"
+   ],
+   "tache": {
+    "id": "TCH-F1",
+    "statut": "fait",
+    "type": "prelevement",
+    "role": "laborantin",
+    "module": "M5",
+    "ecran": "m5-demandes",
+    "titre": "Prélever et analyser",
+    "reference": "ORD-F",
+    "ordonnanceId": "ORD-F",
+    "patient": "TEST F",
+    "patientCode": "CNT/1/26",
+    "date": "2026-10-29T08:00:00.000Z",
+    "detail": "x",
+    "montant": 1000,
+    "faitLe": "2026-10-30T19:24:49.743Z",
+    "faitPar": "BASSONGUI Chabi Séko",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-10-30T19:24:49.743Z"
+   },
+   "toasts": [
+    [
+     "2 analyse(s) prise(s) en charge.",
+     "Saisir les résultats depuis l’écran « Saisie des résultats »."
+    ]
+   ],
+   "titreFile": "Prélèvements à réaliser"
+  },
+  {
+   "nom": "mélange",
+   "etats": [
+    "en_attente",
+    "preleve",
+    "valide"
+   ],
+   "tacheStatut": "en_attente",
+   "boutonPresent": true,
+   "verrouPresent": false,
+   "avant": [
+    "en_attente",
+    "preleve",
+    "valide",
+    "en_attente"
+   ],
+   "apres": [
+    "en_cours",
+    "preleve",
+    "valide",
+    "en_attente"
+   ],
+   "tache": {
+    "id": "TCH-F1",
+    "statut": "fait",
+    "type": "prelevement",
+    "role": "laborantin",
+    "module": "M5",
+    "ecran": "m5-demandes",
+    "titre": "Prélever et analyser",
+    "reference": "ORD-F",
+    "ordonnanceId": "ORD-F",
+    "patient": "TEST F",
+    "patientCode": "CNT/1/26",
+    "date": "2026-10-29T08:00:00.000Z",
+    "detail": "x",
+    "montant": 1000,
+    "faitLe": "2026-10-30T19:24:49.890Z",
+    "faitPar": "BASSONGUI Chabi Séko",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-10-30T19:24:49.890Z"
+   },
+   "toasts": [
+    [
+     "3 analyse(s) prise(s) en charge.",
+     "Saisir les résultats depuis l’écran « Saisie des résultats »."
+    ]
+   ],
+   "titreFile": "Prélèvements à réaliser"
+  },
+  {
+   "nom": "tâche bloquée : verrou, rien ne bouge",
+   "etats": [
+    "en_attente"
+   ],
+   "tacheStatut": "bloque",
+   "boutonPresent": false,
+   "verrouPresent": true,
+   "avant": [
+    "en_attente",
+    "en_attente"
+   ],
+   "apres": [
+    "en_attente",
+    "en_attente"
+   ],
+   "tache": {
+    "id": "TCH-F1",
+    "statut": "bloque",
+    "type": "prelevement",
+    "role": "laborantin",
+    "module": "M5",
+    "ecran": "m5-demandes",
+    "titre": "Prélever et analyser",
+    "reference": "ORD-F",
+    "ordonnanceId": "ORD-F",
+    "patient": "TEST F",
+    "patientCode": "CNT/1/26",
+    "date": "2026-10-29T08:00:00.000Z",
+    "detail": "x",
+    "montant": 1000
+   },
+   "toasts": [
+    [
+     "Cette opération attend le passage en caisse."
+    ]
+   ],
+   "titreFile": "Prélèvements à réaliser — 0 à traiter, 1 en attente de caisse"
+  }
+ ]
+}

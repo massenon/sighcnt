@@ -1,0 +1,57 @@
+{
+ "id": "m4-cpon",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Consultations post-natales (CPoN)",
+ "acces": "ouvert",
+ "titre": "Consultations post-natales (CPoN)",
+ "description": "CPoN 1 à 3, hémorragie ANTE-partum, HPP, examen puerpéral et état du nouveau-né.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Consultations post-natales (CPoN)"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les consultations post-natales",
+  "Archivés"
+ ],
+ "kpis": [
+  "CPoN enregistrées",
+  "Hémorragies ante-partum",
+  "HPP",
+  "Conseils PF donnés"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Accouchée",
+   "Séance",
+   "Hémorragie ANTE-partum",
+   "HPP",
+   "Conseil PF",
+   "Sage-femme",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les consultations post-natales20",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

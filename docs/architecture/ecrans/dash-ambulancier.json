@@ -1,0 +1,49 @@
+{
+ "id": "dash-ambulancier",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Ambulance",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Ambulance",
+ "description": "Interventions, transports sanitaires, consultations et soins à domicile.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Ambulance"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Interventions du mois",
+  "Transports programmés",
+  "Soins à domicile",
+  "Kilométrage du mois"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Consultations et soins à domicile"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Patient",
+   "Motif",
+   "Praticien",
+   "Statut"
+  ]
+ ],
+ "commandes": [
+  "Interventions",
+  "Planifier"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

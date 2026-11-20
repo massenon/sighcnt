@@ -1,0 +1,60 @@
+{
+ "id": "m2-registre-appels",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Registre des appels",
+ "acces": "ouvert",
+ "titre": "Registre des appels",
+ "description": "Appels entrants et sortants liés à la prise de rendez-vous, aux résultats et au suivi des patients.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Registre des appels"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les appels",
+  "Archivés"
+ ],
+ "kpis": [
+  "Appels enregistrés",
+  "Entrants",
+  "Sortants",
+  "Rappels à programmer"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date et heure",
+   "Sens",
+   "Interlocuteur",
+   "Téléphone",
+   "Objet",
+   "Traité par",
+   "Suite donnée",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les appels90",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

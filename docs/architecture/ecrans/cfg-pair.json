@@ -1,0 +1,51 @@
+{
+ "id": "cfg-pair",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Échanges entre postes (mode pair)",
+ "acces": "ouvert",
+ "titre": "Échanges entre postes (mode pair)",
+ "description": "Réglage de ce poste pour échanger ses opérations avec les autres postes par le relais, sans passer par la mère.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Échanges entre postes (mode pair)"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "La clé est unique pour toute la clinique : tous les postes doivent porter la même. Notez-la ou copiez-la maintenant, elle ne sera plus affichée.",
+  "Réglage fermé par défaut : tant qu’il l’est, la perte de la clé ne se rattrape que sur un autre poste de la clinique."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Mode pair",
+  "Appairage",
+  "Conflits à trancher",
+  "Opérations en attente"
+ ],
+ "cartes": [
+  "Configuration du mode pair",
+  "Clé unique de la clinique",
+  "Récupération de la clé par courriel",
+  "État du mode pair"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Enregistrer la configuration",
+  "Générer la clé"
+ ],
+ "champs": [
+  "Adresse du relais *",
+  "Nom de ce poste *",
+  "Code d’appairage (usage unique)",
+  "Activer le mode pair sur ce poste",
+  "Permettre la récupération de la clé par courriel"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

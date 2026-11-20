@@ -26,12 +26,10 @@
     telephoneRdv: '60 33 92 92',
     email: 'cliniquenassiera@gmail.com',
     ifu: '3201642748214',
-    /* UN SEUL RCCM — arbitrage de la Direction du 31/08/2026 (Bugs 7/8/13 des
-       Instructions) : toutes les pièces, caisse comprise, portent la même
-       identité légale. Les pièces anciennes qui portaient NAT/2021/M02-020
-       restent documentées dans les scans de docs/, mais le logiciel n'imprime
-       plus que celui-ci. */
-    rccm: 'RB/NAT/2016-B-268',
+    /* RCCM À JOUR (Direction, 16/11/2026, lot IDENT) : NAT/2021/M02-020, relevé sur l'exemplaire de facture de caisse.
+       L’ancien numéro n’est plus un défaut : il est la VERSION 1 DATÉE de l'identité légale,
+       close au 15/11/2026 et jamais réécrite (store.js, `identiteLegale`). Une pièce émise avant le 16/11/2026 le garde. */
+    rccm: 'NAT/2021/M02-020',
     /* L'AUTORISATION D'EXERCICE N'EST PLUS IMPRIMÉE : elle n'est plus valable,
        l'inscription à l'ordre suffisant depuis la loi 2025-1 de juin 2026.
        Continuer à l'imprimer ferait état d'un titre caduc. */
@@ -47,7 +45,51 @@
     logo: 'assets/img/logo.jpeg',
     devise: 'FCFA',
     codeDevise: 'XOF',
+    /* Régime de TVA tel que l'écran des paramètres fiscaux l'affichait (06/11/2026). Porté tel quel ; il diverge
+       du régime EXONÉRÉ que mecef-config applique (E2272, signalé, non arbitré). */
+    regimeTva: 'Taux normal 18 %',
   };
+
+  /* --------------------------------------------------------------------------
+   * L'IDENTITÉ LÉGALE EST UNE DONNÉE DE RÉFÉRENCE DATÉE (06/11/2026)
+   * --------------------------------------------------------------------------
+   * `BRAND` ci-dessus est la SEMENCE : la version 1 de la collection
+   * `identiteLegale`. Le magasin écrase BRAND EN PLACE (`Object.assign`, jamais
+   * une réaffectation : print.js a capturé la référence) avec la version en
+   * force aujourd'hui. `BRAND_ORIGINE` garde la semence intacte, pour le repli
+   * sans magasin et pour la semence elle-même.
+   *
+   * `identiteALaDate(date)` répond pour une PIÈCE : une facture d'hier
+   * s'imprime avec le RCCM d'hier, même si une nouvelle version prend effet
+   * demain. Elle lit le magasin À L'APPEL (le modèle de D.NS132.montant) et
+   * retombe sur la semence quand il n'est pas chargé.
+   * ----------------------------------------------------------------------- */
+  var CHAMPS_IDENTITE = ['sigle', 'nom', 'slogan', 'forme', 'adresse', 'bp', 'pays', 'telephones', 'telephoneRdv',
+    'email', 'ifu', 'rccm', 'autorisation', 'autorisationExercice', 'autorisationExerciceMotif', 'devise',
+    'codeDevise', 'logo', 'formuleArrete', 'formulePolitesse', 'regimeTva'];
+  var BRAND_ORIGINE = (function () {
+    var o = {};
+    CHAMPS_IDENTITE.forEach(function (k) { o[k] = Array.isArray(BRAND[k]) ? BRAND[k].slice() : BRAND[k]; });
+    return o;
+  })();
+  /** Les seuls champs d'identité d'une fiche (ni id, ni version, ni dates), sur la forme de BRAND. */
+  function champsIdentite(fiche) {
+    var o = {};
+    CHAMPS_IDENTITE.forEach(function (k) {
+      var v = fiche && fiche[k] !== undefined ? fiche[k] : BRAND_ORIGINE[k];
+      o[k] = Array.isArray(v) ? v.slice() : v;
+    });
+    return o;
+  }
+  function identiteALaDate(date) {
+    var st = global.SIGH && global.SIGH.store;
+    if (st && typeof st.identiteALaDate === 'function') {
+      var v = null;
+      try { v = st.identiteALaDate(date); } catch (e) { v = null; }
+      if (v) return champsIdentite(v);
+    }
+    return champsIdentite(BRAND_ORIGINE);
+  }
 
   /* --- Formats ------------------------------------------------------------ */
   var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',
@@ -170,6 +212,22 @@
     return a + ' an' + (a > 1 ? 's' : '') + (ageEstDeclare(rec) ? ' (âge déclaré)' : '');
   }
   function iso(d) { var x = toDate(d); return x.getFullYear() + '-' + pad(x.getMonth() + 1) + '-' + pad(x.getDate()); }
+  /* LA DATE DU JOUR VIT ICI, ET NULLE PART AILLEURS (vague 68, 20/10/2026).
+     Dix-neuf modules portaient `var AUJ = new Date(2026, 7, 16)` — la date du
+     jeu de démonstration, figée pour que les tableaux de bord aient quelque
+     chose à montrer. Conséquence vécue : un rendez-vous pris aujourd'hui tombait
+     hors de la fenêtre de l'agenda (du 14 au 20 août) et ne se retrouvait nulle
+     part. L'application lit l'horloge RÉELLE ; c'est le BANC D'ESSAI qui décale
+     l'horloge sur la date du jeu (build/_banc.js), jamais le code livré. */
+  function aujourdhui() { return new Date(); }
+  /** LA MENTION LÉGALE DU PIED DE PAGE (Direction, 01/11/2026) : dénomination, IFU, RCCM, lus de l'identité unique C.BRAND. Les séparateurs sont une identité imprimée, pas de la ponctuation rédigée. */
+  function mentionLegale() { var I = identiteALaDate(iso(aujourdhui())); return I.nom + ' — IFU ' + I.ifu + ' — RCCM ' + I.rccm + '.'; }
+  /** Valeur d'un champ `datetime-local` à l'heure LOCALE — `toISOString()` rend
+   *  l'heure UTC, et le Bénin est à UTC+1 : l'heure proposée était fausse d'une heure. */
+  function isoLocal(d) {
+    var x = toDate(d || aujourdhui());
+    return iso(x) + 'T' + pad(x.getHours()) + ':' + pad(x.getMinutes());
+  }
   function moisAnnee(d) { var x = toDate(d); return MOIS[x.getMonth()] + ' ' + x.getFullYear(); }
 
   /** Ancienneté / il y a X — pour timelines et journaux d'audit. */
@@ -184,6 +242,29 @@
 
   function addDays(d, n) { var x = new Date(toDate(d).getTime()); x.setDate(x.getDate() + n); return x; }
   function daysBetween(a, b) { return Math.round((toDate(b) - toDate(a)) / 86400000); }
+
+  /* --------------------------------------------------------------------------
+   * LE JOUR D'UNE ÉCHÉANCE : UNE SEULE RÈGLE, ICI (lot A3b, 09/11/2026)
+   * --------------------------------------------------------------------------
+   * Le jour demandé tombe au DERNIER JOUR RÉEL du mois s'il le dépasse (31 en
+   * février donne le 28 ou le 29, 31 en avril donne le 30), jamais avant le
+   * jour déclaré ; un jour qui dépasse ne déborde donc plus sur le mois suivant.
+   * Une échéance tombant un samedi ou un dimanche est REPORTÉE au jour ouvrable
+   * suivant, jamais avancée. Le semis des échéances, la référence
+   * (cfg-comptabilite), le suivi (m12-echeances), la vue mensuelle, l'écran
+   * cfg-fiscalite et la cloche appellent ces trois fonctions et aucune autre :
+   * deux calculs finissent par ne plus dire le même jour (E-A3-01).
+   * ------------------------------------------------------------------------ */
+  function dernierJourDuMois(annee, mois) { return new Date(Number(annee), Number(mois) + 1, 0).getDate(); }
+  function jourDuMois(annee, mois, jour) {
+    var j = Math.max(1, Math.floor(Number(jour) || 1));
+    return new Date(Number(annee), Number(mois), Math.min(j, dernierJourDuMois(annee, mois)));
+  }
+  function reporterJourOuvrable(d) {
+    var x = new Date(toDate(d).getTime());
+    while (x.getDay() === 0 || x.getDay() === 6) x = addDays(x, 1);
+    return x;
+  }
 
   /* --------------------------------------------------------------------------
    * PÉRIODICITÉS — les six pas de découpage que la clinique demande
@@ -480,6 +561,31 @@
   function sum(arr, key) {
     return arr.reduce(function (a, x) { return a + (Number(typeof key === 'function' ? key(x) : x[key]) || 0); }, 0);
   }
+  /* Somme qui DIT quand elle n'a rien à sommer : null si aucune ligne ne porte de nombre. Un total de zéro
+     et un total inconnu ne sont pas la même chose (masse salariale d'un jeu vidé de ses salaires). */
+  function sumOuNul(arr, key) {
+    var vu = false;
+    var t = arr.reduce(function (a, x) {
+      var v = typeof key === 'function' ? key(x) : x[key];
+      if (v === null || v === undefined || v === '' || !isFinite(Number(v))) return a;
+      vu = true; return a + Number(v);
+    }, 0);
+    return vu ? t : null;
+  }
+  /* Moyenne des seules lignes qui portent un nombre ; null s'il n'y en a aucune. */
+  function moyenneOuNul(arr, key) {
+    var n = 0;
+    var t = arr.reduce(function (a, x) {
+      var v = typeof key === 'function' ? key(x) : x[key];
+      if (v === null || v === undefined || v === '' || !isFinite(Number(v))) return a;
+      n++; return a + Number(v);
+    }, 0);
+    return n ? t / n : null;
+  }
+  /* Montant ou, à défaut, la mention donnée (« Non renseigné », « Non calculable »). */
+  function moneyOu(v, mention, withCurrency) {
+    return (v === null || v === undefined || v === '' || !isFinite(Number(v))) ? (mention || 'Non renseigné') : money(v, withCurrency);
+  }
   function sortBy(arr, key, dir) {
     var s = arr.slice(), d = dir === 'desc' ? -1 : 1;
     return s.sort(function (a, b) {
@@ -495,25 +601,86 @@
     var s = seed || 42;
     return function () { s = (s * 9301 + 49297) % 233280; return s / 233280; };
   }
+  /** Référence suivante d'une série : le plus grand rang déjà écrit pour ce préfixe, plus un, lu sur les fiches EXISTANTES (jamais sur un compteur
+      de page, qui repart à 1 à chaque chargement — écart E8). */
+  function referenceSuivante(prefixe, largeur, fiches) {
+    var max = 0;
+    fiches.forEach(function (f) {
+      var r = String(f.reference || '');
+      if (r.indexOf(prefixe) === 0) max = Math.max(max, parseInt(r.slice(prefixe.length), 10) || 0);
+    });
+    return prefixe + String(max + 1).padStart(largeur, '0');
+  }
+  /** LOT MIL (16/11/2026) : l'ANNÉE d'un numéro est celle de la DATE DE LA PIÈCE (« 2027-03-05 » donne 2027), jamais une constante ; sans date lisible, l'horloge du jour. */
+  function anneeDePiece(date) {
+    var m = /^(\d{4})-\d{2}-\d{2}/.exec(String(date == null ? '' : date));
+    if (m) return Number(m[1]);
+    var d = date ? toDate(date) : aujourdhui();
+    return isNaN(d) ? aujourdhui().getFullYear() : d.getFullYear();
+  }
+  /** FABRIQUE UNIQUE des séries ANNUELLES (`BEB-2027-0001`) : préfixe + année de la pièce + rang suivant LU SUR LES FICHES EXISTANTES (compteur par année : 2027 repart à 0001,
+   *  2026 garde le sien). Un numéro émis ne se réécrit jamais : l'appelant ne l'invoque qu'à la création. `champ` : le champ qui porte le numéro (`reference` par défaut). */
+  function referenceAnnuelle(prefixe, date, largeur, fiches, champ) {
+    var cle = champ || 'reference';
+    var lues = champ ? fiches.map(function (f) { var o = {}; o.reference = f[cle]; return o; }) : fiches;
+    return referenceSuivante(prefixe + anneeDePiece(date) + '-', largeur, lues);
+  }
   function pick(rnd, arr) { return arr[Math.floor(rnd() * arr.length) % arr.length]; }
   function between(rnd, a, b) { return Math.floor(rnd() * (b - a + 1)) + a; }
 
+  /* ==========================================================================
+   * LES CONSTANTES VITALES : UNE UNITÉ, UNE FORME (lot B, 13/11/2026, correction à la source)
+   * --------------------------------------------------------------------------
+   * La DIURÈSE se saisit et se stocke en MILLILITRES, partout (accueil comme hospitalisation) ; la TENSION se stocke en DEUX nombres entiers, systolique et diastolique, en
+   * cmHg (l'unité de la feuille de température et de la saisie d'accueil de la clinique : « 12/8 »). Aucune conversion à l'affichage : le texte « 12/8 » n'est qu'une mise
+   * en forme des deux nombres, jamais une donnée stockée. Les BORNES de saisie sont celles que la saisie d'accueil portait déjà (4 à 30 et 2 à 20 cmHg ; 5 L soit 5 000 mL) :
+   * aucune n'est inventée ici, et pour l'hospitalisation elles restent une proposition à valider par un soignant. Une source pour les trois écrans qui saisissent.
+   * ======================================================================== */
+  var CONSTANTES_VITALES = {
+    tension: { unite: 'cmHg', sys: { min: 4, max: 30 }, dia: { min: 2, max: 20 } },
+    diurese: { unite: 'mL', min: 0, max: 5000 },
+  };
+  /** « 12/8 » à partir des deux nombres ; « 12/—  » quand la diastolique manque (« non mesurée » n'est pas zéro) ; null sans systolique. */
+  function tensionTexte(sys, dia) {
+    var v = function (x) { return x == null || x === '' || !isFinite(Number(x)); };
+    if (v(sys)) return null;
+    return Number(sys) + '/' + (v(dia) ? '\u2014' : Number(dia));
+  }
+  /** Les deux champs de saisie de la tension (noms `tensionSys` et `tensionDia`), identiques à l'accueil et à l'hospitalisation. */
+  function champsTension(o) {
+    o = o || {}; var T = CONSTANTES_VITALES.tension;
+    return [
+      { name: 'tensionSys', label: 'Tension systolique (' + T.unite + ')', type: 'number', min: T.sys.min, max: T.sys.max, step: 1, required: !!o.required },
+      { name: 'tensionDia', label: 'Tension diastolique (' + T.unite + ')', type: 'number', min: T.dia.min, max: T.dia.max, step: 1, required: !!o.required },
+    ];
+  }
+  /** Le champ de saisie de la diurèse, en millilitres. */
+  function champDiurese(o) {
+    var D = CONSTANTES_VITALES.diurese;
+    return Object.assign({ name: 'diurese', label: 'Diurèse (' + D.unite + ')', type: 'number', min: D.min, max: D.max, step: 1 }, o || {});
+  }
+
   global.SIGH = global.SIGH || {};
   global.SIGH.core = {
-    BRAND: BRAND, MOIS: MOIS, JOURS: JOURS,
+    CONSTANTES_VITALES: CONSTANTES_VITALES, tensionTexte: tensionTexte, champsTension: champsTension, champDiurese: champDiurese,
+    BRAND: BRAND, BRAND_ORIGINE: BRAND_ORIGINE, CHAMPS_IDENTITE: CHAMPS_IDENTITE,
+    champsIdentite: champsIdentite, identiteALaDate: identiteALaDate,
+    MOIS: MOIS, JOURS: JOURS,
     money: money, num: num, pct: pct, pad: pad,
     dateFR: dateFR, dateLong: dateLong, dateJour: dateJour, heure: heure, age: age,
     ageDe: ageDe, ageTexte: ageTexte, ageEstDeclare: ageEstDeclare,
     params: params, ancre: ancre,
+    dernierJourDuMois: dernierJourDuMois, jourDuMois: jourDuMois, reporterJourOuvrable: reporterJourOuvrable,
     dateHeure: dateHeure, iso: iso, moisAnnee: moisAnnee, ilYA: ilYA,
+    aujourdhui: aujourdhui, isoLocal: isoLocal, mentionLegale: mentionLegale,
     addDays: addDays, daysBetween: daysBetween, toDate: toDate,
     PERIODES: PERIODES, bornes: bornes, bornesLibres: bornesLibres,
     dansBornes: dansBornes, libellePeriode: libellePeriode,
-    codePatient: codePatient, nextRef: nextRef, uid: uid,
+    codePatient: codePatient, nextRef: nextRef, referenceSuivante: referenceSuivante, referenceAnnuelle: referenceAnnuelle, anneeDePiece: anneeDePiece, uid: uid,
     nombreEnLettres: nombreEnLettres, montantEnLettres: montantEnLettres,
     slug: slug, initials: initials, escapeHtml: escapeHtml, norm: norm, matches: matches,
     $: $, $$: $$, el: el, append: append, clear: clear, icon: icon, qr: qr,
-    debounce: debounce, groupBy: groupBy, sum: sum, sortBy: sortBy,
+    debounce: debounce, groupBy: groupBy, sum: sum, sumOuNul: sumOuNul, moyenneOuNul: moyenneOuNul, moneyOu: moneyOu, sortBy: sortBy,
     seeded: seeded, pick: pick, between: between,
   };
 })(window);

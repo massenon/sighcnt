@@ -1,0 +1,55 @@
+{
+ "id": "m5-impression-resultats",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Impression des résultats",
+ "acces": "ouvert",
+ "titre": "Impression des résultats",
+ "description": "Édition des comptes rendus, réservée aux examens réglés : un résultat dont l’examen n’est pas payé reste visible mais ne s’imprime pas.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Impression des résultats"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Résultats rendus",
+  "Imprimables (réglés)",
+  "Verrouillés — règlement dû",
+  "Sans pièce de caisse liée"
+ ],
+ "cartes": [
+  "Comptes rendus à éditer"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Origine",
+   "Date",
+   "Patient",
+   "Analyse",
+   "Règlement",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Imprimer",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

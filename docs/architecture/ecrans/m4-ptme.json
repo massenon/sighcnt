@@ -1,0 +1,53 @@
+{
+ "id": "m4-ptme",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Registre PTME",
+ "acces": "ouvert",
+ "titre": "Registre PTME",
+ "description": "Prévention de la transmission mère-enfant : dépistage, protocole, enfants exposés, dispensation ARV.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Registre PTME"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les fiches PTME",
+  "Archivés"
+ ],
+ "kpis": [
+  "Mères suivies",
+  "Charges virales indétectables",
+  "PCR-1 rendues",
+  "Sous CTM"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Mère suivie",
+   "Charge virale",
+   "Allaitement",
+   "Suivi enfant",
+   "Dispensations ARV",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les fiches PTME6",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

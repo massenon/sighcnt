@@ -26,45 +26,68 @@
   }
 
   /** Chemin du logo, ajusté à la profondeur de la page courante. */
-  function logoSrc() {
+  function logoSrc(identite) {
     var base = document.documentElement.getAttribute('data-root') || '';
-    return base + B.logo;
+    return base + ((identite || B).logo || B.logo);
+  }
+
+  /* --------------------------------------------------------------------------
+   * L'IDENTITÉ D'UNE PIÈCE EST CELLE DE SA DATE (06/11/2026). `B` reste la
+   * référence capturée de C.BRAND, écrasée EN PLACE par le magasin avec la
+   * version en force aujourd'hui ; une pièce qui porte `date` (facture, avoir,
+   * reçu, ticket) s'imprime avec `C.identiteALaDate(date)` : une facture
+   * d'hier garde le RCCM d'hier quand une nouvelle version prend effet demain.
+   * ----------------------------------------------------------------------- */
+  function identitePour(date) {
+    if (date && C.identiteALaDate) {
+      try { return C.identiteALaDate(date); } catch (e) { return B; }
+    }
+    return B;
+  }
+  /* Deux options d'impression vivent au MAGASIN (réglages d'exploitation) et
+     sont LUES ici : un réglage que rien ne lit est un mensonge (E2271). */
+  function reglageImpression(cle, defaut) {
+    try { return S().reglage('impression.' + cle, defaut); } catch (e) { return defaut; }
   }
 
   /* ==========================================================================
    * EN-TÊTE OFFICIEL — reproduction fidèle du papier à en-tête
    * ======================================================================== */
-  function entete() {
+  function entete(identite) {
+    var I = identite || B;
     var head = el('header.print-entete.border-b-\\[3px\\].border-navy-900.pb-2');
     var top = el('div.flex.items-center.justify-center.gap-4');
 
     top.appendChild(el('img.h-16.w-16.shrink-0.object-contain', {
-      src: logoSrc(), alt: 'Logo ' + B.sigle,
+      src: logoSrc(I), alt: 'Logo ' + I.sigle,
       onerror: function () { this.style.visibility = 'hidden'; },
     }));
 
     var mid = el('div.text-center');
     mid.appendChild(el('p.text-\\[22px\\].font-bold.leading-tight.tracking-tight.text-navy-950', { text: 'CLINIQUE NASSIERA TOO' }));
     mid.appendChild(el('p.text-\\[10px\\].leading-snug.text-slate-700', {
-      text: B.bp + '   TÉL. : ' + B.telephones.join('  /  '),
+      text: I.bp + '   TÉL. : ' + (I.telephones || []).join('  /  '),
     }));
     mid.appendChild(el('p.text-\\[9px\\].leading-snug.text-slate-700', {
-      text: 'AUTORISATION D’OUVERTURE ' + B.autorisation,
+      text: 'AUTORISATION D’OUVERTURE ' + I.autorisation,
     }));
     mid.appendChild(el('p.text-\\[9px\\].font-semibold.leading-snug.text-slate-800', {
-      text: 'IFU : ' + B.ifu + '   RCCM : ' + B.rccm,
+      text: 'IFU : ' + I.ifu + '   RCCM : ' + I.rccm,
     }));
-    mid.appendChild(el('p.text-\\[9px\\].leading-snug.text-slate-700', { text: 'E-mail : ' + B.email }));
+    mid.appendChild(el('p.text-\\[9px\\].leading-snug.text-slate-700', { text: 'E-mail : ' + I.email }));
     /* La devise de la clinique, dictée par la Direction le 24/08/2026.
        Elle figure sur les états parce que c'est ce que le patient emporte
        chez lui — et qu'une devise qui ne se lit nulle part n'en est pas une. */
-    mid.appendChild(el('p.text-\\[9px\\].font-semibold.italic.leading-snug.text-navy-800', { text: B.slogan }));
+    mid.appendChild(el('p.text-\\[9px\\].font-semibold.italic.leading-snug.text-navy-800', { text: I.slogan }));
     top.appendChild(mid);
 
-    top.appendChild(el('img.h-16.w-16.shrink-0.object-contain', {
-      src: logoSrc(), alt: '',
-      onerror: function () { this.style.visibility = 'hidden'; },
-    }));
+    /* Le second logo est une OPTION d'impression (cfg-branding), lue au magasin. */
+    if (reglageImpression('doubleLogo', true) !== false) {
+      top.appendChild(el('img.h-16.w-16.shrink-0.object-contain', {
+        src: logoSrc(I), alt: '',
+        onerror: function () { this.style.visibility = 'hidden'; },
+      }));
+    }
 
     head.appendChild(top);
     return head;
@@ -73,11 +96,12 @@
   /* ==========================================================================
    * PIED DE PAGE NORMALISÉ
    * ======================================================================== */
-  function pied(ref) {
+  function pied(ref, identite) {
+    var I = identite || B;
     var f = el('footer.print-pied.mt-6.border-t.border-slate-300.pt-2');
     var row = el('div.flex.items-end.justify-between.gap-4.text-\\[8px\\].text-slate-500');
     row.appendChild(el('div', null, [
-      el('p', { text: B.nom + ' — ' + B.rccm + ' — IFU ' + B.ifu }),
+      el('p', { text: I.nom + ' — ' + I.rccm + ' — IFU ' + I.ifu }),
       el('p', { text: 'Document généré par ' + global.SIGH.store.currentUser() + ' le ' + C.dateHeure(new Date()) }),
     ]));
     row.appendChild(el('div.text-right', null, [
@@ -262,23 +286,34 @@
    * COMPOSITION ET PRÉVISUALISATION DE L'ÉTAT
    * ======================================================================== */
   /**
-   * etat({ titre, sousTitre, contenu, cartouche, signatures, filigrane, lieuDate })
+   * etat({ titre, sousTitre, contenu, cartouche, signatures, filigrane, lieuDate, date })
    * Affiche la prévisualisation ; l'impression (ou « Enregistrer en PDF » du
    * navigateur) est déclenchée depuis la barre d'action.
+   * `date` (ISO) : la date de la PIÈCE ; l'en-tête et le pied portent
+   * l'identité légale en force à cette date. Sans `date`, l'identité du jour.
    */
   function etat(options) {
     var o = Object.assign({
       titre: 'État', sousTitre: null, contenu: null, cartouche: null,
-      signatures: null, filigrane: null, lieuDate: true, archive: true,
+      signatures: null, filigrane: undefined, lieuDate: true, archive: true, date: null,
+      orientation: 'portrait',
     }, options);
+    /* QUATRIÈME GABARIT, LE A4 PAYSAGE (10/11/2026) : une option de l'état, portrait par défaut. Les états
+       existants ne la déclarent pas et ne changent donc pas d'un pixel. */
+    var paysage = o.orientation === 'paysage';
+    var I = identitePour(o.date);
+    /* Le filigrane par défaut est un réglage d'exploitation (cfg-branding) ; un appelant qui en nomme un
+       (« Pro-forma », « AVOIR ») ou qui le refuse (`null`) garde la main. */
+    if (o.filigrane === undefined) o.filigrane = reglageImpression('filigrane', '') || null;
 
     compteur++;
     var ref = 'CNT-' + C.iso(new Date()).replace(/-/g, '') + '-' + C.pad(compteur, 4);
 
     /* --- Feuille A4 --- */
     var sheet = el('article.print-sheet.relative.mx-auto.bg-white.text-slate-900', {
-      style: 'width:210mm;min-height:297mm;padding:12mm;box-sizing:border-box;',
+      style: (paysage ? 'width:297mm;min-height:210mm;' : 'width:210mm;min-height:297mm;') + 'padding:12mm;box-sizing:border-box;',
     });
+    if (paysage) sheet.setAttribute('data-orientation', 'paysage');
 
     if (o.filigrane) {
       sheet.appendChild(el('div.pointer-events-none.absolute.inset-0.grid.place-items-center', null,
@@ -288,7 +323,7 @@
     }
 
     var inner = el('div.relative.flex.min-h-full.flex-col');
-    inner.appendChild(entete());
+    inner.appendChild(entete(I));
 
     var titleBlock = el('div.my-4.text-center');
     titleBlock.appendChild(el('h1.inline-block.border-b-2.border-navy-900.px-6.pb-1.text-\\[15px\\].font-bold.uppercase.tracking-wide.text-navy-950', { text: o.titre }));
@@ -331,17 +366,17 @@
       }));
     }
     if (o.signatures) inner.appendChild(signatures(o.signatures));
-    inner.appendChild(pied(ref));
+    inner.appendChild(pied(ref, I));
     sheet.appendChild(inner);
 
-    return afficher(sheet, o.titre, ref, false, o.archive);
+    return afficher(sheet, o.titre, ref, paysage ? '297mm' : false, o.archive, paysage);
   }
 
   /* --------------------------------------------------------------------------
    * Prévisualisation commune au A4 et au rouleau : la feuille vit dans
    * #print-root — seul élément imprimable — et s'affiche dans une surcouche.
    * ----------------------------------------------------------------------- */
-  function afficher(sheet, titre, ref, etroit, archivable) {
+  function afficher(sheet, titre, ref, etroit, archivable, paysage) {
     /* --- Prévisualisation --- */
     var host = root();
     C.clear(host);
@@ -361,10 +396,13 @@
       bar.appendChild(el('button.btn.btn-sm.btn-secondary', {
         type: 'button',
         onclick: function () {
+          /* Ce geste ne dépose RIEN dans la GED (aucune catégorie documentaire ne reçoit les états imprimés) :
+             il journalise l'édition (RG-12), et le dit. log() ne sauve pas : save() explicite, sinon l'entrée se perd. */
           global.SIGH.store.log('Impression', 'RAP', 'Document', ref, null, { titre: titre });
-          U.toast('Document archivé dans la GED.', { type: 'success', detail: 'Réf. ' + ref });
+          global.SIGH.store.save();
+          U.toast('Édition journalisée.', { type: 'success', detail: 'Réf. ' + ref + '. La pièce n’est pas déposée dans la GED : imprimez ou enregistrez-la en PDF.' });
         },
-      }, [C.icon('archive', 'h-4 w-4'), 'Archiver']));
+      }, [C.icon('clipboard-list', 'h-4 w-4'), 'Journaliser l’édition']));
     }
     bar.appendChild(el('button.btn.btn-sm.btn-primary', { type: 'button', onclick: fermer }, [C.icon('x', 'h-4 w-4'), 'Fermer']));
     overlay.appendChild(bar);
@@ -388,8 +426,18 @@
       /* On replace la feuille dans #print-root le temps de l'impression. */
       host.appendChild(sheet);
       document.body.classList.add('printing');
+      /* @page ne se règle pas par élément : le format paysage s'annonce par une feuille de style posée le temps
+         de l'impression (elle suit celle du logiciel, qui déclare A4 portrait, donc elle l'emporte) puis retirée. */
+      var orient = null;
+      if (paysage) {
+        orient = document.createElement('style');
+        orient.id = 'print-orientation';
+        orient.textContent = '@media print{@page{size:A4 landscape;margin:0}}';
+        document.head.appendChild(orient);
+      }
       var restore = function () {
         document.body.classList.remove('printing');
+        if (orient && orient.parentNode) orient.parentNode.removeChild(orient);
         frame.appendChild(sheet);
         global.removeEventListener('afterprint', restore);
       };
@@ -407,7 +455,7 @@
       if (e.key === 'Escape' && document.body.contains(overlay)) { fermer(); document.removeEventListener('keydown', esc); }
     });
 
-    return { ref: ref, imprimer: imprimer, fermer: fermer, sheet: sheet };
+    return { ref: ref, imprimer: imprimer, fermer: fermer, sheet: sheet, orientation: paysage ? 'paysage' : 'portrait' };
   }
 
   /* ==========================================================================
@@ -420,6 +468,8 @@
    * ======================================================================== */
   function ticket(o) {
     o = o || {};
+    /* L'identité imprimée est celle de la DATE de la pièce (voir `identitePour`). */
+    var I = identitePour(o.date);
     compteur++;
     var ref = 'CNT-' + C.iso(new Date()).replace(/-/g, '') + '-' + C.pad(compteur, 4);
 
@@ -442,11 +492,11 @@
 
     /* En-tête de la clinique, resserré */
     sheet.appendChild(el('p.text-center.text-\\[11px\\].font-bold.leading-tight', { text: 'CLINIQUE NASSIERA TOO' }));
-    sheet.appendChild(ligneTexte(B.bp, 'text-[8px] text-center leading-snug'));
-    sheet.appendChild(ligneTexte('TÉL. ' + B.telephones.join(' / '), 'text-[8px] text-center leading-snug'));
-    sheet.appendChild(ligneTexte('IFU ' + B.ifu, 'text-[8px] text-center leading-snug'));
-    /* Les pièces de caisse portent l'autre RCCM (voir core.js). */
-    sheet.appendChild(ligneTexte('RCCM ' + B.rccm, 'text-[8px] text-center leading-snug'));
+    sheet.appendChild(ligneTexte(I.bp, 'text-[8px] text-center leading-snug'));
+    sheet.appendChild(ligneTexte('TÉL. ' + (I.telephones || []).join(' / '), 'text-[8px] text-center leading-snug'));
+    sheet.appendChild(ligneTexte('IFU ' + I.ifu, 'text-[8px] text-center leading-snug'));
+    /* UN SEUL RCCM depuis l'arbitrage du 31/08/2026 : celui de l'identité en force à la date de la pièce. */
+    sheet.appendChild(ligneTexte('RCCM ' + I.rccm, 'text-[8px] text-center leading-snug'));
     sheet.appendChild(separateur());
 
     /* Bloc MECeF — structure du ticket réel */
@@ -516,10 +566,10 @@
     }
 
     sheet.appendChild(separateur());
-    sheet.appendChild(ligneTexte(B.formuleArrete + ' :', 'text-[8px] leading-snug'));
+    sheet.appendChild(ligneTexte(I.formuleArrete + ' :', 'text-[8px] leading-snug'));
     sheet.appendChild(ligneTexte(C.montantEnLettres(o.partPatient || 0), 'text-[8px] font-semibold leading-snug'));
     sheet.appendChild(separateur());
-    sheet.appendChild(ligneTexte(B.formulePolitesse, 'text-[9px] font-bold text-center leading-snug'));
+    sheet.appendChild(ligneTexte(I.formulePolitesse, 'text-[9px] font-bold text-center leading-snug'));
     sheet.appendChild(ligneTexte('Réf. ' + ref, 'text-[7px] text-center text-slate-400 mt-1'));
 
     afficher(sheet, o.titre || 'Ticket de caisse', ref, true);
@@ -551,6 +601,8 @@
     var m = o.modele || {};
     var zones = m.zones || {};
     var portrait = m.orientation === 'portrait';
+    /* Le badge lit l'identité À LA DATE (lot IDENT), jamais la constante de la semence. */
+    var I = identitePour(C.iso(C.aujourdhui()));
     var L = portrait ? CR80.hauteur : CR80.largeur;
     var H = portrait ? CR80.largeur : CR80.hauteur;
 
@@ -562,7 +614,7 @@
     if (face === 'verso') {
       var dos = el('div.flex.h-full.flex-col.px-3.py-2');
       dos.appendChild(el('p.text-\\[7px\\].font-bold.uppercase.tracking-wide.text-navy-900',
-        { text: B.nom }));
+        { text: I.nom }));
       dos.appendChild(el('div.mt-1.border-t.border-slate-200'));
       var mentions = el('div.mt-1.flex-1.space-y-0\\.5');
       (m.mentionsVerso || []).forEach(function (t) {
@@ -581,7 +633,7 @@
           }),
         ]),
       ]));
-      dos.appendChild(el('p.mt-1.text-center.text-\\[6px\\].italic.text-navy-800', { text: B.slogan }));
+      dos.appendChild(el('p.mt-1.text-center.text-\\[6px\\].italic.text-navy-800', { text: I.slogan }));
       carte.appendChild(dos);
       return carte;
     }
@@ -595,7 +647,7 @@
     }));
     bandeau.appendChild(el('div.min-w-0.flex-1', null, [
       el('p.truncate.text-\\[8px\\].font-bold.uppercase.leading-tight.text-white', { text: 'Clinique Nassiera Too' }),
-      el('p.truncate.text-\\[6px\\].italic.leading-tight.text-navy-100', { text: B.slogan }),
+      el('p.truncate.text-\\[6px\\].italic.leading-tight.text-navy-100', { text: I.slogan }),
     ]));
     carte.appendChild(bandeau);
 
@@ -712,12 +764,122 @@
     return ref;
   }
 
+  /* ==========================================================================
+   * ORGANIGRAMME, DIAGRAMME EN BOÎTES ET CONNECTEURS (10/11/2026)
+   * --------------------------------------------------------------------------
+   * Reproduit la mise en page de l'organigramme papier de la clinique : un
+   * titre, des boîtes rangées par niveau hiérarchique, des connecteurs qui
+   * montrent le rattachement. Il dessine ce que la COLLECTION des postes
+   * contient : rien n'est écrit en dur ici.
+   *
+   * `noeuds` : racines `{ poste, effectif, titulaire, titreAgent, chef, enfants }`. Sous le nom du titulaire : son titre dans l'organigramme entre
+   * parenthèses (`titreAgent`, porté par l'AGENT : « GARBA Yahouza (SG) ») puis « C/S » si le poste porte un chef de service.
+   * AUCUNE ÉTOILE (Direction, 11/11/2026, O5) : la photo en trace une à côté de cinq boîtes, elle ne veut rien dire ; ni cette fabrique ni la
+   * collection ne portent plus de marqueur.
+   * Aucune couleur en dur : les classes viennent du design system.
+   * Les mesures sont en millimètres, la feuille A4 paysage offre 273 mm de
+   * large (12 mm de marge de chaque côté).
+   * ======================================================================== */
+  function organigramme(noeuds, options) {
+    var o = Object.assign({ largeur: 273, hauteurMax: 120, hauteurBoite: 19, ecartMin: 6, boiteMin: 24, boiteMax: 52, gouttiere: 2.5 }, options);
+    var racines = (noeuds || []).filter(Boolean);
+    /* Rangées : une par niveau de l'arbre. Un nœud connaît son parent, ses enfants, sa rangée et la largeur de son sous-arbre en « fentes » (une
+       feuille occupe une fente, un parent occupe celles de ses enfants). */
+    var rangees = [];
+    function fiche(n, niveau, parent) {
+      var f = { n: n, parent: parent, enfants: [], x: 0, niveau: niveau, fentes: 1 };
+      if (parent) parent.enfants.push(f);
+      (rangees[niveau] = rangees[niveau] || []).push(f);
+      (n.enfants || []).forEach(function (e) { fiche(e, niveau + 1, f); });
+      if (f.enfants.length) f.fentes = f.enfants.reduce(function (s, c) { return s + c.fentes; }, 0);
+      return f;
+    }
+    var forets = racines.map(function (r) { return fiche(r, 0, null); });
+    if (!rangees.length) return el('p.text-center.text-\\[10px\\].italic.text-slate-500', { text: 'Aucun poste actif à représenter.' });
+
+    /* Abscisses en fentes, ARBRE ORDONNÉ : les feuilles se rangent de gauche à droite, un parent se CENTRE au-dessus de ses enfants (un enfant unique
+       tombe pile dessous). Deux sous-arbres voisins occupent des intervalles disjoints : aucune boîte ne chevauche sa voisine, aucun connecteur ne
+       traverse le sous-arbre d'un autre. */
+    var total = forets.reduce(function (s, f) { return s + f.fentes; }, 0);
+    (function placer(liste, debut) {
+      liste.forEach(function (f) {
+        if (f.enfants.length) {
+          placer(f.enfants, debut);
+          f.cx = (f.enfants[0].cx + f.enfants[f.enfants.length - 1].cx) / 2;
+        } else f.cx = debut + 0.5;
+        debut += f.fentes;
+      });
+    })(forets, 0);
+    var W = o.largeur;
+    var fente = W / total;
+    var bw = Math.min(o.boiteMax, Math.max(o.boiteMin, fente - o.gouttiere));
+    var bh = o.hauteurBoite;
+    var nb = rangees.length;
+    var ecart = nb > 1 ? Math.max(o.ecartMin, Math.min(14, (o.hauteurMax - nb * bh) / (nb - 1))) : 0;
+    var H = nb * bh + (nb - 1) * ecart;
+    function haut(r) { return r * (bh + ecart); }
+    rangees.forEach(function (rg) { rg.forEach(function (f) { f.x = f.cx * fente; }); });
+    /* LARGEUR DE CHAQUE BOÎTE : au moins la fente, et plus quand la rangée a de la place (un titre long s'y lit mieux). Une boîte ne dépasse jamais la
+       moitié de la distance qui la sépare de sa voisine de rangée, moins la gouttière : deux boîtes voisines ne se chevauchent donc jamais. */
+    rangees.forEach(function (rg) {
+      rg.forEach(function (f, i) {
+        var dispo = Math.min(2 * f.x, 2 * (W - f.x));
+        if (i > 0) dispo = Math.min(dispo, f.x - rg[i - 1].x - o.gouttiere);
+        if (i < rg.length - 1) dispo = Math.min(dispo, rg[i + 1].x - f.x - o.gouttiere);
+        f.w = Math.min(o.boiteMax, Math.max(bw, dispo));
+      });
+    });
+
+    /* Connecteurs : tronc depuis le parent, barre horizontale à mi-écart, descente vers chaque enfant. */
+    var traits = [];
+    function trait(x1, y1, x2, y2) { traits.push('<line x1="' + x1.toFixed(2) + '" y1="' + y1.toFixed(2) + '" x2="' + x2.toFixed(2) + '" y2="' + y2.toFixed(2) + '"/>'); }
+    var fleches = [];
+    rangees.forEach(function (rg, r) {
+      rg.filter(function (f) { return f.enfants.length; }).forEach(function (p) {
+        var yb = haut(r) + bh, yh = haut(r + 1);
+        var ym = yb + (yh - yb) / 2;
+        var xs = p.enfants.map(function (c) { return c.x; }).concat([p.x]);
+        trait(p.x, yb, p.x, ym);
+        trait(Math.min.apply(null, xs), ym, Math.max.apply(null, xs), ym);
+        p.enfants.forEach(function (c) {
+          trait(c.x, ym, c.x, yh - 0.6);
+          fleches.push('<path d="M' + (c.x - 0.9).toFixed(2) + ' ' + (yh - 1.8).toFixed(2) + ' L' + c.x.toFixed(2) + ' ' + (yh - 0.2).toFixed(2) + ' L' + (c.x + 0.9).toFixed(2) + ' ' + (yh - 1.8).toFixed(2) + ' Z"/>');
+        });
+      });
+    });
+
+    var cadre = el('div.org-diagramme.relative.mx-auto', {
+      style: 'width:' + W + 'mm;height:' + H.toFixed(2) + 'mm;', 'data-niveaux': String(nb),
+    });
+    var svg = el('div.absolute.inset-0.text-slate-500');
+    svg.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + 'mm" height="' + H.toFixed(2) + 'mm" viewBox="0 0 ' + W + ' ' + H.toFixed(2)
+      + '" aria-hidden="true"><g stroke="currentColor" stroke-width="0.35" stroke-linecap="square">' + traits.join('') + '</g><g fill="currentColor">' + fleches.join('') + '</g></svg>';
+    cadre.appendChild(svg);
+
+    rangees.forEach(function (rg, r) {
+      rg.forEach(function (f) {
+        var n = f.n;
+        var racine = !f.parent;
+        var boite = el('div.org-boite.absolute.flex.flex-col.items-center.justify-center.overflow-hidden.rounded-sm.border.px-1.text-center.leading-tight', {
+          class: racine ? 'border-navy-900 bg-navy-50 text-navy-950' : 'border-slate-500 bg-white text-slate-900',
+          style: 'left:' + (f.x - f.w / 2).toFixed(2) + 'mm;top:' + haut(r).toFixed(2) + 'mm;width:' + f.w.toFixed(2) + 'mm;height:' + bh + 'mm;box-sizing:border-box;',
+          'data-poste': n.poste,
+        });
+        boite.appendChild(el('span.text-\\[9px\\].font-bold', { text: n.poste + ' (' + C.pad(n.effectif || 0, 2) + ')' }));
+        if (n.titulaire) boite.appendChild(el('span.text-\\[8.5px\\]', { text: n.titulaire + (n.titreAgent ? ' (' + n.titreAgent + ')' : '') + (n.chef ? ' C/S' : '') }));
+        cadre.appendChild(boite);
+      });
+    });
+    return cadre;
+  }
+
   function S() { return global.SIGH.store; }
 
   global.SIGH.print = {
-    etat: etat, entete: entete, pied: pied, ticket: ticket,
+    etat: etat, entete: entete, pied: pied, ticket: ticket, identitePour: identitePour,
     tableau: tableau, cartouche: cartouche, signatures: signatures,
     filtresDeLaPage: filtresDeLaPage,
     badge: badge, planche: planche, carteBadge: carteBadge, CR80: CR80,
+    organigramme: organigramme,
   };
 })(window);

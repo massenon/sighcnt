@@ -1,0 +1,43 @@
+{
+ "id": "m2-file-cabinet",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "File par cabinet",
+ "acces": "ouvert",
+ "titre": "File par cabinet",
+ "description": "Qui attend quel praticien — et le vivier commun, que personne ne doit perdre de vue.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "File par cabinet"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "En file de consultation",
+  "Attendent un praticien nommé",
+  "Vivier commun",
+  "Cabinets sollicités"
+ ],
+ "cartes": [
+  "Cabinet — BADO BANI A. B. Zoulehath (1)",
+  "Vivier commun — par ordre d’arrivée, urgences en tête"
+ ],
+ "tableaux": [
+  [
+   "Patient",
+   "Priorité",
+   "Arrivé à"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

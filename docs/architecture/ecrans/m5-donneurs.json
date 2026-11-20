@@ -1,0 +1,60 @@
+{
+ "id": "m5-donneurs",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Donneurs & transfusions",
+ "acces": "ouvert",
+ "titre": "Donneurs & transfusions",
+ "description": "Registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Donneurs & transfusions"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les donneurs",
+  "Archivés"
+ ],
+ "kpis": [
+  "Donneurs enregistrés",
+  "Éligibles",
+  "Dons cumulés",
+  "Donneurs bénévoles"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Donneur",
+   "Groupe",
+   "Téléphone",
+   "Type de don",
+   "Dons",
+   "Dernier don",
+   "Éligibilité",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les donneurs60",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

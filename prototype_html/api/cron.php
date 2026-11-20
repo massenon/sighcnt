@@ -1,0 +1,631 @@
+<?php
+/* =============================================================================
+ * SIGH-CNT — Le planificateur du serveur
+ * -----------------------------------------------------------------------------
+ * Le serveur travaille SANS écran ouvert : ce fichier évalue des règles à
+ * heure fixe et écrit des notifications que les postes liront à leur
+ * ouverture, ou en continu par `api/notifications.php`.
+ *
+ * DEUX FAÇONS DE LE LANCER, la même fonction derrière :
+ *   — le planificateur du système, toutes les 5 minutes (recommandé) :
+ *       Linux    : 0-59/5 * * * *  php /chemin/prototype_html/api/cron.php
+ *       Windows  : schtasks /create /sc minute /mo 5 /tn SIGH-CRON
+ *                  /tr "php C:\chemin\prototype_html\api\cron.php"
+ *   — à défaut, un « pseudo-cron » : `notifications.php` l'exécute lui-même
+ *     quand aucune exécution n'a eu lieu depuis plus de 5 minutes. La clinique
+ *     qui n'a pas encore installé de tâche système n'est donc pas privée de
+ *     ses alertes — elle est seulement servie quand un poste est ouvert.
+ *
+ * CE QUE FONT LES TÂCHES, ET CE QU'ELLES NE FONT PAS :
+ *   — une tâche LIT les collections du magasin ; elle n'en écrit aucune. Les
+ *     postes réécrivent leurs collections entières (delta par collection) :
+ *     une écriture serveur dans la même collection serait écrasée au geste
+ *     suivant. Les notifications du serveur ont donc leur propre table.
+ *   — une tâche ne décide d'aucun seuil : elle applique celui que la clinique
+ *     a fixé (seuil d'alerte par article, statut de lot, échéance du
+ *     calendrier fiscal). Le jour où un seuil change, rien ici ne change.
+ *   — une alerte DISPARAÎT quand sa cause cesse : à chaque exécution, ce que
+ *     la tâche ne produit plus est marqué résolu. Jamais supprimé (RG-14).
+ *   — aucune donnée médicale dans un titre : le détail reste derrière les
+ *     droits de l'écran vers lequel l'alerte renvoie.
+ * ========================================================================== */
+
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/_sauvegarde.php';
+
+/* --------------------------------------------------------------------------
+ * LES TABLES — propres au planificateur
+ * ------------------------------------------------------------------------ */
+function sigh_cron_installer(PDO $pdo): void
+{
+    $pg = sigh_est_postgres();
+    $horodate = $pg ? 'TIMESTAMP' : 'DATETIME';
+    $pdo->exec('CREATE TABLE IF NOT EXISTS taches_planifiees (
+        code            VARCHAR(48) PRIMARY KEY,
+        libelle         VARCHAR(160) NOT NULL,
+        frequence_min   INT NOT NULL DEFAULT 5,
+        actif           ' . ($pg ? 'BOOLEAN NOT NULL DEFAULT TRUE' : 'TINYINT(1) NOT NULL DEFAULT 1') . ',
+        derniere_le     ' . $horodate . ' NULL,
+        dernier_statut  VARCHAR(16),
+        dernier_message TEXT,
+        duree_ms        INT,
+        alertes         INT NOT NULL DEFAULT 0
+    )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS executions_taches (
+        id         ' . ($pg ? 'BIGSERIAL' : 'BIGINT AUTO_INCREMENT') . ' PRIMARY KEY,
+        code       VARCHAR(48) NOT NULL,
+        debut      ' . $horodate . ' NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        statut     VARCHAR(16) NOT NULL,
+        message    TEXT,
+        duree_ms   INT,
+        alertes    INT NOT NULL DEFAULT 0,
+        origine    VARCHAR(24)
+    )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS notifications_serveur (
+        id         ' . ($pg ? 'BIGSERIAL' : 'BIGINT AUTO_INCREMENT') . ' PRIMARY KEY,
+        cle        VARCHAR(120) NOT NULL,
+        tache      VARCHAR(48) NOT NULL,
+        priorite   VARCHAR(16) NOT NULL,
+        titre      VARCHAR(255) NOT NULL,
+        detail     TEXT,
+        lien       VARCHAR(64),
+        postes     TEXT,
+        cree_le    ' . $horodate . ' NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        resolue_le ' . $horodate . ' NULL
+    )');
+    try {
+        $pdo->exec('CREATE UNIQUE INDEX uq_notifications_serveur_cle ON notifications_serveur (cle)');
+    } catch (Throwable $e) { /* déjà posé */ }
+}
+
+/** Les collections du magasin, lues sans les modifier. */
+function sigh_cron_collection(PDO $pdo, string $nom): array
+{
+    $q = $pdo->prepare('SELECT donnees FROM collections WHERE nom = ?');
+    $q->execute([$nom]);
+    $d = $q->fetchColumn();
+    $o = $d ? json_decode($d, true) : [];
+    if (!is_array($o)) {
+        return [];
+    }
+    return array_values(array_filter($o, function ($f) {
+        return is_array($f) && (($f['statut'] ?? '') !== 'archive') && empty($f['archive']);
+    }));
+}
+
+function sigh_cron_jour(string $iso): ?int
+{
+    $t = strtotime(substr($iso, 0, 10));
+    return $t === false ? null : (int) floor($t / 86400);
+}
+
+/**
+ * LE DÉLAI « PROCHE » DU CALENDRIER FISCAL (lot A3b) : lu dans la collection `parametresFiscaux` (cfg-comptabilite), version en
+ * vigueur le jour de l'exécution. C'est LA MÊME définition que l'écran de suivi, la vue mensuelle, cfg-fiscalite et la cloche.
+ * Aucune valeur de repli écrite ici : un paramètre absent fait ÉCHOUER la tâche, nommément, plutôt que d'alerter sur un seuil
+ * que personne n'a fixé. Le JOUR d'une échéance n'est pas calculé ici : il est porté par la fiche (`echeance`), engendrée par
+ * le socle (C.jourDuMois, report au jour ouvrable), donc le serveur ne peut pas diverger des écrans sur un jour.
+ */
+function sigh_cron_delai_a_payer(PDO $pdo, int $auj): int
+{
+    $iso = gmdate('Y-m-d', $auj * 86400);
+    $retenu = null;
+    $dateRetenue = '';
+    foreach (sigh_cron_collection($pdo, 'parametresFiscaux') as $p) {
+        if (($p['code'] ?? '') !== 'DELAIS-ALERTE') {
+            continue;
+        }
+        $d = substr((string) ($p['dateEffet'] ?? ''), 0, 10);
+        if ($d !== '' && $d > $iso) {
+            continue; /* version à venir : pas encore en vigueur */
+        }
+        if ($retenu === null || $d >= $dateRetenue) {
+            $retenu = $p;
+            $dateRetenue = $d;
+        }
+    }
+    if ($retenu === null || !isset($retenu['delaiAPayer']) || (int) $retenu['delaiAPayer'] < 1) {
+        throw new RuntimeException('Paramètre DELAIS-ALERTE absent du magasin : le délai d\'alerte des échéances fiscales n\'est pas fixé (cfg-comptabilite, Paramètres du calendrier).');
+    }
+    return (int) $retenu['delaiAPayer'];
+}
+
+/**
+ * LE CIRCUIT DE CLÔTURE ANNUELLE (lot CLO C1, C4) : la valeur d'un réglage de la collection `reglagesCloture` (une fiche par version datée), en vigueur le jour `$iso`. Aucune valeur de
+ * repli écrite ici : un réglage sans version FAIT ÉCHOUER la tâche, nommément, plutôt que d'agir sur une liste que personne n'a arrêtée. Aucun nom de rôle n'est écrit dans ce fichier
+ * pour la clôture : les destinataires des alertes sont les rôles de la liste lue.
+ */
+function sigh_cron_circuit(PDO $pdo, string $cle, string $iso)
+{
+    $retenu = null;
+    $dateRetenue = '';
+    foreach (sigh_cron_collection($pdo, 'reglagesCloture') as $v) {
+        if (($v['cle'] ?? '') !== $cle) {
+            continue;
+        }
+        $d = substr((string) ($v['dateEffet'] ?? ''), 0, 10);
+        $fin = substr((string) ($v['dateFin'] ?? ''), 0, 10);
+        if ($d === '' || $d > $iso || ($fin !== '' && $fin < $iso)) {
+            continue;
+        }
+        if ($retenu === null || $d >= $dateRetenue) {
+            $retenu = $v;
+            $dateRetenue = $d;
+        }
+    }
+    if ($retenu === null || !array_key_exists('valeur', $retenu) || $retenu['valeur'] === null || $retenu['valeur'] === [] || $retenu['valeur'] === '') {
+        throw new RuntimeException('Réglage « ' . $cle . ' » absent du magasin : le circuit de clôture annuelle n\'est pas arrêté (écran Exercices & clôtures, onglet Circuit de clôture).');
+    }
+    return $retenu['valeur'];
+}
+
+/**
+ * LES PARAMÈTRES DE CLINIQUE (lot PARAM-CLINIQUE) : la valeur d'une clé de `parametresClinique` (une fiche par version datée) en vigueur le jour `$iso` : la plus grande date
+ * d'effet qui ne le dépasse pas (`null` : depuis toujours, le défaut semé). Aucune valeur de repli écrite ici : une clé sans version FAIT ÉCHOUER la tâche, nommément.
+ */
+function sigh_cron_parametre_clinique(PDO $pdo, string $cle, string $iso): int
+{
+    $retenu = null;
+    $cleRetenue = '';
+    foreach (sigh_cron_collection($pdo, 'parametresClinique') as $v) {
+        if (($v['cle'] ?? '') !== $cle) {
+            continue;
+        }
+        $d = substr((string) ($v['dateEffet'] ?? ''), 0, 10);
+        if ($d !== '' && $d > $iso) {
+            continue;
+        }
+        $tri = $d . '|' . (string) ($v['creeLe'] ?? '') . '|' . (string) ($v['id'] ?? '');
+        if ($retenu === null || strcmp($tri, $cleRetenue) >= 0) {
+            $retenu = $v;
+            $cleRetenue = $tri;
+        }
+    }
+    if ($retenu === null || !is_numeric($retenu['valeur'] ?? null)) {
+        throw new RuntimeException('Paramètre de clinique « ' . $cle . ' » absent du magasin (écran Règles métier versionnées).');
+    }
+    return (int) $retenu['valeur'];
+}
+
+/** Une sauvegarde qui n'a pas pu s'écrire : exécution en ERREUR (jamais « ok » sans rien avoir écrit) ET alerte critique routée à l'administrateur et à la DAF. */
+function sigh_cron_echec_sauvegarde(string $cle, string $titre, array $refus): array
+{
+    $texte = $refus['code'] . ' : ' . $refus['motif'] . ' ' . $refus['geste'];
+    return ['statut' => 'erreur', 'message' => $texte, 'alertes' => [[
+        'cle' => $cle, 'priorite' => 'critique', 'titre' => $titre, 'detail' => $texte, 'lien' => 'm14-taches', 'postes' => ['admin', 'da'],
+    ]]];
+}
+
+/* --------------------------------------------------------------------------
+ * LES TÂCHES — chacune renvoie la liste COMPLÈTE de ce qui est vrai maintenant
+ * ------------------------------------------------------------------------ */
+function sigh_cron_taches(): array
+{
+    return [
+        'echeances_fiscales' => [
+            'libelle' => 'Échéances fiscales dépassées ou proches (délai des paramètres comptables)',
+            'frequence_min' => 60,
+            'executer' => function (PDO $pdo, int $auj): array {
+                $out = [];
+                $delai = sigh_cron_delai_a_payer($pdo, $auj);
+                foreach (sigh_cron_collection($pdo, 'echeancesFiscales') as $e) {
+                    if (!empty($e['paye'])) {
+                        continue;
+                    }
+                    $j = sigh_cron_jour((string) ($e['echeance'] ?? ''));
+                    if ($j === null) {
+                        continue;
+                    }
+                    $ecart = $j - $auj;
+                    if ($ecart > $delai) {
+                        continue;
+                    }
+                    $nom = (string) ($e['libelle'] ?? $e['obligation'] ?? 'Échéance fiscale');
+                    $out[] = [
+                        'cle' => 'echeance:' . ($e['id'] ?? $nom . $e['echeance']),
+                        'priorite' => $ecart < 0 ? 'critique' : 'important',
+                        'titre' => $ecart < 0 ? 'Échéance fiscale dépassée — ' . $nom : 'Échéance fiscale dans ' . $ecart . ' jour(s) — ' . $nom,
+                        'detail' => 'Échéance du ' . substr((string) $e['echeance'], 0, 10) . '. Valider le règlement dans le suivi des échéances.',
+                        'lien' => 'm12-echeances',
+                        'postes' => ['comptable', 'aide_comptable', 'da', 'direction', 'dm', 'admin'],
+                    ];
+                }
+                return $out;
+            },
+        ],
+        'exercices_ouverture' => [
+            'libelle' => 'Ouverture des exercices : l’année en cours, et l’année suivante à partir du mois réglé (la tâche n’écrit aucune pièce ni aucune collection)',
+            'frequence_min' => 1440,
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                $iso = gmdate('Y-m-d', $auj * 86400);
+                $annee = (int) substr($iso, 0, 4);
+                $mois = (int) substr($iso, 5, 2);
+                $moisOuverture = (int) sigh_cron_circuit($pdo, 'moisOuvertureSuivant', $iso);
+                if ($moisOuverture < 1 || $moisOuverture > 12) {
+                    throw new RuntimeException('Réglage « moisOuvertureSuivant » invalide (' . $moisOuverture . ') : un entier de 1 à 12 est attendu.');
+                }
+                $destinataires = sigh_cron_circuit($pdo, 'rolesDemarrer', $iso);
+                $attendus = [$annee];
+                if ($mois >= $moisOuverture) {
+                    $attendus[] = $annee + 1;
+                }
+                $existants = [];
+                foreach (sigh_cron_collection($pdo, 'exercices') as $e) {
+                    $existants[(int) ($e['annee'] ?? 0)] = true;
+                }
+                $out = [];
+                $manque = [];
+                foreach ($attendus as $a) {
+                    if (isset($existants[$a])) {
+                        continue;
+                    }
+                    $manque[] = $a;
+                    $out[] = [
+                        'cle' => 'exercice-a-ouvrir:' . $a,
+                        'priorite' => 'important',
+                        'titre' => 'Exercice ' . $a . ' à ouvrir',
+                        'detail' => 'L’exercice ' . $a . ' n’est pas encore ouvert dans le magasin : il s’ouvre à la prochaine ouverture d’un poste (aucune pièce n’est écrite par la tâche).',
+                        'lien' => 'm12-cloture',
+                        'postes' => is_array($destinataires) ? array_values($destinataires) : [],
+                    ];
+                }
+                return ['alertes' => $out, 'statut' => 'ok', 'message' => 'Au ' . $iso . ' : exercices attendus ' . implode(', ', $attendus) . ' ; à ouvrir : ' . ($manque ? implode(', ', $manque) : 'aucun') . '. Aucune collection écrite.'];
+            },
+        ],
+        'stock_seuils' => [
+            'libelle' => 'Articles sous leur seuil d’alerte',
+            'frequence_min' => 30,
+            'executer' => function (PDO $pdo, int $auj): array {
+                $out = [];
+                foreach (sigh_cron_collection($pdo, 'produits') as $p) {
+                    if (!isset($p['seuilAlerte']) || $p['seuilAlerte'] === null || !isset($p['stock'])) {
+                        continue;
+                    }
+                    if ($p['stock'] > $p['seuilAlerte']) {
+                        continue;
+                    }
+                    $out[] = [
+                        'cle' => 'stock:' . $p['id'],
+                        'priorite' => $p['stock'] <= 0 ? 'critique' : 'important',
+                        'titre' => ($p['designation'] ?? 'Article') . ' — ' . $p['stock'] . ' en stock',
+                        'detail' => 'Seuil d’alerte fixé à ' . $p['seuilAlerte'] . '. Établir un bon de commande — validation de la Direction requise (RG-04).',
+                        'lien' => 'm6-alertes',
+                        'postes' => ['stock', 'pharmacien', 'caissier', 'da'],
+                    ];
+                }
+                return $out;
+            },
+        ],
+        'lots_peremption' => [
+            'libelle' => 'Lots périmés ou proches de la péremption (FEFO)',
+            'frequence_min' => 60,
+            'executer' => function (PDO $pdo, int $auj): array {
+                $out = [];
+                /* Lot PARAM-CLINIQUE : le statut se LIT au jour, selon le préavis de péremption en vigueur (RG-05), jamais le statut écrit à la saisie. */
+                $iso = gmdate('Y-m-d', $auj * 86400);
+                $preavis = sigh_cron_parametre_clinique($pdo, 'stock.delaiPeremptionJours', $iso);
+                foreach (sigh_cron_collection($pdo, 'lots') as $l) {
+                    $st = $l['statut'] ?? '';
+                    $dp = substr((string) ($l['datePeremption'] ?? ''), 0, 10);
+                    if ($dp !== '' && ($t = strtotime($dp . 'T00:00:00Z')) !== false) {
+                        $j = (int) round(($t - $auj * 86400) / 86400);
+                        $st = $j < 0 ? 'perime' : ($j <= $preavis ? 'alerte' : 'actif');
+                    }
+                    if ($st !== 'perime' && $st !== 'alerte') {
+                        continue;
+                    }
+                    $nom = (string) ($l['produit'] ?? $l['numero'] ?? 'Lot');
+                    $out[] = [
+                        'cle' => 'lot:' . $l['id'],
+                        'priorite' => $st === 'perime' ? 'critique' : 'important',
+                        'titre' => ($st === 'perime' ? 'Lot périmé — ' : 'Péremption proche — ') . $nom,
+                        'detail' => $st === 'perime' ? 'À sortir du rayon et à déclarer en perte.' : 'Appliquer le principe FEFO (RG-05).',
+                        'lien' => 'm6-lots',
+                        'postes' => ['stock', 'pharmacien', 'caissier', 'laborantin'],
+                    ];
+                }
+                return $out;
+            },
+        ],
+        'rdv_lendemain' => [
+            'libelle' => 'Rendez-vous du lendemain à rappeler',
+            'frequence_min' => 120,
+            'executer' => function (PDO $pdo, int $auj): array {
+                $n = 0;
+                foreach (sigh_cron_collection($pdo, 'consultations') as $r) {
+                    if (($r['statut'] ?? '') !== 'planifiee') {
+                        continue;
+                    }
+                    if (sigh_cron_jour((string) ($r['date'] ?? '')) === $auj + 1) {
+                        $n++;
+                    }
+                }
+                if ($n === 0) {
+                    return [];
+                }
+                return [[
+                    'cle' => 'rdv-demain:' . gmdate('Y-m-d', ($auj + 1) * 86400),
+                    'priorite' => 'information',
+                    'titre' => $n . ' rendez-vous prévu(s) demain',
+                    'detail' => 'Rappeler les patients qui l’ont demandé. Le détail est à l’agenda.',
+                    'lien' => 'm2-agenda',
+                    'postes' => ['reception', 'medecin', 'infirmier', 'dm'],
+                ]];
+            },
+        ],
+        'creances_agees' => [
+            'libelle' => 'Créances assureurs au-delà du seuil de recouvrement',
+            'frequence_min' => 240,
+            'executer' => function (PDO $pdo, int $auj): array {
+                /* Même définition que le moteur du navigateur (alertesRecouvrement) :
+                   le seuil est l'objectif « creance_agee » du pilotage, 60 jours à défaut. */
+                $seuil = 60;
+                foreach (sigh_cron_collection($pdo, 'objectifsPilotage') as $o) {
+                    if (($o['code'] ?? $o['id'] ?? '') === 'creance_agee' && isset($o['cible'])) {
+                        $seuil = (int) $o['cible'];
+                    }
+                }
+                $par = [];
+                foreach (sigh_cron_collection($pdo, 'factures') as $f) {
+                    if (empty($f['assureur']) || !((float) ($f['partAssurance'] ?? 0) > 0) || empty($f['date'])) {
+                        continue;
+                    }
+                    $j = sigh_cron_jour((string) $f['date']);
+                    if ($j === null || $auj - $j <= $seuil) {
+                        continue;
+                    }
+                    $k = (string) $f['assureur'];
+                    $par[$k] = ($par[$k] ?? ['nb' => 0, 'montant' => 0.0]);
+                    $par[$k]['nb']++;
+                    $par[$k]['montant'] += (float) $f['partAssurance'];
+                }
+                $out = [];
+                foreach ($par as $assureur => $e) {
+                    $out[] = [
+                        'cle' => 'creance-agee:' . $assureur,
+                        'priorite' => 'important',
+                        'titre' => $assureur . ' — ' . $e['nb'] . ' facture(s) de plus de ' . $seuil . ' jours',
+                        'detail' => 'À recouvrer : ' . number_format($e['montant'], 0, ',', ' ') . ' FCFA. Relancer la compagnie.',
+                        'lien' => 'm9-relances',
+                        'postes' => ['da', 'comptable', 'direction', 'agentadmin'],
+                    ];
+                }
+                return $out;
+            },
+        ],
+        'sauvegarde_nocturne' => [
+            'libelle' => 'Sauvegarde du magasin (copie compressée, 7 derniers jours)',
+            'frequence_min' => 1440,
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                /* La destination est celle de la clinique (réglage en base), sinon `api/sauvegardes/`. Une destination INATTEIGNABLE est refusée en la nommant et
+                   donne une alerte : elle n'est jamais remplacée en silence par le défaut, et une exécution n'est jamais « ok » sans avoir rien écrit. */
+                $d = sigh_sauv_destination($pdo);
+                if (!$d['ok']) {
+                    return sigh_cron_echec_sauvegarde('sauvegarde-magasin:inatteignable', 'Sauvegarde du magasin impossible : destination inatteignable', $d);
+                }
+                $tout = ['meta' => [], 'collections' => []];
+                foreach ($pdo->query('SELECT cle, valeur FROM meta') as $l) {
+                    $tout['meta'][$l['cle']] = json_decode($l['valeur'], true);
+                }
+                foreach ($pdo->query('SELECT nom, donnees FROM collections') as $l) {
+                    $tout['collections'][$l['nom']] = json_decode($l['donnees'], true);
+                }
+                $nom = 'magasin-' . gmdate('Y-m-d', $auj * 86400) . '.json.gz';
+                $octets = @file_put_contents($d['chemin'] . '/' . $nom, gzencode(json_encode($tout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 6));
+                if ($octets === false) {
+                    return sigh_cron_echec_sauvegarde('sauvegarde-magasin:inatteignable', 'Sauvegarde du magasin impossible : écriture refusée', sigh_sauv_refus(
+                        'ECRITURE_IMPOSSIBLE', 'la copie du magasin n’a pas pu être écrite dans « ' . $d['chemin'] . ' » (disque plein ou droits retirés)', 'Libérer de la place ou rendre le dossier inscriptible.'));
+                }
+                /* La rotation à 7 jours ne vise QUE les copies du magasin : les fichiers numérisés ne tournent jamais (conservation illimitée). */
+                $anciens = glob($d['chemin'] . '/magasin-*.json.gz') ?: [];
+                sort($anciens);
+                foreach (array_slice($anciens, 0, max(0, count($anciens) - 7)) as $a) {
+                    @unlink($a);
+                }
+                return ['alertes' => [], 'message' => 'Copie écrite : ' . $nom . ' (' . sigh_sauv_poids((int) $octets) . ') dans ' . $d['chemin'] . '. ' . sigh_sauv_mot_disque($d['memeDisque'])];
+            },
+        ],
+        'sauvegarde_fichiers' => [
+            'libelle' => 'Sauvegarde des fichiers numérisés (copie incrémentale vérifiée, conservation illimitée)',
+            'frequence_min' => 60,
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                if (!is_dir(sigh_fichiers_racine())) {
+                    return ['alertes' => [], 'message' => sigh_sauv_resume_sauvegarde(['rienACopier' => true])];
+                }
+                $d = sigh_sauv_destination($pdo);
+                if (!$d['ok']) {
+                    return sigh_cron_echec_sauvegarde('sauvegarde-fichiers:inatteignable', 'Sauvegarde des fichiers impossible : destination inatteignable', $d);
+                }
+                $r = sigh_sauv_sauvegarder($d, $ctx['budget_s'] ?? null, $auj);
+                $alertes = [];
+                $postes = ['admin', 'da'];
+                if ($r['alteres']) {
+                    $noms = implode(', ', array_map(function ($a) { return sigh_sauv_abrege($a['sha256']) . ($a['sauvegardeSaine'] ? ' (copie saine conservée)' : ' (aucune copie saine)'); }, array_slice($r['alteres'], 0, 5)));
+                    $alertes[] = ['cle' => 'sauvegarde-fichiers:alteres', 'priorite' => 'critique',
+                        'titre' => count($r['alteres']) . ' fichier(s) numérisé(s) altéré(s) à la source, non copié(s) à la sauvegarde',
+                        'detail' => 'Empreintes : ' . $noms . '. Un fichier altéré n’est jamais propagé à la sauvegarde. Restaurer la copie saine : php api/restaurer.php --fichiers --oui.',
+                        'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($r['echecs'] || $r['illisibles']) {
+                    $alertes[] = ['cle' => 'sauvegarde-fichiers:echecs', 'priorite' => 'critique',
+                        'titre' => (count($r['echecs']) + count($r['illisibles'])) . ' fichier(s) numérisé(s) non sauvegardé(s) (écriture ou lecture impossible)',
+                        'detail' => 'Vérifier la place disponible et les droits du dossier « ' . $d['chemin'] . ' », puis relancer la tâche.', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($d['memeDisque'] === true) {
+                    $alertes[] = ['cle' => 'sauvegarde-meme-disque', 'priorite' => 'important',
+                        'titre' => 'Les sauvegardes sont sur le même disque que les données',
+                        'detail' => 'Une copie sur le même disque ne protège pas d’une panne de disque (fichiers numérisés et copies du magasin). Désigner un autre disque ou un partage dans « Tâches planifiées », Destination de la sauvegarde.',
+                        'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                $erreur = $r['alteres'] || $r['echecs'] || $r['illisibles'];
+                return ['alertes' => $alertes, 'statut' => $erreur ? 'erreur' : 'ok', 'message' => sigh_sauv_resume_sauvegarde($r)];
+            },
+        ],
+        'controle_fichiers' => [
+            'libelle' => 'Contrôle d’intégrité des fichiers numérisés (manquants, altérés, sans fiche)',
+            'frequence_min' => 1440,
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                $r = sigh_sauv_controler(sigh_sauv_collections($pdo));
+                $postes = ['admin', 'da'];
+                $alertes = [];
+                if ($r['manquants']) {
+                    $alertes[] = ['cle' => 'controle-fichiers:manquants', 'priorite' => 'critique',
+                        'titre' => count($r['manquants']) . ' fichier(s) numérisé(s) référencé(s) introuvable(s) sur le disque',
+                        'detail' => 'Empreintes : ' . implode(', ', array_map(function ($m) { return sigh_sauv_abrege($m['sha256']); }, array_slice($r['manquants'], 0, 5)))
+                            . '. Les restaurer depuis la sauvegarde : php api/restaurer.php --fichiers --oui.', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($r['divergents']) {
+                    $alertes[] = ['cle' => 'controle-fichiers:alteres', 'priorite' => 'critique',
+                        'titre' => count($r['divergents']) . ' fichier(s) numérisé(s) dont l’empreinte a changé',
+                        'detail' => 'Empreintes : ' . implode(', ', array_map(function ($m) { return sigh_sauv_abrege($m['sha256']); }, array_slice($r['divergents'], 0, 5)))
+                            . '. Ces fichiers ne sont plus servis. Restaurer la copie saine : php api/restaurer.php --fichiers --oui.', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($r['orphelins']) {
+                    $alertes[] = ['cle' => 'controle-fichiers:orphelins', 'priorite' => 'information',
+                        'titre' => count($r['orphelins']) . ' fichier(s) numérisé(s) sans fiche (conservés)',
+                        'detail' => 'Un dépôt dont la fiche n’a jamais été enregistrée laisse un fichier sans référence. Il est signalé, jamais supprimé (RG-14).', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                return ['alertes' => $alertes, 'statut' => ($r['manquants'] || $r['divergents']) ? 'erreur' : 'ok', 'message' => sigh_sauv_resume_controle($r)];
+            },
+        ],
+    ];
+}
+
+/* --------------------------------------------------------------------------
+ * L'EXÉCUTION
+ * ------------------------------------------------------------------------ */
+function sigh_cron_executer(PDO $pdo, string $origine = 'systeme', bool $force = false, ?string $seule = null, ?string $maintenant = null): array
+{
+    sigh_cron_installer($pdo);
+    $pg = sigh_est_postgres();
+    $rapport = [];
+    /* L'horloge du serveur ; (BANC SEULEMENT, derrière SIGH_BANC=1) celle que la sonde impose, pour éprouver une tâche datée sans attendre décembre. */
+    $instant = time();
+    if ($maintenant !== null && getenv('SIGH_BANC') === '1' && strtotime($maintenant) !== false) {
+        $instant = strtotime($maintenant);
+    }
+    $auj = (int) floor($instant / 86400);
+    foreach (sigh_cron_taches() as $code => $t) {
+        if ($seule !== null && $seule !== $code) {
+            continue;
+        }
+        $q = $pdo->prepare('SELECT * FROM taches_planifiees WHERE code = ?');
+        $q->execute([$code]);
+        $fiche = $q->fetch();
+        if (!$fiche) {
+            $pdo->prepare('INSERT INTO taches_planifiees (code, libelle, frequence_min) VALUES (?, ?, ?)')
+                ->execute([$code, $t['libelle'], $t['frequence_min']]);
+            $fiche = ['actif' => true, 'derniere_le' => null, 'frequence_min' => $t['frequence_min'], 'libelle' => $t['libelle']];
+        } elseif (($fiche['libelle'] ?? '') !== $t['libelle']) {
+            /* Le libellé du registre suit le code : un libellé qui dit « 7 jours » alors que le seuil est un paramètre mentirait. */
+            $pdo->prepare('UPDATE taches_planifiees SET libelle = ? WHERE code = ?')->execute([$t['libelle'], $code]);
+        }
+        if (!$pg ? !(int) $fiche['actif'] : !$fiche['actif']) {
+            continue;
+        }
+        if (!$force && $fiche['derniere_le'] && time() - strtotime($fiche['derniere_le']) < $t['frequence_min'] * 60) {
+            continue;
+        }
+        $debut = microtime(true);
+        $statut = 'ok';
+        $message = '';
+        $alertes = [];
+        $leve = false;
+        try {
+            $res = $t['executer']($pdo, $auj, ['origine' => $origine, 'budget_s' => sigh_sauv_budget($origine)]);
+            /* Une tâche rend la liste des alertes (forme d'origine) OU { alertes, statut?, message? } : une sauvegarde qui échoue doit pouvoir être « en erreur » ET alerter. */
+            if (is_array($res) && array_key_exists('alertes', $res)) {
+                $alertes = $res['alertes'];
+                $statut = $res['statut'] ?? 'ok';
+                $message = (string) ($res['message'] ?? '');
+            } else {
+                $alertes = $res;
+            }
+        } catch (Throwable $e) {
+            $leve = true;
+            $statut = 'erreur';
+            $message = $e->getMessage();
+        }
+        if (!$leve) {
+            sigh_cron_rapprocher($pdo, $code, $alertes);
+        }
+        $duree = (int) round((microtime(true) - $debut) * 1000);
+        $pdo->prepare('UPDATE taches_planifiees SET derniere_le = CURRENT_TIMESTAMP, dernier_statut = ?, dernier_message = ?, duree_ms = ?, alertes = ? WHERE code = ?')
+            ->execute([$statut, $message, $duree, count($alertes), $code]);
+        $pdo->prepare('INSERT INTO executions_taches (code, statut, message, duree_ms, alertes, origine) VALUES (?, ?, ?, ?, ?, ?)')
+            ->execute([$code, $statut, $message, $duree, count($alertes), $origine]);
+        /* Le journal des exécutions est borné : un historique sans limite
+           finit par peser plus que les alertes qu'il retrace. */
+        $pdo->exec('DELETE FROM executions_taches WHERE id NOT IN (SELECT id FROM (SELECT id FROM executions_taches ORDER BY id DESC LIMIT 500) x)');
+        $rapport[$code] = ['statut' => $statut, 'alertes' => count($alertes), 'duree_ms' => $duree, 'message' => $message];
+    }
+    return $rapport;
+}
+
+/** Inscrit au registre les tâches que le code connaît et que le registre ignore encore (une tâche ajoutée par une mise à jour se VOIT « jamais exécutée » au lieu d'être absente). */
+function sigh_cron_inscrire(PDO $pdo): void
+{
+    foreach (sigh_cron_taches() as $code => $t) {
+        $q = $pdo->prepare('SELECT 1 FROM taches_planifiees WHERE code = ?');
+        $q->execute([$code]);
+        if (!$q->fetchColumn()) {
+            $pdo->prepare('INSERT INTO taches_planifiees (code, libelle, frequence_min) VALUES (?, ?, ?)')->execute([$code, $t['libelle'], $t['frequence_min']]);
+        }
+    }
+}
+
+/** Ce que la tâche produit maintenant devient ouvert ; ce qu'elle ne produit plus est résolu. */
+function sigh_cron_rapprocher(PDO $pdo, string $tache, array $alertes): void
+{
+    $pdo->beginTransaction();
+    try {
+        $cles = [];
+        foreach ($alertes as $a) {
+            $cles[] = $a['cle'];
+            $q = $pdo->prepare('SELECT id FROM notifications_serveur WHERE cle = ?');
+            $q->execute([$a['cle']]);
+            $id = $q->fetchColumn();
+            $postes = json_encode($a['postes'] ?? [], JSON_UNESCAPED_UNICODE);
+            if ($id) {
+                /* Une alerte résolue qui revient redevient ouverte, avec sa date de naissance neuve. */
+                $pdo->prepare('UPDATE notifications_serveur SET priorite = ?, titre = ?, detail = ?, lien = ?, postes = ?,
+                    cree_le = CASE WHEN resolue_le IS NULL THEN cree_le ELSE CURRENT_TIMESTAMP END, resolue_le = NULL WHERE id = ?')
+                    ->execute([$a['priorite'], $a['titre'], $a['detail'] ?? '', $a['lien'] ?? '', $postes, $id]);
+            } else {
+                $pdo->prepare('INSERT INTO notifications_serveur (cle, tache, priorite, titre, detail, lien, postes) VALUES (?, ?, ?, ?, ?, ?, ?)')
+                    ->execute([$a['cle'], $tache, $a['priorite'], $a['titre'], $a['detail'] ?? '', $a['lien'] ?? '', $postes]);
+            }
+        }
+        $ouvertes = $pdo->prepare('SELECT id, cle FROM notifications_serveur WHERE tache = ? AND resolue_le IS NULL');
+        $ouvertes->execute([$tache]);
+        foreach ($ouvertes->fetchAll() as $o) {
+            if (!in_array($o['cle'], $cles, true)) {
+                $pdo->prepare('UPDATE notifications_serveur SET resolue_le = CURRENT_TIMESTAMP WHERE id = ?')->execute([$o['id']]);
+            }
+        }
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
+/* Lancé en ligne de commande : le planificateur du système. */
+if (PHP_SAPI === 'cli' && realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
+    try {
+        $pdo = sigh_pdo();
+        sigh_installer($pdo);
+        $force = in_array('--force', $argv ?? [], true);
+        $rapport = sigh_cron_executer($pdo, 'systeme', $force);
+        foreach ($rapport as $code => $r) {
+            fwrite(STDOUT, sprintf("%-22s %-7s %3d alerte(s) %5d ms %s\n", $code, $r['statut'], $r['alertes'], $r['duree_ms'], $r['message']));
+        }
+        if (!$rapport) {
+            fwrite(STDOUT, "Aucune tâche à exécuter.\n");
+        }
+        exit(0);
+    } catch (Throwable $e) {
+        fwrite(STDERR, 'Planificateur : ' . $e->getMessage() . "\n");
+        exit(1);
+    }
+}

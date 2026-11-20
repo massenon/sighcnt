@@ -1,0 +1,52 @@
+{
+ "id": "dash-receptionniste",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Accueil",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Accueil",
+ "description": "Création de dossiers, rendez-vous du jour, visites et orientation des patients.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Accueil"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Dossiers créés ce mois",
+  "Rendez-vous du jour",
+  "Patients au répertoire",
+  "Cartes d’assurance expirées"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — les parcours de l’accueil",
+  "Rendez-vous et consultations du jour"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "File d’attente",
+  "Ouvrir un dossier",
+  "Prendre le rendez-vous",
+  "Programmer le contrôle",
+  "Enregistrer la référence",
+  "Gérer la file",
+  "Préparer la sortie",
+  "Enregistrer la sortie",
+  "Ouvrir le registre",
+  "Enregistrer une visite",
+  "Consulter l’annuaire",
+  "Délivrer une pièce",
+  "Agenda complet"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -1,0 +1,3183 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-stock.js — ne pas éditer. Écrans de stock M6 de la maquette montés sur un jeu d'essai (produits, lots, mouvements) ; sorties = ce que l'écran affiche. Horloge fixée au 16/08/2026 à minuit local.",
+ "auj": "2026-08-16",
+ "referentiels": {
+  "categories": [
+   {
+    "id": "medicament",
+    "label": "Médicaments"
+   },
+   {
+    "id": "reactif",
+    "label": "Réactifs de laboratoire"
+   },
+   {
+    "id": "conso_labo",
+    "label": "Consommables de laboratoire"
+   },
+   {
+    "id": "conso_medical",
+    "label": "Consommables médicaux"
+   },
+   {
+    "id": "fourniture",
+    "label": "Fournitures administratives"
+   },
+   {
+    "id": "entretien",
+    "label": "Produits d’entretien"
+   },
+   {
+    "id": "petit_materiel",
+    "label": "Petit matériel médical"
+   },
+   {
+    "id": "immobilisation",
+    "label": "Immobilisations"
+   }
+  ],
+  "typesMouvement": [
+   {
+    "id": "entree",
+    "label": "Entrée",
+    "badge": "success"
+   },
+   {
+    "id": "sortie",
+    "label": "Sortie",
+    "badge": "navy"
+   },
+   {
+    "id": "transfert",
+    "label": "Transfert",
+    "badge": "info"
+   },
+   {
+    "id": "perte",
+    "label": "Perte",
+    "badge": "danger"
+   },
+   {
+    "id": "casse",
+    "label": "Casse / bris",
+    "badge": "danger"
+   },
+   {
+    "id": "peremption",
+    "label": "Péremption",
+    "badge": "warning"
+   },
+   {
+    "id": "inventaire",
+    "label": "Régularisation inventaire",
+    "badge": "neutral"
+   }
+  ],
+  "typesStock": [
+   {
+    "id": "gros",
+    "label": "Stock gros (magasin central)"
+   },
+   {
+    "id": "detail",
+    "label": "Stock détail (pharmacie d’urgence)"
+   },
+   {
+    "id": "labo",
+    "label": "Stock laboratoire"
+   }
+  ]
+ },
+ "jeu": {
+  "produits": [
+   {
+    "id": "PRD9012",
+    "statut": "actif",
+    "code": "A4",
+    "designation": "RAME PAPIER A4",
+    "categorie": "fourniture",
+    "unite": "Rame",
+    "prixAchat": 3200,
+    "prixVente": 3200,
+    "cump": 3200,
+    "stockGros": 20,
+    "stockDetail": 0,
+    "stock": 20,
+    "emplacement": "Rayon E — Casier 3",
+    "fournisseur": "NATIFOURN",
+    "seuilAlerte": 10,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9011",
+    "statut": "actif",
+    "code": "DET5",
+    "designation": "DETERGENT 5 L",
+    "categorie": "entretien",
+    "unite": "Bidon",
+    "prixAchat": 4000,
+    "prixVente": 4000,
+    "cump": 4000,
+    "stockGros": 12,
+    "stockDetail": 3,
+    "stock": 15,
+    "emplacement": "Rayon E — Casier 2",
+    "fournisseur": "NATIFOURN",
+    "seuilAlerte": 8,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9010",
+    "statut": "actif",
+    "code": "AUT50",
+    "designation": "AUTOCLAVE 50 L",
+    "categorie": "immobilisation",
+    "unite": "Unité",
+    "prixAchat": 1250000,
+    "prixVente": 1250000,
+    "cump": 1250000,
+    "stockGros": 1,
+    "stockDetail": 0,
+    "stock": 1,
+    "emplacement": "Rayon E — Casier 1",
+    "fournisseur": "MEDIPLUS",
+    "seuilAlerte": 1,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9009",
+    "statut": "actif",
+    "code": "EDTA",
+    "designation": "TUBE EDTA",
+    "categorie": "conso_labo",
+    "unite": "Unité",
+    "prixAchat": 120,
+    "prixVente": 120,
+    "cump": 333.33,
+    "stockGros": 0,
+    "stockDetail": 7,
+    "stock": 7,
+    "emplacement": "Rayon D — Casier 2",
+    "fournisseur": "LABOTECH",
+    "seuilAlerte": 10,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9008",
+    "statut": "actif",
+    "code": "RGL",
+    "designation": "REACTIF GLYCEMIE",
+    "categorie": "reactif",
+    "unite": "Boîte",
+    "prixAchat": 15000,
+    "prixVente": 15000,
+    "cump": 15000,
+    "stockGros": 40,
+    "stockDetail": 0,
+    "stock": 40,
+    "emplacement": "Rayon D — Casier 1",
+    "fournisseur": "LABOTECH",
+    "seuilAlerte": 40,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9007",
+    "statut": "actif",
+    "code": "BET",
+    "designation": "BETADINE 125 ML",
+    "categorie": "medicament",
+    "unite": "Flacon",
+    "prixAchat": 600,
+    "prixVente": 600,
+    "cump": 600,
+    "stockGros": 0,
+    "stockDetail": 0,
+    "stock": 0,
+    "emplacement": "Rayon A — Casier 3",
+    "fournisseur": "CAME",
+    "seuilAlerte": 0,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9006",
+    "statut": "actif",
+    "code": "COT5",
+    "designation": "COTON 500 G",
+    "categorie": "conso_medical",
+    "unite": "Rouleau",
+    "prixAchat": 1200,
+    "prixVente": 1200,
+    "cump": 1200,
+    "stockGros": 10,
+    "stockDetail": 0,
+    "stock": 10,
+    "emplacement": "Rayon C — Casier 1",
+    "fournisseur": "CAME",
+    "seuilAlerte": 0,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9005",
+    "statut": "actif",
+    "code": "SER5M",
+    "designation": "SERINGUE 5 ML",
+    "categorie": "conso_medical",
+    "unite": "Unité",
+    "prixAchat": 45,
+    "prixVente": 45,
+    "cump": 45,
+    "stockGros": 3,
+    "stockDetail": 0,
+    "stock": 3,
+    "emplacement": "Rayon B — Casier 3",
+    "fournisseur": "SOBAPS",
+    "seuilAlerte": null,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9004",
+    "statut": "actif",
+    "code": "GNS",
+    "designation": "GANTS NON STERILES",
+    "categorie": "conso_medical",
+    "unite": "Boîte",
+    "prixAchat": 3500,
+    "prixVente": 3500,
+    "cump": 3500,
+    "stockGros": 0,
+    "stockDetail": 0,
+    "stock": 0,
+    "emplacement": "Rayon B — Casier 2",
+    "fournisseur": "SOBAPS",
+    "seuilAlerte": null,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9003",
+    "statut": "actif",
+    "code": "SER5",
+    "designation": "SERUM SALE 500 ML",
+    "categorie": "conso_medical",
+    "unite": "Flacon",
+    "prixAchat": 1000,
+    "prixVente": 1000,
+    "cump": 1000,
+    "stockGros": 4,
+    "stockDetail": 2,
+    "stock": 6,
+    "emplacement": "Rayon B — Casier 1",
+    "fournisseur": "SOBAPS",
+    "seuilAlerte": 5,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9002",
+    "statut": "actif",
+    "code": "PAR5",
+    "designation": "PARACETAMOL 500 MG",
+    "categorie": "medicament",
+    "unite": "Boîte",
+    "prixAchat": 250,
+    "prixVente": 250,
+    "cump": 250,
+    "stockGros": 3,
+    "stockDetail": 2,
+    "stock": 5,
+    "emplacement": "Rayon A — Casier 2",
+    "fournisseur": "CAME",
+    "seuilAlerte": 5,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "PRD9001",
+    "statut": "actif",
+    "code": "AMX5",
+    "designation": "AMOXICILLINE 500 MG",
+    "categorie": "medicament",
+    "unite": "Boîte",
+    "prixAchat": 800,
+    "prixVente": 800,
+    "cump": 800,
+    "stockGros": 0,
+    "stockDetail": 0,
+    "stock": 0,
+    "emplacement": "Rayon A — Casier 1",
+    "fournisseur": "CAME",
+    "seuilAlerte": 5,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   }
+  ],
+  "lots": [
+   {
+    "id": "LOT9013",
+    "statut": "alerte",
+    "produitId": "PRD9001",
+    "produit": "AMOXICILLINE 500 MG",
+    "numeroLot": "LOT-A13",
+    "datePeremption": "2026-09-30",
+    "quantiteRestante": 0,
+    "emplacement": "Rayon A — Casier 1",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9012",
+    "statut": "alerte",
+    "produitId": "PRD9005",
+    "produit": "SERINGUE 5 ML",
+    "numeroLot": "LOT-B12",
+    "datePeremption": "2026-09-16",
+    "quantiteRestante": 9,
+    "emplacement": "Rayon B — Casier 3",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9011",
+    "statut": "actif",
+    "produitId": "PRD9002",
+    "produit": "PARACETAMOL 500 MG",
+    "numeroLot": "LOT-A11",
+    "datePeremption": "2027-09-20",
+    "quantiteRestante": 12,
+    "emplacement": "Rayon A — Casier 2",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9010",
+    "statut": "actif",
+    "produitId": "PRD9012",
+    "produit": "RAME PAPIER A4",
+    "numeroLot": "LOT-E10",
+    "datePeremption": "2026-11-15",
+    "quantiteRestante": 5,
+    "emplacement": "Rayon E — Casier 3",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9009",
+    "statut": "alerte",
+    "produitId": "PRD9011",
+    "produit": "DETERGENT 5 L",
+    "numeroLot": "LOT-E09",
+    "datePeremption": "2026-11-14",
+    "quantiteRestante": 2,
+    "emplacement": "Rayon E — Casier 2",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9008",
+    "statut": "alerte",
+    "produitId": "PRD9011",
+    "produit": "DETERGENT 5 L",
+    "numeroLot": "LOT-E08",
+    "datePeremption": "2026-11-13",
+    "quantiteRestante": 6,
+    "emplacement": "Rayon E — Casier 2",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9007",
+    "statut": "alerte",
+    "produitId": "PRD9009",
+    "produit": "TUBE EDTA",
+    "numeroLot": "LOT-D07",
+    "datePeremption": "2026-09-16",
+    "quantiteRestante": 3,
+    "emplacement": "Rayon D — Casier 2",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9006",
+    "statut": "alerte",
+    "produitId": "PRD9009",
+    "produit": "TUBE EDTA",
+    "numeroLot": "LOT-D06",
+    "datePeremption": "2026-09-15",
+    "quantiteRestante": 3,
+    "emplacement": "Rayon D — Casier 2",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9005",
+    "statut": "alerte",
+    "produitId": "PRD9008",
+    "produit": "REACTIF GLYCEMIE",
+    "numeroLot": "LOT-D05",
+    "datePeremption": "2026-09-14",
+    "quantiteRestante": 5,
+    "emplacement": "Rayon D — Casier 1",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9004",
+    "statut": "alerte",
+    "produitId": "PRD9008",
+    "produit": "REACTIF GLYCEMIE",
+    "numeroLot": "LOT-D04",
+    "datePeremption": "2026-08-17",
+    "quantiteRestante": 10,
+    "emplacement": "Rayon D — Casier 1",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9003",
+    "statut": "alerte",
+    "produitId": "PRD9003",
+    "produit": "SERUM SALE 500 ML",
+    "numeroLot": "LOT-B03",
+    "datePeremption": "2026-08-16",
+    "quantiteRestante": 1,
+    "emplacement": "Rayon B — Casier 1",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9002",
+    "statut": "perime",
+    "produitId": "PRD9003",
+    "produit": "SERUM SALE 500 ML",
+    "numeroLot": "LOT-B02",
+    "datePeremption": "2026-08-15",
+    "quantiteRestante": 2,
+    "emplacement": "Rayon B — Casier 1",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   },
+   {
+    "id": "LOT9001",
+    "statut": "perime",
+    "produitId": "PRD9002",
+    "produit": "PARACETAMOL 500 MG",
+    "numeroLot": "LOT-A01",
+    "datePeremption": "2026-08-06",
+    "quantiteRestante": 4,
+    "emplacement": "Rayon A — Casier 2",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.078Z"
+   }
+  ],
+  "mouvements": [
+   {
+    "id": "MVT9013",
+    "statut": "actif",
+    "reference": "M9013",
+    "date": "2026-08-02",
+    "produitId": "PRD9004",
+    "produit": "GANTS NON STERILES",
+    "type": "peremption",
+    "typeLabel": "Péremption",
+    "quantite": 2,
+    "justificatif": "Retour R-1",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "detail",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9012",
+    "statut": "actif",
+    "reference": "M9012",
+    "date": "2025-08-30",
+    "produitId": "PRD9012",
+    "produit": "RAME PAPIER A4",
+    "type": "entree",
+    "typeLabel": "Entrée",
+    "quantite": 6,
+    "justificatif": "BL-005",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9011",
+    "statut": "actif",
+    "reference": "M9011",
+    "date": "2025-09-20",
+    "produitId": "PRD9012",
+    "produit": "RAME PAPIER A4",
+    "type": "entree",
+    "typeLabel": "Entrée",
+    "quantite": 8,
+    "justificatif": "BL-004",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9010",
+    "statut": "actif",
+    "reference": "M9010",
+    "date": "2026-08-12",
+    "produitId": "PRD9005",
+    "produit": "SERINGUE 5 ML",
+    "type": "casse",
+    "typeLabel": "Casse / bris",
+    "quantite": 1,
+    "justificatif": "Casse C-1",
+    "utilisateur": "MAMAN Zoukanéri",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9009",
+    "statut": "actif",
+    "reference": "M9009",
+    "date": "2026-08-16",
+    "produitId": "PRD9001",
+    "produit": "AMOXICILLINE 500 MG",
+    "type": "sortie",
+    "typeLabel": "Sortie",
+    "quantite": 7,
+    "justificatif": "BS-003",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9008",
+    "statut": "actif",
+    "reference": "M9008",
+    "date": "2026-08-31",
+    "produitId": "PRD9011",
+    "produit": "DETERGENT 5 L",
+    "type": "entree",
+    "typeLabel": "Entrée",
+    "quantite": 4,
+    "justificatif": "BL-003",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9007",
+    "statut": "actif",
+    "reference": "M9007",
+    "date": "2026-06-05",
+    "produitId": "PRD9002",
+    "produit": "PARACETAMOL 500 MG",
+    "type": "entree",
+    "typeLabel": "Entrée",
+    "quantite": 5,
+    "justificatif": "TR-001",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "detail",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9006",
+    "statut": "actif",
+    "reference": "M9006",
+    "date": "2026-07-16",
+    "produitId": "PRD9009",
+    "produit": "TUBE EDTA",
+    "type": "sortie",
+    "typeLabel": "Sortie",
+    "quantite": 1,
+    "justificatif": "BS-002",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9005",
+    "statut": "actif",
+    "reference": "M9005",
+    "date": "2026-07-17",
+    "produitId": "PRD9009",
+    "produit": "TUBE EDTA",
+    "type": "sortie",
+    "typeLabel": "Sortie",
+    "quantite": 1,
+    "justificatif": "BS-001",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9004",
+    "statut": "actif",
+    "reference": "M9004",
+    "date": "2026-07-20",
+    "produitId": "PRD9008",
+    "produit": "REACTIF GLYCEMIE",
+    "type": "entree",
+    "typeLabel": "Entrée",
+    "quantite": 10,
+    "justificatif": "BL-002",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9003",
+    "statut": "actif",
+    "reference": "M9003",
+    "date": "2026-08-10",
+    "produitId": "PRD9003",
+    "produit": "SERUM SALE 500 ML",
+    "type": "perte",
+    "typeLabel": "Perte",
+    "quantite": 2,
+    "justificatif": "Perte P-1",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9002",
+    "statut": "actif",
+    "reference": "M9002",
+    "date": "2026-08-16",
+    "produitId": "PRD9002",
+    "produit": "PARACETAMOL 500 MG",
+    "type": "sortie",
+    "typeLabel": "Sortie",
+    "quantite": 3,
+    "justificatif": "FAC-001",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "detail",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   },
+   {
+    "id": "MVT9001",
+    "statut": "actif",
+    "reference": "M9001",
+    "date": "2026-08-16",
+    "produitId": "PRD9003",
+    "produit": "SERUM SALE 500 ML",
+    "type": "entree",
+    "typeLabel": "Entrée",
+    "quantite": 50,
+    "justificatif": "BL-001",
+    "utilisateur": "MAMAN Zoukanéri",
+    "stockType": "gros",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:55:04.079Z"
+   }
+  ]
+ },
+ "sorties": {
+  "dashboard": {
+   "kpis": [
+    {
+     "libelle": "Valeur totale du stock",
+     "valeur": "1 995 718 FCFA",
+     "indice": "Valorisation au CUMP"
+    },
+    {
+     "libelle": "Références gérées",
+     "valeur": "12",
+     "indice": null
+    },
+    {
+     "libelle": "Produits critiques",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "Produits périmés",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Valeur stock gros",
+     "valeur": "1 978 885 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Valeur stock détail",
+     "valeur": "16 833 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Mouvements du mois",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "Péremption sous 90 j",
+     "valeur": "9",
+     "indice": "Application du FEFO"
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "CODE",
+      "DÉSIGNATION",
+      "CATÉGORIE",
+      "STOCK",
+      "SEUIL",
+      "EMPLACEMENT",
+      "ÉTAT"
+     ],
+     "lignes": [
+      [
+       "BET",
+       "BETADINE 125 ML",
+       "Médicaments",
+       "0",
+       "0",
+       "Rayon A — Casier 3",
+       "Rupture"
+      ],
+      [
+       "GNS",
+       "GANTS NON STERILES",
+       "Consommables médicaux",
+       "0",
+       "—",
+       "Rayon B — Casier 2",
+       "Rupture"
+      ],
+      [
+       "AMX5",
+       "AMOXICILLINE 500 MG",
+       "Médicaments",
+       "0",
+       "5",
+       "Rayon A — Casier 1",
+       "Rupture"
+      ],
+      [
+       "AUT50",
+       "AUTOCLAVE 50 L",
+       "Immobilisations",
+       "1",
+       "1",
+       "Rayon E — Casier 1",
+       "Critique"
+      ],
+      [
+       "PAR5",
+       "PARACETAMOL 500 MG",
+       "Médicaments",
+       "5",
+       "5",
+       "Rayon A — Casier 2",
+       "Critique"
+      ],
+      [
+       "EDTA",
+       "TUBE EDTA",
+       "Consommables de laboratoire",
+       "7",
+       "10",
+       "Rayon D — Casier 2",
+       "Critique"
+      ],
+      [
+       "RGL",
+       "REACTIF GLYCEMIE",
+       "Réactifs de laboratoire",
+       "40",
+       "40",
+       "Rayon D — Casier 1",
+       "Critique"
+      ]
+     ]
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Accès rapides",
+    "Valeur du stock par catégorie",
+    "Répartition gros / détail",
+    "Mouvements de stock (12 mois)",
+    "État des péremptions",
+    "Produits à réapprovisionner en priorité Toutes les alertes"
+   ],
+   "graphiques": [
+    {
+     "type": "barres",
+     "args": [
+      [
+       "Fournitures administratives",
+       "Produits d’entretien",
+       "Immobilisations",
+       "Consommables de laboratoire",
+       "Réactifs de laboratoire",
+       "Médicaments",
+       "Consommables médicaux"
+      ],
+      [
+       {
+        "label": "Valeur (FCFA)",
+        "data": [
+         64000,
+         60000,
+         1250000,
+         2333.31,
+         600000,
+         1250,
+         18135
+        ]
+       }
+      ]
+     ]
+    },
+    {
+     "type": "anneau",
+     "args": [
+      [
+       "Stock gros (magasin)",
+       "Stock détail (pharmacie)"
+      ],
+      [
+       1978885,
+       16833.309999999998
+      ]
+     ]
+    },
+    {
+     "type": "barres",
+     "args": [
+      [
+       "sept. 25",
+       "octo. 25",
+       "nove. 25",
+       "déce. 25",
+       "janv. 26",
+       "févr. 26",
+       "mars. 26",
+       "avri. 26",
+       "mai. 26",
+       "juin. 26",
+       "juil. 26",
+       "août. 26"
+      ],
+      [
+       {
+        "label": "Entrées",
+        "data": [
+         8,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         5,
+         10,
+         54
+        ],
+        "color": "#22a170"
+       },
+       {
+        "label": "Sorties",
+        "data": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         2,
+         10
+        ],
+        "color": "#12315e"
+       },
+       {
+        "label": "Pertes",
+        "data": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         5
+        ],
+        "color": "#ef4444"
+       }
+      ]
+     ]
+    },
+    {
+     "type": "anneau",
+     "args": [
+      [
+       "Périmés",
+       "Sous 90 jours",
+       "Au-delà de 90 jours"
+      ],
+      [
+       2,
+       9,
+       2
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "7 produit(s) sous le seuil d’alerte — établir un bon de commande (validation DA requise, RG-04).",
+    "2 lot(s) périmé(s) — retour aux fournisseurs habilités (CAME, SoBAPS) et valorisation de la perte."
+   ],
+   "raccourcis": [
+    "Inventaire Physique contre théorique",
+    "Transferts Gros vers détail",
+    "Lots & péremptions Principe FEFO",
+    "Expression de besoins Demande interne",
+    "Toutes les alertes"
+   ]
+  },
+  "produits": {
+   "kpis": [
+    {
+     "libelle": "Références",
+     "valeur": "12",
+     "indice": null
+    },
+    {
+     "libelle": "Valeur du stock",
+     "valeur": "1 995 718 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "En rupture",
+     "valeur": "3",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "",
+      "CODE",
+      "DÉSIGNATION",
+      "UNITÉ",
+      "PRIX D’ACHAT",
+      "CUMP",
+      "STOCK GROS",
+      "STOCK DÉTAIL",
+      "TOTAL",
+      "SEUIL",
+      "VALEUR",
+      "ÉTAT",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "",
+       "AMX5",
+       "AMOXICILLINE 500 MG Médicaments — Boîte",
+       "Boîte",
+       "800",
+       "800",
+       "0",
+       "0",
+       "0",
+       "5",
+       "0",
+       "Rupture",
+       ""
+      ],
+      [
+       "",
+       "AUT50",
+       "AUTOCLAVE 50 L Immobilisations — Unité",
+       "Unité",
+       "1 250 000",
+       "1 250 000",
+       "1",
+       "0",
+       "1",
+       "1",
+       "1 250 000",
+       "Critique",
+       ""
+      ],
+      [
+       "",
+       "BET",
+       "BETADINE 125 ML Médicaments — Flacon",
+       "Flacon",
+       "600",
+       "600",
+       "0",
+       "0",
+       "0",
+       "0",
+       "0",
+       "Rupture",
+       ""
+      ],
+      [
+       "",
+       "COT5",
+       "COTON 500 G Consommables médicaux — Rouleau",
+       "Rouleau",
+       "1 200",
+       "1 200",
+       "10",
+       "0",
+       "10",
+       "0",
+       "12 000",
+       "Normal",
+       ""
+      ],
+      [
+       "",
+       "DET5",
+       "DETERGENT 5 L Produits d’entretien — Bidon",
+       "Bidon",
+       "4 000",
+       "4 000",
+       "12",
+       "3",
+       "15",
+       "8",
+       "60 000",
+       "Normal",
+       ""
+      ],
+      [
+       "",
+       "GNS",
+       "GANTS NON STERILES Consommables médicaux — Boîte",
+       "Boîte",
+       "3 500",
+       "3 500",
+       "0",
+       "0",
+       "0",
+       "—",
+       "0",
+       "Rupture",
+       ""
+      ],
+      [
+       "",
+       "PAR5",
+       "PARACETAMOL 500 MG Médicaments — Boîte",
+       "Boîte",
+       "250",
+       "250",
+       "3",
+       "2",
+       "5",
+       "5",
+       "1 250",
+       "Critique",
+       ""
+      ],
+      [
+       "",
+       "A4",
+       "RAME PAPIER A4 Fournitures administratives — Rame",
+       "Rame",
+       "3 200",
+       "3 200",
+       "20",
+       "0",
+       "20",
+       "10",
+       "64 000",
+       "Normal",
+       ""
+      ],
+      [
+       "",
+       "RGL",
+       "REACTIF GLYCEMIE Réactifs de laboratoire — Boîte",
+       "Boîte",
+       "15 000",
+       "15 000",
+       "40",
+       "0",
+       "40",
+       "40",
+       "600 000",
+       "Critique",
+       ""
+      ],
+      [
+       "",
+       "SER5M",
+       "SERINGUE 5 ML Consommables médicaux — Unité",
+       "Unité",
+       "45",
+       "45",
+       "3",
+       "0",
+       "3",
+       "—",
+       "135",
+       "Normal",
+       ""
+      ],
+      [
+       "",
+       "SER5",
+       "SERUM SALE 500 ML Consommables médicaux — Flacon",
+       "Flacon",
+       "1 000",
+       "1 000",
+       "4",
+       "2",
+       "6",
+       "5",
+       "6 000",
+       "Normal",
+       ""
+      ],
+      [
+       "",
+       "EDTA",
+       "TUBE EDTA Consommables de laboratoire — Unité",
+       "Unité",
+       "120",
+       "333",
+       "0",
+       "7",
+       "7",
+       "10",
+       "2 333",
+       "Critique",
+       ""
+      ]
+     ]
+    }
+   ],
+   "onglets": [
+    "Tous les produits12",
+    "Archivés184"
+   ],
+   "cartes": [],
+   "graphiques": [],
+   "detail": {
+    "PAR5": {
+     "texte": "PARACETAMOL 500 MG PAR5 Stock total 5 Boîte Valeur au CUMP 1 250 FCFA Fiche produit Lots (FEFO)2 Mouvements2 Code article PAR5 Désignation PARACETAMOL 500 MG Catégorie Médicaments Unité Boîte Prix d’achat 250 FCFA Prix de vente 250 FCFASans marge (RG-02) CUMP 250 FCFA Stock gros 3 Boîte Stock détail 2 Boîte Seuil d’alerte 5 Emplacement Rayon A — Casier 2 Fournisseur habituel CAME Imprimer Modifier Archiver",
+     "kpis": [
+      {
+       "libelle": "Stock total",
+       "valeur": "5 Boîte",
+       "indice": null
+      },
+      {
+       "libelle": "Valeur au CUMP",
+       "valeur": "1 250 FCFA",
+       "indice": null
+      }
+     ],
+     "tableaux": [],
+     "Lots (FEFO)": {
+      "tableaux": [
+       {
+        "entetes": [
+         "N° LOT",
+         "PÉREMPTION",
+         "RESTE",
+         "ÉTAT",
+         "EMPLACEMENT"
+        ],
+        "lignes": [
+         [
+          "LOT-A01",
+          "06/08/2026",
+          "4",
+          "Périmé",
+          "Rayon A — Casier 2"
+         ],
+         [
+          "LOT-A11",
+          "20/09/2027",
+          "12",
+          "Valide",
+          "Rayon A — Casier 2"
+         ]
+        ]
+       }
+      ]
+     },
+     "Mouvements": {
+      "tableaux": [
+       {
+        "entetes": [
+         "DATE",
+         "TYPE",
+         "QUANTITÉ",
+         "JUSTIFICATIF",
+         "OPÉRATEUR"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "Sortie",
+          "3",
+          "FAC-001",
+          "MAMAN Zoukanéri"
+         ],
+         [
+          "05/06/2026",
+          "Entrée",
+          "5",
+          "TR-001",
+          "MAMAN Zoukanéri"
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    "GNS": {
+     "texte": "GANTS NON STERILES GNS Stock total 0 Boîte Valeur au CUMP 0 FCFA Fiche produit Lots (FEFO)0 Mouvements1 Code article GNS Désignation GANTS NON STERILES Catégorie Consommables médicaux Unité Boîte Prix d’achat 3 500 FCFA Prix de vente 3 500 FCFA CUMP 3 500 FCFA Stock gros 0 Boîte Stock détail 0 Boîte Seuil d’alerte 0 Emplacement Rayon B — Casier 2 Fournisseur habituel SOBAPS Imprimer Modifier Archiver",
+     "kpis": [
+      {
+       "libelle": "Stock total",
+       "valeur": "0 Boîte",
+       "indice": null
+      },
+      {
+       "libelle": "Valeur au CUMP",
+       "valeur": "0 FCFA",
+       "indice": null
+      }
+     ],
+     "tableaux": [],
+     "Lots (FEFO)": {
+      "tableaux": []
+     },
+     "Mouvements": {
+      "tableaux": [
+       {
+        "entetes": [
+         "DATE",
+         "TYPE",
+         "QUANTITÉ",
+         "JUSTIFICATIF",
+         "OPÉRATEUR"
+        ],
+        "lignes": [
+         [
+          "02/08/2026",
+          "Péremption",
+          "2",
+          "Retour R-1",
+          "MAMAN Zoukanéri"
+         ]
+        ]
+       }
+      ]
+     }
+    }
+   }
+  },
+  "stockGros": {
+   "kpis": [
+    {
+     "libelle": "Références présentes",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "libelle": "Quantité totale",
+     "valeur": "93",
+     "indice": null
+    },
+    {
+     "libelle": "Valeur (CUMP)",
+     "valeur": "1 978 885 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil",
+     "valeur": "7",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "CODE",
+      "DÉSIGNATION",
+      "UNITÉ",
+      "QUANTITÉ",
+      "SEUIL",
+      "CUMP",
+      "VALEUR",
+      "EMPLACEMENT",
+      "ÉTAT"
+     ],
+     "lignes": [
+      [
+       "RGL",
+       "REACTIF GLYCEMIE Réactifs de laboratoire — Boîte",
+       "Boîte",
+       "40",
+       "40",
+       "15 000",
+       "600 000",
+       "Rayon D — Casier 1",
+       "Critique"
+      ],
+      [
+       "A4",
+       "RAME PAPIER A4 Fournitures administratives — Rame",
+       "Rame",
+       "20",
+       "10",
+       "3 200",
+       "64 000",
+       "Rayon E — Casier 3",
+       "Normal"
+      ],
+      [
+       "DET5",
+       "DETERGENT 5 L Produits d’entretien — Bidon",
+       "Bidon",
+       "12",
+       "8",
+       "4 000",
+       "48 000",
+       "Rayon E — Casier 2",
+       "Normal"
+      ],
+      [
+       "COT5",
+       "COTON 500 G Consommables médicaux — Rouleau",
+       "Rouleau",
+       "10",
+       "0",
+       "1 200",
+       "12 000",
+       "Rayon C — Casier 1",
+       "Normal"
+      ],
+      [
+       "SER5",
+       "SERUM SALE 500 ML Consommables médicaux — Flacon",
+       "Flacon",
+       "4",
+       "5",
+       "1 000",
+       "4 000",
+       "Rayon B — Casier 1",
+       "Normal"
+      ],
+      [
+       "SER5M",
+       "SERINGUE 5 ML Consommables médicaux — Unité",
+       "Unité",
+       "3",
+       "—",
+       "45",
+       "135",
+       "Rayon B — Casier 3",
+       "Normal"
+      ],
+      [
+       "PAR5",
+       "PARACETAMOL 500 MG Médicaments — Boîte",
+       "Boîte",
+       "3",
+       "5",
+       "250",
+       "750",
+       "Rayon A — Casier 2",
+       "Critique"
+      ],
+      [
+       "AUT50",
+       "AUTOCLAVE 50 L Immobilisations — Unité",
+       "Unité",
+       "1",
+       "1",
+       "1 250 000",
+       "1 250 000",
+       "Rayon E — Casier 1",
+       "Critique"
+      ],
+      [
+       "BET",
+       "BETADINE 125 ML Médicaments — Flacon",
+       "Flacon",
+       "0",
+       "0",
+       "600",
+       "0",
+       "Rayon A — Casier 3",
+       "Rupture"
+      ],
+      [
+       "GNS",
+       "GANTS NON STERILES Consommables médicaux — Boîte",
+       "Boîte",
+       "0",
+       "—",
+       "3 500",
+       "0",
+       "Rayon B — Casier 2",
+       "Rupture"
+      ],
+      [
+       "AMX5",
+       "AMOXICILLINE 500 MG Médicaments — Boîte",
+       "Boîte",
+       "0",
+       "5",
+       "800",
+       "0",
+       "Rayon A — Casier 1",
+       "Rupture"
+      ]
+     ]
+    },
+    {
+     "entetes": [
+      "DATE",
+      "PRODUIT",
+      "NATURE",
+      "QUANTITÉ",
+      "JUSTIFICATIF (RG-03)"
+     ],
+     "lignes": [
+      [
+       "16/08/2026",
+       "SERUM SALE 500 ML",
+       "Entrée",
+       "50",
+       "BL-001"
+      ],
+      [
+       "16/08/2026",
+       "AMOXICILLINE 500 MG",
+       "Sortie",
+       "7",
+       "BS-003"
+      ],
+      [
+       "12/08/2026",
+       "SERINGUE 5 ML",
+       "Casse / bris",
+       "1",
+       "Casse C-1"
+      ],
+      [
+       "10/08/2026",
+       "SERUM SALE 500 ML",
+       "Perte",
+       "2",
+       "Perte P-1"
+      ],
+      [
+       "20/07/2026",
+       "REACTIF GLYCEMIE",
+       "Entrée",
+       "10",
+       "BL-002"
+      ],
+      [
+       "17/07/2026",
+       "TUBE EDTA",
+       "Sortie",
+       "1",
+       "BS-001"
+      ]
+     ]
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Stock gros (magasin central)",
+    "Mouvements de la période — le flux, pas l’état"
+   ],
+   "graphiques": [],
+   "periodeDefaut": [
+    "2026-07-17",
+    "2026-08-16"
+   ],
+   "mouvementsDefaut": {
+    "entetes": [
+     "DATE",
+     "PRODUIT",
+     "NATURE",
+     "QUANTITÉ",
+     "JUSTIFICATIF (RG-03)"
+    ],
+    "lignes": [
+     [
+      "16/08/2026",
+      "SERUM SALE 500 ML",
+      "Entrée",
+      "50",
+      "BL-001"
+     ],
+     [
+      "16/08/2026",
+      "AMOXICILLINE 500 MG",
+      "Sortie",
+      "7",
+      "BS-003"
+     ],
+     [
+      "12/08/2026",
+      "SERINGUE 5 ML",
+      "Casse / bris",
+      "1",
+      "Casse C-1"
+     ],
+     [
+      "10/08/2026",
+      "SERUM SALE 500 ML",
+      "Perte",
+      "2",
+      "Perte P-1"
+     ],
+     [
+      "20/07/2026",
+      "REACTIF GLYCEMIE",
+      "Entrée",
+      "10",
+      "BL-002"
+     ],
+     [
+      "17/07/2026",
+      "TUBE EDTA",
+      "Sortie",
+      "1",
+      "BS-001"
+     ]
+    ]
+   },
+   "mouvementsPlage": {
+    "debut": "2026-08-01",
+    "fin": "2026-08-12",
+    "table": {
+     "entetes": [
+      "DATE",
+      "PRODUIT",
+      "NATURE",
+      "QUANTITÉ",
+      "JUSTIFICATIF (RG-03)"
+     ],
+     "lignes": [
+      [
+       "12/08/2026",
+       "SERINGUE 5 ML",
+       "Casse / bris",
+       "1",
+       "Casse C-1"
+      ],
+      [
+       "10/08/2026",
+       "SERUM SALE 500 ML",
+       "Perte",
+       "2",
+       "Perte P-1"
+      ]
+     ]
+    }
+   }
+  },
+  "stockDetail": {
+   "kpis": [
+    {
+     "libelle": "Références présentes",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Quantité totale",
+     "valeur": "14",
+     "indice": null
+    },
+    {
+     "libelle": "Valeur (CUMP)",
+     "valeur": "16 833 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil",
+     "valeur": "7",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "CODE",
+      "DÉSIGNATION",
+      "UNITÉ",
+      "QUANTITÉ",
+      "SEUIL",
+      "CUMP",
+      "VALEUR",
+      "EMPLACEMENT",
+      "ÉTAT"
+     ],
+     "lignes": [
+      [
+       "EDTA",
+       "TUBE EDTA Consommables de laboratoire — Unité",
+       "Unité",
+       "7",
+       "10",
+       "333",
+       "2 333",
+       "Rayon D — Casier 2",
+       "Critique"
+      ],
+      [
+       "DET5",
+       "DETERGENT 5 L Produits d’entretien — Bidon",
+       "Bidon",
+       "3",
+       "8",
+       "4 000",
+       "12 000",
+       "Rayon E — Casier 2",
+       "Normal"
+      ],
+      [
+       "SER5",
+       "SERUM SALE 500 ML Consommables médicaux — Flacon",
+       "Flacon",
+       "2",
+       "5",
+       "1 000",
+       "2 000",
+       "Rayon B — Casier 1",
+       "Normal"
+      ],
+      [
+       "PAR5",
+       "PARACETAMOL 500 MG Médicaments — Boîte",
+       "Boîte",
+       "2",
+       "5",
+       "250",
+       "500",
+       "Rayon A — Casier 2",
+       "Critique"
+      ],
+      [
+       "BET",
+       "BETADINE 125 ML Médicaments — Flacon",
+       "Flacon",
+       "0",
+       "0",
+       "600",
+       "0",
+       "Rayon A — Casier 3",
+       "Rupture"
+      ],
+      [
+       "GNS",
+       "GANTS NON STERILES Consommables médicaux — Boîte",
+       "Boîte",
+       "0",
+       "—",
+       "3 500",
+       "0",
+       "Rayon B — Casier 2",
+       "Rupture"
+      ],
+      [
+       "AMX5",
+       "AMOXICILLINE 500 MG Médicaments — Boîte",
+       "Boîte",
+       "0",
+       "5",
+       "800",
+       "0",
+       "Rayon A — Casier 1",
+       "Rupture"
+      ]
+     ]
+    },
+    {
+     "entetes": [
+      "DATE",
+      "PRODUIT",
+      "NATURE",
+      "QUANTITÉ",
+      "JUSTIFICATIF (RG-03)"
+     ],
+     "lignes": [
+      [
+       "16/08/2026",
+       "PARACETAMOL 500 MG",
+       "Sortie",
+       "3",
+       "FAC-001"
+      ],
+      [
+       "12/08/2026",
+       "SERINGUE 5 ML",
+       "Casse / bris",
+       "1",
+       "Casse C-1"
+      ],
+      [
+       "02/08/2026",
+       "GANTS NON STERILES",
+       "Péremption",
+       "2",
+       "Retour R-1"
+      ]
+     ]
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Stock détail (pharmacie d’urgence)",
+    "Mouvements de la période — le flux, pas l’état"
+   ],
+   "graphiques": [],
+   "periodeDefaut": [
+    "2026-07-17",
+    "2026-08-16"
+   ],
+   "mouvementsDefaut": {
+    "entetes": [
+     "DATE",
+     "PRODUIT",
+     "NATURE",
+     "QUANTITÉ",
+     "JUSTIFICATIF (RG-03)"
+    ],
+    "lignes": [
+     [
+      "16/08/2026",
+      "PARACETAMOL 500 MG",
+      "Sortie",
+      "3",
+      "FAC-001"
+     ],
+     [
+      "12/08/2026",
+      "SERINGUE 5 ML",
+      "Casse / bris",
+      "1",
+      "Casse C-1"
+     ],
+     [
+      "02/08/2026",
+      "GANTS NON STERILES",
+      "Péremption",
+      "2",
+      "Retour R-1"
+     ]
+    ]
+   },
+   "mouvementsPlage": {
+    "debut": "2026-08-01",
+    "fin": "2026-08-12",
+    "table": {
+     "entetes": [
+      "DATE",
+      "PRODUIT",
+      "NATURE",
+      "QUANTITÉ",
+      "JUSTIFICATIF (RG-03)"
+     ],
+     "lignes": [
+      [
+       "12/08/2026",
+       "SERINGUE 5 ML",
+       "Casse / bris",
+       "1",
+       "Casse C-1"
+      ],
+      [
+       "02/08/2026",
+       "GANTS NON STERILES",
+       "Péremption",
+       "2",
+       "Retour R-1"
+      ]
+     ]
+    }
+   }
+  },
+  "lots": {
+   "kpis": [
+    {
+     "libelle": "Lots suivis",
+     "valeur": "13",
+     "indice": null
+    },
+    {
+     "libelle": "Périmés",
+     "valeur": "2",
+     "indice": "6 unités à retourner"
+    },
+    {
+     "libelle": "Péremption sous 90 j",
+     "valeur": "9",
+     "indice": "Prioriser en sortie (FEFO)"
+    },
+    {
+     "libelle": "Lots valides",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "",
+      "N° LOT",
+      "PRODUIT",
+      "PÉREMPTION",
+      "ÉCHÉANCE",
+      "QUANTITÉ",
+      "EMPLACEMENT",
+      "ÉTAT FEFO",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "",
+       "LOT-A01",
+       "PARACETAMOL 500 MG",
+       "06/08/2026",
+       "Périmé depuis 10 j",
+       "4",
+       "Rayon A — Casier 2",
+       "Périmé",
+       ""
+      ],
+      [
+       "",
+       "LOT-B02",
+       "SERUM SALE 500 ML",
+       "15/08/2026",
+       "Périmé depuis 1 j",
+       "2",
+       "Rayon B — Casier 1",
+       "Périmé",
+       ""
+      ],
+      [
+       "",
+       "LOT-B03",
+       "SERUM SALE 500 ML",
+       "16/08/2026",
+       "Dans 0 j",
+       "1",
+       "Rayon B — Casier 1",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-D04",
+       "REACTIF GLYCEMIE",
+       "17/08/2026",
+       "Dans 1 j",
+       "10",
+       "Rayon D — Casier 1",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-D05",
+       "REACTIF GLYCEMIE",
+       "14/09/2026",
+       "Dans 29 j",
+       "5",
+       "Rayon D — Casier 1",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-D06",
+       "TUBE EDTA",
+       "15/09/2026",
+       "Dans 30 j",
+       "3",
+       "Rayon D — Casier 2",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-B12",
+       "SERINGUE 5 ML",
+       "16/09/2026",
+       "Dans 31 j",
+       "9",
+       "Rayon B — Casier 3",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-D07",
+       "TUBE EDTA",
+       "16/09/2026",
+       "Dans 31 j",
+       "3",
+       "Rayon D — Casier 2",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-A13",
+       "AMOXICILLINE 500 MG",
+       "30/09/2026",
+       "Dans 45 j",
+       "0",
+       "Rayon A — Casier 1",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-E08",
+       "DETERGENT 5 L",
+       "13/11/2026",
+       "Dans 89 j",
+       "6",
+       "Rayon E — Casier 2",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-E09",
+       "DETERGENT 5 L",
+       "14/11/2026",
+       "Dans 90 j",
+       "2",
+       "Rayon E — Casier 2",
+       "Péremption proche",
+       ""
+      ],
+      [
+       "",
+       "LOT-E10",
+       "RAME PAPIER A4",
+       "15/11/2026",
+       "91 j",
+       "5",
+       "Rayon E — Casier 3",
+       "Normal",
+       ""
+      ],
+      [
+       "",
+       "LOT-A11",
+       "PARACETAMOL 500 MG",
+       "20/09/2027",
+       "400 j",
+       "12",
+       "Rayon A — Casier 2",
+       "Normal",
+       ""
+      ]
+     ]
+    }
+   ],
+   "onglets": [
+    "Tous les lots13",
+    "Ordre de sortie FEFO",
+    "Archivés346"
+   ],
+   "cartes": [],
+   "graphiques": [],
+   "fefo": {
+    "entetes": [
+     "RANG",
+     "PRODUIT",
+     "N° LOT",
+     "PÉREMPTION",
+     "QUANTITÉ",
+     "EMPLACEMENT"
+    ],
+    "lignes": [
+     [
+      "1",
+      "PARACETAMOL 500 MG",
+      "LOT-A01",
+      "06/08/2026",
+      "4",
+      "Rayon A — Casier 2"
+     ],
+     [
+      "2",
+      "SERUM SALE 500 ML",
+      "LOT-B02",
+      "15/08/2026",
+      "2",
+      "Rayon B — Casier 1"
+     ],
+     [
+      "3",
+      "SERUM SALE 500 ML",
+      "LOT-B03",
+      "16/08/2026",
+      "1",
+      "Rayon B — Casier 1"
+     ],
+     [
+      "4",
+      "REACTIF GLYCEMIE",
+      "LOT-D04",
+      "17/08/2026",
+      "10",
+      "Rayon D — Casier 1"
+     ],
+     [
+      "5",
+      "REACTIF GLYCEMIE",
+      "LOT-D05",
+      "14/09/2026",
+      "5",
+      "Rayon D — Casier 1"
+     ],
+     [
+      "6",
+      "TUBE EDTA",
+      "LOT-D06",
+      "15/09/2026",
+      "3",
+      "Rayon D — Casier 2"
+     ],
+     [
+      "7",
+      "SERINGUE 5 ML",
+      "LOT-B12",
+      "16/09/2026",
+      "9",
+      "Rayon B — Casier 3"
+     ],
+     [
+      "8",
+      "TUBE EDTA",
+      "LOT-D07",
+      "16/09/2026",
+      "3",
+      "Rayon D — Casier 2"
+     ],
+     [
+      "9",
+      "DETERGENT 5 L",
+      "LOT-E08",
+      "13/11/2026",
+      "6",
+      "Rayon E — Casier 2"
+     ],
+     [
+      "10",
+      "DETERGENT 5 L",
+      "LOT-E09",
+      "14/11/2026",
+      "2",
+      "Rayon E — Casier 2"
+     ],
+     [
+      "11",
+      "RAME PAPIER A4",
+      "LOT-E10",
+      "15/11/2026",
+      "5",
+      "Rayon E — Casier 3"
+     ],
+     [
+      "12",
+      "PARACETAMOL 500 MG",
+      "LOT-A11",
+      "20/09/2027",
+      "12",
+      "Rayon A — Casier 2"
+     ]
+    ]
+   }
+  },
+  "alertes": {
+   "kpis": [
+    {
+     "libelle": "Ruptures de stock",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil d’alerte",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Lots périmés",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Péremption sous 90 j",
+     "valeur": "9",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "CODE",
+      "DÉSIGNATION",
+      "GROS",
+      "DÉTAIL",
+      "TOTAL",
+      "SEUIL",
+      "À COMMANDER",
+      "FOURNISSEUR",
+      "ÉTAT"
+     ],
+     "lignes": [
+      [
+       "BET",
+       "BETADINE 125 ML Médicaments — Flacon",
+       "0",
+       "0",
+       "0",
+       "0",
+       "0",
+       "CAME",
+       "Rupture"
+      ],
+      [
+       "GNS",
+       "GANTS NON STERILES Consommables médicaux — Boîte",
+       "0",
+       "0",
+       "0",
+       "—",
+       "0",
+       "SOBAPS",
+       "Rupture"
+      ],
+      [
+       "AMX5",
+       "AMOXICILLINE 500 MG Médicaments — Boîte",
+       "0",
+       "0",
+       "0",
+       "5",
+       "10",
+       "CAME",
+       "Rupture"
+      ]
+     ]
+    }
+   ],
+   "onglets": [
+    "Ruptures3",
+    "Sous le seuil4",
+    "Péremptions11"
+   ],
+   "cartes": [
+    "Produits en rupture de stock"
+   ],
+   "graphiques": [],
+   "parOnglet": {
+    "Ruptures": {
+     "entetes": [
+      "CODE",
+      "DÉSIGNATION",
+      "GROS",
+      "DÉTAIL",
+      "TOTAL",
+      "SEUIL",
+      "À COMMANDER",
+      "FOURNISSEUR",
+      "ÉTAT"
+     ],
+     "lignes": [
+      [
+       "BET",
+       "BETADINE 125 ML Médicaments — Flacon",
+       "0",
+       "0",
+       "0",
+       "0",
+       "0",
+       "CAME",
+       "Rupture"
+      ],
+      [
+       "GNS",
+       "GANTS NON STERILES Consommables médicaux — Boîte",
+       "0",
+       "0",
+       "0",
+       "—",
+       "0",
+       "SOBAPS",
+       "Rupture"
+      ],
+      [
+       "AMX5",
+       "AMOXICILLINE 500 MG Médicaments — Boîte",
+       "0",
+       "0",
+       "0",
+       "5",
+       "10",
+       "CAME",
+       "Rupture"
+      ]
+     ]
+    },
+    "Sous le seuil": {
+     "entetes": [
+      "CODE",
+      "DÉSIGNATION",
+      "GROS",
+      "DÉTAIL",
+      "TOTAL",
+      "SEUIL",
+      "À COMMANDER",
+      "FOURNISSEUR",
+      "ÉTAT"
+     ],
+     "lignes": [
+      [
+       "AUT50",
+       "AUTOCLAVE 50 L Immobilisations — Unité",
+       "1",
+       "0",
+       "1",
+       "1",
+       "1",
+       "MEDIPLUS",
+       "Critique"
+      ],
+      [
+       "EDTA",
+       "TUBE EDTA Consommables de laboratoire — Unité",
+       "0",
+       "7",
+       "7",
+       "10",
+       "13",
+       "LABOTECH",
+       "Critique"
+      ],
+      [
+       "RGL",
+       "REACTIF GLYCEMIE Réactifs de laboratoire — Boîte",
+       "40",
+       "0",
+       "40",
+       "40",
+       "40",
+       "LABOTECH",
+       "Critique"
+      ],
+      [
+       "PAR5",
+       "PARACETAMOL 500 MG Médicaments — Boîte",
+       "3",
+       "2",
+       "5",
+       "5",
+       "5",
+       "CAME",
+       "Critique"
+      ]
+     ]
+    },
+    "Péremptions": {
+     "entetes": [
+      "PRODUIT",
+      "N° LOT",
+      "PÉREMPTION",
+      "ÉCHÉANCE",
+      "QUANTITÉ",
+      "EMPLACEMENT"
+     ],
+     "lignes": [
+      [
+       "PARACETAMOL 500 MG",
+       "LOT-A01",
+       "06/08/2026",
+       "Périmé",
+       "4",
+       "Rayon A — Casier 2"
+      ],
+      [
+       "SERUM SALE 500 ML",
+       "LOT-B02",
+       "15/08/2026",
+       "Périmé",
+       "2",
+       "Rayon B — Casier 1"
+      ],
+      [
+       "SERUM SALE 500 ML",
+       "LOT-B03",
+       "16/08/2026",
+       "Dans 0 j",
+       "1",
+       "Rayon B — Casier 1"
+      ],
+      [
+       "REACTIF GLYCEMIE",
+       "LOT-D04",
+       "17/08/2026",
+       "Dans 1 j",
+       "10",
+       "Rayon D — Casier 1"
+      ],
+      [
+       "REACTIF GLYCEMIE",
+       "LOT-D05",
+       "14/09/2026",
+       "Dans 29 j",
+       "5",
+       "Rayon D — Casier 1"
+      ],
+      [
+       "TUBE EDTA",
+       "LOT-D06",
+       "15/09/2026",
+       "Dans 30 j",
+       "3",
+       "Rayon D — Casier 2"
+      ],
+      [
+       "SERINGUE 5 ML",
+       "LOT-B12",
+       "16/09/2026",
+       "Dans 31 j",
+       "9",
+       "Rayon B — Casier 3"
+      ],
+      [
+       "TUBE EDTA",
+       "LOT-D07",
+       "16/09/2026",
+       "Dans 31 j",
+       "3",
+       "Rayon D — Casier 2"
+      ],
+      [
+       "AMOXICILLINE 500 MG",
+       "LOT-A13",
+       "30/09/2026",
+       "Dans 45 j",
+       "0",
+       "Rayon A — Casier 1"
+      ],
+      [
+       "DETERGENT 5 L",
+       "LOT-E08",
+       "13/11/2026",
+       "Dans 89 j",
+       "6",
+       "Rayon E — Casier 2"
+      ],
+      [
+       "DETERGENT 5 L",
+       "LOT-E09",
+       "14/11/2026",
+       "Dans 90 j",
+       "2",
+       "Rayon E — Casier 2"
+      ]
+     ]
+    }
+   }
+  },
+  "creationProduits": [
+   {
+    "nom": "médicament sans prix de vente ni CUMP : prix de vente = prix d'achat, CUMP = prix d'achat",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10",
+     "stockGros": "3",
+     "stockDetail": "4"
+    },
+    "sortie": {
+     "creee": {
+      "id": "PROxmvv9vo9h8bke4",
+      "statut": "actif",
+      "code": "NOUV",
+      "designation": "ARTICLE D'ESSAI",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 500,
+      "stockGros": 3,
+      "stockDetail": 4,
+      "seuilAlerte": 10,
+      "emplacement": "",
+      "fournisseur": "",
+      "stock": 7,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:08.310Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau produit créé. NOUV Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "médicament avec un prix de vente saisi : RG-02, il est ramené au prix d'achat",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10",
+     "prixVente": "700",
+     "cump": "450"
+    },
+    "sortie": {
+     "creee": {
+      "id": "PROxmvv9vox4k68r6",
+      "statut": "actif",
+      "code": "NOUV",
+      "designation": "ARTICLE D'ESSAI",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 450,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "seuilAlerte": 10,
+      "emplacement": "",
+      "fournisseur": "",
+      "stock": 0,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:09.160Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau produit créé. NOUV Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "réactif avec prix de vente et CUMP saisis : conservés",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "reactif",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10",
+     "prixVente": "900",
+     "cump": "400"
+    },
+    "sortie": {
+     "creee": {
+      "id": "PROxmvv9vpka3c1we",
+      "statut": "actif",
+      "code": "NOUV",
+      "designation": "ARTICLE D'ESSAI",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "prixAchat": 500,
+      "prixVente": 900,
+      "cump": 400,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "seuilAlerte": 10,
+      "emplacement": "",
+      "fournisseur": "",
+      "stock": 0,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:09.994Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau produit créé. NOUV Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "réactif sans prix de vente : prix d'achat",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "reactif",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10"
+    },
+    "sortie": {
+     "creee": {
+      "id": "PROxmvv9vq7g8qqie",
+      "statut": "actif",
+      "code": "NOUV",
+      "designation": "ARTICLE D'ESSAI",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 500,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "seuilAlerte": 10,
+      "emplacement": "",
+      "fournisseur": "",
+      "stock": 0,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:10.828Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau produit créé. NOUV Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "stocks vides : zéro",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10",
+     "stockGros": "",
+     "stockDetail": ""
+    },
+    "sortie": {
+     "creee": {
+      "id": "PROxmvv9vqv6hmh5a",
+      "statut": "actif",
+      "code": "NOUV",
+      "designation": "ARTICLE D'ESSAI",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 500,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "seuilAlerte": 10,
+      "emplacement": "",
+      "fournisseur": "",
+      "stock": 0,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:11.682Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau produit créé. NOUV Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "stock gros négatif : refus RG-03",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10",
+     "stockGros": "-1",
+     "stockDetail": "2"
+    },
+    "sortie": {
+     "creee": null,
+     "erreurs": [],
+     "toasts": [
+      "RG-03 — le stock ne peut pas devenir négatif."
+     ]
+    }
+   },
+   {
+    "nom": "stock détail négatif : refus RG-03",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10",
+     "stockGros": "2",
+     "stockDetail": "-5"
+    },
+    "sortie": {
+     "creee": null,
+     "erreurs": [],
+     "toasts": [
+      "RG-03 — le stock ne peut pas devenir négatif."
+     ]
+    }
+   },
+   {
+    "nom": "code manquant : champ obligatoire",
+    "entree": {
+     "code": "",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "10"
+    },
+    "sortie": {
+     "creee": null,
+     "erreurs": [
+      "code : Ce champ est obligatoire."
+     ],
+     "toasts": [
+      "Le formulaire comporte des erreurs."
+     ]
+    }
+   },
+   {
+    "nom": "seuil d'alerte manquant : champ obligatoire",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": ""
+    },
+    "sortie": {
+     "creee": null,
+     "erreurs": [
+      "seuilAlerte : Ce champ est obligatoire."
+     ],
+     "toasts": [
+      "Le formulaire comporte des erreurs."
+     ]
+    }
+   },
+   {
+    "nom": "prix d'achat manquant : champ obligatoire",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "",
+     "seuilAlerte": "10"
+    },
+    "sortie": {
+     "creee": null,
+     "erreurs": [
+      "prixAchat : Ce champ est obligatoire."
+     ],
+     "toasts": [
+      "Le formulaire comporte des erreurs."
+     ]
+    }
+   },
+   {
+    "nom": "seuil zéro accepté",
+    "entree": {
+     "code": "NOUV",
+     "designation": "ARTICLE D'ESSAI",
+     "categorie": "medicament",
+     "unite": "Boîte",
+     "prixAchat": "500",
+     "seuilAlerte": "0"
+    },
+    "sortie": {
+     "creee": {
+      "id": "PROxmvv9vuohsc614",
+      "statut": "actif",
+      "code": "NOUV",
+      "designation": "ARTICLE D'ESSAI",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 500,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "seuilAlerte": 0,
+      "emplacement": "",
+      "fournisseur": "",
+      "stock": 0,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:16.625Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau produit créé. NOUV Annuler"
+     ]
+    }
+   }
+  ],
+  "creationLots": [
+   {
+    "nom": "péremption dépassée : périmé",
+    "entree": {
+     "produitId": "PRD9002",
+     "numeroLot": "LOT-NEW",
+     "quantiteRestante": "5",
+     "emplacement": "Rayon A — Casier 2",
+     "datePeremption": "2026-08-13"
+    },
+    "sortie": {
+     "creee": {
+      "id": "LOTxmvv9vvc9ts3kz",
+      "statut": "perime",
+      "produitId": "PRD9002",
+      "numeroLot": "LOT-NEW",
+      "datePeremption": "2026-08-13",
+      "quantiteRestante": 5,
+      "emplacement": "Rayon A — Casier 2",
+      "produit": "PARACETAMOL 500 MG",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:17.481Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau lot créé. Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "péremption aujourd'hui : alerte (0 jour)",
+    "entree": {
+     "produitId": "PRD9002",
+     "numeroLot": "LOT-NEW",
+     "quantiteRestante": "5",
+     "emplacement": "Rayon A — Casier 2",
+     "datePeremption": "2026-08-16"
+    },
+    "sortie": {
+     "creee": {
+      "id": "LOTxmvv9vvzbxhvnu",
+      "statut": "alerte",
+      "produitId": "PRD9002",
+      "numeroLot": "LOT-NEW",
+      "datePeremption": "2026-08-16",
+      "quantiteRestante": 5,
+      "emplacement": "Rayon A — Casier 2",
+      "produit": "PARACETAMOL 500 MG",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:18.311Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau lot créé. Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "péremption à 90 jours : alerte",
+    "entree": {
+     "produitId": "PRD9002",
+     "numeroLot": "LOT-NEW",
+     "quantiteRestante": "5",
+     "emplacement": "Rayon A — Casier 2",
+     "datePeremption": "2026-11-14"
+    },
+    "sortie": {
+     "creee": {
+      "id": "LOTxmvv9vwmwopt6d",
+      "statut": "alerte",
+      "produitId": "PRD9002",
+      "numeroLot": "LOT-NEW",
+      "datePeremption": "2026-11-14",
+      "quantiteRestante": 5,
+      "emplacement": "Rayon A — Casier 2",
+      "produit": "PARACETAMOL 500 MG",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:19.161Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau lot créé. Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "péremption à 91 jours : actif",
+    "entree": {
+     "produitId": "PRD9002",
+     "numeroLot": "LOT-NEW",
+     "quantiteRestante": "5",
+     "emplacement": "Rayon A — Casier 2",
+     "datePeremption": "2026-11-15"
+    },
+    "sortie": {
+     "creee": {
+      "id": "LOTxmvv9vxaetkok6",
+      "statut": "actif",
+      "produitId": "PRD9002",
+      "numeroLot": "LOT-NEW",
+      "datePeremption": "2026-11-15",
+      "quantiteRestante": 5,
+      "emplacement": "Rayon A — Casier 2",
+      "produit": "PARACETAMOL 500 MG",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:20.006Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau lot créé. Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "produit libellé au lot",
+    "entree": {
+     "produitId": "PRD9008",
+     "numeroLot": "LOT-NEW",
+     "quantiteRestante": "5",
+     "emplacement": "Rayon A — Casier 2",
+     "datePeremption": "2027-03-04"
+    },
+    "sortie": {
+     "creee": {
+      "id": "LOTxmvv9vxxx6ntal",
+      "statut": "actif",
+      "produitId": "PRD9008",
+      "numeroLot": "LOT-NEW",
+      "datePeremption": "2027-03-04",
+      "quantiteRestante": 5,
+      "emplacement": "Rayon A — Casier 2",
+      "produit": "REACTIF GLYCEMIE",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:55:20.853Z"
+     },
+     "erreurs": [],
+     "toasts": [
+      "Nouveau lot créé. Annuler"
+     ]
+    }
+   },
+   {
+    "nom": "numéro de lot manquant : champ obligatoire",
+    "entree": {
+     "produitId": "PRD9002",
+     "numeroLot": "",
+     "quantiteRestante": "5",
+     "emplacement": "Rayon A — Casier 2",
+     "datePeremption": "2026-08-26"
+    },
+    "sortie": {
+     "creee": null,
+     "erreurs": [
+      "numeroLot : Ce champ est obligatoire."
+     ],
+     "toasts": [
+      "Le formulaire comporte des erreurs."
+     ]
+    }
+   },
+   {
+    "nom": "date manquante : champ obligatoire",
+    "entree": {
+     "produitId": "PRD9002",
+     "numeroLot": "LOT-NEW",
+     "quantiteRestante": "5",
+     "emplacement": "Rayon A — Casier 2",
+     "datePeremption": ""
+    },
+    "sortie": {
+     "creee": null,
+     "erreurs": [
+      "datePeremption : Ce champ est obligatoire."
+     ],
+     "toasts": [
+      "Le formulaire comporte des erreurs."
+     ]
+    }
+   }
+  ],
+  "vide": {
+   "dashboard": {
+    "kpis": [
+     {
+      "libelle": "Valeur totale du stock",
+      "valeur": "0 FCFA",
+      "indice": "Valorisation au CUMP"
+     },
+     {
+      "libelle": "Références gérées",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Produits critiques",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Produits périmés",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Valeur stock gros",
+      "valeur": "0 FCFA",
+      "indice": null
+     },
+     {
+      "libelle": "Valeur stock détail",
+      "valeur": "0 FCFA",
+      "indice": null
+     },
+     {
+      "libelle": "Mouvements du mois",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Péremption sous 90 j",
+      "valeur": "0",
+      "indice": "Application du FEFO"
+     }
+    ],
+    "tableaux": [],
+    "onglets": [],
+    "cartes": [
+     "Accès rapides",
+     "Valeur du stock par catégorie",
+     "Répartition gros / détail",
+     "Mouvements de stock (12 mois)",
+     "État des péremptions",
+     "Produits à réapprovisionner en priorité Toutes les alertes"
+    ],
+    "graphiques": [
+     {
+      "type": "barres",
+      "args": [
+       [],
+       [
+        {
+         "label": "Valeur (FCFA)",
+         "data": []
+        }
+       ]
+      ]
+     },
+     {
+      "type": "anneau",
+      "args": [
+       [
+        "Stock gros (magasin)",
+        "Stock détail (pharmacie)"
+       ],
+       [
+        0,
+        0
+       ]
+      ]
+     },
+     {
+      "type": "barres",
+      "args": [
+       [
+        "sept. 25",
+        "octo. 25",
+        "nove. 25",
+        "déce. 25",
+        "janv. 26",
+        "févr. 26",
+        "mars. 26",
+        "avri. 26",
+        "mai. 26",
+        "juin. 26",
+        "juil. 26",
+        "août. 26"
+       ],
+       [
+        {
+         "label": "Entrées",
+         "data": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "color": "#22a170"
+        },
+        {
+         "label": "Sorties",
+         "data": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "color": "#12315e"
+        },
+        {
+         "label": "Pertes",
+         "data": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "color": "#ef4444"
+        }
+       ]
+      ]
+     },
+     {
+      "type": "anneau",
+      "args": [
+       [
+        "Périmés",
+        "Sous 90 jours",
+        "Au-delà de 90 jours"
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     }
+    ],
+    "notes": [],
+    "texte": "Accès rapides Inventaire Physique contre théorique Transferts Gros vers détail Lots & péremptions Principe FEFO Expression de besoins Demande interne Valeur totale du stock 0 FCFA Valorisation au CUMP Références gérées 0 Produits critiques 0 Produits périmés 0 Valeur stock gros 0 FCFA Valeur stock détail 0 FCFA Mouvements du mois 0 Péremption sous 90 j 0 Application du FEFO Valeur du stock par catégorie Répartition gros / détail Mouvements de stock (12 mois) État des péremptions Produits à réapprovisionner en priorité Toutes les alertes Aucun produit sous le seuil d’alerte."
+   },
+   "alertes": {
+    "kpis": [
+     {
+      "libelle": "Ruptures de stock",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Sous le seuil d’alerte",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Lots périmés",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Péremption sous 90 j",
+      "valeur": "0",
+      "indice": null
+     }
+    ],
+    "tableaux": [],
+    "onglets": [
+     "Ruptures0",
+     "Sous le seuil0",
+     "Péremptions0"
+    ],
+    "cartes": [
+     "Produits en rupture de stock"
+    ],
+    "graphiques": [],
+    "texte": "Ruptures de stock 0 Sous le seuil d’alerte 0 Lots périmés 0 Péremption sous 90 j 0 Ruptures0 Sous le seuil0 Péremptions0 Produits en rupture de stock Colonnes Exporter Ouvrir les bons de besoins (M7) Aucune rupture de stock. Aucun enregistrement Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de 90 jours et se règle dans la configuration du module (RG-05)."
+   },
+   "lots": {
+    "kpis": [
+     {
+      "libelle": "Lots suivis",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "libelle": "Périmés",
+      "valeur": "0",
+      "indice": "0 unités à retourner"
+     },
+     {
+      "libelle": "Péremption sous 90 j",
+      "valeur": "0",
+      "indice": "Prioriser en sortie (FEFO)"
+     },
+     {
+      "libelle": "Lots valides",
+      "valeur": "0",
+      "indice": null
+     }
+    ],
+    "tableaux": [],
+    "onglets": [
+     "Tous les lots0",
+     "Ordre de sortie FEFO",
+     "Archivés364"
+    ],
+    "cartes": [],
+    "graphiques": [],
+    "texte": "Lots suivis 0 Périmés 0 0 unités à retourner Péremption sous 90 j 0 Prioriser en sortie (FEFO) Lots valides 0 Tous les lots0 Ordre de sortie FEFO Archivés364 État Périmés Péremption proche Valides Colonnes Exporter Nouveau Aucun lot enregistré. Utiliser le bouton « Nouveau » pour créer le premier enregistrement. Aucun enregistrement"
+   }
+  }
+ }
+}

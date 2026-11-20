@@ -1,0 +1,70 @@
+{
+ "id": "m6-point-stock",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Point du stock valorisé",
+ "acces": "ouvert",
+ "titre": "Point du stock valorisé",
+ "description": "Stock restant, reçu, entré et sorti — au magasin et à la pharmacie — avec sa valeur en francs.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Point du stock valorisé"
+ ],
+ "actions": [
+  "Point des ventes",
+  "Pharmacie interne — urgences",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Stock restant à la pharmacie — état à date, indépendant de la périodicité choisie : ce qui reste en rayon ne dépend pas de la fenêtre qu’on regarde."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Références concernées",
+  "Quantité",
+  "Montant",
+  "Valorisation au CUMP"
+ ],
+ "cartes": [
+  "Cumul par famille d’articles",
+  "Répartition de la valeur par famille"
+ ],
+ "tableaux": [
+  [
+   "Réf.",
+   "Article",
+   "Famille",
+   "Quantité en stock",
+   "P.U.",
+   "Montant",
+   "Montant au CUMP"
+  ],
+  [
+   "Famille",
+   "Références",
+   "Quantité",
+   "Montant"
+  ]
+ ],
+ "commandes": [
+  "Toutes les familles",
+  "Imprimer le point",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [
+  "Vue",
+  "Périodicité (flux)",
+  "Arrêté au",
+  "Famille d’articles"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

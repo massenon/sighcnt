@@ -1,0 +1,60 @@
+{
+ "id": "m14-securite-utilisateurs",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Sécurité des utilisateurs",
+ "acces": "ouvert",
+ "titre": "Sécurité des utilisateurs",
+ "description": "Politique de mot de passe, verrouillage, double facteur, comptes bloqués et tentatives de connexion.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Sécurité des utilisateurs"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Rôles & permissions (RBAC)",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "Les valeurs de cette liste sont celles que la maquette affiche ou que le poste applique. La profondeur de l’historique des mots de passe est une proposition à valider : aucun document ne la fixe."
+ ],
+ "onglets": [
+  "Politique",
+  "Comptes",
+  "Tentatives de connexion",
+  "Sessions"
+ ],
+ "kpis": [
+  "Comptes actifs",
+  "Comptes bloqués",
+  "Mots de passe à renouveler",
+  "Double facteur manquant",
+  "Tentatives refusées",
+  "Sessions ouvertes"
+ ],
+ "cartes": [
+  "Politique de sécurité des comptes"
+ ],
+ "tableaux": [
+  [
+   "Paramètre",
+   "Valeur",
+   "Source",
+   "Application"
+  ]
+ ],
+ "commandes": [
+  "Politique",
+  "Comptes",
+  "Tentatives de connexion",
+  "Sessions13",
+  "Colonnes",
+  "Exporter",
+  "Modifier la politique"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 6
+}

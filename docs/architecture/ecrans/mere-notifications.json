@@ -1,0 +1,44 @@
+{
+ "id": "mere-notifications",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Notifications serveur",
+ "acces": "ouvert",
+ "titre": "Notifications serveur",
+ "description": "Alertes ouvertes, routées par rôle au serveur, résolues quand la cause cesse ; source de la cloche des postes.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Plateforme locale",
+  "Notifications serveur"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Ouvertes",
+  "Critiques",
+  "Résolues (7 j)"
+ ],
+ "cartes": [
+  "Alertes ouvertes"
+ ],
+ "tableaux": [
+  [
+   "Alerte",
+   "Priorité",
+   "Destinataires",
+   "Ouverte"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

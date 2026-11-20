@@ -1,0 +1,50 @@
+{
+ "id": "m3-rapport",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Rapport médical",
+ "acces": "ouvert",
+ "titre": "Rapport médical",
+ "description": "Compte rendu complet d’un séjour : anamnèse, examen physique, diagnostics et traitements.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Rapport médical"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Rapports médicaux",
+  "Séjours clos",
+  "En cours",
+  "Rubriques du formulaire"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Patient",
+   "Entrée",
+   "Sortie",
+   "Diagnostic de sortie",
+   "Médecin traitant",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau rapport",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

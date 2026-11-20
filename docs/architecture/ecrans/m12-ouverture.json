@@ -1,0 +1,52 @@
+{
+ "id": "m12-ouverture",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Bilan d’ouverture & à-nouveaux",
+ "acces": "ouvert",
+ "titre": "Bilan d’ouverture & à-nouveaux",
+ "description": "Report des soldes de bilan au 1ᵉʳ janvier — les à-nouveaux, écrits au journal AN.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Bilan d’ouverture & à-nouveaux"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "Le report s’équilibre : soldes débiteurs 7 397 000 FCFA = soldes créditeurs 31 747 456 FCFA + résultat -24 350 456 FCFA. L’à-nouveau peut être écrit.",
+  "Seules les classes 1 à 5 se reportent. Un compte de charge (classe 6) ou de produit (classe 7) ne passe jamais à l’exercice suivant : il est soldé par le résultat, qui s’inscrit au compte 13 du passif. Le reporter reviendrait à compter deux fois la même dépense."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Comptes à reporter",
+  "Total des soldes débiteurs",
+  "Total des soldes créditeurs",
+  "Résultat de l’exercice 2026"
+ ],
+ "cartes": [
+  "Exercice à reporter",
+  "Bilan d’ouverture au 1ᵉʳ janvier 2027 — à-nouveaux des classes 1 à 5"
+ ],
+ "tableaux": [
+  [
+   "Compte",
+   "Intitulé",
+   "Débit",
+   "Crédit"
+  ]
+ ],
+ "commandes": [
+  "Écrire les à-nouveaux",
+  "Imprimer le bilan d’ouverture"
+ ],
+ "champs": [
+  "Exercice clos"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

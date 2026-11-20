@@ -7,13 +7,23 @@
  *
  * Le prototype simule les échanges avec le dispositif fiscal : l'interfaçage
  * réel s'appuiera sur la machine électronique certifiée de facturation.
+ * Lot L3 : le mode (boîtier ou e-MECeF) se règle à « Configuration fiscale » ;
+ * en e-MECeF, rien n'est branché : aucun numéro n'est fabriqué (PR.mecef.adaptateur).
  * ========================================================================== */
 (function (global) {
   'use strict';
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
-      P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
+      P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
+
+  /** L'IFU du CLIENT (E14, corrigé le 31/10/2026). La pièce nommait l'IFU de la clinique en « IFU client » pour tous les clients :
+      une pièce fiscale qui désigne le mauvais identifiant est un défaut réel. Le dossier du patient (ou la pièce) porte l'IFU
+      quand il est connu ; sinon la case reste VIDE. Jamais celui de la clinique. */
+  function ifuClientDe(f) {
+    var p = f && f.patientId ? S.collection('patients').get(f.patientId) : null;
+    return String((f && f.ifuClient) || (p && p.ifu) || '');
+  }
 
   var F = D.PARAM_FISCAL;
   /* Régime en vigueur : exonéré sur la facture de référence. Le taux normal
@@ -44,17 +54,21 @@
   }
 
   function factures() { return S.collection('factures').active(); }
-  function normalisees() { return factures().filter(function (f) { return !f.proforma; }); }
+  /* Le registre fiscal suit l'EXERCICE choisi (sélecteur de l'en-tête) : une déclaration à la DGI porte sur une année. */
+  function normalisees() {
+    var X = global.SIGH.exercice;
+    return factures().filter(function (f) { return !f.proforma && (!X || X.dansExercice(f.date)); });
+  }
 
-  var STATUTS = {
-    valide: ['Validée', 'success'],
-    en_attente: ['En attente de transmission', 'warning'],
-    rejete: ['Rejetée', 'danger'],
-  };
+  /* LES CINQ ÉTATS D'UNE PIÈCE vivent au socle (`PR.mecef.ETATS`) : normalisée, en attente, à vérifier, refusée, expirée. Il n'y a pas de
+     « facture simple » : toute vente est normalisée (Direction, 07/11/2026). Les identifiants stockés restent `valide` et `rejete`. */
+  var STATUTS = {};
+  PR.mecef.ETATS.forEach(function (e) { STATUTS[e.stocke] = [e.libelle, e.ton]; });
   function statutBadge(s) {
     var x = STATUTS[s] || ['—', 'neutral'];
     return U.badge(x[0], x[1]);
   }
+  var OPTIONS_STATUT = PR.mecef.ETATS.map(function (e) { return { value: e.stocke, label: e.libelle }; });
 
   /* --- Colonnes communes --------------------------------------------------- */
   var colFacture = {
@@ -117,11 +131,11 @@
           { label: 'Factures émises aujourd’hui', value: C.num(j.length), icon: 'file-plus', tone: 'navy' },
           { label: 'Factures validées', value: C.num(validees.length), icon: 'file-check-2', tone: 'success' },
           { label: 'En attente de transmission', value: C.num(n.filter(function (f) { return f.statutMecef === 'en_attente'; }).length), icon: 'clock', tone: 'warning' },
-          { label: 'Factures rejetées', value: C.num(n.filter(function (f) { return f.statutMecef === 'rejete'; }).length), icon: 'file-x', tone: 'danger' },
+          { label: 'Factures refusées', value: C.num(n.filter(function (f) { return f.statutMecef === 'rejete'; }).length), icon: 'file-x', tone: 'danger' },
           { label: 'Montant total déclaré', value: C.money(C.sum(validees, 'montantTTC')), icon: 'trending-up', tone: 'info' },
           {
             label: TAUX_TVA ? 'TVA collectée' : 'AIB collecté',
-            value: C.money(TAUX_TVA ? tva : C.sum(validees, function (f) { return decomposer(f.montantTTC).aib; })),
+            value: C.money(TAUX_TVA ? tva : C.sum(validees, function (f) { return f.aibTaux != null ? (f.aibMontant || 0) : decomposer(f.montantTTC).aib; })),
             icon: 'landmark', tone: 'navy',
             hint: TAUX_TVA ? 'Taux ' + TAUX_TVA + ' %' : 'AIB ' + TAUX_AIB + ' % — TVA exonérée',
           },
@@ -212,14 +226,14 @@
         { label: 'Factures normalisées', value: C.num(rows.length), icon: 'file-badge', tone: 'navy' },
         { label: 'Montant déclaré', value: C.money(C.sum(rows, 'montantTTC')), icon: 'trending-up', tone: 'info' },
         { label: 'TVA collectée', value: C.money(C.sum(rows, function (f) { return Math.round(f.montantTTC * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'warning' },
-        { label: 'Validées par l’administration', value: C.num(rows.filter(function (f) { return f.statutMecef === 'valide'; }).length), icon: 'file-check-2', tone: 'success' },
+        { label: 'Normalisées', value: C.num(rows.filter(function (f) { return f.statutMecef === 'valide'; }).length), icon: 'file-check-2', tone: 'success' },
       ]));
 
       host.appendChild(U.dataTable({
         title: 'Registre des factures normalisées', rows: rows, exportName: 'factures-normalisees', pageSize: 15,
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
-          { name: 'statutMecef', label: 'Statut fiscal', options: [{ value: 'valide', label: 'Validée' }, { value: 'en_attente', label: 'En attente' }, { value: 'rejete', label: 'Rejetée' }] },
+          { name: 'statutMecef', label: 'Statut fiscal', options: OPTIONS_STATUT },
           { name: 'type', label: 'Nature', options: ['Consultation', 'Hospitalisation', 'Laboratoire', 'Pharmacie', 'Soins à domicile'] },
         ],
         columns: [
@@ -265,11 +279,17 @@
               ['TVA (' + TAUX_TVA + ' %)', C.money(tva)],
               ['Montant TTC', C.money(f.montantTTC)],
               ['Statut de transmission', statutBadge(f.statutMecef)],
-              ['IFU émetteur', C.BRAND.ifu],
-              ['RCCM', C.BRAND.rccm],
+              ['IFU émetteur', C.identiteALaDate(f.date).ifu],
+              ['RCCM', C.identiteALaDate(f.date).rccm],
             ]),
             f.statutMecef === 'rejete'
-              ? K.note('<strong>Facture rejetée</strong> par le dispositif fiscal. Une correction puis une réémission sont nécessaires avant archivage définitif.', { tone: 'danger', icon: 'file-x' })
+              ? K.note('<strong>Facture refusée</strong>' + (f.codeRetour ? ' (' + f.codeRetour + ')' : '') + (f.motifRefusMecef ? ' : ' + f.motifRefusMecef : '') + '. Une correction puis une retransmission sont nécessaires avant archivage définitif.', { tone: 'danger', icon: 'file-x' })
+              : null,
+            f.statutMecef === 'a_verifier'
+              ? K.note('<strong>Réponse perdue</strong> : la vente a peut-être été émise. « Reprendre sans doubler » lit l’appareil et ne rejoue jamais l’émission.', { tone: 'warning', icon: 'help-circle' })
+              : null,
+            f.statutMecef === 'expiree'
+              ? K.note('<strong>Facture expirée</strong> avant confirmation : la vente se renormalise.', { tone: 'danger', icon: 'clock' })
               : null,
           ]),
           footer: [K.btn('Imprimer', { variant: 'primary', icon: 'printer', onclick: function () { imprimer(f); } })],
@@ -281,6 +301,11 @@
          HT/TTC, TVA, AIB, montant en toutes lettres, bloc de certification. */
       function imprimer(f) {
         var dec = decomposer(f.montantTTC);
+        /* Le taux d'AIB choisi à l'encaissement gouverne la pièce ; sans choix, celui du régime. */
+        if (f.aibTaux != null && f.aibTaux !== TAUX_AIB) {
+          dec.aib = Math.round(dec.ht * f.aibTaux / 100); dec.net = dec.ttc + dec.aib;
+        }
+        var normalisee = PR.mecef.etat(f) === 'normalisee' && !!f.numeroMecef;
         var ht = dec.ht, tva = dec.tva, aib = dec.aib, netAPayer = dec.net;
         var lignes = (f.lignes && f.lignes.length) ? f.lignes
           : [{ designation: 'Prestation — ' + f.type, quantite: 1, prixUnitaire: f.montantTTC }];
@@ -311,8 +336,9 @@
           { label: 'Taxe', key: 'k' }, { label: 'Montant', key: 'v', align: 'right' },
         ], [
           { k: F.tva.libelle, v: C.money(tva, false) },
-          { k: F.aib.libelle + ' (' + F.aib.code + ')', v: C.money(aib, false) },
-        ]));
+          /* Lot FISC-2 : la facture d'un patient ne porte aucun AIB (taux nul), la ligne est ABSENTE ; une pièce émise avec un taux le garde. */
+          f.aibTaux === 0 ? null : { k: (f.aibTaux != null && f.aibTaux !== TAUX_AIB ? 'AIB ' + f.aibTaux + ' %' : F.aib.libelle) + ' (' + F.aib.code + ')', v: C.money(aib, false) },
+        ].filter(Boolean)));
         if (!TAUX_TVA) {
           taxes.appendChild(el('p.mt-1.text-\\[9px\\].italic.text-slate-500', { text: F.mentionExoneration }));
         }
@@ -336,19 +362,28 @@
           el('p.mt-0\\.5.text-\\[10px\\].font-medium.uppercase', { text: C.montantEnLettres(netAPayer) }),
         ]));
 
-        /* Bloc de certification fiscale. */
-        var codeDgi = codeMecef(graine);
-        contenu.appendChild(el('div.mt-3.flex.items-center.gap-3.rounded.border-2.border-navy-900.p-3', null, [
-          el('div.grid.h-20.w-20.shrink-0.place-items-center.border.border-slate-400.text-\\[8px\\].text-slate-400', { text: 'QR CODE MECeF' }),
-          el('div.min-w-0', null, [
-            el('p.text-\\[10px\\].font-bold.uppercase.text-navy-900', { text: 'Code MECeF / DGI' }),
-            el('p.font-mono.text-\\[11px\\].font-semibold.tracking-wide', { text: codeDgi }),
-            el('p.mt-1.text-\\[9px\\]', { text: 'MECeF NIM : ' + (f.numeroMecef || 'en attente d’attribution') }),
-            el('p.text-\\[9px\\]', { text: 'MECeF Compteurs : ' + C.pad(graine % 9999, 4) + '/' + C.pad((graine % 9999) + 120, 5) }),
-            el('p.text-\\[9px\\]', { text: 'MECeF Heure : ' + C.dateFR(f.date) + ' ' + C.heure(new Date()) }),
-            el('p.text-\\[9px\\]', { text: 'IFU émetteur : ' + C.BRAND.ifu + ' — RCCM : ' + C.BRAND.rccm }),
-          ]),
-        ]));
+        /* Bloc de certification fiscale : QR, NIM, code, compteurs ne s'impriment QUE sur une pièce réellement normalisée. Une pièce
+           non normalisée porte le bandeau DEMO, jamais un faux code. */
+        if (normalisee) {
+          var codeDgi = codeMecef(graine);
+          contenu.appendChild(el('div.mt-3.flex.items-center.gap-3.rounded.border-2.border-navy-900.p-3', null, [
+            el('div.grid.h-20.w-20.shrink-0.place-items-center.border.border-slate-400.text-\\[8px\\].text-slate-400', { text: 'QR CODE MECeF' }),
+            el('div.min-w-0', null, [
+              el('p.text-\\[10px\\].font-bold.uppercase.text-navy-900', { text: 'Code MECeF / DGI' }),
+              el('p.font-mono.text-\\[11px\\].font-semibold.tracking-wide', { text: codeDgi }),
+              el('p.mt-1.text-\\[9px\\]', { text: 'MECeF NIM : ' + f.numeroMecef }),
+              el('p.text-\\[9px\\]', { text: 'MECeF Compteurs : ' + C.pad(graine % 9999, 4) + '/' + C.pad((graine % 9999) + 120, 5) }),
+              el('p.text-\\[9px\\]', { text: 'MECeF Heure : ' + C.dateFR(f.date) + ' ' + C.heure(new Date()) }),
+              el('p.text-\\[9px\\]', { text: 'IFU émetteur : ' + C.identiteALaDate(f.date).ifu + ' — RCCM : ' + C.identiteALaDate(f.date).rccm }),
+              f.mecefSimule ? el('p.text-\\[9px\\].font-semibold.text-warning-700', { text: 'Simulation de la maquette : ce numéro n’est pas un numéro fiscal.' }) : null,
+            ].filter(Boolean)),
+          ]));
+        } else {
+          contenu.appendChild(el('div.mt-3.rounded.border-2.border-dashed.border-warning-600.p-3.text-center', null, [
+            el('p.text-\\[11px\\].font-bold.uppercase.text-warning-700', { text: 'DEMO : pièce non normalisée' }),
+            el('p.text-\\[9px\\]', { text: 'Cette pièce n’a pas été normalisée (état : ' + ((PR.mecef.fiche(PR.mecef.etat(f)) || {}).libelle || 'non applicable') + '). Elle ne porte ni code MECeF, ni QR, ni compteurs.' }),
+          ]));
+        }
 
         contenu.appendChild(el('p.mt-3.text-\\[9px\\].leading-relaxed.text-slate-600', {
           text: 'Facture normalisée émise conformément au dispositif de facturation électronique en vigueur en République du Bénin. '
@@ -358,11 +393,12 @@
         P.etat({
           titre: 'Facture de vente — normalisée',
           sousTitre: f.numero + (f.numeroMecef ? ' — ' + f.numeroMecef : ''),
+          date: f.date,
           cartouche: [
             ['Facture n°', f.numero], ['Date', C.dateFR(f.date)],
             ['Client', f.patient], ['Dossier client', f.patientCode],
-            ['IFU client', C.BRAND.ifu], ['Nature', f.type],
-          ],
+            ['IFU client', ifuClientDe(f)], ['Nature', f.type],
+          ].concat(f.acheteurNom ? [['Nom de l’acheteur', f.acheteurNom]] : []),
           contenu: contenu,
           signatures: [
             { role: 'Mention du caissier', mention: 'Signature et cachet' },
@@ -399,19 +435,34 @@
         { code: 'E-500', libelle: 'Dispositif temporairement indisponible' },
       ];
 
+      function averifier() { return normalisees().filter(function (f) { return f.statutMecef === 'a_verifier'; }); }
+      function expirees() { return normalisees().filter(function (f) { return f.statutMecef === 'expiree'; }); }
+      /** Un numéro fiscal déjà porté n'est JAMAIS réécrit ; un numéro tiré ne doit jamais être déjà pris. */
+      function numeroLibre(tire) {
+        var pris = {};
+        col.all().forEach(function (x) { if (x.numeroMecef) pris[x.numeroMecef] = true; });
+        var n = tire;
+        while (pris['MECEF' + n]) n++;
+        return 'MECEF' + n;
+      }
+
       host.appendChild(U.kpiGrid([
         { label: 'En attente d’envoi', value: C.num(enAttente().length), icon: 'clock', tone: 'warning' },
+        { label: 'À vérifier', value: C.num(averifier().length), icon: 'help-circle', tone: 'warning' },
         { label: 'Transmissions réussies', value: C.num(validees().length), icon: 'check-circle-2', tone: 'success' },
-        { label: 'Rejets à corriger', value: C.num(rejetees().length), icon: 'file-x', tone: 'danger' },
+        { label: 'Refusées à corriger', value: C.num(rejetees().length), icon: 'file-x', tone: 'danger' },
         { label: 'Taux de réussite', value: C.pct(normalisees().length ? validees().length / normalisees().length * 100 : 0), icon: 'percent', tone: 'info' },
       ]));
 
       host.appendChild(el('div.flex.flex-wrap.gap-2', null, [
-        K.btn('Synchroniser maintenant', {
+        K.commande('Synchroniser maintenant', {
           variant: 'primary', icon: 'refresh-cw',
           onclick: function () {
             var att = enAttente();
             if (!att.length) { U.toast('Aucune facture en attente de transmission.', { type: 'info' }); return; }
+            /* Lot L3 : sans adaptateur configuré (e-MECeF), AUCUN tirage : aucun numéro n'est fabriqué, les ventes restent en attente. */
+            var ad = PR.mecef.adaptateur();
+            if (!ad.configure) { U.toast(ad.code + ' : ' + ad.motif, { type: 'warning', detail: ad.geste, duration: 9000 }); return; }
             U.confirm({
               title: 'Transmettre ' + att.length + ' facture(s) ?',
               message: 'Les factures en attente seront transmises au dispositif fiscal. Un identifiant MECeF sera attribué à chaque facture acceptée.',
@@ -424,10 +475,13 @@
               att.forEach(function (f) {
                 var accepte = rnd() > 0.12;
                 if (accepte) acceptees++; else refusees++;
+                var tireN = C.between(rnd, 1000000, 9999999);
+                var tireC = accepte ? 'OK-200' : C.pick(rnd, CODES_REJET).code;
+                /* Un numéro déjà porté est conservé (jamais réécrit) ; sinon le tirage, écarté s'il est déjà pris. */
                 majs.push(col.update(f.id, {
                   statutMecef: accepte ? 'valide' : 'rejete',
-                  numeroMecef: accepte ? 'MECEF' + C.between(rnd, 1000000, 9999999) : null,
-                  codeRetour: accepte ? 'OK-200' : C.pick(rnd, CODES_REJET).code,
+                  numeroMecef: accepte ? (f.numeroMecef || numeroLibre(tireN)) : (f.numeroMecef || null),
+                  codeRetour: tireC,
                   dateTransmission: C.iso(AUJ),
                 }));
               });
@@ -453,18 +507,12 @@
               emptyMessage: 'Aucune facture en attente de transmission.',
               columns: [colFacture, colDate, { key: 'patient', label: 'Client' }, colMontantTTC, colTVA, colStatutMecef],
               rowActions: function (f) {
-                return [K.btn('Transmettre', {
+                return [K.commande('Normaliser', {
                   size: 'sm', variant: 'primary', icon: 'send',
                   onclick: function () {
-                    var res = col.update(f.id, {
-                      statutMecef: 'valide',
-                      numeroMecef: 'MECEF' + C.between(C.seeded(Date.now() % 99999), 1000000, 9999999),
-                      codeRetour: 'OK-200', dateTransmission: C.iso(AUJ),
-                    });
-                    U.toast('Facture transmise et validée.', {
-                      type: 'success', detail: res.record.numeroMecef,
-                      undo: function () { res.undo(); global.location.reload(); },
-                    });
+                    var n = PR.mecef.retransmettre(f.id);
+                    if (!n.ok) { U.toast(n.code + ' : ' + n.motif, { type: 'error', detail: n.geste, duration: 9000 }); return; }
+                    U.toast('Facture normalisée.', { type: 'success', detail: n.numero });
                     setTimeout(function () { global.location.reload(); }, 1200);
                   },
                 })];
@@ -480,9 +528,9 @@
               wrap.appendChild(K.note('Chaque rejet doit être corrigé puis réémis. Le code de retour du dispositif fiscal précise la nature de l’anomalie.', { tone: 'danger', icon: 'file-x' }));
             }
             wrap.appendChild(U.dataTable({
-              rows: rejetees, exportName: 'mecef-rejets', pageSize: 12,
+              rows: rejetees, exportName: 'mecef-refusees', pageSize: 12,
               defaultSort: 'date', defaultDir: 'desc',
-              emptyMessage: 'Aucun rejet à traiter.',
+              emptyMessage: 'Aucune facture refusée à traiter.',
               columns: [colFacture, colDate, { key: 'patient', label: 'Client' }, colMontantTTC,
                 {
                   key: 'codeRetour', label: 'Code de retour',
@@ -496,23 +544,47 @@
                 },
               ],
               rowActions: function (f) {
-                return [K.btn('Corriger et réémettre', {
+                return [K.commande('Corriger et retransmettre', {
                   size: 'sm', variant: 'warning', icon: 'repeat',
                   onclick: function () {
-                    var res = col.update(f.id, {
-                      statutMecef: 'valide',
-                      numeroMecef: 'MECEF' + C.between(C.seeded(Date.now() % 88888), 1000000, 9999999),
-                      codeRetour: 'OK-200', dateTransmission: C.iso(AUJ), reemise: true,
-                    });
-                    U.toast('Facture corrigée et réémise avec succès.', {
-                      type: 'success', undo: function () { res.undo(); global.location.reload(); },
-                    });
+                    var n = PR.mecef.retransmettre(f.id);
+                    if (!n.ok) { U.toast(n.code + ' : ' + n.motif, { type: 'error', detail: n.geste, duration: 9000 }); return; }
+                    col.update(f.id, { reemise: true });
+                    U.toast('Facture retransmise et normalisée.', { type: 'success', detail: n.numero });
                     setTimeout(function () { global.location.reload(); }, 1200);
                   },
                 })];
               },
             }));
             return wrap;
+          },
+        },
+        {
+          id: 'averifier', label: 'À vérifier', badge: averifier().length + expirees().length,
+          render: function () {
+            return U.dataTable({
+              rows: function () { return averifier().concat(expirees()); }, exportName: 'mecef-a-verifier', pageSize: 12,
+              defaultSort: 'date', defaultDir: 'desc',
+              emptyMessage: 'Aucune vente à vérifier ni expirée.',
+              columns: [colFacture, colDate, { key: 'patient', label: 'Client' }, colMontantTTC, colStatutMecef,
+                { key: 'codeRetour', label: 'Motif', render: function (f) { return el('span.text-xs.text-slate-600', { text: (f.codeRetour || '') + (f.motifRefusMecef ? ' : ' + f.motifRefusMecef : '') }); } }],
+              rowActions: function (f) {
+                if (f.statutMecef === 'a_verifier') {
+                  return [K.commande('Reprendre sans doubler', { size: 'sm', variant: 'primary', icon: 'search-check', onclick: function () {
+                    var r = PR.mecef.reprendre(f.id);
+                    if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+                    U.toast(r.reconcilie ? 'Vente réconciliée avec ' + r.numero + '.' : r.motif, { type: 'success' });
+                    setTimeout(function () { global.location.reload(); }, 1200);
+                  } })];
+                }
+                return [K.commande('Renormaliser', { size: 'sm', variant: 'warning', icon: 'repeat', onclick: function () {
+                  var n = PR.mecef.retransmettre(f.id);
+                  if (!n.ok) { U.toast(n.code + ' : ' + n.motif, { type: 'error', detail: n.geste, duration: 9000 }); return; }
+                  U.toast('Vente normalisée.', { type: 'success', detail: n.numero });
+                  setTimeout(function () { global.location.reload(); }, 1200);
+                } })];
+              },
+            });
           },
         },
         {
@@ -545,17 +617,21 @@
       var col = S.collection('avoirs', { module: 'MECEF', entite: 'Avoir' });
       var host = el('div.space-y-4');
       var table;
+      function avoirsExercice() {
+        var X = global.SIGH.exercice;
+        return col.active().filter(function (a) { return !X || X.dansExercice(a.date); });
+      }
 
       host.appendChild(U.kpiGrid([
-        { label: 'Avoirs émis', value: C.num(col.active().length), icon: 'undo-2', tone: 'navy' },
-        { label: 'Montant des avoirs', value: C.money(C.sum(col.active(), 'montant')), icon: 'wallet', tone: 'warning' },
-        { label: 'TVA régularisée', value: C.money(C.sum(col.active(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
+        { label: 'Avoirs émis', value: C.num(avoirsExercice().length), icon: 'undo-2', tone: 'navy' },
+        { label: 'Montant des avoirs', value: C.money(C.sum(avoirsExercice(), 'montant')), icon: 'wallet', tone: 'warning' },
+        { label: 'TVA régularisée', value: C.money(C.sum(avoirsExercice(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
         { label: 'Factures annulées', value: C.num(factures().filter(function (f) { return f.annulee; }).length), icon: 'file-x', tone: 'danger' },
       ]));
 
       table = U.dataTable({
         title: 'Registre des avoirs',
-        rows: function () { return col.active(); },
+        rows: function () { return avoirsExercice(); },
         exportName: 'avoirs-mecef', pageSize: 12,
         defaultSort: 'date', defaultDir: 'desc',
         emptyMessage: 'Aucun avoir émis.',
@@ -602,17 +678,34 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-                var fac = normalisees().filter(function (x) { return x.id === v.factureId; })[0];
-                if (fac) {
-                  v.factureNumero = fac.numero; v.patient = fac.patient; v.patientCode = fac.patientCode;
-                  if (v.montant > fac.montantTTC) { U.toast('Le montant de l’avoir ne peut excéder celui de la facture.', { type: 'error' }); return; }
+                /* B10 (31/10/2026) : l'avoir MECeF n'est PAS un canal à part. Il APPELLE le moteur unique `PR.emettreAvoir`
+                   (collection `avoirs`) : plafond CUMULÉ sur la facture (E15), montant strictement positif (E10), ligne nommée,
+                   contre-passation en brouillon. La transmission au dispositif est la SUITE de l'émission : le moteur écrit la
+                   pièce, ce geste lui pose l'identifiant MECeF et le statut transmis. */
+                if (!(Number(v.montant) > 0)) {
+                  U.toast('Avoir refusé.', { type: 'error', detail: 'Le montant doit être strictement supérieur à 0 FCFA.' });
+                  return;
                 }
-                v.reference = C.nextRef('AV-2026-', 4);
-                v.numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
-                v.statutMecef = 'valide';
-                var res = col.insert(v);
+                var fac = normalisees().filter(function (x) { return x.id === v.factureId; })[0];
+                if (!fac) { U.toast('Choisir la facture à rectifier.', { type: 'error' }); return; }
+                var emis = PR.emettreAvoir(fac.id, {
+                  date: v.date,
+                  lignes: [{ designation: 'Rectification de la facture ' + fac.numero + ' : ' + v.motif, montant: Number(v.montant) }],
+                  motif: v.motif, observations: v.observations,
+                  remboursement: 'creance', origine: 'mecef',
+                });
+                if (emis.erreur) { U.toast('Avoir refusé.', { type: 'error', detail: emis.erreur, duration: 9000 }); return; }
+                var adAvoir = PR.mecef.adaptateur();
+                if (adAvoir.configure) {
+                  var numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
+                  col.update(emis.record.id, { numeroMecef: numeroMecef, statutMecef: 'valide', dateTransmission: new Date().toISOString() });
+                }
+                v.reference = emis.record.reference;
+                var res = { record: col.get(emis.record.id), undo: function () { PR.retirerAvoir(emis.record.id); } };
                 m.close(); table.refresh();
-                U.toast('Avoir ' + v.reference + ' émis et transmis.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                /* Lot L3 : sans adaptateur configuré, l'avoir est ÉMIS (la pièce existe, la contre-passation est écrite) mais n'a AUCUN numéro fiscal. */
+                if (adAvoir.configure) U.toast('Avoir ' + v.reference + ' émis et transmis.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                else U.toast('Avoir ' + v.reference + ' émis, en attente de certification.', { type: 'warning', detail: adAvoir.code + ' : ' + adAvoir.motif + ' ' + adAvoir.geste, duration: 9000, undo: function () { res.undo(); table.refresh(); } });
                 etat(res.record);
               },
             }),
@@ -626,6 +719,7 @@
         P.etat({
           titre: 'Avoir sur facture normalisée',
           sousTitre: a.reference + ' — rectifie la facture ' + a.factureNumero,
+          date: a.date,
           cartouche: [['N° avoir', a.reference], ['Identifiant MECeF', a.numeroMecef || '—'],
             ['Date', C.dateFR(a.date)], ['Facture rectifiée', a.factureNumero],
             ['Client', a.patient], ['Motif', a.motif]],
@@ -679,7 +773,7 @@
       host.appendChild(U.dataTable({
         title: 'Journal fiscal', rows: rows, exportName: 'journal-mecef', pageSize: 20,
         filters: [
-          { name: 'statut', label: 'Statut', options: [{ value: 'valide', label: 'Réussie' }, { value: 'rejete', label: 'Échouée' }, { value: 'en_attente', label: 'En attente' }] },
+          { name: 'statut', label: 'Statut', options: OPTIONS_STATUT },
           { name: 'operation', label: 'Opération', options: ['Transmission', 'Réémission'] },
         ],
         columns: [
@@ -712,24 +806,78 @@
   global.SIGH.screen('mecef-config', {
     title: 'Configuration fiscale',
     description: 'Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes.',
-    regle: 'Ces paramètres alimentent automatiquement toutes les factures normalisées : ils ne doivent jamais être saisis facture par facture.',
+    regle: 'Cet écran <strong>affiche</strong> la configuration fiscale en vigueur (identité de la clinique, régime de TVA, taux d’AIB, préfixes). Elle est lue des référentiels du logiciel et <strong>ne se modifie pas ici</strong>, à une exception : le <strong>mode de certification</strong> (boîtier ou e-MECeF) et l’<strong>imprimante de caisse</strong>, réglés par deux droits réservés de la fiche du rôle (administrateur et Directrice Administrative d’origine). L’identité se règle à « Identité & papier à en-tête », le régime de TVA est arrêté par la comptabilité. Rien n’est saisi facture par facture.',
     render: function (root) {
       var host = el('div.grid.gap-4.lg\\:grid-cols-2');
 
-      var f = U.form([
+      /* LE MODE DE CERTIFICATION (lot L3, Direction 09/11/2026) : boîtier physique (défaut) ou e-MECeF, réglé par l'administrateur ou la DA. */
+      function carteMode() {
+        var ad = PR.mecef.adaptateur();
+        /* Lot MECEF-M : le droit est le GESTE réservé `regler_mode_mecef` de la fiche RBAC (plus de liste de rôles dans l'écran). */
+        var peut = PR.mecef.peutGeste(PR.mecef.GESTE_MODE);
+        var libelles = { boitier: 'Boîtier physique', emecef: 'e-MECeF' };
+        var etatTxt = el('div', { 'data-mecef-mode-etat': '' });
+        var modeTxt = el('span.font-semibold', { 'data-mecef-mode-courant': '' });
+        function peindreEtat() {
+          var a = PR.mecef.adaptateur();
+          C.clear(etatTxt);
+          modeTxt.textContent = libelles[a.mode === 'emecef' ? 'emecef' : 'boitier'];
+          if (a.mode === 'emecef') {
+            etatTxt.appendChild(K.note('<strong>e-MECeF : non configuré, dossier d’interface DGI requis.</strong> Aucun document remis ne décrit le protocole (adresse, authentification, format des messages) : rien n’est supposé. '
+              + 'Une vente est encaissée, reste <strong>en attente de certification</strong> et ne reçoit <strong>aucun numéro</strong> ; elle se retransmet quand l’interface sera branchée.', { tone: 'warning', icon: 'plug-zap' }));
+          } else {
+            etatTxt.appendChild(K.note('<strong>Boîtier physique : en attente des réponses du fournisseur.</strong> Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). '
+              + 'Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.', { tone: 'info', icon: 'info' }));
+            etatTxt.appendChild(el('p.mt-2.text-xs.text-slate-500', { text: 'Maquette : un appareil de démonstration tient lieu de boîtier ; ses numéros portent la mention « non fiscal ». Le poste de production n’a aucun adaptateur.' }));
+          }
+        }
+        /* Le réglage s'ouvre en MODALE par une commande d'écriture : absente pour qui n'a pas le droit (RG-13), et l'écran reste
+           sans champ actif ni bouton d'enregistrement tant qu'on ne règle rien. Le moteur refuse de toute façon (MODE_RESERVE). */
+        function ouvrirReglage() {
+          var sel = el('select.select', { id: 'f_mecefMode', 'data-mecef-mode': '' }, PR.mecef.MODES_PROPOSES.map(function (id) {
+            return el('option', { value: id }, libelles[id]);
+          }));
+          sel.value = PR.mecef.adaptateur().mode === 'emecef' ? 'emecef' : 'boitier';
+          var m = U.modal({
+            title: 'Mode de certification', subtitle: 'Boîtier physique ou e-MECeF', size: 'md',
+            body: el('div', null, [ el('label.label', { for: 'f_mecefMode', text: 'Mode de certification des factures' }), el('div.mt-1', null, [sel]) ]),
+            footer: [
+              K.btn('Annuler', { onclick: function () { m.close(); } }),
+              K.commande('Enregistrer le mode', { variant: 'primary', icon: 'save', onclick: function () {
+                var r = PR.mecef.definirMode(sel.value);
+                if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+                m.close();
+                U.toast('Mode enregistré : ' + libelles[r.mode] + '.', { type: 'success' });
+                peindreEtat();
+              } }),
+            ],
+          });
+        }
+        peindreEtat();
+        var corps = el('div.space-y-3', null, [
+          el('p.text-sm', null, [ 'Mode en vigueur : ', modeTxt ]),
+          etatTxt,
+          peut ? el('div.flex.gap-2', null, [K.commande('Régler le mode', { variant: 'primary', icon: 'settings', onclick: ouvrirReglage })])
+            : K.note('Le mode se règle par un rôle qui détient le droit « Régler le mode de facturation normalisée » : ' + PR.mecef.nomsRolesGeste(PR.mecef.GESTE_MODE) + '.', { tone: 'info', icon: 'lock' }),
+        ]);
+        return U.card('Mode de certification', corps);
+      }
+
+      var idJour = C.identiteALaDate(C.iso(C.aujourdhui()));
+      var champsConfig = [
         { type: 'section', label: 'Identification légale de l’émetteur' },
-        { name: 'raisonSociale', label: 'Raison sociale', required: true, col: 'full', value: C.BRAND.nom },
-        { name: 'ifu', label: 'IFU', required: true, value: C.BRAND.ifu },
-        { name: 'rccm', label: 'RCCM', required: true, value: C.BRAND.rccm },
-        { name: 'autorisation', label: 'N° d’autorisation d’ouverture', col: 'full', value: C.BRAND.autorisation },
-        { name: 'adresse', label: 'Adresse', col: 'full', value: C.BRAND.bp },
+        { name: 'raisonSociale', label: 'Raison sociale', required: true, col: 'full', value: idJour.nom },
+        { name: 'ifu', label: 'IFU', required: true, value: idJour.ifu },
+        { name: 'rccm', label: 'RCCM', required: true, value: idJour.rccm },
+        { name: 'autorisation', label: 'N° d’autorisation d’ouverture', col: 'full', value: idJour.autorisation },
+        { name: 'adresse', label: 'Adresse', col: 'full', value: idJour.bp },
         { name: 'telephone', label: 'Téléphones', value: C.BRAND.telephones.join(' / ') },
         { name: 'email', label: 'Adresse électronique', value: C.BRAND.email },
 
         { type: 'section', label: 'Paramètres d’émission' },
-        { name: 'prefixeFacture', label: 'Préfixe des factures', value: 'FN-2026-', help: 'La numérotation doit rester strictement séquentielle.' },
-        { name: 'prefixeAvoir', label: 'Préfixe des avoirs', value: 'AV-2026-' },
-        { name: 'prefixeProforma', label: 'Préfixe des pro-forma', value: 'PRO-2026-' },
+        { name: 'prefixeFacture', label: 'Préfixe des factures', value: 'FN-' + C.aujourdhui().getFullYear() + '-', help: 'La numérotation doit rester strictement séquentielle.' },
+        { name: 'prefixeAvoir', label: 'Préfixe des avoirs', value: 'AV-' + C.aujourdhui().getFullYear() + '-' },
+        { name: 'prefixeProforma', label: 'Préfixe des pro-forma', value: 'PRO-' + C.aujourdhui().getFullYear() + '-' },
         { name: 'prochainNumero', label: 'Prochain numéro', type: 'number', value: normalisees().length + 1 },
         {
           name: 'regimeTva', label: 'Régime de TVA', type: 'select', required: true,
@@ -744,35 +892,103 @@
         { name: 'modeTransmission', label: 'Mode de transmission', type: 'select', options: ['Automatique à l’émission', 'Manuelle groupée', 'Différée en fin de journée'], value: 'Automatique à l’émission' },
         { name: 'delaiRetransmission', label: 'Délai avant nouvelle tentative (minutes)', type: 'number', value: 15 },
         { name: 'archivageAuto', label: 'Archivage automatique des factures transmises', type: 'checkbox', value: true, col: 'full' },
-      ], {});
+      ];
+      /* LECTURE : aucun champ ne s'écrit nulle part (le bouton « Enregistrer » n'écrivait que le journal et annonçait
+         des valeurs « enregistrées » qui revenaient à la constante au rechargement). Les champs sont verrouillés et la
+         commande est ABSENTE : un geste qui ne conserve rien ne se propose pas. */
+      var f = U.form(champsConfig.map(function (c) {
+        return c.type === 'section' ? c : Object.assign({}, c, { disabled: true });
+      }), {});
 
       var carte = el('div');
       carte.appendChild(U.card('Paramètres fiscaux', el('div', null, [
+        K.note('<strong>Lecture seule.</strong> Ces valeurs sont celles des référentiels du logiciel : les modifier ici ne conserverait rien. '
+          + 'L’identité légale se règle à « Identité & papier à en-tête ».', { tone: 'info', icon: 'info' }),
         f,
         el('div.mt-4.flex.flex-wrap.gap-2', null, [
-          /* La configuration fiscale commande TOUTES les factures
-             normalisées à venir : elle ne se règle pas depuis un profil qui
-             ne fait que consulter la MECeF. */
-          K.commande('Enregistrer les paramètres', {
-            variant: 'primary', icon: 'save',
-            onclick: function () {
-              var v = f.collect();
-              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-              S.log('Modification', 'MECEF', 'ConfigurationFiscale', 'CONFIG', null, v);
-              U.toast('Paramètres fiscaux enregistrés.', {
-                type: 'success',
-                detail: 'Ces valeurs alimenteront toutes les prochaines factures normalisées.',
-              });
-            },
-          }),
           K.btn('Tester la connexion au dispositif', {
             icon: 'plug-zap',
             onclick: function () {
-              U.toast('Connexion au dispositif fiscal établie.', { type: 'success', detail: 'Temps de réponse : 340 ms' });
+              /* Lot L3 : le test n'annonce plus une connexion qu'aucun appareil n'a établie (ni délai de réponse inventé). */
+              var ad = PR.mecef.adaptateur();
+              if (!ad.configure) { U.toast(ad.code + ' : ' + ad.motif, { type: 'warning', detail: ad.geste, duration: 9000 }); return; }
+              U.toast('Appareil de démonstration : aucune connexion réelle.', { type: 'info', detail: 'Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis. Aucun numéro émis ici n’est fiscal.', duration: 9000 });
             },
           }),
         ]),
       ])));
+      /* L'ÉTAT DE LA CAISSE (lot MECEF-M) : ce qui est encaissé sans être normalisé, les avoirs en attente À PART ; un montant qui ne se calcule pas se DIT. */
+      function carteEtatCaisse() {
+        var e = PR.mecef.etatCaisse();
+        function montant(m, nb) { return nb === 0 ? C.money(0) : (m === null ? 'Non calculable' : C.money(m)); }
+        var corps = el('div.space-y-3', { 'data-etat-caisse': '' }, [
+          U.descList([
+            ['Ventes encaissées non normalisées', el('span', { 'data-etat-ventes': '', text: String(e.ventes.nombre) })],
+            ['Montant encaissé non normalisé', el('span', { 'data-etat-ventes-montant': '', text: montant(e.ventes.montant, e.ventes.nombre) })],
+            ['Avoirs en attente de certification (à part)', el('span', { 'data-etat-avoirs': '', text: String(e.avoirs.nombre) })],
+            ['Montant des avoirs en attente', el('span', { 'data-etat-avoirs-montant': '', text: montant(e.avoirs.montant, e.avoirs.nombre) })],
+          ], 'grid-cols-1'),
+        ]);
+        if (e.ventes.montant === null || e.avoirs.montant === null) {
+          corps.appendChild(K.note('<strong>Non calculable</strong> : au moins une pièce n’a pas de montant connu. Le total n’est pas zéro, il n’est pas affirmé.', { tone: 'warning', icon: 'help-circle' }));
+        }
+        corps.appendChild(el('div.flex.gap-2', null, [K.btn('Voir la file', { icon: 'list', onclick: function () { global.SIGH.app.go('mecef-transmission'); } })]));
+        return U.card('État de la caisse', corps);
+      }
+
+      /* L'IMPRIMANTE DE CAISSE (lot MECEF-M) : réglage daté, par le geste réservé `regler_imprimante_caisse` ; commande ABSENTE sans le droit. */
+      function carteImprimante() {
+        var I = PR.mecef.imprimante;
+        var peut = PR.mecef.peutGeste(PR.mecef.GESTE_IMPRIMANTE);
+        var zone = el('div.space-y-3', { 'data-imprimante': '' });
+        function peindre() {
+          var v = I.aLaDate();
+          C.clear(zone);
+          zone.appendChild(U.descList([
+            ['Nom', el('span', { 'data-imprimante-nom': '', text: v.nom })],
+            ['Modèle', el('span', { 'data-imprimante-modele': '', text: v.modele })],
+            ['Type', 'Thermique, rouleau ' + v.largeurMm + ' mm'],
+            ['Liaison', el('span', { 'data-imprimante-liaison': '', text: v.liaisonLibelle })],
+            ['En vigueur', v.dateEffet ? 'depuis le ' + C.dateFR(v.dateEffet) : 'réglage semé par défaut'],
+          ], 'grid-cols-1'));
+          if (v.liaison === 'a_verifier') zone.appendChild(K.note('La liaison réelle n’est pas connue : <strong>à vérifier à l’arrière de l’appareil</strong> (USB ou Ethernet), puis à régler ici.', { tone: 'warning', icon: 'cable' }));
+          zone.appendChild(K.note('Cette imprimante sort les tickets de caisse (rouleau 80 mm). Elle ne remplace pas le boîtier de certification.', { tone: 'info', icon: 'printer' }));
+          if (peut) zone.appendChild(el('div.flex.gap-2', null, [K.commande('Régler l’imprimante', { variant: 'primary', icon: 'settings', onclick: ouvrir })]));
+          else zone.appendChild(K.note('L’imprimante se règle par un rôle qui détient le droit « Régler l’imprimante de caisse » : ' + PR.mecef.nomsRolesGeste(PR.mecef.GESTE_IMPRIMANTE) + '.', { tone: 'info', icon: 'lock' }));
+        }
+        function ouvrir() {
+          var v = I.aLaDate();
+          var nom = el('input.input', { id: 'f_impNom', type: 'text', value: v.nom, 'data-imprimante-champ': 'nom' });
+          var liaison = el('select.select', { id: 'f_impLiaison', 'data-imprimante-champ': 'liaison' }, [el('option', { value: '' }, 'À choisir')].concat(I.liaisons.filter(function (l) { return l.choisissable; }).map(function (l) { return el('option', { value: l.id }, l.libelle); })));
+          liaison.value = v.liaison === 'usb' || v.liaison === 'ethernet' ? v.liaison : '';
+          var date = el('input.input', { id: 'f_impDate', type: 'date', value: C.iso(C.aujourdhui()), 'data-imprimante-champ': 'dateEffet' });
+          var motif = el('input.input', { id: 'f_impMotif', type: 'text', 'data-imprimante-champ': 'motif' });
+          var m = U.modal({
+            title: 'Imprimante de caisse', subtitle: v.modele + ', thermique 80 mm', size: 'md',
+            body: el('div.space-y-3', null, [
+              el('div', null, [el('label.label', { for: 'f_impNom', text: 'Nom' }), nom]),
+              el('div', null, [el('label.label', { for: 'f_impLiaison', text: 'Liaison' }), liaison]),
+              el('div', null, [el('label.label', { for: 'f_impDate', text: 'Date d’effet' }), date]),
+              el('div', null, [el('label.label', { for: 'f_impMotif', text: 'Motif' }), motif]),
+            ]),
+            footer: [
+              K.btn('Annuler', { onclick: function () { m.close(); } }),
+              K.commande('Enregistrer l’imprimante', { variant: 'primary', icon: 'save', onclick: function () {
+                var r = I.definir({ nom: nom.value, liaison: liaison.value, dateEffet: date.value, motif: motif.value });
+                if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+                m.close();
+                U.toast('Imprimante enregistrée : ' + r.version.nom + ', ' + I.liaisons.filter(function (l) { return l.id === r.version.liaison; })[0].libelle + '.', { type: 'success' });
+                peindre();
+              } }),
+            ],
+          });
+        }
+        peindre();
+        return U.card('Imprimante de caisse', zone);
+      }
+
+      host.insertBefore(el('div.lg\\:col-span-2', null, [carteMode()]), host.firstChild);
+      host.insertBefore(el('div.grid.gap-4.lg\\:col-span-2.lg\\:grid-cols-2', null, [carteEtatCaisse(), carteImprimante()]), host.children[1] || null);
       host.appendChild(carte);
 
       /* Aperçu de l'entête fiscale */
@@ -782,8 +998,8 @@
         ['Adresse', C.BRAND.bp],
         ['Téléphones', C.BRAND.telephones.join(' / ')],
         ['Adresse électronique', C.BRAND.email],
-        ['IFU', el('span.font-mono.font-semibold', { text: C.BRAND.ifu })],
-        ['RCCM', el('span.font-mono.font-semibold', { text: C.BRAND.rccm })],
+        ['IFU', el('span.font-mono.font-semibold', { text: idJour.ifu })],
+        ['RCCM', el('span.font-mono.font-semibold', { text: idJour.rccm })],
         ['Autorisation d’ouverture', C.BRAND.autorisation],
         ['Devise', C.BRAND.devise],
         ['Régime de TVA', REGIME.label],

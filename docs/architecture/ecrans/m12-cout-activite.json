@@ -1,0 +1,63 @@
+{
+ "id": "m12-cout-activite",
+ "module": "M12",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Coût à l’activité",
+ "acces": "ouvert",
+ "titre": "Coût à l’activité",
+ "description": "Consommables réellement sortis pour un séjour ou un acte, face au montant facturé — marge sur consommables par groupe de prestation.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Gestion & trésorerie",
+  "Coût à l’activité"
+ ],
+ "actions": [
+  "Recettes & charges par groupe",
+  "Coût global de l’agent",
+  "Tableau de bord comptable"
+ ],
+ "regle": [
+  "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+  "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Prestations facturées",
+  "Consommables sortis",
+  "Marge sur consommables",
+  "Taux de marge"
+ ],
+ "cartes": [
+  "Recette et consommation par groupe",
+  "Marge sur consommables par groupe de prestation",
+  "Prévision saisonnière du besoin de financement"
+ ],
+ "tableaux": [
+  [
+   "Groupe de prestation",
+   "Lignes facturées",
+   "Facturé",
+   "Consommables",
+   "Marge",
+   "Taux"
+  ],
+  [
+   "Mois",
+   "Admissions",
+   "Indice",
+   "BFR projeté"
+  ]
+ ],
+ "commandes": [
+  "Imprimer l’analyse",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Du",
+  "au"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

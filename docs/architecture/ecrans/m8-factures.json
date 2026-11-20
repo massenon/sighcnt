@@ -1,0 +1,62 @@
+{
+ "id": "m8-factures",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Factures",
+ "acces": "ouvert",
+ "titre": "Factures",
+ "description": "Ensemble des factures émises, avec suivi du règlement, de la prise en charge assurance et de la transmission MECeF.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Factures"
+ ],
+ "actions": [
+  "Avoirs",
+  "Nouvelle facture",
+  "Tableau de bord facturation"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les factures",
+  "Archivés"
+ ],
+ "kpis": [
+  "Factures",
+  "Chiffre d’affaires",
+  "Encaissé",
+  "Reste à recouvrer"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° facture",
+   "Date",
+   "Patient",
+   "Nature",
+   "Montant",
+   "Part assurance",
+   "Réglé",
+   "Reste dû",
+   "Règlement",
+   "MECeF",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les factures409",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

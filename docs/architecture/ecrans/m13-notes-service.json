@@ -1,0 +1,53 @@
+{
+ "id": "m13-notes-service",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Notes de service",
+ "acces": "ouvert",
+ "titre": "Notes de service",
+ "description": "Notes de service en vigueur, versions et dates d’effet — sources des règles métier du système.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Notes de service"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [
+  "Une nouvelle note de service crée une nouvelle version de la règle, avec sa propre date d’effet. L’historique demeure intact : les paies et évaluations antérieures conservent le barème qui leur était applicable."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Notes en vigueur",
+  "Règles métier pilotées",
+  "Dernière mise à jour",
+  "Agents concernés"
+ ],
+ "cartes": [
+  "NS 131/07/DM/DA/CNT/2026",
+  "NS n° 132/07/DM/DA/CNT/2026"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Élément d’évaluation",
+   "Moyenne",
+   "Faible à mauvaise"
+  ],
+  [
+   "Prime",
+   "Mode",
+   "Fonctions concernées"
+  ]
+ ],
+ "commandes": [
+  "Ouvrir le moteur"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

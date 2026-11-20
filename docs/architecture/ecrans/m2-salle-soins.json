@@ -1,0 +1,55 @@
+{
+ "id": "m2-salle-soins",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Salle de soins",
+ "acces": "ouvert",
+ "titre": "Salle de soins",
+ "description": "Administrations dues à la salle de soins : ambulatoires et premières administrations des hospitalisés.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Consultations & prescriptions",
+  "Salle de soins"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "La salle de soins administre tous les traitements ambulatoires, du premier au dernier passage, et la première administration des traitements hospitaliers. Le relais passe ensuite à l’hospitalisation — c’est le circuit décrit par la Direction, appliqué par le moteur et non laissé à l’usage."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Patients concernés",
+  "Administrations dues",
+  "Premières administrations",
+  "Bloquées faute de règlement"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Prescription",
+   "Patient",
+   "Acte ou produit",
+   "Passage",
+   "Pourquoi ce poste",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Administrer",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

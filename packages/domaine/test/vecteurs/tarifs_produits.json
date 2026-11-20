@@ -1,0 +1,3902 @@
+{
+ "_doc": "Prix d’achat des produits (lot T5 de la maquette, porté au poste par le lot TFIN) : RG-02, refus nommés, version 1 à la création, accesseur daté. Chaque cas porte l’ÉTAT dont il part (fiche, prestation, versions, pièces).",
+ "aujourdhui": "2026-08-16",
+ "role": "admin",
+ "auteur": "VECTEURS",
+ "cas": [
+  {
+   "nom": "RG-02 : un médicament avec un prix de vente différent",
+   "code": "ACE",
+   "demande": {
+    "code": "ACE",
+    "prixNonAssure": 260,
+    "prixVente": 290,
+    "dateEffet": "2026-08-18",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0003",
+      "code": "ACE",
+      "designation": "ACE MISO 200 µg 1 CP",
+      "categorie": "medicament",
+      "unite": "Comprimé",
+      "prixAchat": 250,
+      "prixVente": 250,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACE",
+      "code": "ACE",
+      "libelle": "ACE MISO 200 µg 1 CP",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACE@origine@1",
+      "code": "ACE",
+      "version": 1,
+      "prixNonAssure": 250,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "RG02_MARGE",
+    "motif": "RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente (290) ne peut pas différer de son prix d’achat (260).",
+    "geste": "Laisser le prix de vente vide : le prix de vente d’un médicament est son prix d’achat, il se dérive. Une exception se valide par la Direction."
+   }
+  },
+  {
+   "nom": "prix zéro",
+   "code": "ACU",
+   "demande": {
+    "code": "ACU",
+    "prixNonAssure": 0,
+    "dateEffet": "2026-08-18",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0004",
+      "code": "ACU",
+      "designation": "ACUPAN 20 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACU",
+      "code": "ACU",
+      "libelle": "ACUPAN 20 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACU@origine@1",
+      "code": "ACU",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "PRIX_ZERO",
+    "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul ») : un article ne se facture jamais à zéro.",
+    "geste": "Saisir un prix d’achat strictement positif, ou laisser l’article « à valoriser » (sans prix)."
+   }
+  },
+  {
+   "nom": "prix absent en changement",
+   "code": "ACU",
+   "demande": {
+    "code": "ACU",
+    "prixNonAssure": "",
+    "dateEffet": "2026-08-18",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0004",
+      "code": "ACU",
+      "designation": "ACUPAN 20 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACU",
+      "code": "ACU",
+      "libelle": "ACUPAN 20 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACU@origine@1",
+      "code": "ACU",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "PRIX_ABSENT",
+    "motif": "Le prix d’achat est absent : un prix vide n’est pas un tarif, l’article ne se facturerait pas.",
+    "geste": "Saisir le prix d’achat."
+   }
+  },
+  {
+   "nom": "prix décimal",
+   "code": "ACU",
+   "demande": {
+    "code": "ACU",
+    "prixNonAssure": 12.5,
+    "dateEffet": "2026-08-18",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0004",
+      "code": "ACU",
+      "designation": "ACUPAN 20 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACU",
+      "code": "ACU",
+      "libelle": "ACUPAN 20 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACU@origine@1",
+      "code": "ACU",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "PRIX_INVALIDE",
+    "motif": "Le prix d’achat doit être un nombre entier de francs, strictement positif (le boîtier fiscal n’accepte que des montants entiers).",
+    "geste": "Corriger le prix d’achat."
+   }
+  },
+  {
+   "nom": "prix de vente décimal",
+   "code": "ABA",
+   "demande": {
+    "code": "ABA",
+    "prixNonAssure": 655,
+    "prixVente": 99.5,
+    "dateEffet": "2026-08-18",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0001",
+      "code": "ABA",
+      "designation": "ABAISSE LANGUE",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ABA",
+      "code": "ABA",
+      "libelle": "ABAISSE LANGUE",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ABA@origine@1",
+      "code": "ABA",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide",
+      "source": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "PRIX_INVALIDE",
+    "motif": "Le prix de vente doit être un nombre entier de francs, strictement positif.",
+    "geste": "Corriger le prix de vente, ou le laisser vide (il vaut alors le prix d’achat)."
+   }
+  },
+  {
+   "nom": "sans motif",
+   "code": "ACU",
+   "demande": {
+    "code": "ACU",
+    "prixNonAssure": 655,
+    "dateEffet": "2026-08-18",
+    "motif": ""
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0004",
+      "code": "ACU",
+      "designation": "ACUPAN 20 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACU",
+      "code": "ACU",
+      "libelle": "ACUPAN 20 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACU@origine@1",
+      "code": "ACU",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "MOTIF_REQUIS",
+    "motif": "Un changement de prix se motive : sans motif, la Direction ne peut pas décider.",
+    "geste": "Saisir le motif du changement."
+   }
+  },
+  {
+   "nom": "sans date d’effet",
+   "code": "ACU",
+   "demande": {
+    "code": "ACU",
+    "prixNonAssure": 655,
+    "dateEffet": "",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0004",
+      "code": "ACU",
+      "designation": "ACUPAN 20 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACU",
+      "code": "ACU",
+      "libelle": "ACUPAN 20 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACU@origine@1",
+      "code": "ACU",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "DATE_EFFET_REQUISE",
+    "motif": "Un changement de prix prend effet à une date : sans date d’effet, on ne sait pas à partir de quand il s’applique.",
+    "geste": "Saisir la date d’effet."
+   }
+  },
+  {
+   "nom": "date passée sans case",
+   "code": "ACU",
+   "demande": {
+    "code": "ACU",
+    "prixNonAssure": 655,
+    "dateEffet": "2026-08-15",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0004",
+      "code": "ACU",
+      "designation": "ACUPAN 20 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACU",
+      "code": "ACU",
+      "libelle": "ACUPAN 20 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACU@origine@1",
+      "code": "ACU",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé sans une décision expresse.",
+    "geste": "Choisir aujourd’hui ou une date future : une date antérieure est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance."
+   }
+  },
+  {
+   "nom": "prix inchangé",
+   "code": "ADRE",
+   "demande": {
+    "code": "ADRE",
+    "prixNonAssure": 549,
+    "dateEffet": "2026-08-18",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0005",
+      "code": "ADRE",
+      "designation": "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 549,
+      "prixVente": 549,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ADRE",
+      "code": "ADRE",
+      "libelle": "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ADRE@origine@1",
+      "code": "ADRE",
+      "version": 1,
+      "prixNonAssure": 549,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide",
+      "source": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "PRIX_INCHANGE",
+    "motif": "Ce prix d’achat est déjà celui en vigueur à cette date : rien à proposer.",
+    "geste": "Modifier le prix d’achat, ou ne rien changer."
+   }
+  },
+  {
+   "nom": "produit introuvable",
+   "code": "ZZ-INCONNU",
+   "demande": {
+    "code": "ZZ-INCONNU",
+    "prixNonAssure": 500,
+    "dateEffet": "2026-08-18",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [],
+    "tarifs": [],
+    "versions": [],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "PRESTATION_INTROUVABLE",
+    "motif": "Aucune prestation ne porte le code « ZZ-INCONNU ».",
+    "geste": "Choisir une prestation de la liste."
+   }
+  },
+  {
+   "nom": "code d’une prestation (création refusée)",
+   "code": "SO02",
+   "demande": {
+    "code": "SO02",
+    "prixNonAssure": 500,
+    "creation": {
+     "famille": "PRODUIT",
+     "libelle": "Doublon"
+    },
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [],
+    "tarifs": [
+     {
+      "id": "SO02",
+      "code": "SO02",
+      "codeActe": "SO02",
+      "libelle": "Soins intraveineux (SIV)",
+      "famille": "AMI",
+      "statut": "actif",
+      "secteur": "Soins et observation",
+      "codeGrille": "SIV",
+      "codesAlias": [
+       "SIV"
+      ],
+      "libelleGrille": "Soin — injection intraveineuse",
+      "assurable": true
+     }
+    ],
+    "versions": [
+     {
+      "id": "SO02@origine@1",
+      "code": "SO02",
+      "version": 1,
+      "prixNonAssure": 1200,
+      "prixAssure": 800,
+      "etatAssure": "montant",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "CODE_EXISTANT",
+    "motif": "Le code « SO02 » est déjà celui d’une prestation tarifée (Soins intraveineux (SIV)) : un article ne peut pas reprendre le code d’une prestation.",
+    "geste": "Choisir un autre code d’article."
+   }
+  },
+  {
+   "nom": "article déjà vendu depuis cette date",
+   "code": "ART120",
+   "demande": {
+    "code": "ART120",
+    "prixNonAssure": 2205,
+    "dateEffet": "2026-08-16",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0011",
+      "code": "ART120",
+      "designation": "ARTESUNATE 120 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 2200,
+      "prixVente": 2200,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ART120",
+      "code": "ART120",
+      "libelle": "ARTESUNATE 120 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ART120@origine@1",
+      "code": "ART120",
+      "version": 1,
+      "prixNonAssure": 2200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": [
+     {
+      "id": "FACxmsvr64rzdj4ew",
+      "numero": "FAC-VEC-PRD",
+      "date": "2026-08-16",
+      "statut": "emise",
+      "lignes": [
+       {
+        "produitId": "PRD0011"
+       }
+      ]
+     },
+     {
+      "id": "FAC0159",
+      "numero": "FN-2026-00159",
+      "date": "2026-07-19",
+      "statut": "actif",
+      "lignes": [
+       {
+        "produitId": "PRD0011"
+       }
+      ]
+     }
+    ]
+   },
+   "ok": false,
+   "refus": {
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FAC-VEC-PRD du 16/08/2026 porte déjà « ART120 » : un prix qui prendrait effet le 16/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce."
+   }
+  },
+  {
+   "nom": "médicament : changement futur proposé",
+   "code": "ACC",
+   "demande": {
+    "code": "ACC",
+    "prixNonAssure": 1050,
+    "dateEffet": "2026-08-19",
+    "motif": "Vecteur : nouveau tarif du fournisseur",
+    "source": "Facture VEC"
+   },
+   "ecrit": true,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0002",
+      "code": "ACC",
+      "designation": "ACCUZON",
+      "categorie": "medicament",
+      "unite": "Unité",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACC",
+      "code": "ACC",
+      "libelle": "ACCUZON",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACC@origine@1",
+      "code": "ACC",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": true,
+   "refus": null,
+   "version": {
+    "id": "ACC@2026-08-19@2",
+    "statut": "propose",
+    "code": "ACC",
+    "version": 2,
+    "prixNonAssure": 1050,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "motif": "Vecteur : nouveau tarif du fournisseur",
+    "origine": "ecran",
+    "proposePar": "VECTEURS",
+    "proposeLe": "2026-08-16",
+    "proposeRole": "admin",
+    "dateEffet": "2026-08-19",
+    "source": "Facture VEC",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.737Z"
+   },
+   "identite": null,
+   "valideeEnUnGeste": false
+  },
+  {
+   "nom": "un seul changement en attente",
+   "code": "ACC",
+   "demande": {
+    "code": "ACC",
+    "prixNonAssure": 1060,
+    "dateEffet": "2026-08-20",
+    "motif": "x"
+   },
+   "ecrit": false,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0002",
+      "code": "ACC",
+      "designation": "ACCUZON",
+      "categorie": "medicament",
+      "unite": "Unité",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACC",
+      "code": "ACC",
+      "libelle": "ACCUZON",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACC@origine@1",
+      "code": "ACC",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ACC@2026-08-19@2",
+      "statut": "propose",
+      "code": "ACC",
+      "version": 2,
+      "prixNonAssure": 1050,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : nouveau tarif du fournisseur",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "source": "Facture VEC",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.737Z"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "CHANGEMENT_EN_ATTENTE",
+    "motif": "Une proposition est déjà en attente de décision pour « ACC » (version 2).",
+    "geste": "La décider (Oui ou Non) ou la retirer avant d’en proposer une autre."
+   }
+  },
+  {
+   "nom": "hors médicament : prix de vente propre",
+   "code": "AIG",
+   "demande": {
+    "code": "AIG",
+    "prixNonAssure": 63,
+    "prixVente": 93,
+    "dateEffet": "2026-08-19",
+    "motif": "Vecteur : prix de vente propre"
+   },
+   "ecrit": true,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0006",
+      "code": "AIG",
+      "designation": "AIGUILLE DE PL",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 53,
+      "prixVente": 53,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AIG",
+      "code": "AIG",
+      "libelle": "AIGUILLE DE PL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AIG@origine@1",
+      "code": "AIG",
+      "version": 1,
+      "prixNonAssure": 53,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": true,
+   "refus": null,
+   "version": {
+    "id": "AIG@2026-08-19@2",
+    "statut": "propose",
+    "code": "AIG",
+    "version": 2,
+    "prixNonAssure": 63,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "motif": "Vecteur : prix de vente propre",
+    "origine": "ecran",
+    "proposePar": "VECTEURS",
+    "proposeLe": "2026-08-16",
+    "proposeRole": "admin",
+    "dateEffet": "2026-08-19",
+    "prixVente": 93,
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.738Z"
+   },
+   "identite": null,
+   "valideeEnUnGeste": false
+  },
+  {
+   "nom": "médicament : valider en un geste, date passée motivée",
+   "code": "AMI",
+   "demande": {
+    "code": "AMI",
+    "prixNonAssure": 525,
+    "dateEffet": "2026-08-14",
+    "datePassee": true,
+    "valider": true,
+    "motif": "Vecteur : correction"
+   },
+   "ecrit": true,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0009",
+      "code": "AMI",
+      "designation": "AMINOPHYLLINE 250 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AMI",
+      "code": "AMI",
+      "libelle": "AMINOPHYLLINE 250 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AMI@origine@1",
+      "code": "AMI",
+      "version": 1,
+      "prixNonAssure": 500,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": false,
+   "refus": {
+    "code": "DATE_PASSEE_RESERVEE",
+    "motif": "Une date d’effet antérieure à aujourd’hui est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance.",
+    "geste": "Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils."
+   }
+  },
+  {
+   "nom": "médicament : valider en un geste, date future",
+   "code": "ARTE60",
+   "demande": {
+    "code": "ARTE60",
+    "prixNonAssure": 1114,
+    "dateEffet": "2026-08-19",
+    "valider": true,
+    "motif": "Vecteur : validation d’emblée"
+   },
+   "ecrit": true,
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0012",
+      "code": "ARTE60",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1084,
+      "prixVente": 1084,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ARTE60",
+      "code": "ARTE60",
+      "libelle": "ARTESUNATE 60 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ARTE60@origine@1",
+      "code": "ARTE60",
+      "version": 1,
+      "prixNonAssure": 1084,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "ok": true,
+   "refus": null,
+   "version": {
+    "id": "ARTE60@2026-08-19@2",
+    "statut": "valide",
+    "code": "ARTE60",
+    "version": 2,
+    "prixNonAssure": 1114,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "motif": "Vecteur : validation d’emblée",
+    "origine": "ecran",
+    "proposePar": "VECTEURS",
+    "proposeLe": "2026-08-16",
+    "proposeRole": "admin",
+    "dateEffet": "2026-08-19",
+    "decidePar": "VECTEURS",
+    "decideLe": "2026-08-16",
+    "roleDecision": "admin",
+    "motifDecision": "Validée en un geste à la saisie",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.739Z"
+   },
+   "identite": null,
+   "valideeEnUnGeste": true
+  }
+ ],
+ "lectures": [
+  {
+   "code": "ACC",
+   "date": null,
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0002",
+      "code": "ACC",
+      "designation": "ACCUZON",
+      "categorie": "medicament",
+      "unite": "Unité",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACC",
+      "code": "ACC",
+      "libelle": "ACCUZON",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACC@origine@1",
+      "code": "ACC",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ACC@2026-08-19@2",
+      "statut": "propose",
+      "code": "ACC",
+      "version": 2,
+      "prixNonAssure": 1050,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : nouveau tarif du fournisseur",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "source": "Facture VEC",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.737Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ACC",
+   "date": "2026-08-18",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0002",
+      "code": "ACC",
+      "designation": "ACCUZON",
+      "categorie": "medicament",
+      "unite": "Unité",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACC",
+      "code": "ACC",
+      "libelle": "ACCUZON",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACC@origine@1",
+      "code": "ACC",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ACC@2026-08-19@2",
+      "statut": "propose",
+      "code": "ACC",
+      "version": 2,
+      "prixNonAssure": 1050,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : nouveau tarif du fournisseur",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "source": "Facture VEC",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.737Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ACC",
+   "date": "2026-08-19",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0002",
+      "code": "ACC",
+      "designation": "ACCUZON",
+      "categorie": "medicament",
+      "unite": "Unité",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACC",
+      "code": "ACC",
+      "libelle": "ACCUZON",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACC@origine@1",
+      "code": "ACC",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ACC@2026-08-19@2",
+      "statut": "propose",
+      "code": "ACC",
+      "version": 2,
+      "prixNonAssure": 1050,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : nouveau tarif du fournisseur",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "source": "Facture VEC",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.737Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ACC",
+   "date": "2026-08-26",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0002",
+      "code": "ACC",
+      "designation": "ACCUZON",
+      "categorie": "medicament",
+      "unite": "Unité",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACC",
+      "code": "ACC",
+      "libelle": "ACCUZON",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACC@origine@1",
+      "code": "ACC",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ACC@2026-08-19@2",
+      "statut": "propose",
+      "code": "ACC",
+      "version": 2,
+      "prixNonAssure": 1050,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : nouveau tarif du fournisseur",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "source": "Facture VEC",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.737Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ACC",
+   "date": "2020-01-01",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0002",
+      "code": "ACC",
+      "designation": "ACCUZON",
+      "categorie": "medicament",
+      "unite": "Unité",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ACC",
+      "code": "ACC",
+      "libelle": "ACCUZON",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ACC@origine@1",
+      "code": "ACC",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ACC@2026-08-19@2",
+      "statut": "propose",
+      "code": "ACC",
+      "version": 2,
+      "prixNonAssure": 1050,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : nouveau tarif du fournisseur",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "source": "Facture VEC",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.737Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AIG",
+   "date": null,
+   "attendu": {
+    "absent": false,
+    "achat": 53,
+    "vente": 53,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0006",
+      "code": "AIG",
+      "designation": "AIGUILLE DE PL",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 53,
+      "prixVente": 53,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AIG",
+      "code": "AIG",
+      "libelle": "AIGUILLE DE PL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AIG@origine@1",
+      "code": "AIG",
+      "version": 1,
+      "prixNonAssure": 53,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "AIG@2026-08-19@2",
+      "statut": "propose",
+      "code": "AIG",
+      "version": 2,
+      "prixNonAssure": 63,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : prix de vente propre",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "prixVente": 93,
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.738Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AIG",
+   "date": "2026-08-18",
+   "attendu": {
+    "absent": false,
+    "achat": 53,
+    "vente": 53,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0006",
+      "code": "AIG",
+      "designation": "AIGUILLE DE PL",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 53,
+      "prixVente": 53,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AIG",
+      "code": "AIG",
+      "libelle": "AIGUILLE DE PL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AIG@origine@1",
+      "code": "AIG",
+      "version": 1,
+      "prixNonAssure": 53,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "AIG@2026-08-19@2",
+      "statut": "propose",
+      "code": "AIG",
+      "version": 2,
+      "prixNonAssure": 63,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : prix de vente propre",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "prixVente": 93,
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.738Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AIG",
+   "date": "2026-08-19",
+   "attendu": {
+    "absent": false,
+    "achat": 53,
+    "vente": 53,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0006",
+      "code": "AIG",
+      "designation": "AIGUILLE DE PL",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 53,
+      "prixVente": 53,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AIG",
+      "code": "AIG",
+      "libelle": "AIGUILLE DE PL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AIG@origine@1",
+      "code": "AIG",
+      "version": 1,
+      "prixNonAssure": 53,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "AIG@2026-08-19@2",
+      "statut": "propose",
+      "code": "AIG",
+      "version": 2,
+      "prixNonAssure": 63,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : prix de vente propre",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "prixVente": 93,
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.738Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AIG",
+   "date": "2026-08-26",
+   "attendu": {
+    "absent": false,
+    "achat": 53,
+    "vente": 53,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0006",
+      "code": "AIG",
+      "designation": "AIGUILLE DE PL",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 53,
+      "prixVente": 53,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AIG",
+      "code": "AIG",
+      "libelle": "AIGUILLE DE PL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AIG@origine@1",
+      "code": "AIG",
+      "version": 1,
+      "prixNonAssure": 53,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "AIG@2026-08-19@2",
+      "statut": "propose",
+      "code": "AIG",
+      "version": 2,
+      "prixNonAssure": 63,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : prix de vente propre",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "prixVente": 93,
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.738Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AIG",
+   "date": "2020-01-01",
+   "attendu": {
+    "absent": false,
+    "achat": 53,
+    "vente": 53,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0006",
+      "code": "AIG",
+      "designation": "AIGUILLE DE PL",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 53,
+      "prixVente": 53,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AIG",
+      "code": "AIG",
+      "libelle": "AIGUILLE DE PL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AIG@origine@1",
+      "code": "AIG",
+      "version": 1,
+      "prixNonAssure": 53,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "AIG@2026-08-19@2",
+      "statut": "propose",
+      "code": "AIG",
+      "version": 2,
+      "prixNonAssure": 63,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : prix de vente propre",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "prixVente": 93,
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.738Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AMI",
+   "date": null,
+   "attendu": {
+    "absent": false,
+    "achat": 500,
+    "vente": 500,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0009",
+      "code": "AMI",
+      "designation": "AMINOPHYLLINE 250 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AMI",
+      "code": "AMI",
+      "libelle": "AMINOPHYLLINE 250 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AMI@origine@1",
+      "code": "AMI",
+      "version": 1,
+      "prixNonAssure": 500,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AMI",
+   "date": "2026-08-18",
+   "attendu": {
+    "absent": false,
+    "achat": 500,
+    "vente": 500,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0009",
+      "code": "AMI",
+      "designation": "AMINOPHYLLINE 250 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AMI",
+      "code": "AMI",
+      "libelle": "AMINOPHYLLINE 250 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AMI@origine@1",
+      "code": "AMI",
+      "version": 1,
+      "prixNonAssure": 500,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AMI",
+   "date": "2026-08-19",
+   "attendu": {
+    "absent": false,
+    "achat": 500,
+    "vente": 500,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0009",
+      "code": "AMI",
+      "designation": "AMINOPHYLLINE 250 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AMI",
+      "code": "AMI",
+      "libelle": "AMINOPHYLLINE 250 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AMI@origine@1",
+      "code": "AMI",
+      "version": 1,
+      "prixNonAssure": 500,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AMI",
+   "date": "2026-08-26",
+   "attendu": {
+    "absent": false,
+    "achat": 500,
+    "vente": 500,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0009",
+      "code": "AMI",
+      "designation": "AMINOPHYLLINE 250 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AMI",
+      "code": "AMI",
+      "libelle": "AMINOPHYLLINE 250 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AMI@origine@1",
+      "code": "AMI",
+      "version": 1,
+      "prixNonAssure": 500,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "AMI",
+   "date": "2020-01-01",
+   "attendu": {
+    "absent": false,
+    "achat": 500,
+    "vente": 500,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0009",
+      "code": "AMI",
+      "designation": "AMINOPHYLLINE 250 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 500,
+      "prixVente": 500,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "AMI",
+      "code": "AMI",
+      "libelle": "AMINOPHYLLINE 250 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "AMI@origine@1",
+      "code": "AMI",
+      "version": 1,
+      "prixNonAssure": 500,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ARTE60",
+   "date": null,
+   "attendu": {
+    "absent": false,
+    "achat": 1084,
+    "vente": 1084,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0012",
+      "code": "ARTE60",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1084,
+      "prixVente": 1084,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ARTE60",
+      "code": "ARTE60",
+      "libelle": "ARTESUNATE 60 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ARTE60@origine@1",
+      "code": "ARTE60",
+      "version": 1,
+      "prixNonAssure": 1084,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ARTE60@2026-08-19@2",
+      "statut": "valide",
+      "code": "ARTE60",
+      "version": 2,
+      "prixNonAssure": 1114,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : validation d’emblée",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "decidePar": "VECTEURS",
+      "decideLe": "2026-08-16",
+      "roleDecision": "admin",
+      "motifDecision": "Validée en un geste à la saisie",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.739Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ARTE60",
+   "date": "2026-08-18",
+   "attendu": {
+    "absent": false,
+    "achat": 1084,
+    "vente": 1084,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0012",
+      "code": "ARTE60",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1084,
+      "prixVente": 1084,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ARTE60",
+      "code": "ARTE60",
+      "libelle": "ARTESUNATE 60 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ARTE60@origine@1",
+      "code": "ARTE60",
+      "version": 1,
+      "prixNonAssure": 1084,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ARTE60@2026-08-19@2",
+      "statut": "valide",
+      "code": "ARTE60",
+      "version": 2,
+      "prixNonAssure": 1114,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : validation d’emblée",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "decidePar": "VECTEURS",
+      "decideLe": "2026-08-16",
+      "roleDecision": "admin",
+      "motifDecision": "Validée en un geste à la saisie",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.739Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ARTE60",
+   "date": "2026-08-19",
+   "attendu": {
+    "absent": false,
+    "achat": 1114,
+    "vente": 1114,
+    "version": 2,
+    "dateEffet": "2026-08-19",
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0012",
+      "code": "ARTE60",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1084,
+      "prixVente": 1084,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ARTE60",
+      "code": "ARTE60",
+      "libelle": "ARTESUNATE 60 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ARTE60@origine@1",
+      "code": "ARTE60",
+      "version": 1,
+      "prixNonAssure": 1084,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ARTE60@2026-08-19@2",
+      "statut": "valide",
+      "code": "ARTE60",
+      "version": 2,
+      "prixNonAssure": 1114,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : validation d’emblée",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "decidePar": "VECTEURS",
+      "decideLe": "2026-08-16",
+      "roleDecision": "admin",
+      "motifDecision": "Validée en un geste à la saisie",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.739Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ARTE60",
+   "date": "2026-08-26",
+   "attendu": {
+    "absent": false,
+    "achat": 1114,
+    "vente": 1114,
+    "version": 2,
+    "dateEffet": "2026-08-19",
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0012",
+      "code": "ARTE60",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1084,
+      "prixVente": 1084,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ARTE60",
+      "code": "ARTE60",
+      "libelle": "ARTESUNATE 60 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ARTE60@origine@1",
+      "code": "ARTE60",
+      "version": 1,
+      "prixNonAssure": 1084,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ARTE60@2026-08-19@2",
+      "statut": "valide",
+      "code": "ARTE60",
+      "version": 2,
+      "prixNonAssure": 1114,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : validation d’emblée",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "decidePar": "VECTEURS",
+      "decideLe": "2026-08-16",
+      "roleDecision": "admin",
+      "motifDecision": "Validée en un geste à la saisie",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.739Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ARTE60",
+   "date": "2020-01-01",
+   "attendu": {
+    "absent": false,
+    "achat": 1084,
+    "vente": 1084,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0012",
+      "code": "ARTE60",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1084,
+      "prixVente": 1084,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ARTE60",
+      "code": "ARTE60",
+      "libelle": "ARTESUNATE 60 MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ARTE60@origine@1",
+      "code": "ARTE60",
+      "version": 1,
+      "prixNonAssure": 1084,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "ARTE60@2026-08-19@2",
+      "statut": "valide",
+      "code": "ARTE60",
+      "version": 2,
+      "prixNonAssure": 1114,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Vecteur : validation d’emblée",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-19",
+      "decidePar": "VECTEURS",
+      "decideLe": "2026-08-16",
+      "roleDecision": "admin",
+      "motifDecision": "Validée en un geste à la saisie",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.739Z"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ATR",
+   "date": null,
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0013",
+      "code": "ATR",
+      "designation": "ATROPINE 1MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ATR",
+      "code": "ATR",
+      "libelle": "ATROPINE 1MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ATR@origine@1",
+      "code": "ATR",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ATR",
+   "date": "2026-08-18",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0013",
+      "code": "ATR",
+      "designation": "ATROPINE 1MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ATR",
+      "code": "ATR",
+      "libelle": "ATROPINE 1MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ATR@origine@1",
+      "code": "ATR",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ATR",
+   "date": "2026-08-19",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0013",
+      "code": "ATR",
+      "designation": "ATROPINE 1MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ATR",
+      "code": "ATR",
+      "libelle": "ATROPINE 1MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ATR@origine@1",
+      "code": "ATR",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ATR",
+   "date": "2026-08-26",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0013",
+      "code": "ATR",
+      "designation": "ATROPINE 1MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ATR",
+      "code": "ATR",
+      "libelle": "ATROPINE 1MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ATR@origine@1",
+      "code": "ATR",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ATR",
+   "date": "2020-01-01",
+   "attendu": {
+    "absent": false,
+    "achat": 1000,
+    "vente": 1000,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0013",
+      "code": "ATR",
+      "designation": "ATROPINE 1MG INJ",
+      "categorie": "medicament",
+      "unite": "Ampoule",
+      "prixAchat": 1000,
+      "prixVente": 1000,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ATR",
+      "code": "ATR",
+      "libelle": "ATROPINE 1MG INJ",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ATR@origine@1",
+      "code": "ATR",
+      "version": 1,
+      "prixNonAssure": 1000,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ALC",
+   "date": null,
+   "attendu": {
+    "absent": false,
+    "achat": 650,
+    "vente": 650,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0007",
+      "code": "ALC",
+      "designation": "ALCOOL",
+      "categorie": "conso_medical",
+      "unite": "Flacon",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ALC",
+      "code": "ALC",
+      "libelle": "ALCOOL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ALC@origine@1",
+      "code": "ALC",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide",
+      "source": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ALC",
+   "date": "2026-08-18",
+   "attendu": {
+    "absent": false,
+    "achat": 650,
+    "vente": 650,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0007",
+      "code": "ALC",
+      "designation": "ALCOOL",
+      "categorie": "conso_medical",
+      "unite": "Flacon",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ALC",
+      "code": "ALC",
+      "libelle": "ALCOOL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ALC@origine@1",
+      "code": "ALC",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide",
+      "source": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ALC",
+   "date": "2026-08-19",
+   "attendu": {
+    "absent": false,
+    "achat": 650,
+    "vente": 650,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0007",
+      "code": "ALC",
+      "designation": "ALCOOL",
+      "categorie": "conso_medical",
+      "unite": "Flacon",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ALC",
+      "code": "ALC",
+      "libelle": "ALCOOL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ALC@origine@1",
+      "code": "ALC",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide",
+      "source": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ALC",
+   "date": "2026-08-26",
+   "attendu": {
+    "absent": false,
+    "achat": 650,
+    "vente": 650,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0007",
+      "code": "ALC",
+      "designation": "ALCOOL",
+      "categorie": "conso_medical",
+      "unite": "Flacon",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ALC",
+      "code": "ALC",
+      "libelle": "ALCOOL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ALC@origine@1",
+      "code": "ALC",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide",
+      "source": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer"
+     }
+    ],
+    "factures": []
+   }
+  },
+  {
+   "code": "ALC",
+   "date": "2020-01-01",
+   "attendu": {
+    "absent": false,
+    "achat": 650,
+    "vente": 650,
+    "version": 1,
+    "dateEffet": null,
+    "motif": null
+   },
+   "etat": {
+    "produits": [
+     {
+      "id": "PRD0007",
+      "code": "ALC",
+      "designation": "ALCOOL",
+      "categorie": "conso_medical",
+      "unite": "Flacon",
+      "prixAchat": 650,
+      "prixVente": 650,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ALC",
+      "code": "ALC",
+      "libelle": "ALCOOL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ALC@origine@1",
+      "code": "ALC",
+      "version": 1,
+      "prixNonAssure": 650,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide",
+      "source": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer"
+     }
+    ],
+    "factures": []
+   }
+  }
+ ],
+ "creations": [
+  {
+   "code": "VEC-NEUF-1",
+   "fiche": {
+    "id": "PROxmsvr64s5dmcyg",
+    "statut": "actif",
+    "code": "VEC-NEUF-1",
+    "designation": "Article VEC-NEUF-1",
+    "categorie": "consommable",
+    "unite": "unité",
+    "stockGros": 0,
+    "stockDetail": 0,
+    "stock": 0,
+    "prixAchat": 700,
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.741Z",
+    "prixVente": 700
+   },
+   "avant": {
+    "tarifs": [],
+    "versions": []
+   },
+   "ok": true,
+   "version": {
+    "id": "VEC-NEUF-1@origine@1",
+    "statut": "valide",
+    "code": "VEC-NEUF-1",
+    "version": 1,
+    "prixNonAssure": 700,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "motif": "Création de l’article",
+    "origine": "creation",
+    "proposePar": "VECTEURS",
+    "proposeLe": "2026-08-16",
+    "proposeRole": "admin",
+    "decidePar": "VECTEURS",
+    "decideLe": "2026-08-16",
+    "roleDecision": "admin",
+    "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.741Z"
+   },
+   "identite": {
+    "id": "VEC-NEUF-1",
+    "statut": "actif",
+    "code": "VEC-NEUF-1",
+    "libelle": "Article VEC-NEUF-1",
+    "famille": "PRODUIT",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.741Z"
+   },
+   "reutilise": false,
+   "apres": [
+    {
+     "id": "VEC-NEUF-1@origine@1",
+     "statut": "valide",
+     "code": "VEC-NEUF-1",
+     "version": 1,
+     "prixNonAssure": 700,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Création de l’article",
+     "origine": "creation",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "admin",
+     "decidePar": "VECTEURS",
+     "decideLe": "2026-08-16",
+     "roleDecision": "admin",
+     "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.741Z"
+    }
+   ]
+  },
+  {
+   "code": "VEC-NEUF-2",
+   "fiche": {
+    "id": "PROxmsvr64s5iqomg",
+    "statut": "actif",
+    "code": "VEC-NEUF-2",
+    "designation": "Article VEC-NEUF-2",
+    "categorie": "medicament",
+    "unite": "unité",
+    "stockGros": 0,
+    "stockDetail": 0,
+    "stock": 0,
+    "prixAchat": 450,
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.741Z",
+    "prixVente": 450
+   },
+   "avant": {
+    "tarifs": [],
+    "versions": []
+   },
+   "ok": true,
+   "version": {
+    "id": "VEC-NEUF-2@origine@1",
+    "statut": "valide",
+    "code": "VEC-NEUF-2",
+    "version": 1,
+    "prixNonAssure": 450,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "motif": "Création de l’article",
+    "origine": "creation",
+    "proposePar": "VECTEURS",
+    "proposeLe": "2026-08-16",
+    "proposeRole": "admin",
+    "decidePar": "VECTEURS",
+    "decideLe": "2026-08-16",
+    "roleDecision": "admin",
+    "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.742Z"
+   },
+   "identite": {
+    "id": "VEC-NEUF-2",
+    "statut": "actif",
+    "code": "VEC-NEUF-2",
+    "libelle": "Article VEC-NEUF-2",
+    "famille": "PRODUIT",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.742Z"
+   },
+   "reutilise": false,
+   "apres": [
+    {
+     "id": "VEC-NEUF-2@origine@1",
+     "statut": "valide",
+     "code": "VEC-NEUF-2",
+     "version": 1,
+     "prixNonAssure": 450,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Création de l’article",
+     "origine": "creation",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "admin",
+     "decidePar": "VECTEURS",
+     "decideLe": "2026-08-16",
+     "roleDecision": "admin",
+     "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.742Z"
+    }
+   ]
+  },
+  {
+   "code": "VEC-NEUF-3",
+   "fiche": {
+    "id": "PROxmsvr64s626t4u",
+    "statut": "actif",
+    "code": "VEC-NEUF-3",
+    "designation": "Article VEC-NEUF-3",
+    "categorie": "consommable",
+    "unite": "unité",
+    "stockGros": 0,
+    "stockDetail": 0,
+    "stock": 0,
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.742Z"
+   },
+   "avant": {
+    "tarifs": [],
+    "versions": []
+   },
+   "ok": true,
+   "version": {
+    "id": "VEC-NEUF-3@origine@1",
+    "statut": "valide",
+    "code": "VEC-NEUF-3",
+    "version": 1,
+    "prixNonAssure": null,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "motif": "Article créé sans prix d’achat : à valoriser",
+    "origine": "creation",
+    "proposePar": "VECTEURS",
+    "proposeLe": "2026-08-16",
+    "proposeRole": "admin",
+    "etatNonAssure": "manquant",
+    "decidePar": "VECTEURS",
+    "decideLe": "2026-08-16",
+    "roleDecision": "admin",
+    "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.742Z"
+   },
+   "identite": {
+    "id": "VEC-NEUF-3",
+    "statut": "actif",
+    "code": "VEC-NEUF-3",
+    "libelle": "Article VEC-NEUF-3",
+    "famille": "PRODUIT",
+    "_creePar": "VECTEURS",
+    "_creeLe": "2026-08-16T12:00:02.742Z"
+   },
+   "reutilise": false,
+   "apres": [
+    {
+     "id": "VEC-NEUF-3@origine@1",
+     "statut": "valide",
+     "code": "VEC-NEUF-3",
+     "version": 1,
+     "prixNonAssure": null,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Article créé sans prix d’achat : à valoriser",
+     "origine": "creation",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "admin",
+     "etatNonAssure": "manquant",
+     "decidePar": "VECTEURS",
+     "decideLe": "2026-08-16",
+     "roleDecision": "admin",
+     "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.742Z"
+    }
+   ]
+  }
+ ],
+ "migration": {
+  "entree": [
+   {
+    "code": "MIG-1",
+    "designation": "Un médicament",
+    "categorie": "medicament",
+    "prixAchat": 300,
+    "prixVente": 300,
+    "statut": "actif"
+   },
+   {
+    "code": "MIG-2",
+    "designation": "Un consommable avec prix de vente",
+    "categorie": "consommable",
+    "prixAchat": 500,
+    "prixVente": 650,
+    "statut": "actif"
+   },
+   {
+    "code": "MIG-3",
+    "designation": "Sans prix",
+    "categorie": "consommable",
+    "statut": "actif"
+   },
+   {
+    "code": "MIG-4",
+    "designation": "Prix zéro",
+    "categorie": "medicament",
+    "prixAchat": 0,
+    "statut": "actif"
+   },
+   {
+    "code": "MIG-5",
+    "designation": "Archivé",
+    "categorie": "medicament",
+    "prixAchat": 10,
+    "statut": "archive"
+   },
+   {
+    "code": "MIG-6",
+    "designation": "Valorisé à titre provisoire",
+    "categorie": "consommable",
+    "prixAchat": 120,
+    "valorisationProvisoire": true,
+    "sourceValorisation": "Inventaire initial (reprise)",
+    "statut": "actif"
+   }
+  ],
+  "tarifs": [
+   {
+    "id": "MIG-1",
+    "code": "MIG-1",
+    "libelle": "Un médicament",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "MIG-2",
+    "code": "MIG-2",
+    "libelle": "Un consommable avec prix de vente",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "MIG-3",
+    "code": "MIG-3",
+    "libelle": "Sans prix",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "MIG-4",
+    "code": "MIG-4",
+    "libelle": "Prix zéro",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "MIG-6",
+    "code": "MIG-6",
+    "libelle": "Valorisé à titre provisoire",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   }
+  ],
+  "versions": [
+   {
+    "id": "MIG-1@origine@1",
+    "code": "MIG-1",
+    "version": 1,
+    "prixNonAssure": 300,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide"
+   },
+   {
+    "id": "MIG-2@origine@1",
+    "code": "MIG-2",
+    "version": 1,
+    "prixNonAssure": 500,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide",
+    "prixVente": 650
+   },
+   {
+    "id": "MIG-3@origine@1",
+    "code": "MIG-3",
+    "version": 1,
+    "prixNonAssure": null,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide",
+    "etatNonAssure": "manquant"
+   },
+   {
+    "id": "MIG-4@origine@1",
+    "code": "MIG-4",
+    "version": 1,
+    "prixNonAssure": null,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide",
+    "etatNonAssure": "manquant"
+   },
+   {
+    "id": "MIG-6@origine@1",
+    "code": "MIG-6",
+    "version": 1,
+    "prixNonAssure": 120,
+    "prixAssure": null,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide",
+    "source": "Inventaire initial (reprise)"
+   }
+  ]
+ },
+ "correctifs": [
+  {
+   "doc": {
+    "code": "C1",
+    "categorie": "medicament",
+    "prixAchat": 100,
+    "prixVente": 100
+   },
+   "s": {
+    "na": 120,
+    "vrs": {
+     "prixNonAssure": 120
+    }
+   },
+   "attendu": {
+    "prixAchat": 120,
+    "prixVente": 120
+   }
+  },
+  {
+   "doc": {
+    "code": "C2",
+    "categorie": "consommable",
+    "prixAchat": 100,
+    "prixVente": 100
+   },
+   "s": {
+    "na": 120,
+    "vrs": {
+     "prixNonAssure": 120,
+     "prixVente": 200
+    }
+   },
+   "attendu": {
+    "prixAchat": 120,
+    "prixVente": 200
+   }
+  },
+  {
+   "doc": {
+    "code": "C3",
+    "categorie": "medicament",
+    "prixAchat": 100,
+    "prixVente": 100
+   },
+   "s": {
+    "na": 100,
+    "vrs": {
+     "prixNonAssure": 100
+    }
+   },
+   "attendu": null
+  },
+  {
+   "doc": {
+    "code": "C4",
+    "categorie": "medicament",
+    "prixAchat": 100,
+    "prixVente": 100
+   },
+   "s": {
+    "na": null,
+    "vrs": {
+     "etatNonAssure": "manquant"
+    }
+   },
+   "attendu": null
+  }
+ ],
+ "receptions": [
+  {
+   "nom": "prix identique : rien à proposer",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": 1400,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "identique",
+    "code": "CHLG",
+    "ancien": null,
+    "prix": 1400,
+    "dateEffet": null,
+    "motif": null,
+    "refus": null
+   }
+  },
+  {
+   "nom": "prix reçu à zéro : le moteur refuse en nommant, la réception n'est pas bloquée",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": 0,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "CHLG",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "PRIX_ZERO",
+     "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul ») : un article ne se facture jamais à zéro.",
+     "geste": "Saisir un prix d’achat strictement positif, ou laisser l’article « à valoriser » (sans prix)."
+    }
+   }
+  },
+  {
+   "nom": "prix reçu décimal : sans objet",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": 12.5,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "sans_objet",
+    "code": null,
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": "prix de réception non renseigné",
+    "refus": null
+   }
+  },
+  {
+   "nom": "prix reçu vide (compté zéro par la maquette) : même refus nommé",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": "",
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "CHLG",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "PRIX_ZERO",
+     "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul ») : un article ne se facture jamais à zéro.",
+     "geste": "Saisir un prix d’achat strictement positif, ou laisser l’article « à valoriser » (sans prix)."
+    }
+   }
+  },
+  {
+   "nom": "un profil sans le droit de modifier les réceptions : refus nommé",
+   "role": "comptable",
+   "droit": false,
+   "entree": {
+    "code": "FORL",
+    "prixRecu": 220,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-2"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0068",
+      "code": "FORL",
+      "designation": "FORLAX SACHET",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 200,
+      "prixVente": 200,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "FORL",
+      "code": "FORL",
+      "libelle": "FORLAX SACHET",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "FORL@origine@1",
+      "code": "FORL",
+      "version": 1,
+      "prixNonAssure": 200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "FORL",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "PROPOSITION_RESERVEE",
+     "motif": "Changer le prix d’achat d’un produit se fait au « Référentiel produits », par un profil qui peut modifier cet écran.",
+     "geste": "Demander le changement au gestionnaire de stock, à la Directrice Administrative ou à l’administrateur."
+    }
+   }
+  },
+  {
+   "nom": "prix différent à la date du jour : proposition ouverte",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "FORL",
+    "prixRecu": 220,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-3"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0068",
+      "code": "FORL",
+      "designation": "FORLAX SACHET",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 200,
+      "prixVente": 200,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "FORL",
+      "code": "FORL",
+      "libelle": "FORLAX SACHET",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "FORL@origine@1",
+      "code": "FORL",
+      "version": 1,
+      "prixNonAssure": 200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "ouverte",
+    "code": "FORL",
+    "ancien": 200,
+    "prix": 220,
+    "dateEffet": "2026-08-16",
+    "motif": null,
+    "refus": null,
+    "version": {
+     "id": "FORL@2026-08-16@2",
+     "statut": "propose",
+     "code": "FORL",
+     "version": 2,
+     "prixNonAssure": 220,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "prix constaté à la réception n° BL-VEC-3",
+     "origine": "ecran",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "admin",
+     "dateEffet": "2026-08-16",
+     "source": "Réception BL-VEC-3",
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.747Z"
+    }
+   }
+  },
+  {
+   "nom": "une seule proposition ouverte par produit : la seconde le dit",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "FORL",
+    "prixRecu": 240,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-4"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0068",
+      "code": "FORL",
+      "designation": "FORLAX SACHET",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 200,
+      "prixVente": 200,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "FORL",
+      "code": "FORL",
+      "libelle": "FORLAX SACHET",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "FORL@origine@1",
+      "code": "FORL",
+      "version": 1,
+      "prixNonAssure": 200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "FORL@2026-08-16@2",
+      "statut": "propose",
+      "code": "FORL",
+      "version": 2,
+      "prixNonAssure": 220,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "prix constaté à la réception n° BL-VEC-3",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-16",
+      "source": "Réception BL-VEC-3",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.747Z"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "deja_ouverte",
+    "code": "FORL",
+    "ancien": null,
+    "prix": 220,
+    "dateEffet": null,
+    "motif": null,
+    "refus": null
+   }
+  },
+  {
+   "nom": "date de réception antérieure sans l'autorité de la date passée : refus nommé",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "GENC",
+    "prixRecu": 867,
+    "date": "2026-08-13",
+    "reference": "BL-VEC-5"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0075",
+      "code": "GENC",
+      "designation": "GENTA COLLYRE",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 852,
+      "prixVente": 852,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "GENC",
+      "code": "GENC",
+      "libelle": "GENTA COLLYRE",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "GENC@origine@1",
+      "code": "GENC",
+      "version": 1,
+      "prixNonAssure": 852,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "GENC",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "DATE_PASSEE_RESERVEE",
+     "motif": "Une date d’effet antérieure à aujourd’hui est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance.",
+     "geste": "Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils."
+    }
+   }
+  },
+  {
+   "nom": "date de réception antérieure par la Directrice Administrative : proposition ouverte, date passée motivée",
+   "role": "da",
+   "droit": true,
+   "entree": {
+    "code": "GENC",
+    "prixRecu": 867,
+    "date": "2026-08-13",
+    "reference": "BL-VEC-6"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0075",
+      "code": "GENC",
+      "designation": "GENTA COLLYRE",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 852,
+      "prixVente": 852,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "GENC",
+      "code": "GENC",
+      "libelle": "GENTA COLLYRE",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "GENC@origine@1",
+      "code": "GENC",
+      "version": 1,
+      "prixNonAssure": 852,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "ouverte",
+    "code": "GENC",
+    "ancien": 852,
+    "prix": 867,
+    "dateEffet": "2026-08-13",
+    "motif": null,
+    "refus": null,
+    "version": {
+     "id": "GENC@2026-08-13@2",
+     "statut": "propose",
+     "code": "GENC",
+     "version": 2,
+     "prixNonAssure": 867,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "prix constaté à la réception n° BL-VEC-6",
+     "origine": "ecran",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "da",
+     "dateEffet": "2026-08-13",
+     "source": "Réception BL-VEC-6",
+     "datePassee": true,
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.750Z"
+    }
+   }
+  },
+  {
+   "nom": "article déjà vendu depuis la date de réception : refus nommé, la réception n'est pas bloquée",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "ISF",
+    "prixRecu": 783,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-7"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0083",
+      "code": "ISF",
+      "designation": "ISOFLURANE",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 778,
+      "prixVente": 778,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ISF",
+      "code": "ISF",
+      "libelle": "ISOFLURANE",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ISF@origine@1",
+      "code": "ISF",
+      "version": 1,
+      "prixNonAssure": 778,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": [
+     {
+      "id": "FACxmsvr64seenozs",
+      "numero": "FAC-VEC-REC",
+      "date": "2026-08-16",
+      "statut": "emise",
+      "lignes": [
+       {
+        "produitId": "PRD0083"
+       }
+      ]
+     }
+    ]
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "ISF",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "TARIF_DEJA_UTILISE",
+     "motif": "La facture FAC-VEC-REC du 16/08/2026 porte déjà « ISF » : un prix qui prendrait effet le 16/08/2026 changerait après coup ce que la pièce dit.",
+     "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce."
+    }
+   }
+  },
+  {
+   "nom": "hors médicament : la proposition ne touche que le prix d'achat, le prix de vente propre est conservé",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "BIP10",
+    "prixRecu": 1907,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-8"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0020",
+      "code": "BIP10",
+      "designation": "BILPATRIX 10 CM",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 1900,
+      "prixVente": 1900,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "BIP10",
+      "code": "BIP10",
+      "libelle": "BILPATRIX 10 CM",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "BIP10@origine@1",
+      "code": "BIP10",
+      "version": 1,
+      "prixNonAssure": 1900,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "ouverte",
+    "code": "BIP10",
+    "ancien": 1900,
+    "prix": 1907,
+    "dateEffet": "2026-08-16",
+    "motif": null,
+    "refus": null,
+    "version": {
+     "id": "BIP10@2026-08-16@2",
+     "statut": "propose",
+     "code": "BIP10",
+     "version": 2,
+     "prixNonAssure": 1907,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "prix constaté à la réception n° BL-VEC-8",
+     "origine": "ecran",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "admin",
+     "dateEffet": "2026-08-16",
+     "source": "Réception BL-VEC-8",
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.752Z"
+    }
+   }
+  }
+ ],
+ "refusPrixAbsent": [
+  {
+   "code": "MED-1",
+   "designation": "Paracétamol 500 mg",
+   "refus": {
+    "code": "PRIX_ACHAT_ABSENT",
+    "motif": "le prix d’achat de l’article « MED-1 : Paracétamol 500 mg » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas",
+    "geste": "Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix."
+   }
+  },
+  {
+   "code": "MED-2",
+   "designation": "",
+   "refus": {
+    "code": "PRIX_ACHAT_ABSENT",
+    "motif": "le prix d’achat de l’article « MED-2 » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas",
+    "geste": "Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix."
+   }
+  },
+  {
+   "code": null,
+   "designation": "Sans code",
+   "refus": {
+    "code": "PRIX_ACHAT_ABSENT",
+    "motif": "le prix d’achat de l’article « Sans code » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas",
+    "geste": "Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix."
+   }
+  }
+ ]
+}

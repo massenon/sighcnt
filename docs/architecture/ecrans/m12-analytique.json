@@ -1,0 +1,51 @@
+{
+ "id": "m12-analytique",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Comptabilité analytique",
+ "acces": "ouvert",
+ "titre": "Comptabilité analytique",
+ "description": "Charges et produits ventilés par centre de coûts et par secteur d’activité.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Comptabilité analytique"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Centres de coûts",
+  "Produits analysés",
+  "Charges analysées",
+  "Résultat analytique"
+ ],
+ "cartes": [
+  "Résultat par centre de coûts",
+  "Résultat par centre de coûts",
+  "Poids des secteurs dans les produits"
+ ],
+ "tableaux": [
+  [
+   "Centre de coûts / secteur",
+   "Écritures",
+   "Produits",
+   "Charges",
+   "Résultat",
+   "Marge"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Imprimer la balance analytique"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

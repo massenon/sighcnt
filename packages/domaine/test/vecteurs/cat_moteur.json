@@ -1,0 +1,567 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-catalogue-labo.js — ne pas éditer.",
+ "jour": "2026-10-30",
+ "plages": {
+  "_doc": "SIGH.laboPlages (plagePour / variableALaDate / referenceALaDate) sur des plages posées",
+  "jourDefaut": "2026-10-30",
+  "variable": {
+   "id": "V1",
+   "code": "GB",
+   "libelle": "Globules blancs",
+   "type": "numerique",
+   "min": 4,
+   "max": 8
+  },
+  "cas": [
+   {
+    "nom": "aucune plage : les bornes de la variable font foi",
+    "plages": [],
+    "resultats": [
+     {
+      "date": "2026-06-01",
+      "plageId": null,
+      "min": 4,
+      "max": 8,
+      "reference": "4 - 8"
+     },
+     {
+      "date": "",
+      "plageId": null,
+      "min": 4,
+      "max": 8,
+      "reference": "4 - 8"
+     },
+     {
+      "date": "2026-10-30T10:00:00",
+      "plageId": null,
+      "min": 4,
+      "max": 8,
+      "reference": "4 - 8"
+     }
+    ]
+   },
+   {
+    "nom": "deux lots versionnés par date d'entrée en service",
+    "plages": [
+     {
+      "id": "A",
+      "variableId": "V1",
+      "lot": "LOT-A",
+      "dateDebut": "2026-05-01",
+      "min": 3.5,
+      "max": 9,
+      "statut": "actif"
+     },
+     {
+      "id": "B",
+      "variableId": "V1",
+      "lot": "LOT-B",
+      "dateDebut": "2026-08-01",
+      "min": 4.5,
+      "max": 8.5,
+      "statut": "actif"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2026-04-30",
+      "plageId": null,
+      "min": 4,
+      "max": 8,
+      "reference": "4 - 8"
+     },
+     {
+      "date": "2026-05-01",
+      "plageId": "A",
+      "min": 3.5,
+      "max": 9,
+      "reference": "3.5 - 9 — lot LOT-A"
+     },
+     {
+      "date": "2026-07-31T23:59:00",
+      "plageId": "A",
+      "min": 3.5,
+      "max": 9,
+      "reference": "3.5 - 9 — lot LOT-A"
+     },
+     {
+      "date": "2026-08-01",
+      "plageId": "B",
+      "min": 4.5,
+      "max": 8.5,
+      "reference": "4.5 - 8.5 — lot LOT-B"
+     },
+     {
+      "date": "2027-01-01",
+      "plageId": "B",
+      "min": 4.5,
+      "max": 8.5,
+      "reference": "4.5 - 8.5 — lot LOT-B"
+     },
+     {
+      "date": "2026-08-01T00:00:00.000Z",
+      "plageId": "B",
+      "min": 4.5,
+      "max": 8.5,
+      "reference": "4.5 - 8.5 — lot LOT-B"
+     }
+    ]
+   },
+   {
+    "nom": "insérées dans le désordre : le tri est par date, pas par rang d'insertion",
+    "plages": [
+     {
+      "id": "B",
+      "variableId": "V1",
+      "lot": "LOT-B",
+      "dateDebut": "2026-08-01",
+      "min": 4.5,
+      "max": 8.5,
+      "statut": "actif"
+     },
+     {
+      "id": "A",
+      "variableId": "V1",
+      "lot": "LOT-A",
+      "dateDebut": "2026-05-01",
+      "min": 3.5,
+      "max": 9,
+      "statut": "actif"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2026-06-15",
+      "plageId": "A",
+      "min": 3.5,
+      "max": 9,
+      "reference": "3.5 - 9 — lot LOT-A"
+     },
+     {
+      "date": "2026-09-01",
+      "plageId": "B",
+      "min": 4.5,
+      "max": 8.5,
+      "reference": "4.5 - 8.5 — lot LOT-B"
+     }
+    ]
+   },
+   {
+    "nom": "plage ARCHIVÉE ignorée",
+    "plages": [
+     {
+      "id": "A",
+      "variableId": "V1",
+      "lot": "LOT-A",
+      "dateDebut": "2026-05-01",
+      "min": 3.5,
+      "max": 9,
+      "statut": "actif"
+     },
+     {
+      "id": "B",
+      "variableId": "V1",
+      "lot": "LOT-B",
+      "dateDebut": "2026-08-01",
+      "min": 3.5,
+      "max": 9,
+      "statut": "archive"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2026-09-01",
+      "plageId": "A",
+      "min": 3.5,
+      "max": 9,
+      "reference": "3.5 - 9 — lot LOT-A"
+     }
+    ]
+   },
+   {
+    "nom": "plage d'une AUTRE variable ignorée",
+    "plages": [
+     {
+      "id": "A",
+      "variableId": "V2",
+      "lot": "LOT-A",
+      "dateDebut": "2026-05-01",
+      "min": 3.5,
+      "max": 9,
+      "statut": "actif"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2026-09-01",
+      "plageId": null,
+      "min": 4,
+      "max": 8,
+      "reference": "4 - 8"
+     }
+    ]
+   },
+   {
+    "nom": "plage sans date d'entrée : vaut depuis toujours, passe avant les datées",
+    "plages": [
+     {
+      "id": "A",
+      "variableId": "V1",
+      "lot": "LOT-A",
+      "dateDebut": "",
+      "min": 3.5,
+      "max": 9,
+      "statut": "actif"
+     },
+     {
+      "id": "B",
+      "variableId": "V1",
+      "lot": "LOT-B",
+      "dateDebut": "2026-08-01",
+      "min": 5,
+      "max": 7,
+      "statut": "actif"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2020-01-01",
+      "plageId": "A",
+      "min": 3.5,
+      "max": 9,
+      "reference": "3.5 - 9 — lot LOT-A"
+     },
+     {
+      "date": "2026-07-01",
+      "plageId": "A",
+      "min": 3.5,
+      "max": 9,
+      "reference": "3.5 - 9 — lot LOT-A"
+     },
+     {
+      "date": "2026-08-02",
+      "plageId": "B",
+      "min": 5,
+      "max": 7,
+      "reference": "5 - 7 — lot LOT-B"
+     }
+    ]
+   },
+   {
+    "nom": "même date d'entrée : la dernière du registre l'emporte (tri stable)",
+    "plages": [
+     {
+      "id": "A",
+      "variableId": "V1",
+      "lot": "LOT-A",
+      "dateDebut": "2026-05-01",
+      "min": 3.5,
+      "max": 9,
+      "statut": "actif"
+     },
+     {
+      "id": "B",
+      "variableId": "V1",
+      "lot": "LOT-B",
+      "dateDebut": "2026-05-01",
+      "min": 4.2,
+      "max": 8.2,
+      "statut": "actif"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2026-06-01",
+      "plageId": "B",
+      "min": 4.2,
+      "max": 8.2,
+      "reference": "4.2 - 8.2 — lot LOT-B"
+     }
+    ]
+   },
+   {
+    "nom": "borne haute seule : « < max » ; borne basse seule : « > min »",
+    "plages": [
+     {
+      "id": "A",
+      "variableId": "V1",
+      "lot": "LOT-A",
+      "dateDebut": "2026-05-01",
+      "min": null,
+      "max": 10,
+      "statut": "actif"
+     },
+     {
+      "id": "B",
+      "variableId": "V1",
+      "lot": "LOT-B",
+      "dateDebut": "2026-08-01",
+      "min": 2,
+      "max": null,
+      "statut": "actif"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2026-06-01",
+      "plageId": "A",
+      "min": null,
+      "max": 10,
+      "reference": "< 10 — lot LOT-A"
+     },
+     {
+      "date": "2026-09-01",
+      "plageId": "B",
+      "min": 2,
+      "max": null,
+      "reference": "> 2 — lot LOT-B"
+     }
+    ]
+   },
+   {
+    "nom": "borne à zéro : le zéro est une borne, pas une absence",
+    "plages": [
+     {
+      "id": "A",
+      "variableId": "V1",
+      "lot": "LOT-A",
+      "dateDebut": "2026-05-01",
+      "min": 0,
+      "max": 5,
+      "statut": "actif"
+     }
+    ],
+    "resultats": [
+     {
+      "date": "2026-06-01",
+      "plageId": "A",
+      "min": 0,
+      "max": 5,
+      "reference": "0 - 5 — lot LOT-A"
+     }
+    ]
+   }
+  ]
+ },
+ "references": {
+  "_doc": "L.libelleReference(variable) : la notation du document (« 4 - 8 », « < 6 », « > 0.35 »)",
+  "cas": [
+   {
+    "variable": {
+     "type": "numerique",
+     "min": 4,
+     "max": 8
+    },
+    "attendu": "4 - 8"
+   },
+   {
+    "variable": {
+     "type": "numerique",
+     "max": 6
+    },
+    "attendu": "< 6"
+   },
+   {
+    "variable": {
+     "type": "numerique",
+     "min": 0.35
+    },
+    "attendu": "> 0.35"
+   },
+   {
+    "variable": {
+     "type": "numerique"
+    },
+    "attendu": ""
+   },
+   {
+    "variable": {
+     "type": "numerique",
+     "min": 0,
+     "max": 5
+    },
+    "attendu": "0 - 5"
+   },
+   {
+    "variable": {
+     "type": "numerique",
+     "min": 4,
+     "max": 8,
+     "regle": "inférieure à la moitié de la glycémie"
+    },
+    "attendu": "inférieure à la moitié de la glycémie"
+   },
+   {
+    "variable": {
+     "type": "binaire",
+     "normal": "Négatif"
+    },
+    "attendu": "Attendu : Négatif"
+   },
+   {
+    "variable": {
+     "type": "binaire"
+    },
+    "attendu": ""
+   },
+   {
+    "variable": {
+     "type": "ternaire",
+     "normal": "Négatif"
+    },
+    "attendu": "Attendu : Négatif"
+   },
+   {
+    "variable": {
+     "type": "liste",
+     "normal": "Absent"
+    },
+    "attendu": "Attendu : Absent"
+   },
+   {
+    "variable": {
+     "type": "titre",
+     "normal": "Négatif",
+     "min": 4
+    },
+    "attendu": "Attendu : Négatif"
+   },
+   {
+    "variable": {
+     "type": "texte",
+     "min": 1,
+     "max": 2
+    },
+    "attendu": ""
+   },
+   {
+    "variable": {
+     "type": "reactif",
+     "normal": "x",
+     "min": 1
+    },
+    "attendu": ""
+   },
+   {
+    "variable": {
+     "type": "lot"
+    },
+    "attendu": ""
+   },
+   {
+    "variable": {
+     "type": "expiration"
+    },
+    "attendu": ""
+   },
+   {
+    "variable": {
+     "type": "commentaire",
+     "regle": "ignorée : accompagnement"
+    },
+    "attendu": "ignorée : accompagnement"
+   },
+   {
+    "variable": {
+     "type": "commentaire",
+     "regle": "x"
+    },
+    "attendu": "x"
+   },
+   {
+    "variable": {
+     "type": "texte",
+     "regle": "règle d'un texte"
+    },
+    "attendu": "règle d'un texte"
+   },
+   {
+    "variable": {
+     "type": "numerique",
+     "min": 1.5,
+     "max": 4.25
+    },
+    "attendu": "1.5 - 4.25"
+   }
+  ],
+  "types": [
+   [
+    "numerique",
+    "Valeur numérique"
+   ],
+   [
+    "binaire",
+    "Positif / Négatif"
+   ],
+   [
+    "ternaire",
+    "Positif / Négatif / Indéterminé"
+   ],
+   [
+    "titre",
+    "Titre (dilution)"
+   ],
+   [
+    "liste",
+    "Choix dans une liste"
+   ],
+   [
+    "texte",
+    "Texte libre"
+   ],
+   [
+    "reactif",
+    "Réactif employé"
+   ],
+   [
+    "lot",
+    "Lot de réactif"
+   ],
+   [
+    "expiration",
+    "Expiration du réactif"
+   ],
+   [
+    "commentaire",
+    "Commentaire de l’examen"
+   ]
+  ],
+  "accompagnement": [
+   "reactif",
+   "lot",
+   "expiration",
+   "commentaire"
+  ],
+  "sections": [
+   [
+    "hematologie",
+    "Hématologie"
+   ],
+   [
+    "serologie",
+    "Sérologie"
+   ],
+   [
+    "parasitologie",
+    "Parasitologie"
+   ],
+   [
+    "biochimie",
+    "Biochimie"
+   ],
+   [
+    "bacteriologie",
+    "Bactériologie"
+   ],
+   [
+    "hormonologie",
+    "Hormonologie"
+   ]
+  ],
+  "typeInconnu": "zzz",
+  "sectionInconnue": "zzz",
+  "uniteInconnue": "—",
+  "uniteSans": "—",
+  "source": "Bulletin d’analyses bio-médicales (formulaire papier) et fiche de résultats du dossier 2026080411, éditée le 21/08/2026."
+ }
+}

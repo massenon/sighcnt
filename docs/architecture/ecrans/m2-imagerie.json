@@ -1,0 +1,56 @@
+{
+ "id": "m2-imagerie",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Tableau Échographie",
+ "acces": "ouvert",
+ "titre": "Tableau Échographie",
+ "description": "Comptes rendus d’échographie et d’électrocardiogramme, saisis par variables et rendus au prescripteur.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Imagerie médicale",
+  "Tableau Échographie"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Les listes de choix pré-insérées viennent du brouillon manuscrit de l’échographiste, des cinq comptes rendus réels et de ses corrections du 14/09/2026. Deux ou trois sacs gestationnels déclarés font paraître autant de blocs de sac, repliables."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus",
+  "Rendus au prescripteur",
+  "En cours de rédaction",
+  "Examens obstétricaux"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date",
+   "Patient",
+   "Examen",
+   "Prescripteur",
+   "Réalisé par",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau compte rendu",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

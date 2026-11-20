@@ -1,0 +1,51 @@
+{
+ "id": "m5-unites",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Unités de mesure",
+ "acces": "ouvert",
+ "titre": "Unités de mesure",
+ "description": "Unités dans lesquelles les résultats s’expriment, pré-insérées pour que le laboratoire n’ait pas à les ressaisir.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Unités de mesure"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les unités",
+  "Archivés"
+ ],
+ "kpis": [
+  "Unités paramétrées",
+  "Reprises de la fiche",
+  "À confirmer",
+  "Domaines couverts"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Symbole",
+   "Intitulé",
+   "Domaine",
+   "Provenance",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les unités23",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,2941 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-plan-annuel.js, ne pas éditer. Horloge : 30/10/2026 10 h.",
+ "maquette": {
+  "contexte": {
+   "exercices": [
+    {
+     "annee": 2024,
+     "debut": "2024-01-01",
+     "fin": "2024-12-31",
+     "etat": "clos"
+    },
+    {
+     "annee": 2025,
+     "debut": "2025-01-01",
+     "fin": "2025-12-31",
+     "etat": "clos"
+    },
+    {
+     "annee": 2026,
+     "debut": "2026-01-01",
+     "fin": "2026-12-31",
+     "etat": "ouvert"
+    },
+    {
+     "annee": 2027,
+     "debut": "2027-01-01",
+     "fin": "2027-12-31",
+     "etat": "ouvert"
+    }
+   ],
+   "axes": [
+    {
+     "code": "digitalisation",
+     "libelle": "Digitalisation"
+    },
+    {
+     "code": "formation",
+     "libelle": "Formation"
+    },
+    {
+     "code": "logistique",
+     "libelle": "Logistique"
+    },
+    {
+     "code": "partenariats",
+     "libelle": "Partenariats"
+    },
+    {
+     "code": "sante_publique",
+     "libelle": "Santé publique"
+    },
+    {
+     "code": "investissement",
+     "libelle": "Investissement"
+    },
+    {
+     "code": "qualite",
+     "libelle": "Qualité"
+    },
+    {
+     "code": "ressources_humaines",
+     "libelle": "Ressources humaines"
+    },
+    {
+     "code": "finance",
+     "libelle": "Finance"
+    }
+   ],
+   "etats": [
+    {
+     "code": "planifiee",
+     "libelle": "Planifiée",
+     "nature": "planifiee",
+     "ton": "warning"
+    },
+    {
+     "code": "en_cours",
+     "libelle": "En cours",
+     "nature": "en_cours",
+     "ton": "info"
+    },
+    {
+     "code": "realisee",
+     "libelle": "Réalisée",
+     "nature": "realisee",
+     "ton": "success"
+    }
+   ],
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "poste": "Directeur Médical"
+   },
+   "poste": {
+    "id": "PST003",
+    "poste": "Comptable",
+    "titulaire": "KASSA Augustin"
+   },
+   "budget": {
+    "id": "BUDPTA1",
+    "reference": "BG-2026-001"
+   },
+   "signataires": [
+    {
+     "posteId": "PST002",
+     "fonction": "Directrice Administrative (DA)",
+     "nom": "TAKI Alimatou épse BASSONGUI"
+    },
+    {
+     "posteId": "PST001",
+     "fonction": "Directeur Médical",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "graceDefaut": 0
+  },
+  "ecranVide": {
+   "kpis": [
+    {
+     "libelle": "Actions programmées",
+     "valeur": "12",
+     "indice": null
+    },
+    {
+     "libelle": "Réalisées",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "libelle": "En cours",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Planifiées",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "En retard",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Avancement moyen",
+     "valeur": "Non calculable",
+     "indice": "12 action(s) sans pourcentage"
+    },
+    {
+     "libelle": "Budget prévu",
+     "valeur": "Non renseigné",
+     "indice": "12 action(s) sans budget"
+    },
+    {
+     "libelle": "Budget réalisé",
+     "valeur": "Non renseigné",
+     "indice": "12 action(s) sans réalisé"
+    }
+   ],
+   "boutons": [
+    "Nouvelle action",
+    "Reconduire les actions non réalisées",
+    "Imprimer le plan",
+    "Imprimer le bilan",
+    "Signataires de l’impression",
+    "Exporter",
+    "Colonnes",
+    "Exporter",
+    "Cocher les 12 lignes filtrées",
+    "Exporter la sélection",
+    "Imprimer la sélection",
+    "Tout désélectionner"
+   ],
+   "selecteur": [
+    "2024",
+    "2025",
+    "2026",
+    "2027"
+   ]
+  },
+  "modaleCreation": {
+   "champs": [
+    "Action *",
+    "Axe *",
+    "Responsable (personnel ou fonction) *",
+    "Trimestre de début *",
+    "Trimestre de fin *",
+    "Budget prévu (FCFA)",
+    "Ligne du module Budgets",
+    "Indicateur de résultat",
+    "Cible de l’indicateur",
+    "État d’avancement *",
+    "Avancement (%)",
+    "Budget réalisé (FCFA)",
+    "Valeur atteinte de l’indicateur",
+    "Observations"
+   ]
+  },
+  "creeParEcran": {
+   "fiche": {
+    "statut": "actif",
+    "action": "Campagne de vaccination",
+    "axe": "sante_publique",
+    "trimestreDebut": 1,
+    "trimestreFin": 2,
+    "budgetPrevu": 1000000,
+    "indicateur": "Enfants vaccinés",
+    "cible": 200,
+    "avancement": "planifiee",
+    "exercice": 2026,
+    "responsableType": "poste",
+    "responsableRef": "PST003",
+    "reference": "PA-2026-013",
+    "version": 1
+   },
+   "toasts": [
+    [
+     "Action PA-2026-013 créée."
+    ]
+   ]
+  },
+  "refusParEcran": {
+   "toasts": [
+    [
+     "Refusé : POURCENTAGE_HORS_BORNES",
+     "Le pourcentage d’avancement est un nombre de 0 à 100 (reçu « 150 »). Saisir un nombre de 0 à 100, ou laisser vide (non renseigné)."
+    ]
+   ],
+   "nb": 13
+  },
+  "creations": [
+   {
+    "ok": true,
+    "code": null,
+    "reference": "PA-2026-014"
+   },
+   {
+    "ok": true,
+    "code": null,
+    "reference": "PA-2026-015"
+   },
+   {
+    "ok": true,
+    "code": null,
+    "reference": "PA-2026-016"
+   },
+   {
+    "ok": true,
+    "code": null,
+    "reference": "PA-2026-017"
+   }
+  ],
+  "fiches": [
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-012",
+    "version": 1,
+    "action": "Rapprochement bancaire mensuel",
+    "axe": "finance",
+    "trimestreDebut": 1,
+    "trimestreFin": 4,
+    "avancement": "en_cours",
+    "responsableType": "agent",
+    "responsableRef": "EMP03"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-011",
+    "version": 1,
+    "action": "Clôture comptable de l’exercice",
+    "axe": "finance",
+    "trimestreDebut": 4,
+    "trimestreFin": 4,
+    "avancement": "planifiee",
+    "responsableType": "agent",
+    "responsableRef": "EMP03"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-010",
+    "version": 1,
+    "action": "Révision de la grille des primes",
+    "axe": "ressources_humaines",
+    "trimestreDebut": 3,
+    "trimestreFin": 3,
+    "avancement": "realisee",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-009",
+    "version": 1,
+    "action": "Audit qualité et sécurité des patients",
+    "axe": "qualite",
+    "trimestreDebut": 4,
+    "trimestreFin": 4,
+    "avancement": "planifiee",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-008",
+    "version": 1,
+    "action": "Mise à niveau du réseau informatique",
+    "axe": "investissement",
+    "trimestreDebut": 1,
+    "trimestreFin": 2,
+    "avancement": "realisee",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-007",
+    "version": 1,
+    "action": "Acquisition d’un nouvel échographe",
+    "axe": "investissement",
+    "trimestreDebut": 3,
+    "trimestreFin": 3,
+    "avancement": "realisee",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-006",
+    "version": 1,
+    "action": "Campagne de dépistage communautaire",
+    "axe": "sante_publique",
+    "trimestreDebut": 2,
+    "trimestreFin": 3,
+    "avancement": "realisee",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-005",
+    "version": 1,
+    "action": "Renouvellement des conventions d’assurance",
+    "axe": "partenariats",
+    "trimestreDebut": 1,
+    "trimestreFin": 2,
+    "avancement": "realisee",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-004",
+    "version": 1,
+    "action": "Inventaire général des stocks",
+    "axe": "logistique",
+    "trimestreDebut": 1,
+    "trimestreFin": 1,
+    "avancement": "realisee",
+    "responsableType": "agent",
+    "responsableRef": "EMP37"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-003",
+    "version": 1,
+    "action": "Formation du personnel au nouveau logiciel",
+    "axe": "formation",
+    "trimestreDebut": 3,
+    "trimestreFin": 4,
+    "avancement": "planifiee",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-002",
+    "version": 1,
+    "action": "Numérisation des dossiers patients actifs",
+    "axe": "digitalisation",
+    "trimestreDebut": 2,
+    "trimestreFin": 4,
+    "avancement": "en_cours",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "reference": "PA-2026-001",
+    "version": 1,
+    "action": "Déploiement du SIGH-CNT",
+    "axe": "digitalisation",
+    "trimestreDebut": 1,
+    "trimestreFin": 4,
+    "avancement": "en_cours",
+    "responsableType": "agent",
+    "responsableRef": "EMP02"
+   },
+   {
+    "statut": "actif",
+    "action": "Campagne de vaccination",
+    "axe": "sante_publique",
+    "trimestreDebut": 1,
+    "trimestreFin": 2,
+    "budgetPrevu": 1000000,
+    "indicateur": "Enfants vaccinés",
+    "cible": 200,
+    "avancement": "planifiee",
+    "exercice": 2026,
+    "responsableType": "poste",
+    "responsableRef": "PST003",
+    "reference": "PA-2026-013",
+    "version": 1
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "action": "Inventaire général des stocks",
+    "axe": "logistique",
+    "trimestreDebut": 1,
+    "trimestreFin": 1,
+    "avancement": "realisee",
+    "budgetPrevu": 500000,
+    "budgetRealise": 450000,
+    "tauxAvancement": 100,
+    "responsableType": "poste",
+    "responsableRef": "PST003",
+    "reference": "PA-2026-014",
+    "version": 1
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "action": "Acquisition d’un échographe",
+    "axe": "investissement",
+    "trimestreDebut": 3,
+    "trimestreFin": 3,
+    "avancement": "planifiee",
+    "budgetPrevu": 8000000,
+    "indicateur": "Appareil installé",
+    "cible": 1,
+    "valeurAtteinte": 0,
+    "responsableType": "poste",
+    "responsableRef": "PST003",
+    "reference": "PA-2026-015",
+    "version": 1
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "action": "Audit qualité",
+    "axe": "qualite",
+    "trimestreDebut": 4,
+    "trimestreFin": 4,
+    "avancement": "en_cours",
+    "tauxAvancement": 40,
+    "budgetId": "BUDPTA1",
+    "responsableType": "poste",
+    "responsableRef": "PST003",
+    "reference": "PA-2026-016",
+    "version": 1
+   },
+   {
+    "statut": "actif",
+    "exercice": 2026,
+    "action": "Révision de la grille des primes",
+    "axe": "ressources_humaines",
+    "trimestreDebut": 2,
+    "trimestreFin": 3,
+    "avancement": "en_cours",
+    "tauxAvancement": 0,
+    "responsableType": "poste",
+    "responsableRef": "PST003",
+    "reference": "PA-2026-017",
+    "version": 1
+   }
+  ],
+  "controles": [
+   {
+    "nom": "valide",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": null
+   },
+   {
+    "nom": "action vide",
+    "fiche": {
+     "exercice": 2026,
+     "action": "",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": "ACTION_VIDE"
+   },
+   {
+    "nom": "exercice inconnu",
+    "fiche": {
+     "exercice": 1999,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": "EXERCICE_INCONNU"
+   },
+   {
+    "nom": "axe inconnu",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "inconnu",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": "AXE_INCONNU"
+   },
+   {
+    "nom": "état inconnu",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "inconnu",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": "ETAT_INCONNU"
+   },
+   {
+    "nom": "trimestres inversés",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 3,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": "TRIMESTRES_INCOHERENTS"
+   },
+   {
+    "nom": "trimestre 5",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 5,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": "TRIMESTRES_INCOHERENTS"
+   },
+   {
+    "nom": "trimestre 0",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 0,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003"
+    },
+    "code": "TRIMESTRES_INCOHERENTS"
+   },
+   {
+    "nom": "responsable texte libre",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsable": "KASSA Augustin"
+    },
+    "code": "RESPONSABLE_TEXTE_LIBRE"
+   },
+   {
+    "nom": "responsable inconnu",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST-INCONNU"
+    },
+    "code": "RESPONSABLE_INCONNU"
+   },
+   {
+    "nom": "responsable agent",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP01"
+    },
+    "code": null
+   },
+   {
+    "nom": "pourcentage 101",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "tauxAvancement": 101
+    },
+    "code": "POURCENTAGE_HORS_BORNES"
+   },
+   {
+    "nom": "pourcentage -1",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "tauxAvancement": -1
+    },
+    "code": "POURCENTAGE_HORS_BORNES"
+   },
+   {
+    "nom": "pourcentage 100",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "tauxAvancement": 100
+    },
+    "code": null
+   },
+   {
+    "nom": "pourcentage 0",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "tauxAvancement": 0
+    },
+    "code": null
+   },
+   {
+    "nom": "pourcentage texte",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "tauxAvancement": "abc"
+    },
+    "code": "POURCENTAGE_HORS_BORNES"
+   },
+   {
+    "nom": "budget négatif",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "budgetPrevu": -5
+    },
+    "code": "MONTANT_INVALIDE"
+   },
+   {
+    "nom": "budget vide",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "budgetPrevu": ""
+    },
+    "code": null
+   },
+   {
+    "nom": "réalisé négatif",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "budgetRealise": -1
+    },
+    "code": "MONTANT_INVALIDE"
+   },
+   {
+    "nom": "cible texte",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "cible": "x"
+    },
+    "code": "MONTANT_INVALIDE"
+   },
+   {
+    "nom": "budget inconnu",
+    "fiche": {
+     "exercice": 2026,
+     "action": "Essai",
+     "axe": "qualite",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "budgetId": "BUD-INCONNU"
+    },
+    "code": "BUDGET_INCONNU"
+   }
+  ],
+  "finTrimestre": [
+   {
+    "debut": "2026-01-01",
+    "q": 1,
+    "fin": "2026-03-31"
+   },
+   {
+    "debut": "2026-01-01",
+    "q": 2,
+    "fin": "2026-06-30"
+   },
+   {
+    "debut": "2026-01-01",
+    "q": 3,
+    "fin": "2026-09-30"
+   },
+   {
+    "debut": "2026-01-01",
+    "q": 4,
+    "fin": "2026-12-31"
+   },
+   {
+    "debut": "2026-04-01",
+    "q": 4,
+    "fin": "2027-03-31"
+   },
+   {
+    "debut": "2027-01-01",
+    "q": 1,
+    "fin": "2027-03-31"
+   },
+   {
+    "debut": "2024-01-01",
+    "q": 1,
+    "fin": "2024-03-31"
+   },
+   {
+    "debut": "2024-11-01",
+    "q": 1,
+    "fin": "2025-01-31"
+   },
+   {
+    "debut": "2026-01-01",
+    "q": 0,
+    "fin": null
+   },
+   {
+    "debut": "2026-01-01",
+    "q": 5,
+    "fin": null
+   },
+   {
+    "debut": "",
+    "q": 1,
+    "fin": null
+   },
+   {
+    "debut": "abc",
+    "q": 2,
+    "fin": null
+   }
+  ],
+  "pourcentage": [
+   {
+    "v": null,
+    "r": {
+     "ok": true,
+     "valeur": null
+    }
+   },
+   {
+    "v": "",
+    "r": {
+     "ok": true,
+     "valeur": null
+    }
+   },
+   {
+    "v": "__undef",
+    "r": {
+     "ok": true,
+     "valeur": null
+    }
+   },
+   {
+    "v": 0,
+    "r": {
+     "ok": true,
+     "valeur": 0
+    }
+   },
+   {
+    "v": 100,
+    "r": {
+     "ok": true,
+     "valeur": 100
+    }
+   },
+   {
+    "v": 50.5,
+    "r": {
+     "ok": true,
+     "valeur": 50.5
+    }
+   },
+   {
+    "v": "45",
+    "r": {
+     "ok": true,
+     "valeur": 45
+    }
+   },
+   {
+    "v": 101,
+    "r": {
+     "ok": false,
+     "code": "POURCENTAGE_HORS_BORNES"
+    }
+   },
+   {
+    "v": -0.1,
+    "r": {
+     "ok": false,
+     "code": "POURCENTAGE_HORS_BORNES"
+    }
+   },
+   {
+    "v": "abc",
+    "r": {
+     "ok": false,
+     "code": "POURCENTAGE_HORS_BORNES"
+    }
+   },
+   {
+    "v": "__nan",
+    "r": {
+     "ok": false,
+     "code": "POURCENTAGE_HORS_BORNES"
+    }
+   }
+  ],
+  "nombre": [
+   {
+    "v": null,
+    "r": null
+   },
+   {
+    "v": "",
+    "r": null
+   },
+   {
+    "v": "__undef",
+    "r": null
+   },
+   {
+    "v": 0,
+    "r": 0
+   },
+   {
+    "v": 12,
+    "r": 12
+   },
+   {
+    "v": "12.5",
+    "r": 12.5
+   },
+   {
+    "v": -1,
+    "r": "__invalide"
+   },
+   {
+    "v": "x",
+    "r": "__invalide"
+   }
+  ],
+  "atteinte": [
+   {
+    "a": {},
+    "r": {
+     "calculable": false,
+     "motif": "cible non définie"
+    }
+   },
+   {
+    "a": {
+     "cible": 100
+    },
+    "r": {
+     "calculable": false,
+     "motif": "valeur atteinte non renseignée"
+    }
+   },
+   {
+    "a": {
+     "cible": 100,
+     "valeurAtteinte": 0
+    },
+    "r": {
+     "calculable": true,
+     "pct": 0
+    }
+   },
+   {
+    "a": {
+     "cible": 100,
+     "valeurAtteinte": 50
+    },
+    "r": {
+     "calculable": true,
+     "pct": 50
+    }
+   },
+   {
+    "a": {
+     "cible": 3,
+     "valeurAtteinte": 1
+    },
+    "r": {
+     "calculable": true,
+     "pct": 33.3
+    }
+   },
+   {
+    "a": {
+     "cible": 100,
+     "valeurAtteinte": 150
+    },
+    "r": {
+     "calculable": true,
+     "pct": 150
+    }
+   },
+   {
+    "a": {
+     "cible": 0,
+     "valeurAtteinte": 5
+    },
+    "r": {
+     "calculable": false,
+     "motif": "cible non définie"
+    }
+   },
+   {
+    "a": {
+     "cible": "",
+     "valeurAtteinte": ""
+    },
+    "r": {
+     "calculable": false,
+     "motif": "cible non définie"
+    }
+   },
+   {
+    "a": {
+     "cible": "x",
+     "valeurAtteinte": 1
+    },
+    "r": {
+     "calculable": false,
+     "motif": "cible non définie"
+    }
+   }
+  ],
+  "totaux": [
+   {
+    "actions": [],
+    "r": {
+     "nb": 0,
+     "prevu": null,
+     "realise": null,
+     "nbSansPrevu": 0,
+     "nbSansRealise": 0,
+     "ecart": null,
+     "tauxMoyen": null,
+     "nbSansTaux": 0,
+     "parNature": {
+      "planifiee": 0,
+      "en_cours": 0,
+      "realisee": 0,
+      "inconnue": 0
+     }
+    }
+   },
+   {
+    "actions": [
+     {
+      "avancement": "realisee"
+     }
+    ],
+    "r": {
+     "nb": 1,
+     "prevu": null,
+     "realise": null,
+     "nbSansPrevu": 1,
+     "nbSansRealise": 1,
+     "ecart": null,
+     "tauxMoyen": null,
+     "nbSansTaux": 1,
+     "parNature": {
+      "planifiee": 0,
+      "en_cours": 0,
+      "realisee": 1,
+      "inconnue": 0
+     }
+    }
+   },
+   {
+    "actions": [
+     {
+      "avancement": "realisee",
+      "budgetPrevu": 100,
+      "budgetRealise": 80,
+      "tauxAvancement": 100
+     },
+     {
+      "avancement": "en_cours",
+      "budgetPrevu": 50,
+      "tauxAvancement": 40
+     }
+    ],
+    "r": {
+     "nb": 2,
+     "prevu": 150,
+     "realise": 80,
+     "nbSansPrevu": 0,
+     "nbSansRealise": 1,
+     "ecart": 70,
+     "tauxMoyen": 70,
+     "nbSansTaux": 0,
+     "parNature": {
+      "planifiee": 0,
+      "en_cours": 1,
+      "realisee": 1,
+      "inconnue": 0
+     }
+    }
+   },
+   {
+    "actions": [
+     {
+      "avancement": "planifiee",
+      "budgetPrevu": 0,
+      "budgetRealise": 0,
+      "tauxAvancement": 0
+     },
+     {
+      "avancement": "planifiee"
+     }
+    ],
+    "r": {
+     "nb": 2,
+     "prevu": 0,
+     "realise": 0,
+     "nbSansPrevu": 1,
+     "nbSansRealise": 1,
+     "ecart": 0,
+     "tauxMoyen": 0,
+     "nbSansTaux": 1,
+     "parNature": {
+      "planifiee": 2,
+      "en_cours": 0,
+      "realisee": 0,
+      "inconnue": 0
+     }
+    }
+   },
+   {
+    "actions": [
+     {
+      "avancement": "inconnu",
+      "tauxAvancement": 10
+     },
+     {
+      "avancement": "en_cours",
+      "tauxAvancement": 33
+     },
+     {
+      "avancement": "en_cours",
+      "tauxAvancement": 34
+     }
+    ],
+    "r": {
+     "nb": 3,
+     "prevu": null,
+     "realise": null,
+     "nbSansPrevu": 3,
+     "nbSansRealise": 3,
+     "ecart": null,
+     "tauxMoyen": 25.7,
+     "nbSansTaux": 0,
+     "parNature": {
+      "planifiee": 0,
+      "en_cours": 2,
+      "realisee": 0,
+      "inconnue": 1
+     }
+    }
+   }
+  ],
+  "retard": [
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 1
+    },
+    "auj": "2026-04-01",
+    "grace": 0,
+    "r": {
+     "enRetard": true,
+     "finTrimestre": "2026-03-31",
+     "limite": "2026-03-31",
+     "jours": 1
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 1
+    },
+    "auj": "2026-04-02",
+    "grace": 0,
+    "r": {
+     "enRetard": true,
+     "finTrimestre": "2026-03-31",
+     "limite": "2026-03-31",
+     "jours": 2
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 1
+    },
+    "auj": "2026-04-05",
+    "grace": 5,
+    "r": {
+     "enRetard": false,
+     "motif": "dans_les_delais",
+     "finTrimestre": "2026-03-31",
+     "limite": "2026-04-05"
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 1
+    },
+    "auj": "2026-04-06",
+    "grace": 5,
+    "r": {
+     "enRetard": true,
+     "finTrimestre": "2026-03-31",
+     "limite": "2026-04-05",
+     "jours": 6
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "realisee",
+     "trimestreFin": 1
+    },
+    "auj": "2026-12-01",
+    "grace": 0,
+    "r": {
+     "enRetard": false,
+     "motif": "realisee"
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "planifiee",
+     "trimestreFin": 3
+    },
+    "auj": "2026-10-01",
+    "grace": 0,
+    "r": {
+     "enRetard": true,
+     "finTrimestre": "2026-09-30",
+     "limite": "2026-09-30",
+     "jours": 1
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "planifiee",
+     "trimestreFin": 3
+    },
+    "auj": "2026-09-30",
+    "grace": 0,
+    "r": {
+     "enRetard": false,
+     "motif": "dans_les_delais",
+     "finTrimestre": "2026-09-30",
+     "limite": "2026-09-30"
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "inconnu",
+     "trimestreFin": 1
+    },
+    "auj": "2026-12-31",
+    "grace": 0,
+    "r": {
+     "enRetard": false,
+     "motif": "etat_inconnu"
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 9
+    },
+    "auj": "2026-12-31",
+    "grace": 0,
+    "r": {
+     "enRetard": false,
+     "motif": "trimestre_illisible"
+    }
+   },
+   {
+    "debut": "",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 1
+    },
+    "auj": "2026-12-31",
+    "grace": 0,
+    "r": {
+     "enRetard": false,
+     "motif": "trimestre_illisible"
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 4
+    },
+    "auj": "2026-12-31",
+    "grace": 0,
+    "r": {
+     "enRetard": false,
+     "motif": "dans_les_delais",
+     "finTrimestre": "2026-12-31",
+     "limite": "2026-12-31"
+    }
+   },
+   {
+    "debut": "2026-01-01",
+    "a": {
+     "avancement": "en_cours",
+     "trimestreFin": 4
+    },
+    "auj": "2027-01-01",
+    "grace": 0,
+    "r": {
+     "enRetard": true,
+     "finTrimestre": "2026-12-31",
+     "limite": "2026-12-31",
+     "jours": 1
+    }
+   }
+  ],
+  "references": [
+   {
+    "prefixe": "PA-",
+    "date": "2026-03-05",
+    "largeur": 3,
+    "fiches": [
+     {
+      "reference": "PA-2026-001"
+     },
+     {
+      "reference": "PA-2026-007"
+     },
+     {
+      "reference": "PA-2025-099"
+     },
+     {
+      "reference": "BEB-2026-0100"
+     },
+     {
+      "reference": "PA-2026-abc"
+     }
+    ],
+    "ref": "PA-2026-008"
+   },
+   {
+    "prefixe": "PA-",
+    "date": "2027-01-01",
+    "largeur": 3,
+    "fiches": [
+     {
+      "reference": "PA-2026-001"
+     },
+     {
+      "reference": "PA-2026-007"
+     },
+     {
+      "reference": "PA-2025-099"
+     },
+     {
+      "reference": "BEB-2026-0100"
+     },
+     {
+      "reference": "PA-2026-abc"
+     }
+    ],
+    "ref": "PA-2027-001"
+   },
+   {
+    "prefixe": "PA-",
+    "date": "2025-12-31",
+    "largeur": 3,
+    "fiches": [
+     {
+      "reference": "PA-2026-001"
+     },
+     {
+      "reference": "PA-2026-007"
+     },
+     {
+      "reference": "PA-2025-099"
+     },
+     {
+      "reference": "BEB-2026-0100"
+     },
+     {
+      "reference": "PA-2026-abc"
+     }
+    ],
+    "ref": "PA-2025-100"
+   },
+   {
+    "prefixe": "PA-",
+    "date": "2024-06-01",
+    "largeur": 4,
+    "fiches": [
+     {
+      "reference": "PA-2026-001"
+     },
+     {
+      "reference": "PA-2026-007"
+     },
+     {
+      "reference": "PA-2025-099"
+     },
+     {
+      "reference": "BEB-2026-0100"
+     },
+     {
+      "reference": "PA-2026-abc"
+     }
+    ],
+    "ref": "PA-2024-0001"
+   },
+   {
+    "prefixe": "PA-",
+    "date": "",
+    "largeur": 3,
+    "fiches": [
+     {
+      "reference": "PA-2026-001"
+     },
+     {
+      "reference": "PA-2026-007"
+     },
+     {
+      "reference": "PA-2025-099"
+     },
+     {
+      "reference": "BEB-2026-0100"
+     },
+     {
+      "reference": "PA-2026-abc"
+     }
+    ],
+    "ref": null
+   }
+  ],
+  "geste": {
+   "detenteurs": [
+    "da",
+    "direction"
+   ]
+  },
+  "adoption": {
+   "sansDroit": {
+    "ok": false,
+    "code": "ADOPTION_RESERVEE"
+   },
+   "sansMotif": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE"
+   },
+   "exerciceInconnu": {
+    "ok": false,
+    "code": "EXERCICE_INCONNU"
+   },
+   "planVide": {
+    "ok": false,
+    "code": "PLAN_VIDE"
+   },
+   "adopte": {
+    "ok": true,
+    "nbActions": 17
+   },
+   "fiche": {
+    "statut": "actif",
+    "exercice": 2026,
+    "dateAdoption": "2026-10-30",
+    "motif": "Délibération du conseil d’administration du 30/10/2026",
+    "adoptePar": "BASSONGUI Chabi Séko",
+    "nbActions": 17
+   },
+   "deuxieme": {
+    "ok": false,
+    "code": "PLAN_DEJA_ADOPTE"
+   },
+   "apresAdoption": {
+    "modifierContenu": "REFUSE",
+    "modifierTrimestre": "REFUSE",
+    "modifierBudgetPrevu": "REFUSE",
+    "modifierSuivi": "ECRIT",
+    "modifierReel": "ECRIT",
+    "archiver": "REFUSE",
+    "ajouterDirect": "REFUSE",
+    "suiviApres": 77,
+    "realiseApres": 1234
+   },
+   "ajoutSansMotif": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE"
+   },
+   "ajoutApres": {
+    "ok": true,
+    "reference": "PA-2026-018",
+    "fiche": {
+     "statut": "actif",
+     "exercice": 2026,
+     "action": "Ajout",
+     "axe": "qualite",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "ajouteApresAdoption": true,
+     "dateEffet": "2026-10-30",
+     "motifVersion": "Demande de la Direction",
+     "reference": "PA-2026-018",
+     "version": 1
+    }
+   },
+   "reviserSansMotif": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE"
+   },
+   "reviserSuivi": {
+    "ok": false,
+    "code": "CHAMP_HORS_REVISION"
+   },
+   "revision": {
+    "ok": true,
+    "version": 2,
+    "reference": "PA-2026-001",
+    "nouvelle": {
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-001",
+     "version": 2,
+     "action": "Inventaire général des stocks (révisé)",
+     "axe": "digitalisation",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "en_cours",
+     "responsableType": "agent",
+     "responsableRef": "EMP02",
+     "tauxAvancement": 77,
+     "budgetRealise": 1234,
+     "versionDe": "PAT001",
+     "dateEffet": "2026-10-30",
+     "motifVersion": "Report de l’inventaire au deuxième trimestre"
+    },
+    "ancienneStatut": "archive",
+    "ancienneMotif": "Remplacée par la version 2 : Report de l’inventaire au deuxième trimestre",
+    "actives": 1
+   },
+   "revisionDeLAncienne": {
+    "ok": false,
+    "code": "ACTION_INCONNUE"
+   }
+  },
+  "reconduction": {
+   "sourceAvant": [
+    {
+     "id": "PATxmvuswn40s1u3x",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-001",
+     "version": 2,
+     "action": "Inventaire général des stocks (révisé)",
+     "axe": "digitalisation",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "en_cours",
+     "responsableType": "agent",
+     "responsableRef": "EMP02",
+     "tauxAvancement": 77,
+     "budgetRealise": 1234,
+     "versionDe": "PAT001",
+     "dateEffet": "2026-10-30",
+     "motifVersion": "Report de l’inventaire au deuxième trimestre",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "PATxmvuswn40njq88",
+     "statut": "actif",
+     "exercice": 2026,
+     "action": "Ajout",
+     "axe": "qualite",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "ajouteApresAdoption": true,
+     "dateEffet": "2026-10-30",
+     "motifVersion": "Demande de la Direction",
+     "reference": "PA-2026-018",
+     "version": 1,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "PATxmvuswn40utj4f",
+     "statut": "actif",
+     "exercice": 2026,
+     "action": "Révision de la grille des primes",
+     "axe": "ressources_humaines",
+     "trimestreDebut": 2,
+     "trimestreFin": 3,
+     "avancement": "en_cours",
+     "tauxAvancement": 0,
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2026-017",
+     "version": 1,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "PATxmvuswn40zd2ns",
+     "statut": "actif",
+     "exercice": 2026,
+     "action": "Audit qualité",
+     "axe": "qualite",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "en_cours",
+     "tauxAvancement": 40,
+     "budgetId": "BUDPTA1",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2026-016",
+     "version": 1,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "PATxmvuswn409ml56",
+     "statut": "actif",
+     "exercice": 2026,
+     "action": "Acquisition d’un échographe",
+     "axe": "investissement",
+     "trimestreDebut": 3,
+     "trimestreFin": 3,
+     "avancement": "planifiee",
+     "budgetPrevu": 8000000,
+     "indicateur": "Appareil installé",
+     "cible": 1,
+     "valeurAtteinte": 0,
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2026-015",
+     "version": 1,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "PATxmvuswn40df800",
+     "statut": "actif",
+     "exercice": 2026,
+     "action": "Inventaire général des stocks",
+     "axe": "logistique",
+     "trimestreDebut": 1,
+     "trimestreFin": 1,
+     "avancement": "realisee",
+     "budgetPrevu": 500000,
+     "budgetRealise": 450000,
+     "tauxAvancement": 100,
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2026-014",
+     "version": 1,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "PATxmvuswn40zcprf",
+     "statut": "actif",
+     "action": "Campagne de vaccination",
+     "axe": "sante_publique",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "budgetPrevu": 1000000,
+     "indicateur": "Enfants vaccinés",
+     "cible": 200,
+     "avancement": "planifiee",
+     "exercice": 2026,
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2026-013",
+     "version": 1,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "PAT002",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-002",
+     "version": 1,
+     "action": "Numérisation des dossiers patients actifs",
+     "axe": "digitalisation",
+     "trimestreDebut": 2,
+     "trimestreFin": 4,
+     "avancement": "en_cours",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT003",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-003",
+     "version": 1,
+     "action": "Formation du personnel au nouveau logiciel",
+     "axe": "formation",
+     "trimestreDebut": 3,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT004",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-004",
+     "version": 1,
+     "action": "Inventaire général des stocks",
+     "axe": "logistique",
+     "trimestreDebut": 1,
+     "trimestreFin": 1,
+     "avancement": "realisee",
+     "responsableType": "agent",
+     "responsableRef": "EMP37"
+    },
+    {
+     "id": "PAT005",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-005",
+     "version": 1,
+     "action": "Renouvellement des conventions d’assurance",
+     "axe": "partenariats",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "realisee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT006",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-006",
+     "version": 1,
+     "action": "Campagne de dépistage communautaire",
+     "axe": "sante_publique",
+     "trimestreDebut": 2,
+     "trimestreFin": 3,
+     "avancement": "realisee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT007",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-007",
+     "version": 1,
+     "action": "Acquisition d’un nouvel échographe",
+     "axe": "investissement",
+     "trimestreDebut": 3,
+     "trimestreFin": 3,
+     "avancement": "realisee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT008",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-008",
+     "version": 1,
+     "action": "Mise à niveau du réseau informatique",
+     "axe": "investissement",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "realisee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT009",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-009",
+     "version": 1,
+     "action": "Audit qualité et sécurité des patients",
+     "axe": "qualite",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT010",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-010",
+     "version": 1,
+     "action": "Révision de la grille des primes",
+     "axe": "ressources_humaines",
+     "trimestreDebut": 3,
+     "trimestreFin": 3,
+     "avancement": "realisee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02"
+    },
+    {
+     "id": "PAT011",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-011",
+     "version": 1,
+     "action": "Clôture comptable de l’exercice",
+     "axe": "finance",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP03"
+    },
+    {
+     "id": "PAT012",
+     "statut": "actif",
+     "exercice": 2026,
+     "reference": "PA-2026-012",
+     "version": 1,
+     "action": "Rapprochement bancaire mensuel",
+     "axe": "finance",
+     "trimestreDebut": 1,
+     "trimestreFin": 4,
+     "avancement": "en_cours",
+     "responsableType": "agent",
+     "responsableRef": "EMP03"
+    }
+   ],
+   "ok": true,
+   "copiees": [
+    "PA-2027-001",
+    "PA-2027-002",
+    "PA-2027-003",
+    "PA-2027-004",
+    "PA-2027-005",
+    "PA-2027-006",
+    "PA-2027-007",
+    "PA-2027-008",
+    "PA-2027-009",
+    "PA-2027-010",
+    "PA-2027-011"
+   ],
+   "ignorees": [],
+   "fiches": [
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Inventaire général des stocks (révisé)",
+     "axe": "digitalisation",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02",
+     "reference": "PA-2027-001",
+     "version": 1,
+     "reconduiteDe": "PATxmvuswn40s1u3x",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-001"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Ajout",
+     "axe": "qualite",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2027-002",
+     "version": 1,
+     "reconduiteDe": "PATxmvuswn40njq88",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-018"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Révision de la grille des primes",
+     "axe": "ressources_humaines",
+     "trimestreDebut": 2,
+     "trimestreFin": 3,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2027-003",
+     "version": 1,
+     "reconduiteDe": "PATxmvuswn40utj4f",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-017"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Audit qualité",
+     "axe": "qualite",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2027-004",
+     "version": 1,
+     "reconduiteDe": "PATxmvuswn40zd2ns",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-016",
+     "budgetId": "BUDPTA1"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Acquisition d’un échographe",
+     "axe": "investissement",
+     "trimestreDebut": 3,
+     "trimestreFin": 3,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2027-005",
+     "version": 1,
+     "reconduiteDe": "PATxmvuswn409ml56",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-015",
+     "budgetPrevu": 8000000,
+     "indicateur": "Appareil installé",
+     "cible": 1
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Campagne de vaccination",
+     "axe": "sante_publique",
+     "trimestreDebut": 1,
+     "trimestreFin": 2,
+     "avancement": "planifiee",
+     "responsableType": "poste",
+     "responsableRef": "PST003",
+     "reference": "PA-2027-006",
+     "version": 1,
+     "reconduiteDe": "PATxmvuswn40zcprf",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-013",
+     "budgetPrevu": 1000000,
+     "indicateur": "Enfants vaccinés",
+     "cible": 200
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Numérisation des dossiers patients actifs",
+     "axe": "digitalisation",
+     "trimestreDebut": 2,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02",
+     "reference": "PA-2027-007",
+     "version": 1,
+     "reconduiteDe": "PAT002",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-002"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Formation du personnel au nouveau logiciel",
+     "axe": "formation",
+     "trimestreDebut": 3,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02",
+     "reference": "PA-2027-008",
+     "version": 1,
+     "reconduiteDe": "PAT003",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-003"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Audit qualité et sécurité des patients",
+     "axe": "qualite",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP02",
+     "reference": "PA-2027-009",
+     "version": 1,
+     "reconduiteDe": "PAT009",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-009"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Clôture comptable de l’exercice",
+     "axe": "finance",
+     "trimestreDebut": 4,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP03",
+     "reference": "PA-2027-010",
+     "version": 1,
+     "reconduiteDe": "PAT011",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-011"
+    },
+    {
+     "statut": "actif",
+     "exercice": 2027,
+     "action": "Rapprochement bancaire mensuel",
+     "axe": "finance",
+     "trimestreDebut": 1,
+     "trimestreFin": 4,
+     "avancement": "planifiee",
+     "responsableType": "agent",
+     "responsableRef": "EMP03",
+     "reference": "PA-2027-011",
+     "version": 1,
+     "reconduiteDe": "PAT012",
+     "reconduiteLe": "2026-10-30",
+     "reconduiteDepuis": "PA-2026-012"
+    }
+   ],
+   "seconde": {
+    "ok": true,
+    "copiees": [],
+    "ignorees": [
+     "PA-2026-001",
+     "PA-2026-018",
+     "PA-2026-017",
+     "PA-2026-016",
+     "PA-2026-015",
+     "PA-2026-013",
+     "PA-2026-002",
+     "PA-2026-003",
+     "PA-2026-009",
+     "PA-2026-011",
+     "PA-2026-012"
+    ]
+   },
+   "memeExercice": {
+    "ok": false,
+    "code": "RECONDUCTION_MEME_EXERCICE"
+   },
+   "versPlanAdopte": {
+    "ok": false,
+    "code": "PLAN_ADOPTE_FIGE"
+   },
+   "sourceIntacte": 18
+  },
+  "alertes": {
+   "avril": [],
+   "juillet": [
+    "PA-2026-001:2",
+    "PA-2026-013:1"
+   ],
+   "octobre": [
+    "PA-2026-001:2",
+    "PA-2026-013:1",
+    "PA-2026-015:1",
+    "PA-2026-017:1"
+   ],
+   "janvier": [
+    "PA-2026-001:2",
+    "PA-2026-002:1",
+    "PA-2026-003:1",
+    "PA-2026-009:1",
+    "PA-2026-011:1",
+    "PA-2026-012:1",
+    "PA-2026-013:1",
+    "PA-2026-015:1",
+    "PA-2026-016:1",
+    "PA-2026-017:1",
+    "PA-2026-018:1"
+   ],
+   "apresRealisation": {
+    "avant": 4,
+    "apres": 3
+   }
+  },
+  "signataires": {
+   "semes": {
+    "version": {
+     "id": "RPL-001",
+     "statut": "actif",
+     "dateEffet": null,
+     "signataires": [
+      {
+       "posteId": "PST002"
+      },
+      {
+       "posteId": "PST001"
+      }
+     ],
+     "motif": "Défaut semé : la Directrice Administrative et le Directeur Médical, comme l’impression d’avant",
+     "creeLe": "2026-11-16",
+     "creePar": "Semence du socle"
+    },
+    "signataires": [
+     {
+      "posteId": "PST002",
+      "fonction": "Directrice Administrative (DA)",
+      "nom": "TAKI Alimatou épse BASSONGUI"
+     },
+     {
+      "posteId": "PST001",
+      "fonction": "Directeur Médical",
+      "nom": "BASSONGUI Chabi Séko"
+     }
+    ]
+   },
+   "sansDroit": {
+    "ok": false,
+    "code": "PARAMETRE_CLINIQUE_RESERVE"
+   },
+   "vide": {
+    "ok": false,
+    "code": "SIGNATAIRES_NOMBRE"
+   },
+   "inconnu": {
+    "ok": false,
+    "code": "SIGNATAIRE_INCONNU"
+   },
+   "sansMotif": {
+    "ok": false,
+    "code": "PARAMETRE_MOTIF_OBLIGATOIRE"
+   },
+   "version": {
+    "ok": true,
+    "avant": [
+     {
+      "posteId": "PST002",
+      "fonction": "Directrice Administrative (DA)",
+      "nom": "TAKI Alimatou épse BASSONGUI"
+     },
+     {
+      "posteId": "PST001",
+      "fonction": "Directeur Médical",
+      "nom": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "apres": [
+     {
+      "posteId": "PST003",
+      "fonction": "Comptable",
+      "nom": "KASSA Augustin"
+     }
+    ]
+   },
+   "anterieure": {
+    "ok": false,
+    "code": "DATE_EFFET_ANTERIEURE"
+   }
+  }
+ },
+ "ecran": {
+  "kpis": [
+   {
+    "libelle": "Actions programmées",
+    "valeur": "18",
+    "indice": null
+   },
+   {
+    "libelle": "Réalisées",
+    "valeur": "8",
+    "indice": null
+   },
+   {
+    "libelle": "En cours",
+    "valeur": "4",
+    "indice": null
+   },
+   {
+    "libelle": "Planifiées",
+    "valeur": "6",
+    "indice": null
+   },
+   {
+    "libelle": "En retard",
+    "valeur": "3",
+    "indice": null
+   },
+   {
+    "libelle": "Avancement moyen",
+    "valeur": "54 %",
+    "indice": "14 action(s) sans pourcentage"
+   },
+   {
+    "libelle": "Budget prévu",
+    "valeur": "9 500 000",
+    "indice": "15 action(s) sans budget"
+   },
+   {
+    "libelle": "Budget réalisé",
+    "valeur": "451 234",
+    "indice": "16 action(s) sans réalisé"
+   }
+  ],
+  "boutons": [
+   "Ajouter après adoption",
+   "Imprimer le plan",
+   "Imprimer le bilan",
+   "Signataires de l’impression",
+   "Exporter",
+   "Colonnes",
+   "Exporter",
+   "Cocher les 18 lignes filtrées",
+   "Exporter la sélection",
+   "Imprimer la sélection",
+   "Tout désélectionner",
+   "Suivre l’action"
+  ],
+  "tableaux": [
+   {
+    "entetes": [
+     "ACTION",
+     "AXE",
+     "T1",
+     "T2",
+     "T3",
+     "T4",
+     "AVANCEMENT"
+    ],
+    "lignes": [
+     [
+      "Inventaire général des stocks (révisé)",
+      "Digitalisation",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Inventaire général des stocks",
+      "Logistique",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Campagne de vaccination",
+      "Santé publique",
+      "",
+      "",
+      "",
+      "",
+      "Planifiée"
+     ],
+     [
+      "Inventaire général des stocks",
+      "Logistique",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Renouvellement des conventions d’assurance",
+      "Partenariats",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Mise à niveau du réseau informatique",
+      "Investissement",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Rapprochement bancaire mensuel",
+      "Finance",
+      "",
+      "",
+      "",
+      "",
+      "En cours"
+     ],
+     [
+      "Révision de la grille des primes",
+      "Ressources humaines",
+      "",
+      "",
+      "",
+      "",
+      "En cours"
+     ],
+     [
+      "Numérisation des dossiers patients actifs",
+      "Digitalisation",
+      "",
+      "",
+      "",
+      "",
+      "En cours"
+     ],
+     [
+      "Campagne de dépistage communautaire",
+      "Santé publique",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Acquisition d’un échographe",
+      "Investissement",
+      "",
+      "",
+      "",
+      "",
+      "Planifiée"
+     ],
+     [
+      "Formation du personnel au nouveau logiciel",
+      "Formation",
+      "",
+      "",
+      "",
+      "",
+      "Planifiée"
+     ],
+     [
+      "Acquisition d’un nouvel échographe",
+      "Investissement",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Révision de la grille des primes",
+      "Ressources humaines",
+      "",
+      "",
+      "",
+      "",
+      "Réalisée"
+     ],
+     [
+      "Ajout",
+      "Qualité",
+      "",
+      "",
+      "",
+      "",
+      "Planifiée"
+     ],
+     [
+      "Audit qualité",
+      "Qualité",
+      "",
+      "",
+      "",
+      "",
+      "En cours"
+     ],
+     [
+      "Audit qualité et sécurité des patients",
+      "Qualité",
+      "",
+      "",
+      "",
+      "",
+      "Planifiée"
+     ],
+     [
+      "Clôture comptable de l’exercice",
+      "Finance",
+      "",
+      "",
+      "",
+      "",
+      "Planifiée"
+     ]
+    ]
+   },
+   {
+    "entetes": [
+     "N°",
+     "ACTION",
+     "AXE",
+     "PÉRIODE",
+     "RESPONSABLE",
+     "AVANCEMENT",
+     "TAUX",
+     "BUDGET PRÉVU",
+     "BUDGET RÉALISÉ",
+     "LIGNE BUDGETS",
+     "INDICATEUR",
+     "ACTIONS"
+    ],
+    "lignes": [
+     [
+      "PA-2026-001 v2",
+      "Inventaire général des stocks (révisé)",
+      "Digitalisation",
+      "T1 à T2",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "Réalisée",
+      "77 %",
+      "Non renseigné",
+      "1 234",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-018",
+      "Ajout",
+      "Qualité",
+      "T4 à T4",
+      "Comptable : KASSA Augustin",
+      "Planifiée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-017",
+      "Révision de la grille des primes",
+      "Ressources humaines",
+      "T2 à T3",
+      "Comptable : KASSA Augustin",
+      "En cours En retard",
+      "0 %",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-016",
+      "Audit qualité",
+      "Qualité",
+      "T4 à T4",
+      "Comptable : KASSA Augustin",
+      "En cours",
+      "40 %",
+      "Non renseigné",
+      "Non renseigné",
+      "BG-2026-001",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-015",
+      "Acquisition d’un échographe",
+      "Investissement",
+      "T3 à T3",
+      "Comptable : KASSA Augustin",
+      "Planifiée En retard",
+      "Non renseigné",
+      "8 000 000",
+      "Non renseigné",
+      "Non rattaché",
+      "Appareil installé : 0 %",
+      ""
+     ],
+     [
+      "PA-2026-014",
+      "Inventaire général des stocks",
+      "Logistique",
+      "T1 à T1",
+      "Comptable : KASSA Augustin",
+      "Réalisée",
+      "100 %",
+      "500 000",
+      "450 000",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-013",
+      "Campagne de vaccination",
+      "Santé publique",
+      "T1 à T2",
+      "Comptable : KASSA Augustin",
+      "Planifiée En retard",
+      "Non renseigné",
+      "1 000 000",
+      "Non renseigné",
+      "Non rattaché",
+      "Enfants vaccinés : non calculable",
+      ""
+     ],
+     [
+      "PA-2026-002",
+      "Numérisation des dossiers patients actifs",
+      "Digitalisation",
+      "T2 à T4",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "En cours",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-003",
+      "Formation du personnel au nouveau logiciel",
+      "Formation",
+      "T3 à T4",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "Planifiée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-004",
+      "Inventaire général des stocks",
+      "Logistique",
+      "T1 à T1",
+      "MAMAN Zoukanéri (Gestionnaire de Stock)",
+      "Réalisée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-005",
+      "Renouvellement des conventions d’assurance",
+      "Partenariats",
+      "T1 à T2",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "Réalisée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-006",
+      "Campagne de dépistage communautaire",
+      "Santé publique",
+      "T2 à T3",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "Réalisée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-007",
+      "Acquisition d’un nouvel échographe",
+      "Investissement",
+      "T3 à T3",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "Réalisée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-008",
+      "Mise à niveau du réseau informatique",
+      "Investissement",
+      "T1 à T2",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "Réalisée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ],
+     [
+      "PA-2026-009",
+      "Audit qualité et sécurité des patients",
+      "Qualité",
+      "T4 à T4",
+      "TAKI Alimatou (Directrice de l’Administration et des Finances)",
+      "Planifiée",
+      "Non renseigné",
+      "Non renseigné",
+      "Non renseigné",
+      "Non rattaché",
+      "Aucun",
+      ""
+     ]
+    ]
+   }
+  ],
+  "boutonsLigne": [
+   "Suivre l’action",
+   "Réviser (version datée)"
+  ],
+  "etatPlan": {
+   "titre": "Plan annuel de travail",
+   "sousTitre": "Exercice 2026, adopté le 30/10/2026",
+   "cartouche": [
+    [
+     "Exercice",
+     "2026"
+    ],
+    [
+     "Actions programmées",
+     "18"
+    ],
+    [
+     "Réalisées",
+     "8"
+    ],
+    [
+     "Date d’édition",
+     "30/10/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Directrice Administrative (DA)",
+     "nom": "TAKI Alimatou épse BASSONGUI"
+    },
+    {
+     "role": "Directeur Médical",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "tableaux": [],
+   "texte": "N°ActionAxePériodeResponsableAvancementPA-2026-001Inventaire général des stocks (révisé)DigitalisationT1 à T2TAKI Alimatou (Directrice de l’Administration et des Finances)RéaliséePA-2026-014Inventaire général des stocksLogistiqueT1 à T1Comptable : KASSA AugustinRéaliséePA-2026-013Campagne de vaccinationSanté publiqueT1 à T2Comptable : KASSA AugustinPlanifiéePA-2026-004Inventaire général des stocksLogistiqueT1 à T1MAMAN Zoukanéri (Gestionnaire de Stock)RéaliséePA-2026-005Renouvellement des conventions d’assurancePartenariatsT1 à T2TAKI Alimatou (Directrice de l’Administration et des Finances)RéaliséePA-2026-008Mise à niveau du réseau informatiqueInvestissementT1 à T2TAKI Alimatou (Directrice de l’Administration et des Finances)RéaliséePA-2026-012Rapprochement bancaire mensuelFinanceT1 à T4KASSA Augustin (Comptable)En coursPA-2026-017Révision de la grille des primesRessources humainesT2 à T3Comptable : KASSA AugustinEn coursPA-2026-002Numérisation des dossiers patients actifsDigitalisationT2 à T4TAKI Alimatou (Directrice de l’Administration et des Finances)En coursPA-2026-006Campagne de dépistage communautaireSanté publiqueT2 à T3TAKI Alimatou (Directrice de l’Administration et des Finances)RéaliséePA-2026-015Acquisition d’un échographeInvestissementT3 à T3Comptable : KASSA AugustinPlanifiéePA-2026-003Formation du personnel au nouveau logicielFormationT3 à T4TAKI Alimatou (Directrice de l’Administration et des Finances)PlanifiéePA-2026-007Acquisition d’un nouvel échographeInvestissementT3 à T3TAKI Alimatou (Directrice de l’Administration et des Finances)RéaliséePA-2026-010Révision de la grille des primesRessources humainesT3 à T3TAKI Alimatou (Directrice de l’Administration et des Finances)RéaliséePA-2026-018AjoutQualitéT4 à T4Comptable : KASSA AugustinPlanifiéePA-2026-016Audit qualitéQualitéT4 à T4Comptable : KASSA AugustinEn coursPA-2026-009Audit qualité et sécurité des patientsQualitéT4 à T4TAKI Alimatou (Directrice de l’Administration et des Finances)PlanifiéePA-2026-011Clôture comptable de l’exerciceFinanceT4 à T4KASSA Augustin (Comptable)Planifiée"
+  },
+  "etatBilan": {
+   "titre": "Bilan du plan annuel de travail",
+   "sousTitre": "Exercice 2026 : réalisé contre prévu",
+   "cartouche": [
+    [
+     "Exercice",
+     "2026"
+    ],
+    [
+     "Actions",
+     "18"
+    ],
+    [
+     "Réalisées",
+     "8"
+    ],
+    [
+     "Date d’édition",
+     "30/10/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Directrice Administrative (DA)",
+     "nom": "TAKI Alimatou épse BASSONGUI"
+    },
+    {
+     "role": "Directeur Médical",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "Action",
+      "État",
+      "Taux",
+      "Budget prévu",
+      "Budget réalisé",
+      "Indicateur"
+     ],
+     "lignes": [
+      [
+       "PA-2026-001",
+       "Inventaire général des stocks (révisé)",
+       "Réalisée",
+       "77 %",
+       "Non renseigné",
+       "1 234",
+       "Aucun"
+      ],
+      [
+       "PA-2026-014",
+       "Inventaire général des stocks",
+       "Réalisée",
+       "100 %",
+       "500 000",
+       "450 000",
+       "Aucun"
+      ],
+      [
+       "PA-2026-013",
+       "Campagne de vaccination",
+       "Planifiée",
+       "Non renseigné",
+       "1 000 000",
+       "Non renseigné",
+       "Enfants vaccinés : non calculable"
+      ],
+      [
+       "PA-2026-004",
+       "Inventaire général des stocks",
+       "Réalisée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-005",
+       "Renouvellement des conventions d’assurance",
+       "Réalisée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-008",
+       "Mise à niveau du réseau informatique",
+       "Réalisée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-012",
+       "Rapprochement bancaire mensuel",
+       "En cours",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-017",
+       "Révision de la grille des primes",
+       "En cours",
+       "0 %",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-002",
+       "Numérisation des dossiers patients actifs",
+       "En cours",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-006",
+       "Campagne de dépistage communautaire",
+       "Réalisée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-015",
+       "Acquisition d’un échographe",
+       "Planifiée",
+       "Non renseigné",
+       "8 000 000",
+       "Non renseigné",
+       "Appareil installé : 0 % de la cible"
+      ],
+      [
+       "PA-2026-003",
+       "Formation du personnel au nouveau logiciel",
+       "Planifiée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-007",
+       "Acquisition d’un nouvel échographe",
+       "Réalisée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-010",
+       "Révision de la grille des primes",
+       "Réalisée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-018",
+       "Ajout",
+       "Planifiée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-016",
+       "Audit qualité",
+       "En cours",
+       "40 %",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-009",
+       "Audit qualité et sécurité des patients",
+       "Planifiée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ],
+      [
+       "PA-2026-011",
+       "Clôture comptable de l’exercice",
+       "Planifiée",
+       "Non renseigné",
+       "Non renseigné",
+       "Non renseigné",
+       "Aucun"
+      ]
+     ],
+     "pied": [
+      [
+       "TOTAL (calculé)",
+       "",
+       "",
+       "",
+       "9 500 000",
+       "451 234",
+       ""
+      ]
+     ]
+    }
+   ],
+   "texte": "N°ActionÉtatTauxBudget prévuBudget réaliséIndicateurPA-2026-001Inventaire général des stocks (révisé)Réalisée77 %Non renseigné1 234AucunPA-2026-014Inventaire général des stocksRéalisée100 %500 000450 000AucunPA-2026-013Campagne de vaccinationPlanifiéeNon renseigné1 000 000Non renseignéEnfants vaccinés : non calculablePA-2026-004Inventaire général des stocksRéaliséeNon renseignéNon renseignéNon renseignéAucunPA-2026-005Renouvellement des conventions d’assuranceRéaliséeNon renseignéNon renseignéNon renseignéAucunPA-2026-008Mise à niveau du réseau informatiqueRéaliséeNon renseignéNon renseignéNon renseignéAucunPA-2026-012Rapprochement bancaire mensuelEn coursNon renseignéNon renseignéNon renseignéAucunPA-2026-017Révision de la grille des primesEn cours0 %Non renseignéNon renseignéAucunPA-2026-002Numérisation des dossiers patients actifsEn coursNon renseignéNon renseignéNon renseignéAucunPA-2026-006Campagne de dépistage communautaireRéaliséeNon renseignéNon renseignéNon renseignéAucunPA-2026-015Acquisition d’un échographePlanifiéeNon renseigné8 000 000Non renseignéAppareil installé : 0 % de la ciblePA-2026-003Formation du personnel au nouveau logicielPlanifiéeNon renseignéNon renseignéNon renseignéAucunPA-2026-007Acquisition d’un nouvel échographeRéaliséeNon renseignéNon renseignéNon renseignéAucunPA-2026-010Révision de la grille des primesRéaliséeNon renseignéNon renseignéNon renseignéAucunPA-2026-018AjoutPlanifiéeNon renseignéNon renseignéNon renseignéAucunPA-2026-016Audit qualitéEn cours40 %Non renseignéNon renseignéAucunPA-2026-009Audit qualité et sécurité des patientsPlanifiéeNon renseignéNon renseignéNon renseignéAucunPA-2026-011Clôture comptable de l’exercicePlanifiéeNon renseignéNon renseignéNon renseignéAucunTOTAL (calculé)9 500 000451 234Avancement moyen : 54 % (14 action(s) sans pourcentage, non comptée(s) comme zéro). Écart budgétaire : 9 048 766 ; 15 action(s) sans budget prévu."
+  }
+ }
+}

@@ -1,0 +1,8751 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-planning-rh.js : planning RH (régime individuel, circuit de validation, propositions), le moteur de la maquette piloté dans Chrome. Ne pas éditer.",
+ "regimesActifs": [
+  {
+   "id": "REG01",
+   "statut": "actif",
+   "fonctions": [
+    "medecin"
+   ],
+   "libelle": "Médecins",
+   "vacations": [
+    "garde"
+   ],
+   "repos": "repos48",
+   "cycle": 2,
+   "source": "Planning de travail des médecins",
+   "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h."
+  },
+  {
+   "id": "REG02",
+   "statut": "actif",
+   "fonctions": [
+    "infirmier"
+   ],
+   "libelle": "Infirmiers",
+   "vacations": [
+    "garde_soins",
+    "garde_hospi"
+   ],
+   "repos": "repos48",
+   "cycle": 3,
+   "joursTravaillesMois": 20,
+   "source": "Planning de travail des infirmiers",
+   "mention": "Deux postes distincts : garde soins de 08h à 18h30 et garde hospitalisation de 08h à 08h. Vingt jours travaillés par mois et par agent."
+  },
+  {
+   "id": "REG03",
+   "statut": "actif",
+   "fonctions": [
+    "sage_femme"
+   ],
+   "libelle": "Sages-femmes",
+   "vacations": [
+    "garde"
+   ],
+   "repos": "repos24",
+   "cycle": 2,
+   "source": "Planning de travail des sages-femmes",
+   "mention": "Garde de 24 h en alternance quotidienne, suivie d’un repos de 24 h."
+  },
+  {
+   "id": "REG04",
+   "statut": "actif",
+   "fonctions": [
+    "aide_soignant"
+   ],
+   "libelle": "Aides-soignants",
+   "vacations": [
+    "garde"
+   ],
+   "repos": "repos48",
+   "cycle": 3,
+   "source": "Planning de travail des aides-soignants",
+   "mention": "Rotation à trois : un agent de garde, deux au repos."
+  },
+  {
+   "id": "REG05",
+   "statut": "actif",
+   "fonctions": [
+    "accueil",
+    "caissiere"
+   ],
+   "libelle": "Secrétaires médicaux et caisse",
+   "vacations": [
+    "garde",
+    "permanence"
+   ],
+   "repos": "repos24",
+   "cycle": 3,
+   "source": "Planning de travail des secrétaires",
+   "mention": "Garde de 24 h et permanence de 08h à 18h ; pas de permanence le dimanche."
+  },
+  {
+   "id": "REG06",
+   "statut": "actif",
+   "fonctions": [
+    "entretien"
+   ],
+   "libelle": "Agents d’entretien",
+   "vacations": [
+    "permanence",
+    "entretien_general"
+   ],
+   "repos": null,
+   "cycle": 3,
+   "source": "Planning des agents d’entretien",
+   "mention": "Rotation « P » (permanence) et « EGJ » (entretien général de la journée)."
+  },
+  {
+   "id": "REG07",
+   "statut": "actif",
+   "fonctions": [
+    "securite"
+   ],
+   "libelle": "Agents de sécurité",
+   "vacations": [
+    "garde",
+    "soiree"
+   ],
+   "repos": "repos24",
+   "cycle": 3,
+   "source": "Planning des agents de sécurité",
+   "mention": "Rotation « G » (garde 24 h), « S » (soirée de 18h à 8h) et « R » (repos)."
+  },
+  {
+   "id": "REG08",
+   "statut": "actif",
+   "fonctions": [
+    "aide_soignant",
+    "entretien"
+   ],
+   "libelle": "Incinération des déchets de l’hôpital",
+   "vacations": [
+    "incineration"
+   ],
+   "repos": null,
+   "cycle": 7,
+   "honoraire": 5000,
+   "honoraireMode": "fixe",
+   "honorairePeriodicite": "mensuelle",
+   "source": "NS n° 132/07/DM/DA/CNT/2026 — prime d’incinération",
+   "mention": "Incinération des déchets hospitaliers, poste hebdomadaire rémunéré 5 000 FCFA par mois au titre de la prime d’incinération (NS 132)."
+  }
+ ],
+ "agents": [
+  {
+   "id": "EMP01",
+   "nomComplet": "BASSONGUI Chabi Séko",
+   "fonction": "medecin",
+   "matricule": "1",
+   "service": "Direction"
+  },
+  {
+   "id": "EMP05",
+   "nomComplet": "YENI M’PO Florent",
+   "fonction": "medecin",
+   "matricule": "5",
+   "service": "Médecine générale"
+  },
+  {
+   "id": "EMP10",
+   "nomComplet": "GARBA Yahouza",
+   "fonction": "infirmier",
+   "matricule": "10",
+   "service": "Soins infirmiers"
+  },
+  {
+   "id": "EMP18",
+   "nomComplet": "BADO BANI A. B. Zoulehath",
+   "fonction": "sage_femme",
+   "matricule": "18",
+   "service": "Maternité"
+  }
+ ],
+ "regime": [
+  {
+   "nom": "sans version : la catégorie des médecins",
+   "fonction": "medecin",
+   "versions": [],
+   "date": "2026-11-10",
+   "attendu": {
+    "date": "2026-11-10",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos48",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": null,
+    "dateEffet": null,
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "version à venir : pas encore en vigueur",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "repos": "repos24",
+      "honoraire": 20000
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-04",
+   "attendu": {
+    "date": "2026-11-04",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos48",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": null,
+    "dateEffet": null,
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "version atteinte le jour même : repos 24 h et honoraire, le reste de la catégorie",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "repos": "repos24",
+      "honoraire": 20000
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-05",
+   "attendu": {
+    "date": "2026-11-05",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos24",
+    "cycle": 2,
+    "honoraire": 20000,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": true,
+    "derogations": [
+     "repos",
+     "honoraire"
+    ],
+    "versionId": "RGI-EMP01-2026-11-05",
+    "dateEffet": "2026-11-05",
+    "mode": "deroge",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "retour à la catégorie : la dérogation s’arrête",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    },
+    {
+     "id": "RGI-EMP01-2026-12-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-12-01",
+     "champs": {},
+     "retourCategorie": true,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-12-02",
+   "attendu": {
+    "date": "2026-12-02",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos48",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": "RGI-EMP01-2026-12-01",
+    "dateEffet": "2026-12-01",
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "entre la dérogation et le retour",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    },
+    {
+     "id": "RGI-EMP01-2026-12-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-12-01",
+     "champs": {},
+     "retourCategorie": true,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-30",
+   "attendu": {
+    "date": "2026-11-30",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos24",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": true,
+    "derogations": [
+     "repos"
+    ],
+    "versionId": "RGI-EMP01-2026-11-05",
+    "dateEffet": "2026-11-05",
+    "mode": "deroge",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "« aucun » repos : le repos codifié disparaît",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "repos": "aucun"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-06",
+   "attendu": {
+    "date": "2026-11-06",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": null,
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": true,
+    "derogations": [
+     "repos"
+    ],
+    "versionId": "RGI-EMP01-2026-11-05",
+    "dateEffet": "2026-11-05",
+    "mode": "deroge",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "vacations et cycle dérogés, honoraire de la catégorie conservé",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "vacations": [
+       "garde",
+       "permanence"
+      ],
+      "cycle": 4,
+      "honorairePeriodicite": "occurrence"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-06",
+   "attendu": {
+    "date": "2026-11-06",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde",
+     "permanence"
+    ],
+    "repos": "repos48",
+    "cycle": 4,
+    "honoraire": null,
+    "honorairePeriodicite": "occurrence",
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": true,
+    "derogations": [
+     "vacations",
+     "cycle",
+     "honorairePeriodicite"
+    ],
+    "versionId": "RGI-EMP01-2026-11-05",
+    "dateEffet": "2026-11-05",
+    "mode": "deroge",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "une version pose les champs dérogés, la suivante les REMPLACE (pas de cumul)",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "repos": "repos24",
+      "honoraire": 20000
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    },
+    {
+     "id": "RGI-EMP01-2026-11-20",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-20",
+     "champs": {
+      "cycle": 5
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-21",
+   "attendu": {
+    "date": "2026-11-21",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos48",
+    "cycle": 5,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": true,
+    "derogations": [
+     "cycle"
+    ],
+    "versionId": "RGI-EMP01-2026-11-20",
+    "dateEffet": "2026-11-20",
+    "mode": "deroge",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "les versions d’un autre agent ne comptent pas",
+   "fonction": "medecin",
+   "versions": [],
+   "date": "2026-11-10",
+   "attendu": {
+    "date": "2026-11-10",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos48",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": null,
+    "dateEffet": null,
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "mode REMPLACE : rien n’est hérité (cycle et honoraire de la catégorie disparaissent)",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "vacations": [
+       "garde",
+       "permanence"
+      ],
+      "repos": "repos24"
+     },
+     "mode": "remplace",
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-06",
+   "attendu": {
+    "date": "2026-11-06",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde",
+     "permanence"
+    ],
+    "repos": "repos24",
+    "cycle": null,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": null,
+    "mention": null,
+    "individuel": true,
+    "derogations": [
+     "vacations",
+     "repos",
+     "cycle",
+     "honoraire",
+     "honorairePeriodicite"
+    ],
+    "versionId": "RGI-EMP01-2026-11-05",
+    "dateEffet": "2026-11-05",
+    "mode": "remplace",
+    "remplace": true
+   }
+  },
+  {
+   "nom": "mode REMPLACE avec cycle et honoraire propres",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "vacations": [
+       "permanence"
+      ],
+      "repos": "aucun",
+      "cycle": 6,
+      "honoraire": 15000,
+      "honorairePeriodicite": "mensuelle"
+     },
+     "mode": "remplace",
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-06",
+   "attendu": {
+    "date": "2026-11-06",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "permanence"
+    ],
+    "repos": null,
+    "cycle": 6,
+    "honoraire": 15000,
+    "honorairePeriodicite": "mensuelle",
+    "source": null,
+    "mention": null,
+    "individuel": true,
+    "derogations": [
+     "vacations",
+     "repos",
+     "cycle",
+     "honoraire",
+     "honorairePeriodicite"
+    ],
+    "versionId": "RGI-EMP01-2026-11-05",
+    "dateEffet": "2026-11-05",
+    "mode": "remplace",
+    "remplace": true
+   }
+  },
+  {
+   "nom": "mode REMPLACE pas encore en vigueur : la catégorie",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "vacations": [
+       "permanence"
+      ],
+      "repos": "repos24"
+     },
+     "mode": "remplace",
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-04",
+   "attendu": {
+    "date": "2026-11-04",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos48",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": null,
+    "dateEffet": null,
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "déroge puis remplace : la dernière version fait foi, sans cumul",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "honoraire": 20000
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    },
+    {
+     "id": "RGI-EMP01-2026-11-20",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-20",
+     "champs": {
+      "vacations": [
+       "garde"
+      ],
+      "repos": "repos24"
+     },
+     "mode": "remplace",
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-11-21",
+   "attendu": {
+    "date": "2026-11-21",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos24",
+    "cycle": null,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": null,
+    "mention": null,
+    "individuel": true,
+    "derogations": [
+     "vacations",
+     "repos",
+     "cycle",
+     "honoraire",
+     "honorairePeriodicite"
+    ],
+    "versionId": "RGI-EMP01-2026-11-20",
+    "dateEffet": "2026-11-20",
+    "mode": "remplace",
+    "remplace": true
+   }
+  },
+  {
+   "nom": "remplace puis retour à la catégorie",
+   "fonction": "medecin",
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "vacations": [
+       "garde"
+      ],
+      "repos": "repos24"
+     },
+     "mode": "remplace",
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    },
+    {
+     "id": "RGI-EMP01-2026-12-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-12-01",
+     "champs": {},
+     "retourCategorie": true,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "date": "2026-12-02",
+   "attendu": {
+    "date": "2026-12-02",
+    "categorie": "Médecins",
+    "libelle": "Médecins",
+    "fonctions": [
+     "medecin"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos48",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des médecins",
+    "mention": "Garde de 24 h (08h→08h), suivie d’un repos de 48 h.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": "RGI-EMP01-2026-12-01",
+    "dateEffet": "2026-12-01",
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "infirmier sans dérogation",
+   "fonction": "infirmier",
+   "versions": [],
+   "date": "2026-11-10",
+   "attendu": {
+    "date": "2026-11-10",
+    "categorie": "Infirmiers",
+    "libelle": "Infirmiers",
+    "fonctions": [
+     "infirmier"
+    ],
+    "vacations": [
+     "garde_soins",
+     "garde_hospi"
+    ],
+    "repos": "repos48",
+    "cycle": 3,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des infirmiers",
+    "mention": "Deux postes distincts : garde soins de 08h à 18h30 et garde hospitalisation de 08h à 08h. Vingt jours travaillés par mois et par agent.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": null,
+    "dateEffet": null,
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "sage-femme sans dérogation (repos 24 h de la catégorie)",
+   "fonction": "sage_femme",
+   "versions": [],
+   "date": "2026-11-10",
+   "attendu": {
+    "date": "2026-11-10",
+    "categorie": "Sages-femmes",
+    "libelle": "Sages-femmes",
+    "fonctions": [
+     "sage_femme"
+    ],
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos24",
+    "cycle": 2,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": "Planning de travail des sages-femmes",
+    "mention": "Garde de 24 h en alternance quotidienne, suivie d’un repos de 24 h.",
+    "individuel": false,
+    "derogations": [],
+    "versionId": null,
+    "dateEffet": null,
+    "mode": "categorie",
+    "remplace": false
+   }
+  },
+  {
+   "nom": "fonction sans régime : rien d’inventé",
+   "fonction": "fonction_inconnue",
+   "versions": [],
+   "date": "2026-11-10",
+   "attendu": {
+    "date": "2026-11-10",
+    "categorie": null,
+    "libelle": null,
+    "fonctions": [],
+    "vacations": [],
+    "repos": null,
+    "cycle": null,
+    "honoraire": null,
+    "honorairePeriodicite": null,
+    "source": null,
+    "mention": null,
+    "individuel": false,
+    "derogations": [],
+    "versionId": null,
+    "dateEffet": null,
+    "mode": "categorie",
+    "remplace": false
+   }
+  }
+ ],
+ "deroger": [
+  {
+   "nom": "repos 24 h et honoraire",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos24",
+    "honoraire": 20000
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {
+     "repos": "repos24",
+     "honoraire": 20000
+    },
+    "retourCategorie": false,
+    "version": 1,
+    "mode": "deroge"
+   }
+  },
+  {
+   "nom": "date à venir, vacations et cycle",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-11-15",
+   "champs": {
+    "vacations": [
+     "garde",
+     "permanence"
+    ],
+    "cycle": 4
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {
+     "vacations": [
+      "garde",
+      "permanence"
+     ],
+     "cycle": 4
+    },
+    "retourCategorie": false,
+    "version": 1,
+    "mode": "deroge"
+   }
+  },
+  {
+   "nom": "honoraire à zéro et périodicité",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "honoraire": 0,
+    "honorairePeriodicite": "occurrence"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {
+     "honoraire": 0,
+     "honorairePeriodicite": "occurrence"
+    },
+    "retourCategorie": false,
+    "version": 1,
+    "mode": "deroge"
+   }
+  },
+  {
+   "nom": "retour à la catégorie (aucun champ requis)",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-10-30",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-10-30",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "dateEffet": "2026-11-15",
+   "champs": {},
+   "retour": true,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {},
+    "retourCategorie": true,
+    "version": 2,
+    "mode": null
+   }
+  },
+  {
+   "nom": "rôle caissier",
+   "role": "caissier",
+   "droit": false,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "DEROGATION_RESERVEE",
+    "motif": "Le régime individuel se règle par un rôle qui détient le droit « Régler le régime individuel d’un agent » (fiche de droits du rôle).",
+    "geste": "Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur) de poser la dérogation."
+   }
+  },
+  {
+   "nom": "rôle surveillant",
+   "role": "surveillant",
+   "droit": false,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "DEROGATION_RESERVEE",
+    "motif": "Le régime individuel se règle par un rôle qui détient le droit « Régler le régime individuel d’un agent » (fiche de droits du rôle).",
+    "geste": "Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur) de poser la dérogation."
+   }
+  },
+  {
+   "nom": "rôle DAF",
+   "role": "da",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos48"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {
+     "repos": "repos48"
+    },
+    "retourCategorie": false,
+    "version": 1,
+    "mode": "deroge"
+   }
+  },
+  {
+   "nom": "mode REMPLACE complet : vacations et repos dits",
+   "role": "admin",
+   "droit": true,
+   "mode": "remplace",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos24",
+    "cycle": 4
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {
+     "vacations": [
+      "garde"
+     ],
+     "repos": "repos24",
+     "cycle": 4
+    },
+    "retourCategorie": false,
+    "version": 1,
+    "mode": "remplace"
+   }
+  },
+  {
+   "nom": "mode REMPLACE avec « aucun repos » (un choix)",
+   "role": "admin",
+   "droit": true,
+   "mode": "remplace",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "vacations": [
+     "permanence"
+    ],
+    "repos": "aucun"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {
+     "vacations": [
+      "permanence"
+     ],
+     "repos": "aucun"
+    },
+    "retourCategorie": false,
+    "version": 1,
+    "mode": "remplace"
+   }
+  },
+  {
+   "nom": "mode REMPLACE sans repos : incomplet",
+   "role": "admin",
+   "droit": true,
+   "mode": "remplace",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "vacations": [
+     "garde"
+    ]
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "REMPLACEMENT_INCOMPLET",
+    "motif": "Un régime qui REMPLACE celui de la catégorie n’hérite de rien : il doit dire ses vacations et son repos (manque : repos).",
+    "geste": "Renseigner les vacations et le repos (« aucun repos codifié » est un choix), ou choisir le mode « déroge » pour que le reste suive la catégorie."
+   }
+  },
+  {
+   "nom": "mode REMPLACE sans vacations : incomplet",
+   "role": "admin",
+   "droit": true,
+   "mode": "remplace",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "REMPLACEMENT_INCOMPLET",
+    "motif": "Un régime qui REMPLACE celui de la catégorie n’hérite de rien : il doit dire ses vacations et son repos (manque : vacations).",
+    "geste": "Renseigner les vacations et le repos (« aucun repos codifié » est un choix), ou choisir le mode « déroge » pour que le reste suive la catégorie."
+   }
+  },
+  {
+   "nom": "mode REMPLACE sans rien : incomplet (les deux manques nommés)",
+   "role": "admin",
+   "droit": true,
+   "mode": "remplace",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "honoraire": 5000
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "REMPLACEMENT_INCOMPLET",
+    "motif": "Un régime qui REMPLACE celui de la catégorie n’hérite de rien : il doit dire ses vacations et son repos (manque : vacations, repos).",
+    "geste": "Renseigner les vacations et le repos (« aucun repos codifié » est un choix), ou choisir le mode « déroge » pour que le reste suive la catégorie."
+   }
+  },
+  {
+   "nom": "mode inconnu",
+   "role": "admin",
+   "droit": true,
+   "mode": "fusionne",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "MODE_INCONNU",
+    "motif": "Le mode « fusionne » n’existe pas : un régime individuel déroge à la catégorie ou la remplace.",
+    "geste": "Choisir « déroge » (le reste suit la catégorie) ou « remplace » (rien n’est hérité)."
+   }
+  },
+  {
+   "nom": "mode DEROGE explicite",
+   "role": "admin",
+   "droit": true,
+   "mode": "deroge",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": true,
+    "champs": {
+     "repos": "repos24"
+    },
+    "retourCategorie": false,
+    "version": 1,
+    "mode": "deroge"
+   }
+  },
+  {
+   "nom": "mode REMPLACE par un rôle sans le droit",
+   "role": "surveillant",
+   "droit": false,
+   "mode": "remplace",
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "vacations": [
+     "garde"
+    ],
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "DEROGATION_RESERVEE",
+    "motif": "Le régime individuel se règle par un rôle qui détient le droit « Régler le régime individuel d’un agent » (fiche de droits du rôle).",
+    "geste": "Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur) de poser la dérogation."
+   }
+  },
+  {
+   "nom": "date illisible",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "30/10/2026",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "DATE_INVALIDE",
+    "motif": "La date d’effet est absente ou illisible.",
+    "geste": "Choisir la date à partir de laquelle la dérogation s’applique."
+   }
+  },
+  {
+   "nom": "date absente",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "DATE_INVALIDE",
+    "motif": "La date d’effet est absente ou illisible.",
+    "geste": "Choisir la date à partir de laquelle la dérogation s’applique."
+   }
+  },
+  {
+   "nom": "motif absent",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "   ",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Le motif de la dérogation est obligatoire.",
+    "geste": "Dire pourquoi le régime de cet agent diffère de celui de sa catégorie."
+   }
+  },
+  {
+   "nom": "date passée",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-29",
+   "champs": {
+    "repos": "repos24"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (29/10/2026) est antérieure à aujourd’hui : une dérogation ne s’applique jamais rétroactivement.",
+    "geste": "Choisir aujourd’hui ou une date à venir. Les vacations passées gardent le régime sous lequel elles ont été posées."
+   }
+  },
+  {
+   "nom": "aucun champ dérogé",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {},
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "AUCUNE_DEROGATION",
+    "motif": "Aucun champ n’est dérogé : le régime de l’agent suit déjà celui de sa catégorie.",
+    "geste": "Renseigner au moins un champ, ou choisir « revenir au régime de la catégorie »."
+   }
+  },
+  {
+   "nom": "champs vides ne dérogent pas",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "",
+    "cycle": "",
+    "honoraire": null,
+    "vacations": []
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "AUCUNE_DEROGATION",
+    "motif": "Aucun champ n’est dérogé : le régime de l’agent suit déjà celui de sa catégorie.",
+    "geste": "Renseigner au moins un champ, ou choisir « revenir au régime de la catégorie »."
+   }
+  },
+  {
+   "nom": "repos inconnu",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "repos": "repos12"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "CHAMP_INVALIDE",
+    "motif": "Le repos « repos12 » n’existe pas.",
+    "geste": "Choisir repos de 24 h, repos de 48 h ou aucun repos codifié."
+   }
+  },
+  {
+   "nom": "cycle nul",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "cycle": 0
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "CHAMP_INVALIDE",
+    "motif": "Le cycle doit être un nombre entier de jours, au moins 1.",
+    "geste": "Corriger le cycle."
+   }
+  },
+  {
+   "nom": "cycle décimal",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "cycle": 2.5
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "CHAMP_INVALIDE",
+    "motif": "Le cycle doit être un nombre entier de jours, au moins 1.",
+    "geste": "Corriger le cycle."
+   }
+  },
+  {
+   "nom": "honoraire négatif",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "honoraire": -1
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "CHAMP_INVALIDE",
+    "motif": "L’honoraire doit être un montant positif ou nul.",
+    "geste": "Corriger l’honoraire."
+   }
+  },
+  {
+   "nom": "périodicité inconnue",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "honorairePeriodicite": "annuelle"
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "CHAMP_INVALIDE",
+    "motif": "La périodicité de l’honoraire est mensuelle ou par occurrence.",
+    "geste": "Corriger la périodicité."
+   }
+  },
+  {
+   "nom": "vacations hors référentiel (un repos n’est pas une vacation travaillée)",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [],
+   "dateEffet": "2026-10-30",
+   "champs": {
+    "vacations": [
+     "repos24"
+    ]
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "CHAMP_INVALIDE",
+    "motif": "Les vacations proposées ne sont pas toutes des vacations travaillées du référentiel.",
+    "geste": "Choisir parmi les types de vacation du référentiel."
+   }
+  },
+  {
+   "nom": "date déjà prise par une version",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-05",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "dateEffet": "2026-11-05",
+   "champs": {
+    "cycle": 3
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "DATE_EXISTANTE",
+    "motif": "Une version commence déjà le 05/11/2026 pour cet agent : une version ne se réécrit pas.",
+    "geste": "Choisir une date d’effet postérieure."
+   }
+  },
+  {
+   "nom": "version insérée avant la plus récente",
+   "role": "admin",
+   "droit": true,
+   "mode": null,
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-12-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-12-01",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "dateEffet": "2026-11-10",
+   "champs": {
+    "cycle": 3
+   },
+   "retour": false,
+   "motif": "Vecteur",
+   "agentExiste": true,
+   "attendu": {
+    "ok": false,
+    "code": "VERSION_ANTERIEURE",
+    "motif": "La version la plus récente de cet agent commence le 01/12/2026 : une version insérée avant elle masquerait l’historique.",
+    "geste": "Choisir une date d’effet postérieure à la dernière version."
+   }
+  }
+ ],
+ "controle": [
+  {
+   "nom": "médecin : garde la veille, repos de 48 h",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-09",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-10",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 09/11/2026 pour BASSONGUI Chabi Séko).",
+    "geste": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde.",
+    "reposHeures": 48,
+    "individuel": false,
+    "autre": "P1",
+    "date": "2026-11-10"
+   }
+  },
+  {
+   "nom": "médecin : garde deux jours avant, repos de 48 h",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-12",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 10/11/2026 pour BASSONGUI Chabi Séko).",
+    "geste": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde.",
+    "reposHeures": 48,
+    "individuel": false,
+    "autre": "P1",
+    "date": "2026-11-12"
+   }
+  },
+  {
+   "nom": "médecin : garde trois jours avant, repos respecté",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-13",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": true,
+    "individuel": false,
+    "repos": "repos48"
+   }
+  },
+  {
+   "nom": "médecin : garde deux jours APRÈS, le repos serait entamé",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-08",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suivrait cette garde serait entamé par la garde déjà programmée le 10/11/2026 pour BASSONGUI Chabi Séko.",
+    "geste": "Choisir un autre jour, ou retirer l’autre garde.",
+    "reposHeures": 48,
+    "individuel": false,
+    "autre": "P1",
+    "date": "2026-11-08"
+   }
+  },
+  {
+   "nom": "médecin : garde la veille de la suivante, repos entamé",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-09",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suivrait cette garde serait entamé par la garde déjà programmée le 10/11/2026 pour BASSONGUI Chabi Séko.",
+    "geste": "Choisir un autre jour, ou retirer l’autre garde.",
+    "reposHeures": 48,
+    "individuel": false,
+    "autre": "P1",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "nom": "garde hospitalisation après une garde",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-09",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-10",
+   "type": "garde_hospi",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 09/11/2026 pour BASSONGUI Chabi Séko).",
+    "geste": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde.",
+    "reposHeures": 48,
+    "individuel": false,
+    "autre": "P1",
+    "date": "2026-11-10"
+   }
+  },
+  {
+   "nom": "dérogation de repos 24 h : garde à J+2 acceptée",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-01",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-12",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": true,
+    "individuel": true,
+    "repos": "repos24"
+   }
+  },
+  {
+   "nom": "dérogation de repos 24 h : garde à J+1 refusée",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-01",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-11",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 24 h qui suit une garde n’est pas respecté (garde déjà programmée le 10/11/2026 pour BASSONGUI Chabi Séko).",
+    "geste": "Choisir un jour après le repos de 24 h, ou retirer l’autre garde.",
+    "reposHeures": 24,
+    "individuel": true,
+    "autre": "P1",
+    "date": "2026-11-11"
+   }
+  },
+  {
+   "nom": "dérogation pas encore en vigueur à la date : le repos de la catégorie s’applique",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-12-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-12-01",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-12",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 10/11/2026 pour BASSONGUI Chabi Séko).",
+    "geste": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde.",
+    "reposHeures": 48,
+    "individuel": false,
+    "autre": "P1",
+    "date": "2026-11-12"
+   }
+  },
+  {
+   "nom": "dérogation « aucun repos » : le contrôle retombe sur un jour",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-01",
+     "champs": {
+      "repos": "aucun"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-11",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 24 h qui suit une garde n’est pas respecté (garde déjà programmée le 10/11/2026 pour BASSONGUI Chabi Séko).",
+    "geste": "Choisir un jour après le repos de 24 h, ou retirer l’autre garde.",
+    "reposHeures": 24,
+    "individuel": true,
+    "autre": "P1",
+    "date": "2026-11-11"
+   }
+  },
+  {
+   "nom": "sage-femme : repos de 24 h de la catégorie",
+   "agent": {
+    "id": "EMP18",
+    "nomComplet": "BADO BANI A. B. Zoulehath",
+    "fonction": "sage_femme",
+    "matricule": "18",
+    "service": "Maternité"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP18",
+     "employe": "BADO BANI A. B. Zoulehath",
+     "fonction": "sage_femme",
+     "service": "Maternité",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-12",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": true,
+    "individuel": false,
+    "repos": "repos24"
+   }
+  },
+  {
+   "nom": "les gardes d’un autre agent ne comptent pas",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-09",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-10",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": true,
+    "individuel": false,
+    "repos": "repos48"
+   }
+  },
+  {
+   "nom": "double affectation le même jour",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "permanence"
+    }
+   ],
+   "date": "2026-11-10",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "DOUBLE_AFFECTATION",
+    "motif": "BASSONGUI Chabi Séko a déjà une vacation le 10/11/2026 (Permanence).",
+    "geste": "Modifier la vacation existante, ou choisir un autre jour.",
+    "reposHeures": null,
+    "individuel": null,
+    "autre": "P1",
+    "date": "2026-11-10"
+   }
+  },
+  {
+   "nom": "on remplace sa propre vacation : ignoreId la met de côté",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-10",
+   "type": "garde",
+   "ignoreId": "P1",
+   "attendu": {
+    "ok": true,
+    "individuel": false,
+    "repos": "repos48"
+   }
+  },
+  {
+   "nom": "une garde soins ne déclenche pas le repos",
+   "agent": {
+    "id": "EMP10",
+    "nomComplet": "GARBA Yahouza",
+    "fonction": "infirmier",
+    "matricule": "10",
+    "service": "Soins infirmiers"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "employe": "GARBA Yahouza",
+     "fonction": "infirmier",
+     "service": "Soins infirmiers",
+     "date": "2026-11-09",
+     "type": "garde_soins"
+    }
+   ],
+   "date": "2026-11-10",
+   "type": "garde_soins",
+   "ignoreId": null,
+   "attendu": {
+    "ok": true,
+    "individuel": false,
+    "repos": "repos48"
+   }
+  },
+  {
+   "nom": "une permanence après une garde n’est pas contrôlée",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-09",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-10",
+   "type": "permanence",
+   "ignoreId": null,
+   "attendu": {
+    "ok": true,
+    "individuel": false,
+    "repos": "repos48"
+   }
+  },
+  {
+   "nom": "type inconnu",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [],
+   "date": "2026-11-10",
+   "type": "sieste",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "TYPE_INCONNU",
+    "motif": "Le type de vacation « sieste » n’existe pas.",
+    "geste": "Choisir un type du référentiel.",
+    "reposHeures": null,
+    "individuel": null,
+    "autre": null,
+    "date": null
+   }
+  },
+  {
+   "nom": "date illisible",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "planning": [],
+   "date": "10/11/2026",
+   "type": "garde",
+   "ignoreId": null,
+   "attendu": {
+    "ok": false,
+    "code": "DATE_INVALIDE",
+    "motif": "La date de la vacation est absente ou illisible.",
+    "geste": "Choisir une date.",
+    "reposHeures": null,
+    "individuel": null,
+    "autre": null,
+    "date": null
+   }
+  }
+ ],
+ "etats": [
+  {
+   "nom": "pointage sans état : validé (avant le circuit)",
+   "collection": "presences",
+   "rec": {},
+   "attendu": {
+    "etat": "valide",
+    "compte": true
+   }
+  },
+  {
+   "nom": "pointage à valider",
+   "collection": "presences",
+   "rec": {
+    "validationEtat": "a_valider"
+   },
+   "attendu": {
+    "etat": "a_valider",
+    "compte": false
+   }
+  },
+  {
+   "nom": "pointage validé par le surveillant, DAF attendue",
+   "collection": "presences",
+   "rec": {
+    "validationEtat": "valide_surveillant"
+   },
+   "attendu": {
+    "etat": "valide_surveillant",
+    "compte": false
+   }
+  },
+  {
+   "nom": "pointage refusé",
+   "collection": "presences",
+   "rec": {
+    "validationEtat": "refuse"
+   },
+   "attendu": {
+    "etat": "refuse",
+    "compte": false
+   }
+  },
+  {
+   "nom": "congé en attente, sans état : à valider",
+   "collection": "conges",
+   "rec": {
+    "statutConge": "en_attente"
+   },
+   "attendu": {
+    "etat": "a_valider",
+    "compte": false
+   }
+  },
+  {
+   "nom": "congé accordé, sans état : validé",
+   "collection": "conges",
+   "rec": {
+    "statutConge": "valide"
+   },
+   "attendu": {
+    "etat": "valide",
+    "compte": true
+   }
+  },
+  {
+   "nom": "congé refusé, sans état : refusé",
+   "collection": "conges",
+   "rec": {
+    "statutConge": "refuse"
+   },
+   "attendu": {
+    "etat": "refuse",
+    "compte": false
+   }
+  },
+  {
+   "nom": "congé en attente mais état explicite validé : l’état explicite l’emporte",
+   "collection": "conges",
+   "rec": {
+    "statutConge": "en_attente",
+    "validationEtat": "valide"
+   },
+   "attendu": {
+    "etat": "valide",
+    "compte": true
+   }
+  },
+  {
+   "nom": "mission à valider, sans état",
+   "collection": "missions",
+   "rec": {
+    "statutMission": "a_valider"
+   },
+   "attendu": {
+    "etat": "a_valider",
+    "compte": false
+   }
+  },
+  {
+   "nom": "mission en projet, sans état : pas validée",
+   "collection": "missions",
+   "rec": {
+    "statutMission": "projet"
+   },
+   "attendu": {
+    "etat": "a_valider",
+    "compte": false
+   }
+  },
+  {
+   "nom": "mission en cours, sans état : validée",
+   "collection": "missions",
+   "rec": {
+    "statutMission": "en_cours"
+   },
+   "attendu": {
+    "etat": "valide",
+    "compte": true
+   }
+  },
+  {
+   "nom": "mission refusée, sans état",
+   "collection": "missions",
+   "rec": {
+    "statutMission": "refusee"
+   },
+   "attendu": {
+    "etat": "refuse",
+    "compte": false
+   }
+  }
+ ],
+ "circuit": [
+  {
+   "nom": "surveillant seul : le surveillant valide",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "surveillant",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "surveillant",
+     "validePar": "Vecteur surveillant",
+     "valideLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "surveillant seul : l’administrateur valide aussi",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "admin",
+   "acteur": "Vecteur admin",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "surveillant",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur admin",
+       "role": "admin",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "surveillant",
+     "validePar": "Vecteur admin",
+     "valideLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "surveillant seul : la DAF est refusée",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "L’étape en attente est celle de le surveillant (circuit : Surveillant seul).",
+    "geste": "Demander à le surveillant de trancher.",
+    "etape": "surveillant"
+   }
+  },
+  {
+   "nom": "surveillant seul : le caissier est refusé",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "caissier",
+   "acteur": "Vecteur caissier",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "L’étape en attente est celle de le surveillant (circuit : Surveillant seul).",
+    "geste": "Demander à le surveillant de trancher.",
+    "etape": "surveillant"
+   }
+  },
+  {
+   "nom": "DAF seule : la DAF valide",
+   "collection": "presences",
+   "circuit": "daf",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "daf",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "daf",
+       "par": "Vecteur da",
+       "role": "da",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "daf",
+     "validePar": "Vecteur da",
+     "valideLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "DAF seule : le surveillant est refusé",
+   "collection": "presences",
+   "circuit": "daf",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "L’étape en attente est celle de la directrice administrative (circuit : Directrice administrative seule).",
+    "geste": "Demander à la directrice administrative de trancher.",
+    "etape": "daf"
+   }
+  },
+  {
+   "nom": "deux étapes : le surveillant signe la première, la pièce n’est pas complète",
+   "collection": "presences",
+   "circuit": "surveillant_puis_daf",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide_surveillant",
+    "etape": "surveillant",
+    "complet": false,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide_surveillant"
+    }
+   }
+  },
+  {
+   "nom": "deux étapes : la DAF ne signe pas la première",
+   "collection": "presences",
+   "circuit": "surveillant_puis_daf",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "L’étape en attente est celle de le surveillant (circuit : Surveillant puis directrice administrative).",
+    "geste": "Demander à le surveillant de trancher.",
+    "etape": "surveillant"
+   }
+  },
+  {
+   "nom": "deux étapes : la DAF achève",
+   "collection": "presences",
+   "circuit": "surveillant_puis_daf",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "etat": "retard",
+    "date": "2026-10-29",
+    "etapesFaites": [
+     {
+      "etape": "surveillant",
+      "par": "S1",
+      "role": "surveillant",
+      "le": "2026-10-29",
+      "decision": "valide",
+      "motif": null
+     }
+    ],
+    "validationEtat": "valide_surveillant"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "daf",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "S1",
+       "role": "surveillant",
+       "le": "2026-10-29",
+       "decision": "valide",
+       "motif": null
+      },
+      {
+       "etape": "daf",
+       "par": "Vecteur da",
+       "role": "da",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "surveillant_puis_daf",
+     "validePar": "Vecteur da",
+     "valideLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "deux étapes : le surveillant ne signe pas la seconde",
+   "collection": "presences",
+   "circuit": "surveillant_puis_daf",
+   "role": "surveillant",
+   "acteur": "Vecteur autre surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "etat": "retard",
+    "date": "2026-10-29",
+    "etapesFaites": [
+     {
+      "etape": "surveillant",
+      "par": "S1",
+      "role": "surveillant",
+      "le": "2026-10-29",
+      "decision": "valide",
+      "motif": null
+     }
+    ],
+    "validationEtat": "valide_surveillant"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "L’étape en attente est celle de la directrice administrative (circuit : Surveillant puis directrice administrative).",
+    "geste": "Demander à la directrice administrative de trancher.",
+    "etape": "daf"
+   }
+  },
+  {
+   "nom": "deux étapes : la même personne ne signe pas deux étapes",
+   "collection": "presences",
+   "circuit": "surveillant_puis_daf",
+   "role": "admin",
+   "acteur": "S1",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "etat": "retard",
+    "date": "2026-10-29",
+    "etapesFaites": [
+     {
+      "etape": "surveillant",
+      "par": "S1",
+      "role": "surveillant",
+      "le": "2026-10-29",
+      "decision": "valide",
+      "motif": null
+     }
+    ],
+    "validationEtat": "valide_surveillant"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "ETAPE_DEJA_SIGNEE",
+    "motif": "Vous avez déjà signé une étape de cette pièce : deux étapes ne se signent pas par la même personne.",
+    "geste": "Demander à la directrice administrative de trancher.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "circuit changé en cours de route : la pièce à mi-circuit se complète",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur autre surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "etat": "retard",
+    "date": "2026-10-29",
+    "etapesFaites": [
+     {
+      "etape": "surveillant",
+      "par": "S1",
+      "role": "surveillant",
+      "le": "2026-10-29",
+      "decision": "valide",
+      "motif": null
+     }
+    ],
+    "validationEtat": "valide_surveillant"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "surveillant",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "S1",
+       "role": "surveillant",
+       "le": "2026-10-29",
+       "decision": "valide",
+       "motif": null
+      },
+      {
+       "etape": "surveillant",
+       "par": "Vecteur autre surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "surveillant",
+     "validePar": "Vecteur autre surveillant",
+     "valideLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "refus sans motif",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "refuser",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Un refus exige son motif : l’agent doit pouvoir le lire.",
+    "geste": "Écrire le motif du refus.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "refus avec motif",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "refuser",
+   "motif": "Pointage contesté",
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "refuse",
+    "etape": "surveillant",
+    "complet": false,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "refuse",
+       "motif": "Pointage contesté"
+      }
+     ],
+     "validationEtat": "refuse",
+     "motifRefus": "Pointage contesté",
+     "refuseePar": "Vecteur surveillant",
+     "refuseeLe": "2026-10-30",
+     "circuitUtilise": "surveillant"
+    }
+   }
+  },
+  {
+   "nom": "décision inconnue",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "peut-etre",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "DECISION_INCONNUE",
+    "motif": "La décision est « valider » ou « refuser ».",
+    "geste": "Choisir une décision.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "pièce déjà validée",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "valide",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "Cette pièce est déjà validée : une décision ne se réécrit pas.",
+    "geste": "Pour corriger un pointage validé, le régulariser (motif, date et auteur consignés).",
+    "etape": null
+   }
+  },
+  {
+   "nom": "pointage d’avant le circuit : validé, ne se retranche pas",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "Cette pièce est déjà validée : une décision ne se réécrit pas.",
+    "geste": "Pour corriger un pointage validé, le régulariser (motif, date et auteur consignés).",
+    "etape": null
+   }
+  },
+  {
+   "nom": "pièce déjà refusée",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "validationEtat": "refuse",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "Cette pièce est déjà refusée : une décision ne se réécrit pas.",
+    "geste": "Pour corriger un pointage validé, le régulariser (motif, date et auteur consignés).",
+    "etape": null
+   }
+  },
+  {
+   "nom": "pièce introuvable",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "ABSENTE",
+   "attendu": {
+    "ok": false,
+    "code": "PIECE_INTROUVABLE",
+    "motif": "La pièce n’existe pas ou est archivée.",
+    "geste": "Choisir une ligne du registre.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "collection inconnue",
+   "collection": "factures",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "numero": "X"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "COLLECTION_INCONNUE",
+    "motif": "La collection « factures » ne passe pas par le circuit de validation.",
+    "geste": "Choisir pointage, congé ou ordre de mission.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "nul ne valide sa propre pièce",
+   "collection": "presences",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "BASSONGUI Chabi Séko",
+   "moiId": "EMP01",
+   "moiNom": "BASSONGUI Chabi Séko",
+   "rec": {
+    "validationEtat": "a_valider",
+    "etat": "retard",
+    "date": "2026-10-29"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "AUTO_VALIDATION",
+    "motif": "Personne ne valide sa propre pièce : pointage de BASSONGUI Chabi Séko.",
+    "geste": "Demander à un autre habilité de trancher.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "congé en attente (avant le circuit) : le surveillant accorde",
+   "collection": "conges",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutConge": "en_attente",
+    "dateDebut": "2026-11-02"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "surveillant",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "surveillant",
+     "statutConge": "valide",
+     "validePar": "Vecteur surveillant",
+     "valideLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "congé : refus avec motif",
+   "collection": "conges",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutConge": "en_attente"
+   },
+   "decision": "refuser",
+   "motif": "Période de forte activité",
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "refuse",
+    "etape": "surveillant",
+    "complet": false,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "refuse",
+       "motif": "Période de forte activité"
+      }
+     ],
+     "validationEtat": "refuse",
+     "motifRefus": "Période de forte activité",
+     "refuseePar": "Vecteur surveillant",
+     "refuseeLe": "2026-10-30",
+     "circuitUtilise": "surveillant",
+     "statutConge": "refuse"
+    }
+   }
+  },
+  {
+   "nom": "congé déjà accordé",
+   "collection": "conges",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutConge": "valide"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "Cette pièce est déjà validée : une décision ne se réécrit pas.",
+    "geste": "Saisir une nouvelle demande.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "mission sans avis du chef de service",
+   "collection": "missions",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutMission": "a_valider"
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "AVIS_REQUIS",
+    "motif": "L’avis du chef de service est requis avant la validation d’un ordre de mission.",
+    "geste": "Consigner l’avis du chef de service, puis valider.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "mission avec avis favorable : validée",
+   "collection": "missions",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutMission": "a_valider",
+    "avisChefService": {
+     "avis": "favorable",
+     "chef": "Chef",
+     "motif": null,
+     "le": "2026-10-29",
+     "consignePar": "x"
+    }
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "surveillant",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "surveillant",
+     "statutMission": "validee",
+     "validePar": "Vecteur surveillant",
+     "valideLe": "2026-10-30",
+     "valideePar": "Vecteur surveillant",
+     "valideeLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "mission avec avis défavorable, validée sans motif",
+   "collection": "missions",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutMission": "a_valider",
+    "avisChefService": {
+     "avis": "defavorable",
+     "chef": "Chef",
+     "motif": "Charge",
+     "le": "2026-10-29",
+     "consignePar": "x"
+    }
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Valider contre un avis défavorable exige un motif.",
+    "geste": "Écrire pourquoi la mission est validée malgré l’avis.",
+    "etape": null
+   }
+  },
+  {
+   "nom": "mission avec avis défavorable, validée avec motif",
+   "collection": "missions",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutMission": "a_valider",
+    "avisChefService": {
+     "avis": "defavorable",
+     "chef": "Chef",
+     "motif": "Charge",
+     "le": "2026-10-29",
+     "consignePar": "x"
+    }
+   },
+   "decision": "valider",
+   "motif": "Mission indispensable",
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "valide",
+    "etape": "surveillant",
+    "complet": true,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": "Mission indispensable"
+      }
+     ],
+     "validationEtat": "valide",
+     "circuitUtilise": "surveillant",
+     "statutMission": "validee",
+     "validePar": "Vecteur surveillant",
+     "valideLe": "2026-10-30",
+     "valideePar": "Vecteur surveillant",
+     "valideeLe": "2026-10-30"
+    }
+   }
+  },
+  {
+   "nom": "mission en projet : pas soumise",
+   "collection": "missions",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutMission": "projet",
+    "avisChefService": {
+     "avis": "favorable",
+     "chef": "Chef",
+     "le": "2026-10-29",
+     "consignePar": "x"
+    }
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "PAS_SOUMISE",
+    "motif": "L’ordre est encore en projet : il n’a pas été soumis à validation.",
+    "geste": "Le soumettre d’abord (état « en attente de validation »).",
+    "etape": null
+   }
+  },
+  {
+   "nom": "mission refusée sans avis (le refus n’exige que son motif)",
+   "collection": "missions",
+   "circuit": "surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutMission": "a_valider"
+   },
+   "decision": "refuser",
+   "motif": "Pas de budget",
+   "id": "PIECE",
+   "attendu": {
+    "ok": true,
+    "etat": "refuse",
+    "etape": "surveillant",
+    "complet": false,
+    "patch": {
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "Vecteur surveillant",
+       "role": "surveillant",
+       "le": "2026-10-30",
+       "decision": "refuse",
+       "motif": "Pas de budget"
+      }
+     ],
+     "validationEtat": "refuse",
+     "motifRefus": "Pas de budget",
+     "refuseePar": "Vecteur surveillant",
+     "refuseeLe": "2026-10-30",
+     "circuitUtilise": "surveillant",
+     "statutMission": "refusee"
+    }
+   }
+  },
+  {
+   "nom": "mission : la DAF ne valide pas en surveillant seul",
+   "collection": "missions",
+   "circuit": "surveillant",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "moiId": null,
+   "moiNom": null,
+   "rec": {
+    "statutMission": "a_valider",
+    "avisChefService": {
+     "avis": "favorable",
+     "chef": "Chef",
+     "le": "2026-10-29",
+     "consignePar": "x"
+    }
+   },
+   "decision": "valider",
+   "motif": null,
+   "id": "PIECE",
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "L’étape en attente est celle de le surveillant (circuit : Surveillant seul).",
+    "geste": "Demander à le surveillant de trancher.",
+    "etape": "surveillant"
+   }
+  }
+ ],
+ "propositions": [
+  {
+   "nom": "ajout accepté",
+   "versions": [],
+   "planning": [],
+   "proposition": {
+    "type": "ajout",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-11-10",
+    "typeVacation": "garde",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "ajout refusé : repos de 48 h",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-09",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "ajout",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-11-10",
+    "typeVacation": "garde",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 09/11/2026 pour BASSONGUI Chabi Séko).",
+    "geste": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde."
+   }
+  },
+  {
+   "nom": "ajout refusé : double affectation",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "permanence"
+    }
+   ],
+   "proposition": {
+    "type": "ajout",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-11-10",
+    "typeVacation": "garde",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DOUBLE_AFFECTATION",
+    "motif": "BASSONGUI Chabi Séko a déjà une vacation le 10/11/2026 (Permanence).",
+    "geste": "Modifier la vacation existante, ou choisir un autre jour."
+   }
+  },
+  {
+   "nom": "modification acceptée (on déplace sa propre garde)",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "modification",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "date": "2026-11-14",
+    "typeVacation": "garde",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "modification : la vacation est celle d’un autre agent",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "modification",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "date": "2026-11-14",
+    "typeVacation": "garde",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "VACATION_D_AUTRUI",
+    "motif": "La vacation visée n’est pas celle de l’agent qui propose.",
+    "geste": "Choisir une de ses propres vacations."
+   }
+  },
+  {
+   "nom": "modification : la vacation n’existe plus",
+   "versions": [],
+   "planning": [],
+   "proposition": {
+    "type": "modification",
+    "employeId": "EMP01",
+    "vacationId": "ABSENTE",
+    "date": "2026-11-14",
+    "typeVacation": "garde",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "VACATION_INTROUVABLE",
+    "motif": "La vacation visée n’existe plus au planning.",
+    "geste": "Choisir une vacation du planning."
+   }
+  },
+  {
+   "nom": "modification : repos violé par le nouveau jour",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    },
+    {
+     "id": "P2",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-15",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "modification",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "date": "2026-11-13",
+    "typeVacation": "garde",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suivrait cette garde serait entamé par la garde déjà programmée le 15/11/2026 pour BASSONGUI Chabi Séko.",
+    "geste": "Choisir un autre jour, ou retirer l’autre garde."
+   }
+  },
+  {
+   "nom": "retrait accepté",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "retrait",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "retrait : vacation d’autrui",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "retrait",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "VACATION_D_AUTRUI",
+    "motif": "La vacation visée n’est pas celle de l’agent qui propose.",
+    "geste": "Choisir une de ses propres vacations."
+   }
+  },
+  {
+   "nom": "échange accepté entre deux médecins",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    },
+    {
+     "id": "P2",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "echange",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "contrepartieId": "P2",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "échange refusé : même agent",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    },
+    {
+     "id": "P2",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "echange",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "contrepartieId": "P2",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ECHANGE_MEME_AGENT",
+    "motif": "Un échange se fait avec un autre agent.",
+    "geste": "Choisir la vacation d’un collègue."
+   }
+  },
+  {
+   "nom": "échange refusé : contrepartie disparue",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "echange",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "contrepartieId": "ABSENTE",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ECHANGE_SANS_CONTREPARTIE",
+    "motif": "L’échange désigne une vacation de collègue qui n’existe plus.",
+    "geste": "Choisir la vacation du collègue."
+   }
+  },
+  {
+   "nom": "échange refusé : une garde de médecin n’est pas une vacation d’infirmier",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    },
+    {
+     "id": "P2",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "employe": "GARBA Yahouza",
+     "fonction": "infirmier",
+     "service": "Soins infirmiers",
+     "date": "2026-11-20",
+     "type": "garde_soins"
+    }
+   ],
+   "proposition": {
+    "type": "echange",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "contrepartieId": "P2",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ECHANGE_HORS_REGIME",
+    "motif": "Garde 24h n’est pas une vacation du régime de GARBA Yahouza.",
+    "geste": "Choisir un collègue de même régime."
+   }
+  },
+  {
+   "nom": "échange refusé : le collègue enchaînerait deux gardes",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    },
+    {
+     "id": "P2",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-20",
+     "type": "garde"
+    },
+    {
+     "id": "P3",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-11",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "echange",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "contrepartieId": "P2",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suivrait cette garde serait entamé par la garde déjà programmée le 11/11/2026 pour YENI M’PO Florent.",
+    "geste": "Choisir un autre jour, ou retirer l’autre garde."
+   }
+  },
+  {
+   "nom": "échange accepté avec dérogation de repos 24 h du collègue",
+   "versions": [
+    {
+     "id": "RGI-EMP05-2026-11-01",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "dateEffet": "2026-11-01",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    },
+    {
+     "id": "P2",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-20",
+     "type": "garde"
+    },
+    {
+     "id": "P3",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-12",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "echange",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "contrepartieId": "P2",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "type de proposition inconnu",
+   "versions": [],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-10",
+     "type": "garde"
+    }
+   ],
+   "proposition": {
+    "type": "cession",
+    "employeId": "EMP01",
+    "vacationId": "P1",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "TYPE_PROPOSITION_INCONNU",
+    "motif": "Le type de proposition « cession » n’existe pas.",
+    "geste": "Choisir ajout, modification, retrait ou échange."
+   }
+  }
+ ],
+ "decisions": [
+  {
+   "nom": "le surveillant valide (la décision est permise)",
+   "role": "surveillant",
+   "decision": "valider",
+   "motif": null,
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "un médecin ne valide pas",
+   "role": "medecin",
+   "decision": "valider",
+   "motif": null,
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "Le planning se valide par le surveillant (ou la Directrice Administrative).",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "un caissier ne valide pas",
+   "role": "caissier",
+   "decision": "refuser",
+   "motif": "x",
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "Le planning se valide par le surveillant (ou la Directrice Administrative).",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "décision inconnue",
+   "role": "surveillant",
+   "decision": "plus-tard",
+   "motif": null,
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "DECISION_INCONNUE",
+    "motif": "La décision est « valider » ou « refuser ».",
+    "geste": "Choisir une décision."
+   }
+  },
+  {
+   "nom": "refus sans motif",
+   "role": "surveillant",
+   "decision": "refuser",
+   "motif": null,
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Un refus exige son motif : l’agent doit pouvoir le lire.",
+    "geste": "Écrire le motif du refus."
+   }
+  },
+  {
+   "nom": "refus motivé",
+   "role": "surveillant",
+   "decision": "refuser",
+   "motif": "Effectif insuffisant",
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "déjà validée",
+   "role": "surveillant",
+   "decision": "valider",
+   "motif": null,
+   "absente": false,
+   "proposition": {
+    "etat": "validee"
+   },
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà validée : une décision ne se réécrit pas.",
+    "geste": "Attendre une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "déjà refusée",
+   "role": "surveillant",
+   "decision": "valider",
+   "motif": null,
+   "absente": false,
+   "proposition": {
+    "etat": "refusee"
+   },
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà refusée : une décision ne se réécrit pas.",
+    "geste": "Attendre une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "retirée par l’agent",
+   "role": "surveillant",
+   "decision": "valider",
+   "motif": null,
+   "absente": false,
+   "proposition": {
+    "etat": "annulee"
+   },
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà retirée : une décision ne se réécrit pas.",
+    "geste": "Attendre une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "proposition introuvable",
+   "role": "surveillant",
+   "decision": "valider",
+   "motif": null,
+   "absente": true,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "PROPOSITION_INTROUVABLE",
+    "motif": "La proposition n’existe pas.",
+    "geste": "Choisir une proposition de la liste."
+   }
+  },
+  {
+   "nom": "nul ne valide sa propre proposition",
+   "role": "surveillant",
+   "decision": "valider",
+   "motif": null,
+   "absente": false,
+   "proposition": {},
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "AUTO_VALIDATION",
+    "motif": "Personne ne valide sa propre proposition.",
+    "geste": "Demander à un autre habilité."
+   }
+  }
+ ],
+ "visibles": [
+  {
+   "role": "surveillant",
+   "moiId": "EMP01",
+   "avecAgent": [
+    "X1",
+    "X2"
+   ],
+   "sansAgent": [
+    "X1",
+    "X2"
+   ],
+   "actives": [
+    {
+     "id": "X1",
+     "employeId": "EMP01"
+    },
+    {
+     "id": "X2",
+     "employeId": "EMP05"
+    }
+   ]
+  },
+  {
+   "role": "da",
+   "moiId": "EMP01",
+   "avecAgent": [
+    "X1",
+    "X2"
+   ],
+   "sansAgent": [
+    "X1",
+    "X2"
+   ],
+   "actives": [
+    {
+     "id": "X1",
+     "employeId": "EMP01"
+    },
+    {
+     "id": "X2",
+     "employeId": "EMP05"
+    }
+   ]
+  },
+  {
+   "role": "admin",
+   "moiId": "EMP01",
+   "avecAgent": [
+    "X1",
+    "X2"
+   ],
+   "sansAgent": [
+    "X1",
+    "X2"
+   ],
+   "actives": [
+    {
+     "id": "X1",
+     "employeId": "EMP01"
+    },
+    {
+     "id": "X2",
+     "employeId": "EMP05"
+    }
+   ]
+  },
+  {
+   "role": "medecin",
+   "moiId": "EMP01",
+   "avecAgent": [
+    "X1"
+   ],
+   "sansAgent": [],
+   "actives": [
+    {
+     "id": "X1",
+     "employeId": "EMP01"
+    },
+    {
+     "id": "X2",
+     "employeId": "EMP05"
+    }
+   ]
+  },
+  {
+   "role": "caissier",
+   "moiId": "EMP01",
+   "avecAgent": [
+    "X1"
+   ],
+   "sansAgent": [],
+   "actives": [
+    {
+     "id": "X1",
+     "employeId": "EMP01"
+    },
+    {
+     "id": "X2",
+     "employeId": "EMP05"
+    }
+   ]
+  }
+ ],
+ "reglages": [
+  {
+   "nom": "circuit : l’administrateur règle",
+   "role": "admin",
+   "genre": "circuit",
+   "valeur": "daf",
+   "attendu": {
+    "ok": true,
+    "valeur": "daf",
+    "avant": "surveillant"
+   }
+  },
+  {
+   "nom": "circuit : la DAF règle",
+   "role": "da",
+   "genre": "circuit",
+   "valeur": "surveillant_puis_daf",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant_puis_daf",
+    "avant": "surveillant"
+   }
+  },
+  {
+   "nom": "circuit : le surveillant ne règle pas",
+   "role": "surveillant",
+   "genre": "circuit",
+   "valeur": "daf",
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Le circuit de validation se règle par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative."
+   }
+  },
+  {
+   "nom": "circuit : circuit inconnu",
+   "role": "admin",
+   "genre": "circuit",
+   "valeur": "tous",
+   "attendu": {
+    "ok": false,
+    "code": "CIRCUIT_INCONNU",
+    "motif": "Le circuit « tous » n’existe pas.",
+    "geste": "Choisir surveillant seul, directrice administrative seule, ou surveillant puis directrice administrative."
+   }
+  },
+  {
+   "nom": "circuit : le défaut se confirme",
+   "role": "da",
+   "genre": "circuit",
+   "valeur": "surveillant",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant",
+    "avant": "surveillant"
+   }
+  },
+  {
+   "nom": "direct : l’administrateur ouvre",
+   "role": "admin",
+   "genre": "direct",
+   "valeur": true,
+   "attendu": {
+    "ok": true,
+    "valeur": true,
+    "avant": false
+   }
+  },
+  {
+   "nom": "direct : la DAF ferme",
+   "role": "da",
+   "genre": "direct",
+   "valeur": false,
+   "attendu": {
+    "ok": true,
+    "valeur": false,
+    "avant": false
+   }
+  },
+  {
+   "nom": "direct : le médecin ne règle pas",
+   "role": "medecin",
+   "genre": "direct",
+   "valeur": true,
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative."
+   }
+  },
+  {
+   "nom": "direct : valeur non booléenne = non",
+   "role": "admin",
+   "genre": "direct",
+   "valeur": "oui",
+   "attendu": {
+    "ok": true,
+    "valeur": false,
+    "avant": false
+   }
+  }
+ ],
+ "poses": [
+  {
+   "nom": "pose : le surveillant",
+   "role": "surveillant",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "pose : la DAF",
+   "role": "da",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "pose : l’administrateur",
+   "role": "admin",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "pose : le médecin est refusé",
+   "role": "medecin",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_RESERVE",
+    "motif": "Le planning du personnel se pose par le surveillant ou la Directrice Administrative.",
+    "geste": "Un agent propose ses vacations (propositions de planning) ; le surveillant valide."
+   }
+  },
+  {
+   "nom": "pose : le caissier est refusé",
+   "role": "caissier",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_RESERVE",
+    "motif": "Le planning du personnel se pose par le surveillant ou la Directrice Administrative.",
+    "geste": "Un agent propose ses vacations (propositions de planning) ; le surveillant valide."
+   }
+  },
+  {
+   "nom": "retrait : le surveillant retire",
+   "role": "surveillant",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "retrait : le médecin est refusé",
+   "role": "medecin",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_RESERVE",
+    "motif": "Le planning du personnel se retire par le surveillant ou la Directrice Administrative.",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "retrait : vacation introuvable",
+   "role": "surveillant",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "VACATION_INTROUVABLE",
+    "motif": "La vacation P1 n’existe pas ou est déjà retirée.",
+    "geste": "Choisir une vacation du registre."
+   }
+  },
+  {
+   "nom": "retrait : vacation déjà archivée",
+   "role": "surveillant",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "archive",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "VACATION_INTROUVABLE",
+    "motif": "La vacation P1 n’existe pas ou est déjà retirée.",
+    "geste": "Choisir une vacation du registre."
+   }
+  }
+ ],
+ "regularisations": [
+  {
+   "nom": "le surveillant régularise : absent à présent, motif codé et justificatif",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motifCode": "maladie",
+    "justificatif": "CERT-12",
+    "motif": "Certificat remis"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "present",
+     "motifCode": "maladie",
+     "justificatif": "CERT-12",
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur surveillant",
+       "motif": "Certificat remis",
+       "etatAvant": "retard",
+       "etatApres": "present",
+       "motifCodeAvant": null,
+       "motifCodeApres": "maladie"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "la DAF régularise",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "conge",
+    "motif": "Congé accordé"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "conge",
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur da",
+       "motif": "Congé accordé",
+       "etatAvant": "retard",
+       "etatApres": "conge",
+       "motifCodeAvant": null,
+       "motifCodeApres": null
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "sans motif codé : la valeur existante reste",
+   "role": "admin",
+   "acteur": "Vecteur admin",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": "mission"
+   },
+   "o": {
+    "etat": "present",
+    "motif": "Mission confirmée"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "present",
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur admin",
+       "motif": "Mission confirmée",
+       "etatAvant": "retard",
+       "etatApres": "present",
+       "motifCodeAvant": "mission",
+       "motifCodeApres": "mission"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "motif codé vidé explicitement",
+   "role": "admin",
+   "acteur": "Vecteur admin",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": "mission"
+   },
+   "o": {
+    "etat": "absent",
+    "motifCode": "",
+    "motif": "Mission annulée"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "absent",
+     "motifCode": null,
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur admin",
+       "motif": "Mission annulée",
+       "etatAvant": "retard",
+       "etatApres": "absent",
+       "motifCodeAvant": "mission",
+       "motifCodeApres": "mission"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "le caissier est refusé",
+   "role": "caissier",
+   "acteur": "Vecteur caissier",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "REGULARISATION_RESERVEE",
+    "motif": "La régularisation d’un pointage se fait par le surveillant ou la Directrice Administrative.",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "motif absent",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "  "
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Le motif de la régularisation est obligatoire.",
+    "geste": "Dire ce qui justifie la correction."
+   }
+  },
+  {
+   "nom": "état inconnu",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "sieste",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ETAT_INCONNU",
+    "motif": "L’état « sieste » n’existe pas.",
+    "geste": "Choisir présent, retard, absent ou congé."
+   }
+  },
+  {
+   "nom": "motif codé inconnu",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motifCode": "vacances",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_CODE_INCONNU",
+    "motif": "Le motif codé « vacances » n’existe pas.",
+    "geste": "Choisir maladie, mission ou congé."
+   }
+  },
+  {
+   "nom": "nul ne régularise son propre pointage",
+   "role": "surveillant",
+   "acteur": "BASSONGUI Chabi Séko",
+   "moiId": "EMP01",
+   "moiNom": "BASSONGUI Chabi Séko",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AUTO_VALIDATION",
+    "motif": "Personne ne régularise son propre pointage.",
+    "geste": "Demander à un autre habilité."
+   }
+  },
+  {
+   "nom": "pointage introuvable",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "ABSENT",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PIECE_INTROUVABLE",
+    "motif": "Le pointage n’existe pas ou est archivé.",
+    "geste": "Choisir une ligne du registre."
+   }
+  },
+  {
+   "nom": "seconde régularisation : la trace s’ajoute",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null,
+    "regularisations": [
+     {
+      "le": "2026-10-28",
+      "par": "S0",
+      "motif": "Première",
+      "etatAvant": "absent",
+      "etatApres": "retard",
+      "motifCodeAvant": null,
+      "motifCodeApres": null
+     }
+    ]
+   },
+   "o": {
+    "etat": "present",
+    "motif": "Seconde"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "present",
+     "regularisations": [
+      {
+       "le": "2026-10-28",
+       "par": "S0",
+       "motif": "Première",
+       "etatAvant": "absent",
+       "etatApres": "retard",
+       "motifCodeAvant": null,
+       "motifCodeApres": null
+      },
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur surveillant",
+       "motif": "Seconde",
+       "etatAvant": "retard",
+       "etatApres": "present",
+       "motifCodeAvant": null,
+       "motifCodeApres": null
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "avis": [
+  {
+   "nom": "avis favorable consigné par le surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef",
+    "motif": ""
+   },
+   "attendu": {
+    "ok": true,
+    "avis": {
+     "avis": "favorable",
+     "chef": "Dr Chef",
+     "motif": null,
+     "le": "2026-10-30",
+     "consignePar": "Vecteur surveillant"
+    }
+   }
+  },
+  {
+   "nom": "avis défavorable motivé",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "defavorable",
+    "chef": "Dr Chef",
+    "motif": "Effectif insuffisant"
+   },
+   "attendu": {
+    "ok": true,
+    "avis": {
+     "avis": "defavorable",
+     "chef": "Dr Chef",
+     "motif": "Effectif insuffisant",
+     "le": "2026-10-30",
+     "consignePar": "Vecteur da"
+    }
+   }
+  },
+  {
+   "nom": "avis défavorable sans motif",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "defavorable",
+    "chef": "Dr Chef",
+    "motif": " "
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Un avis défavorable exige son motif.",
+    "geste": "Dire pourquoi l’avis est défavorable."
+   }
+  },
+  {
+   "nom": "le médecin ne consigne pas",
+   "role": "medecin",
+   "acteur": "Vecteur medecin",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AVIS_RESERVE",
+    "motif": "L’avis du chef de service se consigne par le surveillant, la Directrice Administrative ou l’administrateur.",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "avis inconnu",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "peut-etre",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AVIS_INCONNU",
+    "motif": "L’avis est « favorable » ou « défavorable ».",
+    "geste": "Choisir l’avis."
+   }
+  },
+  {
+   "nom": "chef absent",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "  "
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CHEF_ABSENT",
+    "motif": "Le nom du chef de service qui donne l’avis est obligatoire.",
+    "geste": "Choisir le chef de service de l’agent."
+   }
+  },
+  {
+   "nom": "ordre déjà validé",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "validee",
+    "validationEtat": "valide"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "L’ordre de mission est déjà tranché : l’avis se donne avant la décision.",
+    "geste": "Saisir un nouvel ordre."
+   }
+  },
+  {
+   "nom": "ordre déjà refusé",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "refusee",
+    "validationEtat": "refuse"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "L’ordre de mission est déjà tranché : l’avis se donne avant la décision.",
+    "geste": "Saisir un nouvel ordre."
+   }
+  },
+  {
+   "nom": "ordre introuvable",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "ABSENT",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PIECE_INTROUVABLE",
+    "motif": "L’ordre de mission n’existe pas ou est archivé.",
+    "geste": "Choisir une ligne du registre."
+   }
+  },
+  {
+   "nom": "un nouvel avis remplace le précédent",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider",
+    "avisChefService": {
+     "avis": "defavorable",
+     "chef": "Ancien",
+     "motif": "x",
+     "le": "2026-10-20",
+     "consignePar": "S0"
+    }
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": true,
+    "avis": {
+     "avis": "favorable",
+     "chef": "Dr Chef",
+     "motif": null,
+     "le": "2026-10-30",
+     "consignePar": "Vecteur surveillant"
+    }
+   }
+  }
+ ],
+ "retraits": [
+  {
+   "nom": "l’agent retire sa proposition",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {},
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": true,
+    "etat": "annulee",
+    "annuleeLe": "2026-10-30"
+   }
+  },
+  {
+   "nom": "un autre agent ne la retire pas",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {},
+   "moiId": "EMP05",
+   "attendu": {
+    "ok": false,
+    "code": "PROPOSITION_D_AUTRUI",
+    "motif": "Seul l’agent qui a proposé peut retirer sa proposition.",
+    "geste": "Se connecter avec son compte."
+   }
+  },
+  {
+   "nom": "le surveillant, sans être l’agent, ne la retire pas",
+   "role": "surveillant",
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "PROPOSITION_D_AUTRUI",
+    "motif": "Seul l’agent qui a proposé peut retirer sa proposition.",
+    "geste": "Se connecter avec son compte."
+   }
+  },
+  {
+   "nom": "déjà validée",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {
+    "etat": "validee"
+   },
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà validée.",
+    "geste": "Faire une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "déjà refusée",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {
+    "etat": "refusee"
+   },
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà refusée.",
+    "geste": "Faire une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "déjà retirée",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {
+    "etat": "annulee"
+   },
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà retirée.",
+    "geste": "Faire une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "introuvable",
+   "role": "medecin",
+   "absente": true,
+   "proposition": {},
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "PROPOSITION_INTROUVABLE",
+    "motif": "La proposition n’existe pas.",
+    "geste": "Choisir une proposition de la liste."
+   }
+  }
+ ],
+ "persoDefinir": [
+  {
+   "nom": "hebdomadaire du médecin : garde le lundi et le jeudi",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 4,
+     "type": "garde"
+    },
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 1,
+      "type": "garde"
+     },
+     {
+      "jour": 4,
+      "type": "garde"
+     }
+    ],
+    "version": 1,
+    "periodicite": "hebdomadaire"
+   }
+  },
+  {
+   "nom": "mensuel de la sage-femme : gardes espacées de 3 jours",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP18",
+    "nomComplet": "BADO BANI A. B. Zoulehath",
+    "fonction": "sage_femme",
+    "matricule": "18",
+    "service": "Maternité"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "mensuel",
+   "dateEffet": "2026-11-15",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    },
+    {
+     "jour": 4,
+     "type": "garde"
+    },
+    {
+     "jour": 10,
+     "type": "conge"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 1,
+      "type": "garde"
+     },
+     {
+      "jour": 4,
+      "type": "garde"
+     },
+     {
+      "jour": 10,
+      "type": "conge"
+     }
+    ],
+    "version": 1,
+    "periodicite": "mensuel"
+   }
+  },
+  {
+   "nom": "dérogation de repos 24 h : gardes à J et J+2 permises",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-01",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-11-10",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    },
+    {
+     "jour": 3,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 1,
+      "type": "garde"
+     },
+     {
+      "jour": 3,
+      "type": "garde"
+     }
+    ],
+    "version": 1,
+    "periodicite": "hebdomadaire"
+   }
+  },
+  {
+   "nom": "régime REMPLACÉ : la permanence devient permise au médecin",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-01",
+     "champs": {
+      "vacations": [
+       "permanence"
+      ],
+      "repos": "repos24"
+     },
+     "mode": "remplace",
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-11-10",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 2,
+     "type": "permanence"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 2,
+      "type": "permanence"
+     }
+    ],
+    "version": 1,
+    "periodicite": "hebdomadaire"
+   }
+  },
+  {
+   "nom": "rôle caissier",
+   "role": "caissier",
+   "droit": false,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_PERSO_RESERVE",
+    "motif": "Le planning personnalisé se définit par un rôle qui détient le droit « Définir le planning personnalisé d’un agent » (fiche de droits du rôle).",
+    "geste": "Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur)."
+   }
+  },
+  {
+   "nom": "rôle surveillant (le droit n’est pas celui de poser le planning)",
+   "role": "surveillant",
+   "droit": false,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_PERSO_RESERVE",
+    "motif": "Le planning personnalisé se définit par un rôle qui détient le droit « Définir le planning personnalisé d’un agent » (fiche de droits du rôle).",
+    "geste": "Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur)."
+   }
+  },
+  {
+   "nom": "rôle DAF",
+   "role": "da",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 1,
+      "type": "garde"
+     }
+    ],
+    "version": 1,
+    "periodicite": "hebdomadaire"
+   }
+  },
+  {
+   "nom": "périodicité inconnue",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "annuel",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "PERIODICITE_INCONNUE",
+    "motif": "La périodicité « annuel » n’existe pas : un planning personnalisé est hebdomadaire ou mensuel.",
+    "geste": "Choisir hebdomadaire ou mensuel."
+   }
+  },
+  {
+   "nom": "date illisible",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "30/10/2026",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "DATE_INVALIDE",
+    "motif": "La date d’effet est absente ou illisible.",
+    "geste": "Choisir la date à partir de laquelle le modèle s’applique."
+   }
+  },
+  {
+   "nom": "motif absent",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "  ",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Le motif est obligatoire.",
+    "geste": "Dire pourquoi cet agent a un planning propre."
+   }
+  },
+  {
+   "nom": "date passée",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-29",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (29/10/2026) est antérieure à aujourd’hui : un modèle ne s’applique jamais rétroactivement.",
+    "geste": "Choisir aujourd’hui ou une date à venir."
+   }
+  },
+  {
+   "nom": "modèle vide",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [],
+   "attendu": {
+    "ok": false,
+    "code": "MODELE_VIDE",
+    "motif": "Le modèle ne contient aucun jour.",
+    "geste": "Renseigner au moins un jour du modèle."
+   }
+  },
+  {
+   "nom": "jour 8 dans une semaine",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 8,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "JOUR_INVALIDE",
+    "motif": "Le jour « 8 » n’existe pas dans un modèle hebdomadaire (1 à 7).",
+    "geste": "Corriger le numéro du jour."
+   }
+  },
+  {
+   "nom": "jour 32 dans un mois",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "mensuel",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 32,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "JOUR_INVALIDE",
+    "motif": "Le jour « 32 » n’existe pas dans un modèle mensuel (1 à 31).",
+    "geste": "Corriger le numéro du jour."
+   }
+  },
+  {
+   "nom": "jour 0",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "mensuel",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 0,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "JOUR_INVALIDE",
+    "motif": "Le jour « 0 » n’existe pas dans un modèle mensuel (1 à 31).",
+    "geste": "Corriger le numéro du jour."
+   }
+  },
+  {
+   "nom": "jour donné deux fois",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    },
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "JOUR_EN_DOUBLE",
+    "motif": "Le jour 1 est donné deux fois dans le modèle.",
+    "geste": "Une seule vacation par jour."
+   }
+  },
+  {
+   "nom": "type inconnu",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "sieste"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "TYPE_INCONNU",
+    "motif": "Le type de vacation « sieste » n’existe pas.",
+    "geste": "Choisir un type du référentiel."
+   }
+  },
+  {
+   "nom": "type non permis par le régime (la permanence n’est pas au médecin)",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 2,
+     "type": "permanence"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "TYPE_NON_PERMIS",
+    "motif": "Le type « Permanence » n’est pas permis par le régime de BASSONGUI Chabi Séko à la date d’effet (30/10/2026).",
+    "geste": "Choisir un type de son régime (vacations, repos, congé, absence, remplacement), ou régler d’abord son régime individuel."
+   }
+  },
+  {
+   "nom": "repos 48 h : gardes le lundi et le mercredi",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    },
+    {
+     "jour": 3,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde lundi puis garde mercredi, la semaine étant lue en boucle).",
+    "geste": "Espacer les gardes d’au moins 48 h, ou régler d’abord le repos du régime de cet agent."
+   }
+  },
+  {
+   "nom": "repos 48 h : gardes à la suite",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    },
+    {
+     "jour": 2,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde lundi puis garde mardi, la semaine étant lue en boucle).",
+    "geste": "Espacer les gardes d’au moins 48 h, ou régler d’abord le repos du régime de cet agent."
+   }
+  },
+  {
+   "nom": "semaine lue en BOUCLE : garde le dimanche et le lundi",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 7,
+     "type": "garde"
+    },
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde dimanche puis garde lundi, la semaine étant lue en boucle).",
+    "geste": "Espacer les gardes d’au moins 48 h, ou régler d’abord le repos du régime de cet agent."
+   }
+  },
+  {
+   "nom": "semaine lue en BOUCLE : garde le samedi et le lundi, repos 48 h entamé",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 6,
+     "type": "garde"
+    },
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde samedi puis garde lundi, la semaine étant lue en boucle).",
+    "geste": "Espacer les gardes d’au moins 48 h, ou régler d’abord le repos du régime de cet agent."
+   }
+  },
+  {
+   "nom": "sage-femme, repos 24 h : garde le dimanche et le mardi, la boucle est respectée",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP18",
+    "nomComplet": "BADO BANI A. B. Zoulehath",
+    "fonction": "sage_femme",
+    "matricule": "18",
+    "service": "Maternité"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 7,
+     "type": "garde"
+    },
+    {
+     "jour": 2,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 2,
+      "type": "garde"
+     },
+     {
+      "jour": 7,
+      "type": "garde"
+     }
+    ],
+    "version": 1,
+    "periodicite": "hebdomadaire"
+   }
+  },
+  {
+   "nom": "mensuel : gardes les jours 1 et 2",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "mensuel",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 1,
+     "type": "garde"
+    },
+    {
+     "jour": 2,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "INCOMPATIBILITE_REPOS",
+    "motif": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde le 1 puis garde le 2).",
+    "geste": "Espacer les gardes d’au moins 48 h, ou régler d’abord le repos du régime de cet agent."
+   }
+  },
+  {
+   "nom": "mensuel : le 31 puis le 1er ne se heurtent pas (le mois n’est pas lu en boucle)",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "periodicite": "mensuel",
+   "dateEffet": "2026-10-30",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 31,
+     "type": "garde"
+    },
+    {
+     "jour": 1,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 1,
+      "type": "garde"
+     },
+     {
+      "jour": 31,
+      "type": "garde"
+     }
+    ],
+    "version": 1,
+    "periodicite": "mensuel"
+   }
+  },
+  {
+   "nom": "date déjà prise par une version",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-05",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-11-05",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 2,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "DATE_EXISTANTE",
+    "motif": "Une version commence déjà le 05/11/2026 pour cet agent : une version ne se réécrit pas.",
+    "geste": "Choisir une date d’effet postérieure."
+   }
+  },
+  {
+   "nom": "version insérée avant la plus récente",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-12-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-12-01",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "periodicite": "hebdomadaire",
+   "dateEffet": "2026-11-10",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 2,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": false,
+    "code": "VERSION_ANTERIEURE",
+    "motif": "La version la plus récente de cet agent commence le 01/12/2026 : une version insérée avant elle masquerait l’historique.",
+    "geste": "Choisir une date d’effet postérieure à la dernière version."
+   }
+  },
+  {
+   "nom": "nouvelle version à une date postérieure",
+   "role": "admin",
+   "droit": true,
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-05",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-05",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "periodicite": "mensuel",
+   "dateEffet": "2026-12-01",
+   "motif": "Vecteur",
+   "jours": [
+    {
+     "jour": 2,
+     "type": "garde"
+    }
+   ],
+   "attendu": {
+    "ok": true,
+    "jours": [
+     {
+      "jour": 2,
+      "type": "garde"
+     }
+    ],
+    "version": 2,
+    "periodicite": "mensuel"
+   }
+  }
+ ],
+ "persoApplication": [
+  {
+   "nom": "une semaine du modèle hebdomadaire : deux gardes à poser",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 2,
+    "occupes": 0,
+    "refuses": 0,
+    "libres": 5,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "jour occupé : conservé, jamais écrasé",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-05",
+     "type": "permanence"
+    }
+   ],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "occupe",
+      "type": "garde",
+      "code": "JOUR_OCCUPE"
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 1,
+    "occupes": 1,
+    "refuses": 0,
+    "libres": 5,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "jour occupé par une garde le même jour : conservé",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-02",
+     "type": "garde"
+    }
+   ],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "occupe",
+      "type": "garde",
+      "code": "JOUR_OCCUPE"
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 1,
+    "occupes": 1,
+    "refuses": 0,
+    "libres": 5,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "repos après une garde déjà posée : le jour est refusé, nommé",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-03",
+     "type": "garde"
+    }
+   ],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "refuse",
+      "type": "garde",
+      "code": "INCOMPATIBILITE_REPOS"
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "refuse",
+      "type": "garde",
+      "code": "INCOMPATIBILITE_REPOS"
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 0,
+    "occupes": 0,
+    "refuses": 2,
+    "libres": 5,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "période avant la date d’effet : rien à poser",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-09",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-09",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 0,
+    "occupes": 0,
+    "refuses": 0,
+    "libres": 0,
+    "sansModele": 7
+   }
+  },
+  {
+   "nom": "la période chevauche deux versions",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    },
+    {
+     "id": "PPE-V2",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-09",
+     "jours": [
+      {
+       "jour": 2,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-02",
+   "au": "2026-11-15",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-09",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-10",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-11",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-12",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-13",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-14",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-15",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 2,
+    "occupes": 0,
+    "refuses": 0,
+    "libres": 12,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "modèle mensuel sur un mois",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "mensuel",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 3,
+       "type": "garde"
+      },
+      {
+       "jour": 10,
+       "type": "garde"
+      },
+      {
+       "jour": 11,
+       "type": "garde"
+      },
+      {
+       "jour": 20,
+       "type": "conge"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-01",
+   "au": "2026-11-30",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-01",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-02",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-09",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-10",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-11",
+      "etat": "refuse",
+      "type": "garde",
+      "code": "INCOMPATIBILITE_REPOS"
+     },
+     {
+      "date": "2026-11-12",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-13",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-14",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-15",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-16",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-17",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-18",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-19",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-20",
+      "etat": "a_poser",
+      "type": "conge",
+      "code": null
+     },
+     {
+      "date": "2026-11-21",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-22",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-23",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-24",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-25",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-26",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-27",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-28",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-29",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-30",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 3,
+    "occupes": 0,
+    "refuses": 1,
+    "libres": 25,
+    "sansModele": 1
+   }
+  },
+  {
+   "nom": "les gardes posées dans la période comptent dans le repos (modèle de gardes serrées sous dérogation)",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [
+    {
+     "id": "RGI-EMP01-2026-11-01",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "dateEffet": "2026-11-01",
+     "champs": {
+      "repos": "repos24"
+     },
+     "retourCategorie": false,
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30"
+    }
+   ],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 2,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "refuse",
+      "type": "garde",
+      "code": "INCOMPATIBILITE_REPOS"
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 1,
+    "occupes": 0,
+    "refuses": 1,
+    "libres": 5,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "les vacations d’un autre agent ne comptent pas",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP05",
+     "employe": "YENI M’PO Florent",
+     "fonction": "medecin",
+     "service": "Médecine générale",
+     "date": "2026-11-02",
+     "type": "garde"
+    }
+   ],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 2,
+    "occupes": 0,
+    "refuses": 0,
+    "libres": 5,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "rôle médecin : planning réservé",
+   "role": "medecin",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_RESERVE",
+    "motif": "Le planning du personnel se pose par le surveillant ou la Directrice Administrative.",
+    "geste": "Un agent propose ses vacations (propositions de planning) ; le surveillant valide."
+   }
+  },
+  {
+   "nom": "rôle DAF",
+   "role": "da",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-02",
+   "au": "2026-11-04",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-02",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 1,
+    "occupes": 0,
+    "refuses": 0,
+    "libres": 2,
+    "sansModele": 0
+   }
+  },
+  {
+   "nom": "agent sans modèle",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [],
+   "planning": [],
+   "du": "2026-11-02",
+   "au": "2026-11-08",
+   "attendu": {
+    "ok": false,
+    "code": "AUCUN_MODELE",
+    "motif": "BASSONGUI Chabi Séko n’a pas de planning personnalisé.",
+    "geste": "Définir son planning personnalisé sur sa fiche."
+   }
+  },
+  {
+   "nom": "période inversée",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-08",
+   "au": "2026-11-02",
+   "attendu": {
+    "ok": false,
+    "code": "PERIODE_INVERSEE",
+    "motif": "Le dernier jour (02/11/2026) précède le premier (08/11/2026).",
+    "geste": "Corriger la période."
+   }
+  },
+  {
+   "nom": "période illisible",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "02/11/2026",
+   "au": "2026-11-02",
+   "attendu": {
+    "ok": false,
+    "code": "DATE_INVALIDE",
+    "motif": "La période est absente ou illisible.",
+    "geste": "Choisir un premier et un dernier jour."
+   }
+  },
+  {
+   "nom": "période de 93 jours",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-01",
+   "au": "2027-02-01",
+   "attendu": {
+    "ok": false,
+    "code": "PERIODE_TROP_LONGUE",
+    "motif": "La période couvre 93 jours : au plus 92 jours d’un coup.",
+    "geste": "Appliquer le modèle par périodes plus courtes."
+   }
+  },
+  {
+   "nom": "période de 92 jours",
+   "role": "surveillant",
+   "agent": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "matricule": "1",
+    "service": "Direction"
+   },
+   "versions": [],
+   "persoVersions": [
+    {
+     "id": "PPE-EMP01-2026-11-02",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "periodicite": "hebdomadaire",
+     "dateEffet": "2026-11-02",
+     "jours": [
+      {
+       "jour": 1,
+       "type": "garde"
+      },
+      {
+       "jour": 4,
+       "type": "garde"
+      }
+     ],
+     "motif": "vecteur",
+     "creePar": "vecteur",
+     "creeLe": "2026-10-30",
+     "version": 1
+    }
+   ],
+   "planning": [],
+   "du": "2026-11-01",
+   "au": "2027-01-31",
+   "attendu": {
+    "ok": true,
+    "lignes": [
+     {
+      "date": "2026-11-01",
+      "etat": "sans_modele",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-02",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-05",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-07",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-09",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-10",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-11",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-12",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-13",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-14",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-15",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-16",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-17",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-18",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-19",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-20",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-21",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-22",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-23",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-24",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-25",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-26",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-11-27",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-28",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-29",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-11-30",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-01",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-02",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-03",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-04",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-05",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-07",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-09",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-10",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-11",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-12",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-13",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-14",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-15",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-16",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-17",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-18",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-19",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-20",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-21",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-22",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-23",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-24",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-25",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-26",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-27",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-28",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2026-12-29",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-30",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2026-12-31",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-01",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-02",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-03",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-04",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-05",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-06",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-07",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-08",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-09",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-10",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-11",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-12",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-13",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-14",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-15",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-16",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-17",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-18",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-19",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-20",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-21",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-22",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-23",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-24",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-25",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-26",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-27",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-28",
+      "etat": "a_poser",
+      "type": "garde",
+      "code": null
+     },
+     {
+      "date": "2027-01-29",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-30",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     },
+     {
+      "date": "2027-01-31",
+      "etat": "libre",
+      "type": null,
+      "code": null
+     }
+    ],
+    "aPoser": 26,
+    "occupes": 0,
+    "refuses": 0,
+    "libres": 65,
+    "sansModele": 1
+   }
+  }
+ ],
+ "attente": [
+  {
+   "nom": "confirmer le salaire : sa seule mention tombe",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "salaireBase",
+   "motif": "Contrat signé du 02/04/2018",
+   "attendu": {
+    "ok": true,
+    "valeursAttente": {
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    },
+    "restantes": [
+     "categorie",
+     "dateEmbauche",
+     "cnss"
+    ]
+   }
+  },
+  {
+   "nom": "confirmer la CNSS",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "cnss",
+   "motif": "Carnet CNSS vérifié",
+   "attendu": {
+    "ok": true,
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true
+    },
+    "restantes": [
+     "salaireBase",
+     "categorie",
+     "dateEmbauche"
+    ]
+   }
+  },
+  {
+   "nom": "rôle DAF",
+   "role": "da",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "categorie",
+   "motif": "Grille vérifiée",
+   "attendu": {
+    "ok": true,
+    "valeursAttente": {
+     "salaireBase": true,
+     "dateEmbauche": true,
+     "cnss": true
+    },
+    "restantes": [
+     "salaireBase",
+     "dateEmbauche",
+     "cnss"
+    ]
+   }
+  },
+  {
+   "nom": "rôle surveillant : sans le droit",
+   "role": "surveillant",
+   "droit": false,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "salaireBase",
+   "motif": "x",
+   "attendu": {
+    "ok": false,
+    "code": "CONFIRMATION_RESERVEE",
+    "motif": "Confirmer une valeur d’attente se fait par un rôle qui détient le droit « Confirmer une valeur d’attente du personnel » (fiche de droits du rôle).",
+    "geste": "Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur)."
+   }
+  },
+  {
+   "nom": "rôle médecin : sans le droit",
+   "role": "medecin",
+   "droit": false,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "salaireBase",
+   "motif": "x",
+   "attendu": {
+    "ok": false,
+    "code": "CONFIRMATION_RESERVEE",
+    "motif": "Confirmer une valeur d’attente se fait par un rôle qui détient le droit « Confirmer une valeur d’attente du personnel » (fiche de droits du rôle).",
+    "geste": "Demander à un rôle habilité (d’origine : la Directrice Administrative ou l’administrateur)."
+   }
+  },
+  {
+   "nom": "agent introuvable",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": false,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "salaireBase",
+   "motif": "x",
+   "attendu": {
+    "ok": false,
+    "code": "AGENT_INTROUVABLE",
+    "motif": "L’agent désigné n’existe pas au personnel.",
+    "geste": "Choisir un agent du personnel."
+   }
+  },
+  {
+   "nom": "champ sans valeur d’attente (téléphone)",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "telephone",
+   "motif": "x",
+   "attendu": {
+    "ok": false,
+    "code": "CHAMP_INCONNU",
+    "motif": "Le champ « telephone » n’a pas de valeur d’attente.",
+    "geste": "Choisir le salaire, la catégorie, la date d’embauche ou le numéro CNSS."
+   }
+  },
+  {
+   "nom": "champ déjà confirmé",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "categorie": true
+    }
+   },
+   "champ": "salaireBase",
+   "motif": "x",
+   "attendu": {
+    "ok": false,
+    "code": "PAS_UNE_VALEUR_ATTENTE",
+    "motif": "Le champ « Salaire de base » de BASSONGUI Chabi Séko n’est pas une valeur d’attente.",
+    "geste": "Rien à confirmer."
+   }
+  },
+  {
+   "nom": "fiche sans aucune mention",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": null
+   },
+   "champ": "salaireBase",
+   "motif": "x",
+   "attendu": {
+    "ok": false,
+    "code": "PAS_UNE_VALEUR_ATTENTE",
+    "motif": "Le champ « Salaire de base » de BASSONGUI Chabi Séko n’est pas une valeur d’attente.",
+    "geste": "Rien à confirmer."
+   }
+  },
+  {
+   "nom": "mention sur une valeur absente : rien à confirmer",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": null,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "salaireBase",
+   "motif": "x",
+   "attendu": {
+    "ok": false,
+    "code": "VALEUR_ABSENTE",
+    "motif": "Le champ « Salaire de base » de BASSONGUI Chabi Séko n’a pas de valeur : il n’y a rien à confirmer.",
+    "geste": "Renseigner la valeur sur la fiche."
+   }
+  },
+  {
+   "nom": "motif absent",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "salaireBase",
+   "motif": "   ",
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Le motif de la confirmation est obligatoire.",
+    "geste": "Dire sur quel document ou quelle décision la valeur est arrêtée."
+   }
+  },
+  {
+   "nom": "les autres mentions restent",
+   "role": "admin",
+   "droit": true,
+   "agentExiste": true,
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "champ": "dateEmbauche",
+   "motif": "Registre du personnel",
+   "attendu": {
+    "ok": true,
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "cnss": true
+    },
+    "restantes": [
+     "salaireBase",
+     "categorie",
+     "cnss"
+    ]
+   }
+  }
+ ],
+ "levee": [
+  {
+   "nom": "modifier le salaire lève la mention du salaire seule",
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "patch": {
+    "salaireBase": 130000
+   },
+   "attendu": {
+    "valeursAttente": {
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   }
+  },
+  {
+   "nom": "réécrire le salaire à l’identique ne lève rien",
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "patch": {
+    "salaireBase": 120000
+   },
+   "attendu": {
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   }
+  },
+  {
+   "nom": "modifier le salaire et la CNSS lève les deux mentions",
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "patch": {
+    "salaireBase": 130000,
+    "cnss": "999"
+   },
+   "attendu": {
+    "valeursAttente": {
+     "categorie": true,
+     "dateEmbauche": true
+    }
+   }
+  },
+  {
+   "nom": "modifier le téléphone ne lève aucune mention",
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "patch": {
+    "telephone": "0100000000"
+   },
+   "attendu": {
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   }
+  },
+  {
+   "nom": "modifier la date d’embauche",
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "dateEmbauche": true,
+     "cnss": true
+    }
+   },
+   "patch": {
+    "dateEmbauche": "2019-01-01"
+   },
+   "attendu": {
+    "valeursAttente": {
+     "salaireBase": true,
+     "categorie": true,
+     "cnss": true
+    }
+   }
+  },
+  {
+   "nom": "fiche sans mention : aucune mention créée",
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456"
+   },
+   "patch": {
+    "salaireBase": 130000
+   },
+   "attendu": {
+    "valeursAttente": null
+   }
+  },
+  {
+   "nom": "mention déjà levée : modifier le champ ne la recrée pas",
+   "fiche": {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "salaireBase": 120000,
+    "categorie": "E3-1",
+    "dateEmbauche": "2018-04-02",
+    "cnss": "2123456",
+    "valeursAttente": {
+     "cnss": true
+    }
+   },
+   "patch": {
+    "salaireBase": 130000
+   },
+   "attendu": {
+    "valeursAttente": {
+     "cnss": true
+    }
+   }
+  }
+ ],
+ "rg11": {
+  "planning": [
+   {
+    "id": "V1",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "service": "Direction",
+    "date": "2026-10-05",
+    "type": "garde"
+   },
+   {
+    "id": "V2",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "service": "Direction",
+    "date": "2026-10-12",
+    "type": "garde",
+    "validationEtat": "a_valider"
+   },
+   {
+    "id": "V3",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "service": "Direction",
+    "date": "2026-10-19",
+    "type": "garde",
+    "validationEtat": "validee"
+   },
+   {
+    "id": "V4",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "fonction": "medecin",
+    "service": "Direction",
+    "date": "2026-10-26",
+    "type": "garde",
+    "validationEtat": "refuse"
+   }
+  ],
+  "agentId": "EMP01",
+  "annee": 2026,
+  "mois": 9,
+  "attendu": 2
+ }
+}

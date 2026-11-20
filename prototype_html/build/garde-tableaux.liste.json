@@ -1,0 +1,174 @@
+{
+ "_doc": "Liste de la garde build/garde-tableaux.js (lot EXP) : les tableaux construits hors composant qui n'ont NI cases NI « Exporter », chacun avec sa nature (composant, saisie, document) et son motif. Un tableau de CONSULTATION ne s'inscrit pas : il s'équipe (U.equiperTableau). Les exemptions de saisie et de document sont une proposition à valider (DECISIONS-A-VALIDER.md, section AK).",
+ "sites": [
+  {
+   "fichier": "js/ui.js",
+   "fonction": "render",
+   "rang": 1,
+   "nature": "composant",
+   "motif": "le tableau du composant commun U.dataTable (cases par défaut, commande Exporter, sélection gardée d'une page à l'autre)"
+  },
+  {
+   "fichier": "js/ui.js",
+   "fonction": "tableauImprime",
+   "rang": 1,
+   "nature": "document",
+   "motif": "le tableau imprimé par le moteur de sortie lui-même (impression des lignes cochées ou filtrées)"
+  },
+  {
+   "fichier": "js/print.js",
+   "fonction": "tableau",
+   "rang": 1,
+   "nature": "document",
+   "motif": "P.tableau : le tableau des états imprimés (A4, rouleau), c'est la sortie de l'impression"
+  },
+  {
+   "fichier": "js/parcours.js",
+   "fonction": "etatsHtml",
+   "rang": 1,
+   "nature": "document",
+   "motif": "la balance écrite dans le fichier d'une archive légale de clôture (chaîne HTML du fichier, pas un écran)"
+  },
+  {
+   "fichier": "js/modules/configuration.js",
+   "fonction": "bascule",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "matrice des notifications : chaque case règle un canal, le tableau est le formulaire du réglage"
+  },
+  {
+   "fichier": "js/modules/m10-rh.js",
+   "fonction": "rendreGrille",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "grille du planning à cellules actives (chaque cellule pose une garde) ; ses données sortent par le registre du planning, tableau commun placé dessous"
+  },
+  {
+   "fichier": "js/modules/m10-rh.js",
+   "fonction": "rendreGrille",
+   "rang": 3,
+   "nature": "saisie",
+   "motif": "grille du planning entretien et sécurité à cellules actives ; ses données sortent par le registre des agents, tableau commun placé dessous"
+  },
+  {
+   "fichier": "js/modules/m12-comptabilite.js",
+   "fonction": "maj",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "lignes d'une écriture en cours de saisie (pas encore enregistrée) ; enregistrée, elle sort par le journal des écritures"
+  },
+  {
+   "fichier": "js/modules/m12-comptabilite.js",
+   "fonction": "tableLiasse",
+   "rang": 1,
+   "nature": "document",
+   "motif": "tableau d'un état de la liasse (vue écran à l'identique de la pièce), imprimé et exporté par les commandes propres de la liasse"
+  },
+  {
+   "fichier": "js/modules/m12-comptabilite.js",
+   "fonction": "dessiner",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "lignes d'une pièce comptable en cours de saisie"
+  },
+  {
+   "fichier": "js/modules/m12-comptabilite.js",
+   "fonction": "tableFeuillet",
+   "rang": 1,
+   "nature": "document",
+   "motif": "feuillet de la liasse (écran et impression du même gabarit)"
+  },
+  {
+   "fichier": "js/modules/m14-securite.js",
+   "fonction": "editerRole",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "modale de réglage des modules d'un rôle (cases de droits en cours de réglage)"
+  },
+  {
+   "fichier": "js/modules/m14-securite.js",
+   "fonction": "dessinerModule",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "modale de réglage écran par écran (cases de droits en cours de réglage)"
+  },
+  {
+   "fichier": "js/modules/m14-securite.js",
+   "fonction": "editerImports",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "modale des droits d'import d'un rôle (cases en cours de réglage)"
+  },
+  {
+   "fichier": "js/modules/m14-securite.js",
+   "fonction": "editerGestes",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "modale des gestes réservés d'un rôle (cases en cours de réglage)"
+  },
+  {
+   "fichier": "js/modules/m5-laboratoire.js",
+   "fonction": "compteRendu",
+   "rang": 1,
+   "nature": "document",
+   "motif": "en-tête du compte rendu de laboratoire imprimé"
+  },
+  {
+   "fichier": "js/modules/m5-laboratoire.js",
+   "fonction": "compteRendu",
+   "rang": 2,
+   "nature": "document",
+   "motif": "corps du compte rendu de laboratoire imprimé"
+  },
+  {
+   "fichier": "js/modules/m6-stock.js",
+   "fonction": "theorique",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "comptage d'inventaire : le stock compté se saisit ligne à ligne ; validé, il sort par les écarts et les mouvements"
+  },
+  {
+   "fichier": "js/modules/m6-stock.js",
+   "fonction": "majPanier",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "panier d'une dispensation en cours"
+  },
+  {
+   "fichier": "js/modules/m7-achats.js",
+   "fonction": "maj",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "lignes d'une demande d'achat en cours"
+  },
+  {
+   "fichier": "js/modules/m7-achats.js",
+   "fonction": "maj",
+   "rang": 2,
+   "nature": "saisie",
+   "motif": "lignes d'une commande en cours"
+  },
+  {
+   "fichier": "js/modules/m7-achats.js",
+   "fonction": "receptionner",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "quantités reçues d'une réception en cours"
+  },
+  {
+   "fichier": "js/modules/m8-facturation.js",
+   "fonction": "majLignes",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "prestations d'une facture en composition"
+  },
+  {
+   "fichier": "js/modules/m8-facturation.js",
+   "fonction": "encaisser",
+   "rang": 1,
+   "nature": "saisie",
+   "motif": "prestations à encaisser (les cases y choisissent ce qui se règle)"
+  }
+ ],
+ "sansCases": []
+}

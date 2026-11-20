@@ -1,0 +1,57 @@
+{
+ "id": "m12-budgets",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Budgets",
+ "acces": "ouvert",
+ "titre": "Budgets",
+ "description": "Budgétisation par centre de coûts et suivi du réalisé par rapport au prévisionnel.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Budgets"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les budgets",
+  "Budget vs réalisé",
+  "Archivés"
+ ],
+ "kpis": [
+  "Budget total prévu",
+  "Budget consommé",
+  "Disponible",
+  "Taux de consommation"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Exercice",
+   "Centre de coûts",
+   "Nature",
+   "Budget prévu",
+   "Réalisé",
+   "Disponible",
+   "Consommation",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les budgets7",
+  "Budget vs réalisé",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

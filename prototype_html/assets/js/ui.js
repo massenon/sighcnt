@@ -60,9 +60,10 @@
       actions.appendChild(el('button.btn.btn-sm.btn-secondary', {
         type: 'button',
         onclick: function () {
-          opts.undo();
+          var retour = opts.undo();
           close();
-          toast(opts.undoMessage || 'Action annulée.', { type: 'info' });
+          /* Une annulation qui rend `false` s'est REFUSÉE et l'a dit elle-même : ne pas annoncer qu'elle a réussi. */
+          if (retour !== false) toast(opts.undoMessage || 'Action annulée.', { type: 'info' });
         },
       }, 'Annuler'));
     }
@@ -175,6 +176,8 @@
       /* Le message est rendu en TEXTE ENRICHI : les balises de mise en forme
          que le gabarit écrit s'appliquent, tout le reste est échappé. */
       body.appendChild(paragrapheEnrichi(o.message, 'p.text-sm.text-slate-600'));
+      /* `corps` : un nœud posé sous le message (une liste, un choix) ; `lire` : ce qu'on en retient à la confirmation, rendu dans `choix`. */
+      if (o.corps) body.appendChild(o.corps);
       var motif = null;
       if (o.requireMotif) {
         var wrap = el('div');
@@ -196,12 +199,12 @@
       }
 
       var m = modal({
-        title: o.title, size: 'sm', body: body,
+        title: o.title, size: o.size || 'sm', body: body,
         footer: [
           el('button.btn.btn-secondary', { type: 'button', onclick: function () { repondre(null); m.close(); } }, o.cancelLabel),
           el('button.btn', {
             type: 'button', class: o.danger ? 'btn-danger' : 'btn-primary',
-            onclick: function () { repondre({ motif: motif ? motif.value : null }); m.close(); },
+            onclick: function () { repondre({ motif: motif ? motif.value : null, choix: o.lire ? o.lire() : undefined }); m.close(); },
           }, o.confirmLabel),
         ],
         onClose: function () { repondre(null); },
@@ -250,6 +253,15 @@
       if (o.onClose) o.onClose();
     }
     return { close: close, body: bodyEl, panel: panel };
+  }
+
+  /** Ferme toutes les couches ouvertes (modales, tiroirs) et rend le défilement à la page.
+   *  Appelée au démontage d'un écran : une modale encore ouverte pendant une navigation
+   *  sans rechargement laissait `body { overflow: hidden }` et figeait la barre de défilement. */
+  function fermerCouches() {
+    openLayers.slice().reverse().forEach(function (c) { try { c(); } catch (e) { /* une couche ne bloque pas les autres */ } });
+    openLayers.length = 0;
+    document.body.style.overflow = '';
   }
 
   /* Échap ferme la couche la plus haute */
@@ -832,11 +844,16 @@
         wrap.appendChild(row);
       } else {
         var t = f.type === 'money' ? 'number' : (f.type || 'text');
+        /* E328 : un instant ISO avec fuseau (« …T09:00:00.000Z », la forme des dates écrites par l’agenda) est REFUSÉ par un champ
+           datetime-local — il restait vide et l’édition échouait sur « Date et heure » obligatoire. On le relit à l’heure locale. */
+        if (f.type === 'datetime-local' && val && /(Z|[+-]\d{2}:?\d{2})$/.test(String(val))) val = C.isoLocal(val);
         ctrl = el('input.input', {
           type: t, id: id, name: f.name, placeholder: f.placeholder || '',
           min: f.min, max: f.max, step: f.step || (f.type === 'money' ? 1 : null),
         });
-        ctrl.value = val;
+        /* Un champ `datetime-local` ne reçoit que « AAAA-MM-JJThh:mm » : une date ISO complète (secondes, fuseau) y est REFUSÉE par le navigateur,
+           le champ s'ouvre vide et, s'il est obligatoire, la fiche ne peut plus être corrigée sans ressaisir la date (écart E402). */
+        ctrl.value = (t === 'datetime-local' && val && /(Z|[+-]\d\d:\d\d|:\d\d\.\d+)$/.test(String(val))) ? global.SIGH.core.isoLocal(val) : val;
       }
       if (f.readonly) {
         if (ctrl.classList.contains('combo')) ctrl.disabled = true;
@@ -946,21 +963,364 @@
   }
 
   /* ==========================================================================
+   * SORTIE DES TABLEAUX (lot EXP, 16/11/2026)
+   * -------------------------------------------------------------------------
+   * Un seul moteur pour TOUTES les sorties d'un tableau : classeur .xlsx, fichier .csv, impression. PRD des tableaux (O1 à O6) et réponses de la
+   * Direction du 15/11/2026 (section AH, points 38 à 42) : le CSV reste à côté du .xlsx ; sortir est un geste réservé de la fiche RBAC par rôle
+   * (`exporter_donnees`, défaut : tout rôle qui lit l'écran) ; une limite de lignes par export est un réglage de clinique (refus nommé au-delà,
+   * JAMAIS de fichier tronqué) ; la sélection se garde d'une page à l'autre jusqu'à ce que l'agent la vide ; l'impression d'une sélection est un seul
+   * tableau (« un état par ligne là où un document unitaire existe » n'est PAS fait : `P.etat` n'empile pas plusieurs pièces, section AK).
+   *
+   * LES DROITS DE L'ÉCRAN S'APPLIQUENT À LA SORTIE PAR CONSTRUCTION : le moteur ne reçoit que les lignes que l'écran a construites pour ce profil et
+   * les colonnes visibles ; une cellule rendue autrement que sa valeur brute (`render`) sort sous le TEXTE montré, jamais sous la valeur brute, sauf
+   * quand le texte montré EST la même valeur (un montant ou une date formatés), qui sort alors typée (nombre, date). Une sortie ne contient donc jamais
+   * plus que ce que l'écran montre.
+   * ======================================================================== */
+  var GESTE_SORTIE = 'exporter_donnees';
+  /* La limite d'attente : mesurée le 16/11/2026 sur le jeu de démonstration, dont la plus grande table est le planning (1 394 lignes). 2 000 est le
+     premier millier qui la laisse sortir en entier. PROPOSITION À VALIDER (section AK) : aucune valeur n'a été fixée par la Direction (point 40). */
+  var LIMITE_SORTIE_DEFAUT = 2000;
+  var LIMITE_SORTIE_BORNES = [1, 100000];
+  var LIBELLES_FORMAT = { xlsx: 'Export d’un tableau (.xlsx)', csv: 'Export d’un tableau (.csv)', impression: 'Impression d’un tableau' };
+
+  function magasin() { return global.SIGH.store; }
+  function roleSortie() { var s = magasin() && magasin().session(); return s ? s.role : null; }
+  function libelleRole(r) { var N = global.SIGH.nav; return (N && N.ROLES && N.ROLES[r] && N.ROLES[r].label) || r || 'inconnu'; }
+  /** Le profil courant peut-il sortir les lignes d'un tableau ? Lu à chaque appel (un changement de fiche RBAC vaut tout de suite). */
+  function peutSortir() {
+    var N = global.SIGH.nav, r = roleSortie();
+    return !!(N && typeof N.droitGeste === 'function' && r && N.droitGeste(r, GESTE_SORTIE));
+  }
+  function limiteSortie() {
+    var S = magasin();
+    var v = Number(S ? S.reglage('exportLimiteLignes', LIMITE_SORTIE_DEFAUT) : LIMITE_SORTIE_DEFAUT);
+    return isFinite(v) && v === Math.floor(v) && v >= LIMITE_SORTIE_BORNES[0] && v <= LIMITE_SORTIE_BORNES[1] ? v : LIMITE_SORTIE_DEFAUT;
+  }
+  /** Régler la limite : un profil qui écrit dans la sécurité (M14), comme les autres réglages qui bornent un geste de tous (proposition à valider). */
+  function peutReglerLimite() {
+    var N = global.SIGH.nav, r = roleSortie();
+    return !!(N && r && N.droits(r, 'M14').editer);
+  }
+  function definirLimiteSortie(lignes, motif) {
+    var S = magasin();
+    if (!peutReglerLimite()) return { ok: false, code: 'REGLAGE_RESERVE', motif: 'la limite de lignes par export se règle par un profil qui écrit dans la sécurité (module M14)', geste: 'Demander le réglage à l’administrateur.' };
+    var n = Number(lignes);
+    if (lignes === '' || lignes === null || lignes === undefined || !isFinite(n) || n !== Math.floor(n) || n < LIMITE_SORTIE_BORNES[0] || n > LIMITE_SORTIE_BORNES[1]) {
+      return { ok: false, code: 'LIMITE_INVALIDE', motif: 'la limite est un nombre entier de lignes, de ' + LIMITE_SORTIE_BORNES[0] + ' à ' + C.num(LIMITE_SORTIE_BORNES[1]), geste: 'Saisir un nombre entier de lignes.' };
+    }
+    if (!String(motif || '').trim()) return { ok: false, code: 'MOTIF_REQUIS', motif: 'un réglage de limite se motive', geste: 'Saisir le motif du réglage.' };
+    var avant = limiteSortie();
+    S.log('Limite de lignes par export', 'TAB', 'reglage', 'exportLimiteLignes', { lignes: avant }, { lignes: n, motif: String(motif).slice(0, 60) });
+    S.setReglage('exportLimiteLignes', n);
+    return { ok: true, avant: avant, lignes: n };
+  }
+
+  /* --- La valeur d'une cellule à la sortie ------------------------------------------------------------------- */
+  var RE_DATE = /^\d{4}-\d{2}-\d{2}$/, RE_DATE_HEURE = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/;
+  /** Le texte d'un nœud rendu, tel que l'écran le lit : deux blocs empilés (un nom et son code sur deux lignes) sont séparés d'une espace, jamais collés. */
+  function texteNoeud(n) {
+    if (n.nodeType === 3) return n.nodeValue || '';
+    if (n.nodeType !== 1 && n.nodeType !== 11) return '';
+    var blocs = Array.prototype.filter.call(n.childNodes, function (c) { return c.nodeType === 1 && /^(P|DIV|LI|BR|UL|OL|TABLE|TR)$/.test(c.tagName); });
+    if (!blocs.length) return n.textContent || '';
+    return Array.prototype.map.call(n.childNodes, texteNoeud).join(' ').replace(/\s+/g, ' ').trim();
+  }
+  function texteDe(v) {
+    if (v == null) return '';
+    if (typeof Node !== 'undefined' && v instanceof Node) return texteNoeud(v);
+    if (Array.isArray(v)) return v.map(texteDe).join(' ');
+    return String(v);
+  }
+  function chiffres(s) { return String(s).replace(/[^0-9]/g, ''); }
+  /** Le texte montré ne porte rien d'autre que le nombre (séparateurs, signe, pour cent, devise) ? */
+  function nombreSeul(montre) {
+    var devise = (C.BRAND && C.BRAND.devise) || 'F CFA';
+    return String(montre).split(devise).join('').replace(/[0-9\s  .,+%\-]/g, '') === '';
+  }
+  /** Une valeur brute, typée pour la cellule : nombre, date, date et heure, sinon texte. */
+  function typer(v) {
+    if (typeof v === 'number') return isFinite(v) ? v : '';
+    if (typeof v === 'boolean') return v ? 'Oui' : 'Non';
+    if (typeof v === 'string') {
+      if (RE_DATE.test(v)) return { date: v };
+      if (RE_DATE_HEURE.test(v)) return { dateHeure: v };
+      return v;
+    }
+    if (v instanceof Date) return isNaN(v.getTime()) ? '' : { dateHeure: v.toISOString() };
+    if (v && typeof v === 'object' && (v.date || v.dateHeure) && !(typeof Node !== 'undefined' && v instanceof Node)) return v;
+    return texteDe(v);
+  }
+  /** Le texte MONTRÉ est-il la même valeur que la brute ? Alors la brute sort typée ; sinon c'est le texte montré qui sort. */
+  function memeValeur(brut, montre) {
+    if (brut == null || montre == null) return false;
+    var m = String(montre).trim();
+    if (typeof brut === 'number' && isFinite(brut)) {
+      if (!nombreSeul(m)) return false;
+      var cm = chiffres(m);
+      return cm !== '' && (cm === chiffres(String(Math.abs(brut))) || cm === chiffres(String(Math.round(Math.abs(brut)))));
+    }
+    if (typeof brut === 'string' && (RE_DATE.test(brut) || RE_DATE_HEURE.test(brut))) {
+      var d = new Date(RE_DATE.test(brut) ? brut + 'T12:00:00' : brut);
+      if (isNaN(d.getTime())) return false;
+      return m === C.dateFR(d) || m === C.dateHeure(d) || m === brut;
+    }
+    if (typeof brut === 'string') return m === brut;
+    return false;
+  }
+  /**
+   * La cellule d'une colonne pour une ligne. Ordre : `col.xlsx(r)` (la colonne déclare sa valeur typée) ; sinon la valeur (`col.value` ou `r[col.key]`)
+   * si le texte montré (`col.text`, sinon le rendu `col.render`) est cette même valeur ; sinon le texte montré. Le tiret d'une cellule vide sort vide.
+   */
+  function celluleSortie(col, r) {
+    if (typeof col.xlsx === 'function') return typer(col.xlsx(r));
+    var brut = col.value ? col.value(r) : r[col.key];
+    var montre = null;
+    if (typeof col.text === 'function') montre = texteDe(col.text(r));
+    else if (typeof col.render === 'function') montre = texteDe(col.render(r));
+    if (montre === null) return typer(brut);
+    if (memeValeur(brut, montre)) {
+      var t = typer(brut);
+      /* une date et heure MONTRÉE comme une date seule sort comme une date seule */
+      if (t && t.dateHeure && String(montre).trim() === C.dateFR(new Date(t.dateHeure))) return { date: C.iso(new Date(t.dateHeure)) };
+      return t;
+    }
+    montre = montre.replace(/\s+/g, ' ').trim();
+    return montre === '—' ? '' : montre;
+  }
+  /** La matrice de sortie : une ligne d'en-tête (libellés des colonnes), puis une ligne par fiche. */
+  function matriceSortie(colonnes, lignes) {
+    return [colonnes.map(function (c) { return c.label; })].concat(lignes.map(function (r) {
+      return colonnes.map(function (c) { return celluleSortie(c, r); });
+    }));
+  }
+  function texteCellule(v) {
+    if (v && typeof v === 'object' && v.date) return C.dateFR(new Date(v.date + 'T12:00:00'));
+    if (v && typeof v === 'object' && v.dateHeure) { var d = new Date(v.dateHeure); return C.dateFR(d) + ' ' + C.pad(d.getHours()) + ':' + C.pad(d.getMinutes()); }
+    if (typeof v === 'number') return String(v).replace('.', ',');
+    return v == null ? '' : String(v);
+  }
+  function csvDe(matrice) {
+    var sep = ';'; /* Excel FR */
+    return '﻿' + matrice.map(function (l) {
+      return l.map(function (v) { return '"' + texteCellule(v).replace(/"/g, '""') + '"'; }).join(sep);
+    }).join('\r\n');
+  }
+  function largeursDe(matrice) {
+    var n = matrice[0] ? matrice[0].length : 0, w = [];
+    for (var c = 0; c < n; c++) {
+      var m = 8;
+      for (var i = 0; i < matrice.length && i < 500; i++) m = Math.max(m, texteCellule(matrice[i][c]).length + 2);
+      w.push(Math.min(m, 60));
+    }
+    return w;
+  }
+  function nomFeuille(titre) {
+    var s = String(titre || 'Tableau').replace(/[\[\]\*\?\/\\:]/g, ' ').replace(/\s+/g, ' ').trim();
+    var date = ' ' + C.iso(new Date());
+    return (s.slice(0, 31 - date.length).trim() || 'Tableau') + date;
+  }
+  function nomFichier(nom, ext) { return String(nom || 'export').replace(/[^\w.\-]+/g, '-') + '-' + C.iso(new Date()) + '.' + ext; }
+  function telecharger(contenu, nom, type) {
+    var blob = new Blob([contenu], { type: type });
+    var url = URL.createObjectURL(blob);
+    var a = el('a', { href: url, download: nom });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+  function chargerXlsx() {
+    if (global.SIGH.xlsx && global.SIGH.xlsx.ecrire) return Promise.resolve(global.SIGH.xlsx);
+    return global.SIGH.app.chargerScript('assets/js/vendor/xlsx-mini.js').then(function () { return global.SIGH.xlsx; });
+  }
+  /** Les totaux d'une impression : CALCULÉS sur les lignes imprimées pour les colonnes `somme: true` ; une valeur non numérique rend le total « non calculable », jamais zéro. */
+  function totauxSortie(colonnes, matrice) {
+    if (!colonnes.some(function (c) { return c.somme; })) return null;
+    return colonnes.map(function (c, i) {
+      if (!c.somme) return null;
+      var t = 0, ok = true;
+      for (var k = 1; k < matrice.length; k++) {
+        var v = matrice[k][i];
+        if (v === '' || v == null) continue;
+        if (typeof v !== 'number') { ok = false; break; }
+        t += v;
+      }
+      return ok ? t : 'non calculable';
+    });
+  }
+  function tableauImprime(colonnes, matrice) {
+    var t = el('table.tbl.w-full');
+    var thead = el('thead'), htr = el('tr');
+    colonnes.forEach(function (c) { htr.appendChild(el('th', { class: c.align === 'right' ? 'text-right' : '', text: c.label })); });
+    thead.appendChild(htr); t.appendChild(thead);
+    var tb = el('tbody');
+    matrice.slice(1).forEach(function (l) {
+      var tr = el('tr');
+      l.forEach(function (v, i) {
+        var s = typeof v === 'number' && colonnes[i].align === 'right' ? C.num(v, v % 1 ? 2 : 0) : texteCellule(v);
+        tr.appendChild(el('td', { class: colonnes[i].align === 'right' ? 'text-right num' : '', text: s === '' ? '—' : s }));
+      });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    var tot = totauxSortie(colonnes, matrice);
+    if (tot) {
+      var tf = el('tfoot'), ftr = el('tr', { dataset: { totalSortie: 'oui' } });
+      tot.forEach(function (v, i) {
+        var s = i === 0 && v == null ? 'TOTAL' : (v == null ? '' : (typeof v === 'number' ? C.num(v, v % 1 ? 2 : 0) : v));
+        ftr.appendChild(el('td', { class: 'font-semibold' + (colonnes[i].align === 'right' ? ' text-right num' : ''), text: s }));
+      });
+      tf.appendChild(ftr); t.appendChild(tf);
+    }
+    return t;
+  }
+  function refusSortie(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  /**
+   * LE MOTEUR DE SORTIE. o : { format ('xlsx' | 'csv' | 'impression'), colonnes, lignes, perimetre ('selection' | 'filtre' | 'tout'), nom, titre,
+   * cle (r -> identifiant journalisé), ecran, module, sousTitre }. Rend une promesse : { ok: false, code, motif, geste } ou { ok: true, lignes, fichier }.
+   * Le refus est nommé AVANT tout travail ; la sortie est journalisée (RG-12) AVANT d'être écrite : un fichier sans trace n'existe pas.
+   */
+  function sortirLignes(o) {
+    var fmt = o.format;
+    if (!LIBELLES_FORMAT[fmt]) return Promise.resolve(refusSortie('FORMAT_INCONNU', 'le format « ' + fmt + ' » n’existe pas', 'Choisir Excel (.xlsx), CSV ou Impression.'));
+    if (!peutSortir()) {
+      return Promise.resolve(refusSortie('EXPORT_NON_AUTORISE', 'le profil « ' + libelleRole(roleSortie()) + ' » ne détient pas le droit d’exporter ou d’imprimer les lignes d’un tableau',
+        'Demander ce droit à l’administrateur : il se règle par rôle dans « Rôles & permissions », gestes réservés.'));
+    }
+    var lignes = o.lignes || [], colonnes = (o.colonnes || []).filter(function (c) { return c && c.key !== '_actions'; });
+    if (!lignes.length) return Promise.resolve(refusSortie('EXPORT_VIDE', 'aucune ligne à sortir', 'Cocher des lignes, ou élargir la recherche et les filtres.'));
+    if (!colonnes.length) return Promise.resolve(refusSortie('EXPORT_SANS_COLONNE', 'aucune colonne affichée', 'Afficher au moins une colonne (bouton « Colonnes »).'));
+    var limite = limiteSortie();
+    if (lignes.length > limite) {
+      return Promise.resolve(refusSortie('EXPORT_AU_DELA_DE_LA_LIMITE', C.num(lignes.length) + ' lignes demandées, la limite réglée par la clinique est de ' + C.num(limite)
+        + ' lignes par export : aucun fichier tronqué n’est écrit',
+        'Affiner la recherche ou les filtres, ou cocher moins de lignes ; la limite se relève dans la fenêtre d’export par un profil qui écrit dans la sécurité.'));
+    }
+    var matrice = matriceSortie(colonnes, lignes);
+    var entree = global.SIGH.app && global.SIGH.app.entry ? global.SIGH.app.entry() : null;
+    var cle = o.cle || function (r) { return r.id; };
+    var journal = {
+      action: LIBELLES_FORMAT[fmt], format: fmt, perimetre: o.perimetre || 'filtre', lignes: lignes.length, nom: o.nom,
+      ecran: o.ecran || (entree && entree.id) || null, module: o.module || (entree && entree.module) || 'TAB',
+      references: lignes.map(function (r) { var k = cle(r); return k == null ? '' : k; }),
+    };
+    if (fmt === 'impression') {
+      magasin().journaliserSortie(journal);
+      global.SIGH.print.etat({ titre: o.titre || o.nom || 'État', sousTitre: o.sousTitre || null, contenu: tableauImprime(colonnes, matrice) });
+      return Promise.resolve({ ok: true, lignes: lignes.length, format: fmt });
+    }
+    if (fmt === 'csv') {
+      magasin().journaliserSortie(journal);
+      var fc = nomFichier(o.nom, 'csv');
+      telecharger(csvDe(matrice), fc, 'text/csv;charset=utf-8;');
+      return Promise.resolve({ ok: true, lignes: lignes.length, format: fmt, fichier: fc });
+    }
+    return chargerXlsx().then(function (X) {
+      var octets = X.ecrire({ feuilles: [{ nom: nomFeuille(o.titre || o.nom), lignes: matrice, largeurs: largeursDe(matrice), entete: true }] });
+      magasin().journaliserSortie(journal);
+      var fx = nomFichier(o.nom, 'xlsx');
+      telecharger(octets, fx, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      return { ok: true, lignes: lignes.length, format: fmt, fichier: fx };
+    }, function (e) {
+      return refusSortie('ECRIVAIN_XLSX_INDISPONIBLE', 'l’écrivain de classeur n’a pas pu se charger (' + (e && e.message || e) + ')', 'Recharger la page, ou exporter en CSV.');
+    });
+  }
+  function direRefus(r) {
+    toast('Sortie refusée (' + r.code + ') : ' + (r.motif || '') + '.', { type: 'error', detail: r.geste || '' });
+  }
+  function direSortie(r) {
+    if (!r.ok) { direRefus(r); return; }
+    if (r.format === 'impression') return;
+    toast('Export ' + (r.format === 'xlsx' ? 'Excel (.xlsx)' : 'CSV') + ' généré (' + C.num(r.lignes) + ' ligne' + (r.lignes > 1 ? 's' : '') + ').', { type: 'success' });
+  }
+  /** La fenêtre de réglage de la limite (profil qui écrit dans la sécurité). */
+  function fenetreLimite(apres) {
+    var f = form([
+      { name: 'lignes', label: 'Lignes au plus par export', type: 'number', required: true, value: limiteSortie(), min: LIMITE_SORTIE_BORNES[0], max: LIMITE_SORTIE_BORNES[1] },
+      { name: 'motif', label: 'Motif du réglage', required: true },
+    ], {});
+    var m = modal({ title: 'Limite de lignes par export', size: 'sm', body: [
+      el('p.mb-3.text-sm.text-slate-600', { text: 'Réglage de la clinique, en base. Au-delà, un export est refusé en le disant ; jamais tronqué. Valeur d’attente : ' + C.num(LIMITE_SORTIE_DEFAUT) + ' lignes (plus grande table du jeu de démonstration : le planning), à valider par la Direction.' }), f],
+    footer: [
+      el('button.btn.btn-secondary', { type: 'button', onclick: function () { m.close(); } }, 'Annuler'),
+      el('button.btn.btn-primary', { type: 'button', onclick: function () {
+        var v = f.collect(); if (!v) return;
+        var r = definirLimiteSortie(v.lignes, v.motif);
+        if (!r.ok) { direRefus(r); return; }
+        m.close(); toast('Limite réglée : ' + C.num(r.lignes) + ' lignes par export.', { type: 'success' }); if (apres) apres();
+      } }, 'Enregistrer'),
+    ] });
+  }
+  /**
+   * La fenêtre « Exporter les données » : le PÉRIMÈTRE (lignes cochées, lignes filtrées, tout le tableau) puis le FORMAT. `p` : { cochees, filtrees,
+   * toutes (fonctions qui rendent les lignes), filtreActif, colonnes, nom, titre, cle, perimetre }.
+   */
+  function fenetreSortie(p) {
+    var choix = [];
+    var nC = p.cochees().length, nF = p.filtrees().length, nT = p.toutes().length;
+    if (nC) choix.push({ id: 'selection', libelle: 'Les ' + C.num(nC) + ' ligne' + (nC > 1 ? 's' : '') + ' cochée' + (nC > 1 ? 's' : ''), n: nC });
+    if (p.filtreActif) choix.push({ id: 'filtre', libelle: 'Les ' + C.num(nF) + ' ligne' + (nF > 1 ? 's' : '') + ' filtrée' + (nF > 1 ? 's' : '') + ' (recherche et filtres actifs, toutes pages)', n: nF });
+    choix.push({ id: 'tout', libelle: 'Tout exporter : les ' + C.num(nT) + ' ligne' + (nT > 1 ? 's' : '') + ' du tableau, toutes pages' + (p.filtreActif ? ', sans le filtre' : ''), n: nT });
+    var courant = p.perimetre && choix.some(function (c) { return c.id === p.perimetre; }) ? p.perimetre : choix[0].id;
+    var body = el('div.space-y-3', { dataset: { sortieTableau: p.nom || 'tableau' } });
+    body.appendChild(el('p.text-sm.text-slate-600', { text: 'Choisir les lignes, puis le format. Les colonnes masquées ne sortent pas ; la sortie ne contient que ce que l’écran montre à ce profil.' }));
+    var groupe = el('div.space-y-1', { role: 'radiogroup', 'aria-label': 'Lignes à sortir' });
+    choix.forEach(function (c) {
+      var r = el('input.h-4.w-4.cursor-pointer.border-slate-300.text-navy-900', { type: 'radio', name: 'perimetre-sortie', value: c.id });
+      r.checked = c.id === courant;
+      r.addEventListener('change', function () { if (r.checked) courant = c.id; });
+      groupe.appendChild(el('label.flex.cursor-pointer.items-center.gap-2.text-sm', { dataset: { perimetre: c.id } }, [r, el('span', { text: c.libelle })]));
+    });
+    body.appendChild(groupe);
+    var lim = el('p.text-xs.text-slate-500', { text: 'Limite par export : ' + C.num(limiteSortie()) + ' lignes (réglage de la clinique, valeur d’attente à valider). Au-delà, refus nommé, jamais de fichier tronqué.' });
+    if (peutReglerLimite()) lim.appendChild(el('button.ml-1.underline', { type: 'button', onclick: function () { fenetreLimite(function () { m.close(); fenetreSortie(p); }); } }, 'Régler'));
+    body.appendChild(lim);
+    function lignesDe(id) { return id === 'selection' ? p.cochees() : id === 'filtre' ? p.filtrees() : p.toutes(); }
+    function sortir(fmt) {
+      var lignes = lignesDe(courant);
+      var sous = courant === 'selection' ? C.num(lignes.length) + ' ligne(s) cochée(s)' : courant === 'filtre' ? C.num(lignes.length) + ' ligne(s) filtrée(s)' : C.num(lignes.length) + ' ligne(s), tout le tableau';
+      sortirLignes({ format: fmt, colonnes: p.colonnes(), lignes: lignes, perimetre: courant, nom: p.nom, titre: p.titre, cle: p.cle, sousTitre: sous }).then(function (r) {
+        if (r.ok) m.close();
+        direSortie(r);
+      });
+    }
+    var pied = [
+      el('button.btn.btn-secondary', { type: 'button', dataset: { format: 'xlsx' }, onclick: function () { sortir('xlsx'); } }, [C.icon('file-spreadsheet', 'h-4 w-4'), 'Excel (.xlsx)']),
+      el('button.btn.btn-secondary', { type: 'button', dataset: { format: 'csv' }, onclick: function () { sortir('csv'); } }, [C.icon('file-text', 'h-4 w-4'), 'CSV']),
+      el('button.btn.btn-primary', { type: 'button', dataset: { format: 'impression' }, onclick: function () { sortir('impression'); } }, [C.icon('printer', 'h-4 w-4'), 'PDF / Impression']),
+    ];
+    var m = modal({ title: 'Exporter les données', size: 'md', body: body, footer: pied });
+    return m;
+  }
+
+  /* ==========================================================================
    * TABLEAU DE DONNÉES
    * -------------------------------------------------------------------------
-   * Tri, recherche, filtres, pagination, sélection multiple, colonnes
-   * configurables, actions par ligne, exports CSV / impression.
+   * Tri, recherche, filtres, pagination, sélection multiple (PAR DÉFAUT depuis le lot EXP), colonnes configurables, actions par ligne, sortie
+   * (.xlsx, .csv, impression) des lignes cochées, filtrées ou de tout le tableau.
    * ======================================================================== */
+  /** La clé de sélection d'une ligne : `rowKey`, sinon `id`, sinon `code`, sinon une empreinte de son contenu (stable d'un rendu à l'autre). Sans elle,
+      toutes les lignes sans `id` partageaient la clé `undefined` : en cocher une les cochait toutes. */
+  function cleDeLigne(cfg, r) {
+    if (cfg.rowKey) return String(cfg.rowKey(r));
+    if (r == null) return 'vide';
+    if (r.id != null && r.id !== '') return String(r.id);
+    if (r.code != null && r.code !== '') return 'code:' + r.code;
+    var s;
+    try { s = JSON.stringify(r, function (k, v) { return typeof v === 'function' || (typeof Node !== 'undefined' && v instanceof Node) ? undefined : v; }); } catch (e) { s = String(r); }
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return 'h:' + h.toString(36) + ':' + s.length;
+  }
   function dataTable(config) {
     var cfg = Object.assign({
-      columns: [], rows: [], pageSize: 12, searchable: true, selectable: false,
+      columns: [], rows: [], pageSize: 12, searchable: true, selectable: true,
       filters: [], actions: null, rowActions: null, onRowClick: null,
       emptyMessage: 'Aucun enregistrement.', emptyHint: null, title: null,
       exportName: 'export', toolbar: null, dense: false,
     }, config);
 
     var state = { page: 1, sort: cfg.defaultSort || null, dir: cfg.defaultDir || 'asc', q: '', filters: {}, selected: {}, hidden: {} };
-    var root = el('div.card.overflow-hidden');
+    var root = el('div.card.overflow-hidden', { dataset: { tableau: cfg.exportName || 'export' } });
+    function cle(r) { return cleDeLigne(cfg, r); }
 
     /* --- Barre d'outils --------------------------------------------------- */
     var toolbar = el('div.flex.flex-wrap.items-center.gap-2.border-b.border-slate-200.px-4.py-3');
@@ -1006,28 +1366,37 @@
     });
     toolbar.appendChild(colBtn);
 
-    /* Exports */
-    var expBtn = el('button.btn.btn-secondary.btn-sm', { type: 'button' }, [C.icon('download', 'h-4 w-4'), 'Exporter']);
-    expBtn.addEventListener('click', function () {
-      var body = el('div.space-y-2');
-      body.appendChild(el('p.text-sm.text-slate-600', { text: 'Choisir le format d’export des ' + filtered().length + ' lignes filtrées.' }));
-      var m = modal({
-        title: 'Exporter les données', size: 'sm', body: body,
-        footer: [
-          el('button.btn.btn-secondary', { type: 'button', onclick: function () { m.close(); exportCSV(filtered(), visibleColumns(), cfg.exportName); } }, [C.icon('file-spreadsheet', 'h-4 w-4'), 'CSV / Excel']),
-          el('button.btn.btn-primary', { type: 'button', onclick: function () { m.close(); printTable(); } }, [C.icon('printer', 'h-4 w-4'), 'PDF / Impression']),
-        ],
-      });
-    });
-    toolbar.appendChild(expBtn);
+    /* Sortie : la commande est ABSENTE sans le droit (geste réservé `exporter_donnees`), le moteur refuse aussi. */
+    function parametresSortie(perimetre) {
+      return {
+        cochees: selectedRows, filtrees: filtered, toutes: toutesTriees, filtreActif: filtreActif(), colonnes: visibleColumns,
+        nom: cfg.exportName, titre: cfg.title || cfg.exportName, cle: cle, perimetre: perimetre,
+      };
+    }
+    if (peutSortir()) {
+      var expBtn = el('button.btn.btn-secondary.btn-sm', { type: 'button', dataset: { commande: 'exporter' } }, [C.icon('download', 'h-4 w-4'), 'Exporter']);
+      expBtn.addEventListener('click', function () { fenetreSortie(parametresSortie(null)); });
+      toolbar.appendChild(expBtn);
+    }
     if (cfg.actions) C.append(toolbar, cfg.actions);
     root.appendChild(toolbar);
 
     /* --- Barre de sélection multiple -------------------------------------- */
     var selBar = el('div.hidden.items-center.gap-3.border-b.border-navy-200.bg-navy-50.px-4.py-2');
-    var selCount = el('span.text-sm.font-medium.text-navy-900');
+    var selCount = el('span.text-sm.font-medium.text-navy-900', { dataset: { compteSelection: '0' } });
     selBar.appendChild(selCount);
+    var selTout = el('button.btn.btn-ghost.btn-sm', { type: 'button', dataset: { commande: 'cocher-filtrees' } });
+    selTout.addEventListener('click', function () { filtered().forEach(function (r) { state.selected[cle(r)] = true; }); render(); });
+    selBar.appendChild(selTout);
     selBar.appendChild(el('div.flex-1'));
+    if (peutSortir()) {
+      selBar.appendChild(el('button.btn.btn-secondary.btn-sm', { type: 'button', dataset: { commande: 'exporter-selection' }, onclick: function () { fenetreSortie(parametresSortie('selection')); } },
+        [C.icon('download', 'h-4 w-4'), 'Exporter la sélection']));
+      selBar.appendChild(el('button.btn.btn-secondary.btn-sm', { type: 'button', dataset: { commande: 'imprimer-selection' }, onclick: function () {
+        sortirLignes({ format: 'impression', colonnes: visibleColumns(), lignes: selectedRows(), perimetre: 'selection', nom: cfg.exportName, titre: (cfg.title || cfg.exportName || 'Sélection'),
+          sousTitre: C.num(selectedRows().length) + ' ligne(s) cochée(s)', cle: cle }).then(direSortie);
+      } }, [C.icon('printer', 'h-4 w-4'), 'Imprimer la sélection']));
+    }
     if (cfg.bulkActions) C.append(selBar, cfg.bulkActions(function () { return selectedRows(); }, function () { state.selected = {}; render(); }));
     selBar.appendChild(el('button.btn.btn-ghost.btn-sm', { type: 'button', onclick: function () { state.selected = {}; render(); } }, 'Tout désélectionner'));
     root.appendChild(selBar);
@@ -1048,11 +1417,24 @@
     function cellValue(row, col) {
       return col.value ? col.value(row) : row[col.key];
     }
-    function filtered() {
+    function source() {
       var rows = typeof cfg.rows === 'function' ? cfg.rows() : cfg.rows;
-      rows = rows.slice();
+      return (rows || []).slice();
+    }
+    function trier(rows) {
+      if (state.sort) {
+        var col = cfg.columns.filter(function (c) { return c.key === state.sort; })[0];
+        if (col) rows = C.sortBy(rows, function (r) { return col.sortValue ? col.sortValue(r) : cellValue(r, col); }, state.dir);
+      }
+      return rows;
+    }
+    function filtreActif() {
+      return !!state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; });
+    }
+    function filtrer(rows) {
       if (state.q) {
         rows = rows.filter(function (r) {
+          if (cfg.searchExtra && C.matches(cfg.searchExtra(r), state.q)) return true;
           return cfg.columns.some(function (c) {
             if (c.key === '_actions') return false;
             return C.matches(cellValue(r, c), state.q);
@@ -1067,14 +1449,14 @@
           return f && f.match ? f.match(r, v) : String(r[k]) === String(v);
         });
       });
-      if (state.sort) {
-        var col = cfg.columns.filter(function (c) { return c.key === state.sort; })[0];
-        if (col) rows = C.sortBy(rows, function (r) { return col.sortValue ? col.sortValue(r) : cellValue(r, col); }, state.dir);
-      }
       return rows;
     }
+    function filtered() { return trier(filtrer(source())); }
+    /** Toutes les lignes que l'écran a construites pour ce profil (« en masse » : toutes pages, sans filtre), dans l'ordre du tri affiché. */
+    function toutesTriees() { return trier(source()); }
+    /** Les lignes COCHÉES, y compris celles que le filtre actif cache (la sélection se garde jusqu'à ce que l'agent la vide, et le compte le dit). */
     function selectedRows() {
-      return filtered().filter(function (r) { return state.selected[r.id]; });
+      return toutesTriees().filter(function (r) { return state.selected[cle(r)]; });
     }
 
     function render() {
@@ -1087,22 +1469,25 @@
 
       C.clear(tableWrap);
       if (!rows.length) {
-        tableWrap.appendChild(empty(state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; })
-          ? 'Aucun résultat pour cette recherche.' : cfg.emptyMessage,
-          { hint: cfg.emptyHint, icon: 'inbox' }));
+        var enRecherche = filtreActif();
+        /* `indiceRecherche(q)` : ce que la recherche ne lit PAS (le texte d'une pièce numérisée sans couche texte), dit sous « Aucun résultat » : jamais un vide qui se lit « il n'y a rien ». */
+        tableWrap.appendChild(empty(enRecherche ? 'Aucun résultat pour cette recherche.' : cfg.emptyMessage,
+          { hint: enRecherche && cfg.indiceRecherche ? (cfg.indiceRecherche(state.q) || cfg.emptyHint) : cfg.emptyHint, icon: 'inbox' }));
       } else {
+        /* `noteRecherche(q, rows)` : ce que les résultats ont de particulier (lot OCR-prep : « trouvé dans un texte lu par machine »), dit AU-DESSUS du tableau. */
+        if (state.q && cfg.noteRecherche) { var noteR = cfg.noteRecherche(state.q, rows); if (noteR) tableWrap.appendChild(el('div.mb-2', null, noteR)); }
         var table = el('table.tbl');
         var thead = el('thead'), htr = el('tr');
         if (cfg.selectable) {
           var allCb = el('input.checkbox', { type: 'checkbox', 'aria-label': 'Tout sélectionner' });
-          allCb.checked = pageRows.length > 0 && pageRows.every(function (r) { return state.selected[r.id]; });
+          allCb.checked = pageRows.length > 0 && pageRows.every(function (r) { return state.selected[cle(r)]; });
           allCb.addEventListener('change', function () {
             pageRows.forEach(function (r) {
-              if (allCb.checked) state.selected[r.id] = true; else delete state.selected[r.id];
+              if (allCb.checked) state.selected[cle(r)] = true; else delete state.selected[cle(r)];
             });
             render();
           });
-          htr.appendChild(el('th.w-10', null, allCb));
+          htr.appendChild(el('th.w-10', { dataset: { caseSelection: 'tete' } }, allCb));
         }
         cols.forEach(function (c) {
           var th = el('th', { class: (c.align === 'right' ? 'text-right' : '') + (c.sortable === false ? '' : ' th-sortable') });
@@ -1123,7 +1508,8 @@
 
         var tbody = el('tbody');
         pageRows.forEach(function (r) {
-          var tr = el('tr', { dataset: { selected: state.selected[r.id] ? 'true' : 'false' } });
+          var k = cle(r);
+          var tr = el('tr', { dataset: { selected: state.selected[k] ? 'true' : 'false' } });
           if (cfg.onRowClick) {
             tr.classList.add('cursor-pointer');
             tr.addEventListener('click', function (e) {
@@ -1133,12 +1519,12 @@
           }
           if (cfg.selectable) {
             var cb = el('input.checkbox', { type: 'checkbox', 'aria-label': 'Sélectionner la ligne' });
-            cb.checked = !!state.selected[r.id];
+            cb.checked = !!state.selected[k];
             cb.addEventListener('change', function () {
-              if (cb.checked) state.selected[r.id] = true; else delete state.selected[r.id];
+              if (cb.checked) state.selected[k] = true; else delete state.selected[k];
               render();
             });
-            var tdSel = el('td', null, cb);
+            var tdSel = el('td', { dataset: { caseSelection: 'ligne' } }, cb);
             tdSel.addEventListener('click', function (e) { e.stopPropagation(); });
             tr.appendChild(tdSel);
           }
@@ -1197,38 +1583,21 @@
         footer.appendChild(pager);
       }
 
-      /* Barre de sélection */
-      var n = Object.keys(state.selected).length;
-      selBar.className = n ? 'flex items-center gap-3 border-b border-navy-200 bg-navy-50 px-4 py-2' : 'hidden';
-      selCount.textContent = n + ' ligne' + (n > 1 ? 's' : '') + ' sélectionnée' + (n > 1 ? 's' : '');
+      /* Barre de sélection : le compte dit les lignes cochées que le filtre actif cache (jamais en silence), et propose de cocher tout l'ensemble filtré. */
+      var coches = selectedRows();
+      var n = coches.length;
+      var visibles = {};
+      rows.forEach(function (r) { visibles[cle(r)] = true; });
+      var hors = coches.filter(function (r) { return !visibles[cle(r)]; }).length;
+      selBar.className = n ? 'flex flex-wrap items-center gap-3 border-b border-navy-200 bg-navy-50 px-4 py-2' : 'hidden';
+      selCount.textContent = C.num(n) + ' ligne' + (n > 1 ? 's' : '') + ' sélectionnée' + (n > 1 ? 's' : '')
+        + (hors ? ' (dont ' + C.num(hors) + ' hors du filtre actif)' : '');
+      selCount.dataset.compteSelection = String(n);
+      var nonCochees = rows.length - (rows.length ? rows.filter(function (r) { return state.selected[cle(r)]; }).length : 0);
+      selTout.textContent = 'Cocher les ' + C.num(rows.length) + ' ligne' + (rows.length > 1 ? 's' : '') + ' filtrée' + (rows.length > 1 ? 's' : '');
+      selTout.className = nonCochees > 0 ? 'btn btn-ghost btn-sm' : 'hidden';
 
       icons(root);
-    }
-
-    function printTable() {
-      var rows = filtered(), cols = visibleColumns();
-      global.SIGH.print.etat({
-        titre: cfg.title || cfg.exportName || 'État',
-        contenu: printableTable(rows, cols),
-      });
-    }
-    function printableTable(rows, cols) {
-      var t = el('table.tbl.w-full');
-      var thead = el('thead'), htr = el('tr');
-      cols.forEach(function (c) { htr.appendChild(el('th', { class: c.align === 'right' ? 'text-right' : '', text: c.label })); });
-      thead.appendChild(htr); t.appendChild(thead);
-      var tb = el('tbody');
-      rows.forEach(function (r) {
-        var tr = el('tr');
-        cols.forEach(function (c) {
-          var v = c.text ? c.text(r) : cellValue(r, c);
-          if (v instanceof Node) v = v.textContent;
-          tr.appendChild(el('td', { class: c.align === 'right' ? 'text-right num' : '', text: v == null ? '—' : String(v) }));
-        });
-        tb.appendChild(tr);
-      });
-      t.appendChild(tb);
-      return t;
     }
 
     root.refresh = render;
@@ -1243,26 +1612,100 @@
   }
 
   /* ==========================================================================
-   * EXPORTS
+   * TABLEAUX CONSTRUITS À LA MAIN ET ENCARTS : équiper (lot EXP)
+   * -------------------------------------------------------------------------
+   * `equiperTableau(table, { nom, titre, colonnes?, lignes? })` pose sur un tableau de CONSULTATION construit hors composant la même sortie que
+   * `dataTable` : une case par ligne et « Tout sélectionner », une commande « Exporter » (périmètre : lignes cochées ou tout le tableau ; formats
+   * .xlsx, .csv, impression). Rend la BARRE (compte des cases cochées et commande), à poser au-dessus du tableau ; le tableau reçoit ses cases.
+   * Avec `colonnes` et `lignes` (encarts `K.miniTable`), les cellules sortent par le moteur commun (`celluleSortie`) ; sans elles, sous le texte que
+   * l'écran montre (une colonne alignée à droite dont le texte n'est qu'un nombre sort en nombre ; une date jj/mm/aaaa seule sort en date) : rien de
+   * plus que l'écran. Les cases ne s'impriment pas (`no-print`). Les grilles de SAISIE et les DOCUMENTS imprimés n'en ont pas :
+   * `build/garde-tableaux.js` les énumère avec leur motif.
+   * ======================================================================== */
+  var RE_DATE_FR = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  function celluleDom(td, droite) {
+    var t = (td.textContent || '').replace(/\s+/g, ' ').trim();
+    if (t === '—' || t === '') return '';
+    var m = RE_DATE_FR.exec(t);
+    if (m) return { date: m[3] + '-' + m[2] + '-' + m[1] };
+    if (droite && /\d/.test(t) && nombreSeul(t) && !/[.,].*[.,]/.test(t.replace(/\s/g, ''))) {
+      var n = Number(t.split((C.BRAND && C.BRAND.devise) || 'F CFA').join('').replace(/[\s\u00a0\u202f%+]/g, '').replace(',', '.'));
+      if (isFinite(n)) return n;
+    }
+    return t;
+  }
+  function equiperTableau(table, opts) {
+    opts = opts || {};
+    var corps = table.tBodies[0];
+    var trs = corps ? Array.prototype.slice.call(corps.rows) : [];
+    var entete = table.tHead && table.tHead.rows.length ? table.tHead.rows[table.tHead.rows.length - 1] : null;
+    var coches = [], tout = null;
+    var compte = el('span.text-xs.font-medium.text-navy-900', { dataset: { compteSelection: '0' } });
+    function maj() {
+      var n = coches.filter(function (c) { return c.checked; }).length;
+      compte.textContent = n ? C.num(n) + ' ligne' + (n > 1 ? 's' : '') + ' sélectionnée' + (n > 1 ? 's' : '') : '';
+      compte.dataset.compteSelection = String(n);
+      if (tout) tout.checked = n > 0 && n === coches.length;
+    }
+    if (table.tHead) {
+      Array.prototype.forEach.call(table.tHead.rows, function (tr) {
+        if (tr === entete) {
+          tout = el('input.checkbox', { type: 'checkbox', 'aria-label': 'Tout sélectionner' });
+          tout.addEventListener('change', function () { coches.forEach(function (c) { c.checked = tout.checked; }); maj(); });
+          tr.insertBefore(el('th.w-10.no-print', { dataset: { caseSelection: 'tete' } }, tout), tr.firstChild);
+        } else {
+          tr.insertBefore(el('th.no-print', { dataset: { caseSelection: 'vide' } }), tr.firstChild);
+        }
+      });
+    }
+    trs.forEach(function (tr) {
+      var cb = el('input.checkbox', { type: 'checkbox', 'aria-label': 'Sélectionner la ligne' });
+      cb.addEventListener('change', maj);
+      coches.push(cb);
+      var td = el('td.no-print', { dataset: { caseSelection: 'ligne' } }, cb);
+      td.addEventListener('click', function (e) { e.stopPropagation(); });
+      tr.insertBefore(td, tr.firstChild);
+    });
+    if (table.tFoot) Array.prototype.forEach.call(table.tFoot.rows, function (tr) { tr.insertBefore(el('td.no-print', { dataset: { caseSelection: 'vide' } }), tr.firstChild); });
+    var colonnes, donnees, cle;
+    if (opts.colonnes && opts.lignes && opts.lignes.length === trs.length) {
+      colonnes = opts.colonnes.filter(function (c) { return c && c.key !== '_actions'; });
+      donnees = opts.lignes.map(function (r, i) { return { r: r, coche: coches[i] }; });
+      colonnes = colonnes.map(function (c) { return Object.assign({}, c, { xlsx: function (d) { return celluleSortie(c, d.r); } }); });
+      cle = function (d) { return cleDeLigne({}, d.r); };
+    } else {
+      var ths = entete ? Array.prototype.slice.call(entete.cells, 1) : [];
+      /* une colonne sans libellé ou « Actions » porte des boutons, pas une donnée : elle ne sort pas */
+      colonnes = ths.map(function (th, i) {
+        var droite = /text-right/.test(th.className), libelle = (th.textContent || '').replace(/\s+/g, ' ').trim();
+        if (!libelle || /^actions?$/i.test(libelle)) return null;
+        return { key: 'c' + i, label: libelle, align: droite ? 'right' : null,
+          xlsx: function (d) { var cell = d.tr.cells[i + 1]; return cell ? celluleDom(cell, droite) : ''; } };
+      }).filter(Boolean);
+      donnees = trs.map(function (tr, i) { return { id: tr.dataset.ref || tr.dataset.id || ('ligne-' + (i + 1)), tr: tr, coche: coches[i] }; });
+      cle = function (d) { return d.id; };
+    }
+    var barre = el('div.flex.flex-wrap.items-center.justify-end.gap-2.no-print', { dataset: { tableau: opts.nom || 'tableau', tableauEquipe: 'oui' } });
+    barre.appendChild(compte);
+    if (peutSortir() && donnees.length) {
+      barre.appendChild(el('button.btn.btn-ghost.btn-sm', { type: 'button', dataset: { commande: 'exporter' }, onclick: function () {
+        fenetreSortie({
+          cochees: function () { return donnees.filter(function (d) { return d.coche.checked; }); },
+          filtrees: function () { return donnees; }, toutes: function () { return donnees; }, filtreActif: false,
+          colonnes: function () { return colonnes; }, nom: opts.nom || 'tableau', titre: opts.titre || opts.nom || 'Tableau',
+          cle: cle, perimetre: null,
+        });
+      } }, [C.icon('download', 'h-4 w-4'), 'Exporter']));
+    }
+    icons(barre);
+    return barre;
+  }
+
+  /* ==========================================================================
+   * EXPORTS (compatibilité : `U.exportCSV` reste, il passe par le moteur de sortie et son journal)
    * ======================================================================== */
   function exportCSV(rows, columns, name) {
-    var sep = ';'; /* Excel FR */
-    var head = columns.map(function (c) { return '"' + c.label.replace(/"/g, '""') + '"'; }).join(sep);
-    var lines = rows.map(function (r) {
-      return columns.map(function (c) {
-        var v = c.text ? c.text(r) : (c.value ? c.value(r) : r[c.key]);
-        if (v instanceof Node) v = v.textContent;
-        if (v == null) v = '';
-        return '"' + String(v).replace(/"/g, '""') + '"';
-      }).join(sep);
-    });
-    var csv = '﻿' + [head].concat(lines).join('\r\n');
-    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    var url = URL.createObjectURL(blob);
-    var a = el('a', { href: url, download: (name || 'export') + '-' + C.iso(new Date()) + '.csv' });
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-    toast('Export CSV généré (' + rows.length + ' lignes).', { type: 'success' });
+    return sortirLignes({ format: 'csv', colonnes: columns, lignes: rows, perimetre: 'filtre', nom: name }).then(direSortie);
   }
 
   /* ==========================================================================
@@ -1366,12 +1809,15 @@
   global.SIGH.ui = {
     texteEnrichi: texteEnrichi, paragrapheEnrichi: paragrapheEnrichi,
     toast: toast, toastDiffere: toastDiffere, consommerMessageDiffere: consommerMessageDiffere,
-    modal: modal, confirm: confirm, drawer: drawer,
+    modal: modal, confirm: confirm, drawer: drawer, fermerCouches: fermerCouches,
     sonner: sonner, alerter: alerter,
     kpi: kpi, kpiGrid: kpiGrid, card: card, badge: badge, statut: statut, STATUTS: STATUTS,
     empty: empty, loading: loading, errorState: errorState,
     tabs: tabs, descList: descList, timeline: timeline,
     form: form, dataTable: dataTable, exportCSV: exportCSV, icons: icons,
+    /* Lot EXP : le moteur de sortie des tableaux et l'équipement d'un tableau construit à la main. */
+    sortirLignes: sortirLignes, celluleSortie: celluleSortie, celluleTexte: function (texte, droite) { return celluleDom({ textContent: texte }, droite); }, matriceSortie: matriceSortie, equiperTableau: equiperTableau, cleDeLigne: cleDeLigne,
+    peutSortir: peutSortir, limiteSortie: limiteSortie, definirLimiteSortie: definirLimiteSortie, LIMITE_SORTIE_DEFAUT: LIMITE_SORTIE_DEFAUT, GESTE_SORTIE: GESTE_SORTIE,
     combo: combo, nettoyerCombos: nettoyerCombos,
   };
 })(window);

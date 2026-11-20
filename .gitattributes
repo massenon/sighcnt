@@ -1,0 +1,12 @@
+# Les fichiers binaires ne sont jamais convertis (checkout Windows avec core.autocrlf) : un logo ou une police altérés ne se chargent plus.
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.otf binary
+*.ttf binary
+*.ico binary
+*.pdf binary
+
+# Scripts Windows : fins de ligne CRLF (un .bat en LF casse ses etiquettes)
+*.bat text eol=crlf
+*.iss text eol=crlf

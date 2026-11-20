@@ -1,0 +1,1194 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-hospitalisation2.js — ne pas éditer. Horloge : 16/08/2026.",
+ "visites": {
+  "admissions": [
+   {
+    "id": "ADM1",
+    "statut": "en_cours",
+    "reference": "H00001",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "chambre": "A1",
+    "lit": "A1 LIT1",
+    "typeChambre": "standard",
+    "dateEntree": "2026-08-11",
+    "dateSortie": null,
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM2",
+    "statut": "en_cours",
+    "reference": "H00002",
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26",
+    "chambre": "C1",
+    "lit": "C1 LIT1",
+    "typeChambre": "standard",
+    "dateEntree": "2026-08-11",
+    "dateSortie": null,
+    "infirmier": "GARBA Yahouza"
+   },
+   {
+    "id": "ADM3",
+    "statut": "sortie",
+    "reference": "H00003",
+    "patientId": "PAT0003",
+    "patient": "N’TCHA Yacoubou",
+    "patientCode": "CNT/3/26",
+    "chambre": "A2",
+    "lit": "A2 LIT1",
+    "typeChambre": "standard",
+    "dateEntree": "2026-08-11",
+    "dateSortie": null,
+    "infirmier": "GARBA Yahouza"
+   }
+  ],
+  "jeu": [
+   {
+    "id": "VIS0001",
+    "statut": "actif",
+    "date": "2026-08-15",
+    "heure": "09:00",
+    "admissionId": "ADM1",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "lit": "A1 LIT1",
+    "type": "Famille",
+    "visiteur": "Accompagnant déclaré",
+    "observation": "Apport de repas"
+   },
+   {
+    "id": "VIS0002",
+    "statut": "actif",
+    "date": "2026-08-14",
+    "heure": "14:30",
+    "admissionId": "ADM1",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "lit": "A1 LIT1",
+    "type": "Personnel traitant",
+    "visiteur": "GARBA Yahouza",
+    "observation": "Visite médicale"
+   },
+   {
+    "id": "VIS0003",
+    "statut": "actif",
+    "date": "2026-08-16",
+    "heure": "10:00",
+    "admissionId": "ADM2",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26",
+    "lit": "C1 LIT1",
+    "type": "Famille",
+    "visiteur": "Sœur de la patiente",
+    "observation": ""
+   },
+   {
+    "id": "VIS0004",
+    "statut": "actif",
+    "date": "2026-08-13",
+    "heure": "08:00",
+    "admissionId": "ADM2",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26",
+    "lit": "C1 LIT1",
+    "type": "Personnel traitant",
+    "visiteur": "GARBA Yahouza",
+    "observation": "Contrôle des constantes"
+   },
+   {
+    "id": "VIS0005",
+    "statut": "archive",
+    "date": "2026-08-12",
+    "heure": "19:30",
+    "admissionId": "ADM1",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "lit": "A1 LIT1",
+    "type": "Famille",
+    "visiteur": "Voisin",
+    "observation": "Visite de courtoisie"
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Visites enregistrées",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Visites familiales",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Visites du personnel",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Patients visités",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "",
+      "DATE",
+      "HEURE",
+      "LIT",
+      "PATIENT",
+      "TYPE",
+      "VISITEUR",
+      "OBSERVATION",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "",
+       "16/08/2026",
+       "10:00",
+       "C1 LIT1",
+       "BAKO Boukari",
+       "Famille",
+       "Sœur de la patiente",
+       "—",
+       ""
+      ],
+      [
+       "",
+       "15/08/2026",
+       "09:00",
+       "A1 LIT1",
+       "TCHANE Bertine",
+       "Famille",
+       "Accompagnant déclaré",
+       "Apport de repas",
+       ""
+      ],
+      [
+       "",
+       "14/08/2026",
+       "14:30",
+       "A1 LIT1",
+       "TCHANE Bertine",
+       "Personnel traitant",
+       "GARBA Yahouza",
+       "Visite médicale",
+       ""
+      ],
+      [
+       "",
+       "13/08/2026",
+       "08:00",
+       "C1 LIT1",
+       "BAKO Boukari",
+       "Personnel traitant",
+       "GARBA Yahouza",
+       "Contrôle des constantes",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Tous les visites4",
+    "Archivés1",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier"
+   ],
+   "notes": [],
+   "texte": "Visites enregistrées 4 Visites familiales 2 Visites du personnel 2 Patients visités 2 Tous les visites4 Archivés1 Type de visite Famille Personnel traitant Colonnes Exporter Nouveau DATE HEURE LIT PATIENT TYPE VISITEUR OBSERVATION ACTIONS 16/08/2026 10:00 C1 LIT1 BAKO Boukari Famille Sœur de la patiente — 15/08/2026 09:00 A1 LIT1 TCHANE Bertine Famille Accompagnant déclaré Apport de repas 14/08/2026 14:30 A1 LIT1 TCHANE Bertine Personnel traitant GARBA Yahouza Visite médicale 13/08/2026 08:00 C1 LIT1 BAKO Boukari Personnel traitant GARBA Yahouza Contrôle des constantes Affichage de 1 à 4 sur 4 enregistrements Source : Registre des visites tenu à l’accueil du service.",
+   "boutonsLigne": [
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ],
+   "badges": [
+    [
+     "Famille",
+     "badge badge-success"
+    ],
+    [
+     "Famille",
+     "badge badge-success"
+    ],
+    [
+     "Personnel traitant",
+     "badge badge-info"
+    ],
+    [
+     "Personnel traitant",
+     "badge badge-info"
+    ]
+   ]
+  },
+  "archives": {
+   "tableaux": [
+    {
+     "entetes": [
+      "DATE",
+      "HEURE",
+      "LIT",
+      "PATIENT",
+      "TYPE",
+      "VISITEUR",
+      "OBSERVATION",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "12/08/2026",
+       "19:30",
+       "A1 LIT1",
+       "TCHANE Bertine",
+       "Famille",
+       "Voisin",
+       "Visite de courtoisie",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutonsLigne": [
+    "Restaurer"
+   ]
+  },
+  "detail": {
+   "texte": "BAKO Boukari Date 16/08/2026 Heure 10:00 Lit C1 LIT1 Patient BAKO Boukari Type Famille Visiteur Sœur de la patiente Observation — Patient hospitalisé BAKO Boukari — lit C1 LIT1 (CNT/2/26) Modifier Archiver",
+   "boutons": [
+    "Fermer",
+    "Modifier",
+    "Archiver"
+   ],
+   "tables": []
+  },
+  "creation": {
+   "titre": "Nouveau visite Les champs marqués d’un astérisque sont obligatoires. Patient hos",
+   "champs": [
+    "Patient hospitalisé *",
+    "Date *",
+    "Heure *",
+    "Type de visite *",
+    "Visiteur *",
+    "Observation"
+   ],
+   "defauts": {
+    "admissionId": "ADM1",
+    "date": "2026-08-16",
+    "heure": "10:00",
+    "type": "Famille",
+    "visiteur": "",
+    "observation": ""
+   },
+   "boutons": [
+    "Fermer",
+    "Annuler",
+    "Créer"
+   ],
+   "optionsAdmission": [
+    [
+     "ADM1",
+     "TCHANE Bertine — lit A1 LIT1 (CNT/1/25)"
+    ],
+    [
+     "ADM2",
+     "BAKO Boukari — lit C1 LIT1 (CNT/2/26)"
+    ]
+   ],
+   "optionsType": [
+    [
+     "Famille",
+     "Famille"
+    ],
+    [
+     "Personnel traitant",
+     "Personnel traitant"
+    ]
+   ],
+   "refusSansVisiteur": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 5
+   },
+   "cree": {
+    "toasts": [
+     [
+      "Nouveau visite créé."
+     ]
+    ],
+    "fiche": {
+     "id": "VISxmsvmvr40m3nvi",
+     "statut": "actif",
+     "admissionId": "ADM2",
+     "date": "2026-08-16",
+     "heure": "11:15",
+     "type": "Personnel traitant",
+     "visiteur": "Dr TAKI",
+     "observation": "Réévaluation",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26",
+     "lit": "C1 LIT1"
+    },
+    "total": 6,
+    "premier": "Réévaluation"
+   },
+   "defautsFiche": {
+    "id": "VISxmsvmvr40shefo",
+    "statut": "actif",
+    "admissionId": "ADM1",
+    "date": "2026-08-16",
+    "heure": "10:00",
+    "type": "Famille",
+    "visiteur": "Mère",
+    "observation": "",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25",
+    "lit": "A1 LIT1"
+   }
+  },
+  "apres": {
+   "kpis": [
+    {
+     "libelle": "Visites enregistrées",
+     "valeur": "5",
+     "indice": null
+    },
+    {
+     "libelle": "Visites familiales",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Visites du personnel",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Patients visités",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "",
+      "DATE",
+      "HEURE",
+      "LIT",
+      "PATIENT",
+      "TYPE",
+      "VISITEUR",
+      "OBSERVATION",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "",
+       "16/08/2026",
+       "11:15",
+       "C1 LIT1",
+       "BAKO Boukari",
+       "Personnel traitant",
+       "Dr TAKI",
+       "Réévaluation",
+       ""
+      ],
+      [
+       "",
+       "16/08/2026",
+       "10:00",
+       "C1 LIT1",
+       "BAKO Boukari",
+       "Famille",
+       "Sœur de la patiente",
+       "—",
+       ""
+      ],
+      [
+       "",
+       "15/08/2026",
+       "09:00",
+       "A1 LIT1",
+       "TCHANE Bertine",
+       "Famille",
+       "Accompagnant déclaré",
+       "Apport de repas",
+       ""
+      ],
+      [
+       "",
+       "14/08/2026",
+       "14:30",
+       "A1 LIT1",
+       "TCHANE Bertine",
+       "Personnel traitant",
+       "GARBA Yahouza",
+       "Visite médicale",
+       ""
+      ],
+      [
+       "",
+       "13/08/2026",
+       "08:00",
+       "C1 LIT1",
+       "BAKO Boukari",
+       "Personnel traitant",
+       "GARBA Yahouza",
+       "Contrôle des constantes",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  "modification": {
+   "titre": "Modifier l’enregistrement VIS0003 Patient hospitalisé * TCHANE Bertine — lit A1 ",
+   "champs": [
+    "Patient hospitalisé *",
+    "Date *",
+    "Heure *",
+    "Type de visite *",
+    "Visiteur *",
+    "Observation"
+   ],
+   "valeurs": {
+    "admissionId": "ADM2",
+    "date": "2026-08-16",
+    "heure": "10:00",
+    "type": "Famille",
+    "visiteur": "Sœur de la patiente",
+    "observation": ""
+   },
+   "boutons": [
+    "Fermer",
+    "Annuler",
+    "Enregistrer"
+   ],
+   "enregistre": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "id": "VIS0003",
+     "statut": "actif",
+     "date": "2026-08-16",
+     "heure": "10:00",
+     "admissionId": "ADM1",
+     "patient": "TCHANE Bertine",
+     "patientCode": "CNT/1/25",
+     "lit": "A1 LIT1",
+     "type": "Famille",
+     "visiteur": "Sœur de la patiente",
+     "observation": "Corrigée"
+    }
+   }
+  },
+  "archivage": {
+   "dialogue": "Archiver cet enregistrement ? L’enregistrement ne sera pas supprimé : il est archivé et reste consultable dans l’onglet « Archivés ». L’opération est journalisée et peut être annulée. Motif (consigné dans le journal d’audit) Annuler Archiver",
+   "boutons": [
+    "Fermer",
+    "Annuler",
+    "Archiver"
+   ],
+   "fait": {
+    "toasts": [
+     [
+      "Enregistrement archivé."
+     ]
+    ],
+    "statut": "archive",
+    "kpis": [
+     {
+      "libelle": "Visites enregistrées",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Visites familiales",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Visites du personnel",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Patients visités",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "vide": {
+   "kpis": [
+    {
+     "libelle": "Visites enregistrées",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Visites familiales",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Visites du personnel",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Patients visités",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "texte": "Visites enregistrées 4 Visites familiales 4 Visites du personnel 0 Patients visités 2 Tous les visites4 Archivés0 Type de visite Famille Personnel traitant Colonnes Exporter Nouveau DATE HEURE LIT PATIENT TYPE VISITEUR OBSERVATION ACTIONS 16/08/2026 11:00 C1 LIT1 BAKO Boukari Famille Accompagnant déclaré Accompagnement 15/08/2026 14:00 C1 LIT1 BAKO Boukari Famille Accompagnant déclaré Apport de repas 13/08/2026 19:00 A1 LIT1 TCHANE Bertine Famille Accompagnant déclaré Visite de courtoisie 13/08/2026 10:00 C1 LIT1 BAKO Boukari Famille Accompagnant déclaré Apport de repas Affichage de 1 à 4 sur 4 enregistrements Source : Registre des visites tenu à l’accueil du service."
+  }
+ },
+ "rapport": {
+  "vide": {
+   "kpis": [
+    {
+     "libelle": "Rapports médicaux",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Séjours clos",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "En cours",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Rubriques du formulaire",
+     "valeur": "14",
+     "indice": "reprises du document officiel"
+    }
+   ],
+   "texte": "Rapports médicaux 0 Séjours clos 0 En cours 0 Rubriques du formulaire 14 reprises du document officiel Colonnes Exporter Nouveau rapport Aucun enregistrement. Aucun enregistrement"
+  },
+  "jeu": [
+   {
+    "id": "RAP1",
+    "statut": "actif",
+    "reference": "RAP-0001",
+    "patientCode": "CNT/1/25",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "age": 31,
+    "sexe": "F",
+    "adresse": "Boukoumbé",
+    "telephone": "0372398919",
+    "dateEntree": "2026-08-06",
+    "dateSortie": null,
+    "motif": "Motif 1",
+    "anamnese": "Anamnèse 1",
+    "examenPhysique": "Examen 1",
+    "hypotheses": "Hypothèse 1",
+    "traitementEntree": "Traitement entrée 1",
+    "examensParacliniques": "",
+    "diagnosticRetenu": "Retenu 1",
+    "traitementReajuste": "",
+    "evolution": "",
+    "traitementSortie": "",
+    "diagnosticSortie": "Sortie 1",
+    "medecinId": "SOI01",
+    "medecin": "BASSONGUI Chabi Séko"
+   },
+   {
+    "id": "RAP2",
+    "statut": "actif",
+    "reference": "RAP-0002",
+    "patientCode": "CNT/2/26",
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "age": 32,
+    "sexe": "M",
+    "adresse": "Yimporima",
+    "telephone": "0395837962",
+    "dateEntree": "2026-07-27",
+    "dateSortie": "2026-08-01",
+    "motif": "Motif 2",
+    "anamnese": "Anamnèse 2",
+    "examenPhysique": "Examen 2",
+    "hypotheses": "Hypothèse 2",
+    "traitementEntree": "Traitement entrée 2",
+    "examensParacliniques": "NFS, CRP",
+    "diagnosticRetenu": "Retenu 2",
+    "traitementReajuste": "",
+    "evolution": "Favorable",
+    "traitementSortie": "Paracétamol",
+    "diagnosticSortie": "Sortie 2",
+    "medecinId": "SOI01",
+    "medecin": "BASSONGUI Chabi Séko"
+   },
+   {
+    "id": "RAP3",
+    "statut": "actif",
+    "reference": "RAP-0003",
+    "patientCode": "CNT/3/26",
+    "patientId": "PAT0003",
+    "patient": "N’TCHA Yacoubou",
+    "age": 33,
+    "sexe": "M",
+    "adresse": "Kouandé",
+    "telephone": "0673723379",
+    "dateEntree": "2026-08-11",
+    "dateSortie": "2026-08-14",
+    "motif": "Motif 3",
+    "anamnese": "Anamnèse 3",
+    "examenPhysique": "Examen 3",
+    "hypotheses": "Hypothèse 3",
+    "traitementEntree": "Traitement entrée 3",
+    "examensParacliniques": "NFS, CRP",
+    "diagnosticRetenu": "Retenu 3",
+    "traitementReajuste": "",
+    "evolution": "Favorable",
+    "traitementSortie": "Paracétamol",
+    "diagnosticSortie": "Sortie 3",
+    "medecinId": "SOI01",
+    "medecin": "BASSONGUI Chabi Séko"
+   },
+   {
+    "id": "RAP4",
+    "statut": "archive",
+    "reference": "RAP-0004",
+    "patientCode": "CNT/1/25",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "age": 34,
+    "sexe": "F",
+    "adresse": "Boukoumbé",
+    "telephone": "0372398919",
+    "dateEntree": "2026-07-17",
+    "dateSortie": "2026-07-22",
+    "motif": "Motif 4",
+    "anamnese": "Anamnèse 4",
+    "examenPhysique": "Examen 4",
+    "hypotheses": "Hypothèse 4",
+    "traitementEntree": "Traitement entrée 4",
+    "examensParacliniques": "NFS, CRP",
+    "diagnosticRetenu": "Retenu 4",
+    "traitementReajuste": "",
+    "evolution": "Favorable",
+    "traitementSortie": "Paracétamol",
+    "diagnosticSortie": "Sortie 4",
+    "medecinId": "SOI01",
+    "medecin": "BASSONGUI Chabi Séko"
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Rapports médicaux",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Séjours clos",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "En cours",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Rubriques du formulaire",
+     "valeur": "14",
+     "indice": "reprises du document officiel"
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "PATIENT",
+      "ENTRÉE",
+      "SORTIE",
+      "DIAGNOSTIC DE SORTIE",
+      "MÉDECIN TRAITANT",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "RAP-0003",
+       "N’TCHA Yacoubou — CNT/3/26",
+       "11/08/2026",
+       "14/08/2026",
+       "Sortie 3",
+       "BASSONGUI Chabi Séko",
+       ""
+      ],
+      [
+       "RAP-0001",
+       "TCHANE Bertine — CNT/1/25",
+       "06/08/2026",
+       "en cours",
+       "Sortie 1",
+       "BASSONGUI Chabi Séko",
+       ""
+      ],
+      [
+       "RAP-0002",
+       "BAKO Boukari — CNT/2/26",
+       "27/07/2026",
+       "01/08/2026",
+       "Sortie 2",
+       "BASSONGUI Chabi Séko",
+       ""
+      ]
+     ]
+    }
+   ],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Nouveau rapport",
+    "Tout désélectionner",
+    "Imprimer le rapport",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Imprimer le rapport",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Imprimer le rapport",
+    "Consulter"
+   ],
+   "notes": [],
+   "badges": [
+    null,
+    [
+     "en cours",
+     "badge badge-warning"
+    ],
+    null
+   ],
+   "boutonsLigne": [
+    "Imprimer le rapport",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "detail": {
+   "texte": "RAP-0003 RÉFÉRENCE RAP-0003 PATIENT N’TCHA Yacoubou ÂGE 33 ans SEXE M ADRESSE Kouandé TÉLÉPHONE 0673723379 DATE D’ENTRÉE 11/08/2026 DATE DE SORTIE 14/08/2026 MÉDECIN TRAITANT BASSONGUI Chabi Séko Motif de consultation Motif 3 Anamnèse Anamnèse 3 Examen physique Examen 3 Hypothèses diagnostiques Hypothèse 3 Traitement d’entrée Traitement entrée 3 Examens paracliniques NFS, CRP Diagnostic retenu Retenu 3 Évolution et traitement des complications Favorable Traitement de sortie Paracétamol Diagnostic de sortie Sortie 3",
+   "boutons": [
+    "Fermer"
+   ],
+   "tables": []
+  },
+  "detailEnCours": {
+   "texte": "RAP-0001 RÉFÉRENCE RAP-0001 PATIENT TCHANE Bertine ÂGE 31 ans SEXE F ADRESSE Boukoumbé TÉLÉPHONE 0372398919 DATE D’ENTRÉE 06/08/2026 DATE DE SORTIE séjour en cours MÉDECIN TRAITANT BASSONGUI Chabi Séko Motif de consultation Motif 1 Anamnèse Anamnèse 1 Examen physique Examen 1 Hypothèses diagnostiques Hypothèse 1 Traitement d’entrée Traitement entrée 1 Diagnostic retenu Retenu 1 Diagnostic de sortie Sortie 1",
+   "boutons": [
+    "Fermer"
+   ]
+  },
+  "impression": {
+   "titre": "RAPPORT MÉDICAL",
+   "sousTitre": "RAP-0003 — N’TCHA Yacoubou",
+   "cartouche": [
+    [
+     "Nom et prénoms",
+     "N’TCHA Yacoubou"
+    ],
+    [
+     "Âge",
+     "33 ans"
+    ],
+    [
+     "Sexe",
+     "M"
+    ],
+    [
+     "Adresse",
+     "Kouandé"
+    ],
+    [
+     "Téléphone",
+     "0673723379"
+    ],
+    [
+     "Date d’entrée",
+     "11/08/2026"
+    ],
+    [
+     "Date de sortie",
+     "14/08/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Médecin traitant",
+     "nom": "BASSONGUI Chabi Séko",
+     "mention": "Signature et cachet"
+    }
+   ],
+   "texte": "Motif de consultation :Motif 3Anamnèse :Anamnèse 3Examen physique :Examen 3Hypothèses diagnostiques :Hypothèse 3Traitement d’entrée :Traitement entrée 3Examens paracliniques :NFS, CRPDiagnostic retenu :Retenu 3Évolution et traitement des complications :FavorableTraitement de sortie :ParacétamolDiagnostic de sortie :Sortie 3",
+   "tableaux": []
+  },
+  "impressionEnCours": {
+   "titre": "RAPPORT MÉDICAL",
+   "sousTitre": "RAP-0001 — TCHANE Bertine",
+   "cartouche": [
+    [
+     "Nom et prénoms",
+     "TCHANE Bertine"
+    ],
+    [
+     "Âge",
+     "31 ans"
+    ],
+    [
+     "Sexe",
+     "F"
+    ],
+    [
+     "Adresse",
+     "Boukoumbé"
+    ],
+    [
+     "Téléphone",
+     "0372398919"
+    ],
+    [
+     "Date d’entrée",
+     "06/08/2026"
+    ],
+    [
+     "Date de sortie",
+     "—"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Médecin traitant",
+     "nom": "BASSONGUI Chabi Séko",
+     "mention": "Signature et cachet"
+    }
+   ],
+   "texte": "Motif de consultation :Motif 1Anamnèse :Anamnèse 1Examen physique :Examen 1Hypothèses diagnostiques :Hypothèse 1Traitement d’entrée :Traitement entrée 1Diagnostic retenu :Retenu 1Diagnostic de sortie :Sortie 1",
+   "tableaux": []
+  },
+  "creation": {
+   "titre": "Rapport médical Les champs marqués d’un astérisque sont obli",
+   "champs": [
+    "Patient *",
+    "Date d’entrée *",
+    "Date de sortie",
+    "Motif de consultation *",
+    "Anamnèse *",
+    "Examen physique *",
+    "Hypothèses diagnostiques *",
+    "Traitement d’entrée *",
+    "Examens paracliniques",
+    "Diagnostic retenu *",
+    "Traitement réajusté",
+    "Évolution et traitement des complications",
+    "Traitement de sortie",
+    "Diagnostic de sortie *",
+    "Médecin traitant *"
+   ],
+   "defauts": {
+    "patientCode": "CNT/1/25",
+    "dateEntree": "",
+    "dateSortie": "",
+    "motif": "",
+    "anamnese": "",
+    "examenPhysique": "",
+    "hypotheses": "",
+    "traitementEntree": "",
+    "examensParacliniques": "",
+    "diagnosticRetenu": "",
+    "traitementReajuste": "",
+    "evolution": "",
+    "traitementSortie": "",
+    "diagnosticSortie": "",
+    "medecinId": "SOI01"
+   },
+   "boutons": [
+    "Fermer",
+    "CNT/1/25 — TCHANE Bertine",
+    "Annuler",
+    "Créer"
+   ],
+   "optionsPatient": [
+    [
+     "CNT/1/25",
+     "CNT/1/25 — TCHANE Bertine"
+    ],
+    [
+     "CNT/2/26",
+     "CNT/2/26 — BAKO Boukari"
+    ],
+    [
+     "CNT/3/26",
+     "CNT/3/26 — N’TCHA Yacoubou"
+    ]
+   ],
+   "nbOptionsPatient": 198,
+   "optionsMedecin": [
+    [
+     "SOI01",
+     "BASSONGUI Chabi Séko — Directeur Médical"
+    ],
+    [
+     "SOI02",
+     "YENI M’PO Florent — Médecin Généraliste"
+    ],
+    [
+     "SOI03",
+     "TAKI Orou — Médecin Généraliste"
+    ],
+    [
+     "SOI04",
+     "AHOHOU Rodrigue — Échographiste"
+    ]
+   ],
+   "aides": [
+    "Ce que l’on suspecte à l’entrée — à distinguer du diagnostic retenu.",
+    "Ce que les examens ont confirmé.",
+    "Tient compte de l’évolution et des complications."
+   ],
+   "refusVide": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 4
+   },
+   "cree": {
+    "toasts": [
+     [
+      "Rapport médical créé."
+     ]
+    ],
+    "fiche": {
+     "id": "RAPxmsvmvr40omm0s",
+     "statut": "actif",
+     "patientCode": "CNT/2/26",
+     "dateEntree": "2026-08-12",
+     "dateSortie": "",
+     "motif": "Fièvre",
+     "anamnese": "Depuis 3 jours",
+     "examenPhysique": "T° 39",
+     "hypotheses": "Paludisme",
+     "traitementEntree": "Artésunate",
+     "examensParacliniques": "",
+     "diagnosticRetenu": "Paludisme grave",
+     "traitementReajuste": "",
+     "evolution": "",
+     "traitementSortie": "",
+     "diagnosticSortie": "Guérison",
+     "medecinId": "SOI01",
+     "reference": "RAP-0005",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "age": 56,
+     "sexe": "M",
+     "adresse": "Yimporima",
+     "telephone": "0395837962",
+     "medecin": "BASSONGUI Chabi Séko"
+    },
+    "total": 5,
+    "premier": "Fièvre",
+    "naissance": "1969-12-10"
+   }
+  },
+  "apres": {
+   "kpis": [
+    {
+     "libelle": "Rapports médicaux",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Séjours clos",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "En cours",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Rubriques du formulaire",
+     "valeur": "14",
+     "indice": "reprises du document officiel"
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "PATIENT",
+      "ENTRÉE",
+      "SORTIE",
+      "DIAGNOSTIC DE SORTIE",
+      "MÉDECIN TRAITANT",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "RAP-0005",
+       "BAKO Boukari — CNT/2/26",
+       "12/08/2026",
+       "en cours",
+       "Guérison",
+       "BASSONGUI Chabi Séko",
+       ""
+      ],
+      [
+       "RAP-0003",
+       "N’TCHA Yacoubou — CNT/3/26",
+       "11/08/2026",
+       "14/08/2026",
+       "Sortie 3",
+       "BASSONGUI Chabi Séko",
+       ""
+      ],
+      [
+       "RAP-0001",
+       "TCHANE Bertine — CNT/1/25",
+       "06/08/2026",
+       "en cours",
+       "Sortie 1",
+       "BASSONGUI Chabi Séko",
+       ""
+      ],
+      [
+       "RAP-0002",
+       "BAKO Boukari — CNT/2/26",
+       "27/07/2026",
+       "01/08/2026",
+       "Sortie 2",
+       "BASSONGUI Chabi Séko",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  "modification": {
+   "titre": "Modifier l’enregistrement RAP-0001 Patient * CNT/1/25 — TCHA",
+   "valeurs": {
+    "patientCode": "CNT/1/25",
+    "dateEntree": "2026-08-06",
+    "dateSortie": "",
+    "motif": "Motif 1",
+    "anamnese": "Anamnèse 1",
+    "examenPhysique": "Examen 1",
+    "hypotheses": "Hypothèse 1",
+    "traitementEntree": "Traitement entrée 1",
+    "examensParacliniques": "",
+    "diagnosticRetenu": "Retenu 1",
+    "traitementReajuste": "",
+    "evolution": "",
+    "traitementSortie": "",
+    "diagnosticSortie": "Sortie 1",
+    "medecinId": "SOI01"
+   },
+   "enregistre": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "id": "RAP1",
+     "statut": "actif",
+     "reference": "RAP-0001",
+     "patientCode": "CNT/1/25",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "age": 31,
+     "sexe": "F",
+     "adresse": "Boukoumbé",
+     "telephone": "0372398919",
+     "dateEntree": "2026-08-06",
+     "dateSortie": "2026-08-15",
+     "motif": "Motif 1",
+     "anamnese": "Anamnèse 1",
+     "examenPhysique": "Examen 1",
+     "hypotheses": "Hypothèse 1",
+     "traitementEntree": "Traitement entrée 1",
+     "examensParacliniques": "",
+     "diagnosticRetenu": "Retenu 1",
+     "traitementReajuste": "",
+     "evolution": "",
+     "traitementSortie": "",
+     "diagnosticSortie": "Sortie corrigée",
+     "medecinId": "SOI01",
+     "medecin": "BASSONGUI Chabi Séko"
+    }
+   }
+  },
+  "archivage": {
+   "dialogue": "Archiver cet enregistrement ? Archivage logique (RG-14) : la donnée reste consultable et l’opération est annulable. Motif (consigné dans le journal d’audit) Annuler Archiver",
+   "fait": {
+    "toasts": [
+     [
+      "Enregistrement archivé."
+     ]
+    ],
+    "kpis": [
+     {
+      "libelle": "Rapports médicaux",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Séjours clos",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "En cours",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Rubriques du formulaire",
+      "valeur": "14",
+      "indice": "reprises du document officiel"
+     }
+    ]
+   }
+  }
+ }
+}

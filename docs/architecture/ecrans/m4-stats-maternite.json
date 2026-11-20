@@ -1,0 +1,48 @@
+{
+ "id": "m4-stats-maternite",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Statistiques maternité & naissances",
+ "acces": "ouvert",
+ "titre": "Statistiques maternité & naissances",
+ "description": "Indicateurs DHIS2/SNIS : CPN, SP, MILDA, GAR, accouchements, PF, vaccination et mortalité.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Statistiques maternité & naissances"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Couverture SP3",
+  "Couverture MILDA",
+  "Grossesses à risque (GAR)",
+  "Nouvelles acceptantes PF",
+  "Couverture SP5",
+  "Mort-nés",
+  "Femmes en travail référées",
+  "Urgences SONUC"
+ ],
+ "cartes": [
+  "Types d’accouchement",
+  "Méthodes PF adoptées",
+  "Vaccination et soins de naissance (J0)"
+ ],
+ "tableaux": [
+  [
+   "Soin",
+   "Faits",
+   "Couverture"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 8
+}

@@ -1,0 +1,58 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « lot ». Ne pas éditer à la main.",
+ "titre": "Lot de tournée",
+ "sous": null,
+ "textes": [
+  "Dossiers",
+  "Validité restante"
+ ],
+ "champs": [],
+ "boutons": [],
+ "onglets": [
+  "Accueil",
+  "Synchro",
+  "À traiter",
+  "Réglages"
+ ],
+ "notes": [
+  {
+   "ton": "warn",
+   "texte": "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+  }
+ ],
+ "cartes": [
+  "Lot du jour"
+ ],
+ "items": [
+  {
+   "titre": "DOSSOU Aline",
+   "detail": "CNT/12/26",
+   "fin": ""
+  },
+  {
+   "titre": "KPOGNON Rose",
+   "detail": "CNT/174/26",
+   "fin": ""
+  },
+  {
+   "titre": "TAMOU Félix",
+   "detail": "CNT/1109/26",
+   "fin": ""
+  },
+  {
+   "titre": "SOUROU Mariam",
+   "detail": "CNT/913/25",
+   "fin": ""
+  }
+ ],
+ "kpis": [
+  [
+   "Dossiers",
+   "4"
+  ],
+  [
+   "Validité restante",
+   "10 h"
+  ]
+ ]
+}

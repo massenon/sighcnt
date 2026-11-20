@@ -23,7 +23,7 @@ const MODULE_FILES = {
   M4: 'm4-maternite', M5: 'm5-laboratoire', M6: 'm6-stock', M7: 'm7-achats',
   M8: 'm8-facturation', M9: 'm9-assurances', MECEF: 'mecef', M12: 'm12-comptabilite',
   M10: 'm10-rh', M11: 'm11-paie', M13: 'm13-administration', GED: 'ged',
-  RAP: 'rapports', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
+  RAP: 'rapports', IMP: 'import', MERE: 'mere', RLS: 'relais', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
 };
 
 const SCRIPTS = [
@@ -41,7 +41,15 @@ function template(entry, opts) {
   const depth = o.root ? '' : '../';
   const mod = MODULE_FILES[entry.module];
   const scripts = SCRIPTS.map((s) => `  <script src="${depth}assets/js/${s}"></script>`);
-  if (mod) scripts.push(`  <script src="${depth}assets/js/modules/${mod}.js"></script>`);
+  /* Un écran peut déclarer des fichiers en plus de ceux de son module (`scripts`) ; le module IMP charge toujours son
+     lecteur et écrivain .xlsx. Dédoublonnage : un fichier n'est jamais chargé deux fois (m6-import-grand-stock). */
+  const sup = (entry.scripts || []);
+  const deja = new Set();
+  const ajouter = (s) => { if (deja.has(s)) return; deja.add(s); scripts.push(`  <script src="${depth}assets/js/${s}"></script>`); };
+  /* L'ORDRE COMPTE : import.js capture SIGH.xlsx au chargement, son lecteur doit donc le précéder. */
+  if (entry.module === 'IMP') ajouter('vendor/xlsx-mini.js');
+  if (mod) ajouter('modules/' + mod + '.js');
+  sup.forEach(ajouter);
 
   return `<!doctype html>
 <html lang="fr" data-root="${depth}">
@@ -72,6 +80,57 @@ fs.mkdirSync(pagesDir, { recursive: true });
 
 let created = 0, kept = 0;
 const written = new Set();
+
+/* GARDE : un écran désigné comme `servant` doit exister. `m6-inventaires` (pluriel) n'a jamais existé ; la feuille
+   d'inventaire héritait donc des droits du MODULE au lieu de ceux du registre qu'elle alimente, sans que rien ne le dise. */
+Object.keys(NAV.INDEX).forEach((id) => {
+  const s = NAV.INDEX[id].servant;
+  if (s && !NAV.INDEX[s]) throw new Error('Manifeste : « ' + id + ' » déclare servant « ' + s + ' », qui n\'existe pas.');
+});
+
+/* GARDE DES JEUX D'IMPORT (lot IMP-A, 11/11/2026). Le droit d'importer se décide au MANIFESTE (`N.IMPORTS`), sans charger le moteur : un jeu du moteur (`modules/import.js`) sans
+   déclaration serait un jeu sans droit, donc ouvert à tout détenteur de l'écran ; une déclaration vers un écran qui n'existe pas serait un bouton qu'aucune page ne porte.
+   Le build échoue (1) si un jeu du moteur n'est pas déclaré, ou l'inverse ; (2) si l'écran du jeu ou l'un de ses hôtes n'existe pas au manifeste ; (3) si un rôle des défauts
+   n'existe pas ; (4) si le mode de doublon sort de la liste arrêtée, ou si « ignorer » est déclaré hors de la liste fermée de la Direction (jamais sur patients, comptes, pièces). */
+(function () {
+  const jeux = NAV.IMPORTS || [];
+  if (!jeux.length) throw new Error('Manifeste : N.IMPORTS est vide ou absent.');
+  const src = fs.readFileSync(path.join(ROOT, 'assets/js/modules/import.js'), 'utf8');
+  const moteur = Array.from(src.matchAll(/^\s*id: '([a-z0-9-]+)', ecran: '/gm)).map((m) => m[1]);
+  const declares = jeux.map((j) => j.id);
+  moteur.forEach((id) => { if (declares.indexOf(id) < 0) throw new Error('Manifeste : le jeu d\'import « ' + id + ' » du moteur n\'a pas de déclaration dans N.IMPORTS (droit d\'import, hôtes, sensibilité).'); });
+  declares.forEach((id) => { if (moteur.indexOf(id) < 0) throw new Error('Manifeste : N.IMPORTS déclare « ' + id + ' », que le moteur d\'import ne porte pas.'); });
+  jeux.forEach((j) => {
+    [j.ecran].concat(j.hotes || []).forEach((e) => { if (!NAV.INDEX[e]) throw new Error('Manifeste : le jeu « ' + j.id + ' » désigne l\'écran « ' + e + ' », qui n\'existe pas.'); });
+    Object.keys(j.rolesDefaut || {}).forEach((r) => { if (!NAV.ROLES[r]) throw new Error('Manifeste : le jeu « ' + j.id + ' » donne un droit au rôle « ' + r + ' », qui n\'existe pas.'); });
+    if (['refuser', 'ignorer', 'versionner'].indexOf(j.doublon) < 0) throw new Error('Manifeste : le jeu « ' + j.id + ' » déclare le mode de doublon « ' + j.doublon + ' » (refuser, ignorer ou versionner).');
+    if (j.doublon === 'ignorer' && NAV.IMPORTS_IGNORER_PERMIS.indexOf(j.id) < 0) throw new Error('Manifeste : « ignorer les existants » n\'est pas permis au jeu « ' + j.id + ' » (liste fermée de la Direction : ' + NAV.IMPORTS_IGNORER_PERMIS.join(', ') + ').');
+    if (['courante', 'restreinte'].indexOf(j.sensibilite) < 0) throw new Error('Manifeste : le jeu « ' + j.id + ' » déclare la sensibilité « ' + j.sensibilite + ' » (courante ou restreinte).');
+  });
+  Object.keys(NAV.INDEX).forEach((id) => {
+    const e = NAV.INDEX[id];
+    if (e.jeuImport && e.jeuImport !== '*' && declares.indexOf(e.jeuImport) < 0) throw new Error('Manifeste : « ' + id + ' » dépend du jeu d\'import « ' + e.jeuImport + ' », qui n\'est pas déclaré.');
+  });
+})();
+
+/* GARDE : un écran RETIRÉ ne doit plus exister nulle part. « Reprise SAGE 100 » (01/11/2026) est remplacé par
+   « Importation Grand Stock » : l'ancien identifiant est assemblé ici pour ne pas figurer en clair dans les sources qu'on balaie.
+   Le build échoue si le manifeste ou un script de l'interface le cite encore, et retire la page orpheline. */
+const ECRANS_RETIRES = [['m6', 'reprise'].join('-')];
+ECRANS_RETIRES.forEach((id) => {
+  if (NAV.INDEX[id]) throw new Error('Manifeste : l\'écran retiré « ' + id + ' » est encore déclaré.');
+  const page = path.join(pagesDir, id + EXT);
+  if (fs.existsSync(page)) fs.unlinkSync(page);
+  (function balayer(d) {
+    fs.readdirSync(d, { withFileTypes: true }).forEach((e) => {
+      const f = path.join(d, e.name);
+      if (e.isDirectory()) return balayer(f);
+      if (e.name.endsWith('.js') && fs.readFileSync(f, 'utf8').indexOf(id) !== -1) {
+        throw new Error('Source : l\'écran retiré « ' + id + ' » est encore cité dans ' + path.relative(ROOT, f) + '.');
+      }
+    });
+  })(path.join(ROOT, 'assets', 'js'));
+});
 
 Object.keys(NAV.INDEX).forEach((id) => {
   const entry = NAV.INDEX[id];

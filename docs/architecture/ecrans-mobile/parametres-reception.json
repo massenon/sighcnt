@@ -1,0 +1,47 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « parametres-reception ». Ne pas éditer à la main.",
+ "titre": "Réglages",
+ "sous": null,
+ "textes": [
+  "Profil",
+  "Réception de secours",
+  "Agent",
+  "OROU YO Edmond",
+  "Appareil u-07 · version 1.0.1 · schéma v66",
+  "Activé",
+  "Actif",
+  "Activées"
+ ],
+ "champs": [],
+ "boutons": [
+  "Réinitialiser l’appairage"
+ ],
+ "onglets": [
+  "Accueil",
+  "Synchro",
+  "À traiter",
+  "Réglages"
+ ],
+ "notes": [],
+ "cartes": [
+  "Ce téléphone"
+ ],
+ "items": [
+  {
+   "titre": "Verrouillage automatique",
+   "detail": "après 5 minutes d’inactivité",
+   "fin": "Activé"
+  },
+  {
+   "titre": "Effacement à distance",
+   "detail": "à la révocation, au prochain contact",
+   "fin": "Actif"
+  },
+  {
+   "titre": "Notifications",
+   "detail": "réveil seulement — aucune donnée de santé",
+   "fin": "Activées"
+  }
+ ],
+ "kpis": []
+}

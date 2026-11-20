@@ -1,0 +1,67 @@
+{
+ "id": "m1-externe",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Patient externe",
+ "acces": "ouvert",
+ "titre": "Patient externe — demande d’analyses",
+ "description": "Transcription de l’ordonnance d’un médecin extérieur, puis orientation vers la caisse.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Patient externe"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "Le patient externe arrive avec une ordonnance d’un médecin extérieur. L’accueil la transcrit en cochant les examens au catalogue, puis l’oriente vers la caisse. Le prélèvement n’a lieu qu’après règlement, et le résultat lui est remis directement — il n’a pas de clinicien dans la maison à qui l’adresser."
+ ],
+ "onglets": [
+  "Demandes — analyses (28)",
+  "Demandes — maternité",
+  "Demandes — hospitalisation",
+  "Demandes — imagerie médicale (8)",
+  "Résultats (17)"
+ ],
+ "kpis": [
+  "Demandes externes",
+  "En attente de caisse",
+  "Résultats rendus",
+  "Patients externes"
+ ],
+ "cartes": [
+  "Demandes d’analyses — patients externes"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Patient",
+   "Examen",
+   "Service demandeur",
+   "Prescripteur extérieur",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Nouvelle demande externe",
+  "Demandes — analyses (28)",
+  "Demandes — maternité",
+  "Demandes — hospitalisation",
+  "Demandes — imagerie médicale (8)",
+  "Résultats (17)",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,55 @@
+{
+ "id": "m6-dispensation",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Dispensation",
+ "acces": "ouvert",
+ "titre": "Dispensation",
+ "description": "Délivrance des médicaments aux patients : décompte du stock de détail et rattachement à la facturation.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Dispensation"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Dispensations enregistrées",
+  "Valeur dispensée",
+  "Références en pharmacie",
+  "Ruptures en pharmacie"
+ ],
+ "cartes": [
+  "Ordonnances à délivrer — 51 à traiter, 42 en attente de caisse",
+  "Historique des dispensations"
+ ],
+ "tableaux": [
+  [
+   "Origine",
+   "Patient",
+   "À faire",
+   "Montant",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "File des délivrances (ordonnances encaissées)"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

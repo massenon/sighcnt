@@ -1,0 +1,131 @@
+{
+ "_doc": "m1-patient-profil : jeu posé, rubrique par rubrique",
+ "jour": "2026-10-30",
+ "entete": {
+  "boutons": [
+   "TCHANE Bertine",
+   "Modifier le dossier",
+   "Fiche de consultation",
+   "Documents numérisés",
+   "Imprimer la fiche",
+   "Administratif",
+   "Médical1",
+   "Antécédents & allergies",
+   "Soins1",
+   "Hospitalisations3",
+   "Maternité2",
+   "Analyses & résultats3"
+  ],
+  "texte": "Sélectionner un dossier patient TCHANE Bertine Modifier le dossier Fiche de consultation Documents numérisés Imprimer la fiche Retour au répertoire Rubriques du dossier Administratif Médical 1 Antécédents & allergies Soins 1 Hospitalisations 3 Maternité 2 Analyses & résultats 3 Imagerie médicale 2 Ordonnances 1 À domicile 1 Financier 3 Assurance Traçabilité Identité et couverture TB TCHANE Bertine CNT/1/26 Femme — 41 ans — Groupe O+ NSIA ASSURANCE Carte valide Expire le 31/12/2027 Allergie(s) déclarée(s) : Sulfamides. Vérifier toute prescription et toute dispensation avant délivrance. Dossier de consultation — DOS-1 Dernier dossier : DOS-1 — venue du 10/08/2026 à 09h00, enregistré le 10/08/2026 à 09h05, par Dr A. Motif de consultation Toux Type de venue premiere Histoire de la maladie Depuis 3 jours Traitements en cours Salbutamol ANTÉCÉDENTS Antécédents médicaux Asthme Antécédents chirurgicaux Appendicectomie Antécédents gynéco-obstétricaux G2P2 DONNÉES PRÉALABLES Allergies Sulfamides Allergies médicamenteuses — Statut vaccinal À jour Groupe sanguin O+ Électrophorèse Hb — Dépistage — CONSTANTES REPRISES DE L’ACCUEIL Relevées le 10/08/2026 à 08h50 Température 37.2 °C Tension 12/8 Poids 62 kg Pouls 80 /min EXAMEN PHYSIQUE PAR APPAREIL (IPPOA) APPAREIL EXAMINÉ LE PORTÉ AU DOSSIER LE CONSTAT Appareil cardio-vasculaire 10/08/2026 à 09h00 10/08/2026 à 09h05 RAS — normal Appareil pleuro-pulmonaire 10/08/2026 à 09h00 10/08/2026 à 09h05 Inspection : RAS · Auscultation : Sibilants bilatéraux Ouvrir le dossier de consultation Fiche de consultation Administratif Code dossier CNT/1/26 Nom et prénoms TCHANE Bertine Sexe Féminin Date de naissance 10/03/1985 (41 ans) Téléphone 97000001 "
+ },
+ "menu": [
+  "Administratif",
+  "Médical1",
+  "Antécédents & allergies",
+  "Soins1",
+  "Hospitalisations3",
+  "Maternité2",
+  "Analyses & résultats3",
+  "Imagerie médicale2",
+  "Ordonnances1",
+  "À domicile1",
+  "Financier3",
+  "Assurance",
+  "Traçabilité"
+ ],
+ "rubriques": {
+  "admin": {
+   "libelle": "Administratif",
+   "texte": "Administratif Code dossier CNT/1/26 Nom et prénoms TCHANE Bertine Sexe Féminin Date de naissance 10/03/1985 (41 ans) Téléphone 97000001 Quartier Perma Adresse Rue 12 Personne à prévenir Époux 96000000 Groupe sanguin O+ Dossier créé le 05/01/2026"
+  },
+  "medical": {
+   "libelle": "Médical",
+   "texte": "Médical DATE MOTIF DIAGNOSTIC MÉDECIN 10/08/2026 Toux Asthme Dr A"
+  },
+  "antecedents": {
+   "libelle": "Antécédents & allergies",
+   "texte": "Antécédents & allergies Antécédents Asthme Épilepsie Autres antécédents Appendicectomie Allergies connues Sulfamides Traitement en cours Salbutamol Groupe sanguin O+"
+  },
+  "soins": {
+   "libelle": "Soins",
+   "texte": "Soins DATE ACTE PRODUIT UTILISÉ SOIGNANT ÉTAT 12/08/2026 à 09:30 Pansement Compresses IDE X Validée"
+  },
+  "hospi": {
+   "libelle": "Hospitalisations",
+   "texte": "Hospitalisations Patient actuellement hospitalisé — chambre 3, lit B. Une feuille de température est ouverte tant que le séjour dure. Admissions et lits occupés ENTRÉE SORTIE CHAMBRE LIT DIAGNOSTIC STATUT 14/08/2026 en cours 3 B Pneumonie En cours 01/05/2026 04/05/2026 1 A Paludisme grave Sorti Mises en observation ENTRÉE MOTIF UNITÉ CONSTANTES ISSUE 01/07/2026 10h00 Malaise urgences 2 Retour à domicile Feuilles de température DATE TEMPÉRATURE TENSION POULS RELEVÉ PAR 15/08/2026 08:00 38.4 °C 12/8 90 bpm IDE X Sorties DATE DIAGNOSTIC ÉTAT À LA SORTIE SOLDE (RG-06) 04/05/2026 Paludisme grave Guéri Apuré"
+  },
+  "maternite": {
+   "libelle": "Maternité",
+   "texte": "Maternité Suivi de grossesse DATE PRÉVUE TERME OBSERVATIONS SAGE-FEMME 01/12/2026 30 SA RAS SF Y Accouchements DATE TYPE ISSUE SAGE-FEMME 01/02/2026 Voie basse Vivant SF Y Registre des naissances DATE ENFANT SEXE POIDS APGAR 5 MIN 01/02/2026 NAI-1 Féminin 3.2 kg 9"
+  },
+  "laboratoire": {
+   "libelle": "Analyses & résultats",
+   "texte": "Analyses & résultats 1 résultat(s) hors de votre périmètre. Direction — Accès de supervision, sans droit de prescription. DATE ANALYSE PRESCRIPTEUR ÉTAT RÉSULTAT CONCLUSION 11/08/2026 Glycémie Dr A Validé 1.4 Élevé 10/08/2026 NFS Dr A Validé GB 6 Normal"
+  },
+  "imagerie": {
+   "libelle": "Imagerie médicale",
+   "texte": "Imagerie médicale DATE EXAMEN MODALITÉ PRESCRIPTEUR ÉTAT COMPTE RENDU 14/08/2026 Radio thorax Radiographie Dr A Demandée — attente caisse non rédigé 13/08/2026 Échographie pelvienne Échographie Dr A Validée — CR rendu Lire"
+  },
+  "ordonnances": {
+   "libelle": "Ordonnances",
+   "texte": "Ordonnances N° DATE PRESCRIPTEUR DIAGNOSTIC CONTENU MONTANT DISPENSATION ORD-2026-00001 10/08/2026 Dr A Asthme 2 médic. · 1 analyse(s) 12 500 Servie"
+  },
+  "domicile": {
+   "libelle": "À domicile",
+   "texte": "À domicile DATE MOTIF PRATICIEN DIAGNOSTIC TARIF 11/08/2026 Fièvre Dr B Palu 15 000"
+  },
+  "financier": {
+   "libelle": "Financier",
+   "texte": "Financier Total facturé 18 000 FCFA Reste à payer 6 000 FCFA Patient assuré : les prestations couvertes et non couvertes font deux factures distinctes — pièce -A pour ce que l’assureur prend en charge, pièce -B pour ce qui reste au patient. N° FACTURE DATE NATURE VOLET MONTANT PART ASSUREUR PART PATIENT STATUT FA-2 11/08/2026 Pharmacie Pièce unique 3 000 — 3 000 Partielle FA-1-A 10/08/2026 Consultation Couvert par l’assureur 10 000 8 000 2 000 Soldée FA-1-B 10/08/2026 Consultation Non couvert 5 000 — 5 000 Impayée"
+  },
+  "assurance": {
+   "libelle": "Assurance",
+   "texte": "Assurance Compagnie NSIA ASSURANCE Numéro de police P-9 Taux de prise en charge 80 % Expiration de la carte 31/12/2027 Validité (RG-09) Carte valide"
+  },
+  "audit": {
+   "libelle": "Traçabilité",
+   "texte": "Traçabilité Dossier créé Code CNT/1/26 attribué automatiquement (RG-01) 05/01/2026"
+  }
+ },
+ "dossier": "Dossier de consultation — DOS-1 Dernier dossier : DOS-1 — venue du 10/08/2026 à 09h00, enregistré le 10/08/2026 à 09h05, par Dr A. Motif de consultation Toux Type de venue premiere Histoire de la maladie Depuis 3 jours Traitements en cours Salbutamol ANTÉCÉDENTS Antécédents médicaux Asthme Antécédents chirurgicaux Appendicectomie Antécédents gynéco-obstétricaux G2P2 DONNÉES PRÉALABLES Allergies Sulfamides Allergies médicamenteuses — Statut vaccinal À jour Groupe sanguin O+ Électrophorèse Hb — Dépistage — CONSTANTES REPRISES DE L’ACCUEIL Relevées le 10/08/2026 à 08h50 Température 37.2 °C Tension 12/8 Poids 62 kg Pouls 80 /min EXAMEN PHYSIQUE PAR APPAREIL (IPPOA) APPAREIL EXAMINÉ LE PORTÉ AU DOSSIER LE CONSTAT Appareil cardio-vasculaire 10/08/2026 à 09h00 10/08/2026 à 09h05 RAS — normal Appareil pleuro-pulmonaire 10/08/2026 à 09h00 10/08/2026 à 09h05 Inspection : RAS · Auscultation : Sibilants bilatéraux Ouvrir le dossier de consultation Fiche de consultation",
+ "selecteur": "<div class=\"combo max-w-md\"><button class=\"combo-input \" type=\"button\" aria-haspopup=\"listbox\" aria-expanded=\"false\"><span class=\"combo-value truncate text-slat",
+ "modification": {
+  "prerempli": {
+   "code": "CNT/1/26",
+   "nom": "TCHANE",
+   "prenom": "Bertine",
+   "sexe": "F",
+   "naissanceConnue": "date",
+   "dateNaissance": "1985-03-10",
+   "age": "",
+   "groupeSanguin": "O+",
+   "telephone": "97000001",
+   "quartier": "Perma",
+   "adresse": "Rue 12",
+   "personneAPrevenir": "Époux 96000000",
+   "antecedents": [
+    "Asthme",
+    "Épilepsie"
+   ],
+   "antecedentsAutres": "Appendicectomie",
+   "allergies": [
+    "Sulfamides"
+   ],
+   "traitementEnCours": "Salbutamol",
+   "assureur": "NSIA",
+   "numeroPolice": "P-9",
+   "tauxPriseEnCharge": "80",
+   "carteExpiration": "2027-12-31"
+  },
+  "patch": {
+   "telephone": "97111111",
+   "assureur": "OLEA",
+   "assureurNom": "OLEA ASSURANCE",
+   "age": "",
+   "ageReferenceLe": ""
+  },
+  "toasts": [
+   "Modifications enregistrées."
+  ]
+ }
+}

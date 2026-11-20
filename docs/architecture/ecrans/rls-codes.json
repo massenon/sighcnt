@@ -1,0 +1,44 @@
+{
+ "id": "rls-codes",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Codes d’appairage",
+ "acces": "ouvert",
+ "titre": "Codes d’appairage",
+ "description": "Codes à usage unique créés par la mère : ils expirent, ne servent qu’une fois, ne sont jamais conservés en clair.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Codes d’appairage"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Codes valides",
+  "Utilisés (30 j)",
+  "Expirés"
+ ],
+ "cartes": [
+  "Codes"
+ ],
+ "tableaux": [
+  [
+   "Empreinte",
+   "Créé",
+   "Expire",
+   "État"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

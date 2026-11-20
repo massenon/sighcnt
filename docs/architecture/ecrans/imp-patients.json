@@ -1,0 +1,52 @@
+{
+ "id": "imp-patients",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation du répertoire patients",
+ "acces": "ouvert",
+ "titre": "Importation du répertoire patients",
+ "description": "Reprise du répertoire papier : identité, coordonnées, couverture. Jamais de dossier médical.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation du répertoire patients"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du personnel",
+  "Importation de données"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,57 @@
+{
+ "id": "m3-administrations",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Administration des traitements",
+ "acces": "ouvert",
+ "titre": "Administration des traitements",
+ "description": "Administrations dues au service d’hospitalisation, à partir du deuxième passage.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Administration des traitements"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Ce poste ne voit pas les premières administrations : elles appartiennent à la salle de soins. C’est le relais décrit par la Direction — le rang du passage décide du secteur, et non l’inverse."
+ ],
+ "onglets": [
+  "À administrer",
+  "Historique"
+ ],
+ "kpis": [
+  "Patients concernés",
+  "Administrations dues",
+  "Déjà administrées ici",
+  "Bloquées faute de règlement"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Prescription",
+   "Patient",
+   "Acte ou produit",
+   "Passage",
+   "Pourquoi ce poste",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "À administrer22",
+  "Historique43",
+  "Colonnes",
+  "Exporter",
+  "Administrer",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

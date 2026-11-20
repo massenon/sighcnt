@@ -1,0 +1,51 @@
+{
+ "id": "m3-chambres",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Chambres & lits",
+ "acces": "ouvert",
+ "titre": "Chambres & lits",
+ "description": "Référentiel des chambres, nomenclature des lits et tarification journalière par catégorie.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Chambres & lits"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Lits Standard",
+  "Lits VIP",
+  "Lits VVIP",
+  "Capacité totale"
+ ],
+ "cartes": [
+  "Référentiel des lits"
+ ],
+ "tableaux": [
+  [
+   "Lit",
+   "Chambre",
+   "Aile / service",
+   "Catégorie",
+   "Tarif / jour",
+   "État",
+   "Occupant",
+   "Depuis"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Imprimer le plan"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

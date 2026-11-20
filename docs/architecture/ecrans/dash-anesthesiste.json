@@ -1,0 +1,44 @@
+{
+ "id": "dash-anesthesiste",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Anesthésiste",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Anesthésiste",
+ "description": "Sécurité péri-opératoire : check-listes d’entrée, Glasgow, transfusion et surveillance.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Anesthésiste"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "Ce profil n’ouvre ni la maternité, ni la caisse, ni les consultations générales. Ses écrans propres — consultation pré-anesthésique, feuille d’anesthésie, suites per et post-opératoires — sont prévus en phase 6 du plan et rejoindront l’hospitalisation (M3), dont ce profil hérite."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Interventions du mois",
+  "Anesthésies générales",
+  "Rachianesthésies",
+  "Patients hospitalisés"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Périmètre du profil"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Check-listes du bloc",
+  "Check-listes",
+  "Transfusion"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -1,0 +1,585 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-pieces.js : `SIGH.piecesProduites` (la fonction de la vue unifiée du dossier) sur un magasin contrôlé, sous plusieurs profils. Ne pas éditer.",
+ "magasin": {
+  "ordonnances": [
+   {
+    "id": "O1",
+    "numero": "ORD-0001",
+    "patientId": "P1",
+    "date": "2026-10-01T09:00",
+    "diagnostic": "Paludisme simple",
+    "statut": "actif"
+   },
+   {
+    "id": "O2",
+    "numero": "ORD-0002",
+    "patientId": "P2",
+    "date": "2026-10-02T09:00",
+    "diagnostic": "Autre patient",
+    "statut": "actif"
+   },
+   {
+    "id": "O3",
+    "numero": "ORD-0003",
+    "patientId": "P1",
+    "date": "2026-09-01T09:00",
+    "statut": "archive"
+   }
+  ],
+  "demandesAnalyses": [
+   {
+    "id": "A1",
+    "reference": "DA-0001",
+    "patientId": "P1",
+    "dateHeure": "2026-10-03T10:00",
+    "analyse": "NFS",
+    "resultat": "Hb 12",
+    "etatAnalyse": "valide",
+    "statut": "actif"
+   },
+   {
+    "id": "A2",
+    "reference": "DA-0002",
+    "patientId": "P1",
+    "dateHeure": "2026-10-04T10:00",
+    "analyse": "Glycémie",
+    "resultat": "5,1",
+    "etatAnalyse": "en_cours",
+    "statut": "actif"
+   }
+  ],
+  "crOperatoires": [
+   {
+    "id": "C1",
+    "reference": "CRO-0001",
+    "patientId": "P1",
+    "dateOperation": "2026-09-15",
+    "intervention": "Césarienne",
+    "statut": "actif"
+   }
+  ],
+  "resultatsImagerie": [
+   {
+    "id": "R1",
+    "reference": "IMG-0001",
+    "patientId": "P1",
+    "statut": "rendu",
+    "date": "2026-10-05",
+    "examen": "Échographie obstétricale",
+    "statut2": "x"
+   },
+   {
+    "id": "R2",
+    "reference": "IMG-0002",
+    "patientId": "P1",
+    "statut": "brouillon",
+    "date": "2026-10-06",
+    "examen": "Radiographie"
+   }
+  ],
+  "crMaternite": [
+   {
+    "id": "M1",
+    "reference": "CRM-0001",
+    "patientId": "P1",
+    "dateHeure": "2026-10-20T08:30",
+    "typeLabel": "Compte rendu d’accouchement",
+    "statut": "actif"
+   },
+   {
+    "id": "M2",
+    "reference": "CRM-0002",
+    "patientId": "P1",
+    "dateHeure": "2026-10-20T10:00",
+    "statut": "actif"
+   },
+   {
+    "id": "M3",
+    "reference": "CRM-0003",
+    "patientId": "P2",
+    "dateHeure": "2026-10-20T11:00",
+    "typeLabel": "Compte rendu d’AMIU",
+    "statut": "actif"
+   },
+   {
+    "id": "M4",
+    "reference": "CRM-0004",
+    "patientId": "P1",
+    "dateHeure": "2026-10-19T11:00",
+    "typeLabel": "Archivé",
+    "statut": "archive"
+   }
+  ],
+  "dossiersConsultation": [
+   {
+    "id": "D1",
+    "reference": "DOS-00001",
+    "patientId": "P1",
+    "dateArrivee": "2026-10-21",
+    "motifVenue": "Contrôle tensionnel",
+    "statut": "actif"
+   },
+   {
+    "id": "D2",
+    "reference": "DOS-00002",
+    "patientId": "P1",
+    "dateArrivee": "2026-10-20",
+    "statut": "actif"
+   },
+   {
+    "id": "D3",
+    "reference": "DOS-00003",
+    "patientId": "P2",
+    "dateArrivee": "2026-10-21",
+    "motifVenue": "Autre patient",
+    "statut": "actif"
+   }
+  ]
+ },
+ "cas": [
+  {
+   "profil": {
+    "role": "medecin",
+    "fonction": "medecin",
+    "secteur": "consultation",
+    "id": "EMP01",
+    "nom": "Dr TEST"
+   },
+   "session": {
+    "role": "medecin",
+    "nom": "Dr TEST",
+    "poste": "Administrateur système",
+    "identifiant": "c.bassongui",
+    "fonction": "medecin",
+    "secteur": "consultation",
+    "id": "EMP01"
+   },
+   "zone2": true,
+   "pieces": [
+    {
+     "patientId": "P1",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00001",
+       "date": "2026-10-21",
+       "resume": "Contrôle tensionnel",
+       "ecran": "m2-consultation-fiche"
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0001",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’accouchement",
+       "ecran": "m4-comptes-rendus"
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0002",
+       "date": "2026-10-20",
+       "resume": "Compte rendu de maternité",
+       "ecran": "m4-comptes-rendus"
+      },
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00002",
+       "date": "2026-10-20",
+       "resume": "Fiche de consultation",
+       "ecran": "m2-consultation-fiche"
+      },
+      {
+       "famille": "Compte rendu d’imagerie",
+       "reference": "IMG-0001",
+       "date": "2026-10-05",
+       "resume": "Échographie obstétricale",
+       "ecran": "m2-imagerie-demandes"
+      },
+      {
+       "famille": "Résultat d’analyse rendu",
+       "reference": "DA-0001",
+       "date": "2026-10-03",
+       "resume": "NFS",
+       "ecran": "m5-impression-resultats"
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0001",
+       "date": "2026-10-01",
+       "resume": "Paludisme simple",
+       "ecran": "m2-ordonnances"
+      },
+      {
+       "famille": "Compte rendu opératoire",
+       "reference": "CRO-0001",
+       "date": "2026-09-15",
+       "resume": "Césarienne",
+       "ecran": "m3-bloc-cro"
+      }
+     ]
+    },
+    {
+     "patientId": "P2",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00003",
+       "date": "2026-10-21",
+       "resume": "Autre patient",
+       "ecran": "m2-consultation-fiche"
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0003",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’AMIU",
+       "ecran": "m4-comptes-rendus"
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0002",
+       "date": "2026-10-02",
+       "resume": "Autre patient",
+       "ecran": "m2-ordonnances"
+      }
+     ]
+    },
+    {
+     "patientId": "P3",
+     "lignes": []
+    }
+   ]
+  },
+  {
+   "profil": {
+    "role": "admin",
+    "id": "ADM",
+    "nom": "ADMIN TEST"
+   },
+   "session": {
+    "role": "admin",
+    "nom": "ADMIN TEST",
+    "poste": "Administrateur système",
+    "identifiant": "c.bassongui",
+    "fonction": "direction",
+    "secteur": "ADM",
+    "id": "ADM"
+   },
+   "zone2": true,
+   "pieces": [
+    {
+     "patientId": "P1",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00001",
+       "date": "2026-10-21",
+       "resume": "Contrôle tensionnel",
+       "ecran": "m2-consultation-fiche"
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0001",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’accouchement",
+       "ecran": "m4-comptes-rendus"
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0002",
+       "date": "2026-10-20",
+       "resume": "Compte rendu de maternité",
+       "ecran": "m4-comptes-rendus"
+      },
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00002",
+       "date": "2026-10-20",
+       "resume": "Fiche de consultation",
+       "ecran": "m2-consultation-fiche"
+      },
+      {
+       "famille": "Compte rendu d’imagerie",
+       "reference": "IMG-0001",
+       "date": "2026-10-05",
+       "resume": "Échographie obstétricale",
+       "ecran": "m2-imagerie-demandes"
+      },
+      {
+       "famille": "Résultat d’analyse rendu",
+       "reference": "DA-0001",
+       "date": "2026-10-03",
+       "resume": "NFS",
+       "ecran": "m5-impression-resultats"
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0001",
+       "date": "2026-10-01",
+       "resume": "Paludisme simple",
+       "ecran": "m2-ordonnances"
+      },
+      {
+       "famille": "Compte rendu opératoire",
+       "reference": "CRO-0001",
+       "date": "2026-09-15",
+       "resume": "Césarienne",
+       "ecran": "m3-bloc-cro"
+      }
+     ]
+    },
+    {
+     "patientId": "P2",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00003",
+       "date": "2026-10-21",
+       "resume": "Autre patient",
+       "ecran": "m2-consultation-fiche"
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0003",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’AMIU",
+       "ecran": "m4-comptes-rendus"
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0002",
+       "date": "2026-10-02",
+       "resume": "Autre patient",
+       "ecran": "m2-ordonnances"
+      }
+     ]
+    },
+    {
+     "patientId": "P3",
+     "lignes": []
+    }
+   ]
+  },
+  {
+   "profil": {
+    "role": "laborantin",
+    "fonction": "biologiste",
+    "secteur": "laboratoire",
+    "id": "EMP02",
+    "nom": "LABO TEST"
+   },
+   "session": {
+    "role": "laborantin",
+    "nom": "LABO TEST",
+    "poste": "Administrateur système",
+    "identifiant": "c.bassongui",
+    "fonction": "biologiste",
+    "secteur": "laboratoire",
+    "id": "EMP02"
+   },
+   "zone2": false,
+   "pieces": [
+    {
+     "patientId": "P1",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00001",
+       "date": "2026-10-21",
+       "resume": "Contrôle tensionnel",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0001",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’accouchement",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0002",
+       "date": "2026-10-20",
+       "resume": "Compte rendu de maternité",
+       "ecran": null
+      },
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00002",
+       "date": "2026-10-20",
+       "resume": "Fiche de consultation",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu d’imagerie",
+       "reference": "IMG-0001",
+       "date": "2026-10-05",
+       "resume": "Échographie obstétricale",
+       "ecran": null
+      },
+      {
+       "famille": "Résultat d’analyse rendu",
+       "reference": "DA-0001",
+       "date": "2026-10-03",
+       "resume": "NFS",
+       "ecran": "m5-impression-resultats"
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0001",
+       "date": "2026-10-01",
+       "resume": "Paludisme simple",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu opératoire",
+       "reference": "CRO-0001",
+       "date": "2026-09-15",
+       "resume": "Césarienne",
+       "ecran": null
+      }
+     ]
+    },
+    {
+     "patientId": "P2",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00003",
+       "date": "2026-10-21",
+       "resume": "Autre patient",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0003",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’AMIU",
+       "ecran": null
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0002",
+       "date": "2026-10-02",
+       "resume": "Autre patient",
+       "ecran": null
+      }
+     ]
+    },
+    {
+     "patientId": "P3",
+     "lignes": []
+    }
+   ]
+  },
+  {
+   "profil": {
+    "role": "reception",
+    "id": "REC",
+    "nom": "ACCUEIL TEST"
+   },
+   "session": {
+    "role": "reception",
+    "nom": "ACCUEIL TEST",
+    "poste": "Administrateur système",
+    "identifiant": "c.bassongui",
+    "fonction": "direction",
+    "secteur": "ADM",
+    "id": "REC"
+   },
+   "zone2": false,
+   "pieces": [
+    {
+     "patientId": "P1",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00001",
+       "date": "2026-10-21",
+       "resume": "Contrôle tensionnel",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0001",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’accouchement",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0002",
+       "date": "2026-10-20",
+       "resume": "Compte rendu de maternité",
+       "ecran": null
+      },
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00002",
+       "date": "2026-10-20",
+       "resume": "Fiche de consultation",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu d’imagerie",
+       "reference": "IMG-0001",
+       "date": "2026-10-05",
+       "resume": "Échographie obstétricale",
+       "ecran": "m2-imagerie-demandes"
+      },
+      {
+       "famille": "Résultat d’analyse rendu",
+       "reference": "DA-0001",
+       "date": "2026-10-03",
+       "resume": "NFS",
+       "ecran": null
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0001",
+       "date": "2026-10-01",
+       "resume": "Paludisme simple",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu opératoire",
+       "reference": "CRO-0001",
+       "date": "2026-09-15",
+       "resume": "Césarienne",
+       "ecran": "m3-bloc-cro"
+      }
+     ]
+    },
+    {
+     "patientId": "P2",
+     "lignes": [
+      {
+       "famille": "Fiche de consultation",
+       "reference": "DOS-00003",
+       "date": "2026-10-21",
+       "resume": "Autre patient",
+       "ecran": null
+      },
+      {
+       "famille": "Compte rendu de maternité",
+       "reference": "CRM-0003",
+       "date": "2026-10-20",
+       "resume": "Compte rendu d’AMIU",
+       "ecran": null
+      },
+      {
+       "famille": "Ordonnance",
+       "reference": "ORD-0002",
+       "date": "2026-10-02",
+       "resume": "Autre patient",
+       "ecran": null
+      }
+     ]
+    },
+    {
+     "patientId": "P3",
+     "lignes": []
+    }
+   ]
+  }
+ ]
+}

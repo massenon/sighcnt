@@ -1,0 +1,314 @@
+{
+  "_doc": "Catalogue d'intentions de l'assistant, MESURE du lot AST-0 (14/11/2026). Source UNIQUE du tableau de couverture (docs/architecture/ASSISTANT-couverture-des-intentions.md, bloc engendré par `dart run tool/mesure_assistant.dart --tableau`), de la reconnaissance (tool/src/assistant_comprehension.dart) et des vecteurs de droits (assistant_droits.json). Rien n'est livré au poste. Chaque source est un fichier et une fonction LUS dans le code. statut: calculable (la donnée ET la règle existent, la réponse est une lecture ou un filtre de champs existants), petit_lot (la donnée existe mais l'agrégation, la vue ou la définition manque), non_disponible (la donnée ou le contenu n'existe pas). Les codes de refus autres que LECTURE_NON_AUTORISEE et INTENTION_INCONNUE (PRD) sont des PROPOSITIONS à valider.",
+  "aujourdhui": "2026-11-14",
+  "profils": {
+    "reception": ["reception"],
+    "caisse": ["caissier"],
+    "pharmacie": ["caissier"],
+    "stock": ["stock"],
+    "comptabilite": ["comptable"],
+    "laboratoire": ["laborantin"],
+    "medecin": ["medecin"],
+    "daf": ["da"],
+    "direction": ["direction"],
+    "administrateur": ["admin"]
+  },
+  "profilsHypotheses": {
+    "pharmacie": "Hypothèse à confirmer : le rôle `pharmacien` est ARCHIVÉ dans rbac.json (aucun écran ouvert), la pharmacie est tenue par le rôle `caissier` (« Caissier, Dispensaire (Pharmacie) »).",
+    "caisse": "Il n'existe qu'un rôle de caisse (`caissier`) ; il est le même que celui de la pharmacie."
+  },
+  "rolesAnnexe": {
+    "réception": ["reception"], "caisse": ["caissier"], "comptabilité": ["comptable"], "pharmacie": ["caissier"], "stock": ["stock"],
+    "laboratoire": ["laborantin"], "médecin": ["medecin"], "DAF": ["da"], "Direction": ["direction"], "administrateur": ["admin"],
+    "soignant": ["infirmier"], "surveillant": ["surveillant"], "achats": ["stock"]
+  },
+  "rolesAnnexeHypotheses": "Hypothèses à confirmer : l'annexe nomme trois profils absents de la liste des dix (soignant, surveillant, achats), rapportés à `infirmier`, `surveillant` et `stock` ; pharmacie et caisse sont tous deux le rôle `caissier`.",
+  "refusNommes": {
+    "LECTURE_NON_AUTORISEE": {"origine": "PRD section 5", "motif": "votre fonction ne lit pas cet écran", "geste": "demander l'accès à l'administrateur"},
+    "INTENTION_INCONNUE": {"origine": "PRD section 8", "motif": "la question ne rentre dans aucune intention du catalogue", "geste": "reformuler ou choisir parmi les intentions proches"},
+    "ECRITURE_ABSENTE": {"origine": "proposition", "motif": "l'assistant n'écrit rien, la commande n'existe pas ici", "geste": "ouvrir l'écran concerné et valider soi-même"},
+    "AVIS_MEDICAL_REFUSE": {"origine": "proposition", "motif": "aucune aide au diagnostic ni avis thérapeutique (hors périmètre CDCT 4.3)", "geste": "consulter le dossier si le droit existe, ou le médecin"},
+    "ENVOI_EXTERNE_REFUSE": {"origine": "proposition", "motif": "rien ne quitte la clinique", "geste": "imprimer l'état depuis l'écran"},
+    "INJONCTION_REFUSEE": {"origine": "proposition", "motif": "les règles et les droits ne se contournent pas par la conversation", "geste": "poser une question du catalogue"},
+    "PRECISION_REQUISE": {"origine": "proposition", "motif": "un paramètre obligatoire manque", "geste": "préciser l'acte, l'article ou le patient"},
+    "QUESTION_AMBIGUE": {"origine": "proposition", "motif": "plusieurs intentions possibles", "geste": "choisir parmi les trois intentions proposées"},
+    "NON_CALCULABLE_HISTORIQUE": {"origine": "proposition", "motif": "l'historique à cette date n'est pas conservé", "geste": "lire l'état d'aujourd'hui"},
+    "PERIODE_FUTURE": {"origine": "proposition", "motif": "la période demandée n'a pas commencé", "geste": "choisir une période échue"},
+    "AUCUN_RESULTAT": {"origine": "proposition", "motif": "aucun enregistrement ne correspond", "geste": "vérifier l'orthographe ou ouvrir la liste"},
+    "HOMONYMES": {"origine": "proposition", "motif": "plusieurs correspondances", "geste": "choisir dans la liste, jamais la première"}
+  },
+  "ecransEcriture": [
+    {"mots": ["facture", "avoir"], "ecran": "m8-factures"},
+    {"mots": ["sortie", "stock", "boites", "boite"], "ecran": "m6-mouvements"},
+    {"mots": ["encaisse", "paiement", "francs"], "ecran": "m8-caisse"},
+    {"mots": ["prix", "tarif"], "ecran": "cfg-tarifs"}
+  ],
+  "domaines": {
+    "pharmacie": ["I07", "I08", "I09"],
+    "stock": ["I07", "I08", "I10"],
+    "laboratoire": ["I19", "I08", "I05"],
+    "caisse": ["I14", "I15", "I16"],
+    "comptabilite": ["I14", "I16", "I10"],
+    "maternite": ["I04", "I20", "I05"],
+    "fournisseur": ["I12", "I13", "I16"],
+    "patient": ["I01", "I02", "I03"]
+  },
+  "incoherences": [
+    {"mots": ["rupture", "patients"], "propose": ["I08"], "motif": "une rupture concerne un article, pas un patient"}
+  ],
+  "intentions": [
+    {
+      "id": "I01", "groupe": "Patients (M1)", "libelle": "Retrouver un patient (nom ou code CNT)",
+      "ecransLecture": ["m1-patients"],
+      "sources": ["packages/domaine/lib/src/patients/pat_patients.dart : patProchainCode, patRefusCode (forme du code RG-01), patAge ; collection `patients`"],
+      "statut": "petit_lot",
+      "raison": "L'identité (nom, naissance, âge, code) se lit sur la fiche `patients`. Aucune fonction du domaine ne cherche par nom ni par code (la recherche est un filtre d'écran), et aucune source ne définit la dernière visite : consultations, admissions et factures portent chacune une date, laquelle fait « visite » est à trancher.",
+      "limites": ["recherche par nom tolérante aux fautes et liste d'homonymes : à écrire (un filtre)", "dernière visite : définition à valider (consultation, admission, facture ?)"],
+      "refus": ["LECTURE_NON_AUTORISEE", "HOMONYMES", "AUCUN_RESULTAT"],
+      "requis": ["patient"], "futurOk": false, "historique": true,
+      "controles": ["zone : le dossier étendu (pièces médicales) est de zone 2, `docPeutVoir` (fichiers_regles.dart) ; aucun attribut de zone n'existe au niveau du PATIENT"]
+    },
+    {
+      "id": "I02", "groupe": "Patients (M1)", "libelle": "Validité de l'assurance à la date du jour ou à une date",
+      "ecransLecture": ["m1-patients", "m9-assures", "m8-facturation"],
+      "sources": ["packages/domaine/lib/src/caisse/prise_en_charge.dart : carteValide, couvertureALaDate, souscripteurDe, garantiesDe, repartir (RG-09)", "packages/domaine/lib/src/patients/pat_patients.dart : patCarteValide"],
+      "statut": "calculable",
+      "raison": "RG-09 se lit à la date par le moteur de la caisse (couverture datée) ; la compagnie, le numéro et les garanties viennent des mêmes fonctions.",
+      "limites": ["une carte absente se dit « aucune carte », jamais « invalide » ni zéro"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PRECISION_REQUISE", "AUCUN_RESULTAT"],
+      "requis": ["patient"], "futurOk": true, "historique": true, "controles": []
+    },
+    {
+      "id": "I03", "groupe": "Patients (M1)", "libelle": "Reste à payer et dernière facture d'un patient",
+      "ecransLecture": ["m8-factures", "m8-reliquats"],
+      "sources": ["packages/domaine/lib/src/stock/points.dart : lignesVendues, blocsParPatient, LigneVendue.reste", "packages/domaine/lib/src/patients/pat_pieces.dart : patStatutPiece", "packages/domaine/lib/src/caisse/encaissement.dart : champ `reliquat` de la facture"],
+      "statut": "calculable",
+      "raison": "Le reste est la part patient moins le réglé (`reste`, jamais négatif) ; la dernière facture est un tri par date. Il n'existe pas de compte patient : « solde » se dit reste à payer par facture.",
+      "limites": ["« solde » : sens à confirmer (reste à payer des factures actives)"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PRECISION_REQUISE", "AUCUN_RESULTAT"],
+      "requis": ["patient"], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I04", "groupe": "Patients (M1)", "libelle": "Admission en cours et lit occupé, lits libres",
+      "ecransLecture": ["m3-admissions", "m3-plan-lits"],
+      "sources": ["packages/domaine/lib/src/hospitalisation/hos_regles.dart : hosEnCours, hosLitOccupePar, hosTousLits, hosRefusAdmission (un lit, une admission active)"],
+      "statut": "calculable",
+      "raison": "L'invariant « un lit ne porte qu'une admission active » est porté par le moteur ; lits libres = lits moins lits occupés.",
+      "limites": ["lits libres par service (maternité) : lecture du plan des chambres, à confirmer"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": false, "historique": false, "controles": ["zone médicale : l'identité du patient d'un lit n'est dite qu'aux profils qui lisent la zone médicale"]
+    },
+    {
+      "id": "I05", "groupe": "Tarifs et actes", "libelle": "Prix d'un acte ou d'un produit (deux prix, prix du jour ou à une date)",
+      "ecransLecture": ["cfg-tarifs", "m8-facturation"],
+      "sources": ["packages/domaine/lib/src/tarifs/tarifs.dart : ReferentielTarifs.prixGrille, aLaDate, enVigueur, instantane, ResolutionTarif (absent, reserveSos)"],
+      "statut": "calculable",
+      "raison": "Le référentiel unique porte deux prix (non assuré, assuré) versionnés par date ; une prestation sans version valide à la date est dite absente, jamais zéro. Les médicaments n'ont pas de grille : leur prix est le prix d'achat (RG-02), lu sur la fiche produit, sans version ni double prix.",
+      "limites": ["produit : prix d'achat, un seul prix, non versionné", "écran source : la caisse lit les prix par m8-facturation, pas par cfg-tarifs (le catalogue accepte l'un ou l'autre)"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PRECISION_REQUISE", "AUCUN_RESULTAT"],
+      "requis": ["acte"], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I06", "groupe": "Tarifs et actes", "libelle": "Historique des changements de prix d'un acte",
+      "ecransLecture": ["cfg-tarifs"],
+      "sources": ["packages/domaine/lib/src/tarifs/tarifs.dart : ReferentielTarifs.versionsDe (une ligne immuable par version, date d'effet)"],
+      "statut": "calculable",
+      "raison": "Pour les actes, analyses et certificats du référentiel, chaque version est conservée. Pour un PRODUIT (paracétamol), aucune version : le prix d'achat est calculé, l'historique n'existe pas.",
+      "limites": ["produits (question 18) : non disponible faute de donnée", "le PRD limite l'intention aux actes"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PRECISION_REQUISE", "AUCUN_RESULTAT"],
+      "requis": ["acte"], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I07", "groupe": "Stock et pharmacie (M6, M7)", "libelle": "Niveau d'un article (total, lot, emplacement), seuil, FEFO",
+      "ecransLecture": ["m6-produits", "m6-stock-gros", "m6-stock-detail", "m6-lots"],
+      "sources": ["packages/domaine/lib/src/stock/stock.dart : etatStock, sousSeuil, ordreFefo, statutLot, joursAvantPeremption", "packages/domaine/lib/src/stock/emplacements.dart : prochainLot, articlesRanges, planDesRayons"],
+      "statut": "calculable",
+      "raison": "Le stock se lit sur `stockGros` et `stockDetail`, les lots sur `lots` (FEFO par `ordreFefo`, RG-05). Un article sans lot se dit sans lot.",
+      "limites": ["stock à une date passée (question 99) : non disponible, voir la couverture", "« stock du laboratoire » n'est pas un stock : un article ne porte que stockGros et stockDetail"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PRECISION_REQUISE", "AUCUN_RESULTAT", "NON_CALCULABLE_HISTORIQUE"],
+      "requis": [], "futurOk": false, "historique": false, "controles": []
+    },
+    {
+      "id": "I08", "groupe": "Stock et pharmacie (M6, M7)", "libelle": "Articles en rupture, sous le seuil, proches de péremption",
+      "ecransLecture": ["m6-alertes", "m6-lots", "m6-produits"],
+      "sources": ["packages/domaine/lib/src/stock/stock.dart : sousSeuil, sousSeuilHorsRupture, aReapprovisionner, joursAvantPeremption, statutLot", "packages/domaine/lib/src/parametres/parametres_clinique.dart : pcDelaiPeremption, pcStatutLot", "packages/domaine/lib/src/tableaux_de_bord/tba_regles.dart : tbaRuptures, tbaPerimes, tbaPeremptionProche"],
+      "statut": "calculable",
+      "raison": "Les listes existent déjà au tableau de bord. Le délai de péremption est un paramètre de clinique daté (lot PARAM-CLINIQUE, 90 jours semés, `pcDelaiPeremption`) : l'assistant cite le délai lu en base à la date.",
+      "limites": ["délai de péremption : constante 90, pas un paramètre en base (écart à la règle de paramétrage du 09/11/2026), petit lot avant l'assistant"],
+      "refus": ["LECTURE_NON_AUTORISEE", "NON_CALCULABLE_HISTORIQUE"],
+      "requis": [], "futurOk": true, "historique": false, "controles": []
+    },
+    {
+      "id": "I09", "groupe": "Stock et pharmacie (M6, M7)", "libelle": "Articles qui tournent et qui ne tournent plus",
+      "ecransLecture": ["m6-mouvements", "m6-point-ventes"],
+      "sources": ["packages/domaine/lib/src/stock/stock.dart : mouvementsDuStock (filtre par stock et dates, aucune agrégation)", "packages/domaine/lib/src/stock/points.dart : articlesVentes (classe les articles FACTURÉS, pas les sorties de stock)"],
+      "statut": "petit_lot",
+      "raison": "Chaque sortie est un mouvement (`produitId`, `quantite`, `type`, `date`, `stockType`) : la donnée existe. Aucune fonction ne somme les sorties par article sur une période ni ne cherche la dernière sortie. `articlesVentes` répond à une autre question (les ventes facturées).",
+      "limites": ["classement des sorties par article : agrégation à écrire", "aucune sortie depuis N jours : dernière date de sortie par article, à écrire ; N réglable en base", "sortie ou perte : à définir (types sortie, perte, casse, peremption)"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I10", "groupe": "Stock et pharmacie (M6, M7)", "libelle": "Valorisation du stock au CUMP par secteur",
+      "ecransLecture": ["m6-point-stock"],
+      "sources": ["packages/domaine/lib/src/stock/points.dart : valeurUnitaire, lignesEtatStock (montantCump), famillesArticles (champ groupe)", "packages/domaine/lib/src/stock/stock.dart : valeurStock"],
+      "statut": "calculable",
+      "raison": "Le CUMP est porté par la fiche produit, la valeur est la somme calculée de l'état de stock. Le « secteur » du stock est le GROUPE de la famille d'article (pharmacie, laboratoire, équipement, logistique), pas un secteur de recette.",
+      "limites": ["stock à une date passée : non disponible", "par secteur de recette : sans objet, le stock se range par famille"],
+      "refus": ["LECTURE_NON_AUTORISEE", "NON_CALCULABLE_HISTORIQUE"],
+      "requis": [], "futurOk": false, "historique": false, "controles": ["secteur : aucun axe de secteur dans rbac.json"]
+    },
+    {
+      "id": "I11", "groupe": "Stock et pharmacie (M6, M7)", "libelle": "Inventaire : état du dernier, écarts, articles non comptés",
+      "ecransLecture": ["m6-inventaire"],
+      "sources": ["packages/domaine/lib/src/stock/mouvements_stock.dart : validerInventaire (fiche `inventaires` : lignes théorique, physique, écart signé, nbEcarts, valeurEcart), ciblesInventaire, ligneComptage"],
+      "statut": "calculable",
+      "raison": "La fiche d'inventaire validée garde ses lignes avec l'écart signé : état et écarts se lisent. En revanche `validerInventaire` remplace un article NON compté par son stock théorique (physique = théorique, écart zéro) : « non compté » n'est pas enregistré, donc indiscernable d'un article compté juste.",
+      "limites": ["articles non comptés (question 33) : non disponible faute de donnée, un non compté vaut aujourd'hui un écart zéro", "le mouvement de régularisation porte `quantite` en valeur absolue (signe perdu), le signe se lit sur la fiche d'inventaire"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": false, "historique": true, "controles": ["lancer un inventaire est une écriture : l'assistant OUVRE m6-inventaire-feuille, il ne compte rien"]
+    },
+    {
+      "id": "I12", "groupe": "Fournisseurs et achats (M7)", "libelle": "Fournisseur : coordonnées, commandes, livraisons, dette ouverte",
+      "ecransLecture": ["m7-fournisseurs"],
+      "sources": ["packages/domaine/lib/src/achats/fournisseurs_m7.dart : commandesDuFournisseur, historiqueDuTiroir, kpisFournisseurs", "packages/domaine/lib/src/achats/factures_fournisseurs.dart : detteFournisseurs (hors payée et soldée), nbDettesFournisseurs"],
+      "statut": "calculable",
+      "raison": "La fiche fournisseur porte code, nom, contact, délai ; la dette est la somme des factures fournisseurs ni payées ni soldées, filtrée par le champ `fournisseur`. Écart E21 connu : l'écran ne retire que `payee`, le BFR retire aussi `soldee` : l'assistant devra citer la règle retenue.",
+      "limites": ["dette : deux définitions coexistent (écran et BFR, E21), à trancher avant de répondre", "le fournisseur se désigne par un nom libre (« de gants ») : rapprochement flou à écrire"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT", "HOMONYMES"],
+      "requis": ["fournisseur"], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I13", "groupe": "Fournisseurs et achats (M7)", "libelle": "Commandes en attente de validation (RG-04) et validateur",
+      "ecransLecture": ["m7-commandes"],
+      "sources": ["packages/domaine/lib/src/achats/commandes.dart : commandesEnAttente (statut attente_validation), validationCommande, constante directriceAdministrative"],
+      "statut": "calculable",
+      "raison": "La liste se lit sur `statutCommande`. Le validateur est une CONSTANTE (directriceAdministrative), pas un circuit lu en base : « qui doit valider » ne peut citer que RG-04, non un réglage (écart E72, RG-04 contournable par qui écrit dans M7).",
+      "limites": ["« rôle de validation lu dans le circuit » (question 38) : il n'existe pas de circuit paramétré pour les commandes, seulement RG-04 en dur"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I14", "groupe": "Caisse et recettes (M8, M6, M12)", "libelle": "Recettes d'un jour, d'une semaine, d'un mois, ventilées et comparées",
+      "ecransLecture": ["m8-recettes", "m8-caisse"],
+      "sources": ["packages/domaine/lib/src/stock/points.dart : lignesVendues, cumuler, groupesVentes, evolutionVentes, journalVentes (total CALCULÉ)", "packages/domaine/lib/src/tableaux_de_bord/tba_regles.dart : TbaCaissier (parMode), tbaDuJour, tbaDuMois", "packages/domaine/lib/src/pilotage/pil_tableaux.dart : parMode"],
+      "statut": "calculable",
+      "raison": "Total, secteur (groupe de prestation) et mode de paiement existent ; la comparaison à la période précédente est deux appels. Par caissier : `encaissePar` figure sur la ligne de paiement (encaissement.dart:206), aucune agrégation n'existe. « Recettes » (encaissé) et « chiffre d'affaires » (facturé) ne sont pas la même somme : à trancher.",
+      "limites": ["par caissier : agrégation à écrire (petit lot)", "recettes (encaissé) contre chiffre d'affaires (facturé) : définition à valider", "date future : PERIODE_FUTURE, jamais zéro"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PERIODE_FUTURE"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I15", "groupe": "Caisse et recettes (M8, M6, M12)", "libelle": "Factures et avoirs d'une période, factures non certifiées MECeF",
+      "ecransLecture": ["m8-factures", "mecef-factures", "mecef-avoirs", "m8-facture-avoir"],
+      "sources": ["packages/domaine/lib/src/rapports/rap_regles.dart : rapFacturesPeriode", "packages/domaine/lib/src/mecef/etats.dart : etatMecefDe, etatsMecef (normalisee, en_attente, a_verifier, refusee, expiree)", "packages/domaine/lib/src/caisse/avoir.dart"],
+      "statut": "calculable",
+      "raison": "Les factures actives d'une période se filtrent par date ; l'état de certification locale est le champ `statutMecef` lu par `etatMecefDe` (un avoir sans objet n'est pas du registre fiscal).",
+      "limites": ["non certifiée : tout état sauf normalisée, la liste doit nommer l'état de chaque pièce"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PERIODE_FUTURE"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I16", "groupe": "Caisse et recettes (M8, M6, M12)", "libelle": "Créances et impayés par ancienneté",
+      "ecransLecture": ["m9-creances", "m8-reliquats"],
+      "sources": ["packages/domaine/lib/src/assurances/ass_regles.dart : assBalanceAgee, assTrancheDe (moins30, 30a90, plus90), assCreance, AssLigneCreance", "packages/domaine/lib/src/parametres/parametres_clinique.dart : pcTranches, pcTrancheCreance"],
+      "statut": "petit_lot",
+      "raison": "La balance âgée existe pour les créances des ASSUREURS (trois tranches fixes). Pour les impayés des PATIENTS, le `reliquat` et la date de la facture existent mais aucune balance âgée ne les agrège. Les tranches sont un paramètre de clinique daté (lot PARAM-CLINIQUE, 30 et 90 jours semés, `pcTranches`).",
+      "limites": ["impayés patients par ancienneté : agrégation à écrire", "« plus de N jours » avec N libre : seules les tranches 30 et 90 existent", "classement des débiteurs (assureurs et patients confondus) : définition à valider"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I17", "groupe": "Documents et certificats", "libelle": "Retrouver un document, un courrier, un certificat émis d'un patient",
+      "ecransLecture": ["m1-documents", "m1-pieces", "m13-courriers"],
+      "sources": ["packages/domaine/lib/src/patients/pat_patients.dart : patPiecesProduites (ordonnances, résultats rendus, comptes rendus opératoires, d'imagerie, de maternité, fiches de consultation)", "packages/domaine/lib/src/fichiers/fichiers_regles.dart : docPeutVoir, docZoneDe, fichierRefusDroit (zone 1 administratif, zone 2 médical)"],
+      "statut": "petit_lot",
+      "raison": "La vue unifiée du dossier rend les pièces cliniques avec leur renvoi. Les courriers (M13, collection `courriers`), les documents numérisés (`documentsPatient`) et les certificats émis (collection `certificats`, module CFG) n'y figurent pas. La zone se vérifie par type de document (`docPeutVoir`) ; la liste des rôles de zone 2 est codée en dur (fichiers_donnees.dart:46), absente de rbac.json.",
+      "limites": ["courriers, documents numérisés, certificats émis : à ajouter à la vue (petit lot)", "zone : liste de rôles en dur, deux sources"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": ["patient"], "futurOk": false, "historique": true,
+      "controles": ["zone documents : docPeutVoir (zone 2 réservée aux rôles cliniques), un patient interdit est répondu comme inexistant"]
+    },
+    {
+      "id": "I18", "groupe": "Documents et certificats", "libelle": "Prix d'un certificat (consultation du prix seulement)",
+      "ecransLecture": ["cfg-tarifs", "cfg-certificats"],
+      "sources": ["prototype_html/assets/js/data-tarifs.js : CERTIFICATS_TARIFS (famille CERTIFICAT, six lignes CERT-DPS, CERT-ATG, CERT-DEC, CERT-CBV, CERT-VC, CERT-APT)", "packages/domaine/lib/src/tarifs/tarifs.dart : ReferentielTarifs.prixGrille, ResolutionTarif.reserveSos"],
+      "statut": "calculable",
+      "raison": "Six certificats ont un prix. La grille ne porte qu'UN prix (prixAssure = prixNonAssure) et la règle est `assurable: sos` (couverture de la seule compagnie SOS) : la réponse « deux prix » du PRD est en réalité un prix unique avec une mention de couverture. Les huit gabarits de `cfaTypesCertificat` (repos, grossesse, accouchement, coups, initial, guérison, prénuptial, aptitude) ne coïncident pas avec les six lignes tarifées : le certificat prénuptial n'a pas de prix.",
+      "limites": ["prix unique et couverture SOS seule, à dire dans la réponse", "huit gabarits, six prix : un gabarit sans ligne se dit « aucun prix au référentiel »"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I19", "groupe": "Laboratoire et imagerie", "libelle": "État d'une demande, résultats RENDUS seulement",
+      "ecransLecture": ["m5-demandes", "m5-resultats", "m2-imagerie-demandes"],
+      "sources": ["packages/domaine/lib/src/labo/res_habilitations.dart : peutVoirResultat (rôle, FONCTION, SECTEUR, premier verrou : résultat non validé biologiquement), filtrerResultats", "packages/domaine/lib/src/labo/res_etats.dart : resultatRendu", "packages/domaine/lib/src/imagerie/img_demandes_etats.dart", "packages/domaine/lib/src/patients/pat_patients.dart : patPiecesProduites (résultat rendu et lisible du profil)"],
+      "statut": "calculable",
+      "raison": "Le premier verrou existe déjà : un résultat non validé n'existe pas pour le prescripteur. Les axes fonction et secteur vivent dans `SessionLabo`, hors de rbac.json : l'assistant devra porter la même session.",
+      "limites": ["fonction et secteur : hors rbac.json, session propre au laboratoire", "aucune interprétation clinique, jamais"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT", "AVIS_MEDICAL_REFUSE"],
+      "requis": [], "futurOk": false, "historique": true,
+      "controles": ["zone médicale (RG-13) et habilitation du résultat par fonction et secteur"]
+    },
+    {
+      "id": "I20", "groupe": "Personnel et planning (M10, M11)", "libelle": "Qui est de garde ou de permanence à une date",
+      "ecransLecture": ["m10-planning"],
+      "sources": ["packages/domaine/lib/src/rh/rhb_regles.dart : rhbTypesPlanning (garde, garde_hospi, garde_soins, permanence), rhbCompter", "packages/domaine/lib/src/rh/planning_rh.dart : vacationsGardeRh, propositions (une proposition ne change jamais le planning validé)"],
+      "statut": "calculable",
+      "raison": "La collection `planning` EST le planning validé (une proposition de l'agent n'y entre qu'après le surveillant) : un filtre par date et par type de vacation.",
+      "limites": ["l'écran m10-planning n'est ouvert qu'à l'administrateur, la Direction, la DAF et le surveillant : la réception (questions 58 et 60) n'a pas le droit de lecture"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": true, "historique": true, "controles": []
+    },
+    {
+      "id": "I21", "groupe": "Pilotage et système", "libelle": "Indicateurs du jour (consultations, admissions, analyses), ouvrir le tableau de bord",
+      "ecransLecture": ["dash-direction", "dash-da", "dash-croise"],
+      "sources": ["packages/domaine/lib/src/pilotage/pil_stats.dart : pilStatsConsultations, pilStatsHospitalisations, pilStatsExamens", "packages/domaine/lib/src/tableaux_de_bord/tba_regles.dart : tbaDuJour"],
+      "statut": "calculable",
+      "raison": "Les comptes sont déjà calculés par les moteurs de statistiques ; chaque rôle a son propre tableau de bord (dash-*), l'assistant ne dira que le compte de l'écran que le rôle ouvre.",
+      "limites": ["un rôle sans tableau de pilotage voit seulement son propre tableau : à rattacher rôle par rôle"],
+      "refus": ["LECTURE_NON_AUTORISEE", "PERIODE_FUTURE"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    },
+    {
+      "id": "I22", "groupe": "Pilotage et système", "libelle": "État de la synchronisation et alertes ouvertes",
+      "ecransLecture": ["mere-supervision"],
+      "sources": ["packages/domaine/lib/src/mere/mra_regles.dart : mraRetard, mraAJour", "packages/domaine/lib/src/mere/mrb_regles.dart : mrbCompterAlterations", "packages/domaine/lib/src/mere/synchro_fileuls.dart : synchroFileulPublie (compteurs et horodatages seulement)", "apps/poste/lib/modules/mere/mra_supervision.dart"],
+      "statut": "calculable",
+      "raison": "À la mère, retard du journal, conflits et alertes se calculent. Au fileul, l'état de SA connexion à la mère vit dans le client de synchronisation de apps/poste, hors du domaine.",
+      "limites": ["fileul : état de sa connexion hors domaine (petit lot pour l'exposer à l'assistant)", "jamais un identifiant de patient (compteurs seulement, E2558)"],
+      "refus": ["LECTURE_NON_AUTORISEE"],
+      "requis": [], "futurOk": false, "historique": false, "controles": []
+    },
+    {
+      "id": "I23", "groupe": "Rapports", "libelle": "Générer un rapport : ouvrir l'état existant avec les filtres de la question",
+      "ecransLecture": ["rapports-bibliotheque", "rapports-generateur"],
+      "sources": ["packages/domaine/lib/src/rapports/rap_regles.dart : rapCatalogue, rapPeriode, rapBornes, rapRefusGeneration", "packages/domaine/lib/src/stock/points.dart : etatVentes, lignesEtatStock", "packages/domaine/lib/src/navigation/manifeste.dart (ouverture d'un écran)"],
+      "statut": "calculable",
+      "raison": "L'assistant n'invente aucun état : il ouvre un état du catalogue avec une période et un secteur, et propose l'impression (A4 ou rouleau 80 mm). Le droit est celui de l'écran de l'état visé, en plus de celui de la bibliothèque.",
+      "limites": ["l'état visé doit exister au catalogue : sinon INTENTION_INCONNUE", "le droit de l'état visé se vérifie en plus (non exprimé ici)"],
+      "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
+      "requis": [], "futurOk": false, "historique": true, "controles": ["droit de l'écran de l'état ouvert"]
+    },
+    {
+      "id": "I24", "groupe": "Aide et procédures", "libelle": "Procédures : comment faire, où saisir, qui valide",
+      "ecransLecture": [],
+      "sources": ["docs/architecture/ecrans/*.json : 368 fiches d'écran (description, regle, actions)", "docs/guides/GLOSSAIRE.md"],
+      "statut": "non_disponible",
+      "raison": "Aucune base de connaissances n'existe (ni collection, ni index) et AUCUNE fiche n'est validée par la Direction (décision 5 du PRD : une fiche non validée n'est jamais citée). La matière première existe : les fiches d'écran décrivent règle et actions, rédigées pour le développement et non pour un agent.",
+      "limites": ["0 fiche validée", "texte à rédiger pour des agents, validé par la Direction"],
+      "refus": ["INTENTION_INCONNUE"],
+      "requis": [], "futurOk": false, "historique": true, "controles": ["fiches réservées à un rôle destinataire : concept absent de rbac.json"]
+    },
+    {
+      "id": "I25", "groupe": "Aide et procédures", "libelle": "Glossaire et règles de gestion",
+      "ecransLecture": [],
+      "sources": ["docs/guides/GLOSSAIRE.md : FEFO, CUMP et Avoir y figurent", "CLAUDE.md : RG-01 à RG-14"],
+      "statut": "non_disponible",
+      "raison": "Même cause que l'intention 24 : le glossaire existe en Markdown mais aucune fiche n'est validée par la Direction et aucune collection ne les porte. Les trois termes de la mesure (FEFO, CUMP, avoir) ont une entrée source.",
+      "limites": ["0 fiche validée"],
+      "refus": ["INTENTION_INCONNUE"],
+      "requis": [], "futurOk": false, "historique": true, "controles": []
+    }
+  ]
+}

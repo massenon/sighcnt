@@ -14,7 +14,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit,
       PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   var SERVICES_DEMANDEURS = ['Pharmacie d’urgence', 'Laboratoire', 'Hospitalisation', 'Maternité',
     'Bloc opératoire', 'Accueil', 'Administration', 'Entretien'];
@@ -130,7 +130,8 @@
       var session = S.session() || {};
       var moi = S.currentUser();
       var dr = K.droits('M7');
-      var estArbitre = ['da', 'direction', 'admin'].indexOf(session.role) !== -1;
+      /* Qui arbitre : geste réservé `arbitrer_besoins` de la fiche RBAC (lot CLO-3), jamais une liste de rôles écrite ici. */
+      var estArbitre = !!(global.SIGH.nav && global.SIGH.nav.droitGeste(session.role, 'arbitrer_besoins'));
       var estAchat = ['comptable', 'stock', 'da', 'direction', 'admin', 'aide_comptable']
         .indexOf(session.role) !== -1;
 
@@ -352,7 +353,7 @@
                 if (quoi === 'valider') informerAchat(b, v.motif);
                 m.close();
                 U.toast(quoi === 'valider'
-                  ? 'Besoin ' + b.reference + ' accordé — le comptable et le gestionnaire de stock sont informés.'
+                  ? 'Besoin ' + b.reference + ' accordé : les postes qui traitent les besoins accordés sont informés.'
                   : 'Besoin ' + b.reference + ' — ' + etatBesoin(etape).label.toLowerCase() + '.',
                 { type: quoi === 'valider' ? 'success' : 'warning', duration: 8000 });
                 rafraichir();
@@ -367,16 +368,16 @@
         if (!PR || !PR.notifier) return;
         var detail = b.service + ' — ' + C.num((b.lignes || []).length) + ' article(s), '
           + C.money(b.montantEstime, false) + (motif ? ' · ' + motif : '');
-        ['comptable', 'stock'].forEach(function (poste) {
+        /* Les postes qui TRAITENT un besoin accordé sont ceux qui détiennent le geste réservé `traiter_besoins_accordes` (lot CLO-3) : liste DÉRIVÉE du droit, jamais écrite ici. */
+        var postes = global.SIGH.nav && global.SIGH.nav.rolesAvecGeste ? global.SIGH.nav.rolesAvecGeste('traiter_besoins_accordes') : [];
+        postes.forEach(function (poste) {
           try {
             /* `libelle` et non `titre`, `reference` et non `lien` : c'est
                l'API du moteur, lue et non supposée. */
             PR.notifier({
               type: 'besoin_accorde', poste: poste,
               libelle: 'Besoin accordé — ' + b.reference,
-              detail: detail + (poste === 'comptable'
-                ? ' · engagement budgétaire et décaissement à préparer'
-                : ' · achat à lancer ou distribution à planifier'),
+              detail: detail + ' · engagement budgétaire et décaissement, achat à lancer ou distribution à planifier',
               reference: b.reference,
               priorite: 'important',
             });
@@ -392,7 +393,7 @@
           title: 'Transformer en bon de commande ?',
           message: 'Le besoin <strong>' + b.reference + '</strong> passe en <strong>préparation</strong> '
             + 'et l’écran des commandes s’ouvre. <strong>RG-04</strong> : la commande devra être '
-            + 'validée par la Directrice Administrative avant transmission au fournisseur.',
+            + 'validée (' + PR.libellesValidentCommandeStock() + ') avant transmission au fournisseur.',
           confirmLabel: 'Ouvrir les commandes',
         }).then(function (ok) {
           if (!ok) return;
@@ -439,7 +440,7 @@
           { name: 'categorie', label: 'Catégorie', type: 'select', required: true,
             options: D.CATEGORIES_PRODUIT.map(function (c) { return { value: c.id, label: c.label }; }) },
           { name: 'unite', label: 'Unité', required: true, placeholder: 'Boîte, Ramette, Flacon…' },
-          { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 0 },
+          { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 1, help: 'Obligatoire, strictement positif : un article sans prix d’achat ne se crée pas.' },
           { name: 'seuilAlerte', label: 'Seuil d’alerte', type: 'number', min: 0, required: true },
         ], { categorie: 'fourniture', unite: 'Unité', seuilAlerte: 10 });
         var ma = U.modal({
@@ -466,6 +467,12 @@
                     { type: 'error' });
                   return;
                 }
+                /* LE PRIX D'ACHAT EST OBLIGATOIRE À LA CRÉATION (lot T5b) : refusé en nommant l'article, rien n'est écrit. */
+                if (!(Number(v.prixAchat) > 0)) {
+                  var rp0 = global.SIGH.parcours.refusPrixAchatAbsent(null, v.designation);
+                  U.toast('Article refusé.', { type: 'error', detail: rp0.code + ' : ' + rp0.motif + '. ' + rp0.geste });
+                  return;
+                }
                 v.code = codeArticleSuivant();
                 v.prixAchat = Number(v.prixAchat) || 0;
                 v.seuilAlerte = Number(v.seuilAlerte) || 0;
@@ -478,8 +485,10 @@
                    Lire l'API plutôt que la supposer : p.id valait undefined, et
                    le combo retombait silencieusement sur « Choisir un article ». */
                 var p = S.collection('produits').insert(v).record;
+                /* La version 1 du prix d'achat naît avec la fiche, par la MÊME voie que tout changement de prix (PRD-TARIFS, lot T5). */
+                var rp = global.SIGH.parcours.creerPrixProduit(p, { source: 'Nouvel article saisi à l’écran des achats' });
                 ma.close();
-                U.toast('Article ' + p.code + ' créé au référentiel.', { type: 'success' });
+                U.toast('Article ' + p.code + ' créé au référentiel.', { type: rp.ok ? 'success' : 'warning', detail: rp.ok ? null : 'le prix d’achat n’a pas pu être versionné : ' + rp.motif });
                 if (apres) apres(p);
               },
             }),
@@ -616,10 +625,15 @@
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 if (!lignes.length) { U.toast('Ajouter au moins un article.', { type: 'error' }); return; }
                 v.lignes = lignes;
+                /* E71 : le champ « étape » n'est pas offert à qui n'anime pas le circuit, donc absent de la saisie collectée — le bon était
+                   enregistré SANS étape et n'apparaissait dans aucune vue. Il part SOUMIS, comme le dit le défaut du formulaire. */
+                if (!record && !v.etape) v.etape = 'soumis';
                 v.montantEstime = C.sum(lignes, function (l) { return l.quantiteDemandee * l.prixAchat; });
-                if (!v.reference) v.reference = C.nextRef('BEB-2026-', 4);
-                if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar) {
-                  v.valideePar = 'TAKI Alimatou';
+                /* E75 : le formulaire ne porte pas la référence ; à la modification, `!v.reference` était toujours vrai et le bon était RENUMÉROTÉ. */
+                if (!record) v.reference = C.referenceAnnuelle('BEB-', v.date, 4, col.all());   /* E70 : série lue sur les bons existants, plus un compteur de page */
+                /* E74 : le formulaire ne porte pas le validateur ; sans cette garde, modifier un bon DÉJÀ validé écrasait le vrai validateur. */
+                if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar && !(record && record.valideePar)) {
+                  v.valideePar = S.currentUser();
                 }
                 var res = record ? col.update(record.id, v) : col.insert(v);
                 m.close(); table.refresh();
@@ -691,8 +705,8 @@
    * ======================================================================== */
   global.SIGH.screen('m7-commandes', {
     title: 'Bons de commande',
-    description: 'Commandes fournisseurs, validation par la Directrice Administrative et transmission.',
-    regle: '<strong>RG-04</strong> — toute commande d’achat de stock gros doit être <strong>validée par la Directrice Administrative</strong> avant transmission au fournisseur.',
+    description: 'Commandes fournisseurs, validation (RG-04) et transmission.',
+    regle: '<strong>RG-04</strong> — toute commande d’achat de stock gros doit être <strong>validée</strong> (geste réservé « Valider une commande de stock gros » de la fiche du rôle) avant transmission au fournisseur.',
     render: function (root) {
       amorcer();
       var col = S.collection('commandes', { module: 'M7', entite: 'BonCommande' });
@@ -701,7 +715,7 @@
 
       var STATUTS_CMD = [
         { value: 'brouillon', label: 'Brouillon' },
-        { value: 'attente_validation', label: 'En attente de validation DA' },
+        { value: 'attente_validation', label: 'En attente de validation' },
         { value: 'validee', label: 'Validée' },
         { value: 'transmise', label: 'Transmise au fournisseur' },
         { value: 'livree', label: 'Livrée' },
@@ -717,7 +731,7 @@
 
       var enAttente = col.active().filter(function (c) { return c.statutCommande === 'attente_validation'; });
       if (enAttente.length) {
-        host.appendChild(K.note('<strong>' + enAttente.length + ' commande(s)</strong> en attente de validation par la Directrice Administrative. '
+        host.appendChild(K.note('<strong>' + enAttente.length + ' commande(s)</strong> en attente de validation (' + PR.libellesValidentCommandeStock() + '). '
           + 'Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).', { tone: 'warning', icon: 'shield-alert' }));
       }
 
@@ -730,7 +744,7 @@
 
       table = U.dataTable({
         title: 'Bons de commande',
-        rows: function () { return col.active(); },
+        rows: function () { return col.active().filter(function (c) { return global.SIGH.exercice.dansExercice(c.date); }); },   /* suit l'exercice de la barre supérieure */
         exportName: 'bons-commande', pageSize: 12,
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
@@ -759,10 +773,8 @@
           function pousser(liste, cmd) { if (cmd) liste.push(cmd); }
           var acts = [K.iconBtn('eye', 'Consulter', function () { consulter(c); })];
           if (c.statutCommande === 'attente_validation') {
-            /* LA VALIDATION RG-04 EST L'ACTE DE LA DIRECTRICE
-               ADMINISTRATIVE. L'offrir à qui lit les commandes ferait croire
-               que la commande peut partir sans elle. */
-            pousser(acts, K.commandeIcone('shield-check', 'Valider (DA)', function () { valider(c); }, 'ghost'));
+            /* LA VALIDATION RG-04 EST UN GESTE RÉSERVÉ (`valider_commande_stock`) : ABSENTE sans le droit, le moteur refuse aussi. */
+            if (PR.peutValiderCommandeStock()) pousser(acts, K.commandeIcone('shield-check', 'Valider la commande', function () { valider(c); }, 'ghost'));
           }
           acts.push(K.iconBtn('printer', 'Imprimer', function () { etat(c); }));
           pousser(acts, K.commandeIcone('pencil', 'Modifier', function () { ouvrir(c); }));
@@ -781,9 +793,10 @@
           confirmLabel: 'Valider la commande',
         }).then(function (ok) {
           if (!ok) return;
-          var res = col.update(c.id, { statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: C.iso(AUJ) });
+          var res = PR.validerCommandeStock(c.id);
+          if (!res.ok) { U.toast('Validation refusée (' + res.code + ') : ' + res.motif + ' ' + (res.geste || ''), { type: 'error' }); return; }
           table.refresh();
-          U.toast('Commande validée par la Directrice Administrative.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+          U.toast('Commande validée par ' + res.valideePar + '.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
         });
       }
 
@@ -875,10 +888,15 @@
                 v.fournisseurNom = four ? four.nom : v.fournisseur;
                 v.delaiLivraison = four ? four.delai : null;
                 v.lignes = lignes; v.montant = C.sum(lignes, 'montant');
-                if (!v.reference) v.reference = C.nextRef('BC-2026-', 4);
-                if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar) {
-                  v.valideePar = 'TAKI Alimatou'; v.dateValidation = C.iso(AUJ);
+                /* E75 : idem — modifier une commande ne change pas son numéro. */
+                if (!record) v.reference = C.referenceAnnuelle('BC-', v.date, 4, col.all());   /* E70 */
+                /* RG-04 (lot CLO-3) : choisir « Validée », « Transmise », « Livrée » ou « Soldée » ne VAUT PAS validation. Une commande qui n'a pas été validée par le geste réservé ne passe
+                   pas à ces statuts (refus nommé) ; une commande déjà validée garde son validateur et sa date. */
+                if (PR.STATUTS_COMMANDE_VALIDES.indexOf(v.statutCommande) !== -1 && !(record && record.valideePar && PR.STATUTS_COMMANDE_VALIDES.indexOf(record.statutCommande) !== -1)) {
+                  U.toast('Statut refusé (COMMANDE_NON_VALIDEE) : « ' + labelCmd(v.statutCommande) + ' » ne se choisit pas au formulaire, la commande doit d’abord être validée par le geste « Valider une commande de stock gros » (' + PR.libellesValidentCommandeStock() + ', RG-04). Choisir « En attente de validation ».', { type: 'error' });
+                  return;
                 }
+                if (record && record.valideePar) { delete v.valideePar; delete v.dateValidation; }
                 var res = record ? col.update(record.id, v) : col.insert(v);
                 m.close(); table.refresh();
                 U.toast(record ? 'Commande mise à jour.' : 'Commande créée — ' + res.record.reference, { type: 'success', undo: res.undo });
@@ -898,7 +916,7 @@
               ['Validée par (RG-04)', c.valideePar || 'En attente'],
               ['Date de validation', c.dateValidation ? C.dateFR(c.dateValidation) : '—']]),
             c.statutCommande === 'attente_validation'
-              ? K.note('Cette commande <strong>ne peut être transmise</strong> au fournisseur tant que la Directrice Administrative ne l’a pas validée (RG-04).', { tone: 'warning', icon: 'shield-alert' })
+              ? K.note('Cette commande <strong>ne peut être transmise</strong> au fournisseur tant qu’elle n’est pas validée (RG-04 : ' + PR.libellesValidentCommandeStock() + ').', { tone: 'warning', icon: 'shield-alert' })
               : null,
             U.card('Articles commandés', K.miniTable([
               { label: 'Article', key: 'produit' },
@@ -908,8 +926,8 @@
             ], c.lignes || [])),
           ]),
           footer: [
-            c.statutCommande === 'attente_validation'
-              ? K.commande('Valider (DA)', { variant: 'success', icon: 'shield-check', onclick: function () { valider(c); } }) : null,
+            c.statutCommande === 'attente_validation' && PR.peutValiderCommandeStock()
+              ? K.commande('Valider la commande', { variant: 'success', icon: 'shield-check', onclick: function () { valider(c); } }) : null,
             K.btn('Imprimer', { variant: 'primary', icon: 'printer', onclick: function () { etat(c); } }),
           ].filter(Boolean),
         });
@@ -937,7 +955,7 @@
           ], c.lignes || [], { total: true }),
           signatures: [
             { role: 'Le Gestionnaire de Stock', nom: 'MAMAN Zoukanéri' },
-            { role: 'La Directrice Administrative', nom: 'TAKI Alimatou', mention: 'Bon pour commande (RG-04)' },
+            { role: 'Validation de la commande', nom: c.valideePar || undefined, mention: 'Bon pour commande (RG-04)' },
           ],
         });
       }
@@ -1016,13 +1034,16 @@
            ou un écart constaté après coup ne doivent pas obliger à ressaisir. */
         rowActions: function (l) {
           return [K.iconBtn('printer', 'Imprimer', function () { etat(l); })]
-            .concat(K.actionsLigne(col, champsLivraison, { entite: 'bon de livraison' })(l));
+            .concat(K.actionsLigne(col, champsLivraison, { entite: 'bon de livraison',
+            /* E78 : le formulaire saisit les contrôleurs en TEXTE ; sans cette conversion, modifier un bon écrivait une chaîne là où l'écran lit une liste
+               (`.join` sur une chaîne : le détail du bon cassait au clic). */
+            transform: function (v) { v.controlePar = String(v.controlePar || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); return v; } })(l));
         },
         actions: [K.creer(col, champsLivraison, {
           titre: 'Nouveau bon de livraison', entite: 'Bon de livraison',
           defauts: function () { return { date: C.iso(AUJ), statutReception: 'conforme' }; },
           transform: function (v) {
-            v.reference = C.nextRef('BL-', 5);
+            v.reference = C.referenceSuivante('BL-', 5, col.all());   /* E70 */
             var f = D.FOURNISSEURS.filter(function (x) { return x.code === v.fournisseur; })[0];
             v.fournisseurNom = f ? f.nom : v.fournisseur;
             v.lignes = v.lignes || [];
@@ -1141,7 +1162,9 @@
           { key: 'valideePar', label: 'Validée par' },
         ],
         rowActions: function (c) {
-          return [K.btn('Réceptionner', { size: 'sm', variant: 'primary', icon: 'package-check', onclick: function () { receptionner(c); } })];
+          /* E79 : réceptionner ÉCRIT (bordereau, entrée en stock, CUMP) — la commande est déclarée comme telle, donc absente pour un profil qui lit
+             l'écran (direction, comptable, biologiste). Elle était offerte à tous. */
+          return [K.commande('Réceptionner', { size: 'sm', variant: 'primary', icon: 'package-check', onclick: function () { receptionner(c); } })].filter(Boolean);
         },
       });
       host.appendChild(table);
@@ -1156,8 +1179,8 @@
         var f = U.form([
           { name: 'referenceBL', label: 'N° bordereau de livraison', required: true, placeholder: 'ex. 26LNA00026' },
           { name: 'date', label: 'Date de réception', type: 'date', required: true, value: C.iso(AUJ) },
-          { name: 'controleur1', label: 'Contrôleur 1', required: true, value: 'MAMAN Zoukanéri' },
-          { name: 'controleur2', label: 'Contrôleur 2', required: true, value: 'DIEYABIDI Aïssatou' },
+          { name: 'controleur1', label: 'Contrôleur 1', required: true, value: S.currentUser() },
+          { name: 'controleur2', label: 'Contrôleur 2', required: true, placeholder: 'Nom du second contrôleur' },
           { name: 'controleur3', label: 'Contrôleur 3 (facultatif)' },
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ], {});
@@ -1236,7 +1259,7 @@
                     stockGros: p.stockGros + x.recu, stock: nouvelleQte, cump: nouveauCump,
                   });
                   var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-                    reference: C.nextRef('M', 6), date: v.date,
+                    reference: C.referenceSuivante('M', 6, S.collection('mouvements').all()), date: v.date,   /* E70 */
                     produitId: p.id, produit: p.designation,
                     type: 'entree', typeLabel: 'Entrée', quantite: x.recu, stockType: 'gros',
                     justificatif: 'Bon de livraison ' + v.referenceBL,
@@ -1245,11 +1268,27 @@
                   annulations.push(function () { S.collection('produits').update(p.id, avant); mv.undo(); });
                 });
 
+                /* UNE RÉCEPTION À UN AUTRE PRIX PROPOSE le changement du prix d'achat (lot T5b, Direction, 12/11/2026) : APRÈS l'entrée en stock et le CUMP, qui ne changent pas, et sans jamais
+                   bloquer la réception. Le moteur (`PR.proposerPrixReception`) n'ouvre qu'UNE proposition par produit, rien quand le prix est identique, et ne change aucun prix avant le Oui. */
+                var prop = { ouvertes: [], deja: [], refusees: [] };
+                vals.forEach(function (x) {
+                  if (x.recu <= 0) return;
+                  var p = produits().filter(function (pp) { return pp.id === x.ligne.produitId; })[0];
+                  if (!p) return;
+                  var r = global.SIGH.parcours.proposerPrixReception({ produit: p, prixRecu: x.ligne.prixUnitaire, date: v.date, reference: v.referenceBL });
+                  if (r.etat === 'ouverte') { prop.ouvertes.push(r); annulations.push(function () { global.SIGH.parcours.retirerProposition(r.version.id, 'Réception ' + v.referenceBL + ' annulée'); }); }
+                  else if (r.etat === 'deja_ouverte') prop.deja.push(r);
+                  else if (r.etat === 'refusee') prop.refusees.push(r);
+                });
                 var maj = cmds.update(c.id, { statutCommande: 'livree' });
                 m.close(); table.refresh();
+                var detailProp = '';
+                if (prop.ouvertes.length) detailProp += ' ' + prop.ouvertes.length + ' proposition(s) de changement du prix d’achat ouverte(s) (' + prop.ouvertes.map(function (r) { return r.code + ' : ' + (r.ancien == null ? 'sans prix' : C.num(r.ancien)) + ' à ' + C.num(r.prix); }).join(' ; ') + ') : le prix en vigueur ne change qu’au Oui de la Directrice Administrative.';
+                if (prop.deja.length) detailProp += ' Une proposition attend déjà sa décision pour ' + prop.deja.map(function (r) { return r.code; }).join(', ') + ' : aucune seconde n’a été ouverte.';
+                if (prop.refusees.length) detailProp += ' Proposition de prix non ouverte (la réception n’est pas bloquée) : ' + prop.refusees.map(function (r) { return r.code + ' (' + r.refus.code + ')'; }).join(', ') + '.';
                 U.toast('Réception enregistrée — ' + (ecarts.length ? ecarts.length + ' écart(s) constaté(s).' : 'livraison conforme.'), {
                   type: ecarts.length ? 'warning' : 'success',
-                  detail: 'Stock gros mis à jour, CUMP recalculé.',
+                  detail: 'Stock gros mis à jour, CUMP recalculé.' + detailProp,
                   undo: function () {
                     annulations.forEach(function (u) { u(); });
                     bl.undo(); maj.undo(); table.refresh();
@@ -1357,7 +1396,7 @@
     title: 'Fournisseurs',
     description: 'Référentiel des fournisseurs, habilitation pour les retours de produits périmés et historique des commandes.',
     render: K.crud({
-      collection: 'fournisseurs', entite: 'fournisseur', entiteP: 'fournisseurs', module: 'M7',
+      collection: 'fournisseurs', entite: 'fournisseur', entiteP: 'fournisseurs', module: 'M7', importer: 'fournisseurs',
       defaultSort: 'nom',
       source: 'Facture fournisseur SoBAPS et retours CAME identifiés au cadrage.',
       columns: [
@@ -1456,7 +1495,7 @@
       amorcer();
       var col = S.collection('facturesFournisseurs', { module: 'M7', entite: 'FactureFournisseur' });
 
-      var rows = col.active();
+      var rows = col.active().filter(function (r) { return global.SIGH.exercice.dansExercice(r.date); });   /* suit l'exercice de la barre supérieure */
       var host = el('div.space-y-4');
       var anomalies = rows.filter(function (r) { return r.statutRappro === 'anomalie'; });
 
@@ -1474,10 +1513,13 @@
       host.appendChild(U.dataTable({
         title: 'Factures fournisseurs', rows: rows, exportName: 'factures-fournisseurs', pageSize: 12,
         rowActions: K.actionsLigne(col, [
-          { name: 'numero', label: 'N° de facture', required: true },
+          /* LES CHAMPS SONT CEUX DE LA FICHE (corrigé le 06/11/2026) : `numero` et `montant` n'existaient pas, l'édition les
+             écrivait sur des champs morts que rien ne relisait. Le fournisseur est un CODE (liste), son nom se déduit, et
+             changer le montant facturé recalcule l'écart et le rapprochement (transform ci-dessous). */
+          { name: 'numeroFournisseur', label: 'N° fournisseur', required: true },
           { name: 'date', label: 'Date de facture', type: 'date', required: true },
-          { name: 'fournisseur', label: 'Fournisseur', required: true },
-          { name: 'montant', label: 'Montant (FCFA)', type: 'number', min: 0 },
+          { name: 'fournisseur', label: 'Fournisseur', type: 'select', required: true, options: optionsFournisseurs() },
+          { name: 'montantFacture', label: 'Montant facturé (FCFA)', type: 'number', min: 0 },
           { name: 'echeance', label: 'Échéance', type: 'date' },
           {
             /* « payée » et non « soldée » : le registre, son filtre et son
@@ -1487,7 +1529,18 @@
             name: 'statutPaiement', label: 'Règlement', type: 'select',
             options: [{ value: 'impayee', label: 'Impayée' }, { value: 'partielle', label: 'Partielle' }, { value: 'payee', label: 'Payée' }],
           },
-        ]),
+        ], {
+          transform: function (v, r) {
+            var four = fournisseurs().filter(function (f) { return f.code === v.fournisseur; })[0];
+            if (four) v.fournisseurNom = four.nom;
+            if (v.montantFacture != null && v.montantFacture !== '') {
+              v.montantFacture = Number(v.montantFacture);
+              v.ecart = v.montantFacture - (r.montantLivraison || 0);
+              v.statutRappro = v.ecart === 0 ? 'rapproche' : 'anomalie';
+            }
+            return v;
+          },
+        }),
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
           { name: 'statutRappro', label: 'Rapprochement', options: [{ value: 'rapproche', label: 'Rapprochée' }, { value: 'anomalie', label: 'Anomalie' }] },
@@ -1739,7 +1792,9 @@
                   var lignes = lignesDeNature(liv, nature);
                   var sess = S.session() || {};
                   var res = colPV().insert({
-                    reference: C.nextRef('PV-' + (nature === 'reactifs' ? 'REA' : 'CON') + '-2026-', 4),
+                    /* Série annuelle lue sur les PV EXISTANTS (écart E17, 30/10/2026) : le compteur de page `C.nextRef` repartait à 1
+                       à chaque chargement et réécrivait PV-CON-2026-0001 après les PV amorcés ; le millésime était écrit en dur. */
+                    reference: C.referenceSuivante('PV-' + (nature === 'reactifs' ? 'REA' : 'CON') + '-' + String(v.date).slice(0, 4) + '-', 4, colPV().all()),
                     nature: nature,
                     date: v.date,
                     livraisonRef: liv.reference, commandeRef: liv.commandeRef,
@@ -1751,7 +1806,7 @@
                     chaineFroid: nature === 'reactifs' ? !!v.chaineFroid : null,
                     conclusion: v.conclusion,
                     reserves: v.reserves || '',
-                    magasinier: sess.nomComplet || 'MAMAN Zoukanéri',
+                    magasinier: sess.nomComplet || S.currentUser(),
                     representantFournisseur: v.representantFournisseur,
                   });
                   m.close(); afficher();

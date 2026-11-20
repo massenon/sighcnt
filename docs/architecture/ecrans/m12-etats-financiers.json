@@ -1,0 +1,75 @@
+{
+ "id": "m12-etats-financiers",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "États financiers",
+ "acces": "ouvert",
+ "titre": "États financiers de synthèse",
+ "description": "Bilan, compte de résultat, flux de trésorerie, disponibilités et fiche de synthèse — au format de la liasse DGI.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "États financiers"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "Liasse CLINIQUE NASSIERA SARL, IFU 3201642748214, déposée le 15/05/2026 — code BK505416. Ministère de l’Économie et des Finances — Direction Générale des Impôts, République du Bénin. Référentiel : plan comptable SYSCOHADA révisé (AUDCIF, applicable depuis le 1ᵉʳ janvier 2018).",
+  "Le bilan déposé s’équilibre : total général de l’actif 112 937 495 FCFA = total général du passif 112 937 495 FCFA.",
+  "La colonne « Exercice en cours » est calculée depuis les écritures VALIDÉES du journal, par les préfixes de comptes SYSCOHADA que chaque ligne déclare. Elle reste vide là où le journal ne porte rien — le prototype ne tient pas encore tous les comptes de la liasse. Un compte de tiers y paraît du côté où son solde le place : débiteur à l’actif, créditeur au passif — le plan SYSCOHADA emploie les mêmes comptes de classe 4 pour les créances et pour les dettes."
+ ],
+ "onglets": [
+  "Bilan",
+  "Compte de résultat",
+  "Tableau des flux de trésorerie",
+  "Disponibilités",
+  "Fiche de synthèse"
+ ],
+ "kpis": [
+  "Chiffre d’affaires déposé",
+  "Résultat net déposé",
+  "Total du bilan",
+  "Écarts internes du document"
+ ],
+ "cartes": [
+  "BILAN — ACTIF (feuillet 5/51)",
+  "BILAN — PASSIF (feuillet 6/51)"
+ ],
+ "tableaux": [
+  [
+   "Réf.",
+   "Actif",
+   "Note",
+   "Brut 2025",
+   "Amort. et dépréc.",
+   "Net 2025",
+   "Net 2024",
+   "Exercice en cours"
+  ],
+  [
+   "Réf.",
+   "Passif",
+   "Note",
+   "Net 2025",
+   "Net 2024",
+   "Exercice en cours"
+  ]
+ ],
+ "commandes": [
+  "Bilan",
+  "Compte de résultat",
+  "Tableau des flux de trésorerie",
+  "Disponibilités",
+  "Fiche de synthèse",
+  "Imprimer le bilan",
+  "Flux de trésorerie",
+  "Immobilisations"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

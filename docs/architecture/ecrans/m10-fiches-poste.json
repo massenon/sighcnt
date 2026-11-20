@@ -1,0 +1,52 @@
+{
+ "id": "m10-fiches-poste",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Fiches de poste",
+ "acces": "ouvert",
+ "titre": "Fiches de poste",
+ "description": "Identification, missions, indicateurs de performance, relations fonctionnelles et compétences requises.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Fiches de poste"
+ ],
+ "actions": [
+  "Tableau de bord RH",
+  "Personnel",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Seules deux fiches proviennent d’un document remis par la clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est vide, marquée « à rédiger » — les inventer donnerait à la clinique des missions qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Postes recensés",
+  "Fiches rédigées",
+  "Missions décrites",
+  "Indicateurs de performance"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Intitulé du poste",
+   "Rattachement",
+   "N° d’archivage",
+   "Missions",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle fiche de poste",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

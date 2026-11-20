@@ -1,0 +1,43 @@
+{
+ "id": "rls-appareils",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Appareils",
+ "acces": "ouvert",
+ "titre": "Appareils",
+ "description": "Les appareils appairés : état, dernier contact, boîte aux lettres. Révocation.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Appareils"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Boîtes aux lettres",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Appareils"
+ ],
+ "tableaux": [
+  [
+   "Appareil",
+   "Identifiant",
+   "État",
+   "Dernier contact",
+   "En attente"
+  ]
+ ],
+ "commandes": [
+  "Révoquer"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

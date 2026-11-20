@@ -1,0 +1,64 @@
+{
+ "id": "m3-soins",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Feuille de soins",
+ "acces": "ouvert",
+ "titre": "Feuille de soins",
+ "description": "Actes de soins réalisés au chevet du patient : injections, pansements, perfusions et surveillance.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Feuille de soins"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Direction — l’exécution des soins prescrits ne vous revient pas. Les soins prescrits sont réalisés par les infirmiers ; la feuille de soins reste consultable pour la continuité de la prise en charge, mais aucune validation n’est possible depuis ce poste."
+ ],
+ "onglets": [
+  "Tous les actes de soins",
+  "Archivés"
+ ],
+ "kpis": [
+  "Actes enregistrés",
+  "Réalisés",
+  "Planifiés",
+  "Patients concernés"
+ ],
+ "cartes": [
+  "Actes prescrits à exécuter"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Heure",
+   "Lit",
+   "Patient",
+   "Acte réalisé",
+   "Produit administré",
+   "Soignant",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les actes de soins354",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -6,6 +6,15 @@
  *         mémoire : { "_version": 61, "patients": [...], "factures": [...] }.
  *         Le navigateur l'assigne tel quel et continue de lire de façon
  *         SYNCHRONE — aucun écran ne change.
+ *         LA LECTURE EXIGE UNE SESSION (vague 84) : le magasin porte des données
+ *         de santé (RG-13). Sans jeton de session valide, 401 `SESSION_REQUISE`,
+ *         pour le magasin entier comme pour `?collections=`. Un jeton de
+ *         CHANGEMENT de mot de passe n'est pas une session : refusé aussi.
+ *         LIMITE ASSUMÉE : le serveur ne filtre PAS par rôle à la lecture (la
+ *         matrice des droits vit côté client). Lecture = tout poste
+ *         authentifié voit tout le magasin ; le filtrage par rôle au serveur
+ *         est le pas suivant. La page publique d'enquête n'y lit rien : elle
+ *         a sa lecture étroite, `api/enquete.php`.
  *
  * POST  → applique un DELTA : seules les collections modifiées voyagent.
  *         Renvoyer les 4,8 Mo à chaque geste coûterait plus cher que le
@@ -26,6 +35,8 @@
  * ========================================================================== */
 
 require __DIR__ . '/config.php';
+require_once __DIR__ . '/projection.php';
+require_once __DIR__ . '/_commun.php';
 
 header('Access-Control-Allow-Origin: ' . ($_SERVER['HTTP_ORIGIN'] ?? '*'));
 header('Access-Control-Allow-Credentials: true');
@@ -48,12 +59,40 @@ $methode = $_SERVER['REQUEST_METHOD'] ?? 'GET';
  * LECTURE — le magasin entier
  * ------------------------------------------------------------------------ */
 if ($methode === 'GET') {
+    /* Session obligatoire AVANT toute lecture. `sigh_session` ne connaît que `sessions_poste` : un jeton de
+       changement de mot de passe (table `changements_requis`) n'y figure pas, donc il est refusé. Le refus
+       est NOMMÉ : un rejet muet se lirait comme une panne. */
+    if (sigh_session($pdo) === null) {
+        sigh_repondre([
+            'erreur' => 'session requise',
+            'code'   => 'SESSION_REQUISE',
+            'detail' => 'La lecture du magasin exige une session de poste ouverte (api/auth.php).',
+        ], 401);
+    }
     $sortie = [];
+    /* `?collections=a,b` : seulement ces collections — la relecture d'un poste qui vient d'apprendre,
+       par le journal des événements, qu'un autre poste les a modifiées. Sans méta : ce n'est pas un chargement. */
+    if (isset($_GET['collections'])) {
+        $noms = array_values(array_filter(array_map('trim', explode(',', (string) $_GET['collections']))));
+        $q = $pdo->prepare('SELECT donnees FROM collections WHERE nom = ?');
+        foreach (array_slice($noms, 0, 40) as $nom) {
+            $q->execute([$nom]);
+            $d = $q->fetchColumn();
+            $sortie[$nom] = $d === false ? [] : json_decode($d, true);
+        }
+        sigh_repondre($sortie);
+    }
+    /* La séquence est lue AVANT les données : un événement survenu pendant la lecture sera rejoué
+       (relire une collection déjà à jour est sans effet), jamais manqué. */
+    $seq = sigh_evenement_seq($pdo);
     foreach ($pdo->query('SELECT cle, valeur FROM meta') as $ligne) {
         $sortie[$ligne['cle']] = json_decode($ligne['valeur'], true);
     }
     foreach ($pdo->query('SELECT nom, donnees FROM collections ORDER BY nom') as $ligne) {
         $sortie[$ligne['nom']] = json_decode($ligne['donnees'], true);
+    }
+    if ($sortie) {
+        $sortie['_seq'] = $seq;
     }
     /* Un magasin VIDE se dit, il ne se déguise pas en magasin sans patients :
        le navigateur doit savoir qu'il lui revient de semer le jeu. */
@@ -125,6 +164,12 @@ if ($methode === 'POST') {
                 $insM->execute([$cle, json_encode($valeur, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
             }
         }
+        /* La copie RELATIONNELLE suit, dans la même transaction mais dans un savepoint :
+           si elle échoue, le magasin a quand même reçu son delta (api/projection.php). */
+        $projection = $collections ? sigh_proj_projeter($pdo, $collections) : null;
+        foreach (array_keys($collections) as $nomC) {
+            sigh_evenement($pdo, (string) $nomC, null, $jeton, (string) ($session['identifiant'] ?? $session['nom'] ?? ''));
+        }
         $pdo->commit();
     } catch (Throwable $e) {
         $pdo->rollBack();
@@ -136,6 +181,7 @@ if ($methode === 'POST') {
         'collections' => count($collections),
         'meta'        => count($meta),
         'par'         => $session['identifiant'] ?? $session['nom'] ?? null,
+        'projection'  => $projection ? ['tables' => $projection['ok'], 'erreur' => $projection['erreur']] : null,
     ]);
 }
 
@@ -145,6 +191,7 @@ if ($methode === 'POST') {
 if ($methode === 'DELETE') {
     $pdo->exec('DELETE FROM collections');
     $pdo->exec('DELETE FROM meta');
+    sigh_proj_vider($pdo);
     sigh_repondre(['ok' => true, 'vide' => true]);
 }
 

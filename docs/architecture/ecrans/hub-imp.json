@@ -1,0 +1,31 @@
+{
+ "id": "hub-imp",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation de données",
+ "acces": "ouvert",
+ "titre": "Importation de données",
+ "description": "Tous les écrans du module IMP — Importation de données.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Sécurité & Utilisateurs",
+  "Configuration Clinique"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

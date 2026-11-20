@@ -1,0 +1,57 @@
+{
+ "id": "cfg-organisation",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Organisation & organigramme",
+ "acces": "ouvert",
+ "titre": "Organisation & organigramme",
+ "description": "Secteurs de la clinique, structure hiérarchique et rôles qui en découlent.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Organisation & organigramme"
+ ],
+ "actions": [
+  "Personnel",
+  "Rôles & permissions",
+  "Identité & papier à en-tête"
+ ],
+ "regle": [
+  "NS 145/08/DA/CNT/2026 — Répartition des secteurs de la clinique et désignation des responsables, signée le 06/08/2026 par TAKI Alimatou épse BASSONGUI, Directrice Administrative, avec effet au 07/08/2026. Une note ultérieure se saisit ici : le référentiel est versionné par sa source, pas par le code."
+ ],
+ "onglets": [
+  "Secteurs (NS 145)",
+  "Organigramme",
+  "Poste → rôle → accès"
+ ],
+ "kpis": [
+  "Secteurs de la clinique",
+  "Postes de l’organigramme",
+  "Effectif porté",
+  "Rôles RBAC"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Code",
+   "Secteur",
+   "Responsable",
+   "Adjoint",
+   "Rôle RBAC",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Secteurs (NS 145)14",
+  "Organigramme16",
+  "Poste → rôle → accès",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "Imprimer la répartition"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

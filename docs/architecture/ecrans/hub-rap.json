@@ -1,0 +1,30 @@
+{
+ "id": "hub-rap",
+ "module": "RAP",
+ "domaine": "Administration",
+ "libelleManifeste": "Rapports & Impression",
+ "acces": "ouvert",
+ "titre": "Rapports & Impression",
+ "description": "Tous les écrans du module RAP — Rapports & Impression.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Rapports & Impression"
+ ],
+ "actions": [
+  "Bibliothèque des états",
+  "États de la Direction",
+  "Rapports & Impression"
+ ],
+ "regle": [
+  "Administration & Ambulance"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

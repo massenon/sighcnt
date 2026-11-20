@@ -1,0 +1,64 @@
+{
+ "id": "m5-valeurs-reference",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Valeurs de référence",
+ "acces": "ouvert",
+ "titre": "Valeurs de référence",
+ "description": "Bornes de normalité, unités et type de chaque variable de résultat. Modifiables : elles dépendent du réactif.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Valeurs de référence"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [
+  "Une variable d’accompagnement — réactif, lot, expiration, commentaire — se ferme sans se supprimer : le jour où un changement de réactif rend l’interprétation inutile, elle disparaît du compte rendu et les résultats déjà rendus la conservent. C’est la demande du biologiste, mot pour mot : « on peut les fermer »."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Variables paramétrées",
+  "Documentées",
+  "Validées par le biologiste",
+  "Variables fermées"
+ ],
+ "cartes": [
+  "Variables et valeurs de référence",
+  "Plages de référence par lot de réactif"
+ ],
+ "tableaux": [
+  [
+   "Examen",
+   "Variable",
+   "Type",
+   "Unité",
+   "Référence",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Imprimer le référentiel",
+  "Colonnes",
+  "Exporter",
+  "Nouvelle variable",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "Nouvelle plage de lot"
+ ],
+ "champs": [
+  "Section",
+  "Examen",
+  "État"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

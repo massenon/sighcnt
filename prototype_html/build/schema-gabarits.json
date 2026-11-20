@@ -1,0 +1,23 @@
+{
+  "_doc": "Gabarits de fiche des collections NOUVELLES qui n'ont encore aucune donnée dans le magasin d'entrée de build/gen-schema-pg.js (le générateur déduit les colonnes des données ; sans fiche, pas de table, et la projection nomme l'absence). Un gabarit est UNE fiche type, lue des écrans qui écrivent la collection (cité en `source`) ; il ne sert qu'à poser les colonnes, jamais de donnée. Dès qu'un magasin réel contient la collection, il fait foi et le gabarit est ignoré.",
+  "ressources": {
+    "source": "modules/configuration.js colRessources().insert (cfg-entetes, ressources graphiques)",
+    "fiche": { "id": "RES00001", "statut": "actif", "libelle": "Logo de la clinique", "type": "logo", "usage": "En-tête des états", "donnees": "data:image/png;base64,AAAA", "fichier": "logo.png", "taille": 1024, "_creeLe": "2026-11-06T09:00:00.000Z", "_creePar": "admin" }
+  },
+  "lotsImportation": {
+    "source": "modules/import.js consigner() et appliquer() (module IMP, lots d'importation)",
+    "fiche": { "id": "LIM00001", "statut": "actif", "reference": "IMP-2026-00001", "jeu": "grand-stock", "jeuLibelle": "Importation Grand Stock", "fichier": "stock.xlsx", "empreinte": "0000", "date": "2026-11-06", "par": "admin", "validePar": "admin", "etat": "applique", "nbLignes": 1, "nbAvertissements": 0, "nbRefus": 0, "ecrits": [{ "collection": "produits", "id": "P0001" }], "erreurs": [{ "n": 1, "colonne": "x", "valeur": "y", "code": "C", "niveau": "avertissement", "motif": "m", "geste": "g" }], "erreursTotal": 1, "_creeLe": "2026-11-06T09:00:00.000Z", "_creePar": "admin" }
+  },
+  "validationsReferentiels": {
+    "source": "parcours.js validerReferentiel() (moteur de validation commun, module CFG) et store.js seed()",
+    "fiche": { "id": "VRF-checklist-bloc", "statut": "actif", "famille": "checklists_bloc", "cible": "checklist-bloc", "libelle": "Check-listes d’entrée et de sortie du bloc", "valideLe": "2026-09-01", "validePar": "validation écrite du 01/09/2026", "valideRole": "Direction" }
+  },
+  "regimesIndividuels": {
+    "source": "parcours.js derogerRegime() (SIGH.planningRh.deroger, lot L4 : une fiche immuable par version de dérogation)",
+    "fiche": {"id": "RGI00001", "statut": "actif", "employeId": "EMP00001", "employe": "Dr Exemple", "matricule": "M0001", "fonction": "medecin", "categorie": "Médecins", "champs": {"repos": "repos24", "honoraire": 20000}, "retourCategorie": false, "dateEffet": "2026-11-10", "motif": "Gardes de ce médecin au rythme de 24 h", "version": 1, "creeLe": "2026-11-10", "creePar": "Directrice Administrative", "_creeLe": "2026-11-10T09:00:00.000Z", "_creePar": "admin"}
+  },
+  "propositionsPlanning": {
+    "source": "parcours.js proposerPlanningRh() (SIGH.planningRh.proposer, lot L6 : proposition de planning de l'agent)",
+    "fiche": {"id": "PPL00001", "statut": "actif", "type": "ajout", "employeId": "EMP00001", "employe": "Dr Exemple", "fonction": "medecin", "service": "Médecine générale", "motif": "Je prends cette garde", "date": "2026-11-20", "typeVacation": "garde", "vacationId": "PLN00001", "contrepartieId": "PLN00002", "vacationType": "garde", "vacationDate": "2026-11-10", "contrepartie": "Dr Autre", "contrepartieDate": "2026-11-25", "contrepartieType": "garde", "etat": "proposee", "proposeeLe": "2026-11-10", "proposeePar": "Dr Exemple", "tranchePar": "Surveillant", "trancheLe": "2026-11-11", "motifRefus": "Effectif insuffisant", "motifValidation": "Ok", "appliquees": ["PLN00003"], "_creeLe": "2026-11-10T09:00:00.000Z", "_creePar": "admin"}
+  }
+}

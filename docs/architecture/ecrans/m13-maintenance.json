@@ -1,0 +1,57 @@
+{
+ "id": "m13-maintenance",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Parc technique & maintenance",
+ "acces": "ouvert",
+ "titre": "Parc technique & maintenance",
+ "description": "Équipements de la clinique, état de marche, entretiens périodiques et pannes signalées.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Parc technique & maintenance"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les équipements",
+  "Archivés"
+ ],
+ "kpis": [
+  "Équipements au parc",
+  "En panne",
+  "Entretien échu",
+  "Fiches à compléter"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "État",
+   "Équipement",
+   "Catégorie",
+   "Localisation",
+   "Marque",
+   "Dernier entretien",
+   "Périodicité",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les équipements18",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

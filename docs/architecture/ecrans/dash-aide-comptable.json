@@ -1,0 +1,44 @@
+{
+ "id": "dash-aide-comptable",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Assistant Comptable",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Assistant Comptable",
+ "description": "Saisie des dépenses et des écritures, réceptions fournisseurs et suivi des créances.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Assistant Comptable"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "Ce profil n’ouvre aucun écran clinique (RG-13) et la clôture annuelle lui est fermée : elle engage l’exercice et reste au Comptable principal et à la DAF. Aucune suppression : D est interdit sur toute la matrice de ce rôle."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Écritures du mois",
+  "Brouillons en attente",
+  "Pièces de caisse du jour",
+  "Créances assurance ouvertes"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Périmètre du profil"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Écritures",
+  "Dépenses",
+  "Créances"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

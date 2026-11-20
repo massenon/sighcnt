@@ -1,0 +1,60 @@
+{
+ "id": "m6-mouvements",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Mouvements de stock",
+ "acces": "ouvert",
+ "titre": "Mouvements de stock",
+ "description": "Registre chronologique de tous les mouvements : entrées, sorties, transferts, pertes, casses, péremptions et régularisations.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Mouvements de stock"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les mouvements",
+  "Archivés"
+ ],
+ "kpis": [
+  "Mouvements enregistrés",
+  "Entrées",
+  "Sorties",
+  "Pertes et casses"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Produit",
+   "Type",
+   "Quantité",
+   "Stock",
+   "Justificatif (RG-03)",
+   "Opérateur",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les mouvements678",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

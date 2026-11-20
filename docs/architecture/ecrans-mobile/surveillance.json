@@ -1,0 +1,126 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « surveillance ». Ne pas éditer à la main.",
+ "titre": "Surveillance mère-bébé",
+ "sous": null,
+ "textes": [],
+ "champs": [
+  {
+   "section": null,
+   "id": "heure",
+   "libelle": "Temps",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "H4",
+    "H8",
+    "H12",
+    "H16",
+    "H20",
+    "H24"
+   ],
+   "valeur": "H4"
+  },
+  {
+   "section": "Mère",
+   "id": "mta",
+   "libelle": "TA",
+   "requis": false,
+   "type": "input",
+   "saisie": "text",
+   "clavier": null,
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Mère",
+   "id": "mpouls",
+   "libelle": "Pouls",
+   "requis": false,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "numeric",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Mère",
+   "id": "saign",
+   "libelle": "Saignement",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Normal",
+    "Abondant"
+   ],
+   "valeur": "Normal"
+  },
+  {
+   "section": "Bébé",
+   "id": "bfr",
+   "libelle": "FR",
+   "requis": false,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "numeric",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Bébé",
+   "id": "bt",
+   "libelle": "T°",
+   "requis": false,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "decimal",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Bébé",
+   "id": "bcordon",
+   "libelle": "Cordon",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Sec",
+    "Suintant"
+   ],
+   "valeur": "Sec"
+  }
+ ],
+ "boutons": [
+  "Enregistrer ce temps"
+ ],
+ "onglets": [
+  "Accueil",
+  "Synchro",
+  "À traiter",
+  "Réglages"
+ ],
+ "notes": [
+  {
+   "ton": "",
+   "texte": "Une seule grille de temps pour la mère ET le bébé : c’est la coïncidence des deux séries qui fait la valeur de la feuille."
+  }
+ ],
+ "cartes": [
+  "Mère",
+  "Bébé"
+ ],
+ "items": [],
+ "kpis": []
+}

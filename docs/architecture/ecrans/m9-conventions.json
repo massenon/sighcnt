@@ -1,0 +1,56 @@
+{
+ "id": "m9-conventions",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Conventions & garanties",
+ "acces": "ouvert",
+ "titre": "Conventions & garanties",
+ "description": "Grille de prise en charge par souscripteur : taux et plafonds par catégorie, exclusions et accords préalables.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Conventions & garanties"
+ ],
+ "actions": [
+  "Assurés & cartes",
+  "Compagnies",
+  "Prises en charge"
+ ],
+ "regle": [
+  "9 convention(s) non saisie(s). Un seul barème figure au dossier — celui d’un régime employeur, versé le 18/06/2026 — et il ne vaut que pour son souscripteur. Les grilles des autres compagnies restent à collecter. En attendant, leurs assurés sont facturés intégralement : mieux vaut une facture juste qu’une prise en charge supposée."
+ ],
+ "onglets": [
+  "Souscripteurs",
+  "Grilles de garanties",
+  "Simulateur de répartition"
+ ],
+ "kpis": [
+  "Souscripteurs",
+  "Conventions saisies",
+  "Conventions à collecter",
+  "Lignes de garantie"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Souscripteur",
+   "Compagnie",
+   "Catégorie",
+   "Assurés",
+   "Convention",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Souscripteurs9",
+  "Grilles de garanties0",
+  "Simulateur de répartition",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

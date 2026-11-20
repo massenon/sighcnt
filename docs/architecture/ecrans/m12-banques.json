@@ -1,0 +1,64 @@
+{
+ "id": "m12-banques",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Banques & rapprochements",
+ "acces": "ouvert",
+ "titre": "Banques & rapprochements",
+ "description": "Comptes bancaires, relevés et rapprochement avec la comptabilité.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Banques & rapprochements"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Comptes bancaires",
+  "Rapprochements effectués",
+  "Sans écart",
+  "Avec écart"
+ ],
+ "cartes": [
+  "Comptes bancaires de la clinique",
+  "États de rapprochement bancaire"
+ ],
+ "tableaux": [
+  [
+   "Établissement",
+   "Intitulé du compte",
+   "N° de compte",
+   "Compte SYSCOHADA",
+   "Devise",
+   "État",
+   "Actions"
+  ],
+  [
+   "N°",
+   "Banque",
+   "Compte",
+   "Période",
+   "Solde comptable",
+   "Solde relevé",
+   "Écart",
+   "Effectué par",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

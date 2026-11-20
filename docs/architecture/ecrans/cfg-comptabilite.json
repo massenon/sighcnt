@@ -1,0 +1,82 @@
+{
+ "id": "cfg-comptabilite",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Paramètres comptables & obligations",
+ "acces": "ouvert",
+ "titre": "Paramètres comptables & obligations",
+ "description": "Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances, vérifiées et validées, modifiables par versions datées.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Paramètres comptables & obligations"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "liste des obligations à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+  "ITS, AIB, VPS, CNSS se paient chaque mois, pour le mois d’exercice précédent, au jour porté par chaque obligation. Une déclaration précède le paiement. Si le jour tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi.",
+  "Assiettes arrêtées par le CDCT §10.10 (lecture seule)CNSS : part patronale 16.4 %, part ouvrière 3.6 %. VPS : 4 % du salaire brut. ITS : barème progressif par tranches. AIB : acompte assis sur les bénéfices. Ces taux ne se modifient pas ici : ils sont arrêtés par le cahier des charges ; les rendre datés est un chantier nommé."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Obligations en vigueur",
+  "Mensuelles",
+  "Annuelles",
+  "Réglées en tranches"
+ ],
+ "cartes": [
+  "Obligations mensuelles : le 10 du mois suivant",
+  "Barème de l’ITS",
+  "Impôt sur les sociétés : quatre acomptes et une liquidation",
+  "Patente, CCIB et TVM : une fois par an",
+  "Redevances ORTB : prélevées sur les salaires",
+  "Versions antérieures des obligations et des paramètres ORTB",
+  "Principes de tenue"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Obligation",
+   "Échéance",
+   "Déclaration préalable",
+   "Version"
+  ],
+  [
+   "Tranche de salaire",
+   "Taux"
+  ],
+  [
+   "Acompte",
+   "Échéance",
+   "Part"
+  ],
+  [
+   "Code",
+   "Obligation",
+   "Échéance"
+  ],
+  [
+   "Redevance",
+   "Catégorie",
+   "Assiette",
+   "Montant",
+   "Mois de prélèvement"
+  ]
+ ],
+ "commandes": [
+  "Nouvelle obligation",
+  "Valider les obligations",
+  "Suivi des échéances",
+  "Valider",
+  "Modifier les paramètres ORTB",
+  "Suivi nominatif"
+ ],
+ "champs": [],
+ "nbTableaux": 5,
+ "nbKpis": 4
+}

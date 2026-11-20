@@ -1,0 +1,204 @@
+# Plan : mise en œuvre des décisions de la Direction du 09/11/2026
+
+Source : `docs/decisions/DECISIONS-A-VALIDER.md` (section D). Règle commune : tout paramètre est **en base**, réglable dans les paramètres du poste, avec un défaut semé ; un paramètre qui change se versionne par date. Synchronisation : les paramètres voyagent du poste vers le relais par le journal (famille R, configuration), chiffrés de bout en bout ; le relais ne les lit pas et son panneau web n'affiche que ses propres réglages. Chaque lot déclare ses paramètres dans cette famille et prouve l'aller-retour (poste, relais chiffré, second poste) au banc. Méthode : maquette d'abord, puis vecteurs, domaine Dart, poste. Un agent par lot, banc isolé, une suite complète et un audit RBAC à la fin de la série. Un seul agent écrit dans la maquette à la fois.
+
+| Lot | Décision(s) couverte(s) | Contenu | Défaut |
+|---|---|---|---|
+| L1 | Validation Q1 à Q5 | Choix « Valider » dans la modale de mise à jour des 14 familles ; enregistrer par un profil de la famille valide ; hors famille l'élément repasse « à valider » (b) ; élément semé reste « à valider » jusqu'à la première relecture ; motif obligatoire pour les valeurs chiffrées ; création par un validateur naît validée ; une seule ligne de journal ; sonde du refus fileul | |
+| L2 | AIB Q1, Q3, Q5, Q7 | Formulaire de validation du barème AIB dans les paramètres (famille `bareme_aib`) ; taux selon la situation de l'acheteur (1 %, 5 %, 3 %) ; charge des 5 % : paramètre **acheteur / clinique** ; branchement sur les écritures d'achat **différé**, avec son formulaire de validation | charge : clinique |
+| L3 | MECeF (décision 3) | Paramètre **mode : boîtier ou e-MECeF** ; aucun numéro simulé au poste ; e-MECeF « non configuré : dossier d'interface DGI requis » | boîtier |
+| L4 | Planning Q1 | Régime individuel qui déroge **champ par champ** (durée, repos, honoraire), le reste suit la catégorie | |
+| L5 | Planning Q2, Q3 | Circuit de validation des présences et absences **paramétrable** (surveillant seul, DAF seule, surveillant puis DAF) ; congés et ordres de mission au même circuit, mission avec avis du chef de service | surveillant seul |
+| L6 | Planning Q4 | L'agent **propose** une modification de son planning, le surveillant valide ; réglage « l'agent peut modifier directement » | non |
+| L7 | Planning Q5, Q6, Q8 | Fiche de paie : copie chiffrée locale sur le téléphone, réglage oui/non ; espace « Mes » accessible sur poste partagé en secours (session nominative) ; « Mon assurance du personnel » en lecture seule | téléphone : oui |
+| L8 | Planning Q7 | Le badge sert de pointage, réglage oui/non, relié au registre des présences | oui |
+| L0 | Synchronisation des paramètres | Famille de configuration « paramètres » : du poste vers le relais, stockage chiffré côté relais, rejeu sur les fileuls ; panneau web limité aux réglages du relais ; banc de synchronisation à deux postes | |
+| L9 | Travail restant | Valeurs d'attente du personnel (marquage par champ) ; portage barème AIB, paramètres fiscaux, calendrier et versement CNSS vers vecteurs, Dart et poste ; SMS S3 à S6 ; module satisfaction ; relais en ligne R0 à R7 ; dictionnaire de données ; rechargements de page à rendre attentifs à l'envoi (E2307) | |
+
+Ordre : L0 (avant tout paramètre), L1, L2, L3, puis L4 à L8 (même écran M10 pour L4, L5, L6, L8 : un agent à la fois), puis L9. Le poste Flutter suit chaque lot de la maquette (vecteurs régénérés, parité N1).
+Chaque lot rend : scénario de banc qui sonde au geste, réglage en base visible dans les paramètres, défaut vérifié, entrée ECARTS-MAQUETTE.md, commit.
+
+## L0 : synchronisation des paramètres (réalisé le 09/11/2026)
+
+### Inventaire : ce qui existait
+
+- **Le canal** : la mère publie chaque fiche de configuration au journal en famille R par `POST /admin/referentiel` ; les fileuls la reprennent par `GET /liste` et l'appliquent (`ApplicateurConfiguration`, garde « réglé sur la mère ») ; le journal est répliqué chiffré (AES-256-GCM, sens `journal`) vers le relais, qui n'en lit rien ; un mobile ne reçoit que les fiches de sa portée.
+- **Les paramètres de la maquette** : des collections propres à chaque sujet (`politiqueSecurite`, `baremeNS131` + `historiqueBareme`, `grillePrimes` + `historiquePrimes`, `obligationsFiscales` + `historiqueObligations`, `reglages`). Chacune a sa forme et son propre versionnement par date ; aucune n'est générique. Elles voyagent déjà (elles sont dans `cfbEssentielles`).
+- **Ce qui manquait pour un paramètre générique** : une fiche à champs fixes (clé, famille, type, valeur, défaut, date d'effet, version, auteur, motif), la règle de résolution « valeur en vigueur à la date D avec défaut », le refus de réécrire une valeur déjà utilisée par une pièce, la liste blanche du téléphone, un registre des définitions avec défauts semés, un écran par famille.
+
+### Conclusion : la famille R suffit, une famille « paramètres » distincte n'est pas nécessaire
+
+1. **Propriété** : un paramètre se règle sur la mère et nulle part ailleurs, ce qui est exactement la famille R (« la mère seule écrit »). Le fileul reçoit et lit, il ne règle pas.
+2. **Fusion** : le défaut de la famille R est « dernier écrit gagne » sur une fiche. Un paramètre versionné par date ne doit jamais être réécrit : on le modélise donc comme **une fiche immuable par version** (`cle@dateEffet@version`). Chaque fiche n'est écrite qu'une fois, la famille R n'a plus rien à fusionner, et la valeur en vigueur est une fonction pure de l'ensemble des fiches (indépendante de l'ordre d'arrivée, vérifié par permutation). Aucune règle de fusion nouvelle dans le protocole.
+3. **Ce qui s'ajoute n'est pas une famille mais trois règles de la mère**, refaites à la réception comme à l'émission (même fonction du domaine) : type et valeur, date d'effet, refus `parametre_deja_utilise`, `version_deja_prise`, `version_immuable`, `mobile_interdit`. La mère les applique à la collection `parametres` ; le relais n'en contient aucune.
+4. **Les usages** (une pièce a utilisé telle valeur à telle date) sont la seule donnée qui part d'un fileul : collection `usagesParametres`, famille B (ajout seul), remontée par le pont d'activité. C'est ce qui permet à la mère de refuser de réécrire ce que la pièce d'un fileul a utilisé.
+5. **Relais** : aucune route nouvelle. Les versions sont des opérations du journal : elles arrivent au relais dans les enveloppes `journal` de la mère, chiffrées avec les autres, et reviennent avec elles à la restauration (R8r). Le panneau web n'affiche aucun paramètre métier et ne propose aucune route pour en lire ou en écrire (test PHPUnit).
+
+### Liste blanche du téléphone (RG-13)
+
+Un paramètre ne va à un téléphone que si **sa définition le déclare** (`mobile`), qu'il n'est **pas sensible** et que sa **famille n'est pas réservée** : `paie`, `rh`, `fiscal`, `bareme_aib`, `comptabilite`, `mecef`, `securite`, `relais`, `courriel`, `sms`. La mère refuse à la réception une version qui déclare `mobile` pour un paramètre sensible ou une famille réservée (`mobile_interdit`) et ne publie aux mobiles que les versions autorisées. **La liste blanche est vide à ce jour** : aucune des six définitions ne l'est, aucun lot n'a démontré un besoin. La liste des familles réservées est prudentielle, **à valider par la Direction** (aucun document ne la fixe). Un secret (mot de passe SMTP, clé d'API) n'est pas un paramètre : il reste au coffre du poste.
+
+### Ce qui a été livré, et comment il se vérifie
+
+| Pièce | Où | Vérification |
+|---|---|---|
+| Règle de référence | `packages/sync/banc/parametres.js` | `node --test banc/parametres.test.js` : 8 tests |
+| Scénario à processus réels | `banc/scenarios-parametres.js` (`L0`) | `node --no-warnings banc/run.js L0` : 24 vérifications, sur Node, sur le relais Laravel, et tout en Dart + Laravel (`SIGH_RELAIS=laravel SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart`) |
+| Vecteurs | `node banc/vecteurs-parametres.js` → `packages/domaine/test/vecteurs/parametres.json` | 62 cas, refus comparés au code, motif et geste près |
+| Domaine Dart | `packages/domaine/lib/src/parametres/` (`Parametres`, `ServiceParametres`, registre des six défauts) | `dart test` : 78 tests de paramètres |
+| Mère Dart | `packages/sync_dart/lib/src/mere.dart`, `pont.dart` | scénario L0 en Dart ; `dart analyze` |
+| Poste | `apps/poste` : onglet « Paramètres » de Paramètres système, semis par la mère, gardes de collection, publication et réception par les canaux existants | **non compilé ni testé ici** (pas de SDK Flutter) : voir les limites |
+| Relais | `apps/web/tests/Feature/ParametresOpaquesTest.php`, texte du panneau | `php artisan test` : 106 réussis |
+
+### Les six défauts déclarés (aucune valeur inventée)
+
+Les défauts viennent de la colonne « Défaut » de ce plan et de la section D des décisions : MECeF `boitier` (L3) ; charge du prélèvement AIB `clinique` (L2) ; circuit des présences `surveillant` (L5) ; l'agent modifie directement `non` (L6) ; copie de la fiche de paie sur le téléphone `oui` (L7) ; le badge sert de pointage `oui` (L8). Chacun porte `branche: false` et `appliquePar` : **le réglage s'enregistre et se synchronise, mais l'écran concerné ne le lit pas encore**, et l'écran des paramètres le dit. Chaque lot qui branche un paramètre passe `branche` à vrai et lit la valeur par `ServiceParametres.valeurA(cle, dateDeLaPiece)`, puis note l'usage à l'émission de la pièce (`enregistrerUsage`).
+
+### Limites connues
+
+- Le mode pair (ADR-0006) ne porte pas la configuration : un fileul qui ne joint pas la mère ne reçoit pas un nouveau réglage tant qu'il ne la rejoint pas. Les paramètres ne changent que sur la mère, elle-même absente dans ce cas : aucune divergence, un retard seulement.
+- Si la base de la mère était reconstruite de zéro, les anciennes versions seraient republiées après les usages déjà connus et pourraient être refusées (`parametre_deja_utilise`) alors qu'elles précédaient la pièce. La restauration par l'archive du relais (R8r) rejoue le journal tel quel et n'y passe pas.
+- La date d'une pièce (`dateEffet`, usage) est une date locale AAAA-MM-JJ fournie par l'appelant ; le domaine ne lit jamais l'horloge.
+- Revue de sécurité du chiffrement, SQLCipher, service Windows, charge : non couverts par ce lot (voir le README du banc).
+
+## L2 : AIB, charge des 5 % et branchement différé (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Pièce | Où | Vérification |
+|---|---|---|
+| Quatre réglages datés (charge des 5 %, branchement sur les achats, compte d'acompte, compte de contrepartie) | maquette : collection `reglagesAib` (semée au socle, VERSION 76), moteur `SIGH.reglagesAib` (parcours.js), écran `cfg-bareme-aib` onglets « Réglages » et « Achats à écrire » | scénario « Vague 103 » (15 vérifications, au geste) |
+| Défauts de la Direction | charge `clinique` (non arrêtée : texte officiel manquant), branchement `desactive`, aucun compte semé | Vague 103, vecteurs `aib.json` |
+| Validation | les réglages relèvent de la famille `bareme_aib` (collections `baremeAib` et `reglagesAib`) : « Valider » au geste pour Direction, DAF, comptable, administrateur ; écrire par le comptable, la DAF ou l'administrateur arrête la version (date, auteur, motif) | Vague 103 (caissier refusé, Direction valide), Vague 100 à 102 inchangées |
+| Charge portée par la vente | `aibCharge` et `aibChargeArretee` sur la facture normalisée, à la date du barème de la vente ; aucun effet sur les montants | Vague 103 |
+| Branchement différé | désactivé : le moteur liste (situation d'après l'IFU du fournisseur, taux du barème de la date de la facture, charge), n'écrit rien (refus nommé `AIB_BRANCHEMENT_DESACTIVE`) ; actif : une pièce de deux lignes en brouillon, équilibrée, par facture listée, une seule fois | Vague 103, vecteurs |
+| Vecteurs | `prototype_html/build/vecteurs-aib.js` → `packages/domaine/test/vecteurs/aib.json` (62 cas) et `aib_donnees.dart` (semences du barème) | régénérables |
+| Domaine Dart | `packages/domaine/lib/src/comptabilite/aib.dart` (+ `aib_donnees.dart`) | `dart test` : `aib_test.dart` (17), `aib_parametres_test.dart` (6), suite complète 3 034 verts ; quatre mutations font tomber `aib_test.dart` |
+| Registre des paramètres | `definitions.dart` : `bareme_aib.chargePrelevement` passe à `branche: true`, trois définitions ajoutées (`branchementAchats`, `compteAcompte`, `compteContrepartie`) | `aib_parametres_test.dart` |
+| Poste | `apps/poste/lib/donnees/aib_poste.dart`, `modules/cfg/cfg_aib_achats.dart` (section de la famille « AIB » de l'onglet Paramètres), contrôle des réglages dans `cfg_parametres.dart` | `flutter test test/aib_poste_test.dart` (4 verts), `flutter analyze` sans erreur |
+
+### Décisions de conception
+
+- **Un seul versionnement par date.** Maquette et poste ne tiennent pas la même mécanique de stockage (la maquette a sa collection `reglagesAib`, le poste le registre des paramètres du lot L0, famille R), mais les mêmes règles : le domaine lit des fiches de réglage ; `aibReglagesDepuisParametres` relit les versions du registre sous cette forme. La version 0 semée est « à valider » ; toute version datée est arrêtée (un profil qui peut régler l'a posée).
+- **Rien d'inventé.** Aucun compte n'est semé ni proposé : le comptable le choisit dans le plan comptable. La base des 5 % aux achats est le montant facturé (la fiche fournisseur ne distingue pas le hors taxes), dit à l'écran.
+- **L'activation se refuse en nommant** (`AIB_BRANCHEMENT_INCOMPLET`) tant que les deux comptes et la charge ne sont pas arrêtés à la date d'effet.
+
+### Limites
+
+- L'écran `cfg-bareme-aib` n'est pas porté au poste : le manifeste du poste (engendré) ne le connaît pas, c'est le lot A5. Au poste, les réglages se règlent aux cartes de la famille « AIB » de l'onglet Paramètres, qui porte aussi la liste « achats à écrire » et la commande « Écrire ».
+- Flutter : `flutter analyze` ne trouve aucune erreur ; une suite complète du poste n'a pas été lancée (voir ECARTS-MAQUETTE E2319).
+
+
+## L3 : MECeF, mode de certification et aucun numéro fabriqué (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Pièce | Où | Vérification |
+|---|---|---|
+| Mode de certification : « Boîtier physique » (défaut) ou « e-MECeF », réglé à « Configuration fiscale » (maquette) et à la même carte du poste (administrateur ou DA, mère seule), journalisé | maquette : réglage `mecefMode`, `PR.mecef.definirMode`, carte « Mode de certification » de `mecef-config` ; poste : paramètre `mecef.mode` du registre L0 (`branche: true`), lu par `donnees/mecef_poste.dart` | scénario « Vague 105 » ; `mecef_test.dart` du poste |
+| Adaptateur du mode : `PR.mecef.adaptateur()` (maquette) et interface `AdaptateurMecef` + `AdaptateurNonConfigure` (domaine), refus nommé `MECEF_NON_CONFIGURE` (motif, geste) | `parcours.js`, `packages/domaine/lib/src/mecef/mode.dart` | vecteurs `mecef_mode.json`, `mecef_mode_test.dart` |
+| Aucun numéro fabriqué sans adaptateur : vente en attente de certification (état stocké `en_attente`, code et motif portés, encaissement acquis), retransmission sans essai consommé, « Synchroniser » sans tirage, avoir émis sans numéro, test de connexion qui ne ment plus | maquette (mode e-MECeF) et poste (les deux modes) | Vague 105 ; `mecef_acheteur_test.dart`, `mecef_test.dart`, `m8_facturation_test.dart` |
+| e-MECeF : « non configuré : dossier d'interface DGI requis », aucun code d'intégration (ni URL, ni jeton, ni format de message) | écrans et refus nommé | revue du code |
+
+### Décisions de conception
+
+- **Un adaptateur par mode, un refus qui se nomme.** La caisse n'est jamais bloquée : l'émission et l'encaissement aboutissent, seule la certification attend. Un seul code (`MECEF_NON_CONFIGURE`), deux motifs (boîtier, e-MECeF).
+- **Écart maquette / poste assumé.** La maquette garde son appareil de démonstration en mode boîtier (elle simule, et le dit) ; le poste n'a aucun adaptateur, donc ne certifie rien dans aucun mode. Les vecteurs ne portent que ce que la maquette fait réellement (mode e-MECeF) ; le refus du boîtier au poste est éprouvé par un test propre.
+- **Le mode n'est pas un usage de pièce.** Il ne fixe aucun contenu de la pièce (elle porte `modeMecef`, le mode sous lequel la tentative a eu lieu) : l'inscrire à `usagesParametres` interdirait de le rebasculer le jour même.
+- **`desactive` reste un détail de la maquette** (démonstration du lot M1) : non proposé, non porté au poste.
+
+### Questions ouvertes (aucun fait inventé)
+
+Voir ECARTS-MAQUETTE E2322 : modèle, interface et protocole du boîtier ; dossier d'interface e-MECeF de la DGI ; asynchronisme de l'orchestration (lot M3) ; granularité du réglage (clinique) face à un boîtier branché à un seul poste.
+
+### Limites
+
+- L'adaptateur réel (lot M3) n'existe pas : le poste ne certifie aucune vente. `normaliserVente` est synchrone et devra le devenir.
+- Le libellé de l'état `en_attente` reste « En attente de transmission » (la parité N1 compare les libellés) ; les messages disent « en attente de certification ».
+
+
+## L4, L5, L6 : planning individuel, circuit de validation, propositions de l'agent (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Lot | Pièce | Où | Vérification |
+|---|---|---|---|
+| L4 | Régime individuel qui déroge champ par champ (vacations, repos, cycle, honoraire, périodicité), versions datées immuables, retour à la catégorie par une version, historique, contrôle de repos unique (dérogation comprise, avant et après la garde, double affectation) | maquette : `SIGH.planningRh` (fin de `parcours.js`), collection `regimesIndividuels`, carte « Régimes individuels » de « Planning & gardes » | « Vague 106 » (28 vérifications au geste ; échoue sur l'arbre d'avant) |
+| L4 | Filtres avancés du planning et du registre des vacations (onze critères, grille et registre, état filtré, export de la liste filtrée) ; seul le planning VALIDÉ compte (primes, paie, statistiques) | `m10-rh.js`, `m11-paie.js` | « Vague 106 », scénarios RH existants verts |
+| L5 | Circuit de validation (surveillant seul par défaut, DAF seule, surveillant puis DAF), réglé au poste, en base, journalisé ; pointages, congés et ordres de mission au même circuit ; avis du chef de service ; motif codé, justificatif, régularisation datée ; pièce non validée visible et non comptée | maquette : `SIGH.planningRh`, cartes de réglage, écrans `m10-presences`, `m10-conges`, `m10-missions`, kit (`actionsSup`, `avantTableau`), RBAC09 (surveillant ouvre congés et missions, `VERSION` 77) | « Vague 107 » (31 vérifications au geste ; échoue sur l'arbre d'avant), audit RBAC ciblé : 0 promesse |
+| L6 | L'agent propose (ajout, modification, retrait, échange), le surveillant valide ; contrôle à la proposition et à la validation ; visibilité par agent ; application directe réglable (non par défaut) | maquette : écran `m10-propositions-planning` (universel), collection `propositionsPlanning` | « Vague 108 » (20 vérifications au geste ; échoue sur l'arbre d'avant) |
+| L4 à L6 | Vecteurs tirés du moteur de la maquette | `prototype_html/build/vecteurs-planning-rh.js` → `packages/domaine/test/vecteurs/planning_rh.json` (126 cas) | régénérables |
+| L4 à L6 | Domaine Dart | `packages/domaine/lib/src/rh/planning_rh.dart`, registre L0 (`planning.circuitPresences` et `planning.agentModifieDirectement` à `branche: true`) | `dart test test/planning_rh_test.dart` : 129 verts, mutations vérifiées |
+| L4 à L6 | Poste : couche données et règles | `apps/poste/lib/donnees/planning_rh_poste.dart` | `flutter test test/planning_rh_poste_test.dart` : 11 verts |
+| L4 à L6 | Poste : gestes au domaine et gardes du moteur | `planning_rh.dart` (réglages, pose et retrait, régularisation, avis, retrait d'une proposition, `gardeRegimeIndividuelRh`, `gardePresenceValideeRh`), `magasin.dart` | `dart test test/planning_rh_test.dart` : 177 verts ; `planning_rh_poste_test` : 18 verts (E2340) |
+| L4 à L6 | Poste : écrans | `m10-planning`, `m10-presences`, `m10-propositions-planning`, `m10-conges`, `m10-missions`, rotation `m10-securite-entretien` (`rhb_planning.dart`, `rhb_presences.dart`, `rhb_propositions.dart`, `rhb_circuit.dart`, `rha_conges.dart`, `rha_missions.dart`) | parité N1 = 100 % mesuré ; `m10_planning_test` 16, `m10_presences_test` 12, `m10_propositions_test` 6, `m10_test` (congés, missions) ; filtres et circuit rejoués sur les relevés de la maquette (E2339) |
+
+### Décisions de conception
+
+- **Un moteur, un seul contrôle.** Le contrôle d'incompatibilité était écrit deux fois dans les écrans (grille générale, rotation sécurité et entretien) : il vit au moteur, appelé par la grille, la rotation, la validation d'une proposition et l'application directe. « Quelle que soit la voie » se tient parce qu'il n'y a plus qu'une voie de code.
+- **Une dérogation ne se réécrit pas.** Même principe que la grille des primes, les plages par lot et le barème AIB : une fiche immuable par version, la valeur à une date est une fonction pure des fiches ; une date d'effet passée est refusée ; la vacation porte le régime sous lequel elle a été posée.
+- **La validation est un droit du circuit, pas du module.** Le surveillant OUVRE congés et missions sans pouvoir les saisir (`editer: false`) ; le moteur refuse tout autre rôle (`VALIDATION_RESERVEE`). L'audit RBAC compte ces gestes comme un droit propre.
+- **Une pièce d'avant le circuit n'est ni validée d'office ni à valider** : elle est lue d'après son état d'origine, sans migration de données.
+- **Rien n'est supposé sur le « chef de service »** : l'avis est consigné par un habilité au nom du chef choisi, faute de document qui le désigne.
+
+### Limites
+
+Voir ECARTS-MAQUETTE E2331 (faits qui manquent : chef de service, accord du collègue, repère de retard) et E2339 à E2342 (écrans du poste portés ; ce qui est régénéré et ce qui ne l'est pas ; écarts assumés). Restent hors de ce lot : le filtre RG-11 (seul le planning et les présences VALIDÉS comptent) sur les statistiques de garde, de permanence, de présence, les primes et la paie du poste ; l'annulation de la pose d'une dérogation ; les écrans des lots A5 et SMS, que le manifeste du poste n'inclut pas encore (E2341) ; les tables relationnelles des deux collections nouvelles.
+
+
+## L7, L8 : espace « Mes », copie de la fiche de paie, assurance du personnel, badge qui pointe (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Lot | Pièce | Où | Vérification |
+|---|---|---|---|
+| L7 | Moteur `SIGH.espaceMes` : dix-sept rubriques lues sur l'agent de la session, refus `COMPTE_NON_NOMINATIF`, `RUBRIQUE_INCONNUE`, copie de la fiche de paie (`COPIE_PAIE_DESACTIVEE`, `COPIE_PAIE_AUTRE_AGENT`), réglage `paieCopieTelephone` (oui par défaut) | maquette : `parcours.js`, écran `m10-mes` (universel), carte de réglage pour l'administrateur et la DAF, purge de l'affichage à la déconnexion (`store.js`) et au verrou (`app.js`) | « Vague 109 » (15 vérifications au geste ; échoue sur l'arbre d'avant), audit RBAC ciblé : 0 promesse |
+| L7 | « Mon assurance du personnel » : montant porté ou « non renseigné », jamais le prix courant du catalogue | `m10-assurance-personnel` et rubrique de « Mon espace » | « Vague 109 » (la demande ancienne sans montant), `rhc_regles_test` inchangé (les sommes ne bougent pas) |
+| L8 | Moteur `SIGH.pointageBadge` : arrivée puis départ à valider, délai en base, treize refus nommés, journal de chaque passage, commande « Pointer » absente sans droit ni réglage | maquette : `m10-rh.js`, écran `m10-badges-verification` (carte « Pointage par badge », « Régler », « Pointer ») | « Vague 110 » (11 vérifications au geste ; échoue sur l'arbre d'avant) |
+| L7, L8 | Vecteurs tirés des moteurs de la maquette | `prototype_html/build/vecteurs-mes-pointage.js` → `packages/domaine/test/vecteurs/mes_pointage.json` (44 lectures, 9 copies, 7 réglages de copie, 40 passages, 15 réglages de pointage) | régénérables |
+| L7, L8 | Domaine Dart | `packages/domaine/lib/src/rh/espace_mes.dart`, `pointage_badge.dart` ; registre L0 : `paie.copieFichePaieTelephone` et `planning.badgeSertDePointage` passent à `branche: true`, `planning.delaiEntrePointagesBadge` ajouté (5 minutes, proposition à valider) | `dart test test/mes_pointage_test.dart` : 120 verts ; cinq mutations (limite du délai, pièce émise, filtre de l'agent, prix par défaut, présence validée) font tomber le fichier ; `dart test` complet : 3 343 verts |
+| L7, L8 | Poste | `apps/poste/lib/donnees/mes_poste.dart` (`EspaceMesPoste`, `PointageBadgePoste`, `MesAffichage`), `modules/m10/rhd_mes.dart`, `rhc_assurance_personnel.dart`, `rhc_badges_verification.dart`, `acc_session.dart`, `sync/pont_activite.dart` (`presences`) | parité N1 100 % mesuré (m10-mes, badges-verification, assurance) ; `m10_mes_test` 7, `pointage_badge_poste_test` 7 (dont deux postes avec pont) |
+
+### Décisions de conception
+
+- **La copie de la fiche de paie n'est pas un paramètre qui descend.** Le réglage reste fermé au téléphone (famille `paie` réservée, liste blanche vide) ; c'est la PIÈCE ÉMISE de l'agent seul qui voyage, chiffrée, publiée ou retirée par la mère selon le réglage. Le domaine refuse la pièce d'un autre agent et ne recalcule jamais. Voir `ECARTS-MAQUETTE.md` E2344 pour ce qui reste à arbitrer (conservation, clé par agent, canal).
+- **L'espace « Mes » lit, il ne garde rien.** Aucune copie de données ; seule la rubrique ouverte est retenue, gardée au verrou et effacée à la déconnexion. Au poste, l'écran se vide sous le verrou (`TickerMode`) pour ne rien laisser en mémoire sous la couche.
+- **Un moteur par décision, un refus qui se nomme.** Le pointage par badge réutilise le verdict du badge existant (inconnu, retiré, expiré, non remis) et ajoute ses propres refus ; la présence née du badge entre dans le circuit du lot L5 sans règle nouvelle.
+- **Une valeur d'attente se dit.** Le délai de 5 minutes est marqué « proposition à valider » au registre et à l'écran ; aucune heure d'arrivée attendue n'est inventée (le badge n'infère pas le retard).
+
+### Limites
+
+Le canal mère, relais et téléphone de la copie de paie, le profil « agent » du mobile, les stats de garde de « Mon espace » (garde de 24 h seulement), l'écran vidé sous le verrou sondé dans Flutter, les générateurs `vecteurs-qualite.js` et `vecteurs-cfg-b.js` (en panne, fichiers ajustés à la main) : voir `ECARTS-MAQUETTE.md` E2343 à E2350.
+
+### Suite complète du poste (lot Z, 10/11/2026)
+
+Les huit échecs que le lot Y disait préexistants étaient des tests périmés par les lots L1 et la vague 49 (cause de chacun : `ECARTS-MAQUETTE.md` E2343), remis sur ce que la maquette fait aujourd'hui ; huit autres vecteurs ont suivi les lots L7 et L8 (E2351). Exécution complète finale, sortie lue : `flutter test` dans `apps/poste` : **2 404 verts, 1 ignoré (préexistant), 0 échec**, 16 min 22 s ; `dart test` dans `packages/domaine` : 3 343 verts.
+
+## ORG2 : organigramme modifiable aligné sur la photo, verrou d'un poste de secours, garde soins (réalisé le 11/11/2026)
+
+Décisions de la Direction du 11/11/2026 (`DECISIONS-A-VALIDER.md`, section G : O1 à O5, P3, P4). Même méthode que les lots précédents : la maquette d'abord, un scénario qui échoue sur l'arbre d'avant, les vecteurs tirés de la maquette, le domaine Dart, puis le poste.
+
+### Ce qui est livré
+
+| Pièce | Où | Vérification |
+|---|---|---|
+| Semence de la collection `postes` alignée sur la photo (six intitulés, hiérarchie, identifiants stables), titre « SG » porté par le personnel, `VERSION` 78 | `prototype_html/assets/js/data.js`, `store.js` | « Vague 111 » (20 vérifications ; échoue sur l'arbre d'avant), « Vague 104 » alignée |
+| Moteur `SIGH.organigramme` : réaffecter, renommer le titulaire, poser le titre de l'agent, créer, archiver ; refus nommés ; journal ; droits (écrire, annuler pour archiver) | `parcours.js`, `modules/configuration.js` | « Vague 111 » (gestes par la modale, refus à l'écran, droits, reprise) |
+| Reprise qui n'écrase jamais une modification de la clinique (trace d'écran et comparaison à l'ancienne semence) | `store.js` (`migrerOrganigramme`), `organigramme_poste.dart` (`reprendre`) | « Vague 111 », `organigramme_test.dart`, `org2_poste_test.dart` |
+| Impression A4 paysage : arbre ordonné en fentes, titre de l'agent, aucune étoile | `print.js` (`P.organigramme`), `piece.dart`, `feuilles.dart`, `pdf.dart` | PDF mesuré 842 x 595 pt, une page, pdftotext (maquette et poste) |
+| P3 : délai de verrou d'un poste de secours (5 minutes, à valider, en base, administrateur et DAF) | `parcours.js` (`SIGH.verrouSecours`), `app.js`, `m14-securite.js` ; `verrou_secours.dart`, paramètre `securite.delaiVerrouPosteSecours` ; `verrou_secours_poste.dart`, `sessions.dart`, `acc_ecrans.dart` | « Vague 112 » ; 33 tests du domaine ; `org2_poste_test.dart` (carte, droits, verrou à la connexion) |
+| P4 : la garde soins compte dans « Mes statistiques de garde » | `parcours.js` (`TRAVAIL_MES`), `espace_mes.dart` | « Vague 112 » ; `mes_pointage.json` régénéré (une lecture change) |
+| Vecteurs | `prototype_html/build/vecteurs-organigramme.js` → `packages/domaine/test/vecteurs/organigramme.json` (42 cas, 6 contrôles, 5 reprises, 6 mises en page, 16 réglages, 6 désignations, 9 délais) | régénérable |
+| Domaine Dart | `packages/domaine/lib/src/configuration/organigramme.dart`, `securite/verrou_secours.dart` | `dart test` : 3 441 verts (98 tests de ce lot) |
+| Poste | `apps/poste/lib/donnees/organigramme_poste.dart`, `verrou_secours_poste.dart`, `modules/cfg/cfa_organisation.dart`, `modules/m14/sessions.dart`, `impression/*`, `core/parametres_poste.dart`, `service_installation.dart` | parité N1 : m14-sessions 24 sur 24 ; `org2_poste_test.dart` |
+
+### Décisions de conception
+
+- **Le titre vit sur l'agent, pas sur le poste.** Un poste se renomme, se réaffecte, se vide ; le titre d'un agent ne doit pas changer parce que son poste change de main. Le rattachement se fait par le nom du titulaire, comme pour l'espace « Mes ».
+- **L'organigramme est une collection administrable, la photo est sa semence.** La hiérarchie de la photo est la valeur de départ ; rien ne la fige. Ce que la photo ne tranche pas est écrit en hypothèse (E2352) et se corrige au CRUD sans code.
+- **Un refus se nomme et n'écrit rien.** Tout est contrôlé avant la première écriture ; archiver demande le droit d'annuler (RG-14).
+- **Une valeur d'attente se dit.** Le délai de 5 minutes est marqué « à valider » à l'écran et au registre ; ce qu'est un « poste de secours » est une hypothèse écrite.
+
+### Limites
+
+Voir `ECARTS-MAQUETTE.md` E2360 : lectures de hiérarchie que la photo ne tranche pas, définition d'un poste de secours, refus d'archiver un poste qui porte des postes, titre qui ne suit pas le poste, apostrophe de « Agents d'Entretiens ». Le mobile n'est concerné par aucun de ces changements (le paramètre de secours est de la famille `securite`, réservée).

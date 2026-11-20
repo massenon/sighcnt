@@ -1,0 +1,87 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-tri.js — C.sortBy. Ne pas éditer.",
+ "cas": [
+  {
+   "nom": "codes patient mêlant formats",
+   "entree": [
+    "CNT900/25",
+    "CNT/10/25",
+    "CNT/1/25",
+    "CNT/100/25",
+    "CNT/2/26",
+    "CNT/1/26",
+    "CNT/101/26"
+   ],
+   "sortie": [
+    "CNT/1/25",
+    "CNT/1/26",
+    "CNT/2/26",
+    "CNT/10/25",
+    "CNT/100/25",
+    "CNT/101/26",
+    "CNT900/25"
+   ]
+  },
+  {
+   "nom": "nombres, lettres, accents",
+   "entree": [
+    "b2",
+    "a10",
+    "a2",
+    "é1",
+    "e2",
+    "A1",
+    "a1",
+    "10",
+    "9"
+   ],
+   "sortie": [
+    "9",
+    "10",
+    "a1",
+    "A1",
+    "a2",
+    "a10",
+    "b2",
+    "é1",
+    "e2"
+   ]
+  },
+  {
+   "nom": "ponctuation avant chiffres avant lettres",
+   "entree": [
+    "x-1",
+    "x1",
+    "xa",
+    "x 1",
+    "x_1",
+    "x.1"
+   ],
+   "sortie": [
+    "x 1",
+    "x_1",
+    "x-1",
+    "x.1",
+    "x1",
+    "xa"
+   ]
+  },
+  {
+   "nom": "préfixes",
+   "entree": [
+    "FN-2026-00010",
+    "FN-2026-00009",
+    "FN-2026-00009-A",
+    "FN-2026-00009-B",
+    "FN-2026-9"
+   ],
+   "sortie": [
+    "FN-2026-00009",
+    "FN-2026-9",
+    "FN-2026-00009-A",
+    "FN-2026-00009-B",
+    "FN-2026-00010"
+   ]
+  }
+ ]
+}

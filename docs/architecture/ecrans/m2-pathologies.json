@@ -1,0 +1,57 @@
+{
+ "id": "m2-pathologies",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Pathologies & morbidité",
+ "acces": "ouvert",
+ "titre": "Pathologies & morbidité",
+ "description": "Référentiel des pathologies de la clinique et tableau de morbidité issu des consultations.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Consultations & prescriptions",
+  "Pathologies & morbidité"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Une pathologie notifiable relève de la déclaration obligatoire aux autorités sanitaires. Le signaler permet de repérer les cas à déclarer sans relire tout le registre — la clinique reste responsable de la déclaration elle-même, que le logiciel ne transmet pas."
+ ],
+ "onglets": [
+  "Tableau de morbidité",
+  "Référentiel"
+ ],
+ "kpis": [
+  "Pathologies au référentiel",
+  "Chapitres couverts",
+  "Cas enregistrés",
+  "Cas à déclaration obligatoire"
+ ],
+ "cartes": [
+  "Les pathologies les plus fréquentes",
+  "Répartition par chapitre",
+  "Tableau de morbidité"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Pathologie",
+   "Chapitre",
+   "Déclaration",
+   "Cas"
+  ]
+ ],
+ "commandes": [
+  "Tableau de morbidité7",
+  "Référentiel55",
+  "Colonnes",
+  "Exporter",
+  "Imprimer le tableau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

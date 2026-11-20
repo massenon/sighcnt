@@ -1,0 +1,57 @@
+{
+ "id": "m1-antecedents",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Antécédents & allergies",
+ "acces": "ouvert",
+ "titre": "Antécédents & allergies",
+ "description": "Recensement des antécédents médicaux, chirurgicaux et des allergies connues, consultables depuis toute prescription.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Antécédents & allergies"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "Les allergies déclarées sont remontées automatiquement à la prescription (M2) et à la dispensation en pharmacie (M6) afin de bloquer toute délivrance contre-indiquée."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Dossiers renseignés",
+  "Allergies déclarées",
+  "Antécédents à risque",
+  "Sans antécédent notable"
+ ],
+ "cartes": [
+  "Antécédents et allergies par dossier"
+ ],
+ "tableaux": [
+  [
+   "Dossier",
+   "Patient",
+   "Groupe",
+   "Antécédents",
+   "Allergies",
+   "Traitement en cours",
+   "Risque",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

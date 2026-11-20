@@ -32,7 +32,7 @@
  * ========================================================================== */
 (function (global) {
   'use strict';
-  var C = global.SIGH.core, S = global.SIGH.store, N = global.SIGH.nav;
+  var C = global.SIGH.core, S = global.SIGH.store, N = global.SIGH.nav, D = global.SIGH.data;
 
   /* ==========================================================================
    * PARAMÈTRES DE L'UTILISATEUR — ils gouvernent le CANAL, jamais la règle
@@ -90,6 +90,46 @@
    * d'affichage, pas une règle. Elle permet à un poste de filtrer sans que le
    * moteur ait à connaître le métier.
    * ======================================================================== */
+  /* Quels rôles tiennent un POSTE de notification. `null` = tout le monde
+     (« tous » ou poste non précisé) ; un poste inconnu est lu comme un rôle. */
+  /* Lot CLO-3 point 7 : la caisse et la pharmacie sont des postes lus de la fiche RBAC (gestes `poste_caisse`, `poste_pharmacie`), jamais les noms `caissier` ni `pharmacien`. */
+  /* Les autres rôles de ces postes (hors caisse et pharmacie) restent déclarés tels quels : ils ne sont pas l'objet du point 7. */
+  function lst() { return Array.prototype.slice.call(arguments); }
+  function rolesGeste(g) { return N && N.rolesAvecGeste ? N.rolesAvecGeste(g) : []; }
+  var POSTES_NOTIF = {
+    tous: null,
+    caisse: function () { return rolesGeste('poste_caisse'); },
+    comptable: ['comptable', 'assistant_comptable', 'aide_comptable', 'da'],
+    direction: ['direction', 'da', 'dm'],
+    imagerie: ['echographiste'],
+    laboratoire: ['laborantin'],
+    prescripteur: ['medecin', 'chirurgien', 'anesthesiste', 'dm'],
+    stock: function () { return lst('stock', 'da').concat(rolesGeste('poste_pharmacie')); },
+    salle_soins: ['infirmier', 'aide_soignant', 'surveillant'],
+    hospitalisation: ['infirmier', 'aide_soignant', 'surveillant', 'medecin'],
+  };
+  function rolesDuPoste(poste) {
+    if (!poste || poste === 'tous') return null;
+    var d = POSTES_NOTIF[poste];
+    if (d === undefined) return [poste];
+    return typeof d === 'function' ? d() : d;
+  }
+  /* `PR.notifier` écrit « haute » ou « normale » ; le moteur raisonne en critique, important, information. */
+  function prioriteDePoste(n) {
+    if (n.priorite === 'critique' || n.priorite === 'important' || n.priorite === 'information') return n.priorite;
+    if (n.priorite === 'haute' || n.ton === 'danger') return 'critique';
+    return 'information';
+  }
+  /* L'écran où se traite chaque type de notification de poste. */
+  var LIENS_NOTIF = {
+    demande_imagerie: 'm2-imagerie-demandes',
+    prescription_soins: 'm2-salle-soins',
+    resultat_disponible: 'm5-resultats',
+    resultat_rectifie: 'm5-resultats',
+    cloture: 'm12-cloture',
+    prix_decide: 'cfg-tarifs',
+  };
+
   var SOURCES = [
     {
       code: 'stock_seuil', categorie: 'metier', domaine: 'Stock',
@@ -103,11 +143,11 @@
             return {
               cle: 'stock:' + p.id,
               priorite: p.stock <= 0 ? 'critique' : 'important',
-              titre: p.designation + ' — ' + C.num(p.stock) + ' en stock',
+              titre: p.designation + ' : ' + C.num(p.stock) + ' en stock',
               detail: 'Seuil d’alerte fixé à ' + C.num(p.seuilAlerte) + '. Établir un bon '
-                + 'de commande — validation de la Direction requise (RG-04).',
+                + 'de commande, validation de la Direction requise (RG-04).',
               lien: 'm6-alertes',
-              postes: ['stock', 'pharmacien', 'caissier', 'da'],
+              postes: lst('stock', 'da').concat(rolesGeste('poste_pharmacie'), rolesGeste('poste_caisse')),
             };
           });
       },
@@ -115,20 +155,23 @@
     {
       code: 'lots_peremption', categorie: 'metier', domaine: 'Pharmacie',
       lire: function () {
+        /* Lot PARAM-CLINIQUE : le statut se LIT à la date, selon le préavis de péremption en vigueur (paramètre de clinique daté, RG-05), jamais le statut écrit à la saisie. */
         return S.collection('lots').active()
-          .filter(function (l) { return l.statut === 'perime' || l.statut === 'alerte'; })
-          .map(function (l) {
+          .map(function (l) { return { l: l, st: D.statutLotALaDate(l, C.aujourdhui()) }; })
+          .filter(function (x) { return x.st === 'perime' || x.st === 'alerte'; })
+          .map(function (x) {
+            var l = x.l;
             return {
               cle: 'lot:' + l.id,
-              priorite: l.statut === 'perime' ? 'critique' : 'important',
-              titre: l.statut === 'perime'
-                ? 'Lot périmé — ' + (l.produit || l.numero)
-                : 'Péremption proche — ' + (l.produit || l.numero),
-              detail: l.statut === 'perime'
+              priorite: x.st === 'perime' ? 'critique' : 'important',
+              titre: x.st === 'perime'
+                ? 'Lot périmé : ' + (l.produit || l.numero)
+                : 'Péremption proche : ' + (l.produit || l.numero),
+              detail: x.st === 'perime'
                 ? 'À sortir du rayon et à déclarer en perte.'
                 : 'Appliquer le principe FEFO (RG-05).',
               lien: 'm6-lots',
-              postes: ['stock', 'pharmacien', 'caissier', 'laborantin'],
+              postes: lst('stock', 'laborantin').concat(rolesGeste('poste_pharmacie'), rolesGeste('poste_caisse')),
             };
           });
       },
@@ -145,7 +188,7 @@
               titre: 'Facture ' + (f.numero || f.id) + ' rejetée par la MECeF',
               detail: 'Corriger puis réémettre auprès de l’administration fiscale.',
               lien: 'mecef-transmission',
-              postes: ['caissier', 'comptable', 'da', 'assistant_comptable'],
+              postes: rolesGeste('poste_caisse').concat(lst('comptable', 'da', 'assistant_comptable')),
             };
           });
       },
@@ -155,15 +198,40 @@
       /* Le calendrier fiscal est un référentiel : le moteur ne recalcule
          aucune date, il lit ce qui est déjà dépassé. */
       lire: function () {
-        var auj = C.iso(new Date(2026, 7, 16));
+        var auj = C.iso(C.aujourdhui());   /* la cloche et l'écran comptent à la même date (vague 68) */
         return S.collection('echeancesFiscales').active()
           .filter(function (e) { return !e.paye && String(e.echeance) < auj; })
           .map(function (e) {
             return {
               cle: 'fisc:' + e.id,
               priorite: 'critique',
-              titre: (e.libelle || e.obligation) + ' — échéance dépassée',
+              titre: (e.libelle || e.obligation) + ' : échéance dépassée',
               detail: 'Échéance au ' + C.dateFR(e.echeance) + '. Une pénalité court.',
+              lien: 'm12-echeances',
+              postes: ['comptable', 'da', 'assistant_comptable', 'direction'],
+            };
+          });
+      },
+    },
+    {
+      code: 'echeance_fiscale_proche', categorie: 'metier', domaine: 'Comptabilité',
+      /* Une échéance NON dépassée mais PROCHE : le délai est le paramètre « à payer » du calendrier (cfg-comptabilite), le même que le
+         suivi, la vue mensuelle et le planificateur du serveur. Ce fichier ne décide d'aucun seuil, il applique celui des paramètres. */
+      lire: function () {
+        var auj = C.iso(C.aujourdhui());
+        var delai = D.delaisFiscauxALaDate(auj).delaiAPayer;
+        return S.collection('echeancesFiscales').active()
+          .filter(function (e) {
+            var j = C.daysBetween(auj, String(e.echeance).slice(0, 10));
+            return !e.paye && j >= 0 && j <= delai;
+          })
+          .map(function (e) {
+            var j = C.daysBetween(auj, String(e.echeance).slice(0, 10));
+            return {
+              cle: 'fisc-proche:' + e.id,
+              priorite: 'important',
+              titre: (e.libelle || e.obligation) + ' : échéance dans ' + j + ' jour(s)',
+              detail: 'Échéance au ' + C.dateFR(e.echeance) + '. Valider le règlement dans le suivi des échéances.',
               lien: 'm12-echeances',
               postes: ['comptable', 'da', 'assistant_comptable', 'direction'],
             };
@@ -189,7 +257,7 @@
           return {
             cle: 'creance:' + a.assureur,
             priorite: a.jours > a.seuil * 1.5 ? 'critique' : 'important',
-            titre: (nom ? nom.nom : a.assureur) + ' — ' + C.money(a.montant, false) + ' en souffrance',
+            titre: (nom ? nom.nom : a.assureur) + ' : ' + C.money(a.montant, false) + ' en souffrance',
             detail: C.num(a.nb) + ' facture(s), jusqu’à ' + a.jours + ' jours d’ancienneté '
               + '(seuil retenu : ' + a.seuil + ' jours). Cette créance pèse sur le besoin '
               + 'en fonds de roulement.',
@@ -212,7 +280,7 @@
               cle: 'labo-prel:' + d.id,
               priorite: 'important',
               titre: 'Analyse réglée, prélèvement à faire',
-              detail: (d.analyse || 'Analyse') + ' — le patient a payé, il peut être appelé.',
+              detail: (d.analyse || 'Analyse') + ' : le patient a payé, il peut être appelé.',
               lien: 'm5-prelevement',
               postes: ['laborantin'],
             };
@@ -229,7 +297,7 @@
               cle: 'labo-saisie:' + d.id,
               priorite: 'information',
               titre: 'Échantillon reçu, résultat à saisir',
-              detail: (d.analyse || 'Analyse') + ' — reçu le ' + C.dateFR(d.recuLaboLe) + '.',
+              detail: (d.analyse || 'Analyse') + ' : reçu le ' + C.dateFR(d.recuLaboLe) + '.',
               lien: 'm5-resultats',
               postes: ['laborantin'],
             };
@@ -237,22 +305,169 @@
       },
     },
     {
+      code: 'a_valider_besoins', categorie: 'metier', domaine: 'À valider',
+      /* Les bons d'expression de besoins qui attendent l'arbitrage de la DAF
+         (étapes « soumis » et « validation DA »). La source LIT l'étape que le
+         module a posée ; elle ne revalide rien. */
+      lire: function () {
+        return S.collection('besoins').active()
+          .filter(function (b) { return b.etape === 'soumis' || b.etape === 'validation_da'; })
+          .map(function (b) {
+            return {
+              cle: 'besoin:' + b.id,
+              priorite: 'important',
+              titre: 'Bon de besoins à valider' + (b.reference ? ' : ' + b.reference : ''),
+              detail: (b.service || 'Service') + (b.motif ? ' : ' + b.motif : '') + '. La validation est un geste de la DAF.',
+              lien: 'm7-besoins',
+              /* ceux qui arbitrent : geste réservé `arbitrer_besoins` de la fiche RBAC (lot CLO-3), jamais une liste écrite ici */
+              postes: global.SIGH.nav && global.SIGH.nav.rolesAvecGeste ? global.SIGH.nav.rolesAvecGeste('arbitrer_besoins') : null,
+            };
+          });
+      },
+    },
+    {
+      code: 'prix_a_valider', categorie: 'metier', domaine: 'À valider',
+      /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : UNE alerte par LOT (les propositions d'un même lot, par exemple la grille imprimée des
+         analyses, ne sont qu'une alerte portant son compte ; une saisie à l'écran est un lot d'une ligne). La source LIT l'état des versions et ne décide d'aucun
+         seuil ; elle cesse de produire l'alerte quand la dernière proposition du lot est décidée. Les destinataires sont les profils de la famille de décision
+         (`PR.rolesDecidentPrix()`, geste réservé `decider_prix` de la fiche RBAC), jamais une liste écrite ici. */
+      lire: function () {
+        var PR = global.SIGH.parcours;
+        var lots = {}, ordre = [];
+        S.collection('versionsTarif').all().filter(function (v) { return v.statut === 'propose'; }).forEach(function (v) {
+          var cle = v.lot || (v.origine === 'semence-grille' ? 'grille' : v.id);
+          if (!lots[cle]) { lots[cle] = []; ordre.push(cle); }
+          lots[cle].push(v);
+        });
+        return ordre.map(function (cle) {
+          var g = lots[cle];
+          return {
+            cle: 'prix:' + cle,
+            priorite: 'important',
+            titre: g.length > 1 ? C.num(g.length) + ' changements de prix à valider' : 'Changement de prix à valider : ' + g[0].code,
+            detail: g.length > 1
+              ? 'Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.'
+              : (g[0].proposePar ? 'Proposé par ' + g[0].proposePar + '. ' : '') + 'Le prix en vigueur ne change pas avant le Oui.',
+            lien: 'cfg-tarifs', onglet: 'alertes',
+            postes: PR && PR.rolesDecidentPrix ? PR.rolesDecidentPrix() : null,
+          };
+        });
+      },
+    },
+    {
+      code: 'produits_a_valoriser', categorie: 'metier', domaine: 'À valider',
+      /* Les articles repris avec leur stock mais SANS prix d'achat (reprise du Grand Stock : le stock existe, RG-03) : ils ne se facturent pas tant qu'un premier prix n'est pas
+         décidé. UNE alerte par article ; au-delà du seuil de regroupement, une ligne portant le compte. La source LIT la liste unique (`PR.produitsAValoriser`) et disparaît quand elle
+         est vide ; le message ne porte AUCUNE donnée sensible (le code et la désignation de l'article, jamais une quantité ni une valeur). Les destinataires sont ceux de la
+         famille de décision des prix (`PR.rolesDecidentPrix()`, geste `decider_prix`), jamais une liste écrite ici ; le RBAC de l'écran visé filtre ensuite (`pourMoi`). */
+      lire: function () {
+        var PR = global.SIGH.parcours;
+        if (!PR || !PR.produitsAValoriser) return [];
+        return PR.produitsAValoriser().map(function (x) {
+          return {
+            cle: 'valoriser:' + x.code,
+            priorite: 'important',
+            titre: 'Produit à valoriser : ' + x.code,
+            detail: x.designation + ' : ' + x.raison + '. L’article ne se facture pas. '
+              + (x.enAttente ? 'Un premier prix est proposé : il attend le Oui ou le Non.' : 'Proposez son premier prix d’achat (Oui ou Non de la Directrice Administrative).'),
+            lien: 'cfg-tarifs', onglet: 'produits',
+            postes: PR.rolesDecidentPrix ? PR.rolesDecidentPrix() : null,
+          };
+        });
+      },
+    },
+    {
+      code: 'a_valider_ecritures', categorie: 'metier', domaine: 'À valider',
+      /* Une PIÈCE comptable en brouillon (deux lignes de même numéro) compte
+         pour une : le comptable valide des pièces, pas des lignes (RG-10). */
+      lire: function () {
+        var vues = {};
+        return S.collection('ecritures').active()
+          .filter(function (e) {
+            if (e.statut !== 'brouillon') return false;
+            var k = e.numero || e.pieceNumero || e.id;
+            if (vues[k]) return false;
+            vues[k] = true;
+            return true;
+          })
+          .map(function (e) {
+            var k = e.numero || e.pieceNumero || e.id;
+            return {
+              cle: 'ecr:' + k,
+              priorite: 'information',
+              titre: 'Pièce comptable en brouillon : ' + k,
+              detail: (e.libelle || 'Écriture') + '. La validation comptable reste un geste humain.',
+              lien: 'm12-ecritures',
+              postes: ['comptable', 'da', 'aide_comptable'],
+            };
+          });
+      },
+    },
+    {
+      code: 'prix_manquant', categorie: 'metier', domaine: 'Tarifs',
+      /* LOT TARIF-FIX-2 (Direction, 16/11/2026) : une prescription acceptée avec une ligne SANS PRIX attend ce prix à la caisse. L'alerte part vers le profil qui le
+         FIXE, lu dans la fiche RBAC (droit de modifier « Tarifs et prix » pour un acte, une analyse, un examen ; « Référentiel produits » pour un prix d'achat), jamais
+         un nom de rôle. UNE alerte PAR CODE (jamais une par prescription), DÉRIVÉE : elle retombe d'elle-même dès qu'un prix est en vigueur à la date des pièces. Aucune
+         donnée de santé : le code, le libellé de la prestation et le nombre de pièces, jamais un patient. */
+      lire: function () {
+        var PR = global.SIGH.parcours;
+        if (!PR || !PR.prixManquantsEnAttente) return [];
+        return PR.prixManquantsEnAttente().map(function (m) {
+          var achat = m.nature === 'prix_achat';
+          return {
+            cle: 'prix:' + m.cle,
+            priorite: 'important',
+            titre: (achat ? 'Prix à valoriser : « ' : 'Prix à définir : « ') + m.code + ' » ' + m.libelle,
+            detail: C.num(m.pieces.length) + ' pièce(s) en attente à la caisse. ' + m.geste,
+            lien: achat ? 'm6-produits' : 'cfg-tarifs',
+            postes: PR.rolesQuiFixent(m.nature),
+          };
+        });
+      },
+    },
+    {
+      code: 'plan_retard', categorie: 'metier', domaine: 'Plan annuel',
+      /* LOT PTA (16/11/2026) : une action du plan annuel non réalisée dont le trimestre de fin est passé (plus la tolérance lue en base : `plan.graceRetardJours`). UNE alerte PAR ACTION,
+         DÉRIVÉE : elle retombe d'elle-même quand l'action est réalisée ou replanifiée. Elle part vers les rôles qui détiennent le geste d'adoption du plan (fiche RBAC, jamais un nom de
+         rôle). Aucune donnée de santé : la référence, le libellé de l'action et le trimestre. */
+      lire: function () {
+        var PA = global.SIGH.planAnnuel, N = global.SIGH.nav;
+        if (!PA || !PA.alertes) return [];
+        var roles = N && N.rolesAvecGeste ? N.rolesAvecGeste(PA.GESTE) : [];
+        return PA.alertes().map(function (x) {
+          return {
+            cle: 'plan:' + x.action.id,
+            priorite: 'important',
+            titre: 'Action en retard : ' + x.action.reference + ' ' + x.action.action,
+            detail: 'Prévue au plus tard fin T' + x.action.trimestreFin + ' (' + C.dateFR(x.retard.finTrimestre) + '), ' + C.num(x.retard.jours) + ' jour(s) de retard. Réaliser l’action ou la replanifier.',
+            lien: 'm13-plan-annuel',
+            postes: roles,
+          };
+        });
+      },
+    },
+    {
       code: 'poste', categorie: 'metier', domaine: 'Poste',
       /* Les notifications de POSTE, écrites par le moteur transactionnel
          (`PR.notifier`). Elles s'adressent à un poste et non à une personne :
          le prescripteur peut être en congé, c'est le service qui doit voir
-         passer l'information. */
+         passer l'information.
+         Le POSTE d'une notification (« imagerie », « salle_soins »…) n'est pas
+         un identifiant de rôle : `POSTES_NOTIF` dit quels rôles le tiennent,
+         et « tous » s'adresse à chacun. Le titre est le `libelle` que
+         `PR.notifier` écrit. */
       lire: function () {
         return S.collection('notifications').active()
           .filter(function (n) { return !n.lue; })
           .map(function (n) {
             return {
               cle: 'notif:' + n.id,
-              priorite: n.priorite || (n.ton === 'danger' ? 'critique' : 'important'),
-              titre: n.titre || n.message || 'Notification',
+              priorite: prioriteDePoste(n),
+              titre: n.titre || n.libelle || n.message || 'Notification',
               detail: n.detail || n.message || '',
-              lien: n.ecran || null,
-              postes: n.poste ? [n.poste] : null,
+              lien: n.ecran || LIENS_NOTIF[n.type] || null,
+              onglet: n.type === 'prix_decide' ? 'historique' : null,
+              postes: rolesDuPoste(n.poste),
               enregistree: n.id,
             };
           });
@@ -354,17 +569,28 @@
 
   var LIBELLES_GROUPE = {
     stock_seuil: ['article(s) sous leur seuil d’alerte',
-      'Établir un bon de commande — validation de la Direction requise (RG-04).'],
+      'Établir un bon de commande, validation de la Direction requise (RG-04).'],
     lots_peremption: ['lot(s) périmés ou proches de la péremption',
       'Appliquer le principe FEFO (RG-05) et déclarer les pertes constatées.'],
+    prix_manquant: ['prestation(s) sans prix attendue(s) à la caisse',
+      'Poser le prix (« Tarifs et prix » ou « Changer le prix d’achat ») : les pièces en attente se valorisent à leur date.'],
     mecef_rejet: ['facture(s) rejetée(s) par la MECeF',
       'Corriger puis réémettre auprès de l’administration fiscale.'],
     echeance_fiscale: ['échéance(s) fiscale(s) dépassée(s)',
       'Une pénalité court sur chacune. Déclarer et payer.'],
+    echeance_fiscale_proche: ['échéance(s) fiscale(s) proche(s)',
+      'À payer dans le délai des paramètres du calendrier : déclarer puis payer.'],
     labo_a_traiter: ['analyse(s) réglée(s), prélèvement à faire',
       'Les patients ont payé : ils peuvent être appelés en salle de prélèvement.'],
     labo_a_saisir: ['échantillon(s) reçu(s), résultat à saisir',
       'Le prescripteur ne verra rien tant que le résultat n’est pas validé.'],
+    creance_agee: ['créance(s) assureur en souffrance',
+      'Relancer chaque compagnie : ces créances pèsent sur le besoin en fonds de roulement.'],
+    a_valider_besoins: ['bon(s) de besoins à valider', 'Arbitrer chaque bon : validé, complément demandé ou rejeté avec son motif.'],
+    produits_a_valoriser: ['produit(s) à valoriser', 'Proposer le premier prix d’achat de chaque article (« Tarifs et prix », onglet Produits) : la Directrice Administrative décide.'],
+    prix_a_valider: ['lot(s) de changements de prix à valider', 'Décider chaque changement (Oui ou Non) à « Tarifs et prix », onglet Alertes.'],
+    a_valider_ecritures: ['pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'],
+    plan_retard: ['action(s) du plan annuel en retard', 'Réaliser chaque action ou la replanifier : l’alerte retombe d’elle-même.'],
     poste: ['notification(s) de poste', 'À consulter dans les écrans concernés.'],
   };
 
@@ -384,7 +610,7 @@
     ordre.forEach(function (cle) {
       var g = paquets[cle];
       if (g.length < SEUIL_REGROUPEMENT) { out = out.concat(g); return; }
-      var lib = LIBELLES_GROUPE[g[0].source] || [g[0].domaine.toLowerCase() + ' — alertes', ''];
+      var lib = LIBELLES_GROUPE[g[0].source] || [g[0].domaine.toLowerCase() + ' : alertes', ''];
       /* Une alerte groupée est acquittée si TOUS ses membres le sont — faire
          taire la ligne alors que quinze articles restent en rupture ferait
          perdre l'information au moment où elle compte — OU si la ligne
@@ -402,7 +628,7 @@
         priorite: g[0].priorite,
         titre: C.num(g.length) + ' ' + lib[0],
         detail: lib[1],
-        lien: g[0].lien,
+        lien: g[0].lien, onglet: g[0].onglet || null,
         postes: g[0].postes,
         acquitteeLe: acquitteeLe,
       });
@@ -420,6 +646,9 @@
       try { lues = src.lire() || []; } catch (e) { lues = []; }
       lues.forEach(function (n) {
         if (!opts.tousPostes && !pourMoi(n, poste)) return;
+        /* Le serveur et le poste calculent parfois la MÊME alerte (même clé) :
+           celle du poste, fraîche, l'emporte ; l'autre ne double pas la cloche. */
+        if (out.some(function (x) { return x.cle === n.cle; })) return;
         out.push(Object.assign({}, n, {
           source: src.code,
           categorie: src.categorie,
@@ -545,6 +774,9 @@
    * repère ce qui est NOUVEAU depuis le dernier tour, et distribue.
    */
   function tour(premier) {
+    /* Les déclencheurs SMS (rappel de la veille, vœux, reprise de la file) se branchent ICI, sur le même tour que les alertes : ils ne
+       dupliquent pas la tâche serveur rdv_lendemain, qui alerte le PERSONNEL ; eux préviennent le PATIENT, et seulement poste d’accueil. */
+    try { if (global.SIGH.parcours && global.SIGH.parcours.declencherSmsAuto) global.SIGH.parcours.declencherSmsAuto(); } catch (e) { console.error('[SIGH] SMS :', e); }
     var liste = enAttente();
     var nouveaux = liste.filter(function (n) { return !_vues[n.cle]; });
     liste.forEach(function (n) { _vues[n.cle] = true; });
@@ -585,6 +817,47 @@
     return liste;
   }
 
+  /* ==========================================================================
+   * LES ALERTES DU SERVEUR
+   * --------------------------------------------------------------------------
+   * Le planificateur du serveur (api/cron.php) évalue des règles à heure fixe,
+   * poste ouvert ou non, et les écrit dans sa propre table. Le poste les LIT :
+   * il les compte comme n'importe quelle source (cloche, badge, regroupement,
+   * acquittement, son), sans rien recalculer. Hors ligne ou sans serveur, la
+   * liste reste celle du dernier sondage — et vide au premier : le poste ne
+   * perd rien de ce qu'il calcule lui-même.
+   * ======================================================================== */
+  var _serveur = [];
+  var _serveurLe = null;
+  var _sondageEnVol = false;
+  function urlServeur() {
+    var racine = '';
+    try { racine = (document.documentElement.getAttribute('data-root')) || ''; } catch (e) { racine = ''; }
+    return racine + 'api/notifications.php';
+  }
+  function sonderServeur() {
+    if (_sondageEnVol || !global.fetch) return global.Promise.resolve(false);
+    var jeton = S.jetonServeur ? S.jetonServeur() : null;
+    if (!jeton || global.location.protocol === 'file:') return global.Promise.resolve(false);
+    _sondageEnVol = true;
+    return global.fetch(urlServeur(), { headers: { 'X-Sigh-Jeton': jeton, Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        _serveur = (o && o.notifications) || [];
+        _serveurLe = (o && o.serveur_le) || null;
+        _sondageEnVol = false;
+        return true;
+      }, function () { _sondageEnVol = false; return false; });
+  }
+  SOURCES.push({
+    code: 'serveur', categorie: 'metier', domaine: 'Planificateur',
+    lire: function () {
+      return _serveur.map(function (n) {
+        return { cle: n.cle, priorite: n.priorite, titre: n.titre, detail: n.detail, lien: n.lien || null, postes: n.postes };
+      });
+    },
+  });
+
   var INTERVALLE = 45000;   /* 45 s : assez pour être vivant, assez peu pour ne pas peser */
 
   function demarrer() {
@@ -592,8 +865,10 @@
     /* Le premier tour est différé : la page doit finir de se monter, et le
        magasin d'être amorcé. Sonner pendant l'amorçage donnerait une alerte
        sur un état transitoire. */
-    global.setTimeout(function () { tour(true); }, 1500);
-    _timer = global.setInterval(function () { tour(false); }, INTERVALLE);
+    /* Le sondage du serveur précède le premier tour : au premier regard, la
+       cloche porte déjà ce que le planificateur a vu pendant la nuit. */
+    global.setTimeout(function () { sonderServeur().then(function () { tour(true); }); }, 1500);
+    _timer = global.setInterval(function () { sonderServeur().then(function () { tour(false); }); }, INTERVALLE);
   }
   function arreter() {
     if (_timer) { global.clearInterval(_timer); _timer = null; }
@@ -601,6 +876,7 @@
 
   global.SIGH.notifications = {
     /* Lecture */
+    sonderServeur: sonderServeur, etatServeur: function () { return { alertes: _serveur.slice(), le: _serveurLe }; },
     collecter: collecter, enAttente: enAttente, priorite: priorite, PRIORITES: PRIORITES,
     SOURCES: SOURCES,
     /* Acquittement */

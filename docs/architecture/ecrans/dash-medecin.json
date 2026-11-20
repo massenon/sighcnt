@@ -1,0 +1,62 @@
+{
+ "id": "dash-medecin",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Médecin",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Médecin",
+ "description": "Consultations du jour, patients hospitalisés sous responsabilité et prescriptions récentes.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Médecin"
+ ],
+ "actions": [
+  "Infirmier / Sage-femme",
+  "Pharmacie",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "Aucun patient ne vous est adressé nommément. 0 patient(s) attendent en file commune : le prochain praticien libre les reçoit.",
+  "1 patient(s) attendent un autre praticien. Ils figurent au poste de consultation, pas dans votre liste."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Consultations du jour",
+  "En attente",
+  "Patients hospitalisés",
+  "Consultations du mois"
+ ],
+ "cartes": [
+  "Actes prescrits en attente d’exécution",
+  "Accès rapides",
+  "Vos patients en attente",
+  "File commune de consultation",
+  "Ce que vous faites ici — vos parcours",
+  "File d’attente et consultations récentes",
+  "Motifs de consultation les plus fréquents",
+  "Diagnostics posés"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Dossier",
+   "Patient",
+   "Motif",
+   "Statut"
+  ]
+ ],
+ "commandes": [
+  "Lire les résultats",
+  "Ouvrir la file d’attente",
+  "Ouvrir la consultation",
+  "Voir les résultats",
+  "Admettre",
+  "Délivrer",
+  "Toutes les consultations"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

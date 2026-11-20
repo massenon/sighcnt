@@ -15,7 +15,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit,
       PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* Centres de coûts : référentiel administrable (écran cfg-centres-couts).
      La saisie comptable en propose la liste et permet d'en ouvrir un à la
@@ -25,10 +25,41 @@
     return colCentres().active().map(function (c) { return { value: c.code, label: c.libelle, detail: c.type === 'support' ? 'Support' : 'Exploitation' }; });
   }
 
-  function ecritures() { return S.collection('ecritures').active(); }
-  function comptes() { return S.collection('comptes').active(); }
+  /* L'EXERCICE CHOISI au sélecteur gouverne toute lecture comptable : aucune année en dur.
+     `ecrituresToutes()` reste pour les écrans qui CHOISISSENT eux-mêmes une année
+     (bilan d'ouverture, états à bornes) ; `ecritures()` porte l'exercice du sélecteur
+     et, tant que le précédent n'est pas clos, ses à-nouveaux PROVISOIRES (calculés, jamais stockés). */
+  function exo() { return global.SIGH.exercice.choisi(); }
+  /* Le journal CL (clôture) n'entre pas dans les états : ceux de N restent ceux d'AVANT la clôture. Il reste visible au registre des écritures. */
+  function ecrituresToutes() { return S.collection('ecritures').active().filter(function (e) { return e.journal !== 'CL'; }); }
+  function ecritures() {
+    var X = global.SIGH.exercice, a = X.choisi();
+    return ecrituresToutes().filter(function (e) { return X.anneeDe(e.date) === a; }).concat(X.provisoires(a));
+  }
+  /* E724/E725 : le plan du jeu portait deux fiches au même numéro (244100, 631810). On GARDE la première fiche
+     du document (celle qui précède dans le classeur) et on ARCHIVE le doublon avec son motif (RG-14). Une seule
+     règle, appliquée une fois par chargement de page, aux magasins anciens comme aux neufs. */
+  var planAssaini = false;
+  function assainirPlan() {
+    planAssaini = true;
+    var col = S.collection('comptes');
+    var vus = {};
+    col.active().slice().forEach(function (c) {
+      var n = String(c.num);
+      if (!vus[n]) { vus[n] = c; return; }
+      col.archive(c.id, 'Doublon du plan comptable (numéro ' + n + '): la fiche conservée est « ' + vus[n].libelle + ' » (' + vus[n].id + ').');
+    });
+  }
+  function avecAssainissement(rendre) { return function (root) { assainirPlan(); return rendre(root); }; }
+  function comptes() {
+    if (!planAssaini) assainirPlan();
+    return S.collection('comptes').active();
+  }
 
+  /* E715 : un compte créé à l'écran fait foi pour son libellé (le plan statique n'est que le repli). */
   function compteLibelle(num) {
+    var cr = S.collection('comptes').all().filter(function (x) { return String(x.num) === String(num); })[0];
+    if (cr) return cr.libelle;
     var c = D.PLAN_COMPTABLE.filter(function (x) { return x.num === num; })[0];
     return c ? c.libelle : num;
   }
@@ -51,8 +82,8 @@
       6: 'Classe 6 — Charges', 7: 'Classe 7 — Produits', 8: 'Classe 8 — Autres charges et produits',
     }[n] || 'Classe ' + n;
   }
-  function soldeCompte(num) {
-    var e = ecritures().filter(function (x) { return x.compte === num; });
+  function soldeCompte(num, source) {
+    var e = (source || ecritures()).filter(function (x) { return x.compte === num; });
     return { debit: C.sum(e, 'debit'), credit: C.sum(e, 'credit'), solde: C.sum(e, 'debit') - C.sum(e, 'credit'), nb: e.length };
   }
 
@@ -231,8 +262,8 @@
     title: 'Plan comptable OHADA',
     description: 'Référentiel des comptes du plan SYSCOHADA utilisés par la clinique, par classe.',
     regle: 'Les comptes marqués « document » proviennent du classeur comptable SYSCOHADA transmis lors du cadrage ; les autres complètent le plan pour permettre le bouclage des schémas d’écriture.',
-    render: K.crud({
-      collection: 'comptes', entite: 'compte', entiteP: 'comptes', module: 'M12',
+    render: avecAssainissement(K.crud({
+      collection: 'comptes', entite: 'compte', entiteP: 'comptes', module: 'M12', importer: 'plan-comptable',
       defaultSort: 'num', pageSize: 20,
       source: 'Classeur comptable SYSCOHADA — journal des comptes par mois.',
       columns: [
@@ -265,10 +296,18 @@
         { name: 'classe', label: 'Classe', type: 'select', required: true, options: [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return { value: n, label: classeLibelle(n) }; }) },
         { name: 'journal', label: 'Journal usuel', type: 'select', required: true, options: D.JOURNAUX.map(function (j) { return { value: j.code, label: j.code + ' — ' + j.libelle }; }) },
       ],
-      transform: function (v) { v.classe = Number(v.classe); if (!v.source) v.source = 'CDCT'; return v; },
+      /* Écart E721 : la provenance était remise à « CDCT » à CHAQUE enregistrement — modifier un compte du document en faisait un
+         « Complément ». Seule la création pose la provenance ; la modification la conserve. */
+      transform: function (v, record) { v.classe = Number(v.classe); if (!v.source && !record) v.source = 'CDCT'; return v; },
       beforeSave: function (v, record) {
         if (!/^\d{6}$/.test(String(v.num))) return 'Le numéro de compte doit comporter 6 chiffres.';
-        if (!record && comptes().some(function (c) { return c.num === v.num; })) return 'Ce numéro de compte existe déjà.';
+        /* Unicité du numéro : à la création ET quand la modification change le numéro ; un compte archivé garde son numéro (RG-14). */
+        var pris = S.collection('comptes').all().concat(S.collection('comptes').archived()).filter(function (c) {
+          return c.num === v.num && (!record || c.id !== record.id);
+        })[0];
+        if (pris) return pris.statut === 'archive'
+          ? 'Ce numéro de compte existe déjà (compte archivé : le restaurer depuis la corbeille).'
+          : 'Ce numéro de compte existe déjà.';
         return null;
       },
       filters: [
@@ -300,7 +339,7 @@
           return wrap;
         },
       }],
-    }),
+    })),
     actions: function () {
       return [K.btn('Imprimer le plan comptable', {
         variant: 'primary', icon: 'printer',
@@ -310,7 +349,7 @@
             sousTitre: 'Référentiel des comptes utilisés par la clinique',
             cartouche: [['Comptes paramétrés', C.num(comptes().length)],
               ['Classes', C.num(Object.keys(C.groupBy(comptes(), 'classe')).length)],
-              ['Exercice', '2026'], ['Date d’édition', C.dateFR(AUJ)]],
+              ['Exercice', String(exo())], ['Date d’édition', C.dateFR(AUJ)]],
             contenu: P.tableau([
               { label: 'N° de compte', key: 'num' },
               { label: 'Intitulé', key: 'libelle' },
@@ -410,7 +449,7 @@
         var sel = C.sortBy(e.filter(function (x) { return x.journal === j.code; }), 'date');
         P.etat({
           titre: 'Journal comptable — ' + j.libelle,
-          sousTitre: 'Code journal ' + j.code + ' — exercice 2026',
+          sousTitre: 'Code journal ' + j.code + ' — exercice ' + exo(),
           cartouche: [['Journal', j.code + ' — ' + j.libelle], ['Écritures', C.num(sel.length)],
             ['Total débit', C.money(j.debit)], ['Total crédit', C.money(j.credit)],
             ['Équilibre', j.equilibre ? 'Équilibré' : 'Écart de ' + C.money(Math.abs(j.debit - j.credit))],
@@ -477,18 +516,47 @@
         rowActions: function (e) {
           var acts = [K.iconBtn('eye', 'Consulter', function () { consulter(e); })];
           if (e.statut === 'brouillon') {
-            acts.push(K.iconBtn('check', 'Valider', function () {
-              var res = col.update(e.id, { statut: 'validee' });
+            acts.push(K.commandeIcone('check', 'Valider', function () {
+              /* On valide la PIÈCE ENTIÈRE, jamais une ligne seule (écart E710) : valider une ligne coupait l'écriture en deux
+                 et laissait la balance boiteuse. RG-10 est contrôlé sur l'ensemble des lignes de même numéro AVANT. */
+              var piece = col.active().filter(function (x) { return x.numero === e.numero && x.statut === 'brouillon'; });
+              var td = C.sum(piece, 'debit'), tc = C.sum(piece, 'credit');
+              if (td !== tc) {
+                U.toast('RG-10 — écriture déséquilibrée : validation impossible.', {
+                  type: 'error', detail: 'Pièce ' + e.numero + ' : écart de ' + C.money(Math.abs(td - tc)) + '.',
+                });
+                return;
+              }
+              var res = piece.map(function (x) { return col.update(x.id, { statut: 'validee' }); });
+              /* Un refus de la garde d'exercice rend null : on défait ce qui a passé, le magasin a dit le motif, aucun succès n'est annoncé. */
+              if (res.some(function (r) { return !r; })) {
+                res.forEach(function (r) { if (r) r.undo(); });
+                table.refresh();
+                return;
+              }
               table.refresh();
-              U.toast('Écriture validée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+              U.toast('Écriture validée.', { type: 'success', detail: piece.length + ' ligne(s).',
+                undo: function () { res.forEach(function (r) { if (r) r.undo(); }); table.refresh(); } });
             }, 'ghost'));
           }
-          acts.push(K.iconBtn('archive', 'Archiver', function () {
-            var res = col.archive(e.id);
+          /* Archiver est absent (jamais grisé) quand l'exercice de la pièce n'est pas ouvert : la garde le refuserait. */
+          var exoOuvert = !global.SIGH.exercice || global.SIGH.exercice.etat(global.SIGH.exercice.anneeDe(e.date)) === 'ouvert';
+          if (exoOuvert) acts.push(K.commandeIcone('archive', 'Archiver', function () {
+            /* On archive la PIÈCE ENTIÈRE (écart E716, même défaut que la validation) : archiver une ligne seule laissait
+               l'autre au journal — une demi-écriture serait pire qu'aucune (RG-10, comme l'archivage d'une dépense). */
+            var piece = col.active().filter(function (x) { return x.numero === e.numero; });
+            var res = piece.map(function (x) { return col.archive(x.id); });
+            if (res.some(function (r) { return !r; })) {
+              res.forEach(function (r) { if (r) r.undo(); });
+              table.refresh();
+              return;
+            }
             table.refresh();
-            U.toast('Écriture archivée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
-          }, 'ghost'));
-          return acts;
+            U.toast('Écriture archivée.', { type: 'success', detail: piece.length + ' ligne(s).',
+              undo: function () { res.forEach(function (r) { if (r) r.undo(); }); table.refresh(); } });
+          }, { variant: 'ghost', droit: 'annuler' }));
+          /* Une commande sans droit est ABSENTE (`commandeIcone` rend null) : audit RBAC du 07/11/2026, profils direction et aide-comptable. */
+          return acts.filter(Boolean);
         },
       });
       host.appendChild(table);
@@ -502,7 +570,7 @@
 
         var f = U.form([
           { name: 'date', label: 'Date de l’opération', type: 'date', required: true, value: C.iso(AUJ) },
-          { name: 'journal', label: 'Journal', type: 'select', required: true, options: D.JOURNAUX.map(function (j) { return { value: j.code, label: j.code + ' — ' + j.libelle }; }) },
+          { name: 'journal', label: 'Journal', type: 'select', required: true, options: D.JOURNAUX.filter(function (j) { return !(D.JOURNAUX_RESERVES || []).some(function (r) { return r.code === j.code; }); }).map(function (j) { return { value: j.code, label: j.code + ' — ' + j.libelle }; }) },
           { name: 'libelle', label: 'Libellé de l’opération', required: true, col: 'full' },
           {
             name: 'centreCout', label: 'Centre de coûts', type: 'select', options: optionsCentres(),
@@ -649,7 +717,13 @@
             });
             return;
           }
-          var num = v.journal + '-2026-' + C.pad(col.active().length + 1, 5);
+          /* Écart E711 : le rang était « nombre de lignes actives + 1 » — il repart en arrière à chaque archivage et redonne un numéro déjà
+             attribué. Le rang est le plus grand déjà écrit pour ce journal et cet exercice, plus un (lu sur les fiches existantes). */
+          var prefNum = v.journal + '-' + exo() + '-', maxNum = 0;
+          col.all().forEach(function (x) {
+            if (String(x.numero || '').indexOf(prefNum) === 0) maxNum = Math.max(maxNum, parseInt(String(x.numero).slice(prefNum.length), 10) || 0);
+          });
+          var num = prefNum + C.pad(maxNum + 1, 5);
           var crees = lignes.map(function (l) {
             return col.insert({
               numero: num, date: v.date, journal: v.journal, journalLibelle: journalLibelle(v.journal),
@@ -659,6 +733,13 @@
               origine: 'Saisie manuelle', statut: statut,
             });
           });
+          /* Écart E713 : une écriture refusée par la garde de l'exercice clos rend null — la maquette annonçait « enregistrée » et
+             fermait la saisie. On défait ce qui a pu être écrit et la saisie reste ouverte (le refus a déjà été dit). */
+          if (crees.some(function (r) { return !r; })) {
+            crees.forEach(function (r) { if (r) r.undo(); });
+            table.refresh();
+            return;
+          }
           m.close(); table.refresh();
           U.toast('Écriture ' + num + ' enregistrée (' + crees.length + ' ligne(s)).', {
             type: 'success',
@@ -702,7 +783,12 @@
     regle: 'Écran en lecture seule. Le grand livre est <strong>reconstitué depuis les écritures</strong> : il ne se modifie pas ici. Toute correction passe par l’écriture d’origine (Écritures comptables), qui doit rester équilibrée (RG-10).',
     render: function (root) {
       var host = el('div.space-y-4');
-      var mouvementes = comptes().filter(function (c) { return soldeCompte(c.num).nb > 0; });
+      /* Écart E724 : le plan porte deux fiches au même numéro (244100, 631810) — la liste proposait le compte deux fois. UNE entrée par numéro. */
+      var numsVus = {};
+      var mouvementes = comptes().filter(function (c) {
+        if (soldeCompte(c.num).nb === 0 || numsVus[c.num]) return false;
+        numsVus[c.num] = true; return true;
+      });
 
       var listeMvt = C.sortBy(mouvementes, 'num');
       var selCompte = U.combo(listeMvt.map(function (c) {
@@ -741,9 +827,14 @@
         });
       }
 
+      function soldeTuile(label, v, hint) {
+        return { label: label, value: v == null ? 'Inconnu' : C.money(v), icon: v == null ? 'help-circle' : 'scale', tone: v == null ? 'warning' : (v >= 0 ? 'navy' : 'danger'), hint: hint + (v == null ? '' : (v >= 0 ? ' · Débiteur' : ' · Créditeur')) };
+      }
+
       function afficher() {
         var rows = avecSolde();
         var s = soldeCompte(selCompte.value);
+        var so = global.SIGH.exercice.soldesCompte(selCompte.value, exo());
         C.clear(vue);
 
         vue.appendChild(U.kpiGrid([
@@ -751,6 +842,9 @@
           { label: 'Total débit', value: C.money(s.debit), icon: 'arrow-down-left', tone: 'warning' },
           { label: 'Total crédit', value: C.money(s.credit), icon: 'arrow-up-right', tone: 'success' },
           { label: 'Solde', value: C.money(s.solde), icon: 'scale', tone: s.solde >= 0 ? 'navy' : 'danger', hint: s.solde >= 0 ? 'Débiteur' : 'Créditeur' },
+          /* EF-CLO-4 : l'ouverture et la clôture sont LUES du moteur d'exercice ; une ouverture inconnue se DIT (« Inconnu »), elle n'est jamais un zéro. */
+          soldeTuile('Solde d’ouverture', so.ouverture.valeur, so.ouverture.etat === 'provisoire' ? 'Provisoire : ' + so.ouverture.source : so.ouverture.source),
+          soldeTuile('Solde de clôture', so.cloture.valeur, so.cloture.valeur == null ? 'Inconnu : l’ouverture ne l’est pas moins' : (so.apresCL ? 'Après la pièce de clôture (journal CL)' : (so.cloture.etat === 'en_cloture' ? 'Exercice en clôture' : 'Ouverture plus mouvements'))),
         ]));
 
         vue.appendChild(U.dataTable({
@@ -819,7 +913,7 @@
         });
         P.etat({
           titre: 'Grand livre général',
-          sousTitre: 'Exercice 2026 — tous comptes mouvementés',
+          sousTitre: 'Exercice ' + exo() + ' — tous comptes mouvementés',
           cartouche: [['Comptes mouvementés', C.num(mouvementes.length)],
             ['Écritures', C.num(ecritures().length)],
             ['Total débit', C.money(C.sum(ecritures(), 'debit'))],
@@ -838,12 +932,36 @@
   global.SIGH.screen('m12-balance', {
     title: 'Balance générale & âgée',
     description: 'Balance des comptes, contrôle d’équilibre et balance âgée des comptes de tiers.',
-    regle: 'Écran en lecture seule. La balance est <strong>calculée à partir des écritures validées</strong>. Elle ne se saisit pas : corriger l’écriture concernée pour la faire évoluer.',
-    render: function (root) {
+    regle: 'Écran en lecture seule. La balance est <strong>calculée à partir des écritures validées</strong> par défaut ; le filtre « Écritures retenues » permet d’y compter aussi les brouillons, et le bandeau dit ce qui est compté. Elle ne se saisit pas : corriger l’écriture concernée pour la faire évoluer.',
+    render: function rendreBalance(root, modeBalance) {
       var host = el('div.space-y-4');
 
+      /* E718 : la balance ne mentionnait que les écritures « validées » et comptait tout.
+         Le filtre est EXPLICITE (défaut : validées) et le bandeau dit la vérité. */
+      var mode = modeBalance === 'toutes' ? 'toutes' : 'validees';
+      var toutesEcr = ecritures();
+      var retenues = mode === 'toutes' ? toutesEcr : toutesEcr.filter(function (x) { return x.statut === 'validee'; });
+      var nbBrouillons = toutesEcr.filter(function (x) { return x.statut === 'brouillon'; }).length;
+      var selMode = el('select.select', { id: 'balance-ecritures', 'aria-label': 'Écritures retenues' });
+      [['validees', 'Validées seulement'], ['toutes', 'Toutes (brouillons compris)']].forEach(function (o) {
+        var opt = el('option', { value: o[0] }, o[1]);
+        if (o[0] === mode) opt.selected = true;
+        selMode.appendChild(opt);
+      });
+      selMode.addEventListener('change', function () { C.clear(root); rendreBalance(root, selMode.value); });
+      host.appendChild(el('div.flex.flex-wrap.items-center.gap-2', null, [
+        el('label.label.mb-0', { for: 'balance-ecritures', text: 'Écritures retenues' }), selMode,
+      ]));
+      host.appendChild(mode === 'toutes'
+        ? K.note('Balance calculée sur <strong>toutes les écritures</strong> de l’exercice ' + exo() + ', <strong>brouillons compris</strong> ('
+          + C.num(nbBrouillons) + ' ligne(s) en brouillon). Un brouillon n’est pas un fait comptable : choisir « Validées seulement » pour la balance opposable.',
+        { tone: 'warning', icon: 'file-clock' })
+        : K.note('Balance calculée sur les <strong>écritures validées</strong> de l’exercice ' + exo() + '. '
+          + (nbBrouillons ? C.num(nbBrouillons) + ' ligne(s) en brouillon sont écartées.' : 'Aucun brouillon à écarter.'),
+        { tone: 'info', icon: 'scale' }));
+
       var lignes = comptes().map(function (c) {
-        var s = soldeCompte(c.num);
+        var s = soldeCompte(c.num, retenues);
         return {
           id: c.num, num: c.num, libelle: c.libelle, classe: c.classe,
           debit: s.debit, credit: s.credit,
@@ -852,6 +970,10 @@
           nb: s.nb,
         };
       }).filter(function (l) { return l.nb > 0; });
+      /* Écart E725 : deux fiches du plan au même numéro (631810) faisaient compter DEUX fois les mouvements du compte — la balance annonçait un
+         déséquilibre RG-10 de 1 954 000 F qui n'existait pas dans le journal. UNE ligne par numéro de compte. */
+      var numsVus = {};
+      lignes = lignes.filter(function (l) { if (numsVus[l.num]) return false; numsVus[l.num] = true; return true; });
 
       var totalDebit = C.sum(lignes, 'debit');
       var totalCredit = C.sum(lignes, 'credit');
@@ -979,11 +1101,12 @@
       function imprimerBalance() {
         P.etat({
           titre: 'Balance générale des comptes',
-          sousTitre: 'Exercice 2026 — situation au ' + C.dateFR(AUJ),
+          sousTitre: 'Exercice ' + exo() + ' — situation au ' + C.dateFR(AUJ),
           cartouche: [['Comptes mouvementés', C.num(lignes.length)],
             ['Total débit', C.money(totalDebit)], ['Total crédit', C.money(totalCredit)],
             ['Équilibre', equilibre ? 'Équilibrée' : 'Écart de ' + C.money(Math.abs(totalDebit - totalCredit))],
-            ['Exercice', '2026'], ['Date d’édition', C.dateFR(AUJ)]],
+            ['Exercice', String(exo())], ['Écritures retenues', mode === 'toutes' ? 'Toutes, brouillons compris' : 'Validées seulement'],
+            ['Date d’édition', C.dateFR(AUJ)]],
           contenu: P.tableau([
             { label: 'Compte', key: 'num' },
             { label: 'Intitulé', key: 'libelle' },
@@ -1053,7 +1176,7 @@
           onclick: function () {
             P.etat({
               titre: 'Balance analytique',
-              sousTitre: 'Résultat par centre de coûts — exercice 2026',
+              sousTitre: 'Résultat par centre de coûts — exercice ' + exo(),
               cartouche: [['Centres de coûts', C.num(rows.length)],
                 ['Produits', C.money(C.sum(rows, 'produits'))],
                 ['Charges', C.money(C.sum(rows, 'charges'))],
@@ -1107,7 +1230,7 @@
     description: 'Budgétisation par centre de coûts et suivi du réalisé par rapport au prévisionnel.',
     render: function (root) {
       var col = S.collection('budgets', { module: 'M12', entite: 'Budget' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('budgets')) {
         var rnd = C.seeded(2213);
         D.CENTRES_COUT.forEach(function (cc, i) {
           var prevu = C.between(rnd, 3, 40) * 500000;
@@ -1128,7 +1251,7 @@
       }
 
       return K.crud({
-        collection: 'budgets', entite: 'budget', entiteP: 'budgets', module: 'M12',
+        collection: 'budgets', entite: 'budget', entiteP: 'budgets', module: 'M12', importer: 'budgets',
         defaultSort: 'prevu', defaultDir: 'desc', pageSize: 15,
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (b) { return el('span.font-mono.text-xs', { text: b.reference }); } },
@@ -1168,14 +1291,17 @@
           },
         ],
         fields: [
-          { name: 'exercice', label: 'Exercice', type: 'number', required: true, value: 2026 },
+          { name: 'exercice', label: 'Exercice', type: 'number', required: true, value: AUJ.getFullYear() },
           { name: 'centreCout', label: 'Centre de coûts', type: 'select', required: true, options: optionsCentres() },
-          { name: 'nature', label: 'Nature budgétaire', type: 'select', required: true, options: ['Charges de fonctionnement', 'Investissements', 'Charges de personnel', 'Achats de marchandises'] },
+          { name: 'nature', label: 'Nature budgétaire', type: 'select', required: true, options: D.NATURES_BUDGET },
           { name: 'prevu', label: 'Montant prévisionnel (FCFA)', type: 'money', required: true, min: 0 },
         ],
-        transform: function (v) {
+        /* E772/E773 : la référence vient des budgets EXISTANTS (le compteur de page redonnait « BG-2026-001 », déjà attribuée), et une MODIFICATION
+           la conserve — recalculée à chaque enregistrement, elle renumérotait le budget. */
+        transform: function (v, record) {
           v.centre = centreLabel(v.centreCout);
-          if (!v.reference) v.reference = C.nextRef('BG-2026-', 3);
+          /* E777 : le millésime de la référence est l'exercice SAISI, le rang court par exercice (archivés compris). */
+          if (!v.reference) v.reference = record && record.reference ? record.reference : C.referenceSuivante('BG-' + v.exercice + '-', 3, col.all().concat(col.archived()));
           return v;
         },
         kpis: function (rows) {
@@ -1262,7 +1388,7 @@
       + 'AMORT. / NET de l’actif immobilisé du bilan.',
     render: function (root) {
       var col = S.collection('immobilisations', { module: 'M12', entite: 'Immobilisation' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('immobilisations')) {
         var rnd = C.seeded(2311);
         var BIENS = [
           ['Échographe', 'Matériel médical', 8500000, 5, '241000'],
@@ -1430,7 +1556,7 @@
       }
 
       return K.crud({
-        collection: 'immobilisations', entite: 'immobilisation', entiteP: 'immobilisations', module: 'M12',
+        collection: 'immobilisations', entite: 'immobilisation', entiteP: 'immobilisations', module: 'M12', importer: 'immobilisations',
         defaultSort: 'valeurAcquisition', defaultDir: 'desc', pageSize: 15, drawerWidth: 'max-w-2xl',
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (i) { return el('span.font-mono.text-xs', { text: i.reference }); } },
@@ -1464,7 +1590,7 @@
         ],
         fields: [
           { name: 'designation', label: 'Désignation du bien', required: true, col: 'full' },
-          { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: ['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'] },
+          { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: D.CATEGORIES_IMMOBILISATION },
           { name: 'dateAcquisition', label: 'Date d’acquisition', type: 'date', required: true },
           { name: 'valeurAcquisition', label: 'Valeur d’acquisition (FCFA)', type: 'money', required: true, min: 0 },
           { name: 'dureeAmortissement', label: 'Durée d’amortissement (années)', type: 'number', required: true, min: 1, max: 30 },
@@ -1478,10 +1604,14 @@
           { name: 'motifSortie', label: 'Motif de la sortie', type: 'select',
             options: ['Cession', 'Réforme', 'Destruction', 'Vol ou perte', 'Don'] },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('IM-', 3); return v; },
+        /* E772/E773 : même défaut que les budgets — référence tirée des biens existants, conservée à la modification. */
+        transform: function (v, record) {
+          if (!v.reference) v.reference = record && record.reference ? record.reference : C.referenceSuivante('IM-', 3, col.all());
+          return v;
+        },
         onCreate: function () { return { dateAcquisition: C.iso(AUJ), dureeAmortissement: 5, etat: 'En service', compte: '241000' }; },
         filters: [
-          { name: 'categorie', label: 'Catégorie', options: ['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'] },
+          { name: 'categorie', label: 'Catégorie', options: D.CATEGORIES_IMMOBILISATION },
           { name: 'etat', label: 'État', options: ['En service', 'En maintenance', 'Hors service', 'Cédé'] },
         ],
         kpis: function (rows) {
@@ -1600,7 +1730,7 @@
     description: 'Comptes bancaires, relevés et rapprochement avec la comptabilité.',
     render: function (root) {
       var col = S.collection('rapprochements', { module: 'M12', entite: 'Rapprochement' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('rapprochements')) {
         var rnd = C.seeded(2417);
         var BANQUES = ['ECOBANK Bénin', 'Bank Of Africa Bénin', 'Orabank Bénin'];
         BANQUES.forEach(function (b, i) {
@@ -1611,7 +1741,7 @@
               id: 'RAP' + C.uid(), statut: 'actif',
               reference: 'RB-' + C.pad(col.all().length + 1, 4),
               banque: b, compte: '521000',
-              periode: C.MOIS[m + 2].charAt(0).toUpperCase() + C.MOIS[m + 2].slice(1) + ' 2026',
+              periode: C.MOIS[m + 2].charAt(0).toUpperCase() + C.MOIS[m + 2].slice(1) + ' ' + C.aujourdhui().getFullYear(),
               soldeComptable: soldeCompta,
               soldeReleve: soldeCompta + ecart,
               ecart: ecart,
@@ -1792,9 +1922,16 @@
        * Sans cette règle, le passif sortirait en négatif et la lecture
        * s'inverserait d'une rubrique à l'autre.
        * ---------------------------------------------------------------- */
-      function soldeDesComptes(prefixes, sens) {
+      /* L'EXERCICE PRÉCÉDENT, TIRÉ DU JOURNAL. Quand le précédent n'a pas été déposé (et que le journal
+         le porte), sa colonne se CALCULE comme celle de l'exercice choisi, avec ses à-nouveaux
+         provisoires s'il n'est pas encore clos. Un bilan sans sa colonne N-1 ne se compare à rien. */
+      var anneeN1 = global.SIGH.exercice.choisi() - 1;
+      var eN1 = ecrituresToutes().filter(function (x) { return x.statut === 'validee' && global.SIGH.exercice.anneeDe(x.date) === anneeN1; })
+        .concat(global.SIGH.exercice.provisoires(anneeN1).filter(function (x) { return x.statut === 'validee'; }));
+      var avecN1 = eN1.length > 0;
+      function soldeDesComptes(prefixes, sens, source) {
         if (!prefixes || !prefixes.length) return null;
-        var sel = e.filter(function (x) {
+        var sel = (source || e).filter(function (x) {
           var num = String(x.compte || '');
           return prefixes.some(function (p) { return num.indexOf(p) === 0; });
         });
@@ -1819,6 +1956,23 @@
       /* Au compte de résultat, le formulaire porte les charges en NÉGATIF :
          on suit sa convention, sinon la colonne calculée ne se compare pas
          à la colonne déposée. */
+      function calculActifN1(l) {
+        var v = soldeDesComptes(l.comptes, 'debit', eN1);
+        return v == null || v < 0 ? null : v;
+      }
+      function calculPassifN1(l) {
+        var v = soldeDesComptes(l.comptes, 'credit', eN1);
+        return v == null || v < 0 ? null : v;
+      }
+      function calculResultatN1(l) {
+        var v = soldeDesComptes(l.comptes, l.signe === '-' ? 'debit' : 'credit', eN1);
+        if (v == null) return null;
+        return l.signe === '-' ? -v : v;
+      }
+      function colonneN1(calcul) {
+        return avecN1 ? [{ label: 'Exercice ' + anneeN1 + ' (journal)', align: 'right',
+          render: function (l) { return l.t ? el('span') : cellule(calcul(l), { vide: '—' }); } }] : [];
+      }
       function calculResultat(l) {
         var v = soldeDesComptes(l.comptes, l.signe === '-' ? 'debit' : 'credit');
         if (v == null) return null;
@@ -1926,7 +2080,7 @@
                 { label: 'Net ' + L.DEPOT.exerciceN1, align: 'right', render: function (l) { return cellule(l.netN1); } },
                 { label: 'Exercice en cours', align: 'right',
                   render: function (l) { return l.t ? el('span') : cellule(calculActif(l), { vide: '—' }); } },
-              ])),
+              ].concat(colonneN1(calculActifN1)))),
               U.card('BILAN — PASSIF (feuillet 6/51)', tableLiasse(L.BILAN_PASSIF, [
                 { label: 'Réf.', render: function (l) { return el('span.font-mono.text-xs.text-slate-500', { text: l.ref }); } },
                 { label: 'Passif', render: libelleDe },
@@ -1935,7 +2089,7 @@
                 { label: 'Net ' + L.DEPOT.exerciceN1, align: 'right', render: function (l) { return cellule(l.netN1); } },
                 { label: 'Exercice en cours', align: 'right',
                   render: function (l) { return l.t ? el('span') : cellule(calculPassif(l), { vide: '—' }); } },
-              ])),
+              ].concat(colonneN1(calculPassifN1)))),
               K.note('La colonne <strong>« Exercice en cours »</strong> est calculée depuis les '
                 + 'écritures VALIDÉES du journal, par les préfixes de comptes SYSCOHADA que chaque '
                 + 'ligne déclare. Elle reste vide là où le journal ne porte rien — le prototype ne '
@@ -1960,7 +2114,7 @@
                 { label: 'Exercice ' + L.DEPOT.exerciceN1, align: 'right', render: function (l) { return cellule(l.n1); } },
                 { label: 'Exercice en cours', align: 'right',
                   render: function (l) { return l.t ? el('span') : cellule(calculResultat(l), { vide: '—' }); } },
-              ])),
+              ].concat(colonneN1(calculResultatN1)))),
               K.note('La <strong>marge commerciale est nulle</strong> à la liasse déposée — et c’est '
                 + 'la confirmation documentaire de <strong>RG-02</strong> : les médicaments sont '
                 + 'facturés au prix d’achat, sans marge. Si elle cessait de l’être, ce serait un '
@@ -2199,107 +2353,345 @@
   });
 
   /* ==========================================================================
-   * EXERCICES & CLÔTURES
+   * EXERCICES & CLÔTURES (PRD-M12-cloture-exercice)
+   * --------------------------------------------------------------------------
+   * La clôture se fait en DEUX GESTES par deux personnes : le comptable la
+   * DEMANDE (les contrôles bloquants refusent en nommant), la Direction ou la
+   * DAF la VALIDE avec un motif — signer n'est pas saisir. Elle solde les
+   * classes 6, 7 et 8 vers le résultat, écrit les à-nouveaux de N+1 (au solde
+   * pour les comptes sans lettrage, ligne à ligne pour les tiers non lettrés)
+   * puis fige l'exercice : plus aucune écriture, aucune réouverture.
    * ======================================================================== */
-  global.SIGH.screen('m12-cloture', {
-    title: 'Exercices & périodes comptables',
-    description: 'Suivi des exercices et des périodes, sans interruption de service à la fin de l’année.',
-    regle: 'Une période se <strong>verrouille</strong> quand ses écritures sont validées et sa balance équilibrée '
-      + '(RG-10) — mais le <strong>logiciel ne se clôture pas en fin d’exercice</strong> : le travail continue sur '
-      + 'l’année suivante et les données des années antérieures restent consultables. C’est une demande écrite du '
-      + 'cahier de charge du 30/12/2024.',
-    render: function (root) {
-      var e = ecritures();
-      var host = el('div.space-y-4');
-      host.appendChild(K.note('<strong>Aucune clôture ne ferme le logiciel.</strong> Le passage à l’exercice suivant '
-        + 'est automatique : la saisie continue sans interruption, et les exercices antérieurs restent ouverts à la '
-        + 'consultation et à l’édition d’états. Verrouiller une période empêche d’y saisir, pas d’y lire.',
-      { tone: 'success', icon: 'infinity' }));
+  function telechargerCSV(nom, entetes, lignes) {
+    var esc = function (v) { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var txt = '﻿' + [entetes].concat(lignes).map(function (l) { return l.map(esc).join(';'); }).join('\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' }));
+    a.download = nom + '.csv'; document.body.appendChild(a); a.click(); a.remove();
+  }
 
-      var periodes = C.MOIS.map(function (m, i) {
-        var sel = e.filter(function (x) {
-          var d = C.toDate(x.date);
-          return d.getFullYear() === 2026 && d.getMonth() === i;
-        });
-        var debit = C.sum(sel, 'debit'), credit = C.sum(sel, 'credit');
-        var brouillons = sel.filter(function (x) { return x.statut === 'brouillon'; }).length;
-        return {
-          id: String(i), mois: m.charAt(0).toUpperCase() + m.slice(1) + ' 2026', index: i,
-          nb: sel.length, debit: debit, credit: credit,
-          equilibre: debit === credit, brouillons: brouillons,
-          cloturable: sel.length > 0 && debit === credit && brouillons === 0,
-          statutPeriode: i < AUJ.getMonth() ? 'cloturee' : (i === AUJ.getMonth() ? 'ouverte' : 'future'),
-        };
-      });
+  /* L'archive de clôture dans la GED est tenue par le MOTEUR (SIGH.exercice.archiver) : elle naît avec la
+     clôture. Ce bouton ne sert qu'à la déposer pour un exercice clos AVANT que le moteur ne le fasse. */
+  function archiverDansGED(x) {
+    var r = global.SIGH.exercice.archiver(x.annee);
+    if (r.deja) U.toast('Cet exercice est déjà archivé dans la GED.', { type: 'info', detail: r.reference });
+    else U.toast('Archive de l’exercice ' + x.annee + ' déposée dans la GED.', { type: 'success', detail: r.reference + ' — conservation 10 ans.' });
+    return r;
+  }
+
+  /* L'archive légale d'une clôture : fichiers, empreintes, et un téléchargement qui VÉRIFIE l'empreinte avant de livrer. */
+  function voirArchive(x) {
+    var archives = S.collection('archivesExercice').active().filter(function (a) { return a.annee === x.annee; })
+      .sort(function (a, b) { return b.version - a.version; });
+    if (!archives.length) { U.toast('Aucune archive pour l’exercice ' + x.annee + '.', { type: 'info', detail: 'Elle naît avec la clôture définitive.' }); return; }
+    var corps = el('div.space-y-4');
+    archives.forEach(function (a) {
+      corps.appendChild(el('p.text-sm.font-semibold.text-slate-800', { text: a.reference + ' : clôture ' + a.clNumero + ', déposée le ' + C.dateFR(a.creeLe) + ' par ' + (a.par || '—') }));
+      corps.appendChild(K.miniTable(['Fichier', 'Taille', 'Empreinte SHA-256', ''], a.fichiers.map(function (f) {
+        return [f.nom, C.num(f.taille) + ' c.', el('span.font-mono.text-xs', { text: f.empreinte.slice(0, 20) + '…' }),
+          K.btn('Télécharger', { size: 'sm', variant: 'secondary', icon: 'download', onclick: function () { telechargerArchive(a.reference, f.nom); } })];
+      })));
+    });
+    corps.appendChild(K.note('L’archive est <strong>immuable</strong> et jamais régénérée. Avant chaque téléchargement, l’empreinte du fichier est recalculée et comparée à celle du manifeste : un fichier altéré est refusé.', { tone: 'info', icon: 'shield-check' }));
+    var m = U.modal({ title: 'Archive légale de l’exercice ' + x.annee, size: 'lg', body: corps, footer: [K.btn('Fermer', { variant: 'secondary', onclick: function () { m.close(); } })] });
+  }
+  function telechargerArchive(reference, nom) {
+    var r = global.SIGH.exercice.lireArchive(reference, nom);
+    if (!r.ok) { U.toast('Téléchargement refusé.', { type: 'error', detail: r.motif }); return; }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([r.fichier.contenu], { type: r.fichier.type }));
+    a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+    U.toast('Fichier vérifié et téléchargé.', { type: 'success', detail: nom + ' : empreinte conforme.' });
+  }
+
+  function procesVerbalCloture(x) {
+    var X = global.SIGH.exercice, lignes = X.soldes(X.ecrituresDe(x.annee));
+    P.etat({
+      titre: 'Procès-verbal de clôture — exercice ' + x.annee,
+      sousTitre: 'Détermination du résultat et à-nouveaux de l’exercice ' + (x.annee + 1),
+      cartouche: [['Exercice', x.debut + ' → ' + x.fin], ['Résultat net', C.money(x.resultat || 0)],
+        ['Demandée par', x.demandePar || '—'], ['Validée par', x.validePar || '—'],
+        ['Empreinte SHA-256', (x.empreinte || '').slice(0, 32) + '…'], ['Date d’édition', C.dateFR(AUJ)]],
+      contenu: P.tableau([
+        { label: 'Compte', key: 'compte' }, { label: 'Intitulé', key: 'libelle' },
+        { label: 'Débit', value: function (l) { return C.money(l.debit, false); }, align: 'right', somme: function (l) { return l.debit; } },
+        { label: 'Crédit', value: function (l) { return C.money(l.credit, false); }, align: 'right', somme: function (l) { return l.credit; } },
+      ], lignes),
+      signatures: [{ role: 'Le Comptable', nom: x.demandePar || '' }, { role: 'La Direction', nom: x.validePar || '' }],
+    });
+  }
+
+  function ouvrirPreCloture(x, apresDemande) {
+    var X = global.SIGH.exercice, pre = X.preCloture(x.annee);
+    var corps = el('div.space-y-3');
+    corps.appendChild(el('p.text-sm.text-slate-700', { html: 'Résultat provisoire de l’exercice ' + x.annee + ' : <strong>' + C.money(pre.resultat)
+      + '</strong> sur ' + C.num(pre.nbEcritures) + ' ligne(s) validée(s).' }));
+    corps.appendChild(K.miniTable(['Contrôle', 'Nature', 'État', 'Détail / où corriger'], pre.controles.map(function (c) {
+      return [c.libelle, c.bloquant ? 'Bloquant' : 'Signalé', c.ok ? 'Conforme' : (c.bloquant ? 'ÉCHEC' : 'À voir'),
+        c.ok ? '—' : (c.detail || '') + ' → ' + (global.SIGH.nav.get(c.ecran) ? global.SIGH.nav.get(c.ecran).label : c.ecran)];
+    })));
+    var pied = [K.btn('Fermer', { variant: 'secondary', onclick: function () { m.close(); } })];
+    if (apresDemande) pied.push(K.btn('Démarrer la clôture', { icon: 'lock', onclick: function () { m.close(); demander(x); } }));
+    var m = U.modal({ title: 'Pré-clôture — exercice ' + x.annee, size: 'lg', body: corps, footer: pied });
+  }
+
+  function demander(x) {
+    U.confirm({ title: 'Démarrer la clôture de l’exercice ' + x.annee + ' ?',
+      message: 'Dès maintenant, <strong>les modules n’écrivent plus dans ' + x.annee + '</strong> : seul le comptable y passe ses écritures d’inventaire. '
+        + 'Rien n’est figé : la saisie peut reprendre tant que la Direction n’a pas clôturé définitivement.', confirmLabel: 'Démarrer la clôture' }).then(function (ok) {
+      if (!ok) return;
+      var r = global.SIGH.exercice.demarrer(x.annee);
+      if (!r.ok) { U.toast('Démarrage refusé.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
+      U.toast('Clôture ' + x.annee + ' démarrée.', { type: 'success', detail: 'Les modules n’écrivent plus dans cet exercice.' });
+      S.rechargerQuandEnvoye();
+    });
+  }
+
+  function reprendre(x) {
+    U.confirm({ title: 'Reprendre la saisie de l’exercice ' + x.annee + ' ?', message: 'Les modules écrivent de nouveau dans ' + x.annee + '. Possible tant que rien n’est clôturé.', confirmLabel: 'Reprendre la saisie' }).then(function (ok) {
+      if (!ok) return;
+      var r = global.SIGH.exercice.reprendre(x.annee);
+      if (!r.ok) { U.toast('Reprise refusée.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
+      U.toast('Saisie de ' + x.annee + ' reprise.', { type: 'success' });
+      S.rechargerQuandEnvoye();
+    });
+  }
+
+  function rouvrir(x) {
+    var champ = el('textarea.input', { rows: 3, placeholder: 'Motif de la réouverture (dix caractères au moins)', id: 'motif-reouverture' });
+    var m = U.modal({ title: 'Rouvrir l’exercice ' + x.annee, body: el('div.space-y-3', null, [
+      el('p.text-sm.text-slate-700', { html: 'La pièce de clôture et la pièce d’à-nouveaux sont <strong>contre-passées</strong> : rien ne s’efface, la piste d’audit reste entière. '
+        + 'L’exercice repasse « en clôture ». La Direction en est informée.' }), champ ]),
+      footer: [K.btn('Annuler', { variant: 'secondary', onclick: function () { m.close(); } }),
+        K.btn('Rouvrir', { icon: 'unlock', variant: 'danger', onclick: function () {
+          var r = global.SIGH.exercice.rouvrir(x.annee, champ.value);
+          if (!r.ok) { U.toast('Réouverture refusée.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
+          m.close();
+          U.toast('Exercice ' + x.annee + ' rouvert.', { type: 'success', detail: r.pieces.join(' et ') + ' contre-passent la clôture.' });
+          S.rechargerQuandEnvoye();
+        } })] });
+  }
+
+  function valider(x) {
+    var champ = el('textarea.input', { rows: 3, placeholder: 'Motif de la validation (obligatoire)', id: 'motif-cloture' });
+    var m = U.modal({ title: 'Valider la clôture de l’exercice ' + x.annee, body: el('div.space-y-3', null, [
+      el('p.text-sm.text-slate-700', { html: 'Clôture démarrée par <strong>' + U.texteEnrichi(x.demandePar || '—') + '</strong>. Les contrôles sont rejoués, puis, d’un seul tenant : '
+        + 'pièce de clôture (journal CL) qui solde les classes 6, 7 et 8 centre par centre, pièce d’à-nouveaux (journal AN) de ' + (x.annee + 1) + ', verrou, archive. Peuvent ensuite rouvrir l’exercice : ' + global.SIGH.exercice.nomsRoles(global.SIGH.exercice.circuit('rolesRouvrir').valeur || []) + '.' }), champ ]),
+      footer: [K.btn('Annuler', { variant: 'secondary', onclick: function () { m.close(); } }),
+        K.btn('Clôturer définitivement', { icon: 'lock', variant: 'danger', onclick: function () {
+          var r = global.SIGH.exercice.valider(x.annee, champ.value);
+          if (!r.ok) { U.toast('Clôture refusée.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
+          m.close();
+          U.toast('Exercice ' + x.annee + ' clos.', { type: 'success', detail: 'Résultat ' + C.money(r.resultat) + ' — ' + r.lignesAN + ' ligne(s) d’à-nouveau écrite(s).' });
+          S.rechargerQuandEnvoye();
+        } })] });
+  }
+
+  global.SIGH.screen('m12-cloture', {
+    title: 'Exercices & clôtures',
+    description: 'Sélecteur d’exercice, pré-clôture, clôture en deux gestes, à-nouveaux et lettrage des tiers.',
+    regle: function () {
+      var X = global.SIGH.exercice, c = X.circuitComplet(), nom = function (l) { return c.ok || l ? '<strong>' + C.escapeHtml(X.nomsRoles(l)) + '</strong>' : '<strong>(non arrêté)</strong>'; };
+      return 'Trois états : <strong>ouvert</strong>, <strong>en clôture</strong> (les modules n’écrivent plus), <strong>clôturé</strong> (lecture seule). Démarrent la clôture : ' + nom(c.rolesDemarrer)
+        + ' ; la clôture définitive revient à ' + nom(c.rolesCloturer) + ' (une autre personne que celle qui l’a démarrée) ; rouvrent, avec un motif, par contre-passation : ' + nom(c.rolesRouvrir)
+        + '. Ces listes se règlent à l’onglet « Circuit de clôture ». La caisse continue d’encaisser : une pièce s’enregistre toujours dans l’exercice de sa date.';
+    },
+    render: function () {
+      var X = global.SIGH.exercice, host = el('div.space-y-4');
+      var droits = K.droits('M12'), role = (S.session() || {}).role;
+      /* Aucun nom de rôle ici : les trois listes se LISENT dans le circuit de clôture (réglage daté, défauts semés). */
+      var peutDemander = droits.editer && X.peut('rolesDemarrer');
+      var peutValider = X.peut('rolesCloturer');
+      var peutRouvrir = droits.editer && X.peut('rolesRouvrir');
+      var cur = X.de(X.choisi()), pre = X.preCloture(X.choisi());
 
       host.appendChild(U.kpiGrid([
-        { label: 'Exercice en cours', value: '2026', icon: 'calendar', tone: 'navy' },
-        { label: 'Périodes clôturées', value: C.num(periodes.filter(function (p) { return p.statutPeriode === 'cloturee'; }).length), icon: 'lock', tone: 'success' },
-        { label: 'Écritures en brouillon', value: C.num(C.sum(periodes, 'brouillons')), icon: 'file-clock', tone: 'warning' },
-        { label: 'Total des écritures', value: C.num(e.length), icon: 'book-open-check', tone: 'info' },
+        { label: 'Exercice affiché', value: String(X.choisi()), icon: 'calendar', tone: 'navy' },
+        { label: 'État', value: ({ ouvert: 'Ouvert', en_cloture: 'En clôture', clos: 'Clôturé' })[cur ? cur.etat : 'ouvert'], icon: 'lock', tone: cur && cur.etat === 'clos' ? 'success' : 'info' },
+        { label: cur && cur.etat === 'clos' ? 'Résultat net' : 'Résultat provisoire', value: C.money(cur && cur.etat === 'clos' ? cur.resultat : pre.resultat), icon: 'scale', tone: 'neutral' },
+        { label: 'Contrôles bloquants en échec', value: C.num(pre.bloquants.length), icon: 'shield-alert', tone: pre.bloquants.length ? 'warning' : 'success' },
       ]));
 
-      host.appendChild(U.dataTable({
-        title: 'Périodes comptables — exercice 2026', rows: periodes, exportName: 'cloture', pageSize: 12,
-        searchable: false,
-        columns: [
-          { key: 'mois', label: 'Période', nowrap: true },
-          { key: 'nb', label: 'Écritures', align: 'right' },
-          { key: 'debit', label: 'Total débit', align: 'right', text: function (p) { return C.money(p.debit, false); }, render: function (p) { return C.money(p.debit, false); } },
-          { key: 'credit', label: 'Total crédit', align: 'right', text: function (p) { return C.money(p.credit, false); }, render: function (p) { return C.money(p.credit, false); } },
-          {
-            key: 'equilibre', label: 'Équilibre',
-            text: function (p) { return p.equilibre ? 'Équilibrée' : 'Déséquilibrée'; },
-            render: function (p) {
-              if (!p.nb) return el('span.text-xs.text-slate-400', { text: '—' });
-              return p.equilibre ? U.badge('Équilibrée', 'success') : U.badge('Écart ' + C.money(Math.abs(p.debit - p.credit), false), 'danger');
-            },
-          },
-          {
-            key: 'brouillons', label: 'Brouillons', align: 'right',
-            render: function (p) { return p.brouillons ? el('span.font-semibold.text-warning-600', { text: String(p.brouillons) }) : '—'; },
-          },
-          {
-            key: 'statutPeriode', label: 'Statut',
-            render: function (p) {
-              var m = { cloturee: ['Clôturée', 'neutral'], ouverte: ['Ouverte', 'success'], future: ['À venir', 'neutral'] };
-              var x = m[p.statutPeriode];
-              return U.badge(x[0], x[1]);
-            },
-          },
-        ],
-        rowActions: function (p) {
-          if (p.statutPeriode !== 'ouverte') return [];
-          return [K.btn(p.cloturable ? 'Clôturer' : 'Non clôturable', {
-            size: 'sm', variant: p.cloturable ? 'primary' : 'secondary', icon: 'lock',
-            onclick: function () {
-              if (!p.cloturable) {
-                U.toast('Clôture impossible.', {
-                  type: 'error',
-                  detail: p.brouillons ? p.brouillons + ' écriture(s) en brouillon à valider.' : 'La balance de la période n’est pas équilibrée (RG-10).',
-                });
-                return;
+      var onglets = [
+        { id: 'exercices', label: 'Exercices', render: function () {
+          return U.dataTable({
+            title: 'Exercices comptables', rows: X.liste().map(function (x) { return Object.assign({}, x); }), exportName: 'exercices', pageSize: 10, searchable: false,
+            columns: [
+              { key: 'annee', label: 'Exercice', nowrap: true, text: function (x) { return 'Exercice ' + x.annee; }, render: function (x) { return 'Exercice ' + x.annee; } },
+              { key: 'debut', label: 'Période', text: function (x) { return C.dateFR(x.debut) + ' → ' + C.dateFR(x.fin); }, render: function (x) { return C.dateFR(x.debut) + ' → ' + C.dateFR(x.fin); } },
+              { key: 'etat', label: 'État', text: function (x) { return x.etat; }, render: function (x) {
+                var t = { ouvert: ['Ouvert', 'success'], en_cloture: ['En clôture', 'warning'], clos: ['Clôturé', 'neutral'] }[x.etat] || [x.etat, 'neutral'];
+                return U.badge(t[0], t[1]); } },
+              { key: 'resultat', label: 'Résultat net', align: 'right', text: function (x) { return x.resultat == null ? '' : C.money(x.resultat, false); },
+                render: function (x) { return x.resultat == null ? el('span.text-slate-400', { text: '—' }) : C.money(x.resultat); } },
+              { key: 'validePar', label: 'Validée par', render: function (x) { return x.validePar ? x.validePar + ' — ' + C.dateFR(x.valideLe) : '—'; } },
+              { key: 'empreinte', label: 'Empreinte', render: function (x) { return x.empreinte ? el('span.font-mono.text-xs', { text: x.empreinte.slice(0, 12) + '…' }) : '—'; } },
+            ],
+            rowActions: function (x) {
+              var a = [];
+              if (x.source === 'liasse') return [];
+              if (x.etat === 'ouvert') {
+                a.push(K.btn('Pré-clôture', { size: 'sm', variant: 'secondary', icon: 'list-checks', onclick: function () { ouvrirPreCloture(x, peutDemander); } }));
               }
-              U.confirm({
-                title: 'Clôturer la période ' + p.mois + ' ?',
-                message: 'Après clôture, aucune écriture ne pourra plus être saisie sur cette période. '
-                  + 'La balance est équilibrée à ' + C.money(p.debit) + ' au débit comme au crédit.',
-                confirmLabel: 'Clôturer la période',
-              }).then(function (ok) {
-                if (!ok) return;
-                S.log('Validation', 'M12', 'ClotureComptable', p.mois, null, { debit: p.debit, credit: p.credit });
-                U.toast('Période ' + p.mois + ' clôturée.', { type: 'success' });
-              });
+              if (x.etat === 'en_cloture') {
+                a.push(K.btn('Contrôles', { size: 'sm', variant: 'secondary', icon: 'list-checks', onclick: function () { ouvrirPreCloture(x, false); } }));
+                if (peutDemander) a.push(K.commande('Reprendre la saisie', { size: 'sm', variant: 'secondary', icon: 'rotate-ccw', onclick: function () { reprendre(x); } }));
+                if (peutValider) a.push(K.commande('Clôturer définitivement', { size: 'sm', variant: 'primary', icon: 'lock', onclick: function () { valider(x); } }));
+              }
+              if (x.etat === 'clos') {
+                if (peutRouvrir) a.push(K.commande('Rouvrir', { size: 'sm', variant: 'danger', icon: 'unlock', onclick: function () { rouvrir(x); } }));
+                a.push(K.btn('Archive légale', { size: 'sm', variant: 'secondary', icon: 'archive', onclick: function () { voirArchive(x); } }));
+                a.push(K.btn('Procès-verbal', { size: 'sm', variant: 'secondary', icon: 'printer', onclick: function () { procesVerbalCloture(x); } }));
+                a.push(K.commande('Archiver dans la GED', { size: 'sm', variant: 'secondary', icon: 'archive', onclick: function () { archiverDansGED(x); } }));
+                a.push(K.btn('Exporter CSV', { size: 'sm', variant: 'secondary', icon: 'download', onclick: function () {
+                  telechargerCSV('journal-' + x.annee, ['Pièce', 'Date', 'Journal', 'Compte', 'Libellé', 'Débit', 'Crédit'],
+                    X.ecrituresDe(x.annee).map(function (e) { return [e.numero, e.date, e.journal, e.compte, e.libelle, e.debit, e.credit]; }));
+                } }));
+              }
+              return a;
             },
-          })];
-        },
-      }));
-
-      host.appendChild(K.note('La clôture annuelle génère les écritures de détermination du résultat et reporte les soldes à nouveau sur l’exercice suivant.', { tone: 'info' }));
-      root.appendChild(host);
-      return null;
+          });
+        } },
+        { id: 'periodes', label: 'Périodes de l’exercice', render: function () {
+          var e = ecritures().filter(function (x) { return !x.provisoire; });
+          var rows = C.MOIS.map(function (m, i) {
+            var sel = e.filter(function (x) { return C.toDate(x.date).getMonth() === i; });
+            var d = C.sum(sel, 'debit'), c = C.sum(sel, 'credit');
+            return { id: String(i), mois: m.charAt(0).toUpperCase() + m.slice(1) + ' ' + exo(), nb: sel.length, debit: d, credit: c,
+              equilibre: d === c, brouillons: sel.filter(function (x) { return x.statut === 'brouillon'; }).length };
+          });
+          return U.dataTable({ title: 'Périodes comptables — exercice ' + exo(), rows: rows, exportName: 'periodes', pageSize: 12, searchable: false,
+            columns: [
+              { key: 'mois', label: 'Période', nowrap: true },
+              { key: 'nb', label: 'Écritures', align: 'right' },
+              { key: 'debit', label: 'Total débit', align: 'right', text: function (p) { return C.money(p.debit, false); }, render: function (p) { return C.money(p.debit, false); } },
+              { key: 'credit', label: 'Total crédit', align: 'right', text: function (p) { return C.money(p.credit, false); }, render: function (p) { return C.money(p.credit, false); } },
+              { key: 'equilibre', label: 'Équilibre', text: function (p) { return p.equilibre ? 'Équilibrée' : 'Déséquilibrée'; },
+                render: function (p) { return !p.nb ? '—' : (p.equilibre ? U.badge('Équilibrée', 'success') : U.badge('Écart ' + C.money(Math.abs(p.debit - p.credit), false), 'danger')); } },
+              { key: 'brouillons', label: 'Brouillons', align: 'right', render: function (p) { return p.brouillons ? el('span.font-semibold.text-warning-600', { text: String(p.brouillons) }) : '—'; } },
+            ] });
+        } },
+        { id: 'lettrage', label: 'Lettrage des tiers', render: function () { return ecranLettrage(); } },
+        { id: 'comptes-resultat', label: 'Comptes de résultat', render: function () { return ecranComptesResultat(droits, role); } },
+        { id: 'circuit', label: 'Circuit de clôture', render: function () { return ecranCircuitCloture(); } },
+      ];
+      host.appendChild(U.tabs(onglets));
+      return host;
     },
   });
+
+  /* LE CIRCUIT DE CLÔTURE (lot CLO C1) : lu au moteur (`SIGH.exercice.circuit`), réglé par un geste réservé de la fiche RBAC. L'écran ne nomme aucun rôle : les cases viennent de la
+     matrice des rôles, les valeurs du réglage daté. La commande « Enregistrer le circuit » est ABSENTE sans le droit (jamais grisée) ; le moteur refuse aussi. */
+  function ecranCircuitCloture() {
+    var X = global.SIGH.exercice, N = global.SIGH.nav, wrap = el('div.space-y-4');
+    var defs = X.definitionsCircuit(), peut = X.peutRegler();
+    var libOf = function (d, v) { return d.type === 'roles' ? X.nomsRoles(v) : String(v); };
+    wrap.appendChild(U.card('Circuit en vigueur aujourd’hui', K.miniTable(['Réglage', 'Valeur lue', 'En vigueur depuis', 'Version'], defs.map(function (d) {
+      var r = X.circuit(d.cle);
+      return [d.libelle, r.ok ? libOf(d, r.valeur) : 'Non arrêté : ' + r.motif, r.ok ? C.dateFR(r.dateEffet) : 'aucune', r.ok ? String(r.version) : 'aucune'];
+    }))));
+    var histo = [];
+    defs.forEach(function (d) { X.versionsCircuit(d.cle).forEach(function (v) { histo.push([d.libelle, libOf(d, v.valeur), C.dateFR(v.dateEffet) + (v.dateFin ? ' au ' + C.dateFR(v.dateFin) : ' (en cours)'), v.creePar || 'non renseigné', v.motif || 'non renseigné']); }); });
+    wrap.appendChild(U.card('Historique des versions (jamais réécrites)', K.miniTable(['Réglage', 'Valeur', 'Période', 'Par', 'Motif'], histo)));
+    if (!peut) {
+      wrap.appendChild(K.note('Le droit « Régler le circuit de la clôture annuelle » n’est pas accordé à votre profil : le circuit se <strong>lit</strong> ici, il se règle depuis un profil qui détient ce droit (matrice des droits). Aucune commande n’est proposée.', { tone: 'info', icon: 'lock' }));
+      return wrap;
+    }
+    var roles = Object.keys(N.ROLES).filter(function (r) { return !(N.roleArchive && N.roleArchive(r)); });
+    var champs = {};
+    var form = el('div.space-y-4');
+    defs.forEach(function (d) {
+      var r = X.circuit(d.cle), courant = r.ok ? r.valeur : [];
+      var bloc = el('div.rounded-lg.border.border-slate-200.p-3');
+      bloc.appendChild(el('p.text-sm.font-semibold', { text: d.libelle }));
+      bloc.appendChild(el('p.text-xs.text-slate-500.mb-2', { text: d.aide }));
+      if (d.type === 'roles') {
+        var grille = el('div.grid.gap-1.sm\\:grid-cols-2.lg\\:grid-cols-3'), cases = {};
+        roles.forEach(function (rid) {
+          var cb = el('input', { type: 'checkbox', 'aria-label': d.libelle + ' : ' + libelleRoleCircuit(rid), dataset: { cle: d.cle, role: rid } });
+          cb.checked = courant.indexOf(rid) >= 0; cases[rid] = cb;
+          grille.appendChild(el('label.flex.items-center.gap-2.text-sm', null, [cb, el('span', { text: libelleRoleCircuit(rid) })]));
+        });
+        champs[d.cle] = { lire: function () { return roles.filter(function (rid) { return cases[rid].checked; }); }, courant: courant };
+        bloc.appendChild(grille);
+      } else {
+        var sel = el('select.select.w-auto', { 'aria-label': d.libelle, dataset: { cle: d.cle } });
+        C.MOIS.forEach(function (m, i) { var o = el('option', { value: String(i + 1) }, (i + 1) + ' : ' + m); if (courant === i + 1) o.selected = true; sel.appendChild(o); });
+        champs[d.cle] = { lire: function () { return Number(sel.value); }, courant: courant };
+        bloc.appendChild(sel);
+      }
+      form.appendChild(bloc);
+    });
+    var date = el('input.input.w-44', { type: 'date', value: C.iso(C.aujourdhui()), 'aria-label': 'Date d’effet' });
+    var motif = el('textarea.input', { rows: 2, placeholder: 'Motif du changement (obligatoire)', 'aria-label': 'Motif du changement' });
+    form.appendChild(el('div.grid.gap-3.sm\\:grid-cols-2', null, [el('div', null, [el('label.label', { text: 'Date d’effet' }), date]), el('div', null, [el('label.label', { text: 'Motif' }), motif])]));
+    form.appendChild(K.btn('Enregistrer le circuit', { icon: 'save', variant: 'primary', onclick: function () {
+      var faits = 0;
+      for (var i = 0; i < defs.length; i++) {
+        var d = defs[i], f = champs[d.cle], v = f.lire();
+        if (JSON.stringify(v) === JSON.stringify(f.courant)) continue;
+        var res = X.definirCircuit({ cle: d.cle, valeur: v, dateEffet: date.value, motif: motif.value });
+        if (!res.ok) { U.toast('Circuit refusé.', { type: 'error', detail: res.motif + (res.geste ? ' ' + res.geste : '') }); if (faits) S.rechargerQuandEnvoye(); return; }
+        faits++;
+      }
+      if (!faits) { U.toast('Aucun changement : le circuit est identique.', { type: 'info' }); return; }
+      U.toast('Circuit de clôture enregistré (' + faits + ' réglage(s), nouvelle version datée).', { type: 'success', detail: 'Les versions précédentes sont conservées.' });
+      S.rechargerQuandEnvoye();
+    } }));
+    wrap.appendChild(U.card('Modifier le circuit (une nouvelle version datée, la précédente est conservée)', form));
+    return wrap;
+  }
+  function libelleRoleCircuit(rid) { var N = global.SIGH.nav; return (N.ROLES[rid] && N.ROLES[rid].label) || rid; }
+
+  /* LETTRAGE — un ensemble de lignes d'un compte de tiers dont le total s'annule.
+     Seules les lignes NON lettrées sont reprises ligne à ligne aux à-nouveaux. */
+  function ecranLettrage() {
+    var X = global.SIGH.exercice, wrap = el('div.space-y-3');
+    var tiers = Object.keys(C.groupBy(ecrituresToutes().filter(function (e) { return X.lettrable(e.compte); }), 'compte')).sort();
+    var sel = el('select.select.w-auto');
+    tiers.forEach(function (c) { sel.appendChild(el('option', { value: c }, c + ' — ' + compteLibelle(c))); });
+    var zone = el('div');
+    var droits = K.droits('M12');
+    function dessiner() {
+      C.clear(zone);
+      var lignes = ecrituresToutes().filter(function (e) { return String(e.compte) === sel.value && X.anneeDe(e.date) === exo() && e.statut === 'validee'; });
+      var coches = {};
+      var tab = U.dataTable({ title: 'Lignes du compte ' + sel.value, rows: lignes.map(function (e) { return e; }), exportName: 'lettrage', pageSize: 10, searchable: true,
+        columns: [
+          { key: 'select', label: '', render: function (e) {
+            if (e.lettrage || !droits.editer || X.etat(X.anneeDe(e.date)) === 'clos') return '';
+            var cb = el('input', { type: 'checkbox', 'aria-label': 'Sélectionner ' + e.numero });
+            cb.addEventListener('change', function () { if (cb.checked) coches[e.id] = true; else delete coches[e.id]; });
+            return cb; } },
+          { key: 'numero', label: 'Pièce', nowrap: true }, { key: 'date', label: 'Date', text: function (e) { return C.dateFR(e.date); }, render: function (e) { return C.dateFR(e.date); } },
+          { key: 'libelle', label: 'Libellé' },
+          { key: 'debit', label: 'Débit', align: 'right', text: function (e) { return C.money(e.debit, false); }, render: function (e) { return C.money(e.debit, false); } },
+          { key: 'credit', label: 'Crédit', align: 'right', text: function (e) { return C.money(e.credit, false); }, render: function (e) { return C.money(e.credit, false); } },
+          { key: 'lettrage', label: 'Lettrage', render: function (e) { return e.lettrage ? U.badge(e.lettrage, 'success') : el('span.text-slate-400', { text: 'non lettrée' }); } },
+        ] });
+      zone.appendChild(tab);
+      if (droits.editer) {
+        zone.appendChild(el('div.flex.gap-2.mt-3', null, [
+          K.btn('Lettrer la sélection', { icon: 'link', onclick: function () {
+            var r = X.lettrer(sel.value, Object.keys(coches));
+            if (!r.ok) { U.toast('Lettrage refusé.', { type: 'error', detail: r.motif }); return; }
+            U.toast('Lettrage « ' + r.code + ' » posé sur ' + r.lignes + ' ligne(s).', { type: 'success' }); dessiner(); } }),
+          K.btn('Dé-lettrer un code…', { variant: 'secondary', icon: 'unlink', onclick: function () {
+            var code = global.prompt('Code de lettrage à défaire sur le compte ' + sel.value + ' :'); if (!code) return;
+            var motif = global.prompt('Motif (obligatoire) :'); var r = X.delettrer(sel.value, code.toUpperCase(), motif);
+            if (!r.ok) { U.toast('Dé-lettrage refusé.', { type: 'error', detail: r.motif }); return; }
+            U.toast(r.lignes + ' ligne(s) dé-lettrée(s).', { type: 'success' }); dessiner(); } }),
+        ]));
+      }
+    }
+    sel.addEventListener('change', dessiner);
+    wrap.appendChild(K.note('Un lettrage rapproche des lignes d’un <strong>même compte de tiers</strong> dont le total s’annule (une facture et son règlement). '
+      + 'À la clôture, seules les lignes <strong>non lettrées</strong> sont reprises une à une aux à-nouveaux.', { tone: 'info', icon: 'link' }));
+    if (!tiers.length) { wrap.appendChild(el('p.text-sm.text-slate-500', { text: 'Aucun compte de tiers mouvementé.' })); return wrap; }
+    wrap.appendChild(el('label.flex.items-center.gap-2.text-sm', null, [el('span', { text: 'Compte' }), sel]));
+    wrap.appendChild(zone); dessiner();
+    return wrap;
+  }
 
   /* ==========================================================================
    * BILAN D'OUVERTURE
@@ -2340,7 +2732,7 @@
 
   /** Les soldes de bilan à la clôture d'un exercice. */
   function soldesDeCloture(annee) {
-    var lignes = ecritures().filter(function (x) {
+    var lignes = ecrituresToutes().filter(function (x) {
       return x.statut === 'validee' && C.toDate(x.date).getFullYear() <= annee;
     });
     var parCompte = {};
@@ -2354,7 +2746,7 @@
     /* LE RÉSULTAT DE L'EXERCICE CLOS entre au passif : c'est lui qui équilibre
        le report, puisque les classes 6 et 7 ne se reportent pas. */
     var resultat = 0;
-    ecritures().filter(function (x) {
+    ecrituresToutes().filter(function (x) {
       return x.statut === 'validee' && C.toDate(x.date).getFullYear() === annee;
     }).forEach(function (x) {
       var cl = String(x.compte || '').charAt(0);
@@ -2375,7 +2767,7 @@
     root.appendChild(host);
     var anneeSel = el('select.select.w-auto');
     var annees = {};
-    ecritures().forEach(function (x) { annees[C.toDate(x.date).getFullYear()] = true; });
+    ecrituresToutes().forEach(function (x) { annees[C.toDate(x.date).getFullYear()] = true; });
     var listeAnnees = Object.keys(annees).sort();
     listeAnnees.forEach(function (a) {
       anneeSel.appendChild(el('option', { value: a }, 'Exercice ' + a));
@@ -2390,6 +2782,8 @@
         variant: 'primary', icon: 'file-plus', onclick: function () { ecrire(); },
       }),
       K.btn('Imprimer le bilan d’ouverture', { icon: 'printer', onclick: function () { imprimer(); } }),
+      /* « Importer les données » : le jeu des soldes d'ouverture (une pièce AN en brouillon, RG-10), selon le droit d'IMPORTER de ce jeu, non celui d'écrire les à-nouveaux. */
+      K.importer('soldes-ouverture'),
     ].filter(Boolean))));
     host.appendChild(vue);
     afficher();
@@ -2398,8 +2792,12 @@
 
     function annee() { return Number(anneeSel.value); }
     function suivante() { return annee() + 1; }
+    /* E813 : UN SEUL compte de résultat. Le report manuel écrit, comme la clôture en deux gestes,
+       au 131000 (bénéfice) ou au 139000 (perte). Le 130000 ne reste que pour les reports manuels
+       antérieurs, qui sont SIGNALÉS à l'écran (ils ne se réécrivent pas : RG-14). */
+    function compteResultat(resultat) { return resultat >= 0 ? '131000' : '139000'; }
     function dejaEcrit() {
-      return ecritures().filter(function (x) {
+      return ecrituresToutes().filter(function (x) {
         return x.journal === 'AN' && C.toDate(x.date).getFullYear() === suivante();
       });
     }
@@ -2434,6 +2832,13 @@
           + 'années suivantes (RG-10). Vérifier les écritures de l’exercice ' + annee() + ' avant de '
           + 'reporter.', { tone: 'danger', icon: 'alert-triangle' }));
 
+      var anciens130 = ecrituresToutes().filter(function (x) { return x.journal === 'AN' && x.compte === '130000'; });
+      if (anciens130.length) {
+        vue.appendChild(K.note('<strong>Report manuel antérieur au compte 130000</strong> : ' + C.num(anciens130.length)
+          + ' ligne(s) portent le résultat à l’ancien compte. Le résultat se porte désormais au 131000 (bénéfice) ou au 139000 (perte), '
+          + 'comme à la clôture ; le 130000 n’est réservé qu’à ces reports manuels signalés, qui ne se réécrivent pas.',
+        { tone: 'warning', icon: 'alert-triangle' }));
+      }
       if (deja.length) {
         vue.appendChild(K.note('Les à-nouveaux du <strong>1ᵉʳ janvier ' + suivante() + '</strong> sont '
           + 'DÉJÀ écrits : ' + C.num(deja.length) + ' ligne(s) au journal AN. Les réécrire créerait un '
@@ -2450,7 +2855,7 @@
           { label: 'Crédit', align: 'right',
             render: function (c) { return c.solde < 0 ? C.money(-c.solde, false) : ''; } },
         ], s.comptes.concat([
-          { compte: '13', libelle: 'Résultat net de l’exercice ' + annee(),
+          { compte: compteResultat(s.resultat), libelle: 'Résultat net de l’exercice ' + annee(),
             solde: -s.resultat },
         ]))));
 
@@ -2505,7 +2910,7 @@
           })));
         });
         ecrits.push(col.insert(Object.assign({}, base, {
-          compte: '130000', compteLibelle: 'Résultat net de l’exercice ' + annee(),
+          compte: compteResultat(s.resultat), compteLibelle: s.resultat >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
           debit: s.resultat < 0 ? -s.resultat : 0,
           credit: s.resultat > 0 ? s.resultat : 0,
         })));
@@ -2521,7 +2926,7 @@
     function imprimer() {
       var s = soldesDeCloture(annee());
       var lignes = s.comptes.concat([
-        { compte: '130000', libelle: 'Résultat net de l’exercice ' + annee(), solde: -s.resultat },
+        { compte: compteResultat(s.resultat), libelle: 'Résultat net de l’exercice ' + annee(), solde: -s.resultat },
       ]);
       P.etat({
         titre: 'Bilan d’ouverture — à-nouveaux',
@@ -2815,13 +3220,14 @@
           },
         },
         {
-          id: 'comparaison', label: 'Comparaison 2025 / 2026',
+          id: 'comparaison', label: 'Comparaison 2025 / ' + C.aujourdhui().getFullYear(),
           render: function () {
+            var exo = C.aujourdhui().getFullYear();   /* lot MIL : l'exercice du jour face à la liasse 2025 déposée */
             var factures = S.collection('factures').active();
             var rows = E.mois.map(function (m, i) {
               var ca2026 = C.sum(factures.filter(function (f) {
                 var d = C.toDate(f.date);
-                return d.getFullYear() === 2026 && d.getMonth() === i;
+                return d.getFullYear() === exo && d.getMonth() === i;
               }), 'montantTTC');
               var ca2025 = E.chiffreAffaires[i];
               return {
@@ -2832,19 +3238,19 @@
               };
             });
             return el('div.space-y-3', null, [
-              K.note('L’exercice 2026 est alimenté par le jeu de démonstration du prototype : la comparaison illustre le mécanisme, '
+              K.note('L’exercice ' + exo + ' est alimenté par le jeu de démonstration du prototype : la comparaison illustre le mécanisme, '
                 + 'elle ne reflétera l’activité réelle qu’après la bascule en production.', { tone: 'info' }),
-              U.card('Chiffre d’affaires 2025 et 2026',
+              U.card('Chiffre d’affaires 2025 et ' + exo,
                 G.barres(moisCourts.map(function (m) { return m.slice(0, 4); }), [
                   { label: '2025 (réel)', data: rows.map(function (r) { return r.ca2025; }), color: G.TONES.navy },
-                  { label: '2026 (prototype)', data: rows.map(function (r) { return r.ca2026; }), color: G.TONES.vert },
+                  { label: exo + ' (prototype)', data: rows.map(function (r) { return r.ca2026; }), color: G.TONES.vert },
                 ])),
               U.dataTable({
-                rows: rows, exportName: 'comparaison-2025-2026', pageSize: 13, searchable: false,
+                rows: rows, exportName: 'comparaison-2025-' + exo, pageSize: 13, searchable: false,
                 columns: [
                   { key: 'mois', label: 'Mois', nowrap: true },
                   { key: 'ca2025', label: 'CA 2025 (réel)', align: 'right', text: function (r) { return C.money(r.ca2025, false); }, render: function (r) { return C.money(r.ca2025, false); } },
-                  { key: 'ca2026', label: 'CA 2026', align: 'right', text: function (r) { return C.money(r.ca2026, false); }, render: function (r) { return C.money(r.ca2026, false); } },
+                  { key: 'ca2026', label: 'CA ' + exo, align: 'right', text: function (r) { return C.money(r.ca2026, false); }, render: function (r) { return C.money(r.ca2026, false); } },
                   {
                     key: 'ecart', label: 'Écart', align: 'right',
                     text: function (r) { return C.money(r.ecart, false); },
@@ -2953,11 +3359,7 @@
   }
 
   /** Reporte au jour ouvrable suivant — précision du comptable. */
-  function jourOuvrableSuivant(d) {
-    var x = new Date(d.getTime());
-    while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
-    return x;
-  }
+  function jourOuvrableSuivant(d) { return C.reporterJourOuvrable(d); }
 
   /* Déroule le calendrier sur l'exercice : chaque obligation mensuelle donne
      douze échéances, chaque obligation annuelle en donne une. */
@@ -2967,54 +3369,147 @@
   function amorcerEcheances() {
     var db = S.raw();
     if (db.echeancesFiscales && db.echeancesFiscales.length) return;
-    var annee = AUJ.getFullYear();
-    var out = [], n = 0;
-    D.CALENDRIER_FISCAL.forEach(function (o) {
-      var dates = [];
-      if (o.periodicite === 'mensuelle') {
-        for (var m = 0; m < 12; m++) dates.push(new Date(annee, m, o.jour));
-      } else {
-        dates.push(new Date(annee, o.mois, Math.min(o.jour, 28)));
-      }
-      dates.forEach(function (d) {
-        n++;
-        var echue = jourOuvrableSuivant(d);
-        var passee = echue < AUJ;
-        out.push({
-          id: 'ECH' + C.pad(n, 4), statut: 'actif',
-          code: o.code, libelle: o.libelle, famille: o.famille,
-          periodicite: o.periodicite, part: o.part, declaration: o.declaration, note: o.note,
-          exercice: annee,
-          periode: o.periodicite === 'mensuelle' ? C.MOIS[Math.max(0, d.getMonth() - 1)] + ' ' + annee : String(annee),
-          echeance: C.iso(echue),
-          reportee: C.iso(echue) !== C.iso(d),
-          /* Les échéances passées sont réputées honorées, sauf les deux plus
-             récentes — pour que l'écran ait quelque chose à montrer. */
-          paye: passee && C.daysBetween(echue, AUJ) > 25,
-          datePaiement: null, montant: null, reference: null, valideePar: null,
-        });
-      });
-    });
-    out.forEach(function (e) {
-      if (e.paye) {
-        e.datePaiement = e.echeance;
-        e.valideePar = 'KASSA Augustin';
-        e.reference = 'QUIT-' + e.code + '-' + e.exercice;
-      }
-    });
-    db.echeancesFiscales = out;
+    /* UNE SEULE FABRIQUE (06/11/2026) : celle du socle, qui lit les obligations
+       À LEUR DATE (versions datées de cfg-comptabilite) ; la copie qui vivait
+       ici lisait D.CALENDRIER_FISCAL en dur et aurait divergé à la première
+       version. Jamais de quittance inventée après un vidage. */
+    db.echeancesFiscales = S.genEcheances(AUJ.getFullYear(), { aujourdhui: AUJ, sansReglement: S.jeuVide() });
     S.save();
   }
+  /* L'ÉCHÉANCIER COUVRE L'EXERCICE COURANT, LE SUIVANT ET L'EXERCICE CHOISI (lot A3b, E-A3-09) : additif et idempotent,
+     une échéance existante (payée comprise) n'est jamais régénérée ni réécrite. */
+  function assurerExercices() {
+    var X = global.SIGH.exercice, annees = [AUJ.getFullYear(), AUJ.getFullYear() + 1];
+    if (X && X.choisi) { var c = X.choisi(); if (annees.indexOf(c) < 0) annees.push(c); }
+    annees.forEach(function (a) { S.assurerEcheances(a); });
+  }
+  /** Un nombre de jours, écrit comme le suivi l'a toujours écrit à sa valeur d'origine (« dix jours »). */
+  function enJours(n) { return n === 10 ? 'dix jours' : n + ' jours'; }
 
   /** État calculé d'une échéance — jamais stocké, toujours recalculé. */
   function calculerEtat(e) {
     if (e.paye) return 'payee';
     var j = C.daysBetween(AUJ, e.echeance);
     if (j < 0) return 'en_retard';
-    if (j <= 10) return 'a_payer';
-    if (e.declaration && j <= 30) return 'declaration';
+    /* LES SEUILS SONT DES PARAMÈTRES (collection parametresFiscaux, cfg-comptabilite) : une seule définition de « proche »
+       pour le suivi, la vue mensuelle, cfg-fiscalite, la cloche et le planificateur. */
+    var d = D.delaisFiscauxALaDate(AUJ);
+    if (j <= d.delaiAPayer) return 'a_payer';
+    if (e.declaration && j <= d.delaiDeclaration) return 'declaration';
     return 'a_venir';
   }
+
+  /* ==========================================================================
+   * CALENDRIER FISCAL MENSUEL (lot A3b, 09/11/2026) : la grille du mois, en LECTURE.
+   * --------------------------------------------------------------------------
+   * Une VUE du même registre que le suivi (collection echeancesFiscales) : aucune seconde collection, aucun calcul de date à
+   * part (la date vient de l'échéance, reportée au jour ouvrable par le moteur du socle), l'état vient de calculerEtat,
+   * donc des mêmes paramètres que le suivi. Elle ne modifie rien ; ses droits sont ceux de m12-echeances (servant).
+   * ======================================================================== */
+  var CHIPS_ETAT = {
+    payee: 'border-success-200 bg-success-50 text-success-700',
+    en_retard: 'border-danger-200 bg-danger-50 text-danger-700',
+    a_payer: 'border-warning-200 bg-warning-50 text-warning-700',
+    declaration: 'border-info-200 bg-info-50 text-info-700',
+    a_venir: 'border-slate-200 bg-slate-50 text-slate-600',
+  };
+  global.SIGH.screen('m12-calendrier-fiscal', {
+    title: 'Calendrier fiscal mensuel',
+    description: 'Les échéances fiscales et sociales du mois, jour par jour, avec leur état : payée, en retard, à payer, à venir.',
+    regle: 'Cette vue <strong>lit le même registre</strong> que le suivi des échéances : une échéance, son jour et son état y sont identiques. '
+      + 'Rien ne se saisit ici ; le paiement se valide au suivi. Un jour qui tombe un samedi ou un dimanche est <strong>reporté au jour ouvrable suivant</strong>, '
+      + 'et les seuils « à payer » et « déclaration » sont ceux des paramètres comptables.',
+    actions: function () {
+      return [
+        K.btn('Suivi des échéances', { icon: 'calendar-clock', onclick: function () { global.SIGH.app.go('m12-echeances'); } }),
+        K.btn('Obligations & règles', { icon: 'book-open-check', onclick: function () { global.SIGH.app.go('cfg-comptabilite'); } }),
+      ];
+    },
+    render: function (root) {
+      amorcerEcheances();
+      assurerExercices();
+      var X = global.SIGH.exercice;
+      var ref = X && X.dateReference ? X.dateReference() : AUJ;
+      var cur = { a: ref.getFullYear(), m: ref.getMonth() };
+      dessiner();
+      return null;
+
+      function bouton(label, id, opts) { var b = K.btn(label, opts); b.id = id; return b; }
+      function decaler(n) {
+        var d = new Date(cur.a, cur.m + n, 1);
+        cur = { a: d.getFullYear(), m: d.getMonth() };
+        dessiner();
+      }
+      function delaiLisible(e) {
+        if (e.paye) return 'réglée';
+        return e.jours < 0 ? Math.abs(e.jours) + ' j de retard' : 'dans ' + e.jours + ' j';
+      }
+
+      function dessiner() {
+        C.clear(root);
+        var debut = C.iso(new Date(cur.a, cur.m, 1)), fin = C.iso(new Date(cur.a, cur.m, C.dernierJourDuMois(cur.a, cur.m)));
+        var rows = colEcheances().active().filter(function (e) { return e.echeance >= debut && e.echeance <= fin; })
+          .map(function (e) { return Object.assign({}, e, { etat: calculerEtat(e), jours: C.daysBetween(AUJ, e.echeance) }); })
+          .sort(function (a, b) { return a.echeance.localeCompare(b.echeance) || String(a.code).localeCompare(String(b.code)); });
+        var parJour = {};
+        rows.forEach(function (e) { (parJour[e.echeance] = parJour[e.echeance] || []).push(e); });
+        var host = el('div#calendrier-fiscal.space-y-4', { 'data-mois': cur.a + '-' + C.pad(cur.m + 1, 2) });
+
+        host.appendChild(el('div.flex.flex-wrap.items-center.justify-between.gap-2', null, [
+          el('div.flex.items-center.gap-2', null, [
+            bouton('Mois précédent', 'cal-precedent', { icon: 'chevron-left', onclick: function () { decaler(-1); } }),
+            el('h2#cal-titre.px-2.text-lg.font-semibold.text-slate-800', { text: C.MOIS[cur.m].charAt(0).toUpperCase() + C.MOIS[cur.m].slice(1) + ' ' + cur.a }),
+            bouton('Mois suivant', 'cal-suivant', { icon: 'chevron-right', onclick: function () { decaler(1); } }),
+          ]),
+          bouton('Aujourd’hui', 'cal-aujourdhui', { onclick: function () { cur = { a: AUJ.getFullYear(), m: AUJ.getMonth() }; dessiner(); } }),
+        ]));
+
+        host.appendChild(U.kpiGrid([
+          { label: 'Échéances du mois', value: C.num(rows.length), icon: 'calendar-days', tone: 'navy' },
+          { label: 'En retard', value: C.num(rows.filter(function (e) { return e.etat === 'en_retard'; }).length), icon: 'alarm-clock', tone: rows.some(function (e) { return e.etat === 'en_retard'; }) ? 'danger' : 'success' },
+          { label: 'À payer ou à déclarer', value: C.num(rows.filter(function (e) { return e.etat === 'a_payer' || e.etat === 'declaration'; }).length), icon: 'coins', tone: 'warning' },
+          { label: 'Payées', value: C.num(rows.filter(function (e) { return e.etat === 'payee'; }).length), icon: 'check-circle-2', tone: 'success' },
+        ]));
+
+        /* La grille : lundi en premier, six semaines au plus. */
+        var premier = new Date(cur.a, cur.m, 1), decalage = (premier.getDay() + 6) % 7, nb = C.dernierJourDuMois(cur.a, cur.m);
+        var grille = el('div#cal-grille.grid.grid-cols-7.gap-1');
+        ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].forEach(function (j) {
+          grille.appendChild(el('div.px-1.pb-1.text-center.text-xs.font-semibold.uppercase.text-slate-500', { text: j }));
+        });
+        for (var v = 0; v < decalage; v++) grille.appendChild(el('div'));
+        for (var j = 1; j <= nb; j++) {
+          var dt = new Date(cur.a, cur.m, j), cle = C.iso(dt), fe = dt.getDay() === 0 || dt.getDay() === 6;
+          var cell = el('div.min-h-\\[5rem\\].rounded-md.border.p-1', { class: fe ? 'border-slate-100 bg-slate-50' : 'border-slate-200 bg-white', 'data-jour': cle });
+          cell.appendChild(el('p.text-xs.font-semibold', { class: cle === C.iso(AUJ) ? 'text-navy-700 underline' : 'text-slate-500', text: String(j) }));
+          (parJour[cle] || []).forEach(function (e) {
+            cell.appendChild(el('button.cal-ech.mt-0\\.5.block.w-full.truncate.rounded.border.px-1.text-left.text-xs.font-medium', {
+              type: 'button', class: CHIPS_ETAT[e.etat] || CHIPS_ETAT.a_venir,
+              title: e.libelle + ' (' + etatEcheance(e.etat).label + ', ' + delaiLisible(e) + ')',
+              'data-echeance': e.id, 'data-code': e.code, 'data-date': e.echeance, 'data-etat': e.etat,
+              onclick: function () { global.SIGH.app.go('m12-echeances'); },
+            }, e.code));
+          });
+          grille.appendChild(cell);
+        }
+        host.appendChild(U.card('Le mois en grille', el('div.space-y-2', null, [
+          grille,
+          el('div.flex.flex-wrap.gap-2.pt-1', null, ETATS_ECHEANCE.map(function (s) { return U.badge(s.label, s.tone); })),
+        ])));
+
+        host.appendChild(U.card('Les échéances du mois', K.miniTable([
+          { label: 'Date', render: function (e) { return el('span.num', { text: C.dateFR(e.echeance) + (e.reportee ? ' (reportée)' : '') }); } },
+          { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
+          { label: 'Obligation', render: function (e) { return e.libelle + (e.part && e.part < 100 ? ', tranche de ' + e.part + ' %' : ''); } },
+          { label: 'Délai', render: delaiLisible },
+          { label: 'État', render: function (e) { var s = etatEcheance(e.etat); return U.badge(s.label, s.tone); } },
+        ], rows, { empty: 'Aucune échéance ce mois. L’échéancier d’un exercice se génère à son ouverture.' })));
+
+        root.appendChild(host);
+        U.icons(root);
+      }
+    },
+  });
 
   global.SIGH.screen('m12-echeances', {
     title: 'Échéances fiscales & paiements',
@@ -3029,6 +3524,8 @@
     },
     render: function (root) {
       amorcerEcheances();
+      assurerExercices();
+      var DELAIS = D.delaisFiscauxALaDate(AUJ);
       dessiner();
       return null;
 
@@ -3057,7 +3554,7 @@
             hint: retard.length ? 'Risque de pénalité' : 'Aucun retard',
           },
           {
-            label: 'À payer sous 10 jours', value: C.num(aPayer.length), icon: 'coins',
+            label: 'À payer sous ' + DELAIS.delaiAPayer + ' jours', value: C.num(aPayer.length), icon: 'coins',
             tone: aPayer.length ? 'warning' : 'success',
           },
           { label: 'Déclarations attendues', value: C.num(declarations.length), icon: 'file-pen-line', tone: 'info' },
@@ -3080,7 +3577,7 @@
         }
         if (aPayer.length) {
           barre.appendChild(alerte('warning', 'coins',
-            aPayer.length + ' paiement(s) à effectuer sous dix jours',
+            aPayer.length + ' paiement(s) à effectuer sous ' + enJours(DELAIS.delaiAPayer),
             aPayer.slice(0, 3).map(function (e) {
               return e.code + ' le ' + C.dateFR(e.echeance);
             }).join(' · ') + (aPayer.length > 3 ? ' …' : ''),
@@ -3094,15 +3591,22 @@
             }).join(' · '), null));
         }
         if (!retard.length && !aPayer.length && !declarations.length) {
+          /* E804 — la date de la prochaine obligation se formate comme toutes les autres, et quand TOUT est réglé on le dit
+             au lieu d'écrire « undefined » : le message se lisait « La prochaine obligation tombe le undefined ». */
+          var prochaine = rows.filter(function (e) { return e.jours >= 0 && !e.paye; })
+            .sort(function (a, b) { return a.jours - b.jours; })[0];
           barre.appendChild(alerte('success', 'check-circle-2',
             'Aucune échéance en attente immédiate',
-            'La prochaine obligation tombe le ' + (rows.filter(function (e) { return e.jours >= 0 && !e.paye; })
-              .sort(function (a, b) { return a.jours - b.jours; })[0] || {}).echeance, null));
+            prochaine ? 'La prochaine obligation tombe le ' + C.dateFR(prochaine.echeance)
+              : 'Toutes les échéances de l’exercice sont réglées.', null));
         }
         host.appendChild(barre);
 
         host.appendChild(U.dataTable({
-          title: 'Échéances de l’exercice ' + AUJ.getFullYear(),
+          title: (function () {
+            var ex = Object.keys(C.groupBy(rows, 'exercice')).sort();
+            return ex.length > 1 ? 'Échéances des exercices ' + ex.join(' et ') : 'Échéances de l’exercice ' + (ex[0] || AUJ.getFullYear());
+          })(),
           rows: rows, exportName: 'echeances-fiscales', pageSize: 20, searchable: true,
           defaultSort: 'echeance',
           filters: [
@@ -3118,6 +3622,10 @@
               name: 'periodicite', label: 'Périodicité',
               options: [{ value: 'mensuelle', label: 'Mensuelle' }, { value: 'annuelle', label: 'Annuelle' }],
             },
+            {
+              name: 'exercice', label: 'Exercice',
+              options: Object.keys(C.groupBy(rows, 'exercice')).sort().map(function (x) { return { value: x, label: x }; }),
+            },
           ],
           columns: [
             { key: 'code', label: 'Code', nowrap: true, render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
@@ -3129,6 +3637,11 @@
                   el('p.truncate.text-xs.text-slate-400', {
                     text: e.periode + (e.part && e.part < 100 ? ' · tranche de ' + e.part + ' %' : ''),
                   }),
+                  /* Une échéance née d'une version datée de l'obligation le dit : c'est ce qui explique un jour qui a changé. */
+                  e.versionObligation ? el('p.truncate.text-\\[10px\\].text-info-700', {
+                    text: 'Version de l’obligation en vigueur au ' + C.dateFR(e.versionObligation)
+                      + (e.regenereeLe ? ' (régénérée le ' + C.dateFR(e.regenereeLe) + ')' : ''),
+                  }) : null,
                 ]);
               },
             },
@@ -3149,7 +3662,7 @@
                 if (e.paye) return el('span.text-xs.text-slate-400', { text: '—' });
                 if (e.jours < 0) return el('span.num.font-semibold.text-danger-600', { text: Math.abs(e.jours) + ' j de retard' });
                 return el('span.num', {
-                  class: e.jours <= 10 ? 'font-semibold text-warning-700' : 'text-slate-600',
+                  class: e.jours <= DELAIS.delaiAPayer ? 'font-semibold text-warning-700' : 'text-slate-600',
                   text: 'dans ' + e.jours + ' j',
                 });
               },
@@ -3188,13 +3701,13 @@
             if (e.paye) {
               return [
                 K.iconBtn('printer', 'Éditer la quittance', function () { imprimerQuittance(e); }),
-                K.iconBtn('undo-2', 'Annuler la validation', function () { annulerPaiement(e); }),
-              ];
+                K.commandeIcone('undo-2', 'Annuler la validation', function () { annulerPaiement(e); }, { droit: 'annuler' }),
+              ].filter(Boolean);
             }
             return [
-              K.iconBtn('check', 'Valider le paiement effectué', function () { validerPaiement(e); }),
+              K.commandeIcone('check', 'Valider le paiement effectué', function () { validerPaiement(e); }),
               K.iconBtn('bell', 'Rappeler cette échéance', function () { rappeler(e); }),
-            ];
+            ].filter(Boolean);
           },
         }));
 
@@ -3206,7 +3719,7 @@
         if (retard.length || aPayer.length) {
           setTimeout(function () {
             U.alerter(
-              (retard.length ? retard.length + ' échéance(s) en retard' : aPayer.length + ' paiement(s) sous dix jours'),
+              (retard.length ? retard.length + ' échéance(s) en retard' : aPayer.length + ' paiement(s) sous ' + enJours(DELAIS.delaiAPayer)),
               {
                 son: retard.length ? 'alerte' : 'rappel',
                 type: retard.length ? 'error' : 'warning',
@@ -3228,10 +3741,11 @@
           el('p.mt-0\\.5.text-xs', { class: 'text-' + tone + '-800', text: detail }),
         ]));
         if (cible) {
-          d.appendChild(K.btn('Valider le paiement', {
+          var bValider = K.commande('Valider le paiement', {
             size: 'sm', variant: tone === 'danger' ? 'danger' : 'primary', icon: 'check',
             onclick: function () { validerPaiement(cible); },
-          }));
+          });
+          if (bValider) d.appendChild(bValider);
         }
         return d;
       }
@@ -3344,7 +3858,7 @@
           ]),
           footer: e.paye
             ? [K.btn('Éditer la quittance', { variant: 'primary', icon: 'printer', onclick: function () { imprimerQuittance(e); } })]
-            : [K.btn('Valider le paiement', { variant: 'primary', icon: 'check', onclick: function () { validerPaiement(e); } })],
+            : [K.commande('Valider le paiement', { variant: 'primary', icon: 'check', onclick: function () { validerPaiement(e); } })].filter(Boolean),
         });
       }
 
@@ -3368,7 +3882,7 @@
               { k: 'Observation', v: e.observation || '—' },
             ]),
           ]),
-          signatures: [{ role: 'Le Comptable', nom: e.valideePar || 'KASSA Augustin' },
+          signatures: [{ role: 'Le Comptable', nom: e.valideePar || '' },
             { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
         });
       }
@@ -3403,9 +3917,46 @@
     return S.collection('banques', { module: 'M12', entite: 'compte de trésorerie', prefix: 'BQ' });
   }
 
-  /** Les comptes de charge du plan réel de la clinique — classe 6 et 671. */
+  /* LA TABLE DES COMPTES DE RÉSULTAT (131 bénéfice, 139 perte) : celle que la clôture lit pour solder les classes 6, 7 et 8. Deux fiches, une par sens :
+     on les MODIFIE, on ne les crée ni ne les archive (la clôture a besoin des deux). Réservée à ceux qui peuvent démarrer une clôture. */
+  function ecranComptesResultat(droits, role) {
+    var X = global.SIGH.exercice, col = X.comptesResultat();
+    var peut = droits.editer && X.peut('rolesDemarrer');
+    var host = el('div.space-y-4');
+    host.appendChild(K.note('<strong>Le compte du résultat net.</strong> La clôture solde les classes 6, 7 et 8 vers le compte de bénéfice (131) ou de perte (139) selon le signe du résultat. Ces comptes se paramètrent ici, jamais dans le code. '
+      + (peut ? 'Une modification vaut pour les prochaines clôtures : les pièces CL déjà écrites ne changent pas.' : 'Réservé à : ' + C.escapeHtml(X.nomsRoles(X.circuit('rolesDemarrer').valeur || [])) + ' (circuit de clôture) : vous consultez.'), { tone: 'info', icon: 'scale' }));
+    function champs() {
+      return [
+        { name: 'compte', label: 'Compte (six chiffres)', required: true, help: '131… pour le bénéfice, 139… pour la perte (SYSCOHADA).' },
+        { name: 'libelle', label: 'Libellé de la pièce', required: true, col: 'full' },
+      ];
+    }
+    var table = U.dataTable({
+      title: 'Comptes du résultat net', rows: function () { return col.active(); }, exportName: 'comptes-resultat', pageSize: 10,
+      columns: [
+        { key: 'sens', label: 'Résultat', render: function (f) { return f.sens === 'benefice' ? U.badge('Bénéfice', 'success') : U.badge('Perte', 'danger'); }, text: function (f) { return f.sens === 'benefice' ? 'Bénéfice' : 'Perte'; } },
+        { key: 'compte', label: 'Compte', nowrap: true, render: function (f) { return el('span.font-mono.text-xs', { text: f.compte }); } },
+        { key: 'libelle', label: 'Libellé' },
+      ],
+      rowActions: peut ? K.actionsLigne(col, champs, {
+        entite: 'compte de résultat', archivable: false,
+        avant: function (v, r) {
+          var motif = X.controleCompteResultat(r, v);
+          if (motif) { U.toast('Compte de résultat refusé.', { type: 'error', detail: motif, duration: 9000 }); return false; }
+          return true;
+        },
+      }) : undefined,
+    });
+    host.appendChild(table);
+    return host;
+  }
+
+  /** Les comptes de charge du plan de la clinique (classe 6 et 671). E715 : la COLLECTION fait foi (un compte créé à l'écran est
+   *  proposable en dépense) ; le plan statique ne sert que si la collection n'est pas amorcée. */
   function comptesCharge() {
-    return (D.PLAN_COMPTABLE || []).filter(function (c) {
+    var col = comptes();
+    var source = col.length ? col : (D.PLAN_COMPTABLE || []);
+    return source.filter(function (c) {
       return /^6/.test(String(c.num));
     });
   }
@@ -3458,7 +4009,7 @@
       /* ------------------------------------------------------------------ */
       function amorcer() {
         var col = colDepenses();
-        if (col.all().length) return;
+        if (col.all().length || !S.amorcable('depenses')) return;
         /* Un historique de neuf mois : sans lui, les indicateurs et les
            graphiques seraient à zéro et on croirait l'écran cassé. Les
            libellés sont ceux d'une clinique, pas des chaînes de test. */
@@ -3594,7 +4145,13 @@
           return null;
         }
 
-        var posees = lignes.map(function (l) { return col.insert(l).record; });
+        /* Chaque insert est testé : la garde d'exercice rend null. Une demi-écriture est défaite, l'appelant reçoit null (le magasin a dit le motif). */
+        var resIns = lignes.map(function (l) { return col.insert(l); });
+        if (resIns.some(function (r) { return !r; })) {
+          resIns.forEach(function (r) { if (r) r.undo(); });
+          return null;
+        }
+        var posees = resIns.map(function (r) { return r.record; });
         S.log('Écriture de dépense', 'M12', 'Ecriture', dep.reference, null,
           { debit: debit, credit: credit, lignes: posees.length });
         /* On retient les DEUX identifiants : archiver la dépense doit archiver
@@ -3769,6 +4326,20 @@
         };
       }
 
+      /* Écart E714 : la garde de l'exercice clos refuse l'écriture (insert rend null) — la maquette levait alors une TypeError dans
+         poserEcriture APRÈS avoir écrit la dépense. Le refus est dit AVANT toute écriture, avec le motif du moteur. */
+      function exerciceDeLaDateClos(date) {
+        var a = global.SIGH.exercice.anneeDe(date);
+        /* Les DEUX états qui ferment la saisie : clos et en clôture (la garde de parcours.js refuse l'écriture automatique des deux). */
+        var etat = a ? global.SIGH.exercice.etat(a) : 'ouvert';
+        if (etat !== 'clos' && etat !== 'en_cloture') return false;
+        var x = global.SIGH.exercice.de(a);
+        U.toast('Écriture refusée.', { type: 'error', detail: etat === 'clos'
+          ? 'Exercice ' + a + ' clos' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '') + ' — lecture seule. La correction passe par une écriture de l’exercice en cours.'
+          : 'Exercice ' + a + ' en clôture : les modules n’y écrivent plus. Dater la dépense de l’exercice ouvert.' });
+        return true;
+      }
+
       function nouvelle() {
         if (!K.droits('M12').editer) return;
         var f = U.form(champs(), { date: C.iso(AUJ), categorie: 'fonctionnement' });
@@ -3786,9 +4357,12 @@
                 if (!v) return;
                 var t = totauxDepuisLignes(v, editeur);
                 if (!t) return;
+                if (exerciceDeLaDateClos(v.date)) return;
                 var sess = S.session() || {};
-                var rec = colDepenses().insert({
-                  reference: C.nextRef('DEP-' + String(C.toDate(v.date).getFullYear()) + '-', 4),
+                var insDep = colDepenses().insert({
+                  /* Écart E712 : C.nextRef est un compteur de PAGE (repart à 1 à chaque chargement) — la première dépense de la
+                     session redonnait DEP-2026-0001, déjà attribuée. Le rang se lit sur les dépenses existantes (E8). */
+                  reference: C.referenceSuivante('DEP-' + String(C.toDate(v.date).getFullYear()) + '-', 4, colDepenses().all()),
                   date: v.date,
                   lignes: t.lignes, montant: t.montant,
                   libelle: t.libelle, compteCharge: t.compteCharge,
@@ -3796,15 +4370,27 @@
                   justificatif: fichier.lire(),
                   saisiPar: sess.nomComplet || sess.nom || 'Utilisateur',
                   saisiLe: C.iso(AUJ),
-                }).record;
+                });
+                var rec = insDep.record;
                 var ec = poserEcriture(rec);
-                if (ec) colDepenses().update(rec.id, { ecritureId: ec.id, ecritureIds: ec.ids });
+                if (!ec) {
+                  /* Jamais de dépense sans son écriture : la saisie est défaite, la modale reste ouverte (le refus a été dit). */
+                  insDep.undo();
+                  afficher();
+                  return;
+                }
+                colDepenses().update(rec.id, { ecritureId: ec.id, ecritureIds: ec.ids });
                 m.close(); afficher();
                 U.toast('Dépense enregistrée.', { type: 'success',
                   detail: C.money(rec.montant) + ' en ' + t.lignes.length + ' ligne(s) — écriture '
                     + (ec ? 'en brouillon, à valider' : 'non posée')
                     + (rec.justificatif ? '' : ' · sans justificatif'),
-                  undo: function () { colDepenses().archive(rec.id); afficher(); },
+                  /* Écart E727 : annuler la saisie n'archivait que la dépense — son écriture en brouillon restait au journal, charge sans pièce. */
+                  undo: function () {
+                    colDepenses().archive(rec.id);
+                    (ec ? ec.ids : []).forEach(function (id) { S.collection('ecritures').archive(id); });
+                    afficher();
+                  },
                   undoMessage: 'Dépense annulée.' });
               } }),
           ],
@@ -3836,21 +4422,28 @@
                 if (!v) return;
                 var t = totauxDepuisLignes(v, editeur);
                 if (!t) return;
-                colDepenses().update(r.id, {
+                /* L'exercice de l'ANCIENNE date compte autant que celui de la nouvelle : l'ancienne écriture y reste, sinon la charge serait comptée deux fois. */
+                if (exerciceDeLaDateClos(r.date)) return;
+                if (exerciceDeLaDateClos(v.date)) return;
+                var patch = {
                   date: v.date,
                   lignes: t.lignes, montant: t.montant, libelle: t.libelle,
                   compteCharge: t.compteCharge, compteTresorerie: v.compteTresorerie,
                   categorie: v.categorie, justificatif: fichier.lire() || r.justificatif || null,
-                });
+                };
                 /* L'écriture suit la dépense : la laisser telle quelle
-                   ferait diverger la comptabilité de la pièce qui la fonde. */
-                /* TOUTES les lignes de l'ancienne écriture, pas la première :
-                   en laisser une seule mettrait le journal en déséquilibre. */
-                (r.ecritureIds || [r.ecritureId]).filter(Boolean).forEach(function (id) {
-                  S.collection('ecritures').archive(id);
+                   ferait diverger la comptabilité de la pièce qui la fonde.
+                   TOUTES les lignes de l'ancienne écriture, pas la première :
+                   en laisser une seule mettrait le journal en déséquilibre.
+                   Ordre : archiver l'ancienne, poser la nouvelle, et seulement alors écrire la dépense ; tout refus défait ce qui a passé. */
+                var anciennes = (r.ecritureIds || [r.ecritureId]).filter(Boolean).map(function (id) {
+                  return S.collection('ecritures').archive(id);
                 });
-                var ec = poserEcriture(colDepenses().get(r.id));
-                if (ec) colDepenses().update(r.id, { ecritureId: ec.id, ecritureIds: ec.ids });
+                var rendre = function () { anciennes.forEach(function (a) { if (a) a.undo(); }); afficher(); };
+                if (anciennes.some(function (a) { return !a; })) { rendre(); return; }
+                var ec = poserEcriture(Object.assign({}, r, patch));
+                if (!ec) { rendre(); return; }
+                colDepenses().update(r.id, Object.assign({ ecritureId: ec.id, ecritureIds: ec.ids }, patch));
                 m.close(); afficher();
                 U.toast('Dépense modifiée.', { type: 'success',
                   detail: 'L’écriture a été refaite et repart en brouillon.' });
@@ -3868,8 +4461,14 @@
         }).then(function (ok) {
           if (!ok) return;
           var ids = (r.ecritureIds || [r.ecritureId]).filter(Boolean);
+          /* Les écritures d'abord : si la garde d'exercice en refuse une, on remet celles qui ont passé et la dépense reste en place. */
+          var archivees = ids.map(function (id) { return S.collection('ecritures').archive(id); });
+          if (archivees.some(function (a) { return !a; })) {
+            archivees.forEach(function (a) { if (a) a.undo(); });
+            afficher();
+            return;
+          }
           colDepenses().archive(r.id);
-          ids.forEach(function (id) { S.collection('ecritures').archive(id); });
           afficher();
           U.toast('Dépense archivée.', { type: 'success',
             undo: function () {
@@ -4176,7 +4775,7 @@
    * ======================================================================== */
   function ecrituresRetenues(bornes) {
     var brouillons = 0;
-    var retenues = ecritures().filter(function (e) {
+    var retenues = ecrituresToutes().filter(function (e) {
       if (bornes && !C.dansBornes(e.date, bornes)) return false;
       if (e.statut === 'brouillon') { brouillons++; return false; }
       return true;
@@ -4350,7 +4949,7 @@
   function exercicesDuJournal() {
     var annees = {};
     annees[AUJ.getFullYear()] = true;
-    ecritures().forEach(function (e) { if (e.date) annees[C.toDate(e.date).getFullYear()] = true; });
+    ecrituresToutes().forEach(function (e) { if (e.date) annees[C.toDate(e.date).getFullYear()] = true; });
     return Object.keys(annees).map(Number).sort(function (a, b) { return b - a; });
   }
 
@@ -4405,7 +5004,7 @@
     var tDebut = C.toDate(b.debut).getTime(), tFin = C.toDate(b.fin).getTime();
     var annee = C.toDate(b.debut).getFullYear();
     var ouverture = {}, mouv = {}, debits = {}, credits = {}, brouillons = 0, nb = 0;
-    ecritures().forEach(function (e) {
+    ecrituresToutes().forEach(function (e) {
       if (!e.date) return;
       var t = C.toDate(e.date).getTime();
       if (t > tFin) return;
@@ -4997,7 +5596,7 @@
       var selPeriode = el('select.select');
       C.PERIODES.forEach(function (x) { selPeriode.appendChild(el('option', { value: x.id }, x.label)); });
       selPeriode.value = 'annee';
-      var inDate = el('input.input', { type: 'date', value: C.iso(AUJ) });
+      var inDate = el('input.input', { type: 'date', value: C.iso(global.SIGH.exercice.dateReference()) });
       var vue = el('div.space-y-4');
 
       var barre = el('div.card');
@@ -5088,6 +5687,14 @@
         }]));
 
         var droits = K.droits('M12');
+        /* La répartition est UNE pièce à valider (constante du code : la validation vit dans `validationsReferentiels`). */
+        vue.appendChild(el('div.flex.flex-wrap.items-center.justify-between.gap-2.rounded-lg.border.border-slate-200.bg-white.px-3.py-2', null, [
+          el('div.flex.items-center.gap-2', null, [
+            el('span.text-sm.font-medium.text-slate-700', { text: 'Répartition fixe et variable' }),
+            K.badgeValidation('repartition_charges', 'repartition-fixe-variable'),
+          ]),
+          K.boutonValider('repartition_charges', 'repartition-fixe-variable', { moduleCode: 'M12', apres: afficher }),
+        ].filter(Boolean)));
         vue.appendChild(U.card('Nature des charges — proposition corrigeable', U.dataTable({
           rows: r.comptes, exportName: 'nature-charges', pageSize: 20, searchable: true,
           filters: [{ name: 'nature', label: 'Nature',
@@ -5110,7 +5717,10 @@
             if (!droits.editer) return [];
             return [K.iconBtn('repeat', 'Basculer en ' + (x.nature === 'variable' ? 'fixe' : 'variable'),
               function () {
+                if (!K.gardeValidation('repartition_charges')) return;
                 corrigerNature(x.compte, x.nature === 'variable' ? 'fixe' : 'variable');
+                /* Lot L1 : le comptable (profil de la famille) qui corrige VALIDE la pièce ; tout autre profil la remet « à valider ». */
+                K.suivreValidation('repartition_charges', 'repartition-fixe-variable');
                 afficher();
                 U.toast('Nature corrigée.', { type: 'success',
                   detail: x.compte + ' — ' + (x.nature === 'variable' ? 'désormais fixe' : 'désormais variable')

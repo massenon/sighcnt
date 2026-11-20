@@ -1,0 +1,1217 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile.js : les pages du simulateur mobile (mobile/ecrans/*.php) PILOTÉES dans Chrome, et, avec --regles, PR.peutPrescrire de la maquette complète. Ne pas éditer à la main.",
+ "constantes": [
+  {
+   "saisie": {},
+   "erreurs": {
+    "temperature": "La température est obligatoire."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "57"
+   },
+   "erreurs": {
+    "temperature": "La température : valeur improbable (30 à 45)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "abc"
+   },
+   "erreurs": {
+    "temperature": "La température doit être un nombre."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "29,9"
+   },
+   "erreurs": {
+    "temperature": "La température : valeur improbable (30 à 45)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "30"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "45"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "45,1"
+   },
+   "erreurs": {
+    "temperature": "La température : valeur improbable (30 à 45)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "38,6"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "sys": "49"
+   },
+   "erreurs": {
+    "sys": "La systolique : valeur improbable (50 à 260)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "sys": "50"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "sys": "260"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "sys": "261"
+   },
+   "erreurs": {
+    "sys": "La systolique : valeur improbable (50 à 260)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "dia": "29"
+   },
+   "erreurs": {
+    "dia": "La diastolique : valeur improbable (30 à 160)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "dia": "30"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "dia": "160"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "dia": "161"
+   },
+   "erreurs": {
+    "dia": "La diastolique : valeur improbable (30 à 160)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "pouls": "19"
+   },
+   "erreurs": {
+    "pouls": "Le pouls : valeur improbable (20 à 250)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "pouls": "20"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "pouls": "250"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "pouls": "251"
+   },
+   "erreurs": {
+    "pouls": "Le pouls : valeur improbable (20 à 250)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "fr": "4"
+   },
+   "erreurs": {
+    "fr": "La FR : valeur improbable (5 à 80)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "fr": "5"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "fr": "80"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "fr": "81"
+   },
+   "erreurs": {
+    "fr": "La FR : valeur improbable (5 à 80)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "spo2": "49"
+   },
+   "erreurs": {
+    "spo2": "La SpO₂ : valeur improbable (50 à 100)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "spo2": "50"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "spo2": "100"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "spo2": "101"
+   },
+   "erreurs": {
+    "spo2": "La SpO₂ : valeur improbable (50 à 100)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "0,4"
+   },
+   "erreurs": {
+    "poids": "Le poids : valeur improbable (0.5 à 300)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "0,5"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "300"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "300,1"
+   },
+   "erreurs": {
+    "poids": "Le poids : valeur improbable (0.5 à 300)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "1e2"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "0x10"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "pouls": "  96  "
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "5."
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": ".5"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "+5"
+   },
+   "erreurs": {}
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "-1"
+   },
+   "erreurs": {
+    "poids": "Le poids : valeur improbable (0.5 à 300)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "1,2,3"
+   },
+   "erreurs": {
+    "poids": "Le poids doit être un nombre."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "poids": "Infinity"
+   },
+   "erreurs": {
+    "poids": "Le poids : valeur improbable (0.5 à 300)."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "NaN"
+   },
+   "erreurs": {
+    "temperature": "La température doit être un nombre."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "37",
+    "pouls": "9 6"
+   },
+   "erreurs": {
+    "pouls": "Le pouls doit être un nombre."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "3 7"
+   },
+   "erreurs": {
+    "temperature": "La température doit être un nombre."
+   }
+  },
+  {
+   "saisie": {
+    "temperature": "57",
+    "sys": "300",
+    "dia": "10",
+    "pouls": "x",
+    "fr": "200",
+    "spo2": "10",
+    "poids": "1000"
+   },
+   "erreurs": {
+    "temperature": "La température : valeur improbable (30 à 45).",
+    "sys": "La systolique : valeur improbable (50 à 260).",
+    "dia": "La diastolique : valeur improbable (30 à 160).",
+    "pouls": "Le pouls doit être un nombre.",
+    "fr": "La FR : valeur improbable (5 à 80).",
+    "spo2": "La SpO₂ : valeur improbable (50 à 100).",
+    "poids": "Le poids : valeur improbable (0.5 à 300)."
+   }
+  }
+ ],
+ "consultation": {
+  "champs": {
+   "motif": {
+    "libelle": "Motif",
+    "requis": true,
+    "type": "text",
+    "options": null,
+    "valeur": "Suivi HTA"
+   },
+   "anamnese": {
+    "libelle": "Anamnèse",
+    "requis": false,
+    "type": "textarea",
+    "options": null,
+    "valeur": null
+   },
+   "inspection": {
+    "libelle": "Inspection",
+    "requis": false,
+    "type": "textarea",
+    "options": null,
+    "valeur": null
+   },
+   "palpation": {
+    "libelle": "Palpation",
+    "requis": false,
+    "type": "textarea",
+    "options": null,
+    "valeur": null
+   },
+   "percussion": {
+    "libelle": "Percussion",
+    "requis": false,
+    "type": "textarea",
+    "options": null,
+    "valeur": null
+   },
+   "auscultation": {
+    "libelle": "Auscultation",
+    "requis": false,
+    "type": "textarea",
+    "options": null,
+    "valeur": null
+   },
+   "diagnostic": {
+    "libelle": "Diagnostic",
+    "requis": true,
+    "type": "select",
+    "options": [
+     "Paludisme simple",
+     "Paludisme grave",
+     "Hypertension artérielle",
+     "Infection respiratoire aiguë",
+     "Gastro-entérite",
+     "Autre (à préciser)"
+    ],
+    "valeur": null
+   },
+   "orientation": {
+    "libelle": "Orientation",
+    "requis": false,
+    "type": "select",
+    "options": [
+     "Traitement à domicile",
+     "Revoir à la clinique",
+     "Référer / hospitaliser",
+     "Rendez-vous de contrôle"
+    ],
+    "valeur": null
+   }
+  },
+  "note": "Dossier → fiche → prescription : la prescription se fait après l’enregistrement de la fiche. Les constantes relevées ce jour sont reprises, jamais ressaisies.",
+  "cas": [
+   {
+    "saisie": {
+     "motif": ""
+    },
+    "erreurs": {
+     "motif": "Le motif est obligatoire."
+    }
+   },
+   {
+    "saisie": {
+     "motif": "   "
+    },
+    "erreurs": {
+     "motif": "Le motif est obligatoire."
+    }
+   },
+   {
+    "saisie": {
+     "motif": "Suivi HTA"
+    },
+    "erreurs": {}
+   }
+  ]
+ },
+ "prescription": {
+  "champs": {
+   "pat": {
+    "libelle": "Patient",
+    "requis": false,
+    "placeholder": null
+   },
+   "med": {
+    "libelle": "Médicament",
+    "requis": true,
+    "placeholder": "Paracétamol 500 mg"
+   },
+   "poso": {
+    "libelle": "Posologie",
+    "requis": true,
+    "placeholder": "1 cp × 3/j"
+   },
+   "duree": {
+    "libelle": "Durée (jours)",
+    "requis": true,
+    "placeholder": "5"
+   }
+  },
+  "note": "Prescrire génère l’ordonnance et la facture de la caisse. Le patient règle à la caisse de la clinique ; la délivrance n’a lieu qu’après paiement (RG-03).",
+  "cas": [
+   {
+    "saisie": {},
+    "erreurs": {
+     "med": "Le médicament est obligatoire.",
+     "poso": "La posologie est obligatoire.",
+     "duree": "La durée est obligatoire."
+    }
+   },
+   {
+    "saisie": {
+     "med": "Paracétamol 500 mg"
+    },
+    "erreurs": {
+     "poso": "La posologie est obligatoire.",
+     "duree": "La durée est obligatoire."
+    }
+   },
+   {
+    "saisie": {
+     "med": "Paracétamol 500 mg",
+     "poso": "1 cp × 3/j"
+    },
+    "erreurs": {
+     "duree": "La durée est obligatoire."
+    }
+   },
+   {
+    "saisie": {
+     "med": "x",
+     "poso": "y",
+     "duree": "0"
+    },
+    "erreurs": {
+     "duree": "La durée : valeur improbable (1 à 90)."
+    }
+   },
+   {
+    "saisie": {
+     "med": "x",
+     "poso": "y",
+     "duree": "1"
+    },
+    "erreurs": {}
+   },
+   {
+    "saisie": {
+     "med": "x",
+     "poso": "y",
+     "duree": "90"
+    },
+    "erreurs": {}
+   },
+   {
+    "saisie": {
+     "med": "x",
+     "poso": "y",
+     "duree": "91"
+    },
+    "erreurs": {
+     "duree": "La durée : valeur improbable (1 à 90)."
+    }
+   },
+   {
+    "saisie": {
+     "med": "x",
+     "poso": "y",
+     "duree": "abc"
+    },
+    "erreurs": {
+     "duree": "La durée doit être un nombre."
+    }
+   },
+   {
+    "saisie": {
+     "med": "x",
+     "poso": "y",
+     "duree": "5,5"
+    },
+    "erreurs": {}
+   },
+   {
+    "saisie": {
+     "med": "  ",
+     "poso": "y",
+     "duree": "5"
+    },
+    "erreurs": {
+     "med": "Le médicament est obligatoire."
+    }
+   }
+  ]
+ },
+ "analyses": {
+  "examens": [
+   "NFS",
+   "Glycémie",
+   "Goutte épaisse / TDR paludisme",
+   "CRP",
+   "Test de grossesse (TBG)",
+   "Créatininémie"
+  ],
+  "urgences": [
+   "Non urgent",
+   "Urgent — bilan entier",
+   "Urgent — examens cochés"
+  ],
+  "note": "Rien ne se prélève avant le paiement. La demande part par le relais, le patient règle à la caisse, puis passe à la salle de prélèvement.",
+  "aucunExamen": {
+   "visible": true,
+   "message": "Cochez au moins un examen."
+  },
+  "unExamen": {
+   "visible": false,
+   "message": "Cochez au moins un examen."
+  }
+ },
+ "profils": {
+  "soignant": {
+   "label": "Soignant (infirmier)",
+   "ecrans": [
+    "appairage",
+    "verrou",
+    "accueil-soignant",
+    "dossier",
+    "constantes",
+    "sync",
+    "a-traiter",
+    "lot",
+    "parametres"
+   ]
+  },
+  "medecin": {
+   "label": "Médecin",
+   "ecrans": [
+    "appairage",
+    "verrou",
+    "accueil-medecin",
+    "dossier",
+    "constantes",
+    "consultation",
+    "prescription",
+    "demande-analyse",
+    "sync",
+    "a-traiter",
+    "lot",
+    "parametres"
+   ]
+  },
+  "sagefemme": {
+   "label": "Sage-femme",
+   "ecrans": [
+    "appairage",
+    "verrou",
+    "accueil-sagefemme",
+    "dossier",
+    "constantes",
+    "cpn",
+    "cpon",
+    "surveillance",
+    "sync",
+    "a-traiter",
+    "lot",
+    "parametres"
+   ]
+  }
+ },
+ "libellesEcrans": {
+  "appairage": "Appairage",
+  "verrou": "Code PIN",
+  "accueil-soignant": "Ma tournée",
+  "accueil-medecin": "Mes visites",
+  "accueil-sagefemme": "Mes suivis",
+  "accueil-reception": "Accueil de secours",
+  "dossier": "Dossier du patient",
+  "constantes": "Constantes",
+  "consultation": "Consultation à domicile",
+  "prescription": "Prescription",
+  "demande-analyse": "Demande d’analyses",
+  "cpn": "Visite prénatale (CPN)",
+  "cpon": "Visite post-natale (CPoN)",
+  "surveillance": "Surveillance mère-bébé",
+  "nouveau-dossier": "Nouveau dossier",
+  "dossiers-crees": "Dossiers ouverts",
+  "orientation": "Orienter un patient",
+  "sync": "Synchronisation",
+  "a-traiter": "À traiter",
+  "lot": "Lot de tournée",
+  "parametres": "Réglages"
+ },
+ "dossier": {
+  "titres": [
+   "Identité",
+   "Couverture",
+   "Allergies",
+   "Motif de la visite",
+   "Dernières constantes"
+  ],
+  "boutons": [
+   "Saisir les constantes"
+  ],
+  "boutonsMedecin": [
+   "Saisir les constantes",
+   "Consultation à domicile"
+  ],
+  "boutonsSageFemme": [
+   "Saisir les constantes",
+   "Visite prénatale"
+  ],
+  "cartes": {
+   "p1": {
+    "Identité": "Âge67 ansQuartierKoubaTéléphone97 11 22 33",
+    "Couverture": "Carte valide",
+    "Allergies": "Pénicilline",
+    "Motif de la visite": "Suivi HTAVisite à 09:30",
+    "Dernières constantes": "Aucune saisie sur ce téléphone."
+   },
+   "p2": {
+    "Identité": "Âge29 ansQuartierPéporiyakouTéléphone96 44 55 66",
+    "Couverture": "CARTE NON VALIDELa prise en charge ne s’applique pas : facturation intégrale au patient (RG-09).",
+    "Allergies": "Aucune connue.",
+    "Motif de la visite": "Post-partum J5Visite à 10:45",
+    "Dernières constantes": "Aucune saisie sur ce téléphone."
+   },
+   "p3": {
+    "Identité": "Âge8 ansQuartierBérécingouTéléphone95 00 11 22",
+    "Couverture": "Non assuré",
+    "Allergies": "Aucune connue.",
+    "Motif de la visite": "Paludisme — contrôleVisite à 14:00",
+    "Dernières constantes": "Aucune saisie sur ce téléphone."
+   },
+   "p4": {
+    "Identité": "Âge31 ansQuartierWinkéTéléphone94 33 22 11",
+    "Couverture": "Carte valide",
+    "Allergies": "Aucune connue.",
+    "Motif de la visite": "CPN 3 — 28 SAVisite à 15:30",
+    "Dernières constantes": "Aucune saisie sur ce téléphone."
+   }
+  }
+ },
+ "accueil": {
+  "titre": "Ma tournée",
+  "kpis": [
+   [
+    "Dossiers du lot",
+    "4"
+   ],
+   [
+    "Constantes à saisir",
+    "2"
+   ],
+   [
+    "En attente d’envoi",
+    "0"
+   ],
+   [
+    "Validité du lot",
+    "10 h"
+   ]
+  ]
+ },
+ "lot": {
+  "note": "Le lot est chiffré et expire : passé le délai, les dossiers s’effacent du téléphone — sauf ce qui n’est pas encore parti."
+ },
+ "droitsPrescription": {
+  "fonctions": [
+   "medecin",
+   "sage_femme",
+   "infirmier",
+   "aide_soignant",
+   "tsl",
+   "biologiste",
+   "accueil",
+   "caissiere",
+   "dispensatrice",
+   "direction",
+   "stock",
+   "comptable",
+   "securite",
+   "entretien",
+   "chauffeur",
+   "chirurgien"
+  ],
+  "natures": [
+   "analyse",
+   "medicament",
+   "acte",
+   "echographie",
+   "hospitalisation"
+  ],
+  "lignes": [
+   {
+    "fonction": "medecin",
+    "nature": "analyse",
+    "autorise": true
+   },
+   {
+    "fonction": "medecin",
+    "nature": "medicament",
+    "autorise": true
+   },
+   {
+    "fonction": "medecin",
+    "nature": "acte",
+    "autorise": true
+   },
+   {
+    "fonction": "medecin",
+    "nature": "echographie",
+    "autorise": true
+   },
+   {
+    "fonction": "medecin",
+    "nature": "hospitalisation",
+    "autorise": true
+   },
+   {
+    "fonction": "sage_femme",
+    "nature": "analyse",
+    "autorise": true
+   },
+   {
+    "fonction": "sage_femme",
+    "nature": "medicament",
+    "autorise": true
+   },
+   {
+    "fonction": "sage_femme",
+    "nature": "acte",
+    "autorise": true
+   },
+   {
+    "fonction": "sage_femme",
+    "nature": "echographie",
+    "autorise": true
+   },
+   {
+    "fonction": "sage_femme",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "infirmier",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "infirmier",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "infirmier",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "infirmier",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "infirmier",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "aide_soignant",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "aide_soignant",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "aide_soignant",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "aide_soignant",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "aide_soignant",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "tsl",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "tsl",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "tsl",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "tsl",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "tsl",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "biologiste",
+    "nature": "analyse",
+    "autorise": true
+   },
+   {
+    "fonction": "biologiste",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "biologiste",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "biologiste",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "biologiste",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "accueil",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "accueil",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "accueil",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "accueil",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "accueil",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "caissiere",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "caissiere",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "caissiere",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "caissiere",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "caissiere",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "dispensatrice",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "dispensatrice",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "dispensatrice",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "dispensatrice",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "dispensatrice",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "direction",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "direction",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "direction",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "direction",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "direction",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "stock",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "stock",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "stock",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "stock",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "stock",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "comptable",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "comptable",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "comptable",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "comptable",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "comptable",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "securite",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "securite",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "securite",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "securite",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "securite",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "entretien",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "entretien",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "entretien",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "entretien",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "entretien",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "chauffeur",
+    "nature": "analyse",
+    "autorise": false
+   },
+   {
+    "fonction": "chauffeur",
+    "nature": "medicament",
+    "autorise": false
+   },
+   {
+    "fonction": "chauffeur",
+    "nature": "acte",
+    "autorise": false
+   },
+   {
+    "fonction": "chauffeur",
+    "nature": "echographie",
+    "autorise": false
+   },
+   {
+    "fonction": "chauffeur",
+    "nature": "hospitalisation",
+    "autorise": false
+   },
+   {
+    "fonction": "chirurgien",
+    "nature": "analyse",
+    "autorise": true
+   },
+   {
+    "fonction": "chirurgien",
+    "nature": "medicament",
+    "autorise": true
+   },
+   {
+    "fonction": "chirurgien",
+    "nature": "acte",
+    "autorise": true
+   },
+   {
+    "fonction": "chirurgien",
+    "nature": "echographie",
+    "autorise": true
+   },
+   {
+    "fonction": "chirurgien",
+    "nature": "hospitalisation",
+    "autorise": true
+   }
+  ],
+  "labels": {
+   "medecin": "Médecin",
+   "sage_femme": "Sage-femme",
+   "infirmier": "Infirmier(ère)",
+   "aide_soignant": "Aide-soignant(e)",
+   "tsl": "Technicien de laboratoire",
+   "biologiste": "Biologiste médical",
+   "accueil": "Accueil / Secrétaire médical",
+   "caissiere": "Caissière",
+   "dispensatrice": "Dispensatrice",
+   "direction": "Direction",
+   "stock": "Gestionnaire de stock",
+   "comptable": "Comptable",
+   "securite": "Agent de sécurité",
+   "entretien": "Agent d’entretien",
+   "chauffeur": "Chauffeur coursier",
+   "chirurgien": "Chirurgien"
+  },
+  "note": {
+   "medecin": "Accès à tous les résultats, quel que soit le prescripteur.",
+   "sage_femme": "Résultats de la maternité seulement — pas ceux demandés par la chirurgie.",
+   "infirmier": "Exécute les soins prescrits ; ne consulte pas les résultats d’analyses.",
+   "aide_soignant": "N’exécute pas les soins prescrits et ne consulte aucun résultat.",
+   "tsl": "Produit les résultats, les valide techniquement et les remet aux patients externes. Peut porter la validation biologique par intérim, qui est alors tracée comme telle.",
+   "biologiste": "Détient la validation biologique : c’est elle qui rend le résultat visible du prescripteur.",
+   "accueil": "Aucun accès aux résultats ni aux prescriptions.",
+   "caissiere": "Voit la liste des prestations à encaisser, jamais leur contenu clinique.",
+   "dispensatrice": "Voit les médicaments prescrits, non les résultats d’analyses.",
+   "direction": "Accès de supervision, sans droit de prescription.",
+   "stock": null,
+   "comptable": null,
+   "securite": null,
+   "entretien": null,
+   "chauffeur": null,
+   "chirurgien": "Seul à renseigner les actes chirurgicaux et la programmation du bloc. Consulte le mardi et le jeudi (chirurgien-gynécologue)."
+  }
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "id": "hub-dash",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Tableaux de bord par poste",
+ "acces": "ouvert",
+ "titre": "Tableaux de bord par poste",
+ "description": "Tous les écrans du module DASH — Tableaux de bord par poste.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

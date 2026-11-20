@@ -1,0 +1,13 @@
+{
+  "name": "sigh-cnt/prototype-api",
+  "description": "Dépendances OPTIONNELLES de l'API PHP de la maquette : les deux fournisseurs de la passerelle SMS. Sans `vendor/`, `sms_client.php` retombe sur l'appel REST direct (cURL).",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.1",
+    "twilio/sdk": "^8.14",
+    "vonage/client": "^4.4"
+  },
+  "config": { "optimize-autoloader": true, "sort-packages": true },
+  "minimum-stability": "stable"
+}

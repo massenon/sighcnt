@@ -1,0 +1,63 @@
+{
+ "id": "m5-prelevement",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Salle de prélèvement",
+ "acces": "ouvert",
+ "titre": "Salle de prélèvement",
+ "description": "Prélèvement des échantillons après encaissement, et transmission au laboratoire avec le bon d’analyse.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Salle de prélèvement"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [
+  "Le patient peut partir dès le prélèvement fait : c’est la salle qui achemine l’échantillon au laboratoire avec le bon d’analyse. Le laboratoire ne saisit un résultat que sur un échantillon reçu — sans quoi un résultat pourrait être rendu pour un prélèvement qui n’a jamais eu lieu."
+ ],
+ "onglets": [
+  "À prélever",
+  "À transmettre",
+  "Reçus au laboratoire"
+ ],
+ "kpis": [
+  "À prélever",
+  "En attente de règlement",
+  "Prélevés, à transmettre",
+  "Reçus au laboratoire"
+ ],
+ "cartes": [
+  "Patients attendus en salle de prélèvement"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Patient",
+   "Examen",
+   "Échantillon",
+   "Priorité",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "À prélever202",
+  "À transmettre31",
+  "Reçus au laboratoire31",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

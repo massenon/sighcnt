@@ -1,0 +1,532 @@
+{
+ "_doc": "m1-antecedents sur un jeu posé",
+ "jeu": [
+  {
+   "id": "A1",
+   "statut": "actif",
+   "code": "CNT/1/26",
+   "nom": "Nom1",
+   "prenom": "Pre1",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "91",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01"
+  },
+  {
+   "id": "A2",
+   "statut": "actif",
+   "code": "CNT/2/26",
+   "nom": "Nom2",
+   "prenom": "Pre2",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "92",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01",
+   "antecedents": [
+    "Asthme"
+   ],
+   "allergies": [
+    "Sulfamides"
+   ],
+   "groupeSanguin": "O+",
+   "traitementEnCours": "Salbutamol"
+  },
+  {
+   "id": "A3",
+   "statut": "actif",
+   "code": "CNT/3/26",
+   "nom": "Nom3",
+   "prenom": "Pre3",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "93",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01",
+   "antecedents": [
+    "Drépanocytose",
+    "Asthme"
+   ]
+  },
+  {
+   "id": "A4",
+   "statut": "actif",
+   "code": "CNT/4/26",
+   "nom": "Nom4",
+   "prenom": "Pre4",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "94",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01",
+   "antecedents": "Épilepsie",
+   "allergies": "Pénicilline",
+   "antecedentsAutres": "Césarienne 2019"
+  },
+  {
+   "id": "A5",
+   "statut": "actif",
+   "code": "CNT/5/26",
+   "nom": "Nom5",
+   "prenom": "Pre5",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "95",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01",
+   "antecedents": "Aucun antécédent notable",
+   "allergies": "Aucune allergie connue"
+  },
+  {
+   "id": "A6",
+   "statut": "actif",
+   "code": "CNT/6/26",
+   "nom": "Nom6",
+   "prenom": "Pre6",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "96",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01",
+   "antecedents": [],
+   "allergies": []
+  },
+  {
+   "id": "A7",
+   "statut": "actif",
+   "code": "CNT/7/26",
+   "nom": "Nom7",
+   "prenom": "Pre7",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "97",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01",
+   "antecedents": [
+    "Diabète de type 2"
+   ],
+   "allergies": [
+    "Arachide",
+    "Iode"
+   ]
+  },
+  {
+   "id": "A8",
+   "statut": "archive",
+   "code": "CNT/8/26",
+   "nom": "Nom8",
+   "prenom": "Pre8",
+   "sexe": "F",
+   "dateNaissance": "1990-01-01",
+   "telephone": "98",
+   "quartier": "Perma",
+   "dateCreation": "2026-01-01",
+   "antecedents": [
+    "Hépatite B"
+   ]
+  }
+ ],
+ "kpis": [
+  [
+   "Dossiers renseignés",
+   "4"
+  ],
+  [
+   "Allergies déclarées",
+   "3"
+  ],
+  [
+   "Antécédents à risque",
+   "2"
+  ],
+  [
+   "Sans antécédent notable",
+   "3"
+  ]
+ ],
+ "entetes": [
+  "DOSSIER",
+  "PATIENT",
+  "GROUPE",
+  "ANTÉCÉDENTS",
+  "ALLERGIES",
+  "TRAITEMENT EN COURS",
+  "RISQUE",
+  "ACTIONS"
+ ],
+ "lignes": [
+  [
+   "CNT/1/26",
+   "Nom1 Pre1",
+   "—",
+   "Aucun antécédent notable",
+   "Aucune allergie connue",
+   "—",
+   "Standard",
+   ""
+  ],
+  [
+   "CNT/2/26",
+   "Nom2 Pre2",
+   "O+",
+   "Asthme",
+   "Sulfamides",
+   "Salbutamol",
+   "Standard",
+   ""
+  ],
+  [
+   "CNT/3/26",
+   "Nom3 Pre3",
+   "—",
+   "Drépanocytose, Asthme",
+   "Aucune allergie connue",
+   "—",
+   "Élevé",
+   ""
+  ],
+  [
+   "CNT/4/26",
+   "Nom4 Pre4",
+   "—",
+   "Épilepsie Césarienne 2019",
+   "Pénicilline",
+   "—",
+   "Élevé",
+   ""
+  ],
+  [
+   "CNT/5/26",
+   "Nom5 Pre5",
+   "—",
+   "Aucun antécédent notable",
+   "Aucune allergie connue",
+   "—",
+   "Standard",
+   ""
+  ],
+  [
+   "CNT/6/26",
+   "Nom6 Pre6",
+   "—",
+   "Aucun antécédent notable",
+   "Aucune allergie connue",
+   "—",
+   "Standard",
+   ""
+  ],
+  [
+   "CNT/7/26",
+   "Nom7 Pre7",
+   "—",
+   "Diabète de type 2",
+   "Arachide, Iode",
+   "—",
+   "Standard",
+   ""
+  ]
+ ],
+ "filtresDisponibles": [
+  {
+   "nom": "Allergie",
+   "options": [
+    "Allergie",
+    "Pénicilline",
+    "Sulfamides",
+    "Aspirine",
+    "Arachide",
+    "Iode",
+    "Anti-inflammatoires non stéroïdiens",
+    "Aucune allergie connue"
+   ]
+  },
+  {
+   "nom": "Antécédent",
+   "options": [
+    "Antécédent",
+    "Hypertension artérielle",
+    "Diabète de type 2",
+    "Asthme",
+    "Drépanocytose",
+    "Ulcère gastrique",
+    "Épilepsie",
+    "Césarienne antérieure",
+    "Tuberculose traitée",
+    "Insuffisance rénale",
+    "Hépatite B",
+    "Aucun antécédent notable"
+   ]
+  }
+ ],
+ "filtres": [
+  {
+   "filtre": "Allergie",
+   "valeur": "Pénicilline",
+   "codes": [
+    "CNT/4/26"
+   ]
+  },
+  {
+   "filtre": "Allergie",
+   "valeur": "Sulfamides",
+   "codes": [
+    "CNT/2/26"
+   ]
+  },
+  {
+   "filtre": "Allergie",
+   "valeur": "Aspirine",
+   "codes": []
+  },
+  {
+   "filtre": "Allergie",
+   "valeur": "Arachide",
+   "codes": [
+    "CNT/7/26"
+   ]
+  },
+  {
+   "filtre": "Allergie",
+   "valeur": "Iode",
+   "codes": [
+    "CNT/7/26"
+   ]
+  },
+  {
+   "filtre": "Allergie",
+   "valeur": "Anti-inflammatoires non stéroïdiens",
+   "codes": []
+  },
+  {
+   "filtre": "Allergie",
+   "valeur": "Aucune allergie connue",
+   "codes": [
+    "CNT/1/26",
+    "CNT/3/26",
+    "CNT/5/26",
+    "CNT/6/26"
+   ]
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Hypertension artérielle",
+   "codes": []
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Diabète de type 2",
+   "codes": [
+    "CNT/7/26"
+   ]
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Asthme",
+   "codes": [
+    "CNT/2/26",
+    "CNT/3/26"
+   ]
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Drépanocytose",
+   "codes": [
+    "CNT/3/26"
+   ]
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Ulcère gastrique",
+   "codes": []
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Épilepsie",
+   "codes": [
+    "CNT/4/26"
+   ]
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Césarienne antérieure",
+   "codes": []
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Tuberculose traitée",
+   "codes": []
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Insuffisance rénale",
+   "codes": []
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Hépatite B",
+   "codes": []
+  },
+  {
+   "filtre": "Antécédent",
+   "valeur": "Aucun antécédent notable",
+   "codes": [
+    "CNT/1/26",
+    "CNT/5/26",
+    "CNT/6/26"
+   ]
+  }
+ ],
+ "modifications": [
+  {
+   "nom": "un antécédent à risque et une allergie",
+   "code": "CNT/1/26",
+   "saisie": {
+    "antecedents": [
+     "Drépanocytose",
+     "Asthme"
+    ],
+    "allergies": [
+     "Iode",
+     "Pénicilline"
+    ],
+    "traitementEnCours": "Hydroxyurée",
+    "groupeSanguin": "A+"
+   },
+   "titre": "Antécédents et allergies Nom1 Pre1 — CNT/1/26 Antécédents — Aucune sélection — Autres antécédents Allergies connues — Au",
+   "prerempli": {
+    "antecedents": [],
+    "antecedentsAutres": "",
+    "allergies": [],
+    "traitementEnCours": "",
+    "groupeSanguin": ""
+   },
+   "patch": {
+    "antecedents": [
+     "Drépanocytose",
+     "Asthme"
+    ],
+    "antecedentsAutres": "",
+    "allergies": [
+     "Iode",
+     "Pénicilline"
+    ],
+    "traitementEnCours": "Hydroxyurée",
+    "groupeSanguin": "A+"
+   },
+   "toasts": [
+    "Éléments médicaux enregistrés. | CNT/1/26"
+   ],
+   "kpisApres": [
+    [
+     "Dossiers renseignés",
+     "5"
+    ],
+    [
+     "Allergies déclarées",
+     "4"
+    ],
+    [
+     "Antécédents à risque",
+     "3"
+    ],
+    [
+     "Sans antécédent notable",
+     "2"
+    ]
+   ]
+  },
+  {
+   "nom": "fiche à deux antécédents : enregistrer n'efface aucune valeur",
+   "code": "CNT/3/26",
+   "saisie": {
+    "antecedentsAutres": "Appendicectomie"
+   },
+   "titre": "Antécédents et allergies Nom3 Pre3 — CNT/3/26 Antécédents Asthme, Drépanocytose Autres antécédents Allergies connues — A",
+   "prerempli": {
+    "antecedents": [
+     "Drépanocytose",
+     "Asthme"
+    ],
+    "antecedentsAutres": "",
+    "allergies": [],
+    "traitementEnCours": "",
+    "groupeSanguin": ""
+   },
+   "patch": {
+    "antecedentsAutres": "Appendicectomie",
+    "allergies": [],
+    "traitementEnCours": "",
+    "groupeSanguin": ""
+   },
+   "toasts": [
+    "Éléments médicaux enregistrés. | CNT/3/26"
+   ],
+   "kpisApres": [
+    [
+     "Dossiers renseignés",
+     "5"
+    ],
+    [
+     "Allergies déclarées",
+     "4"
+    ],
+    [
+     "Antécédents à risque",
+     "3"
+    ],
+    [
+     "Sans antécédent notable",
+     "2"
+    ]
+   ]
+  },
+  {
+   "nom": "retour à « Aucun antécédent notable »",
+   "code": "CNT/4/26",
+   "saisie": {
+    "antecedents": [],
+    "allergies": []
+   },
+   "titre": "Antécédents et allergies Nom4 Pre4 — CNT/4/26 Antécédents Épilepsie Autres antécédents Allergies connues Pénicilline Tra",
+   "prerempli": {
+    "antecedents": [
+     "Épilepsie"
+    ],
+    "antecedentsAutres": "Césarienne 2019",
+    "allergies": [
+     "Pénicilline"
+    ],
+    "traitementEnCours": "",
+    "groupeSanguin": ""
+   },
+   "patch": {
+    "antecedents": [],
+    "allergies": [],
+    "traitementEnCours": "",
+    "groupeSanguin": ""
+   },
+   "toasts": [
+    "Éléments médicaux enregistrés. | CNT/4/26"
+   ],
+   "kpisApres": [
+    [
+     "Dossiers renseignés",
+     "4"
+    ],
+    [
+     "Allergies déclarées",
+     "3"
+    ],
+    [
+     "Antécédents à risque",
+     "2"
+    ],
+    [
+     "Sans antécédent notable",
+     "3"
+    ]
+   ]
+  }
+ ]
+}

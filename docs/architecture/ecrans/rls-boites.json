@@ -1,0 +1,46 @@
+{
+ "id": "rls-boites",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Boîtes aux lettres",
+ "acces": "ouvert",
+ "titre": "Boîtes aux lettres",
+ "description": "Pour chaque mobile : enveloppes déposées par la mère, enveloppes envoyées par le mobile, rangs, tailles.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Boîtes aux lettres"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Boîtes",
+  "Vers les mobiles",
+  "Depuis les mobiles"
+ ],
+ "cartes": [
+  "Boîtes"
+ ],
+ "tableaux": [
+  [
+   "Mobile",
+   "Vers le mobile",
+   "Depuis le mobile",
+   "Dernier rang reçu",
+   "Taille",
+   "Plus ancienne"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

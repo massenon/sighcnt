@@ -45,6 +45,28 @@ define('SIGH_DSN',  $reglages['dsn']  ?? 'pgsql:host=127.0.0.1;port=5432;dbname=
 define('SIGH_USER', $reglages['user'] ?? 'postgres');
 define('SIGH_PASS', $reglages['pass'] ?? '');
 
+/** LE DOSSIER DES FICHIERS NUMÉRISÉS (scans), sans rien créer. `SIGH_FICHIERS_DIR` le surcharge (un dossier par banc). UNE seule définition : le serveur de
+ *  fichiers, la sauvegarde, la restauration et le contrôle d'intégrité lisent la même, faute de quoi ils ne parleraient pas du même dossier. */
+function sigh_fichiers_racine(): string
+{
+    $d = getenv('SIGH_FICHIERS_DIR');
+    if (!is_string($d) || $d === '') {
+        $d = __DIR__ . '/fichiers';
+    }
+    return rtrim($d, '/\\');
+}
+
+/** LA DESTINATION DE SAUVEGARDE PAR DÉFAUT : `api/sauvegardes/` (le MÊME disque que les données, ce que l'écran des tâches DIT). `SIGH_SAUVEGARDES_DIR`
+ *  la surcharge (un dossier par banc) ; le réglage de la clinique (`sauvegardeFichiers`, en base) l'emporte sur l'un et l'autre. */
+function sigh_sauvegardes_racine(): string
+{
+    $d = getenv('SIGH_SAUVEGARDES_DIR');
+    if (!is_string($d) || $d === '') {
+        $d = __DIR__ . '/sauvegardes';
+    }
+    return rtrim($d, '/\\');
+}
+
 /** La connexion, ouverte une seule fois par requête. */
 function sigh_pdo(): PDO
 {
@@ -149,4 +171,63 @@ function sigh_corps(): array
     }
     $o = json_decode($brut, true);
     return is_array($o) ? $o : [];
+}
+
+/* --------------------------------------------------------------------------
+ * LE JOURNAL DES ÉVÉNEMENTS — ce qui permet à un poste de savoir qu'un autre
+ * a écrit, sans recharger. Il ne porte JAMAIS le contenu d'une fiche : une
+ * collection, éventuellement un identifiant, l'auteur (le jeton de session)
+ * et une séquence croissante. Le contenu se relit par le magasin, derrière
+ * les mêmes portes qu'avant.
+ * ------------------------------------------------------------------------ */
+function sigh_evenements_installer(PDO $pdo): void
+{
+    static $fait = false;
+    if ($fait || !sigh_est_postgres()) {
+        return;
+    }
+    $pdo->exec('CREATE TABLE IF NOT EXISTS evenements (
+        seq        BIGSERIAL PRIMARY KEY,
+        le         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        jeton      VARCHAR(64),
+        utilisateur VARCHAR(128),
+        collection VARCHAR(64) NOT NULL,
+        fiche_id   VARCHAR(64)
+    )');
+    $fait = true;
+}
+
+/** Note qu'une collection (ou une fiche) vient de changer. Ne fait jamais échouer l'écriture. */
+function sigh_evenement(PDO $pdo, string $collection, ?string $ficheId, ?string $jeton, ?string $utilisateur): void
+{
+    try {
+        if (!sigh_est_postgres()) {
+            return;
+        }
+        sigh_evenements_installer($pdo);
+        $pdo->exec('SAVEPOINT evenement');
+        try {
+            $pdo->prepare('INSERT INTO evenements (jeton, utilisateur, collection, fiche_id) VALUES (?, ?, ?, ?)')
+                ->execute([$jeton, $utilisateur, $collection, $ficheId]);
+            if (mt_rand(1, 40) === 1) {
+                $pdo->exec('DELETE FROM evenements WHERE seq < (SELECT COALESCE(MAX(seq), 0) - 5000 FROM evenements)');
+            }
+            $pdo->exec('RELEASE SAVEPOINT evenement');
+        } catch (Throwable $e) {
+            $pdo->exec('ROLLBACK TO SAVEPOINT evenement');
+        }
+    } catch (Throwable $e) {
+        /* un journal d'événements défaillant ne ferme pas l'écriture */
+    }
+}
+
+/** La séquence courante (0 si le journal est vide ou indisponible). */
+function sigh_evenement_seq(PDO $pdo): int
+{
+    try {
+        sigh_evenements_installer($pdo);
+        return (int) $pdo->query('SELECT COALESCE(MAX(seq), 0) FROM evenements')->fetchColumn();
+    } catch (Throwable $e) {
+        return 0;
+    }
 }

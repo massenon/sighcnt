@@ -1,0 +1,68 @@
+{
+ "id": "m10-primes",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Primes (NS 132)",
+ "acces": "ouvert",
+ "titre": "Primes diverses (NS 132)",
+ "description": "Grille des primes par fonction et calcul des primes acquises à partir du planning validé.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Primes (NS 132)"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Agents primés",
+  "Primes de garde",
+  "Primes de permanence",
+  "Total des primes du mois"
+ ],
+ "cartes": [
+  "Grille des primes — NS n° 132/07/DM/DA/CNT/2026",
+  "Primes acquises — octobre 2026"
+ ],
+ "tableaux": [
+  [
+   "Prime",
+   "Mode",
+   "AIDE-SOIGNANT(E)",
+   "CAISSIÈRE",
+   "ACCUEIL / SECRÉTAIRE MÉDICAL",
+   "INFIRMIER(ÈRE)",
+   "SAGE-FEMME",
+   "TSL (TECHNICIEN SUPÉRIEUR DE LABORATOIRE)",
+   "En vigueur"
+  ],
+  [
+   "Mat.",
+   "Agent",
+   "Fonction",
+   "Gardes",
+   "Prime de garde",
+   "Perm.",
+   "Prime de permanence",
+   "Primes fixes",
+   "Total"
+  ]
+ ],
+ "commandes": [
+  "Nouvelle prime",
+  "Imprimer la note",
+  "Colonnes",
+  "Exporter",
+  "Éditer l’état des primes",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

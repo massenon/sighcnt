@@ -1,0 +1,61 @@
+{
+ "id": "m9-historique",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Historique par assureur",
+ "acces": "ouvert",
+ "titre": "Historique par assureur",
+ "description": "Détail des prestations consommées par compagnie, souscripteur et assuré, sur une plage libre.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Historique par assureur"
+ ],
+ "actions": [
+  "Relevé & facture mensuelle",
+  "Conventions",
+  "Tableau de bord assurances"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Prestations",
+  "Assurés distincts",
+  "Total facturé",
+  "Part assureurs"
+ ],
+ "cartes": [
+  "Répartition par compagnie",
+  "Détail des prestations"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Pièce",
+   "Assuré",
+   "Souscripteur",
+   "Compagnie",
+   "Nature",
+   "Montant",
+   "Part assureur"
+  ]
+ ],
+ "commandes": [
+  "Toutes les compagnies",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [
+  "Compagnie",
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

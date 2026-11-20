@@ -1,0 +1,58 @@
+{
+ "id": "dash-direction",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Direction",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Direction",
+ "description": "Pilotage stratégique : indicateurs financiers, activité, stock et ressources humaines en temps réel.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Direction"
+ ],
+ "actions": [
+  "Éditer le rapport de direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [
+  "51 produit(s) sous le seuil d’alerte",
+  "17 lot(s) périmé(s) à retourner",
+  "37 lot(s) à péremption proche (FEFO)"
+ ],
+ "onglets": [],
+ "kpis": [
+  "Chiffre d’affaires du mois",
+  "Montant encaissé",
+  "Reste à recouvrer",
+  "Valeur du stock",
+  "Patients au répertoire",
+  "Consultations du mois",
+  "Lits occupés",
+  "Effectif",
+  "Besoin en fonds de roulement",
+  "En-cours clients",
+  "Stocks",
+  "Dettes fournisseurs"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Trésorerie & besoin en fonds de roulement",
+  "Évolution du chiffre d’affaires (12 mois)",
+  "Recettes par activité",
+  "Activité — consultations et hospitalisations",
+  "Répartition des modes de paiement",
+  "Performance par service (centre de coûts)"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Voir les échéances",
+  "Tableau décisionnel",
+  "Détail du BFR"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 12
+}

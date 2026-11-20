@@ -1,0 +1,71 @@
+{
+ "id": "cfg-tarifs",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Tarifs et prix",
+ "acces": "ouvert",
+ "titre": "Tarifs et prix",
+ "description": "Le référentiel de prix unique : prestations, analyses et imagerie, l’historique de chaque prix et les changements en attente de décision.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Tarifs et prix"
+ ],
+ "actions": [
+  "Nouvelle prestation",
+  "Imprimer la grille",
+  "Organisation & organigramme"
+ ],
+ "regle": [
+  "Consultations, actes, hospitalisation (la journée par type de chambre), actes médico-infirmiers, gynéco-obstétrique et certificats. Le libellé de facturation est celui sur lequel les conventions d’assurance s’appuient pour leurs exclusions : il ne se change pas à la légère."
+ ],
+ "onglets": [
+  "Prestations",
+  "Analyses",
+  "Imagerie",
+  "Produits",
+  "Alertes",
+  "Historique"
+ ],
+ "kpis": [
+  "Prestations tarifées",
+  "Prix en vigueur",
+  "Propositions en attente",
+  "Sans prix en vigueur"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Code",
+   "Libellé de facturation",
+   "Famille",
+   "Secteur",
+   "Prix non assuré",
+   "Prix assuré",
+   "Couverture",
+   "En vigueur depuis",
+   "Version",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Prestations128",
+  "Analyses50",
+  "Imagerie23",
+  "Produits184",
+  "Alertes39",
+  "Historique",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

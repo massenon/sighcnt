@@ -1,0 +1,3943 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-transcription-mobile.js : la transcription d’une prescription du mobile par PR.prescrire. Ne pas éditer.",
+ "catalogues": {
+  "produits": [
+   {
+    "id": "PRD0002",
+    "code": "ACC",
+    "designation": "ACCUZON",
+    "unite": "Unité",
+    "categorie": "medicament",
+    "prixAchat": 1000,
+    "prixVente": 1000,
+    "cump": 999.92,
+    "seuilAlerte": 10,
+    "seuilConfirmeLe": "2026-09-01",
+    "stockGros": 37,
+    "stockDetail": 10,
+    "stock": 10,
+    "emplacement": "Rayon B — Casier 2",
+    "fournisseur": "UBIPHARM",
+    "source": "SAGE_100_GESTION_COMMERCIALE_15.01",
+    "lotImport": "IMPORT-SAGE-20260715",
+    "dateImport": "2026-07-15",
+    "quantiteImportee": 50,
+    "valoriseSage": true,
+    "seuilAValider": false,
+    "statut": "actif"
+   },
+   {
+    "id": "PRD0003",
+    "code": "ACE",
+    "designation": "ACE MISO 200 µg 1 CP",
+    "unite": "Comprimé",
+    "categorie": "medicament",
+    "prixAchat": 250,
+    "prixVente": 250,
+    "cump": 250,
+    "seuilAlerte": 5,
+    "seuilConfirmeLe": "2026-09-01",
+    "stockGros": 16,
+    "stockDetail": 2,
+    "stock": 2,
+    "emplacement": "Rayon C — Casier 3",
+    "fournisseur": "NATIFOURN",
+    "source": "SAGE_100_GESTION_COMMERCIALE_15.01",
+    "lotImport": "IMPORT-SAGE-20260715",
+    "dateImport": "2026-07-15",
+    "quantiteImportee": 24,
+    "valoriseSage": true,
+    "seuilAValider": false,
+    "statut": "actif"
+   },
+   {
+    "id": "PRD0004",
+    "code": "ACU",
+    "designation": "ACUPAN 20 MG INJ",
+    "unite": "Ampoule",
+    "categorie": "medicament",
+    "prixAchat": 650,
+    "prixVente": 650,
+    "cump": 650,
+    "seuilAlerte": 10,
+    "seuilConfirmeLe": "2026-09-01",
+    "stockGros": 37,
+    "stockDetail": 50,
+    "stock": 50,
+    "emplacement": "Rayon D — Casier 4",
+    "fournisseur": "MEDIPLUS",
+    "source": "SAGE_100_GESTION_COMMERCIALE_15.01",
+    "lotImport": "IMPORT-SAGE-20260715",
+    "dateImport": "2026-07-15",
+    "quantiteImportee": 50,
+    "valoriseSage": true,
+    "seuilAValider": false,
+    "statut": "actif"
+   }
+  ],
+  "analyses": [
+   {
+    "id": "ANA01",
+    "n": 1,
+    "code": "L01",
+    "designation": "AKOP",
+    "categorie": "Parasitologie",
+    "prix": 2000,
+    "echantillon": "Selles",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA02",
+    "n": 2,
+    "code": "L02",
+    "designation": "ASLO",
+    "categorie": "Sérologie",
+    "prix": 4000,
+    "echantillon": "Sang",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA03",
+    "n": 3,
+    "code": "L03",
+    "designation": "AZOTEMIE (UREMIE)",
+    "categorie": "Biochimie",
+    "prix": 2500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA04",
+    "n": 4,
+    "code": "L04",
+    "designation": "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+    "categorie": "Biochimie",
+    "prix": 3500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA05",
+    "n": 5,
+    "code": "L05",
+    "designation": "BU",
+    "categorie": "Biochimie",
+    "prix": 1000,
+    "echantillon": "Urine",
+    "delai": "1 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA06",
+    "n": 6,
+    "code": "L06",
+    "designation": "CALCEMIE",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA07",
+    "n": 7,
+    "code": "L07",
+    "designation": "CHOLESTEROL TOTAL",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA08",
+    "n": 8,
+    "code": "L08",
+    "designation": "CHOLESTEROL HDL",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA09",
+    "n": 9,
+    "code": "L09",
+    "designation": "CREATININE",
+    "categorie": "Biochimie",
+    "prix": 2500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA10",
+    "n": 10,
+    "code": "L10",
+    "designation": "CRP",
+    "categorie": "Immunologie",
+    "prix": 4000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA11",
+    "n": 11,
+    "code": "L11",
+    "designation": "D-DIMERE",
+    "categorie": "Hémostase",
+    "prix": 12000,
+    "echantillon": "Sang",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA12",
+    "n": 12,
+    "code": "L12",
+    "designation": "ECBU",
+    "categorie": "Bactériologie",
+    "prix": 5000,
+    "echantillon": "Urine",
+    "delai": "48 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA13",
+    "n": 13,
+    "code": "L13",
+    "designation": "ELECTROPHORESE DE L’HEMOGLOBINE",
+    "categorie": "Hématologie",
+    "prix": 8000,
+    "echantillon": "Sang",
+    "delai": "72 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA14",
+    "n": 14,
+    "code": "L14",
+    "designation": "GLYCEMIE",
+    "categorie": "Biochimie",
+    "prix": 1500,
+    "echantillon": "Sang",
+    "delai": "2 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA15",
+    "n": 15,
+    "code": "L15",
+    "designation": "GLYCEMIE CAPILLAIRE",
+    "categorie": "Biochimie",
+    "prix": 1000,
+    "echantillon": "Capillaire",
+    "delai": "Immédiat",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA16",
+    "n": 16,
+    "code": "L16",
+    "designation": "GE-DP / FROTTIS SANGUIN",
+    "categorie": "Parasitologie",
+    "prix": 1500,
+    "echantillon": "Sang",
+    "delai": "2 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA17",
+    "n": 17,
+    "code": "L17",
+    "designation": "GROUPE SANGUIN-RHESUS",
+    "categorie": "Immuno-hématologie",
+    "prix": 2000,
+    "echantillon": "Sang",
+    "delai": "2 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA18",
+    "n": 18,
+    "code": "L18",
+    "designation": "HEMOGLOBINE CAPILLAIRE",
+    "categorie": "Hématologie",
+    "prix": 1000,
+    "echantillon": "Capillaire",
+    "delai": "Immédiat",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA19",
+    "n": 19,
+    "code": "L19",
+    "designation": "HEPATITE B",
+    "categorie": "Sérologie",
+    "prix": 3500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA20",
+    "n": 20,
+    "code": "L20",
+    "designation": "HEPATITE C",
+    "categorie": "Sérologie",
+    "prix": 4500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA21",
+    "n": 21,
+    "code": "L21",
+    "designation": "HIV",
+    "categorie": "Sérologie",
+    "prix": 2500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA22",
+    "n": 22,
+    "code": "L22",
+    "designation": "IONOGRAMME SANGUIN",
+    "categorie": "Biochimie",
+    "prix": 8000,
+    "echantillon": "Sang",
+    "delai": "6 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA23",
+    "n": 23,
+    "code": "L23",
+    "designation": "MAGNESEMIE",
+    "categorie": "Biochimie",
+    "prix": 3500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA24",
+    "n": 24,
+    "code": "L24",
+    "designation": "NFS COMPLETE (HEMOGRAMME)",
+    "categorie": "Hématologie",
+    "prix": 4000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA25",
+    "n": 25,
+    "code": "L25",
+    "designation": "PRELEVEMENT URETRAL (PU)",
+    "categorie": "Bactériologie",
+    "prix": 5000,
+    "echantillon": "Prélèvement",
+    "delai": "48 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA26",
+    "n": 26,
+    "code": "L26",
+    "designation": "PRELEVEMENT VAGINAL (PV)",
+    "categorie": "Bactériologie",
+    "prix": 5000,
+    "echantillon": "Prélèvement",
+    "delai": "48 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA27",
+    "n": 27,
+    "code": "L27",
+    "designation": "PROLACTINE",
+    "categorie": "Hormonologie",
+    "prix": 10000,
+    "echantillon": "Sang",
+    "delai": "72 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA28",
+    "n": 28,
+    "code": "L28",
+    "designation": "PROTIDEMIE",
+    "categorie": "Biochimie",
+    "prix": 2500,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA29",
+    "n": 29,
+    "code": "L29",
+    "designation": "PSA TOTAL",
+    "categorie": "Hormonologie",
+    "prix": 12000,
+    "echantillon": "Sang",
+    "delai": "72 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA30",
+    "n": 30,
+    "code": "L30",
+    "designation": "PSA LIBRE",
+    "categorie": "Hormonologie",
+    "prix": 12000,
+    "echantillon": "Sang",
+    "delai": "72 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA31",
+    "n": 31,
+    "code": "L31",
+    "designation": "SERODIAGNOSTIC WIDAL (SDW)",
+    "categorie": "Sérologie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA32",
+    "n": 32,
+    "code": "L32",
+    "designation": "SPERMOGRAMME",
+    "categorie": "Andrologie",
+    "prix": 8000,
+    "echantillon": "Sperme",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA33",
+    "n": 33,
+    "code": "L33",
+    "designation": "SPERMOGRAMME SOS",
+    "categorie": "Andrologie",
+    "prix": 10000,
+    "echantillon": "Sperme",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA34",
+    "n": 34,
+    "code": "L34",
+    "designation": "SPERMOGRAMME GRAS SAVOY / ECBK",
+    "categorie": "Andrologie",
+    "prix": 12000,
+    "echantillon": "Sperme",
+    "delai": "48 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA35",
+    "n": 35,
+    "code": "L35",
+    "designation": "TBG SERIQUE (SANGUIN)",
+    "categorie": "Hormonologie",
+    "prix": 12000,
+    "echantillon": "Sang",
+    "delai": "72 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA36",
+    "n": 36,
+    "code": "L36",
+    "designation": "TEMPS DE COAGULATION (TC)",
+    "categorie": "Hémostase",
+    "prix": 1500,
+    "echantillon": "Sang",
+    "delai": "2 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA37",
+    "n": 37,
+    "code": "L37",
+    "designation": "TEMPS DE CEPHALINE ACTIVEE OU KAOLIN (TCA ou TCK)",
+    "categorie": "Hémostase",
+    "prix": 5000,
+    "echantillon": "Sang",
+    "delai": "6 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA38",
+    "n": 38,
+    "code": "L38",
+    "designation": "TEST D’EMMEL",
+    "categorie": "Hématologie",
+    "prix": 2000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA39",
+    "n": 39,
+    "code": "L39",
+    "designation": "TP + INR",
+    "categorie": "Hémostase",
+    "prix": 5000,
+    "echantillon": "Sang",
+    "delai": "6 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA40",
+    "n": 40,
+    "code": "L40",
+    "designation": "TPHA",
+    "categorie": "Sérologie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA41",
+    "n": 41,
+    "code": "L41",
+    "designation": "TRANSAMINASE TGO / ASAT",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA42",
+    "n": 42,
+    "code": "L42",
+    "designation": "TRANSAMINASE TGP / ALAT",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA43",
+    "n": 43,
+    "code": "L43",
+    "designation": "TRANSAMINASE GGT",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA44",
+    "n": 44,
+    "code": "L44",
+    "designation": "TRIGLYCERIDE",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA45",
+    "n": 45,
+    "code": "L45",
+    "designation": "TEMPS DE SAIGNEMENT",
+    "categorie": "Hémostase",
+    "prix": 1500,
+    "echantillon": "Sang",
+    "delai": "2 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA46",
+    "n": 46,
+    "code": "L46",
+    "designation": "URICEMIE (ACIDE URIQUE)",
+    "categorie": "Biochimie",
+    "prix": 3000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA47",
+    "n": 47,
+    "code": "L47",
+    "designation": "VITESSE DE SEDIMENTATION (VS)",
+    "categorie": "Hématologie",
+    "prix": 2000,
+    "echantillon": "Sang",
+    "delai": "4 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ANA48",
+    "n": 48,
+    "code": "L48",
+    "designation": "VDRL",
+    "categorie": "Sérologie",
+    "prix": 2500,
+    "echantillon": "Sang",
+    "delai": "24 h",
+    "statut": "Actif",
+    "tarifProvisoire": true
+   }
+  ],
+  "patients": [
+   {
+    "id": "PATX1",
+    "code": "CNT/1001/26",
+    "nom": "ALPHA",
+    "prenom": "Une",
+    "sexe": "F",
+    "dateNaissance": "1990-01-01",
+    "statut": "actif"
+   },
+   {
+    "id": "PATX2",
+    "code": "CNT/1002/26",
+    "nom": "BETA",
+    "prenom": "Deux",
+    "sexe": "M",
+    "dateNaissance": "1985-05-05",
+    "statut": "actif",
+    "assureur": "NSIA",
+    "assureurNom": "NSIA",
+    "tauxPriseEnCharge": 80,
+    "carteExpiration": "2099-12-31"
+   },
+   {
+    "id": "PATX3",
+    "code": "CNT/1003/26",
+    "nom": "GAMMA",
+    "prenom": "Trois",
+    "sexe": "F",
+    "dateNaissance": "1992-02-02",
+    "statut": "actif",
+    "assureur": "NSIA",
+    "assureurNom": "NSIA",
+    "tauxPriseEnCharge": 80,
+    "carteExpiration": "2020-01-01"
+   },
+   {
+    "id": "PATX4",
+    "code": "CNT/1004/26",
+    "nom": "DELTA",
+    "prenom": "Quatre",
+    "sexe": "M",
+    "dateNaissance": "1980-04-04",
+    "statut": "actif",
+    "personnelId": "EMP01"
+   },
+   {
+    "id": "PATX5",
+    "code": "CNT/1005/26",
+    "nom": "EPSILON",
+    "prenom": "Cinq",
+    "sexe": "F",
+    "dateNaissance": "1995-05-05",
+    "statut": "actif",
+    "assureur": "NSIA",
+    "assureurNom": "NSIA",
+    "tauxPriseEnCharge": 80,
+    "carteExpiration": "2026-08-31"
+   }
+  ],
+  "correspondance": {
+   "NFS": "L24",
+   "Glycémie": "L14",
+   "Goutte épaisse / TDR paludisme": "L16",
+   "CRP": "L10",
+   "Test de grossesse (TBG)": "L35",
+   "Créatininémie": "L09"
+  }
+ },
+ "cas": [
+  {
+   "nom": "médecin, patient non assuré : ordonnance, facture, tâches encaissement et dispensation, au PRIX D’ACHAT du catalogue (RG-02)",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      },
+      {
+       "produitId": "PRD0004",
+       "medicament": "ACUPAN 20 MG INJ",
+       "quantite": 3,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpf4ufqbf",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0002",
+         "produit": "ACCUZON",
+         "unite": "Unité",
+         "quantite": 2,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 1000,
+         "total": 2000
+        },
+        {
+         "produitId": "PRD0004",
+         "produit": "ACUPAN 20 MG INJ",
+         "unite": "Ampoule",
+         "quantite": 3,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 650,
+         "total": 1950
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 3950,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 3950,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpf5dm46m",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpf5dm46m",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACCUZON",
+         "quantite": 2,
+         "prixUnitaire": 1000,
+         "prixUnitaireNet": 1000,
+         "montantBrut": 2000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 2000,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 2000,
+         "demandeId": null,
+         "produitId": "PRD0002",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        },
+        {
+         "id": "L002",
+         "categorie": "medicament",
+         "designation": "ACUPAN 20 MG INJ",
+         "quantite": 3,
+         "prixUnitaire": 650,
+         "prixUnitaireNet": 650,
+         "montantBrut": 1950,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 1950,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 1950,
+         "demandeId": null,
+         "produitId": "PRD0004",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX1",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 3950,
+       "montantTTC": 3950,
+       "montantBrut": 3950,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": null,
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 3950,
+       "montantPaye": 0,
+       "reliquat": 3950,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpf54bs0z",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
+       "factureId": "FACxmvxjbpf5dm46m",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "2 médicament(s) — 3 950",
+       "montant": 3950
+      },
+      {
+       "id": "TCHxmvxjbpf51x9is",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
+       "factureId": "FACxmvxjbpf5dm46m",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "2 médicament(s)",
+       "montant": 3950
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpf5eueun",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
+       "lignes": [
+        {
+         "produitId": "PRD0002",
+         "libelle": "ACCUZON",
+         "quantite": 2,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 1000,
+         "nbAdministrations": 1
+        },
+        {
+         "produitId": "PRD0004",
+         "libelle": "ACUPAN 20 MG INJ",
+         "quantite": 3,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 650,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 3950,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "patient assuré, carte valide : parts assureur et patient sur chaque ligne",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX2",
+     "patientCode": "CNT/1002/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpf803wk0",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX2",
+       "patientCode": "CNT/1002/26",
+       "patient": "BETA Deux",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0002",
+         "produit": "ACCUZON",
+         "unite": "Unité",
+         "quantite": 2,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 1000,
+         "total": 2000
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 2000,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 2000,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpf82xbjg",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpf82xbjg",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACCUZON",
+         "quantite": 2,
+         "prixUnitaire": 1000,
+         "prixUnitaireNet": 1000,
+         "montantBrut": 2000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 2000,
+         "partAssureur": 1600,
+         "partPersonnel": 0,
+         "partPatient": 400,
+         "demandeId": null,
+         "produitId": "PRD0002",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX2",
+       "patient": "BETA Deux",
+       "patientCode": "CNT/1002/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 2000,
+       "montantTTC": 2000,
+       "montantBrut": 2000,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": "NSIA",
+       "tauxPriseEnCharge": 80,
+       "partAssurance": 1600,
+       "partPatient": 400,
+       "montantPaye": 0,
+       "reliquat": 400,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpf8llgwe",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
+       "factureId": "FACxmvxjbpf82xbjg",
+       "factureNumero": "FP-2026-00001",
+       "patient": "BETA Deux",
+       "patientCode": "CNT/1002/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s) — 2 000",
+       "montant": 2000
+      },
+      {
+       "id": "TCHxmvxjbpf8d4zp1",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
+       "factureId": "FACxmvxjbpf82xbjg",
+       "factureNumero": "FP-2026-00001",
+       "patient": "BETA Deux",
+       "patientCode": "CNT/1002/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s)",
+       "montant": 2000
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpf83zeos",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX2",
+       "patientCode": "CNT/1002/26",
+       "patient": "BETA Deux",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
+       "lignes": [
+        {
+         "produitId": "PRD0002",
+         "libelle": "ACCUZON",
+         "quantite": 2,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 1000,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 2000,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "carte EXPIRÉE : facturation intégrale au patient (RG-09)",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX3",
+     "patientCode": "CNT/1003/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpf9qh7fz",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX3",
+       "patientCode": "CNT/1003/26",
+       "patient": "GAMMA Trois",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0002",
+         "produit": "ACCUZON",
+         "unite": "Unité",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "total": 2000
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 2000,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 2000,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpf9tfqhc",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpf9tfqhc",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACCUZON",
+         "quantite": 2,
+         "prixUnitaire": 1000,
+         "prixUnitaireNet": 1000,
+         "montantBrut": 2000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 2000,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 2000,
+         "demandeId": null,
+         "produitId": "PRD0002",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX3",
+       "patient": "GAMMA Trois",
+       "patientCode": "CNT/1003/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 2000,
+       "montantTTC": 2000,
+       "montantBrut": 2000,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": "NSIA",
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 2000,
+       "montantPaye": 0,
+       "reliquat": 2000,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpf98ndpx",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
+       "factureId": "FACxmvxjbpf9tfqhc",
+       "factureNumero": "FP-2026-00001",
+       "patient": "GAMMA Trois",
+       "patientCode": "CNT/1003/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s) — 2 000",
+       "montant": 2000
+      },
+      {
+       "id": "TCHxmvxjbpf94x2tn",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
+       "factureId": "FACxmvxjbpf9tfqhc",
+       "factureNumero": "FP-2026-00001",
+       "patient": "GAMMA Trois",
+       "patientCode": "CNT/1003/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s)",
+       "montant": 2000
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpf9chz17",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX3",
+       "patientCode": "CNT/1003/26",
+       "patient": "GAMMA Trois",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
+       "lignes": [
+        {
+         "produitId": "PRD0002",
+         "libelle": "ACCUZON",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 2000,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "RG-09 à la DATE de la prescription : carte valide au 20/08, transcrite plus tard, la part assureur est maintenue",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX5",
+     "patientCode": "CNT/1005/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpf97qg4h",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX5",
+       "patientCode": "CNT/1005/26",
+       "patient": "EPSILON Cinq",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0002",
+         "produit": "ACCUZON",
+         "unite": "Unité",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "total": 2000
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 2000,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 2000,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpf9txyj1",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpf9txyj1",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACCUZON",
+         "quantite": 2,
+         "prixUnitaire": 1000,
+         "prixUnitaireNet": 1000,
+         "montantBrut": 2000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 2000,
+         "partAssureur": 1600,
+         "partPersonnel": 0,
+         "partPatient": 400,
+         "demandeId": null,
+         "produitId": "PRD0002",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX5",
+       "patient": "EPSILON Cinq",
+       "patientCode": "CNT/1005/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 2000,
+       "montantTTC": 2000,
+       "montantBrut": 2000,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": "NSIA",
+       "tauxPriseEnCharge": 80,
+       "partAssurance": 1600,
+       "partPatient": 400,
+       "montantPaye": 0,
+       "reliquat": 400,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpf98o8hl",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
+       "factureId": "FACxmvxjbpf9txyj1",
+       "factureNumero": "FP-2026-00001",
+       "patient": "EPSILON Cinq",
+       "patientCode": "CNT/1005/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s) — 2 000",
+       "montant": 2000
+      },
+      {
+       "id": "TCHxmvxjbpf93arml",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
+       "factureId": "FACxmvxjbpf9txyj1",
+       "factureNumero": "FP-2026-00001",
+       "patient": "EPSILON Cinq",
+       "patientCode": "CNT/1005/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s)",
+       "montant": 2000
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpf9asfpv",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX5",
+       "patientCode": "CNT/1005/26",
+       "patient": "EPSILON Cinq",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
+       "lignes": [
+        {
+         "produitId": "PRD0002",
+         "libelle": "ACCUZON",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 2000,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "RG-09 à la date : prescription du 05/09, carte expirée depuis le 31/08 : intégral au patient",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX5",
+     "patientCode": "CNT/1005/26",
+     "patient": "ALPHA Une",
+     "date": "2026-09-05T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpfaw7irt",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-09-05T09:00:00.000Z",
+       "patientId": "PATX5",
+       "patientCode": "CNT/1005/26",
+       "patient": "EPSILON Cinq",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0002",
+         "produit": "ACCUZON",
+         "unite": "Unité",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "total": 2000
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 2000,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 2000,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpfa3ll25",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpfa3ll25",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACCUZON",
+         "quantite": 2,
+         "prixUnitaire": 1000,
+         "prixUnitaireNet": 1000,
+         "montantBrut": 2000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 2000,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 2000,
+         "demandeId": null,
+         "produitId": "PRD0002",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX5",
+       "patient": "EPSILON Cinq",
+       "patientCode": "CNT/1005/26",
+       "date": "2026-09-05",
+       "type": "Prescription",
+       "montantHT": 2000,
+       "montantTTC": 2000,
+       "montantBrut": 2000,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": "NSIA",
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 2000,
+       "montantPaye": 0,
+       "reliquat": 2000,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpfapdopp",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
+       "factureId": "FACxmvxjbpfa3ll25",
+       "factureNumero": "FP-2026-00001",
+       "patient": "EPSILON Cinq",
+       "patientCode": "CNT/1005/26",
+       "date": "2026-09-05T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s) — 2 000",
+       "montant": 2000
+      },
+      {
+       "id": "TCHxmvxjbpfa3mzq9",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
+       "factureId": "FACxmvxjbpfa3ll25",
+       "factureNumero": "FP-2026-00001",
+       "patient": "EPSILON Cinq",
+       "patientCode": "CNT/1005/26",
+       "date": "2026-09-05T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s)",
+       "montant": 2000
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpfajarcs",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-09-05T09:00:00.000Z",
+       "patientId": "PATX5",
+       "patientCode": "CNT/1005/26",
+       "patient": "EPSILON Cinq",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
+       "lignes": [
+        {
+         "produitId": "PRD0002",
+         "libelle": "ACCUZON",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 2000,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "agent de la clinique : prise en charge du personnel, jamais une créance",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX4",
+     "patientCode": "CNT/1004/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpfasjhia",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX4",
+       "patientCode": "CNT/1004/26",
+       "patient": "DELTA Quatre",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0002",
+         "produit": "ACCUZON",
+         "unite": "Unité",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "total": 2000
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 2000,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 2000,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpfadtyvx",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpfadtyvx",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACCUZON",
+         "quantite": 2,
+         "prixUnitaire": 1000,
+         "prixUnitaireNet": 1000,
+         "montantBrut": 2000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 2000,
+         "partAssureur": 0,
+         "partPersonnel": 2000,
+         "partPatient": 0,
+         "demandeId": null,
+         "produitId": "PRD0002",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX4",
+       "patient": "DELTA Quatre",
+       "patientCode": "CNT/1004/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 2000,
+       "montantTTC": 2000,
+       "montantBrut": 2000,
+       "totalRemise": 0,
+       "partPersonnel": 2000,
+       "priseEnChargePersonnel": true,
+       "personnelId": "EMP01",
+       "assureur": null,
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 0,
+       "montantPaye": 0,
+       "reliquat": 0,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpfa6nnhj",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
+       "factureId": "FACxmvxjbpfadtyvx",
+       "factureNumero": "FP-2026-00001",
+       "patient": "DELTA Quatre",
+       "patientCode": "CNT/1004/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s) — 2 000",
+       "montant": 2000
+      },
+      {
+       "id": "TCHxmvxjbpfagjbpz",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
+       "factureId": "FACxmvxjbpfadtyvx",
+       "factureNumero": "FP-2026-00001",
+       "patient": "DELTA Quatre",
+       "patientCode": "CNT/1004/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s)",
+       "montant": 2000
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpfaeergx",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX4",
+       "patientCode": "CNT/1004/26",
+       "patient": "DELTA Quatre",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
+       "lignes": [
+        {
+         "produitId": "PRD0002",
+         "libelle": "ACCUZON",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 2000,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "analyses : une demande au laboratoire par examen, prélèvement bloqué jusqu’à la caisse",
+   "params": {
+    "piece": {
+     "id": "PIECE-2",
+     "nature": "analyse",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "examens": [
+      "NFS",
+      "Glycémie"
+     ],
+     "urgence": "Non urgent",
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "prelevement"
+     ],
+     "demandes": 2
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpfbncnu0",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [],
+       "analyses": [
+        {
+         "code": "L24",
+         "designation": "NFS COMPLETE (HEMOGRAMME)",
+         "categorie": "Hématologie",
+         "echantillon": "Sang",
+         "delai": "4 h",
+         "prix": 4000
+        },
+        {
+         "code": "L14",
+         "designation": "GLYCEMIE",
+         "categorie": "Biochimie",
+         "echantillon": "Sang",
+         "delai": "2 h",
+         "prix": 1500
+        }
+       ],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 0,
+       "montantAnalyses": 5500,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 5500,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "sans_objet",
+       "statutAnalyses": "en_attente",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpfbi58ci",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-2",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "demandesAnalyses": [
+      {
+       "id": "DEMxmvxjbpfbjux9p",
+       "statut": "actif",
+       "reference": "LAB-00002",
+       "codeAnalyse": "00002-2026",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "analyseCode": "L14",
+       "analyse": "GLYCEMIE",
+       "categorie": "Biochimie",
+       "echantillon": "Sang",
+       "delai": "2 h",
+       "prix": 1500,
+       "dateHeure": "2026-08-20T09:00:00.000Z",
+       "prescripteur": "Dr YENI M’PO Florent",
+       "laborantin": null,
+       "urgent": false,
+       "etatAnalyse": "en_attente",
+       "origine": "ordonnance",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null,
+       "secteurDemandeur": "Consultation",
+       "bloqueParPaiement": true
+      },
+      {
+       "id": "DEMxmvxjbpfbbqvf8",
+       "statut": "actif",
+       "reference": "LAB-00001",
+       "codeAnalyse": "00001-2026",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "analyseCode": "L24",
+       "analyse": "NFS COMPLETE (HEMOGRAMME)",
+       "categorie": "Hématologie",
+       "echantillon": "Sang",
+       "delai": "4 h",
+       "prix": 4000,
+       "dateHeure": "2026-08-20T09:00:00.000Z",
+       "prescripteur": "Dr YENI M’PO Florent",
+       "laborantin": null,
+       "urgent": false,
+       "etatAnalyse": "en_attente",
+       "origine": "ordonnance",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null,
+       "secteurDemandeur": "Consultation",
+       "bloqueParPaiement": true
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpfbi58ci",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "analyse",
+         "designation": "NFS COMPLETE (HEMOGRAMME)",
+         "quantite": 1,
+         "prixUnitaire": 4000,
+         "prixUnitaireNet": 4000,
+         "montantBrut": 4000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 4000,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 4000,
+         "demandeId": "DEMxmvxjbpfbbqvf8",
+         "produitId": null,
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        },
+        {
+         "id": "L002",
+         "categorie": "analyse",
+         "designation": "GLYCEMIE",
+         "quantite": 1,
+         "prixUnitaire": 1500,
+         "prixUnitaireNet": 1500,
+         "montantBrut": 1500,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 1500,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 1500,
+         "demandeId": "DEMxmvxjbpfbjux9p",
+         "produitId": null,
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX1",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 5500,
+       "montantTTC": 5500,
+       "montantBrut": 5500,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": null,
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 5500,
+       "montantPaye": 0,
+       "reliquat": 5500,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpfb4mnlg",
+       "statut": "bloque",
+       "type": "prelevement",
+       "role": "laborantin",
+       "module": "M5",
+       "ecran": "m5-demandes",
+       "titre": "Prélever et analyser",
+       "icon": "flask-conical",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
+       "factureId": "FACxmvxjbpfbi58ci",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "2 analyse(s) — NFS COMPLETE (HEMOGRAMME), GLYCEMIE",
+       "montant": 5500
+      },
+      {
+       "id": "TCHxmvxjbpfbln1yv",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
+       "factureId": "FACxmvxjbpfbi58ci",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "2 analyse(s)",
+       "montant": 5500
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "analyses urgentes : l’ordonnance est urgente",
+   "params": {
+    "piece": {
+     "id": "PIECE-2",
+     "nature": "analyse",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "examens": [
+      "CRP"
+     ],
+     "urgence": "Urgent — bilan entier",
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "prelevement"
+     ],
+     "demandes": 1
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpfcg5gtb",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [],
+       "analyses": [
+        {
+         "code": "L10",
+         "designation": "CRP",
+         "categorie": "Immunologie",
+         "echantillon": "Sang",
+         "delai": "4 h",
+         "prix": 4000
+        }
+       ],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 0,
+       "montantAnalyses": 4000,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 4000,
+       "urgent": true,
+       "statutPaiement": "impayee",
+       "statutDispensation": "sans_objet",
+       "statutAnalyses": "en_attente",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpfc71rq4",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-2",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "demandesAnalyses": [
+      {
+       "id": "DEMxmvxjbpfcojeh3",
+       "statut": "actif",
+       "reference": "LAB-00001",
+       "codeAnalyse": "00001-2026",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "analyseCode": "L10",
+       "analyse": "CRP",
+       "categorie": "Immunologie",
+       "echantillon": "Sang",
+       "delai": "4 h",
+       "prix": 4000,
+       "dateHeure": "2026-08-20T09:00:00.000Z",
+       "prescripteur": "Dr YENI M’PO Florent",
+       "laborantin": null,
+       "urgent": true,
+       "etatAnalyse": "en_attente",
+       "origine": "ordonnance",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null,
+       "secteurDemandeur": "Consultation",
+       "bloqueParPaiement": true
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpfc71rq4",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "analyse",
+         "designation": "CRP",
+         "quantite": 1,
+         "prixUnitaire": 4000,
+         "prixUnitaireNet": 4000,
+         "montantBrut": 4000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 4000,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 4000,
+         "demandeId": "DEMxmvxjbpfcojeh3",
+         "produitId": null,
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX1",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 4000,
+       "montantTTC": 4000,
+       "montantBrut": 4000,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": null,
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 4000,
+       "montantPaye": 0,
+       "reliquat": 4000,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpfczaeje",
+       "statut": "bloque",
+       "type": "prelevement",
+       "role": "laborantin",
+       "module": "M5",
+       "ecran": "m5-demandes",
+       "titre": "Prélever et analyser",
+       "icon": "flask-conical",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
+       "factureId": "FACxmvxjbpfc71rq4",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": true,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 analyse(s) — CRP",
+       "montant": 4000
+      },
+      {
+       "id": "TCHxmvxjbpfcug6ss",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
+       "factureId": "FACxmvxjbpfc71rq4",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": true,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 analyse(s)",
+       "montant": 4000
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "sage-femme : prescrit des analyses, secteur de la maternité",
+   "params": {
+    "piece": {
+     "id": "PIECE-2",
+     "nature": "analyse",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "examens": [
+      "Test de grossesse (TBG)"
+     ],
+     "urgence": "Non urgent",
+     "prescripteur": "Sage-femme X",
+     "fonction": "sage_femme",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "prelevement"
+     ],
+     "demandes": 1
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpfcnttlm",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "medecin": "Sage-femme X",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [],
+       "analyses": [
+        {
+         "code": "L35",
+         "designation": "TBG SERIQUE (SANGUIN)",
+         "categorie": "Hormonologie",
+         "echantillon": "Sang",
+         "delai": "72 h",
+         "prix": 12000
+        }
+       ],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 0,
+       "montantAnalyses": 12000,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 12000,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "sans_objet",
+       "statutAnalyses": "en_attente",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpfd1cmlq",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-2",
+       "fonctionPrescripteur": "sage_femme"
+      }
+     ],
+     "demandesAnalyses": [
+      {
+       "id": "DEMxmvxjbpfclq8nz",
+       "statut": "actif",
+       "reference": "LAB-00001",
+       "codeAnalyse": "00001-2026",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "analyseCode": "L35",
+       "analyse": "TBG SERIQUE (SANGUIN)",
+       "categorie": "Hormonologie",
+       "echantillon": "Sang",
+       "delai": "72 h",
+       "prix": 12000,
+       "dateHeure": "2026-08-20T09:00:00.000Z",
+       "prescripteur": "Sage-femme X",
+       "laborantin": null,
+       "urgent": false,
+       "etatAnalyse": "en_attente",
+       "origine": "ordonnance",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null,
+       "secteurDemandeur": "MATERNITE",
+       "bloqueParPaiement": true
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpfd1cmlq",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "analyse",
+         "designation": "TBG SERIQUE (SANGUIN)",
+         "quantite": 1,
+         "prixUnitaire": 12000,
+         "prixUnitaireNet": 12000,
+         "montantBrut": 12000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 12000,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 12000,
+         "demandeId": "DEMxmvxjbpfclq8nz",
+         "produitId": null,
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX1",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 12000,
+       "montantTTC": 12000,
+       "montantBrut": 12000,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": null,
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 12000,
+       "montantPaye": 0,
+       "reliquat": 12000,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpfdnas4k",
+       "statut": "bloque",
+       "type": "prelevement",
+       "role": "laborantin",
+       "module": "M5",
+       "ecran": "m5-demandes",
+       "titre": "Prélever et analyser",
+       "icon": "flask-conical",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
+       "factureId": "FACxmvxjbpfd1cmlq",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 analyse(s) — TBG SERIQUE (SANGUIN)",
+       "montant": 12000
+      },
+      {
+       "id": "TCHxmvxjbpfdu5bxi",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
+       "factureId": "FACxmvxjbpfd1cmlq",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 analyse(s)",
+       "montant": 12000
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "sans note rattachée : le diagnostic est vide, la transcription se fait",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": null
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpfdjapig",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0002",
+         "produit": "ACCUZON",
+         "unite": "Unité",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "total": 2000
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 2000,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 2000,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpfd1xym3",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpfd1xym3",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACCUZON",
+         "quantite": 2,
+         "prixUnitaire": 1000,
+         "prixUnitaireNet": 1000,
+         "montantBrut": 2000,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 2000,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 2000,
+         "demandeId": null,
+         "produitId": "PRD0002",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX1",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 2000,
+       "montantTTC": 2000,
+       "montantBrut": 2000,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": null,
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 2000,
+       "montantPaye": 0,
+       "reliquat": 2000,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpfd827b0",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
+       "factureId": "FACxmvxjbpfd1xym3",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s) — 2 000",
+       "montant": 2000
+      },
+      {
+       "id": "TCHxmvxjbpfd7335m",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
+       "factureId": "FACxmvxjbpfd1xym3",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s)",
+       "montant": 2000
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpfdtf5pz",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
+       "lignes": [
+        {
+         "produitId": "PRD0002",
+         "libelle": "ACCUZON",
+         "quantite": 2,
+         "posologie": "1 cp x 3/j",
+         "duree": "5 jours",
+         "prix": 1000,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 2000,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "infirmier : fonction non habilitée à prescrire des médicaments",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Infirmière X",
+     "fonction": "infirmier",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Infirmier(ère) n’est pas habilité à prescrire « Médicaments ».",
+    "code": "FONCTION_NON_HABILITEE",
+    "geste": "Demander la prescription à un médecin",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "aide-soignant : fonction non habilitée",
+   "params": {
+    "piece": {
+     "id": "PIECE-2",
+     "nature": "analyse",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "examens": [
+      "NFS",
+      "Glycémie"
+     ],
+     "urgence": "Non urgent",
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "aide_soignant",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Aide-soignant(e) n’est pas habilité à prescrire « Analyses de laboratoire ».",
+    "code": "FONCTION_NON_HABILITEE",
+    "geste": "Demander la prescription à un médecin",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "fonction absente de la pièce",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": " n’est pas habilité à prescrire « Médicaments ».",
+    "code": "FONCTION_NON_HABILITEE",
+    "geste": "Demander la prescription à un médecin",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "nature « acte » : le mobile ne prescrit pas",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "acte",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Le mobile ne prescrit pas « acte ».",
+    "code": "NATURE_NON_PORTEE",
+    "geste": "Prescrire depuis un poste de la clinique",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "patient inconnu de la clinique : refusé en le disant, rien d’écrit",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATZ",
+     "patientCode": "CNT/9999/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Le dossier « CNT/9999/26 » n’existe pas à la clinique : la prescription ne peut pas être facturée.",
+    "code": "PATIENT_INTROUVABLE",
+    "geste": "Rapprocher le dossier du patient avant de transcrire",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "médicament hors catalogue : refusé en le nommant",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD-INCONNU",
+       "medicament": "Inconnomol 500",
+       "quantite": 1,
+       "posologie": "1",
+       "dureeJours": 1
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Médicament absent du catalogue de la clinique : « Inconnomol 500 ».",
+    "code": "PRODUIT_INCONNU",
+    "geste": "Choisir le médicament dans la liste du lot et refaire la prescription",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "ligne sans produit (texte libre de l’ancienne pièce) : refusée",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "medicament": "Paracétamol 500 mg",
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Médicament absent du catalogue de la clinique : « Paracétamol 500 mg ».",
+    "code": "PRODUIT_INCONNU",
+    "geste": "Choisir le médicament dans la liste du lot et refaire la prescription",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "stock insuffisant : refus nommé (RG-03), jamais un stock négatif",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0003",
+       "medicament": "ACE MISO 200 µg 1 CP",
+       "quantite": 3,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Stock insuffisant pour « ACE MISO 200 µg 1 CP » : disponible : 2 ; demandé : 3 (RG-03).",
+    "code": "STOCK_INSUFFISANT",
+    "geste": "Corriger la quantité ou demander un transfert du gros.",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "stock insuffisant sur DEUX lignes du même produit : le cumul est refusé",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0003",
+       "medicament": "ACE MISO 200 µg 1 CP",
+       "quantite": 2,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      },
+      {
+       "produitId": "PRD0003",
+       "medicament": "ACE MISO 200 µg 1 CP",
+       "quantite": 1,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Stock insuffisant pour « ACE MISO 200 µg 1 CP » : disponible : 2 ; demandé : 3 (RG-03).",
+    "code": "STOCK_INSUFFISANT",
+    "geste": "Corriger la quantité ou demander un transfert du gros.",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "stock exactement épuisé : accepté",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0003",
+       "medicament": "ACE MISO 200 µg 1 CP",
+       "quantite": 2,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": false,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [
+      "encaissement",
+      "dispensation"
+     ],
+     "demandes": 0
+    },
+    "inserts": {
+     "ordonnances": [
+      {
+       "id": "ORDxmvxjbpff3l39a",
+       "statut": "actif",
+       "numero": "ORD-2026-00001",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "medecin": "Dr YENI M’PO Florent",
+       "diagnostic": "Paludisme simple",
+       "consultationId": null,
+       "dossierConsultationId": null,
+       "medicaments": [
+        {
+         "produitId": "PRD0003",
+         "produit": "ACE MISO 200 µg 1 CP",
+         "unite": "Comprimé",
+         "quantite": 2,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 250,
+         "total": 500
+        }
+       ],
+       "analyses": [],
+       "actes": [],
+       "imagerie": [],
+       "montantMedicaments": 500,
+       "montantAnalyses": 0,
+       "montantActes": 0,
+       "montantImagerie": 0,
+       "montant": 500,
+       "urgent": false,
+       "statutPaiement": "impayee",
+       "statutDispensation": "en_attente",
+       "statutAnalyses": "sans_objet",
+       "statutActes": "sans_objet",
+       "statutImagerie": "sans_objet",
+       "factureId": "FACxmvxjbpffmxxsk",
+       "factureNumero": "FP-2026-00001",
+       "origine": "mobile",
+       "pieceMobileId": "PIECE-1",
+       "fonctionPrescripteur": "medecin"
+      }
+     ],
+     "factures": [
+      {
+       "id": "FACxmvxjbpffmxxsk",
+       "statut": "actif",
+       "lignes": [
+        {
+         "id": "L001",
+         "categorie": "medicament",
+         "designation": "ACE MISO 200 µg 1 CP",
+         "quantite": 2,
+         "prixUnitaire": 250,
+         "prixUnitaireNet": 250,
+         "montantBrut": 500,
+         "remise": 0,
+         "motifRemise": null,
+         "montant": 500,
+         "partAssureur": 0,
+         "partPersonnel": 0,
+         "partPatient": 500,
+         "demandeId": null,
+         "produitId": "PRD0003",
+         "acteCode": null,
+         "demandeImagerieId": null,
+         "statutPaiement": "du",
+         "montantRegle": 0,
+         "payeLe": null,
+         "payePar": null
+        }
+       ],
+       "numero": "FP-2026-00001",
+       "numeroMecef": null,
+       "patientId": "PATX1",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20",
+       "type": "Prescription",
+       "montantHT": 500,
+       "montantTTC": 500,
+       "montantBrut": 500,
+       "totalRemise": 0,
+       "partPersonnel": 0,
+       "priseEnChargePersonnel": false,
+       "personnelId": null,
+       "assureur": null,
+       "tauxPriseEnCharge": 0,
+       "partAssurance": 0,
+       "partPatient": 500,
+       "montantPaye": 0,
+       "reliquat": 500,
+       "modePaiement": null,
+       "statutPaiement": "impayee",
+       "statutMecef": "en_attente",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
+       "ordonnanceNumero": "ORD-2026-00001",
+       "dossierConsultationId": null
+      }
+     ],
+     "taches": [
+      {
+       "id": "TCHxmvxjbpffq51fr",
+       "statut": "bloque",
+       "type": "dispensation",
+       "role": "pharmacien",
+       "module": "M6",
+       "ecran": "m6-dispensation",
+       "titre": "Délivrer les médicaments",
+       "icon": "pill",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
+       "factureId": "FACxmvxjbpffmxxsk",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s) — 500",
+       "montant": 500
+      },
+      {
+       "id": "TCHxmvxjbpff7aja2",
+       "statut": "en_attente",
+       "type": "encaissement",
+       "role": "caissier",
+       "module": "M8",
+       "ecran": "m8-caisse",
+       "titre": "Encaisser la prescription",
+       "icon": "coins",
+       "reference": "ORD-2026-00001",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
+       "factureId": "FACxmvxjbpffmxxsk",
+       "factureNumero": "FP-2026-00001",
+       "patient": "ALPHA Une",
+       "patientCode": "CNT/1001/26",
+       "date": "2026-08-20T09:00:00.000Z",
+       "urgent": false,
+       "faitLe": null,
+       "faitPar": null,
+       "detail": "1 médicament(s)",
+       "montant": 500
+      }
+     ],
+     "prescriptions": [
+      {
+       "id": "PRSxmvxjbpff0dflj",
+       "statut": "en_cours",
+       "reference": "ORD-2026-00001",
+       "type": "ordonnance",
+       "origine": "mobile",
+       "date": "2026-08-20T09:00:00.000Z",
+       "patientId": "PATX1",
+       "patientCode": "CNT/1001/26",
+       "patient": "ALPHA Une",
+       "prescripteurId": null,
+       "prescripteur": "Dr YENI M’PO Florent",
+       "secteurDestinataire": "pharmacie",
+       "modalite": "ambulatoire",
+       "premierAdministrateur": "salle_soins",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
+       "lignes": [
+        {
+         "produitId": "PRD0003",
+         "libelle": "ACE MISO 200 µg 1 CP",
+         "quantite": 2,
+         "posologie": "1 cp",
+         "duree": "3 jours",
+         "prix": 250,
+         "nbAdministrations": 1
+        }
+       ],
+       "montant": 500,
+       "statutPaiement": "impayee"
+      }
+     ]
+    },
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "quantité nulle : refusée",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 0,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Quantité invalide pour « ACCUZON » : un entier d’au moins 1 est attendu.",
+    "code": "QUANTITE_INVALIDE",
+    "geste": "Refaire la prescription depuis le téléphone",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "quantité non entière : refusée",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 1.5,
+       "posologie": "1 cp",
+       "dureeJours": 3
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Quantité invalide pour « ACCUZON » : un entier d’au moins 1 est attendu.",
+    "code": "QUANTITE_INVALIDE",
+    "geste": "Refaire la prescription depuis le téléphone",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "ordonnance sans ligne",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "L’ordonnance ne porte aucune ligne.",
+    "code": "ORDONNANCE_VIDE",
+    "geste": "Refaire la prescription depuis le téléphone",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "examen sans correspondance au catalogue du laboratoire : refusé",
+   "params": {
+    "piece": {
+     "id": "PIECE-2",
+     "nature": "analyse",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "examens": [
+      "NFS",
+      "IRM cérébrale"
+     ],
+     "urgence": "Non urgent",
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "Examen sans correspondance au catalogue du laboratoire : IRM cérébrale.",
+    "code": "EXAMEN_INCONNU",
+    "geste": "Demander l’examen depuis un poste de la clinique",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "demande sans examen",
+   "params": {
+    "piece": {
+     "id": "PIECE-2",
+     "nature": "analyse",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "examens": [],
+     "urgence": "Non urgent",
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": null,
+   "sortie": {
+    "erreur": "La demande ne porte aucun examen.",
+    "code": "ORDONNANCE_VIDE",
+    "geste": "Refaire la demande depuis le téléphone",
+    "retour": null,
+    "inserts": {},
+    "modifs": {}
+   }
+  },
+  {
+   "nom": "pièce déjà transcrite : rien n’est réécrit",
+   "params": {
+    "piece": {
+     "id": "PIECE-1",
+     "nature": "medicament",
+     "patientId": "PATX1",
+     "patientCode": "CNT/1001/26",
+     "patient": "ALPHA Une",
+     "date": "2026-08-20T09:00:00.000Z",
+     "noteId": "NOTE-1",
+     "lignes": [
+      {
+       "produitId": "PRD0002",
+       "medicament": "ACCUZON",
+       "quantite": 2,
+       "posologie": "1 cp x 3/j",
+       "dureeJours": 5
+      }
+     ],
+     "prescripteur": "Dr YENI M’PO Florent",
+     "fonction": "medecin",
+     "emise": true,
+     "origine": "mobile"
+    },
+    "note": {
+     "id": "NOTE-1",
+     "diagnostic": "Paludisme simple",
+     "patientId": "PATX1"
+    }
+   },
+   "preparation": "transcrite une première fois",
+   "sortie": {
+    "erreur": null,
+    "code": null,
+    "geste": null,
+    "retour": {
+     "deja": true,
+     "ordonnanceNumero": "ORD-2026-00001",
+     "factureNumero": "FP-2026-00001",
+     "taches": [],
+     "demandes": 0
+    },
+    "inserts": {},
+    "modifs": {}
+   }
+  }
+ ]
+}

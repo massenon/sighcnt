@@ -1,0 +1,59 @@
+{
+ "id": "m14-soignants",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Prescripteurs & exécutants de soins",
+ "acces": "ouvert",
+ "titre": "Prescripteurs & exécutants de soins",
+ "description": "Qui prescrit, qui exécute les soins, et dans quels secteurs.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Prescripteurs & exécutants de soins"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Rôles & permissions (RBAC)",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "Les effectifs énoncés par la Direction — 3 médecins, 3 sages-femmes, 7 infirmiers — se retrouvent exactement dès lors qu’on met à part les deux agents qui ne sont ni prescripteurs ni exécutants : l’Infirmier — Surveillant Général, qui supervise les soins (c’est l’IG de la description de poste du 26/10/2023), et l’Échographiste, qui réalise des examens sans prescrire."
+ ],
+ "onglets": [
+  "Tous",
+  "Prescripteurs",
+  "Exécutants"
+ ],
+ "kpis": [
+  "Soignants",
+  "Prescripteurs",
+  "Exécutants de soins",
+  "Cumulent les deux"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Agent",
+   "Poste",
+   "Qualité",
+   "Prescrit",
+   "Exécute",
+   "Secteurs",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous15",
+  "Prescripteurs6",
+  "Exécutants10",
+  "Colonnes",
+  "Exporter",
+  "Nouveau soignant",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

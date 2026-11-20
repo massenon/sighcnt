@@ -1,0 +1,488 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-catalogue-labo.js — ne pas éditer.",
+ "unites": {
+  "_doc": "m5-unites : jeu de la maquette",
+  "kpis": [
+   {
+    "label": "Unités paramétrées",
+    "valeur": "23",
+    "indice": null
+   },
+   {
+    "label": "Reprises de la fiche",
+    "valeur": "14",
+    "indice": null
+   },
+   {
+    "label": "À confirmer",
+    "valeur": "9",
+    "indice": null
+   },
+   {
+    "label": "Domaines couverts",
+    "valeur": "8",
+    "indice": null
+   }
+  ],
+  "onglets": [
+   "Tous les unités23",
+   "Archivés0"
+  ],
+  "entetes": [
+   "",
+   "SYMBOLE",
+   "INTITULÉ",
+   "DOMAINE",
+   "PROVENANCE",
+   "ACTIONS"
+  ],
+  "filtres": [
+   [
+    "|Domaine",
+    "Hématologie|Hématologie",
+    "Biochimie|Biochimie",
+    "Hormonologie|Hormonologie",
+    "Bactériologie|Bactériologie",
+    "Parasitologie|Parasitologie",
+    "Hémostase|Hémostase",
+    "Andrologie|Andrologie",
+    "Général|Général"
+   ]
+  ],
+  "lignes": [
+   [
+    "",
+    "10⁶/ml",
+    "million par millilitre",
+    "Andrologie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "ml",
+    "millilitre",
+    "Andrologie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "/champ",
+    "par champ microscopique",
+    "Bactériologie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "UFC/ml",
+    "unité formant colonie par millilitre",
+    "Bactériologie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "g/l",
+    "gramme par litre",
+    "Biochimie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "mg/l",
+    "milligramme par litre",
+    "Biochimie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "mmol/l",
+    "millimole par litre",
+    "Biochimie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "UI/l",
+    "unité internationale par litre",
+    "Biochimie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "%",
+    "pour cent",
+    "Général",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "—",
+    "sans unité",
+    "Général",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "G/l",
+    "giga par litre",
+    "Hématologie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "T/l",
+    "téra par litre",
+    "Hématologie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "g/dl",
+    "gramme par décilitre",
+    "Hématologie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "fl",
+    "femtolitre",
+    "Hématologie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "pg",
+    "picogramme",
+    "Hématologie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "mm",
+    "millimètre (sédimentation)",
+    "Hématologie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "s",
+    "seconde",
+    "Hémostase",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "min",
+    "minute",
+    "Hémostase",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "ng/ml",
+    "nanogramme par millilitre",
+    "Hormonologie",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "µUI/ml",
+    "micro-unité internationale par millilitre",
+    "Hormonologie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "pg/ml",
+    "picogramme par millilitre",
+    "Hormonologie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "mUI/ml",
+    "milli-unité internationale par millilitre",
+    "Hormonologie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "parasites/µl",
+    "parasites par microlitre",
+    "Parasitologie",
+    "Fiche de résultats CNT",
+    ""
+   ]
+  ],
+  "ids": [
+   "millions_ml",
+   "ml",
+   "par_champ",
+   "ufc_ml",
+   "g_l",
+   "mg_l",
+   "mmol_l",
+   "ui_l",
+   "pourcent",
+   "sans",
+   "g_l_hb",
+   "t_l",
+   "g_dl",
+   "fl",
+   "pg",
+   "mm",
+   "secondes",
+   "minutes",
+   "ng_ml",
+   "uui_ml",
+   "pg_ml",
+   "mui_ml",
+   "parasites_ul"
+  ]
+ },
+ "craft": {
+  "_doc": "unités posées : provenance et indicateurs",
+  "fiches": [
+   {
+    "id": "u1",
+    "statut": "actif",
+    "symbole": "a",
+    "libelle": "alpha",
+    "domaine": "Biochimie",
+    "source": "Ma source"
+   },
+   {
+    "id": "u2",
+    "statut": "actif",
+    "symbole": "b",
+    "libelle": "bravo",
+    "domaine": "Biochimie",
+    "aValider": true
+   },
+   {
+    "id": "u3",
+    "statut": "actif",
+    "symbole": "c",
+    "libelle": "charlie",
+    "domaine": "Général"
+   },
+   {
+    "id": "u4",
+    "statut": "archive",
+    "symbole": "d",
+    "libelle": "delta",
+    "domaine": "Hémostase",
+    "aValider": true
+   },
+   {
+    "id": "u5",
+    "statut": "actif",
+    "symbole": "e",
+    "libelle": "echo",
+    "domaine": "Hémostase",
+    "aValider": false,
+    "source": "Fiche X"
+   }
+  ],
+  "kpis": [
+   {
+    "label": "Unités paramétrées",
+    "valeur": "4",
+    "indice": null
+   },
+   {
+    "label": "Reprises de la fiche",
+    "valeur": "3",
+    "indice": null
+   },
+   {
+    "label": "À confirmer",
+    "valeur": "1",
+    "indice": null
+   },
+   {
+    "label": "Domaines couverts",
+    "valeur": "3",
+    "indice": null
+   }
+  ],
+  "lignes": [
+   [
+    "",
+    "a",
+    "alpha",
+    "Biochimie",
+    "Ma source",
+    ""
+   ],
+   [
+    "",
+    "b",
+    "bravo",
+    "Biochimie",
+    "À confirmer",
+    ""
+   ],
+   [
+    "",
+    "c",
+    "charlie",
+    "Général",
+    "Fiche de résultats CNT",
+    ""
+   ],
+   [
+    "",
+    "e",
+    "echo",
+    "Hémostase",
+    "Fiche X",
+    ""
+   ]
+  ],
+  "ids": [
+   "u1",
+   "u2",
+   "u3",
+   "u5"
+  ]
+ },
+ "saisie": {
+  "_doc": "m5-unites : « Nouveau » → « Créer », « Modifier » → « Enregistrer »",
+  "creations": [
+   {
+    "nom": "unité complète",
+    "saisie": {
+     "symbole": "mg/dl",
+     "libelle": "milligramme par décilitre",
+     "domaine": "Biochimie"
+    },
+    "initial": [
+     [
+      "symbole",
+      ""
+     ],
+     [
+      "libelle",
+      ""
+     ],
+     [
+      "domaine",
+      "Hématologie"
+     ]
+    ],
+    "nouvelles": [
+     {
+      "id": "UNIxmvve7un08hish",
+      "statut": "actif",
+      "symbole": "mg/dl",
+      "libelle": "milligramme par décilitre",
+      "domaine": "Biochimie"
+     }
+    ],
+    "toasts": [
+     [
+      "Nouveau unité créé."
+     ]
+    ],
+    "modaleOuverte": false,
+    "premiereLigne": [
+     "",
+     "10⁶/ml",
+     "million par millilitre",
+     "Andrologie",
+     "À confirmer",
+     ""
+    ]
+   },
+   {
+    "nom": "symbole manquant : refus",
+    "saisie": {
+     "libelle": "sans symbole"
+    },
+    "initial": [
+     [
+      "symbole",
+      ""
+     ],
+     [
+      "libelle",
+      ""
+     ],
+     [
+      "domaine",
+      "Hématologie"
+     ]
+    ],
+    "nouvelles": [],
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "modaleOuverte": true,
+    "premiereLigne": [
+     "",
+     "10⁶/ml",
+     "million par millilitre",
+     "Andrologie",
+     "À confirmer",
+     ""
+    ]
+   }
+  ],
+  "modification": {
+   "avant": {
+    "id": "g_l_hb",
+    "statut": "actif",
+    "symbole": "G/l",
+    "libelle": "giga par litre",
+    "domaine": "Hématologie",
+    "source": "Fiche de résultats CNT"
+   },
+   "prerempli": [
+    [
+     "symbole",
+     "G/l"
+    ],
+    [
+     "libelle",
+     "giga par litre"
+    ],
+    [
+     "domaine",
+     "Hématologie"
+    ]
+   ],
+   "patch": {
+    "libelle": "giga par litre (corrigé)"
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées."
+    ]
+   ]
+  }
+ }
+}

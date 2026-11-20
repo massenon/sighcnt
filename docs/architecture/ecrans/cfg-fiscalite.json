@@ -1,0 +1,91 @@
+{
+ "id": "cfg-fiscalite",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Paramètres fiscaux (IFU / RCCM)",
+ "acces": "ouvert",
+ "titre": "Paramètres fiscaux (IFU / RCCM)",
+ "description": "Identité fiscale de l’établissement (vérifiée et validée), numérotation des documents et calendrier des obligations.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Paramètres fiscaux (IFU / RCCM)"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+  "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
+  "4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026. Une déclaration précède généralement le paiement."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Échéances suivies",
+  "Mensuelles",
+  "Dans les 30 jours",
+  "CCIB annuelle"
+ ],
+ "cartes": [
+  "Identification fiscale de l’établissement",
+  "Versions de l’identité légale",
+  "Numérotation des documents",
+  "Obligations déclaratives (dérivées des obligations en vigueur)",
+  "Calendrier fiscal et social"
+ ],
+ "tableaux": [
+  [
+   "Version",
+   "En force",
+   "Du",
+   "Au",
+   "IFU / RCCM",
+   "Validée",
+   "Motif"
+  ],
+  [
+   "Type de document",
+   "Préfixe",
+   "Format",
+   "Séquence"
+  ],
+  [
+   "Déclaration",
+   "Périodicité",
+   "Échéance",
+   "Écran producteur"
+  ],
+  [
+   "Code",
+   "Obligation",
+   "Périodicité",
+   "Prochaine échéance",
+   "Dans",
+   "Règle appliquée"
+  ]
+ ],
+ "commandes": [
+  "Enregistrer",
+  "Valider l’identité légale",
+  "Configuration MECeF",
+  "Éditer",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Dénomination sociale",
+  "Forme juridique",
+  "IFU (13 chiffres) *",
+  "RCCM *",
+  "Autorisation d’ouverture",
+  "Adresse fiscale (adresse postale imprimée)",
+  "Devise",
+  "Code ISO de la devise",
+  "Régime de TVA"
+ ],
+ "nbTableaux": 4,
+ "nbKpis": 4
+}

@@ -11,7 +11,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* Référentiel partagé avec le peuplement du socle — voir D.GED_CATEGORIES. */
   var CATEGORIES = D.GED_CATEGORIES;
@@ -158,13 +158,14 @@
               ['Consultations', String(d.consultations)],
               ['Durée de conservation', d.conservation + ' ans'],
               ['Signature électronique', d.signe ? U.badge('Signé', 'success') : U.badge('Non signé', 'neutral')],
+              d.etatValidation === 'rejete' ? ['Motif du rejet', d.motifRejet || 'Non consigné'] : null,
               ['Archivage', d.archive ? U.badge('Archivé', 'neutral') : U.badge('Actif', 'success')],
             ]),
             U.card('Traçabilité', U.timeline([
               { title: 'Document déposé', detail: 'Par ' + d.deposePar, date: C.dateFR(d.date), tone: 'success' },
               { title: 'Indexation automatique', detail: 'Rattaché au dossier ' + d.codeRattachement, date: C.dateFR(d.date), tone: 'info' },
               d.etatValidation === 'valide' ? { title: 'Document validé', detail: 'Workflow de validation clôturé', date: C.dateFR(C.addDays(d.date, 2)), tone: 'success' } : null,
-              d.etatValidation === 'rejete' ? { title: 'Document rejeté', detail: 'À corriger et redéposer', date: C.dateFR(C.addDays(d.date, 2)), tone: 'danger' } : null,
+              d.etatValidation === 'rejete' ? { title: 'Document rejeté', detail: d.motifRejet ? 'Motif : ' + d.motifRejet : 'À corriger et redéposer (aucun motif consigné)', date: C.dateFR(C.addDays(d.date, 2)), tone: 'danger' } : null,
               d.archive ? { title: 'Archivage', detail: 'Conservation ' + d.conservation + ' ans', date: C.dateFR(C.addDays(d.date, 30)), tone: 'neutral' } : null,
             ].filter(Boolean))),
           ]),
@@ -186,10 +187,11 @@
             { k: 'Déposé par', v: d.deposePar },
             { k: 'État de validation', v: { valide: 'Validé', en_attente: 'En attente', rejete: 'Rejeté' }[d.etatValidation] },
             { k: 'Signature électronique', v: d.signe ? 'Oui' : 'Non' },
+            d.etatValidation === 'rejete' ? { k: 'Motif du rejet', v: d.motifRejet || 'Non consigné' } : null,
             { k: 'Archivage', v: d.archive ? 'Archivé' : 'Actif' },
             { k: 'Durée de conservation', v: d.conservation + ' ans' },
             { k: 'Consultations', v: String(d.consultations) },
-          ]),
+          ].filter(Boolean)),
           signatures: [{ role: 'L’Agent administratif' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
         });
       }
@@ -221,12 +223,21 @@
       function enAttente() { return col.active().filter(function (d) { return d.etatValidation === 'en_attente'; }); }
       function rejetes() { return col.active().filter(function (d) { return d.etatValidation === 'rejete'; }); }
 
-      host.appendChild(U.kpiGrid([
-        { label: 'Documents à valider', value: C.num(enAttente().length), icon: 'file-clock', tone: 'warning' },
-        { label: 'Rejetés à corriger', value: C.num(rejetes().length), icon: 'file-x', tone: 'danger' },
-        { label: 'Validés', value: C.num(col.active().filter(function (d) { return d.etatValidation === 'valide'; }).length), icon: 'file-check-2', tone: 'success' },
-        { label: 'Délai moyen de validation', value: '2 jours', icon: 'timer', tone: 'info' },
-      ]));
+      /* Les indicateurs se RECALCULENT à chaque geste (E562) : figés à l'ouverture, ils annonçaient 38 documents à valider
+         après qu'on en eût validé un. */
+      var kpiHote = el('div');
+      function peindreKpis() {
+        C.clear(kpiHote);
+        kpiHote.appendChild(U.kpiGrid([
+          { label: 'Documents à valider', value: C.num(enAttente().length), icon: 'file-clock', tone: 'warning' },
+          { label: 'Rejetés à corriger', value: C.num(rejetes().length), icon: 'file-x', tone: 'danger' },
+          { label: 'Validés', value: C.num(col.active().filter(function (d) { return d.etatValidation === 'valide'; }).length), icon: 'file-check-2', tone: 'success' },
+          { label: 'Délai moyen de validation', value: '2 jours', icon: 'timer', tone: 'info' },
+        ]));
+        U.icons(kpiHote);
+      }
+      peindreKpis();
+      host.appendChild(kpiHote);
 
       /* Circuit */
       var circuit = el('div.flex.flex-wrap.items-center.gap-1\\.5');
@@ -249,7 +260,7 @@
         columns: [
           { key: 'reference', label: 'Référence', nowrap: true, render: function (d) { return el('span.font-mono.text-xs', { text: d.reference }); } },
           { key: 'libelle', label: 'Document' },
-          { key: 'categorie', label: 'Catégorie', text: categorieLabel, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
+          { key: 'categorie', label: 'Catégorie', text: function (d) { return categorieLabel(d.categorie); }, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
           { key: 'rattacheA', label: 'Rattaché à' },
           { key: 'date', label: 'Date de dépôt', nowrap: true, text: function (d) { return C.dateFR(d.date); }, render: function (d) { return C.dateFR(d.date); } },
           { key: 'deposePar', label: 'Déposé par' },
@@ -262,28 +273,16 @@
             },
           },
         ],
-        bulkActions: function (getSelected, clear) {
-          return [K.btn('Valider la sélection', {
-            size: 'sm', variant: 'success', icon: 'badge-check',
-            onclick: function () {
-              var sel = getSelected();
-              var majs = sel.map(function (d) { return col.update(d.id, { etatValidation: 'valide' }); });
-              clear(); table.refresh();
-              U.toast(sel.length + ' document(s) validé(s).', {
-                type: 'success', undo: function () { majs.forEach(function (m) { m.undo(); }); table.refresh(); },
-              });
-            },
-          })];
-        },
-        selectable: true,
+        /* Défaut 7 : plus de validation en MASSE. Une validation est un geste humain, un document à la fois. Les cases (lot EXP, 16/11/2026) ne servent qu'à
+           SORTIR des lignes (export, impression) : aucune action de groupe n'est déclarée ici, aucune « Valider la sélection » n'existe. */
         rowActions: function (d) {
           return [
             K.btn('Valider', {
               size: 'sm', variant: 'success', icon: 'check',
               onclick: function () {
                 var res = col.update(d.id, { etatValidation: 'valide', signe: true });
-                table.refresh();
-                U.toast('Document validé et signé.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                table.refresh(); peindreKpis();
+                U.toast('Document validé et signé.', { type: 'success', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
               },
             }),
             K.iconBtn('x', 'Rejeter', function () {
@@ -292,9 +291,16 @@
                 confirmLabel: 'Rejeter', danger: true, requireMotif: true,
               }).then(function (r) {
                 if (!r) return;
-                var res = col.update(d.id, { etatValidation: 'rejete', motifRejet: r.motif });
-                table.refresh();
-                U.toast('Document rejeté.', { type: 'warning', undo: function () { res.undo(); table.refresh(); } });
+                var motif = String(r.motif || '').trim();
+                if (!motif) { U.toast('Le motif de rejet est obligatoire.', { type: 'error', detail: 'Rouvrir « Rejeter » et écrire la raison : le déposant la lira sur la fiche.' }); return; }
+                var res = col.update(d.id, { etatValidation: 'rejete', motifRejet: motif });
+                if (!res) { U.toast('Rejet non enregistré : écriture refusée par le magasin.', { type: 'error' }); return; }
+                global.SIGH.parcours.notifier({
+                  type: 'ged_rejet', poste: 'tous', libelle: 'Document rejeté : ' + d.reference,
+                  detail: motif, reference: d.reference, priorite: 'haute',
+                });
+                table.refresh(); peindreKpis();
+                U.toast('Document rejeté.', { type: 'warning', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
               });
             }, 'ghost'),
           ];
@@ -321,7 +327,14 @@
       var rows = col.active();
       var host = el('div.space-y-4');
 
-      function echeance(d) { return C.addDays(d.date, d.conservation * 365); }
+      /* E565 : l'échéance est CALENDAIRE (date du document + N années civiles), plus N × 365 jours, qui
+         tombait 5 jours avant l'anniversaire sur 20 ans (années bissextiles ignorées). Un 29 février
+         retombe, hors année bissextile, au 1er mars : la conservation n'est jamais écourtée. */
+      function echeance(d) {
+        var x = new Date(C.toDate(d.date).getTime());
+        x.setFullYear(x.getFullYear() + Number(d.conservation));
+        return x;
+      }
       function expire(d) { return echeance(d) < AUJ; }
 
       var archives = rows.filter(function (d) { return d.archive; });
@@ -359,11 +372,9 @@
       host.appendChild(U.dataTable({
         title: 'Cycle de vie des documents', rows: rows, exportName: 'ged-archives', pageSize: 20,
         rowActions: K.actionsLigne(col, [
-          { name: 'titre', label: 'Titre du document', required: true, col: 'full' },
-          { name: 'categorie', label: 'Catégorie' },
-          { name: 'dureeConservation', label: 'Durée de conservation (années)', type: 'number', min: 0 },
-          { name: 'emplacement', label: 'Emplacement physique' },
-          { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
+          { name: 'libelle', label: 'Libellé du document', required: true, col: 'full' },
+          { name: 'categorie', label: 'Catégorie', type: 'select', options: CATEGORIES.map(function (c) { return { value: c.id, label: c.label }; }) },
+          { name: 'conservation', label: 'Durée de conservation (années)', type: 'number', min: 1 },
         ]),
         defaultSort: 'date',
         filters: [
@@ -373,7 +384,7 @@
         columns: [
           { key: 'reference', label: 'Référence', nowrap: true, render: function (d) { return el('span.font-mono.text-xs', { text: d.reference }); } },
           { key: 'libelle', label: 'Document' },
-          { key: 'categorie', label: 'Catégorie', text: categorieLabel, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
+          { key: 'categorie', label: 'Catégorie', text: function (d) { return categorieLabel(d.categorie); }, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
           { key: 'date', label: 'Date du document', nowrap: true, text: function (d) { return C.dateFR(d.date); }, render: function (d) { return C.dateFR(d.date); } },
           { key: 'conservation', label: 'Conservation', align: 'right', render: function (d) { return d.conservation + ' ans'; } },
           {
@@ -407,7 +418,7 @@
               contenu: P.tableau([
                 { label: 'Référence', key: 'reference' },
                 { label: 'Document', key: 'libelle' },
-                { label: 'Catégorie', value: categorieLabel },
+                { label: 'Catégorie', value: function (d) { return categorieLabel(d.categorie); } },
                 { label: 'Date', value: function (d) { return C.dateFR(d.date); } },
                 { label: 'Conservation', value: function (d) { return d.conservation + ' ans'; } },
                 { label: 'Échéance', value: function (d) { return C.dateFR(echeance(d)); } },

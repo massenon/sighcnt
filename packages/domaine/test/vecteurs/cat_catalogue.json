@@ -1,0 +1,1464 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-catalogue-labo.js — ne pas éditer.",
+ "catalogue": {
+  "_doc": "m5-catalogue : jeu de la maquette (48 analyses)",
+  "kpis": [
+   {
+    "label": "Analyses au catalogue",
+    "valeur": "48",
+    "indice": null
+   },
+   {
+    "label": "Catégories",
+    "valeur": "10",
+    "indice": null
+   },
+   {
+    "label": "Tarif moyen",
+    "valeur": "4 490 FCFA",
+    "indice": null
+   },
+   {
+    "label": "Tarifs à confirmer",
+    "valeur": "48",
+    "indice": null
+   }
+  ],
+  "onglets": [
+   "Tous les analyses48",
+   "Par catégorie",
+   "Archivés0"
+  ],
+  "entetes": [
+   "",
+   "N°",
+   "CODE",
+   "DÉSIGNATION",
+   "CATÉGORIE",
+   "ÉCHANTILLON",
+   "TARIF",
+   "STATUT",
+   "ACTIONS"
+  ],
+  "filtres": [
+   [
+    "|Catégorie",
+    "Andrologie|Andrologie",
+    "Bactériologie|Bactériologie",
+    "Biochimie|Biochimie",
+    "Hormonologie|Hormonologie",
+    "Hématologie|Hématologie",
+    "Hémostase|Hémostase",
+    "Immuno-hématologie|Immuno-hématologie",
+    "Immunologie|Immunologie",
+    "Parasitologie|Parasitologie",
+    "Sérologie|Sérologie"
+   ],
+   [
+    "|Échantillon",
+    "Capillaire|Capillaire",
+    "Prélèvement|Prélèvement",
+    "Sang|Sang",
+    "Selles|Selles",
+    "Sperme|Sperme",
+    "Urine|Urine"
+   ]
+  ],
+  "page1": [
+   [
+    "",
+    "1",
+    "L01",
+    "AKOP",
+    "Parasitologie",
+    "Selles",
+    "2 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "2",
+    "L02",
+    "ASLO",
+    "Sérologie",
+    "Sang",
+    "4 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "3",
+    "L03",
+    "AZOTEMIE (UREMIE)",
+    "Biochimie",
+    "Sang",
+    "2 500",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "4",
+    "L04",
+    "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+    "Biochimie",
+    "Sang",
+    "3 500",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "5",
+    "L05",
+    "BU",
+    "Biochimie",
+    "Urine",
+    "1 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "6",
+    "L06",
+    "CALCEMIE",
+    "Biochimie",
+    "Sang",
+    "3 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "7",
+    "L07",
+    "CHOLESTEROL TOTAL",
+    "Biochimie",
+    "Sang",
+    "3 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "8",
+    "L08",
+    "CHOLESTEROL HDL",
+    "Biochimie",
+    "Sang",
+    "3 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "9",
+    "L09",
+    "CREATININE",
+    "Biochimie",
+    "Sang",
+    "2 500",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "10",
+    "L10",
+    "CRP",
+    "Immunologie",
+    "Sang",
+    "4 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "11",
+    "L11",
+    "D-DIMERE",
+    "Hémostase",
+    "Sang",
+    "12 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "12",
+    "L12",
+    "ECBU",
+    "Bactériologie",
+    "Urine",
+    "5 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "13",
+    "L13",
+    "ELECTROPHORESE DE L’HEMOGLOBINE",
+    "Hématologie",
+    "Sang",
+    "8 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "14",
+    "L14",
+    "GLYCEMIE",
+    "Biochimie",
+    "Sang",
+    "1 500",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "15",
+    "L15",
+    "GLYCEMIE CAPILLAIRE",
+    "Biochimie",
+    "Capillaire",
+    "1 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "16",
+    "L16",
+    "GE-DP / FROTTIS SANGUIN",
+    "Parasitologie",
+    "Sang",
+    "1 500",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "17",
+    "L17",
+    "GROUPE SANGUIN-RHESUS",
+    "Immuno-hématologie",
+    "Sang",
+    "2 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "18",
+    "L18",
+    "HEMOGLOBINE CAPILLAIRE",
+    "Hématologie",
+    "Capillaire",
+    "1 000",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "19",
+    "L19",
+    "HEPATITE B",
+    "Sérologie",
+    "Sang",
+    "3 500",
+    "Actif",
+    ""
+   ],
+   [
+    "",
+    "20",
+    "L20",
+    "HEPATITE C",
+    "Sérologie",
+    "Sang",
+    "4 500",
+    "Actif",
+    ""
+   ]
+  ],
+  "aide": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "nbLignes": 48,
+  "parCategorie": [
+   {
+    "titre": "Andrologie",
+    "badge": "3 analyses",
+    "lignes": [
+     [
+      "SPERMOGRAMME",
+      "8 000"
+     ],
+     [
+      "SPERMOGRAMME GRAS SAVOY / ECBK",
+      "12 000"
+     ],
+     [
+      "SPERMOGRAMME SOS",
+      "10 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Bactériologie",
+    "badge": "3 analyses",
+    "lignes": [
+     [
+      "ECBU",
+      "5 000"
+     ],
+     [
+      "PRELEVEMENT URETRAL (PU)",
+      "5 000"
+     ],
+     [
+      "PRELEVEMENT VAGINAL (PV)",
+      "5 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Biochimie",
+    "badge": "17 analyses",
+    "lignes": [
+     [
+      "AZOTEMIE (UREMIE)",
+      "2 500"
+     ],
+     [
+      "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+      "3 500"
+     ],
+     [
+      "BU",
+      "1 000"
+     ],
+     [
+      "CALCEMIE",
+      "3 000"
+     ],
+     [
+      "CHOLESTEROL HDL",
+      "3 000"
+     ],
+     [
+      "CHOLESTEROL TOTAL",
+      "3 000"
+     ],
+     [
+      "CREATININE",
+      "2 500"
+     ],
+     [
+      "GLYCEMIE",
+      "1 500"
+     ],
+     [
+      "GLYCEMIE CAPILLAIRE",
+      "1 000"
+     ],
+     [
+      "IONOGRAMME SANGUIN",
+      "8 000"
+     ],
+     [
+      "MAGNESEMIE",
+      "3 500"
+     ],
+     [
+      "PROTIDEMIE",
+      "2 500"
+     ],
+     [
+      "TRANSAMINASE GGT",
+      "3 000"
+     ],
+     [
+      "TRANSAMINASE TGO / ASAT",
+      "3 000"
+     ],
+     [
+      "TRANSAMINASE TGP / ALAT",
+      "3 000"
+     ],
+     [
+      "TRIGLYCERIDE",
+      "3 000"
+     ],
+     [
+      "URICEMIE (ACIDE URIQUE)",
+      "3 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Hématologie",
+    "badge": "5 analyses",
+    "lignes": [
+     [
+      "ELECTROPHORESE DE L’HEMOGLOBINE",
+      "8 000"
+     ],
+     [
+      "HEMOGLOBINE CAPILLAIRE",
+      "1 000"
+     ],
+     [
+      "NFS COMPLETE (HEMOGRAMME)",
+      "4 000"
+     ],
+     [
+      "TEST D’EMMEL",
+      "2 000"
+     ],
+     [
+      "VITESSE DE SEDIMENTATION (VS)",
+      "2 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Hémostase",
+    "badge": "5 analyses",
+    "lignes": [
+     [
+      "D-DIMERE",
+      "12 000"
+     ],
+     [
+      "TEMPS DE CEPHALINE ACTIVEE OU KAOLIN (TCA ou TCK)",
+      "5 000"
+     ],
+     [
+      "TEMPS DE COAGULATION (TC)",
+      "1 500"
+     ],
+     [
+      "TEMPS DE SAIGNEMENT",
+      "1 500"
+     ],
+     [
+      "TP + INR",
+      "5 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Hormonologie",
+    "badge": "4 analyses",
+    "lignes": [
+     [
+      "PROLACTINE",
+      "10 000"
+     ],
+     [
+      "PSA LIBRE",
+      "12 000"
+     ],
+     [
+      "PSA TOTAL",
+      "12 000"
+     ],
+     [
+      "TBG SERIQUE (SANGUIN)",
+      "12 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Immuno-hématologie",
+    "badge": "1 analyse",
+    "lignes": [
+     [
+      "GROUPE SANGUIN-RHESUS",
+      "2 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Immunologie",
+    "badge": "1 analyse",
+    "lignes": [
+     [
+      "CRP",
+      "4 000"
+     ]
+    ]
+   },
+   {
+    "titre": "Parasitologie",
+    "badge": "2 analyses",
+    "lignes": [
+     [
+      "AKOP",
+      "2 000"
+     ],
+     [
+      "GE-DP / FROTTIS SANGUIN",
+      "1 500"
+     ]
+    ]
+   },
+   {
+    "titre": "Sérologie",
+    "badge": "7 analyses",
+    "lignes": [
+     [
+      "ASLO",
+      "4 000"
+     ],
+     [
+      "HEPATITE B",
+      "3 500"
+     ],
+     [
+      "HEPATITE C",
+      "4 500"
+     ],
+     [
+      "HIV",
+      "2 500"
+     ],
+     [
+      "SERODIAGNOSTIC WIDAL (SDW)",
+      "3 000"
+     ],
+     [
+      "TPHA",
+      "3 000"
+     ],
+     [
+      "VDRL",
+      "2 500"
+     ]
+    ]
+   }
+  ]
+ },
+ "etats": {
+  "_doc": "deux archivées + un tarif confirmé, puis tout archivé",
+  "apresDeuxArchives": {
+   "kpis": [
+    {
+     "label": "Analyses au catalogue",
+     "valeur": "46",
+     "indice": null
+    },
+    {
+     "label": "Catégories",
+     "valeur": "10",
+     "indice": null
+    },
+    {
+     "label": "Tarif moyen",
+     "valeur": "4 554 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Tarifs à confirmer",
+     "valeur": "45",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les analyses46",
+    "Par catégorie",
+    "Archivés2"
+   ]
+  },
+  "archives": [
+   [
+    "1",
+    "L01",
+    "AKOP",
+    "Parasitologie",
+    "Selles",
+    "2 000",
+    "Archivé",
+    ""
+   ],
+   [
+    "2",
+    "L02",
+    "ASLO",
+    "Sérologie",
+    "Sang",
+    "4 000",
+    "Archivé",
+    ""
+   ]
+  ],
+  "toutArchive": {
+   "kpis": [
+    {
+     "label": "Analyses au catalogue",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "label": "Catégories",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "label": "Tarif moyen",
+     "valeur": "0 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Tarifs à confirmer",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les analyses0",
+    "Par catégorie",
+    "Archivés48"
+   ]
+  },
+  "texteVide": "Aucun analyse enregistré."
+ },
+ "impression": {
+  "_doc": "« Imprimer le catalogue » (bouton d'en-tête)",
+  "boutonPresent": true,
+  "actions": [
+   "Imprimer le catalogue"
+  ],
+  "imprime": [
+   {
+    "titre": "Tarifs des analyses de laboratoire",
+    "sousTitre": "48 désignations — tarifs en vigueur",
+    "cartouche": null,
+    "signatures": [
+     {
+      "role": "Le Laborantin chef",
+      "nom": "KINNOU Addoul Ganiou"
+     },
+     {
+      "role": "La Directrice Administrative",
+      "nom": "TAKI Alimatou"
+     }
+    ],
+    "contenu": [
+     {
+      "table": {
+       "entetes": [
+        "N°",
+        "Désignation",
+        "Catégorie",
+        "Échantillon",
+        "Tarif"
+       ],
+       "lignes": [
+        [
+         "1",
+         "AKOP",
+         "Parasitologie",
+         "Selles",
+         "2 000"
+        ],
+        [
+         "2",
+         "ASLO",
+         "Sérologie",
+         "Sang",
+         "4 000"
+        ],
+        [
+         "3",
+         "AZOTEMIE (UREMIE)",
+         "Biochimie",
+         "Sang",
+         "2 500"
+        ],
+        [
+         "4",
+         "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+         "Biochimie",
+         "Sang",
+         "3 500"
+        ],
+        [
+         "5",
+         "BU",
+         "Biochimie",
+         "Urine",
+         "1 000"
+        ],
+        [
+         "6",
+         "CALCEMIE",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "7",
+         "CHOLESTEROL TOTAL",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "8",
+         "CHOLESTEROL HDL",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "9",
+         "CREATININE",
+         "Biochimie",
+         "Sang",
+         "2 500"
+        ],
+        [
+         "10",
+         "CRP",
+         "Immunologie",
+         "Sang",
+         "4 000"
+        ],
+        [
+         "11",
+         "D-DIMERE",
+         "Hémostase",
+         "Sang",
+         "12 000"
+        ],
+        [
+         "12",
+         "ECBU",
+         "Bactériologie",
+         "Urine",
+         "5 000"
+        ],
+        [
+         "13",
+         "ELECTROPHORESE DE L’HEMOGLOBINE",
+         "Hématologie",
+         "Sang",
+         "8 000"
+        ],
+        [
+         "14",
+         "GLYCEMIE",
+         "Biochimie",
+         "Sang",
+         "1 500"
+        ],
+        [
+         "15",
+         "GLYCEMIE CAPILLAIRE",
+         "Biochimie",
+         "Capillaire",
+         "1 000"
+        ],
+        [
+         "16",
+         "GE-DP / FROTTIS SANGUIN",
+         "Parasitologie",
+         "Sang",
+         "1 500"
+        ],
+        [
+         "17",
+         "GROUPE SANGUIN-RHESUS",
+         "Immuno-hématologie",
+         "Sang",
+         "2 000"
+        ],
+        [
+         "18",
+         "HEMOGLOBINE CAPILLAIRE",
+         "Hématologie",
+         "Capillaire",
+         "1 000"
+        ],
+        [
+         "19",
+         "HEPATITE B",
+         "Sérologie",
+         "Sang",
+         "3 500"
+        ],
+        [
+         "20",
+         "HEPATITE C",
+         "Sérologie",
+         "Sang",
+         "4 500"
+        ],
+        [
+         "21",
+         "HIV",
+         "Sérologie",
+         "Sang",
+         "2 500"
+        ],
+        [
+         "22",
+         "IONOGRAMME SANGUIN",
+         "Biochimie",
+         "Sang",
+         "8 000"
+        ],
+        [
+         "23",
+         "MAGNESEMIE",
+         "Biochimie",
+         "Sang",
+         "3 500"
+        ],
+        [
+         "24",
+         "NFS COMPLETE (HEMOGRAMME)",
+         "Hématologie",
+         "Sang",
+         "4 000"
+        ],
+        [
+         "25",
+         "PRELEVEMENT URETRAL (PU)",
+         "Bactériologie",
+         "Prélèvement",
+         "5 000"
+        ],
+        [
+         "26",
+         "PRELEVEMENT VAGINAL (PV)",
+         "Bactériologie",
+         "Prélèvement",
+         "5 000"
+        ],
+        [
+         "27",
+         "PROLACTINE",
+         "Hormonologie",
+         "Sang",
+         "10 000"
+        ],
+        [
+         "28",
+         "PROTIDEMIE",
+         "Biochimie",
+         "Sang",
+         "2 500"
+        ],
+        [
+         "29",
+         "PSA TOTAL",
+         "Hormonologie",
+         "Sang",
+         "12 000"
+        ],
+        [
+         "30",
+         "PSA LIBRE",
+         "Hormonologie",
+         "Sang",
+         "12 000"
+        ],
+        [
+         "31",
+         "SERODIAGNOSTIC WIDAL (SDW)",
+         "Sérologie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "32",
+         "SPERMOGRAMME",
+         "Andrologie",
+         "Sperme",
+         "8 000"
+        ],
+        [
+         "33",
+         "SPERMOGRAMME SOS",
+         "Andrologie",
+         "Sperme",
+         "10 000"
+        ],
+        [
+         "34",
+         "SPERMOGRAMME GRAS SAVOY / ECBK",
+         "Andrologie",
+         "Sperme",
+         "12 000"
+        ],
+        [
+         "35",
+         "TBG SERIQUE (SANGUIN)",
+         "Hormonologie",
+         "Sang",
+         "12 000"
+        ],
+        [
+         "36",
+         "TEMPS DE COAGULATION (TC)",
+         "Hémostase",
+         "Sang",
+         "1 500"
+        ],
+        [
+         "37",
+         "TEMPS DE CEPHALINE ACTIVEE OU KAOLIN (TCA ou TCK)",
+         "Hémostase",
+         "Sang",
+         "5 000"
+        ],
+        [
+         "38",
+         "TEST D’EMMEL",
+         "Hématologie",
+         "Sang",
+         "2 000"
+        ],
+        [
+         "39",
+         "TP + INR",
+         "Hémostase",
+         "Sang",
+         "5 000"
+        ],
+        [
+         "40",
+         "TPHA",
+         "Sérologie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "41",
+         "TRANSAMINASE TGO / ASAT",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "42",
+         "TRANSAMINASE TGP / ALAT",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "43",
+         "TRANSAMINASE GGT",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "44",
+         "TRIGLYCERIDE",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "45",
+         "TEMPS DE SAIGNEMENT",
+         "Hémostase",
+         "Sang",
+         "1 500"
+        ],
+        [
+         "46",
+         "URICEMIE (ACIDE URIQUE)",
+         "Biochimie",
+         "Sang",
+         "3 000"
+        ],
+        [
+         "47",
+         "VITESSE DE SEDIMENTATION (VS)",
+         "Hématologie",
+         "Sang",
+         "2 000"
+        ],
+        [
+         "48",
+         "VDRL",
+         "Sérologie",
+         "Sang",
+         "2 500"
+        ]
+       ],
+       "pied": null
+      }
+     }
+    ],
+    "filtres": []
+   }
+  ]
+ },
+ "saisie": {
+  "_doc": "m5-catalogue : « Nouveau » → « Créer » et « Modifier » → « Enregistrer »",
+  "creations": [
+   {
+    "nom": "complète",
+    "saisie": {
+     "code": "L99",
+     "designation": "TEST ANALYSE",
+     "categorie": "Biochimie",
+     "echantillon": "Sang",
+     "delai": "2 h",
+     "prix": "1500"
+    },
+    "initial": [
+     [
+      "code",
+      ""
+     ],
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "Andrologie"
+     ],
+     [
+      "echantillon",
+      ""
+     ],
+     [
+      "delai",
+      ""
+     ],
+     [
+      "prix",
+      ""
+     ]
+    ],
+    "titre": "Nouveau analyse",
+    "nouvelles": [
+     {
+      "id": "ANAxmvve7rk3hgmqg",
+      "statut": "actif",
+      "code": "L99",
+      "designation": "TEST ANALYSE",
+      "categorie": "Biochimie",
+      "echantillon": "Sang",
+      "delai": "2 h",
+      "prix": 1500
+     }
+    ],
+    "nbApres": 49,
+    "nbAvant": 48,
+    "toasts": [
+     [
+      "Nouveau analyse créé.",
+      "L99"
+     ]
+    ],
+    "modaleOuverte": false
+   },
+   {
+    "nom": "minimale : échantillon et délai laissés vides",
+    "saisie": {
+     "code": "L98",
+     "designation": "AUTRE",
+     "prix": "800"
+    },
+    "initial": [
+     [
+      "code",
+      ""
+     ],
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "Andrologie"
+     ],
+     [
+      "echantillon",
+      ""
+     ],
+     [
+      "delai",
+      ""
+     ],
+     [
+      "prix",
+      ""
+     ]
+    ],
+    "titre": "Nouveau analyse",
+    "nouvelles": [
+     {
+      "id": "ANAxmvve7rwcxr667",
+      "statut": "actif",
+      "code": "L98",
+      "designation": "AUTRE",
+      "categorie": "Andrologie",
+      "echantillon": "",
+      "delai": "",
+      "prix": 800
+     }
+    ],
+    "nbApres": 50,
+    "nbAvant": 49,
+    "toasts": [
+     [
+      "Nouveau analyse créé.",
+      "L98"
+     ]
+    ],
+    "modaleOuverte": false
+   },
+   {
+    "nom": "désignation manquante : refus, rien n'est écrit",
+    "saisie": {
+     "code": "L97",
+     "prix": "800"
+    },
+    "initial": [
+     [
+      "code",
+      ""
+     ],
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "Andrologie"
+     ],
+     [
+      "echantillon",
+      ""
+     ],
+     [
+      "delai",
+      ""
+     ],
+     [
+      "prix",
+      ""
+     ]
+    ],
+    "titre": "Nouveau analyse",
+    "nouvelles": [],
+    "nbApres": 50,
+    "nbAvant": 50,
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "modaleOuverte": true
+   },
+   {
+    "nom": "code manquant : refus",
+    "saisie": {
+     "designation": "SANS CODE",
+     "prix": "800"
+    },
+    "initial": [
+     [
+      "code",
+      ""
+     ],
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "Andrologie"
+     ],
+     [
+      "echantillon",
+      ""
+     ],
+     [
+      "delai",
+      ""
+     ],
+     [
+      "prix",
+      ""
+     ]
+    ],
+    "titre": "Nouveau analyse",
+    "nouvelles": [],
+    "nbApres": 50,
+    "nbAvant": 50,
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "modaleOuverte": true
+   },
+   {
+    "nom": "tarif manquant : refus",
+    "saisie": {
+     "code": "L96",
+     "designation": "SANS TARIF"
+    },
+    "initial": [
+     [
+      "code",
+      ""
+     ],
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "Andrologie"
+     ],
+     [
+      "echantillon",
+      ""
+     ],
+     [
+      "delai",
+      ""
+     ],
+     [
+      "prix",
+      ""
+     ]
+    ],
+    "titre": "Nouveau analyse",
+    "nouvelles": [],
+    "nbApres": 50,
+    "nbAvant": 50,
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "modaleOuverte": true
+   },
+   {
+    "nom": "tarif à zéro",
+    "saisie": {
+     "code": "L95",
+     "designation": "GRATUIT",
+     "prix": "0"
+    },
+    "initial": [
+     [
+      "code",
+      ""
+     ],
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "Andrologie"
+     ],
+     [
+      "echantillon",
+      ""
+     ],
+     [
+      "delai",
+      ""
+     ],
+     [
+      "prix",
+      ""
+     ]
+    ],
+    "titre": "Nouveau analyse",
+    "nouvelles": [
+     {
+      "id": "ANAxmvve7t16a749z",
+      "statut": "actif",
+      "code": "L95",
+      "designation": "GRATUIT",
+      "categorie": "Andrologie",
+      "echantillon": "",
+      "delai": "",
+      "prix": 0
+     }
+    ],
+    "nbApres": 51,
+    "nbAvant": 50,
+    "toasts": [
+     [
+      "Nouveau analyse créé.",
+      "L95"
+     ]
+    ],
+    "modaleOuverte": false
+   }
+  ],
+  "modifications": [
+   {
+    "nom": "prix et délai corrigés",
+    "code": "L03",
+    "saisie": {
+     "prix": "2800",
+     "delai": "4 h"
+    },
+    "prerempli": [
+     [
+      "code",
+      "L03"
+     ],
+     [
+      "designation",
+      "AZOTEMIE (UREMIE)"
+     ],
+     [
+      "categorie",
+      "Biochimie"
+     ],
+     [
+      "echantillon",
+      "Sang"
+     ],
+     [
+      "delai",
+      "4 h"
+     ],
+     [
+      "prix",
+      "2500"
+     ]
+    ],
+    "avant": {
+     "id": "ANA03",
+     "n": 3,
+     "code": "L03",
+     "designation": "AZOTEMIE (UREMIE)",
+     "categorie": "Biochimie",
+     "prix": 2500,
+     "echantillon": "Sang",
+     "delai": "4 h",
+     "statut": "Actif",
+     "tarifProvisoire": true
+    },
+    "patch": {
+     "prix": 2800
+    },
+    "toasts": [
+     [
+      "Modifications enregistrées.",
+      "L03"
+     ]
+    ]
+   },
+   {
+    "nom": "désignation corrigée",
+    "code": "L05",
+    "saisie": {
+     "designation": "BU (BANDELETTE URINAIRE)"
+    },
+    "prerempli": [
+     [
+      "code",
+      "L05"
+     ],
+     [
+      "designation",
+      "BU"
+     ],
+     [
+      "categorie",
+      "Biochimie"
+     ],
+     [
+      "echantillon",
+      "Urine"
+     ],
+     [
+      "delai",
+      "1 h"
+     ],
+     [
+      "prix",
+      "1000"
+     ]
+    ],
+    "avant": {
+     "id": "ANA05",
+     "n": 5,
+     "code": "L05",
+     "designation": "BU",
+     "categorie": "Biochimie",
+     "prix": 1000,
+     "echantillon": "Urine",
+     "delai": "1 h",
+     "statut": "Actif",
+     "tarifProvisoire": true
+    },
+    "patch": {
+     "designation": "BU (BANDELETTE URINAIRE)"
+    },
+    "toasts": [
+     [
+      "Modifications enregistrées.",
+      "L05"
+     ]
+    ]
+   }
+  ]
+ },
+ "fiche": {
+  "_doc": "fiche en tiroir de la première analyse, et effet de « Imprimer l'état » sur une ligne",
+  "boutonsLigne": [
+   "Consulter",
+   "Imprimer l’état",
+   "Modifier",
+   "Archiver"
+  ],
+  "tiroir": [
+   "AKOP L01 N° 1 Code L01 Désignation AKOP Catégorie Parasitologie Échantillon Selles Tarif 2 000 Statut Actif Délai de rendu 24 h Imprimer Modifier Archiver"
+  ],
+  "piedTiroir": [
+   "",
+   "Imprimer",
+   "Modifier",
+   "Archiver"
+  ],
+  "imprimeApresEtat": 0,
+  "feuilles": 0
+ }
+}

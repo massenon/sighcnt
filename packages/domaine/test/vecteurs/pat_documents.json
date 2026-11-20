@@ -1,0 +1,235 @@
+{
+ "_doc": "m1-documents sur un jeu posé",
+ "jeu": [
+  {
+   "id": "DOC1",
+   "statut": "actif",
+   "reference": "GED-00001",
+   "patientId": "K1",
+   "code": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "type": "Ordonnance",
+   "date": "2026-08-01",
+   "fichier": null,
+   "format": "PDF",
+   "taille": 2048,
+   "donnees": null,
+   "etat": "valide",
+   "depose": "OROU YO Edmond"
+  },
+  {
+   "id": "DOC2",
+   "statut": "actif",
+   "reference": "GED-00002",
+   "patientId": "K1",
+   "code": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "type": "Facture",
+   "date": "2026-08-02",
+   "fichier": null,
+   "format": "JPEG",
+   "taille": 3145728,
+   "donnees": null,
+   "etat": "en_attente",
+   "depose": "OROU YO Edmond"
+  },
+  {
+   "id": "DOC3",
+   "statut": "actif",
+   "reference": "GED-00003",
+   "patientId": "K2",
+   "code": "CNT/2/26",
+   "patient": "Nom2 Pre2",
+   "type": "Ordonnance",
+   "date": "2026-08-03",
+   "fichier": "scan.png",
+   "format": "PNG",
+   "taille": 500,
+   "donnees": "data:image/png;base64,AAAA",
+   "etat": "valide",
+   "depose": "OROU YO Edmond"
+  },
+  {
+   "id": "DOC4",
+   "statut": "archive",
+   "reference": "GED-00004",
+   "patientId": "K1",
+   "code": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "type": "Ordonnance",
+   "date": "2026-08-04",
+   "fichier": null,
+   "format": "PDF",
+   "taille": 8192,
+   "donnees": null,
+   "etat": "valide",
+   "depose": "OROU YO Edmond"
+  },
+  {
+   "id": "DOC5",
+   "statut": "actif",
+   "reference": "GED-00005",
+   "patientId": "K1",
+   "code": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "type": "Ordonnance",
+   "date": "2026-08-05",
+   "fichier": null,
+   "format": "PDF",
+   "taille": null,
+   "donnees": null,
+   "etat": "valide",
+   "depose": "OROU YO Edmond"
+  }
+ ],
+ "kpis": [
+  [
+   "Documents numérisés",
+   "4"
+  ],
+  [
+   "Validés",
+   "3"
+  ],
+  [
+   "En attente de validation",
+   "1"
+  ],
+  [
+   "Dossiers couverts",
+   "2"
+  ]
+ ],
+ "entetes": [
+  "RÉFÉRENCE",
+  "DOSSIER",
+  "PATIENT",
+  "TYPE",
+  "DATE",
+  "FICHIER",
+  "DÉPOSÉ PAR",
+  "STATUT",
+  "ACTIONS"
+ ],
+ "lignes": [
+  [
+   "GED-00005",
+   "CNT/1/26",
+   "Nom1 Pre1",
+   "Ordonnance",
+   "05/08/2026",
+   "PDF · — référencé",
+   "OROU YO Edmond",
+   "Validé",
+   ""
+  ],
+  [
+   "GED-00003",
+   "CNT/2/26",
+   "Nom2 Pre2",
+   "Ordonnance",
+   "03/08/2026",
+   "PNG · 0 Ko déposé",
+   "OROU YO Edmond",
+   "Validé",
+   ""
+  ],
+  [
+   "GED-00002",
+   "CNT/1/26",
+   "Nom1 Pre1",
+   "Facture",
+   "02/08/2026",
+   "JPEG · 3.0 Mo référencé",
+   "OROU YO Edmond",
+   "En attente",
+   ""
+  ],
+  [
+   "GED-00001",
+   "CNT/1/26",
+   "Nom1 Pre1",
+   "Ordonnance",
+   "01/08/2026",
+   "PDF · 2 Ko référencé",
+   "OROU YO Edmond",
+   "Validé",
+   ""
+  ]
+ ],
+ "boutonsLigne": [
+  [
+   "Prévisualiser",
+   "Modifier",
+   "Retirer du dossier"
+  ],
+  [
+   "Prévisualiser",
+   "Modifier",
+   "Retirer du dossier"
+  ],
+  [
+   "Prévisualiser",
+   "Modifier",
+   "Retirer du dossier"
+  ],
+  [
+   "Prévisualiser",
+   "Modifier",
+   "Retirer du dossier"
+  ]
+ ],
+ "filtres": [
+  {
+   "filtre": "Type de document",
+   "valeur": "Facture",
+   "refs": [
+    "GED-00002"
+   ]
+  },
+  {
+   "filtre": "Fichier",
+   "valeur": "Fichier déposé",
+   "refs": [
+    "GED-00003"
+   ]
+  },
+  {
+   "filtre": "Fichier",
+   "valeur": "Référencé seulement",
+   "refs": [
+    "GED-00005",
+    "GED-00002",
+    "GED-00001"
+   ]
+  }
+ ],
+ "modification": {
+  "prerempli": {
+   "patientId": "K1",
+   "type": "Ordonnance",
+   "date": "2026-08-01",
+   "etat": "valide",
+   "depose": "OROU YO Edmond"
+  },
+  "patch": {
+   "type": "Consentement éclairé",
+   "etat": "en_attente",
+   "depose": "GARBA Yahouza"
+  },
+  "toasts": [
+   "Modifications enregistrées."
+  ]
+ },
+ "confirmation": "Retirer « Consentement éclairé » du dossier ? Le document est archivé, non supprimé (RG-14) : il reste consultable et restaurable depuis la corbeille. L’opération est journalisée. Motif (consigné dans le journal d’audit) Annuler Retirer",
+ "champsConfirmation": [
+  "Préciser le motif…"
+ ],
+ "retrait": {
+  "statut": "archive",
+  "motif": "Scan illisible",
+  "toasts": [
+   "Document retiré du dossier."
+  ]
+ }
+}

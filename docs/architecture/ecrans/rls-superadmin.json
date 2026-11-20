@@ -1,0 +1,48 @@
+{
+ "id": "rls-superadmin",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Comptes superadmin",
+ "acces": "ouvert",
+ "titre": "Comptes superadmin",
+ "description": "Les comptes qui administrent le relais : création par commande, mot de passe, sessions, double facteur.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Comptes superadmin"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Comptes",
+  "Sessions ouvertes"
+ ],
+ "tableaux": [
+  [
+   "Courriel",
+   "Créé",
+   "Dernière connexion",
+   "Double facteur"
+  ],
+  [
+   "Appareil",
+   "Adresse",
+   "Depuis"
+  ]
+ ],
+ "commandes": [
+  "Changer le mot de passe"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 0
+}

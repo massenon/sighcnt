@@ -1,0 +1,73 @@
+/* Manuel d'utilisation SIGH-CNT : feuille d'impression (A4). Police simple et grande, beaucoup de blanc. */
+@page { size: A4; }
+:root { --navy: #14305e; --navy-doux: #e8eef8; --texte: #1e293b; --gris: #64748b; --rouge: #c81e1e; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: Arial, 'Liberation Sans', Roboto, sans-serif; font-size: 11.5pt; line-height: 1.5; color: var(--texte); margin: 0; }
+p { margin: 0 0 8pt; }
+b, strong { color: #0f172a; }
+.couverture { height: 255mm; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; page-break-after: always;
+  border: 2px solid var(--navy); border-radius: 10px; padding: 20mm 14mm; background: linear-gradient(180deg, #fff 0%, #fff 55%, var(--navy-doux) 100%); }
+.couverture .logo { width: 34mm; height: auto; margin-bottom: 8mm; }
+.couverture .clinique { font-size: 13pt; font-weight: 700; color: var(--navy); letter-spacing: .04em; }
+.couverture .clinique span { font-weight: 400; font-size: 11pt; color: var(--gris); letter-spacing: 0; }
+.titre-couv { font-size: 34pt; color: var(--navy); margin: 22mm 0 4mm; }
+.sous-couv { font-size: 15pt; font-weight: 700; }
+.public { font-size: 12pt; color: var(--gris); margin-top: 6mm; max-width: 130mm; }
+.devise { font-style: italic; color: var(--navy); font-size: 13pt; margin-top: 26mm; }
+.edition { margin-top: 10mm; font-size: 10pt; color: var(--gris); }
+.sommaire { page-break-after: always; }
+.titre-sommaire { font-size: 22pt; color: var(--navy); border-bottom: 3px solid var(--navy); padding-bottom: 3mm; }
+.sommaire ol { list-style: none; padding: 0; margin: 0; }
+.sommaire li a { display: flex; justify-content: space-between; text-decoration: none; color: var(--texte); border-bottom: 1px dotted #cbd5e1; padding: 1.2pt 0; }
+.sommaire li.n1 { margin-top: 6pt; font-weight: 700; font-size: 11.5pt; }
+.sommaire li.n1 a { color: var(--navy); }
+.sommaire li.n2 { padding-left: 9mm; font-size: 10pt; }
+.sommaire .sn { display: inline-block; min-width: 10mm; color: var(--gris); }
+.sommaire li.n1 .sn { color: var(--navy); }
+.sommaire .p { min-width: 9mm; text-align: right; }
+.chapitre { page-break-before: always; }
+h1 { font-size: 22pt; color: var(--navy); margin: 0 0 6mm; border-bottom: 3px solid var(--navy); padding-bottom: 3mm; line-height: 1.2; }
+h1 .num-ch { display: block; font-size: 11pt; text-transform: uppercase; letter-spacing: .12em; color: var(--gris); margin-bottom: 2mm; }
+.chapeau { font-size: 12.5pt; color: #334155; margin-bottom: 6mm; }
+h2 { font-size: 15pt; color: var(--navy); margin: 9mm 0 3mm; page-break-after: avoid; break-after: avoid; }
+h2 .num { color: var(--gris); font-weight: 700; margin-right: 2mm; }
+h3 { font-size: 12.5pt; margin: 6mm 0 2mm; page-break-after: avoid; break-after: avoid; }
+ol.etapes { padding-left: 0; margin: 2mm 0 5mm; list-style: none; counter-reset: etape; }
+ol.etapes > li { counter-increment: etape; position: relative; padding-left: 10mm; margin-bottom: 2.4mm; }
+ol.etapes > li::before { content: counter(etape); position: absolute; left: 0; top: -.5pt; width: 6.5mm; height: 6.5mm; border-radius: 50%; background: var(--navy); color: #fff;
+  font-weight: 700; font-size: 10pt; text-align: center; line-height: 6.5mm; }
+ul { margin: 1mm 0 4mm; padding-left: 6mm; }
+ul li { margin-bottom: 1.2mm; }
+.chemin { display: inline; font-weight: 700; }
+figure { margin: 4mm 0 6mm; page-break-inside: avoid; break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; max-height: 120mm; border: 1px solid #cbd5e1; border-radius: 4px; }
+figure.mobile img { max-height: 125mm; }
+figure.duo { display: flex; gap: 6mm; justify-content: center; }
+figure.duo > div { flex: 1; }
+figure figcaption { font-size: 9.5pt; color: var(--gris); margin-top: 1.5mm; }
+.encadre { border-left: 5px solid; border-radius: 6px; padding: 3mm 4mm 2mm 4mm; margin: 4mm 0; page-break-inside: avoid; break-inside: avoid; font-size: 11pt; }
+.encadre .tete { font-weight: 700; margin-bottom: 1mm; display: block; }
+.encadre p:last-child { margin-bottom: 1mm; }
+.encadre.info { background: #eff6ff; border-color: #2563eb; }
+.encadre.info .tete { color: #1d4ed8; }
+.encadre.attention { background: #fff7ed; border-color: #f59e0b; }
+.encadre.attention .tete { color: #b45309; }
+.encadre.alerte { background: #fef2f2; border-color: #dc2626; }
+.encadre.alerte .tete { color: #b91c1c; }
+.encadre.astuce { background: #f0fdf4; border-color: #16a34a; }
+.encadre.astuce .tete { color: #15803d; }
+table { border-collapse: collapse; width: 100%; font-size: 9.5pt; margin: 3mm 0 5mm; page-break-inside: auto; }
+th, td { border: 1px solid #cbd5e1; padding: 1.4mm 2mm; text-align: left; vertical-align: top; }
+th { background: var(--navy-doux); color: var(--navy); }
+tr { page-break-inside: avoid; break-inside: avoid; }
+table.qui td:first-child { width: 32%; font-weight: 700; }
+table.matrice { font-size: 7.5pt; table-layout: fixed; }
+table.matrice th, table.matrice td { padding: .8mm .6mm; text-align: center; }
+table.matrice td:first-child, table.matrice th:first-child { text-align: left; width: 38mm; }
+table.matrice th.v { height: 30mm; vertical-align: bottom; white-space: nowrap; }
+table.matrice th.v span { display: inline-block; transform: rotate(-90deg); transform-origin: left bottom; width: 4mm; position: relative; left: 2.5mm; }
+.ok { color: #15803d; font-weight: 700; } .lec { color: #2563eb; }
+.cle { font-family: 'Liberation Mono', monospace; font-size: 10pt; background: #f1f5f9; padding: 0 1mm; border-radius: 2px; }
+.petit { font-size: 9.5pt; color: var(--gris); }
+.saut { page-break-before: always; }

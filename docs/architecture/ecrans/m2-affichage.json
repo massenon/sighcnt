@@ -1,0 +1,29 @@
+{
+ "id": "m2-affichage",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Écran d’appel des patients",
+ "acces": "ouvert",
+ "titre": "Écran d’appel des patients",
+ "description": "Affichage de salle d’attente : numéros appelés et numéros suivants, sans aucune donnée médicale.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Écran d’appel des patients"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

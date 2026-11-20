@@ -1,0 +1,57 @@
+{
+ "id": "ged-workflow",
+ "module": "GED",
+ "domaine": "Administration",
+ "libelleManifeste": "Workflow de validation",
+ "acces": "ouvert",
+ "titre": "Workflow de validation",
+ "description": "Circuit de validation des documents déposés : contrôle, signature et classement.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Gestion documentaire",
+  "Workflow de validation"
+ ],
+ "actions": [
+  "Bibliothèque documentaire",
+  "Archivage & conservation",
+  "Gestion documentaire"
+ ],
+ "regle": [
+  "La validation appose une signature électronique et verrouille le document : toute modification ultérieure crée une nouvelle version."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Documents à valider",
+  "Rejetés à corriger",
+  "Validés",
+  "Délai moyen de validation"
+ ],
+ "cartes": [
+  "Circuit de validation documentaire",
+  "Documents en attente de validation"
+ ],
+ "tableaux": [
+  [
+   "Référence",
+   "Document",
+   "Catégorie",
+   "Rattaché à",
+   "Date de dépôt",
+   "Déposé par",
+   "En attente depuis",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Valider",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

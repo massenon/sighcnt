@@ -1,0 +1,40 @@
+{
+ "id": "m8-remboursements",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Remboursements & annulations",
+ "acces": "ouvert",
+ "titre": "Remboursements & annulations",
+ "description": "Traitement des remboursements de trop-perçus et des annulations de factures, avec motif obligatoire.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Remboursements & annulations"
+ ],
+ "actions": [
+  "Tableau de bord facturation",
+  "Nouvelle facture",
+  "Facturation & Caisse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Opérations enregistrées",
+  "Remboursements",
+  "Annulations",
+  "Montant total"
+ ],
+ "cartes": [
+  "Remboursements et annulations"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle opération"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

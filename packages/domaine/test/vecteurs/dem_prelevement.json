@@ -1,0 +1,437 @@
+{
+ "_doc": "m5-prelevement : trois onglets sur des fiches posées",
+ "fiches": [
+  {
+   "id": "D0001",
+   "reference": "LAB-90001",
+   "etatAnalyse": "en_attente",
+   "bloqueParPaiement": true,
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0002",
+   "reference": "LAB-90002",
+   "etatAnalyse": "attente_prelevement",
+   "bloqueParPaiement": false,
+   "statutPaiement": "soldee",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0003",
+   "reference": "LAB-90003",
+   "etatAnalyse": "attente_prelevement",
+   "statutPaiement": "soldee",
+   "statut": "actif",
+   "urgent": true
+  },
+  {
+   "id": "D0004",
+   "reference": "LAB-90004",
+   "etatAnalyse": "en_attente",
+   "statutPaiement": "impaye",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0005",
+   "reference": "LAB-90005",
+   "etatAnalyse": "preleve",
+   "statutPaiement": "soldee",
+   "preleveLe": "2026-10-29T08:00:00.000Z",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0006",
+   "reference": "LAB-90006",
+   "etatAnalyse": "en_cours",
+   "preleveLe": "2026-10-29T08:00:00.000Z",
+   "recuLaboLe": "2026-10-29T09:00:00.000Z",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0007",
+   "reference": "LAB-90007",
+   "etatAnalyse": "valide",
+   "preleveLe": "2026-10-28T08:00:00.000Z",
+   "recuLaboLe": "2026-10-28T09:00:00.000Z",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0008",
+   "reference": "LAB-90008",
+   "etatAnalyse": "valide",
+   "preleveLe": "2026-10-28T08:00:00.000Z",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0009",
+   "reference": "LAB-90009",
+   "etatAnalyse": "valide",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0010",
+   "reference": "LAB-90010",
+   "etatAnalyse": "rectifie",
+   "preleveLe": "2026-10-27T08:00:00.000Z",
+   "recuLaboLe": "2026-10-27T09:00:00.000Z",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0011",
+   "reference": "LAB-90011",
+   "etatAnalyse": "valide_technique",
+   "preleveLe": "2026-10-27T08:00:00.000Z",
+   "recuLaboLe": "2026-10-27T09:00:00.000Z",
+   "statut": "actif",
+   "urgent": false
+  },
+  {
+   "id": "D0012",
+   "reference": "LAB-90012",
+   "etatAnalyse": "attente_prelevement",
+   "statutPaiement": "soldee",
+   "statut": "archive",
+   "urgent": false
+  },
+  {
+   "id": "D0013",
+   "reference": "LAB-90013",
+   "etatAnalyse": "saisi",
+   "preleveLe": "2026-10-26T08:00:00.000Z",
+   "recuLaboLe": "2026-10-26T09:00:00.000Z",
+   "statut": "actif",
+   "urgent": false
+  }
+ ],
+ "onglets": [
+  "À prélever4",
+  "À transmettre2",
+  "Reçus au laboratoire3"
+ ],
+ "kpiTexte": "À prélever 2 Demandes réglées, patient attendu En attente de règlement 2 Prélèvement impossible Prélevés, à transmettre 2 Reçus au laboratoire 3 Le patient peut partir dès le prélèvement fait : c’est la salle qui achemine l’échantillon au laboratoire avec le bon d’analyse. Le laboratoire ne saisit un résultat que sur un échantil",
+ "tabs": {
+  "attente": [
+   {
+    "ref": "LAB-90001",
+    "cellules": [
+     "LAB-90001",
+     "PAT D0001 CNT/01/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "En attente de caisse",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Règlement requis avant prélèvement"
+    ]
+   },
+   {
+    "ref": "LAB-90002",
+    "cellules": [
+     "LAB-90002",
+     "PAT D0002 CNT/02/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "Réglée — à prélever",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Enregistrer le prélèvement"
+    ]
+   },
+   {
+    "ref": "LAB-90003",
+    "cellules": [
+     "LAB-90003",
+     "PAT D0003 CNT/03/26 · externe",
+     "AKOP",
+     "Selles",
+     "Urgent",
+     "Réglée — à prélever",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Enregistrer le prélèvement"
+    ]
+   },
+   {
+    "ref": "LAB-90004",
+    "cellules": [
+     "LAB-90004",
+     "PAT D0004 CNT/04/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "En attente de caisse",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Règlement requis avant prélèvement"
+    ]
+   }
+  ],
+  "transmettre": [
+   {
+    "ref": "LAB-90005",
+    "cellules": [
+     "LAB-90005",
+     "PAT D0005 CNT/05/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "Prélevé 29/10/2026 à 08h00",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Transmettre au laboratoire"
+    ]
+   },
+   {
+    "ref": "LAB-90008",
+    "cellules": [
+     "LAB-90008",
+     "PAT D0008 CNT/08/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "Prélevé 28/10/2026 à 08h00",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Transmettre au laboratoire"
+    ]
+   }
+  ],
+  "labo": [
+   {
+    "ref": "LAB-90006",
+    "cellules": [
+     "LAB-90006",
+     "PAT D0006 CNT/06/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "Reçu 29/10/2026 à 09h00",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Saisir le résultat"
+    ]
+   },
+   {
+    "ref": "LAB-90011",
+    "cellules": [
+     "LAB-90011",
+     "PAT D0011 CNT/11/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "Reçu 27/10/2026 à 09h00",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Saisir le résultat"
+    ]
+   },
+   {
+    "ref": "LAB-90013",
+    "cellules": [
+     "LAB-90013",
+     "PAT D0013 CNT/13/26",
+     "AKOP",
+     "Selles",
+     "Courant",
+     "Reçu 26/10/2026 à 09h00",
+     ""
+    ],
+    "actions": [
+     "Imprimer le bon d’analyse",
+     "Saisir le résultat"
+    ]
+   }
+  ]
+ },
+ "actions": [
+  {
+   "nom": "prélever une demande réglée",
+   "tab": "À prélever",
+   "ref": "LAB-90002",
+   "action": "Enregistrer le prélèvement",
+   "saisie": {
+    "preleveur": "KINNOU A. Ganiou",
+    "heurePrelevement": "08:45",
+    "natureEchantillon": "Sang veineux",
+    "observationPrelevement": "À jeun"
+   },
+   "champsModale": [
+    "f_preleveur",
+    "f_heurePrelevement",
+    "f_natureEchantillon",
+    "f_observationPrelevement"
+   ],
+   "texteModale": "Enregistrer le prélèvement PAT D0002 — AKOP Patient PAT D0002 Dossier CNT/02/26 Examen AKOP Prescripteur — Une fois le prélèvement enregistré, le patient peut partir. L’échantillon reste à acheminer au laboratoire avec son bon. Prélevé par * KINNOU A. Ganiou AGOSSOU Yahouza Heure du prélèvement * Nature de l’échantillon * Reprise de la demande ; corrigeable si le prélèvement a différé. Observation Difficulté de prélèvement, patient à jeun ou non, tout ce que le laboratoire doit savoir. Annuler Prélèvement effectué",
+   "patch": {
+    "preleveur": "KINNOU A. Ganiou",
+    "heurePrelevement": "08:45",
+    "natureEchantillon": "Sang veineux",
+    "observationPrelevement": "À jeun",
+    "preleveLe": "2026-10-30T19:24:48.401Z"
+   },
+   "toasts": [
+    [
+     "Prélèvement enregistré.",
+     "Le patient peut partir ; l’échantillon est à transmettre au laboratoire."
+    ]
+   ],
+   "modaleOuverteApres": false,
+   "audit": [
+    {
+     "action": "Modification",
+     "entite": "Stock"
+    }
+   ],
+   "ongletsApres": [
+    "À prélever3",
+    "À transmettre3",
+    "Reçus au laboratoire3"
+   ]
+  },
+  {
+   "nom": "prélever, nature de l'échantillon vidée : formulaire en erreur",
+   "tab": "À prélever",
+   "ref": "LAB-90003",
+   "action": "Enregistrer le prélèvement",
+   "saisie": {
+    "natureEchantillon": ""
+   },
+   "champsModale": [
+    "f_preleveur",
+    "f_heurePrelevement",
+    "f_natureEchantillon",
+    "f_observationPrelevement"
+   ],
+   "texteModale": "Enregistrer le prélèvement PAT D0003 — AKOP Patient PAT D0003 Dossier CNT/03/26 Examen AKOP Prescripteur — Une fois le prélèvement enregistré, le patient peut partir. L’échantillon reste à acheminer au laboratoire avec son bon. Prélevé par * KINNOU A. Ganiou AGOSSOU Yahouza Heure du prélèvement * Nature de l’échantillon * Reprise de la demande ; corrigeable si le prélèvement a différé. Observation Difficulté de prélèvement, patient à jeun ou non, tout ce que le laboratoire doit savoir. Annuler Prélèvement effectué",
+   "patch": {},
+   "toasts": [],
+   "modaleOuverteApres": true,
+   "audit": [
+    {
+     "action": "Modification",
+     "entite": "Stock"
+    }
+   ],
+   "ongletsApres": [
+    "À prélever3",
+    "À transmettre3",
+    "Reçus au laboratoire3"
+   ]
+  },
+  {
+   "nom": "demande impayée (bloqueParPaiement) : le verrou parle, rien n'est écrit",
+   "tab": "À prélever",
+   "ref": "LAB-90001",
+   "action": "Règlement requis avant prélèvement",
+   "saisie": null,
+   "champsModale": [],
+   "texteModale": "",
+   "patch": {},
+   "toasts": [
+    [
+     "Prélèvement impossible.",
+     "La demande n’est pas réglée. Le patient doit d’abord passer à la caisse."
+    ]
+   ],
+   "modaleOuverteApres": false,
+   "audit": [
+    {
+     "action": "Modification",
+     "entite": "Stock"
+    }
+   ],
+   "ongletsApres": [
+    "À prélever3",
+    "À transmettre3",
+    "Reçus au laboratoire3"
+   ]
+  },
+  {
+   "nom": "demande impayée (statutPaiement impaye) : verrou",
+   "tab": "À prélever",
+   "ref": "LAB-90004",
+   "action": "Règlement requis avant prélèvement",
+   "saisie": null,
+   "champsModale": [],
+   "texteModale": "",
+   "patch": {},
+   "toasts": [
+    [
+     "Prélèvement impossible.",
+     "La demande n’est pas réglée. Le patient doit d’abord passer à la caisse."
+    ]
+   ],
+   "modaleOuverteApres": false,
+   "audit": [
+    {
+     "action": "Modification",
+     "entite": "Stock"
+    }
+   ],
+   "ongletsApres": [
+    "À prélever3",
+    "À transmettre3",
+    "Reçus au laboratoire3"
+   ]
+  },
+  {
+   "nom": "transmettre au laboratoire (confirmation)",
+   "tab": "À transmettre",
+   "ref": "LAB-90005",
+   "action": "Transmettre au laboratoire",
+   "saisie": null,
+   "champsModale": [],
+   "texteModale": "Transmettre l’échantillon au laboratoire ? L’échantillon de PAT D0005 (AKOP) est remis au laboratoire avec son bon d’analyse. À compter de cette remise, le laboratoire peut saisir le résultat — et pas avant : un résultat rendu sur un échantillon non reçu serait invérifiable. Annuler Transmettre",
+   "patch": {
+    "etatAnalyse": "en_cours",
+    "recuLaboLe": "2026-10-30T19:24:49.267Z",
+    "recuPar": "BASSONGUI Chabi Séko"
+   },
+   "toasts": [
+    [
+     "Échantillon transmis au laboratoire.",
+     "Le résultat peut désormais être saisi."
+    ]
+   ],
+   "modaleOuverteApres": false,
+   "audit": [
+    {
+     "action": "Modification",
+     "entite": "Stock"
+    }
+   ],
+   "ongletsApres": [
+    "À prélever3",
+    "À transmettre2",
+    "Reçus au laboratoire4"
+   ]
+  }
+ ]
+}

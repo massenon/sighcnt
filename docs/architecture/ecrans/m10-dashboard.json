@@ -1,0 +1,54 @@
+{
+ "id": "m10-dashboard",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Tableau de bord RH",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Ressources humaines",
+ "description": "Effectif, plannings, présences, évaluations, primes et masse salariale.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Tableau de bord RH"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Personnel",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Effectif total",
+  "Masse salariale (base)",
+  "Salaire moyen",
+  "Ancienneté moyenne",
+  "De garde aujourd’hui",
+  "En permanence",
+  "En repos",
+  "Agents à évaluer"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Effectif par fonction",
+  "Répartition par service",
+  "Masse salariale par service",
+  "Planning du jour",
+  "Règles métier en vigueur"
+ ],
+ "tableaux": [
+  [
+   "Référence",
+   "Objet",
+   "Version",
+   "Date d’effet",
+   "Statut",
+   "Signataire"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 8
+}

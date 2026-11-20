@@ -1,0 +1,61 @@
+{
+ "id": "m13-ambulance",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Interventions ambulance",
+ "acces": "ouvert",
+ "titre": "Interventions ambulance",
+ "description": "Registre des sorties d’ambulance : transports sanitaires, urgences et évacuations.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Interventions ambulance"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les interventions",
+  "Archivés"
+ ],
+ "kpis": [
+  "Interventions enregistrées",
+  "Ce mois-ci",
+  "Kilométrage cumulé",
+  "Recettes ambulance"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date et heure",
+   "Patient",
+   "Motif",
+   "Destination",
+   "Km",
+   "Chauffeur",
+   "Accompagnant",
+   "Montant",
+   "État",
+   "Facturation",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les interventions38",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

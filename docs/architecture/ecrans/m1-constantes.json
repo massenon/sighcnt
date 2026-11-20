@@ -1,0 +1,58 @@
+{
+ "id": "m1-constantes",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Constantes à l’accueil",
+ "acces": "ouvert",
+ "titre": "Constantes à l’accueil",
+ "description": "Température, poids, taille, tension, SpO₂ et pouls relevés dès l’arrivée du patient.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Constantes à l’accueil"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "Ces relevés alimentent la feuille de température (graphique à cinq échelles) et la fiche de surveillance (le même relevé en tableau). Une seule collection, deux présentations : les tenir séparées produirait deux vérités divergentes sur les constantes d’un même patient."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Relevés enregistrés",
+  "Aujourd’hui",
+  "Patients suivis",
+  "Constantes hors bornes"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Date et heure",
+   "Patient",
+   "Moment",
+   "T°",
+   "TA",
+   "Pouls",
+   "SpO₂",
+   "IMC",
+   "Contrôle",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau relevé",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

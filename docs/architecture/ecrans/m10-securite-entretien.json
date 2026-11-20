@@ -1,0 +1,79 @@
+{
+ "id": "m10-securite-entretien",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Sécurité & entretien",
+ "acces": "ouvert",
+ "titre": "Sécurité & entretien",
+ "description": "Planning rotatif des agents de sécurité et d’entretien : permanence et entretien général de la journée.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Sécurité & entretien"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Ces légendes sont reprises telles quelles des plannings transmis lors du cadrage : « G = GARDE 24H, S = SOIRÉE 18H à 8H, R = REPOS » pour la sécurité, « P = PERMANENCE, EGJ = ENTRETIEN GÉNÉRAL DE LA JOURNÉE » pour l’entretien.",
+  "Les repos sont exclus de ces comptages : ils figurent à la rotation mais ne sont pas des postes tenus. Un écart marqué entre agents d’une même fonction signale une rotation déséquilibrée — c’est précisément ce que le cycle à trois doit éviter."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Agents de sécurité",
+  "Agents d’entretien",
+  "En poste aujourd’hui",
+  "Masse salariale"
+ ],
+ "cartes": [
+  "Agents de sécurité",
+  "Agents d’entretien",
+  "Planning rotatif sur 14 jours",
+  "Agents de sécurité et d’entretien",
+  "Vacations par agent",
+  "Répartition par type de poste",
+  "Sécurité et entretien"
+ ],
+ "tableaux": [
+  [
+   "Agent",
+   "Fonction",
+   "ma27",
+   "me28",
+   "je29",
+   "ve30",
+   "sa31",
+   "di1",
+   "lu2",
+   "ma3",
+   "me4",
+   "je5",
+   "ve6",
+   "sa7",
+   "di8",
+   "lu9"
+  ],
+  [
+   "Mat.",
+   "Agent",
+   "Fonction",
+   "Poste",
+   "Embauche",
+   "Salaire",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Imprimer le planning",
+  "+",
+  "Colonnes",
+  "Exporter",
+  "Nouvel agent"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

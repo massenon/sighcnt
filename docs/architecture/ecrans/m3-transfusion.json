@@ -1,0 +1,54 @@
+{
+ "id": "m3-transfusion",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Surveillance transfusionnelle",
+ "acces": "ouvert",
+ "titre": "Surveillance transfusionnelle",
+ "description": "Surveillance d’une transfusion à temps imposés : avant la pose, 15 min, toutes les 30 min, fin, 1 h et 2 h après.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Surveillance transfusionnelle"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "La huitième ligne du formulaire officiel est illisible au scan. Elle figure ici sous l’intitulé provisoire « Autre élément surveillé » et reste à confirmer par le service — deviner ce qu’un protocole de sécurité demande de surveiller serait la pire des improvisations."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Surveillances",
+  "Protocole complet",
+  "Incidents signalés",
+  "Éléments surveillés"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date",
+   "Patient",
+   "Service",
+   "Poche de PSL",
+   "Début de la transfusion",
+   "Relevés",
+   "Incident",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle surveillance",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

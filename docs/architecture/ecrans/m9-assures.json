@@ -1,0 +1,60 @@
+{
+ "id": "m9-assures",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Assurés & cartes",
+ "acces": "ouvert",
+ "titre": "Assurés & cartes",
+ "description": "Fiche assuré : compagnie, numéro de police, catégorie de carte, taux et date d’expiration.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Assurés & cartes"
+ ],
+ "actions": [
+  "Tableau de bord assurances",
+  "Compagnies partenaires",
+  "Assurances & Créances"
+ ],
+ "regle": [
+  "52 carte(s) expirée(s) — la caisse doit facturer intégralement ces patients jusqu’au renouvellement de leur carte."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Assurés enregistrés",
+  "Cartes valides",
+  "Cartes expirées",
+  "Taux moyen"
+ ],
+ "cartes": [
+  "Fiches assurés"
+ ],
+ "tableaux": [
+  [
+   "Dossier",
+   "Bénéficiaire",
+   "Compagnie",
+   "Souscripteur",
+   "Catégorie",
+   "N° police",
+   "Taux",
+   "Expiration",
+   "Validité (RG-09)",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Vérifier la carte",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

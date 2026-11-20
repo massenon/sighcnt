@@ -11,7 +11,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit,
       N = global.SIGH.nav;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* États d'une intervention d'ambulance — lus aussi par le tableau de bord
      de l'ambulancier (« demandées ou en cours »). */
@@ -21,6 +21,12 @@
     terminee: ['Terminée', 'success'],
   };
 
+  /* E540 : « AUJ » porte l'HEURE de l'horloge. Comparer une date (minuit) à AUJ rangeait parmi le PASSÉ tout ce qui a lieu aujourd'hui, et
+     Math.round((minuit demain − maintenant) / 1 jour) lisait « Aujourd'hui » pour demain dès midi. Les événements se comparent par JOUR ; une réunion,
+     qui a une heure, par son DÉBUT. */
+  function evenementAVenir(e) { return String(e.date).slice(0, 10) >= C.iso(AUJ); }
+  function reunionAVenir(r) { return C.toDate(String(r.date).slice(0, 10) + 'T' + (r.heure || '00:00')) >= AUJ; }
+
   function personnel() { return S.collection('personnel').active(); }
   function optionsAgents() {
     return C.sortBy(personnel(), 'nomComplet').map(function (e) { return { value: e.nomComplet, label: e.nomComplet + ' — ' + e.poste }; });
@@ -29,6 +35,20 @@
   /* ==========================================================================
    * COURRIERS
    * ======================================================================== */
+  /** Un courrier est numérisé quand un FICHIER est rattaché à sa fiche (dérivé, jamais saisi). */
+  function numeriseCourrier(c) { return !!(c && c.fichier && typeof c.fichier === 'object' && c.fichier.sha256); }
+  /** Les pièces numérisées de la liste (objets `fichier`), pour ce que la recherche lit et ne lit pas. */
+  function fichiersCourriers() { return S.collection('courriers').active().filter(numeriseCourrier).map(function (c) { return c.fichier; }); }
+  /** L'état d'indexation d'une pièce (lot OCR-prep) : couche texte, lue par machine (à vérifier), en attente, en échec, non indexée. Sans le module de lecture : couche texte ou rien. */
+  function etatTexte(x) { var O = global.SIGH.ocr; return O ? O.etatDe(x) : { code: x.texteIndexe ? 'indexe' : 'non_indexe', court: x.texteIndexe ? 'texte indexé' : 'texte non indexé', disponible: !!x.texteIndexe }; }
+  /** Ce que la recherche ne lit pas : les pièces numérisées dont le texte n'est pas lisible (images sans couche texte, lecture OCR absente, en attente ou en échec). */
+  function indiceNonIndexe() {
+    var O = global.SIGH.ocr;
+    if (O) return O.indiceVide(fichiersCourriers());
+    var n = S.collection('courriers').active().filter(function (c) { return numeriseCourrier(c) && !c.fichier.texteIndexe; }).length;
+    return n ? n + ' pièce' + (n > 1 ? 's numérisées n’ont' : ' numérisée n’a') + ' pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées.' : null;
+  }
+
   global.SIGH.screen('m13-courriers', {
     title: 'Courriers (départ / arrivée)',
     description: 'Registre numérisé du courrier administratif, avec suivi des réponses et des accusés de réception.',
@@ -39,8 +59,27 @@
          gagnait toujours, et sa forme muette laissait la colonne Traitement
          afficher des tirets. Un seul seed, une seule forme. */
       return K.crud({
-        collection: 'courriers', entite: 'courrier', entiteP: 'courriers', module: 'M13',
+        collection: 'courriers', entite: 'courrier', entiteP: 'courriers', module: 'M13', importer: 'courriers',
         defaultSort: 'date', defaultDir: 'desc', pageSize: 15,
+        /* RECHERCHE AVANCÉE (lot D4) : les colonnes, plus ce qui ne s'y voit pas (observations, date lisible, nom du fichier, TEXTE extrait d'un PDF qui porte une couche texte), et un filtre du/au
+           sur la date du courrier. Une pièce sans texte indexé (image) le DIT sous « Aucun résultat » : le vide ne se lit jamais « rien dans ce courrier ». */
+        plageDates: { champ: 'date', aujourdhui: AUJ },
+        recherche: {
+          extra: function (c) {
+            var x = c.fichier && c.fichier.sha256 ? c.fichier : null;
+            return [c.observations, c.date ? C.dateFR(c.date) : '', x ? x.nom : '', x ? x.nomNormalise : '', x && global.SIGH.fichiers ? global.SIGH.fichiers.texteDe(x, { famille: 'courrier' }) : ''].join(' ');
+          },
+          indice: function () { return indiceNonIndexe(); },
+          /* Un résultat trouvé par un texte lu par machine le DIT (lot OCR-prep) : la reconnaissance peut se tromper. */
+          note: function (q, rows) { return global.SIGH.ocr ? global.SIGH.ocr.noteRecherche(q, rows.filter(numeriseCourrier).map(function (c) { return c.fichier; })) : null; },
+        },
+        detailSup: function (c, ctx) {
+          var F = global.SIGH.fichiers; if (!F) return null;
+          var dr = K.droits('M13');
+          return F.cartePiece({ famille: 'courrier', col: S.collection('courriers'), fiche: c, titre: 'Courrier ' + c.reference,
+            journal: { module: 'M13', entite: 'courrier', ecran: 'm13-courriers' }, peutVoir: true,
+            peutDeposer: !!dr.editer && c.statut !== 'archive', peutRetirer: !!dr.annuler && c.statut !== 'archive', refresh: ctx.rouvrir });
+        },
         columns: [
           { key: 'reference', label: 'N° d’ordre', nowrap: true, render: function (c) { return el('span.font-mono.text-xs.font-semibold', { text: c.reference }); } },
           {
@@ -65,10 +104,17 @@
               return U.badge(x[0], x[1]);
             },
           },
+          /* `numerise` est DÉRIVÉ (lot DOCS-1) : « Oui » seulement quand un fichier est rattaché à la fiche, jamais une case que l'on coche. Un courrier que la reprise disait numérisé sans qu'aucun
+             fichier existe reste « À scanner » : la case annonçait un scan que rien n'ouvrait. */
           {
-            key: 'numerise', label: 'Numérisé',
-            text: function (c) { return c.numerise ? 'Oui' : 'Non'; },
-            render: function (c) { return c.numerise ? U.badge('Oui', 'success') : U.badge('À scanner', 'warning'); },
+            key: 'numerise', label: 'Numérisé', value: function (c) { return numeriseCourrier(c) ? 'Oui' : 'À scanner'; },
+            text: function (c) { return numeriseCourrier(c) ? 'Oui' : 'Non'; },
+            render: function (c) {
+              if (!numeriseCourrier(c)) return U.badge('À scanner', 'warning');
+              var x = c.fichier;
+              return el('div.flex.flex-col.items-start.gap-0\\.5', null, [U.badge('Oui', 'success'),
+                el('span.text-\\[10px\\]', { class: etatTexte(x).code === 'ocr_indexe' ? 'text-warning-700' : 'text-slate-400', 'data-texte-etat': etatTexte(x).code, text: etatTexte(x).court })]);
+            },
           },
         ],
         fields: [
@@ -76,15 +122,22 @@
           { name: 'date', label: 'Date', type: 'date', required: true },
           { name: 'correspondant', label: 'Correspondant', required: true, col: 'full' },
           { name: 'objet', label: 'Objet', required: true, col: 'full' },
-          { name: 'nature', label: 'Nature', type: 'select', required: true, options: ['Lettre', 'Courriel', 'Note', 'Facture', 'Convocation', 'Rapport'] },
-          { name: 'affecteA', label: 'Service destinataire', type: 'select', required: true, options: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks', 'Laboratoire', 'Pharmacie'] },
+          { name: 'nature', label: 'Nature', type: 'select', required: true, options: D.COURRIERS.NATURES },
+          { name: 'affecteA', label: 'Service destinataire', type: 'select', required: true, options: D.COURRIERS.SERVICES },
           { name: 'traitement', label: 'État du traitement', type: 'select', required: true, options: [{ value: 'en_attente', label: 'En attente' }, { value: 'en_cours', label: 'En cours' }, { value: 'traite', label: 'Traité' }] },
           { name: 'accuseReception', label: 'Accusé de réception', type: 'checkbox' },
-          { name: 'numerise', label: 'Document numérisé', type: 'checkbox' },
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ],
-        transform: function (v) {
-          if (!v.reference) v.reference = (v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + '2026-' + C.pad(S.collection('courriers').all().length + 1, 4);
+        transform: function (v, record) {
+          /* E530 : à la modification, le formulaire ne porte pas la référence — elle était recalculée (ARR-2026-0004 devenait ARR-2026-0012). */
+          if (record && record.reference) v.reference = record.reference;
+          /* Le nom de téléchargement de la pièce suit la date de la fiche ; la RÉFÉRENCE, elle, ne change jamais. */
+          if (record && record.fichier && record.fichier.sha256 && D.DOCUMENTS) {
+            v.fichier = Object.assign({}, record.fichier, { nomNormalise: D.DOCUMENTS.nomNormalise('courrier', Object.assign({}, record, v), (record.fichier.nomNormalise || '').split('.').pop()) });
+          }
+          /* E538 : série annuelle ARR-AAAA-NNNN / DEP-AAAA-NNNN. Le millésime est l'année de la DATE du courrier, le rang court par sens et par année (archivés compris). */
+          if (!v.reference) v.reference = C.referenceSuivante((v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + String(v.date || C.iso(AUJ)).slice(0, 4) + '-', 4,
+            S.collection('courriers').all().concat(S.collection('courriers').archived()));
           return v;
         },
         onCreate: function () { return { date: C.iso(AUJ), sens: 'arrivee', traitement: 'en_attente', nature: 'Lettre' }; },
@@ -92,6 +145,13 @@
           { name: 'sens', label: 'Sens', options: [{ value: 'arrivee', label: 'Arrivée' }, { value: 'depart', label: 'Départ' }] },
           { name: 'traitement', label: 'Traitement', options: [{ value: 'traite', label: 'Traité' }, { value: 'en_cours', label: 'En cours' }, { value: 'en_attente', label: 'En attente' }] },
           { name: 'affecteA', label: 'Service', options: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks'] },
+          { name: 'numerise', label: 'Numérisé', options: [{ value: 'oui', label: 'Pièce numérisée' }, { value: 'non', label: 'À scanner' }, { value: 'sansTexte', label: 'Texte non indexé' }, { value: 'lu', label: 'Texte lu par machine' }],
+            match: function (r, v) {
+              if (v === 'oui') return numeriseCourrier(r);
+              if (v === 'non') return !numeriseCourrier(r);
+              if (v === 'lu') return numeriseCourrier(r) && etatTexte(r.fichier).code === 'ocr_indexe';
+              return numeriseCourrier(r) && !etatTexte(r.fichier).disponible;
+            } },
         ],
         kpis: function (rows) {
           return [
@@ -112,7 +172,9 @@
               { k: 'Objet', v: c.objet },
               { k: 'État du traitement', v: { traite: 'Traité', en_cours: 'En cours', en_attente: 'En attente' }[c.traitement] },
               { k: 'Accusé de réception', v: c.accuseReception ? 'Oui' : 'Non' },
-              { k: 'Document numérisé', v: c.numerise ? 'Oui' : 'Non' },
+              { k: 'Document numérisé', v: numeriseCourrier(c) ? 'Oui' : 'Non, à scanner' },
+              { k: 'Nom du fichier', v: numeriseCourrier(c) ? D.DOCUMENTS.nomNormalise('courrier', c, (c.fichier.nomNormalise || '').split('.').pop()) : 'Aucun fichier rattaché' },
+              { k: 'Empreinte SHA-256 (8 premiers caractères)', v: numeriseCourrier(c) ? D.DOCUMENTS.abrege(c.fichier.sha256) : 'Sans objet' },
               { k: 'Observations', v: c.observations || '—' },
             ]),
             signatures: [{ role: 'L’Agent administratif' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
@@ -121,13 +183,17 @@
       })(root);
     },
     actions: function () {
-      return [K.btn('Imprimer le registre', {
+      return [global.SIGH.fichiers && global.SIGH.fichiers.boutonReglage ? global.SIGH.fichiers.boutonReglage() : null, global.SIGH.ocr ? global.SIGH.ocr.boutonReglage() : null, K.btn('Imprimer le registre', {
         icon: 'printer',
         onclick: function () {
           var rows = C.sortBy(S.collection('courriers').active(), 'date', 'desc');
           P.etat({
             titre: 'Registre du courrier',
-            sousTitre: 'Arrivées et départs — exercice 2026',
+            sousTitre: 'Arrivées et départs, exercice ' + (function () {
+              var an = {}; rows.forEach(function (c) { an[String(c.date || '').slice(0, 4)] = true; });
+              var l = Object.keys(an).filter(Boolean).sort();
+              return l.length ? l.join(', ') : String(AUJ.getFullYear());
+            })(),
             cartouche: [['Courriers enregistrés', C.num(rows.length)],
               ['Arrivées', C.num(rows.filter(function (c) { return c.sens === 'arrivee'; }).length)],
               ['Départs', C.num(rows.filter(function (c) { return c.sens === 'depart'; }).length)],
@@ -171,9 +237,9 @@
           { key: 'participants', label: 'Participants', align: 'right' },
           {
             key: 'statutReunion', label: 'Statut', sortable: false,
-            value: function (r) { return C.toDate(r.date) >= AUJ ? 'À venir' : 'Tenue'; },
+            value: function (r) { return reunionAVenir(r) ? 'À venir' : 'Tenue'; },
             render: function (r) {
-              return C.toDate(r.date) >= AUJ ? U.badge('À venir', 'info') : U.badge('Tenue', 'success');
+              return reunionAVenir(r) ? U.badge('À venir', 'info') : U.badge('Tenue', 'success');
             },
           },
           {
@@ -193,19 +259,24 @@
           { name: 'compteRendu', label: 'Compte rendu rédigé', type: 'checkbox' },
           { name: 'resolutions', label: 'Résolutions adoptées', type: 'textarea', rows: 3, col: 'full' },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('RU-2026-', 3); return v; },
+        /* E531 : C.nextRef est un compteur de PAGE (le premier « Nouveau » donnait RU-2026-001, déjà pris) et la modification recalculait la référence. */
+        transform: function (v, record) {
+          if (record && record.reference) v.reference = record.reference;
+          if (!v.reference) v.reference = C.referenceAnnuelle('RU-', v.date, 3, S.collection('reunions').all());
+          return v;
+        },
         onCreate: function () { return { date: C.iso(AUJ), heure: '09:00', lieu: 'Salle de réunion', participants: 8 }; },
         filters: [{ name: 'type', label: 'Type', options: ['Réunion de direction', 'Réunion de service', 'Comité d’hygiène', 'Revue mensuelle d’activité', 'Réunion du personnel', 'Comité de gestion des stocks'] }],
         kpis: function (rows) {
           return [
             { label: 'Réunions enregistrées', value: C.num(rows.length), icon: 'users', tone: 'navy' },
-            { label: 'À venir', value: C.num(rows.filter(function (r) { return C.toDate(r.date) >= AUJ; }).length), icon: 'calendar-clock', tone: 'info' },
-            { label: 'Comptes rendus à rédiger', value: C.num(rows.filter(function (r) { return !r.compteRendu && C.toDate(r.date) < AUJ; }).length), icon: 'file-clock', tone: 'warning' },
+            { label: 'À venir', value: C.num(rows.filter(reunionAVenir).length), icon: 'calendar-clock', tone: 'info' },
+            { label: 'Comptes rendus à rédiger', value: C.num(rows.filter(function (r) { return !r.compteRendu && !reunionAVenir(r); }).length), icon: 'file-clock', tone: 'warning' },
             { label: 'Participants cumulés', value: C.num(C.sum(rows, 'participants')), icon: 'user-check', tone: 'success' },
           ];
         },
         etat: function (r) {
-          var futur = C.toDate(r.date) >= AUJ;
+          var futur = reunionAVenir(r);
           P.etat({
             titre: futur ? 'Convocation à une réunion' : 'Compte rendu de réunion',
             sousTitre: r.type + ' — ' + C.dateFR(r.date),
@@ -263,7 +334,7 @@
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ];
       }
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('evenementsEtablissement')) {
         var rnd = C.seeded(2713);
         var EVTS = [
           ['Journée de vaccination', 'Santé publique'], ['Campagne de dépistage du diabète', 'Santé publique'],
@@ -293,17 +364,17 @@
 
       host.appendChild(U.kpiGrid([
         { label: 'Événements planifiés', value: C.num(rows.length), icon: 'calendar-heart', tone: 'navy' },
-        { label: 'À venir', value: C.num(rows.filter(function (e) { return C.toDate(e.date) >= AUJ; }).length), icon: 'calendar-clock', tone: 'info' },
+        { label: 'À venir', value: C.num(rows.filter(evenementAVenir).length), icon: 'calendar-clock', tone: 'info' },
         { label: 'Avec notification', value: C.num(rows.filter(function (e) { return e.notifier; }).length), icon: 'bell', tone: 'warning' },
         { label: 'Catégories', value: C.num(Object.keys(C.groupBy(rows, 'categorie')).length), icon: 'layers', tone: 'neutral' },
       ]));
 
       /* Prochains événements */
-      var prochains = C.sortBy(rows.filter(function (e) { return C.toDate(e.date) >= AUJ; }), 'date').slice(0, 6);
+      var prochains = C.sortBy(rows.filter(evenementAVenir), 'date').slice(0, 6);
       if (prochains.length) {
         var grille = el('div.grid.gap-3.sm\\:grid-cols-2.lg\\:grid-cols-3');
         prochains.forEach(function (e) {
-          var j = C.daysBetween(AUJ, e.date);
+          var j = C.daysBetween(C.iso(AUJ), String(e.date).slice(0, 10));
           var carte = el('div.rounded-xl.border.border-slate-200.bg-white.p-4.shadow-card');
           carte.appendChild(el('div.mb-2.flex.items-start.justify-between.gap-2', null, [
             U.badge(e.categorie, 'navy'),
@@ -324,7 +395,14 @@
 
       host.appendChild(U.dataTable({
         title: 'Tous les événements', rows: rows, exportName: 'evenements', pageSize: 15,
-        rowActions: K.actionsLigne(col, champsEvenement, { entite: 'événement' }),
+        rowActions: K.actionsLigne(col, champsEvenement, {
+          entite: 'événement',
+          /* E532 : cocher « Notifier le personnel » à la modification ne posait aucun canal (colonne « Notification » vide), la décocher gardait les anciens. */
+          transform: function (v, record) {
+            v.canaux = v.notifier ? ((record.canaux && record.canaux.length) ? record.canaux : ['In-app']) : [];
+            return v;
+          },
+        }),
         actions: [K.creer(col, champsEvenement, {
           titre: 'Nouvel événement de la clinique', entite: 'Événement',
           defauts: function () { return { categorie: 'Santé publique', date: C.iso(AUJ), heure: '09:00', notifier: true }; },
@@ -395,126 +473,335 @@
    * ======================================================================== */
   global.SIGH.screen('m13-plan-annuel', {
     title: 'Plan annuel de travail',
-    description: 'Programmation annuelle des activités de la clinique, par axe et par trimestre.',
+    description: 'Programmation annuelle des activités de la clinique, par exercice, par axe et par trimestre, avec suivi chiffré.',
     render: function (root) {
-      var col = S.collection('planAnnuel', { module: 'M13', entite: 'PlanAnnuelTravail' });
-      if (!col.all().length) {
+      var PA = global.SIGH.planAnnuel;
+      var col = S.collection('planAnnuel', { module: 'M13', entite: 'PlanAnnuelTravail', prefix: 'PAT' });
+      var exos = PA.exercices();
+      var anneeJour = AUJ.getFullYear();
+      var annee = exos.some(function (x) { return x.annee === anneeJour; }) ? anneeJour : (exos.length ? exos[exos.length - 1].annee : anneeJour);
+
+      /* L'amorçage de DÉMONSTRATION : douze actions de l'exercice DU JOUR (jamais une année écrite), le responsable est une RÉFÉRENCE (l'agent qui tient le poste, sinon le poste),
+         l'état est celui que le calendrier rend plausible (aucune action déjà en retard à la semence). Sans source de la Direction : à remplacer par le vrai plan. */
+      if (!col.all().length && S.amorcable('planAnnuel')) {
+        var posteDeRole = function (role) { return S.collection('postes').active().filter(function (p) { return p.role === role; })[0] || null; };
+        var cleNom = function (n) { return String(n || '').replace(/\s+[ée]pse\s+.*$/i, '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); };
+        var refDe = function (role) {
+          var p = posteDeRole(role) || S.collection('postes').active()[0];
+          if (!p) return null;
+          var ag = S.collection('personnel').active().filter(function (a) { return p.titulaire && cleNom(a.nomComplet) === cleNom(p.titulaire); })[0];
+          return ag ? { responsableType: 'agent', responsableRef: ag.id } : { responsableType: 'poste', responsableRef: p.id };
+        };
+        var trCourant = Math.floor(AUJ.getMonth() / 3) + 1;
         var ACTIONS = [
-          ['Déploiement du SIGH-CNT', 'Digitalisation', 1, 4, 'En cours'],
-          ['Numérisation des dossiers patients actifs', 'Digitalisation', 2, 4, 'En cours'],
-          ['Formation du personnel au nouveau logiciel', 'Formation', 3, 4, 'Planifiée'],
-          ['Inventaire général des stocks', 'Logistique', 1, 1, 'Réalisée'],
-          ['Renouvellement des conventions d’assurance', 'Partenariats', 1, 2, 'Réalisée'],
-          ['Campagne de dépistage communautaire', 'Santé publique', 2, 3, 'En cours'],
-          ['Acquisition d’un nouvel échographe', 'Investissement', 3, 3, 'Planifiée'],
-          ['Mise à niveau du réseau informatique', 'Investissement', 1, 2, 'Réalisée'],
-          ['Audit qualité et sécurité des patients', 'Qualité', 4, 4, 'Planifiée'],
-          ['Révision de la grille des primes', 'Ressources humaines', 3, 3, 'Planifiée'],
-          ['Clôture comptable de l’exercice', 'Finance', 4, 4, 'Planifiée'],
-          ['Rapprochement bancaire mensuel', 'Finance', 1, 4, 'En cours'],
+          ['Déploiement du SIGH-CNT', 'digitalisation', 1, 4, 'en_cours', 'da'],
+          ['Numérisation des dossiers patients actifs', 'digitalisation', 2, 4, 'en_cours', 'da'],
+          ['Formation du personnel au nouveau logiciel', 'formation', 3, 4, 'planifiee', 'da'],
+          ['Inventaire général des stocks', 'logistique', 1, 1, 'realisee', 'stock'],
+          ['Renouvellement des conventions d’assurance', 'partenariats', 1, 2, 'realisee', 'da'],
+          ['Campagne de dépistage communautaire', 'sante_publique', 2, 3, 'en_cours', 'da'],
+          ['Acquisition d’un nouvel échographe', 'investissement', 3, 3, 'planifiee', 'da'],
+          ['Mise à niveau du réseau informatique', 'investissement', 1, 2, 'realisee', 'da'],
+          ['Audit qualité et sécurité des patients', 'qualite', 4, 4, 'planifiee', 'da'],
+          ['Révision de la grille des primes', 'ressources_humaines', 3, 3, 'planifiee', 'da'],
+          ['Clôture comptable de l’exercice', 'finance', 4, 4, 'planifiee', 'comptable'],
+          ['Rapprochement bancaire mensuel', 'finance', 1, 4, 'en_cours', 'comptable'],
         ];
         ACTIONS.forEach(function (a, i) {
-          col.all().push({
-            id: 'PAT' + C.pad(i + 1, 3), statut: 'actif',
-            reference: 'PA-2026-' + C.pad(i + 1, 3),
-            action: a[0], axe: a[1], trimestreDebut: a[2], trimestreFin: a[3],
-            avancement: a[4],
-            responsable: a[1] === 'Finance' ? 'KASSA Augustin' : (a[1] === 'Logistique' ? 'MAMAN Zoukanéri' : 'TAKI Alimatou'),
-          });
+          var r = refDe(a[5]); if (!r) return;
+          var etat = a[3] < trCourant ? 'realisee' : a[4];
+          col.all().push(Object.assign({
+            id: 'PAT' + C.pad(i + 1, 3), statut: 'actif', exercice: anneeJour,
+            reference: C.referenceAnnuelle('PA-', anneeJour + '-01-01', 3, col.all()), version: 1,
+            action: a[0], axe: a[1], trimestreDebut: a[2], trimestreFin: a[3], avancement: etat,
+          }, r));
         });
         S.save();
       }
 
-      var rows = col.active();
       var host = el('div.space-y-4');
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Actions programmées', value: C.num(rows.length), icon: 'list-checks', tone: 'navy' },
-        { label: 'Réalisées', value: C.num(rows.filter(function (r) { return r.avancement === 'Réalisée'; }).length), icon: 'check-circle-2', tone: 'success' },
-        { label: 'En cours', value: C.num(rows.filter(function (r) { return r.avancement === 'En cours'; }).length), icon: 'loader', tone: 'info' },
-        { label: 'Planifiées', value: C.num(rows.filter(function (r) { return r.avancement === 'Planifiée'; }).length), icon: 'calendar-clock', tone: 'warning' },
-      ]));
-
-      /* Diagramme de Gantt simplifié par trimestre */
-      var gantt = el('div.overflow-x-auto');
-      var t = el('table.tbl.min-w-\\[48rem\\]');
-      t.appendChild(el('thead', null, el('tr', null, [
-        el('th', { text: 'Action' }), el('th', { text: 'Axe' }),
-        el('th.text-center', { text: 'T1' }), el('th.text-center', { text: 'T2' }),
-        el('th.text-center', { text: 'T3' }), el('th.text-center', { text: 'T4' }),
-        el('th', { text: 'Avancement' }),
-      ])));
-      var tb = el('tbody');
-      C.sortBy(rows, 'trimestreDebut').forEach(function (r) {
-        var tr = el('tr');
-        tr.appendChild(el('td.text-sm.text-slate-800', { text: r.action }));
-        tr.appendChild(el('td', null, U.badge(r.axe, 'navy')));
-        for (var q = 1; q <= 4; q++) {
-          var actif = q >= r.trimestreDebut && q <= r.trimestreFin;
-          var tone = r.avancement === 'Réalisée' ? 'success' : (r.avancement === 'En cours' ? 'info' : 'warning');
-          tr.appendChild(el('td.px-1', null,
-            el('div.h-3.rounded-full', { class: actif ? 'bg-' + tone + '-400' : 'bg-slate-100' })));
-        }
-        tr.appendChild(el('td', null, U.badge(r.avancement,
-          r.avancement === 'Réalisée' ? 'success' : (r.avancement === 'En cours' ? 'info' : 'warning'))));
-        tb.appendChild(tr);
-      });
-      t.appendChild(tb);
-      gantt.appendChild(t);
-
-      host.appendChild(U.card('Plan annuel de travail 2026', gantt, [
-        K.btn('Imprimer le plan', {
-          size: 'sm', icon: 'printer',
-          onclick: function () {
-            P.etat({
-              titre: 'Plan annuel de travail',
-              sousTitre: 'Exercice 2026',
-              cartouche: [['Exercice', '2026'], ['Actions programmées', C.num(rows.length)],
-                ['Réalisées', C.num(rows.filter(function (r) { return r.avancement === 'Réalisée'; }).length)],
-                ['Date d’édition', C.dateFR(AUJ)]],
-              contenu: P.tableau([
-                { label: 'N°', key: 'reference' },
-                { label: 'Action', key: 'action' },
-                { label: 'Axe', key: 'axe' },
-                { label: 'Période', value: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; } },
-                { label: 'Responsable', key: 'responsable' },
-                { label: 'Avancement', key: 'avancement' },
-              ], C.sortBy(rows, 'trimestreDebut')),
-              signatures: [{ role: 'La Directrice Administrative', nom: 'TAKI Alimatou' },
-                { role: 'Le Directeur Médical', nom: 'BASSONGUI Chabi Séko' }],
-            });
-          },
-        }),
-      ]));
-
-      host.appendChild(U.dataTable({
-        title: 'Détail des actions', rows: rows, exportName: 'plan-annuel', pageSize: 15,
-        rowActions: K.actionsLigne(col, [
-          { name: 'action', label: 'Action', required: true, col: 'full' },
-          { name: 'responsable', label: 'Responsable' },
-          { name: 'echeance', label: 'Échéance', type: 'date' },
-          { name: 'avancement', label: 'Avancement (%)', type: 'number', min: 0, max: 100 },
-          { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
-        ]),
-        filters: [
-          { name: 'axe', label: 'Axe', options: Object.keys(C.groupBy(rows, 'axe')).sort() },
-          { name: 'avancement', label: 'Avancement', options: ['Réalisée', 'En cours', 'Planifiée'] },
-        ],
-        columns: [
-          { key: 'reference', label: 'N°', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.reference }); } },
-          { key: 'action', label: 'Action' },
-          { key: 'axe', label: 'Axe', render: function (r) { return U.badge(r.axe, 'navy'); } },
-          { key: 'trimestreDebut', label: 'Période', align: 'right', render: function (r) { return 'T' + r.trimestreDebut + ' – T' + r.trimestreFin; } },
-          { key: 'responsable', label: 'Responsable' },
-          {
-            key: 'avancement', label: 'Avancement',
-            render: function (r) {
-              return U.badge(r.avancement, r.avancement === 'Réalisée' ? 'success' : (r.avancement === 'En cours' ? 'info' : 'warning'));
-            },
-          },
-        ],
-      }));
       root.appendChild(host);
+
+      function nomEtat(code) { var e = D.PLAN.etat(code); return e ? e.libelle : 'État inconnu'; }
+      function tonEtat(code) { var e = D.PLAN.etat(code); return e ? e.ton : 'neutral'; }
+      function nomAxe(code) { var a = D.PLAN.axe(code); return a ? a.libelle : 'Axe inconnu'; }
+      function nomResp(a) { var r = PA.responsable(a); return r ? r.libelle : 'Responsable introuvable'; }
+      function fcfa(v) { return v == null ? 'Non renseigné' : C.money(v, false); }
+      function pct(v) { return v == null ? 'Non renseigné' : C.num(v) + ' %'; }
+
+      /* Les champs d'une action. `portee` : 'tout' (création, plan non adopté), 'suivi' (plan adopté : le contenu est figé), 'contenu' (révision). */
+      function champs(portee) {
+        var liste = [];
+        var enContenu = portee !== 'suivi', enSuivi = portee !== 'contenu';
+        if (enContenu) {
+          liste.push({ name: 'action', label: 'Action', required: true, col: 'full' });
+          liste.push({ name: 'axe', label: 'Axe', type: 'select', required: true, options: D.PLAN.referentiel('axe').map(function (x) { return { value: x.code, label: x.libelle }; }) });
+          liste.push({ name: 'responsable', label: 'Responsable (personnel ou fonction)', type: 'select', required: true, search: true, options: PA.optionsResponsables() });
+          liste.push({ name: 'trimestreDebut', label: 'Trimestre de début', type: 'select', required: true, options: [1, 2, 3, 4].map(function (q) { return { value: q, label: 'T' + q }; }) });
+          liste.push({ name: 'trimestreFin', label: 'Trimestre de fin', type: 'select', required: true, options: [1, 2, 3, 4].map(function (q) { return { value: q, label: 'T' + q }; }) });
+          liste.push({ name: 'budgetPrevu', label: 'Budget prévu (FCFA)', type: 'number', min: 0, step: 1 });
+          liste.push({ name: 'budgetId', label: 'Ligne du module Budgets', type: 'select', options: S.collection('budgets').active().filter(function (b) { return Number(b.exercice) === Number(annee); })
+            .map(function (b) { return { value: b.id, label: b.reference + ' : ' + b.centre }; }), placeholder: 'Non rattaché' });
+          liste.push({ name: 'indicateur', label: 'Indicateur de résultat', col: 'half' });
+          liste.push({ name: 'cible', label: 'Cible de l’indicateur', type: 'number', min: 0 });
+        }
+        if (enSuivi) {
+          liste.push({ name: 'avancement', label: 'État d’avancement', type: 'select', required: true, options: D.PLAN.referentiel('etat').map(function (x) { return { value: x.code, label: x.libelle }; }) });
+          liste.push({ name: 'tauxAvancement', label: 'Avancement (%)', type: 'number', min: 0, max: 100, help: 'De 0 à 100 ; laissé vide : non renseigné (ce n’est pas zéro).' });
+          liste.push({ name: 'budgetRealise', label: 'Budget réalisé (FCFA)', type: 'number', min: 0, step: 1 });
+          liste.push({ name: 'valeurAtteinte', label: 'Valeur atteinte de l’indicateur', type: 'number', min: 0 });
+          liste.push({ name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' });
+        }
+        return liste;
+      }
+      function valeursDe(r) {
+        var v = Object.assign({}, r);
+        if (r.responsableType && r.responsableRef) v.responsable = r.responsableType + ':' + r.responsableRef;
+        return v;
+      }
+      function refus(res) {
+        U.toast(res.code ? 'Refusé : ' + res.code : 'Refusé', { type: 'error', detail: res.motif + (res.geste ? ' ' + res.geste : '') });
+      }
+      function modale(titre, sousTitre, liste, valeurs, libelleBouton, surValider) {
+        var f = U.form(liste, valeurs || {});
+        var m = U.modal({
+          title: titre, subtitle: sousTitre, size: 'lg', body: f,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn(libelleBouton, { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              if (surValider(v) !== false) m.close();
+            } }),
+          ],
+        });
+        return m;
+      }
+      function demandeMotif(titre, message, libelleBouton) {
+        return U.confirm({ title: titre, message: message, confirmLabel: libelleBouton, requireMotif: true });
+      }
+
+      function peindre() {
+        host.innerHTML = '';
+        var bilan = PA.bilan(annee);
+        var rows = bilan.actions, T = bilan.totaux, adoption = bilan.adoption;
+        var enRetard = bilan.lignes.filter(function (l) { return l.retard && l.retard.enRetard; });
+        var ligneDe = {}; bilan.lignes.forEach(function (l) { ligneDe[l.action.id] = l; });
+        var figee = !!adoption;
+
+        /* L'exercice, l'adoption, les gestes du plan. */
+        var barre = el('div.flex.flex-wrap.items-center.gap-3');
+        var sel = el('select.select.w-auto', { id: 'plan-exercice', 'aria-label': 'Exercice du plan' });
+        exos.forEach(function (x) {
+          var o = el('option', { value: String(x.annee) }, 'Exercice ' + x.annee);
+          if (x.annee === annee) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.addEventListener('change', function () { annee = Number(sel.value); peindre(); });
+        barre.appendChild(sel);
+        barre.appendChild(figee
+          ? U.badge('Adopté le ' + C.dateFR(adoption.dateAdoption) + ' par ' + adoption.adoptePar, 'success')
+          : U.badge('Plan non adopté', 'warning'));
+        if (figee) barre.appendChild(el('span.text-xs.text-slate-500', { text: 'Motif : ' + adoption.motif + '. Le contenu ne change plus que par version datée.' }));
+        host.appendChild(barre);
+
+        host.appendChild(U.kpiGrid([
+          { label: 'Actions programmées', value: C.num(T.nb), icon: 'list-checks', tone: 'navy' },
+          { label: 'Réalisées', value: C.num(T.parNature.realisee), icon: 'check-circle-2', tone: 'success' },
+          { label: 'En cours', value: C.num(T.parNature.en_cours), icon: 'loader', tone: 'info' },
+          { label: 'Planifiées', value: C.num(T.parNature.planifiee), icon: 'calendar-clock', tone: 'warning' },
+          { label: 'En retard', value: C.num(enRetard.length), icon: 'alarm-clock', tone: enRetard.length ? 'danger' : 'neutral' },
+          { label: 'Avancement moyen', value: T.tauxMoyen == null ? 'Non calculable' : C.num(T.tauxMoyen) + ' %', icon: 'gauge', tone: 'navy',
+            hint: T.nbSansTaux ? T.nbSansTaux + ' action(s) sans pourcentage' : null },
+          { label: 'Budget prévu', value: T.prevu == null ? 'Non renseigné' : C.money(T.prevu, false), icon: 'wallet', tone: 'navy', hint: T.nbSansPrevu ? T.nbSansPrevu + ' action(s) sans budget' : null },
+          { label: 'Budget réalisé', value: T.realise == null ? 'Non renseigné' : C.money(T.realise, false), icon: 'receipt', tone: 'info', hint: T.nbSansRealise ? T.nbSansRealise + ' action(s) sans réalisé' : null },
+        ]));
+
+        /* Diagramme de Gantt simplifié par trimestre. */
+        var gantt = el('div.overflow-x-auto');
+        var t = el('table.tbl.min-w-\\[48rem\\]');
+        t.appendChild(el('thead', null, el('tr', null, [
+          el('th', { text: 'Action' }), el('th', { text: 'Axe' }),
+          el('th.text-center', { text: 'T1' }), el('th.text-center', { text: 'T2' }),
+          el('th.text-center', { text: 'T3' }), el('th.text-center', { text: 'T4' }),
+          el('th', { text: 'Avancement' }),
+        ])));
+        var tb = el('tbody');
+        C.sortBy(rows, 'trimestreDebut').forEach(function (r) {
+          var tr = el('tr', { dataset: { action: r.reference } });
+          tr.appendChild(el('td.text-sm.text-slate-800', { text: r.action }));
+          tr.appendChild(el('td', null, U.badge(nomAxe(r.axe), 'navy')));
+          for (var q = 1; q <= 4; q++) {
+            var actif = q >= r.trimestreDebut && q <= r.trimestreFin;
+            tr.appendChild(el('td.px-1', null, el('div.h-3.rounded-full', { class: actif ? 'bg-' + tonEtat(r.avancement) + '-400' : 'bg-slate-100' })));
+          }
+          tr.appendChild(el('td', null, U.badge(nomEtat(r.avancement), tonEtat(r.avancement))));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        /* Lot EXP : le plan se coche et s'exporte (garde-tableaux : consultation). */
+        gantt.appendChild(U.equiperTableau(t, { nom: 'plan-annuel', titre: 'Plan annuel de travail ' + annee }));
+        gantt.appendChild(t);
+        if (!rows.length) gantt.appendChild(el('p.p-4.text-sm.text-slate-500', { text: 'Aucune action programmée pour l’exercice ' + annee + '.' }));
+
+        var actionsCarte = [];
+        if (!figee) actionsCarte.push(K.commande('Nouvelle action', { size: 'sm', icon: 'plus', variant: 'primary', moduleCode: 'M13', onclick: function () { ouvrirCreation(); } }));
+        else actionsCarte.push(K.commande('Ajouter après adoption', { size: 'sm', icon: 'plus', moduleCode: 'M13', onclick: function () { ouvrirCreation(true); } }));
+        if (!figee && PA.peutAdopter()) actionsCarte.push(K.btn('Adopter le plan', { size: 'sm', icon: 'badge-check', variant: 'primary', onclick: function () {
+          demandeMotif('Adopter le plan ' + annee + ' ?', 'L’adoption est datée et journalisée. Ensuite le contenu du plan ne change plus que par version datée.', 'Adopter').then(function (rep) {
+            if (!rep) return;
+            var res = PA.adopter(annee, rep.motif);
+            if (!res.ok) { refus(res); return; }
+            U.toast('Plan ' + annee + ' adopté.', { type: 'success' }); peindre();
+          });
+        } }));
+        var precedents = exos.filter(function (x) { return x.annee < annee; });
+        if (!figee && precedents.length) actionsCarte.push(K.commande('Reconduire les actions non réalisées', { size: 'sm', icon: 'copy-plus', moduleCode: 'M13', onclick: function () {
+          var f = U.form([{ name: 'source', label: 'Exercice source', type: 'select', required: true, options: precedents.slice().reverse().map(function (x) { return { value: x.annee, label: 'Exercice ' + x.annee }; }) }], {});
+          var m = U.modal({ title: 'Reconduire dans l’exercice ' + annee, subtitle: 'Copie datée des actions non réalisées ; l’exercice source n’est jamais réécrit.', size: 'md', body: f,
+            footer: [K.btn('Annuler', { onclick: function () { m.close(); } }), K.btn('Reconduire', { variant: 'primary', icon: 'copy-plus', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var res = PA.reconduire(v.source, annee);
+              if (!res.ok) { refus(res); return; }
+              m.close(); U.toast(res.copiees.length + ' action(s) reconduite(s)' + (res.ignorees.length ? ', ' + res.ignorees.length + ' déjà reconduite(s) ou ignorée(s).' : '.'), { type: 'success' }); peindre();
+            } })] });
+        } }));
+        actionsCarte.push(K.btn('Imprimer le plan', { size: 'sm', icon: 'printer', onclick: function () { imprimerPlan(bilan); } }));
+        actionsCarte.push(K.btn('Imprimer le bilan', { size: 'sm', icon: 'file-bar-chart', onclick: function () { imprimerBilan(bilan); } }));
+        if (global.SIGH.parametresClinique.peutRegler()) actionsCarte.push(K.btn('Signataires de l’impression', { size: 'sm', icon: 'signature', onclick: function () { ouvrirSignataires(); } }));
+        host.appendChild(U.card('Plan annuel de travail ' + annee, gantt, actionsCarte.filter(Boolean)));
+
+        host.appendChild(U.dataTable({
+          title: 'Détail des actions', rows: rows, exportName: 'plan-annuel', pageSize: 15,
+          rowActions: function (r) {
+            var actes = [];
+            var ic = function (n, titre, fn, o) { return K.commandeIcone(n, titre, fn, o || { moduleCode: 'M13' }); };
+            actes.push(ic('pencil', figee ? 'Suivre l’action' : 'Modifier', function () {
+              modale(figee ? 'Suivi de l’action' : 'Modifier l’action', r.reference, champs(figee ? 'suivi' : 'tout'), valeursDe(r), 'Enregistrer', function (v) {
+                if (v.responsable) { var i = v.responsable.indexOf(':'); v.responsableType = v.responsable.slice(0, i); v.responsableRef = v.responsable.slice(i + 1); delete v.responsable; }
+                var patch = {};
+                Object.keys(v).forEach(function (k) { if (v[k] !== '' && v[k] !== null && v[k] !== undefined) patch[k] = v[k]; });
+                ['trimestreDebut', 'trimestreFin'].forEach(function (k) { if (patch[k] !== undefined) patch[k] = Number(patch[k]); });
+                var res = col.update(r.id, patch);
+                if (!res) return false;
+                U.toast('Modifications enregistrées.', { type: 'success', undo: function () { res.undo(); peindre(); } }); peindre();
+              });
+            }));
+            if (figee) actes.push(ic('git-branch-plus', 'Réviser (version datée)', function () {
+              modale('Réviser l’action', r.reference + ' : version ' + ((r.version || 1) + 1), champs('contenu').concat([{ name: 'motif', label: 'Motif de la révision', required: true, col: 'full' }]), valeursDe(r), 'Créer la version', function (v) {
+                var motif = v.motif; delete v.motif;
+                if (v.trimestreDebut) v.trimestreDebut = Number(v.trimestreDebut);
+                if (v.trimestreFin) v.trimestreFin = Number(v.trimestreFin);
+                var res = PA.reviser(r.id, v, motif);
+                if (!res.ok) { refus(res); return false; }
+                U.toast('Version ' + res.version + ' créée.', { type: 'success' }); peindre();
+              });
+            }));
+            if (!figee) actes.push(ic('archive', 'Archiver', function () {
+              demandeMotif('Archiver cette action ?', 'Archivage logique (RG-14) : la donnée reste consultable et l’opération est annulable.', 'Archiver').then(function (rep) {
+                if (!rep) return;
+                var res = col.archive(r.id, rep.motif);
+                if (res) { U.toast('Action archivée.', { type: 'success', undo: function () { res.undo(); peindre(); } }); peindre(); }
+              });
+            }, { moduleCode: 'M13', droit: 'annuler', variant: 'ghost' }));
+            return actes.filter(Boolean);
+          },
+          filters: [
+            { name: 'axe', label: 'Axe', options: D.PLAN.referentiel('axe').map(function (x) { return { value: x.code, label: x.libelle }; }) },
+            { name: 'avancement', label: 'Avancement', options: D.PLAN.referentiel('etat').map(function (x) { return { value: x.code, label: x.libelle }; }) },
+          ],
+          columns: [
+            { key: 'reference', label: 'N°', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.reference + ((r.version || 1) > 1 ? ' v' + r.version : '') }); } },
+            { key: 'action', label: 'Action' },
+            { key: 'axe', label: 'Axe', text: function (r) { return nomAxe(r.axe); }, render: function (r) { return U.badge(nomAxe(r.axe), 'navy'); } },
+            { key: 'trimestreDebut', label: 'Période', align: 'right', text: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; }, render: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; } },
+            { key: 'responsableRef', label: 'Responsable', text: nomResp, render: function (r) { return nomResp(r); } },
+            { key: 'avancement', label: 'Avancement', text: function (r) { return nomEtat(r.avancement); },
+              render: function (r) {
+                var l = ligneDe[r.id], w = el('div.flex.flex-wrap.items-center.gap-1');
+                w.appendChild(U.badge(nomEtat(r.avancement), tonEtat(r.avancement)));
+                if (l && l.retard && l.retard.enRetard) w.appendChild(U.badge('En retard', 'danger'));
+                return w;
+              } },
+            { key: 'tauxAvancement', label: 'Taux', align: 'right', text: function (r) { return pct(D.PLAN.pourcentage(r.tauxAvancement).valeur); }, render: function (r) { return pct(D.PLAN.pourcentage(r.tauxAvancement).valeur); } },
+            { key: 'budgetPrevu', label: 'Budget prévu', align: 'right', text: function (r) { return fcfa(D.PLAN.nombre(r.budgetPrevu)); }, render: function (r) { return fcfa(D.PLAN.nombre(r.budgetPrevu)); } },
+            { key: 'budgetRealise', label: 'Budget réalisé', align: 'right', text: function (r) { return fcfa(D.PLAN.nombre(r.budgetRealise)); }, render: function (r) { return fcfa(D.PLAN.nombre(r.budgetRealise)); } },
+            { key: 'budgetId', label: 'Ligne Budgets', text: function (r) { var b = r.budgetId ? S.collection('budgets').get(r.budgetId) : null; return b ? b.reference : 'Non rattaché'; },
+              render: function (r) { var b = r.budgetId ? S.collection('budgets').get(r.budgetId) : null; return b ? b.reference : el('span.text-slate-400', { text: 'Non rattaché' }); } },
+            { key: 'indicateur', label: 'Indicateur', text: function (r) { var a = ligneDe[r.id] && ligneDe[r.id].atteinte; return (r.indicateur || 'Aucun') + (a ? (a.calculable ? ' : ' + C.num(a.pct) + ' % de la cible' : ' : non calculable (' + a.motif + ')') : ''); },
+              render: function (r) { var a = ligneDe[r.id] && ligneDe[r.id].atteinte; return r.indicateur ? (r.indicateur + (a && a.calculable ? ' : ' + C.num(a.pct) + ' %' : ' : non calculable')) : el('span.text-slate-400', { text: 'Aucun' }); } },
+          ],
+        }));
+        U.icons(host);
+      }
+
+      function ouvrirCreation(apresAdoption) {
+        var liste = champs('tout').concat(apresAdoption ? [{ name: 'motif', label: 'Motif de l’ajout (plan adopté)', required: true, col: 'full' }] : []);
+        modale(apresAdoption ? 'Ajouter une action après adoption' : 'Nouvelle action', 'Exercice ' + annee + '. Les champs marqués d’un astérisque sont obligatoires.', liste,
+          { avancement: (D.PLAN.referentiel('etat').filter(function (e) { return e.nature === 'planifiee'; })[0] || {}).code }, 'Créer', function (v) {
+            v.exercice = annee;
+            var res = PA.ajouter(v);
+            if (!res.ok) { refus(res); return false; }
+            U.toast('Action ' + res.reference + ' créée.', { type: 'success', undo: function () { res.undo(); peindre(); } }); peindre();
+          });
+      }
+      function ouvrirSignataires() {
+        var cur = PA.signataires(null).signataires;
+        var postes = S.collection('postes').active().map(function (p) { return { value: p.id, label: p.poste + (p.titulaire ? ' : ' + p.titulaire : '') }; });
+        modale('Signataires de l’impression', 'Une fonction de l’organigramme ; le titulaire se lit au poste à la date de l’impression.', [
+          { name: 'p1', label: 'Premier signataire (fonction)', type: 'select', required: true, search: true, options: postes },
+          { name: 'p2', label: 'Second signataire (fonction)', type: 'select', search: true, options: postes },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true },
+          { name: 'motif', label: 'Motif', required: true, col: 'full' },
+        ], { p1: cur[0] && cur[0].posteId, p2: cur[1] && cur[1].posteId, dateEffet: C.iso(AUJ) }, 'Enregistrer', function (v) {
+          var ids = [v.p1, v.p2].filter(Boolean);
+          var res = PA.definirSignataires(ids, v.dateEffet, v.motif);
+          if (!res.ok) { refus(res); return false; }
+          U.toast('Signataires réglés à compter du ' + C.dateFR(res.dateEffet) + '.', { type: 'success' });
+        });
+      }
+      function signaturesImpression() {
+        return PA.signataires(null).signataires.map(function (s) { return { role: s.fonction || 'Fonction introuvable', nom: s.nom || 'Poste vacant' }; });
+      }
+      function numeriqueOuNull(f) { return function (r) { var n = D.PLAN.nombre(r[f]); return n == null ? null : n; }; }
+      function colonneMontant(label, champ, T) {
+        var lignesAvec = 0;
+        return { label: label, align: 'right', value: function (r) { return fcfa(D.PLAN.nombre(r[champ])); }, somme: numeriqueOuNull(champ),
+          formatTotal: function (v) { return (T[champ === 'budgetPrevu' ? 'prevu' : 'realise'] == null) ? 'Non calculable' : C.money(v, false); } };
+      }
+      function imprimerPlan(bilan) {
+        var T = bilan.totaux, rows = C.sortBy(bilan.actions, 'trimestreDebut');
+        P.etat({
+          titre: 'Plan annuel de travail', sousTitre: 'Exercice ' + bilan.exercice + (bilan.adoption ? ', adopté le ' + C.dateFR(bilan.adoption.dateAdoption) : ', non adopté'),
+          cartouche: [['Exercice', String(bilan.exercice)], ['Actions programmées', C.num(T.nb)], ['Réalisées', C.num(T.parNature.realisee)], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: P.tableau([
+            { label: 'N°', key: 'reference' }, { label: 'Action', key: 'action' }, { label: 'Axe', value: function (r) { return nomAxe(r.axe); } },
+            { label: 'Période', value: function (r) { return 'T' + r.trimestreDebut + ' à T' + r.trimestreFin; } },
+            { label: 'Responsable', value: nomResp }, { label: 'Avancement', value: function (r) { return nomEtat(r.avancement); } },
+          ], rows),
+          signatures: signaturesImpression(),
+        });
+      }
+      function imprimerBilan(bilan) {
+        var T = bilan.totaux, rows = C.sortBy(bilan.actions, 'trimestreDebut');
+        var contenu = el('div.space-y-3');
+        contenu.appendChild(P.tableau([
+          { label: 'N°', key: 'reference' }, { label: 'Action', key: 'action' },
+          { label: 'État', value: function (r) { return nomEtat(r.avancement); } },
+          { label: 'Taux', align: 'right', value: function (r) { return pct(D.PLAN.pourcentage(r.tauxAvancement).valeur); } },
+          colonneMontant('Budget prévu', 'budgetPrevu', T), colonneMontant('Budget réalisé', 'budgetRealise', T),
+          { label: 'Indicateur', value: function (r) { var a = D.PLAN.atteinteIndicateur(r); return r.indicateur ? (r.indicateur + ' : ' + (a.calculable ? C.num(a.pct) + ' % de la cible' : 'non calculable')) : 'Aucun'; } },
+        ], rows, { total: true, totalLabel: 'TOTAL (calculé)' }));
+        contenu.appendChild(el('p.text-\\[10px\\].text-slate-600', { text: 'Avancement moyen : ' + (T.tauxMoyen == null ? 'non calculable' : C.num(T.tauxMoyen) + ' %')
+          + (T.nbSansTaux ? ' (' + T.nbSansTaux + ' action(s) sans pourcentage, non comptée(s) comme zéro)' : '') + '. Écart budgétaire : ' + (T.ecart == null ? 'non calculable' : C.money(T.ecart, false))
+          + (T.nbSansPrevu ? ' ; ' + T.nbSansPrevu + ' action(s) sans budget prévu' : '') + '.' }));
+        P.etat({
+          titre: 'Bilan du plan annuel de travail', sousTitre: 'Exercice ' + bilan.exercice + ' : réalisé contre prévu',
+          cartouche: [['Exercice', String(bilan.exercice)], ['Actions', C.num(T.nb)], ['Réalisées', C.num(T.parNature.realisee)], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: contenu, signatures: signaturesImpression(),
+        });
+      }
+      peindre();
       return null;
     },
   });
@@ -667,11 +954,13 @@
             { name: 'facture', label: 'Intervention facturée', type: 'checkbox' },
           ];
         },
-        transform: function (v) {
+        transform: function (v, record) {
           var p = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
           if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; }
           if (!v.tarif) v.tarif = 5000 + (Number(v.kilometrage) || 0) * 500;
-          if (!v.reference) v.reference = C.nextRef('AM-2026-', 4);
+          /* E534 : C.nextRef = compteur de page (le premier « Nouveau » donnait AM-2026-0001, déjà pris) ; la modification recalculait la référence. */
+          if (record && record.reference) v.reference = record.reference;
+          if (!v.reference) v.reference = C.referenceAnnuelle('AM-', v.dateHeure, 4, S.collection('ambulance').all());
           return v;
         },
         onCreate: function () { return { chauffeur: 'TCHANE Nourou', facture: false, kilometrage: 10, etat: 'demandee' }; },
@@ -782,7 +1071,7 @@
       }
       function joursDepuis(iso) {
         if (!iso) return null;
-        return Math.round((Date.now() - C.toDate(iso).getTime()) / 86400000);
+        return C.daysBetween(String(iso).slice(0, 10), C.iso(new Date()));   /* E540 : par JOUR — vérifié ce matin, « 1 j » dès midi */
       }
       function perime(r) {
         var j = joursDepuis(r.verifieLe);
@@ -827,7 +1116,7 @@
           { name: 'libelle', label: 'Désignation', type: 'text', required: true },
           { name: 'type', label: 'Type', type: 'select', required: true,
             options: TYPES_AMBULANCE.map(function (t) { return { value: t.code, label: t.label }; }) },
-          { name: 'telephone', label: 'Téléphone', type: 'text', required: true,
+          { name: 'telephone', label: 'Téléphone', type: 'text',   /* E535 : jamais obligatoire — la consigne est « laisser la fiche à compléter », exiger un numéro forçait à en inventer un */
             hint: 'Le numéro que l’accueil compose. Ne rien inventer : laisser la fiche à compléter.' },
           { name: 'telephone2', label: 'Second numéro', type: 'text' },
           { name: 'contact', label: 'Personne à demander', type: 'text' },
@@ -984,7 +1273,7 @@
           }
           if (r.telephone && perime(r)) {
             carte.appendChild(el('p.mt-2.text-xs.font-medium.text-amber-700', {
-              text: 'Non vérifié depuis ' + joursDepuis(r.verifieLe) + ' jours',
+              text: r.verifieLe ? 'Non vérifié depuis ' + joursDepuis(r.verifieLe) + ' jours' : 'Jamais vérifié',   /* E535 : « depuis null jours » */
             }));
           }
           grille.appendChild(carte);
@@ -1034,7 +1323,7 @@
    * DEUX PARTIS PRIS.
    *
    * 1. LE PARC EST UNE PROPOSITION, PAS UN RELEVÉ. Aucun document de cadrage
-   *    n'inventorie les équipements : l'inventaire SAGE porte les ARTICLES
+   *    n'inventorie les équipements : l'inventaire initial porte les ARTICLES
    *    (médicaments, consommables), pas les machines. Les fiches amorcées ici
    *    portent donc « aCompleter » et l'écran le dit. Inventer un numéro de
    *    série ou une date de mise en service donnerait une donnée fausse qu'on
@@ -1063,7 +1352,7 @@
     description: 'Équipements de la clinique, état de marche, entretiens périodiques et pannes signalées.',
     regle: 'Un automate en panne <strong>arrête le laboratoire</strong> : l’état de marche prime sur tout '
       + 'le reste, et c’est la première colonne. Le parc amorcé ici est une <strong>proposition à '
-      + 'compléter</strong> — aucun document de cadrage n’inventorie les équipements, l’inventaire SAGE '
+      + 'compléter</strong> — aucun document de cadrage n’inventorie les équipements, l’inventaire initial '
       + 'ne porte que les articles. Les fiches non vérifiées sont <strong>signalées, jamais présentées '
       + 'comme relevées</strong>.',
     render: function (root) {
@@ -1112,6 +1401,7 @@
 
       function echu(r) {
         if (!r.dernierEntretien || !r.periodiciteMois) return false;
+        if (r.etat === 'reforme') return false;   /* E536 : un équipement réformé n'a plus d'entretien à faire — il gonflait l'indicateur « Entretien échu » */
         return C.addDays(C.toDate(r.dernierEntretien), Math.round(r.periodiciteMois * 30.4)) < AUJ;
       }
 
@@ -1171,8 +1461,10 @@
           { name: 'dernierEntretien', label: 'Dernier entretien', type: 'date' },
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
         ],
-        transform: function (v) {
-          if (!v.reference) v.reference = C.nextRef('EQ-', 3);
+        transform: function (v, record) {
+          /* E536 : compteur de page (EQ-001 déjà pris) et référence recalculée à chaque modification. */
+          if (record && record.reference) v.reference = record.reference;
+          if (!v.reference) v.reference = C.referenceSuivante('EQ-', 3, S.collection('materiel').all());
           /* Une fiche renseignée cesse d'être « à compléter » : le marquage
              disparaît par la saisie, non par une case à cocher qu'on oublie. */
           v.aCompleter = !(v.marque && v.numeroSerie && v.miseEnService);
@@ -1264,6 +1556,108 @@
      un t\u00e9l\u00e9phone \u2014 souvent la comparaison la plus instructive. */
   var CANAL_PUBLIC = 'Lien public';
 
+  /* ==========================================================================
+   * LOT SAT (ADR-0009) : SATISFACTION EN LIGNE. Questionnaire en VERSIONS DATEES (une reponse garde la version sous laquelle elle a ete donnee),
+   * POINT DE COLLECTE (un lien par point : accueil, consultation, ...), ANALYSE calculee (taux de satisfaction = notes 4 ou 5, recommandation, par
+   * question, par mois, par point ; le taux de reponse est NON CALCULABLE tant que les passages ne sont pas comptes). Memes regles au domaine Dart
+   * (`qual_en_ligne.dart`), rejouees sur les vecteurs tires de l'ecran reel (`build/vecteurs-qualite.js`, cas SAT).
+   * ======================================================================== */
+  var POINTS_COLLECTE_DEFAUT = [
+    { code: 'accueil', libelle: 'Accueil' }, { code: 'consultation', libelle: 'Consultation' }, { code: 'laboratoire', libelle: 'Laboratoire' },
+    { code: 'pharmacie', libelle: 'Pharmacie' }, { code: 'maternite', libelle: 'Maternité' }, { code: 'hospitalisation', libelle: 'Hospitalisation' },
+    { code: 'sortie', libelle: 'Sortie' },
+  ];
+  function colPoints() {
+    return S.collection('pointsCollecte', { module: 'M13', entite: 'point de collecte', prefix: 'PTC' });
+  }
+  function amorcerPoints() {
+    var col = colPoints();
+    if (col.all().length) return;
+    POINTS_COLLECTE_DEFAUT.forEach(function (p, i) { col.all().push({ id: 'PTC' + C.pad(i + 1, 4), statut: 'actif', code: p.code, libelle: p.libelle, source: 'Décision S2 du PRD satisfaction (07/11/2026)' }); });
+    S.save();
+  }
+  function libellePoint(code) {
+    var p = colPoints().active().filter(function (x) { return x.code === code; })[0];
+    return p ? p.libelle : (code || '—');
+  }
+  /** La version du questionnaire en vigueur a une date : la derniere dont l'effet est atteint ; a defaut, la premiere. Sans `versions`, V1 = `questions`. */
+  function versionsDe(enq) {
+    if (enq.versions && enq.versions.length) return enq.versions;
+    return [{ version: 'V1', effetLe: enq.creeLe || '2000-01-01', questions: enq.questions || [] }];
+  }
+  function versionALaDate(enq, date) {
+    var vs = versionsDe(enq).slice().sort(function (a, b) { return a.effetLe < b.effetLe ? -1 : a.effetLe > b.effetLe ? 1 : 0; });
+    var choisie = vs[0];
+    vs.forEach(function (v) { if (v.effetLe <= date) choisie = v; });
+    return choisie;
+  }
+  /** Modifier un questionnaire AJOUTE une version (jamais une reecriture) : `null` si rien ne change. */
+  function ajouterVersion(enq, questions, date) {
+    var vs = versionsDe(enq);
+    var derniere = versionALaDate(enq, '9999-12-31');
+    if (JSON.stringify(derniere.questions) === JSON.stringify(questions)) return null;
+    var n = vs.length + 1;
+    if (date < derniere.effetLe) return { refus: 'VERSION_ANTERIEURE', motif: 'Une version prend effet après la dernière (' + derniere.version + ' du ' + derniere.effetLe + ').', geste: 'Choisir une date d’effet plus récente.' };
+    return { versions: vs.concat([{ version: 'V' + n, effetLe: date, questions: questions }]) };
+  }
+  function arrondi1(x) { return Math.round(x * 10) / 10; }
+  function notesValides(reps, questions) {
+    var out = [];
+    reps.forEach(function (r) {
+      (questions || []).forEach(function (q) {
+        if (q.type !== 'note') return;
+        var v = (r.reponses || {})[q.code];
+        var n = v == null || String(v).trim() === '' ? NaN : Number(v);
+        if (isFinite(n) && n >= 1 && n <= 5) out.push({ q: q.code, n: n });
+      });
+    });
+    return out;
+  }
+  function tauxSatisfaction(notes) {
+    if (!notes.length) return null;
+    return arrondi1(notes.filter(function (x) { return x.n >= 4; }).length / notes.length * 100);
+  }
+  /** L'ANALYSE : filtres {du, au, point, version, canal} ; tout est recalcule des reponses. */
+  function analyseSatisfaction(enq, reponses, f) {
+    f = f || {};
+    var reps = reponses.filter(function (r) {
+      if (r.enqueteId !== enq.id) return false;
+      var jour = String(r.date || '').slice(0, 10);
+      if (f.du && jour < f.du) return false;
+      if (f.au && jour > f.au) return false;
+      if (f.point && r.point !== f.point) return false;
+      if (f.version && (r.version || 'V1') !== f.version) return false;
+      if (f.canal && r.canal !== f.canal) return false;
+      return true;
+    });
+    var toutes = {};
+    versionsDe(enq).forEach(function (v) { (v.questions || []).forEach(function (q) { if (!toutes[q.code]) toutes[q.code] = q; }); });
+    var qs = Object.keys(toutes).map(function (k) { return toutes[k]; });
+    var notes = notesValides(reps, qs);
+    var parQuestion = qs.filter(function (q) { return q.type === 'note'; }).map(function (q) {
+      var ns = notes.filter(function (x) { return x.q === q.code; });
+      return { code: q.code, libelle: q.libelle, n: ns.length, moyenne: ns.length ? arrondi1(ns.reduce(function (a, x) { return a + x.n; }, 0) / ns.length) : null, satisfaction: tauxSatisfaction(ns) };
+    });
+    var qReco = qs.filter(function (q) { return q.code === 'Q_RECO' || /recommand/i.test(q.libelle); })[0];
+    var reco = null;
+    if (qReco) {
+      var repondus = reps.filter(function (r) { var v = (r.reponses || {})[qReco.code]; return v != null && String(v).trim() !== ''; });
+      if (repondus.length) reco = arrondi1(repondus.filter(function (r) { return /^(oui|plutôt oui)/i.test(String(r.reponses[qReco.code])); }).length / repondus.length * 100);
+    }
+    var mois = {}, points = {};
+    reps.forEach(function (r) {
+      var m = String(r.date || '').slice(0, 7), p = r.point || '';
+      (mois[m] = mois[m] || []).push(r); (points[p] = points[p] || []).push(r);
+    });
+    var parMois = Object.keys(mois).sort().map(function (m) { var ns = notesValides(mois[m], qs); return { mois: m, n: mois[m].length, satisfaction: tauxSatisfaction(ns) }; });
+    var ordre = colPoints().active().map(function (x) { return x.code; });
+    var parPoint = Object.keys(points).sort(function (a, b) {
+      var ia = ordre.indexOf(a), ib = ordre.indexOf(b); ia = ia < 0 ? 99 : ia; ib = ib < 0 ? 99 : ib; return ia - ib || (a < b ? -1 : 1);
+    }).map(function (p) { var ns = notesValides(points[p], qs); return { point: p, libelle: p ? libellePoint(p) : 'Sans point', n: points[p].length, satisfaction: tauxSatisfaction(ns) }; });
+    return { reponses: reps.length, notes: notes.length, satisfaction: tauxSatisfaction(notes), recommandation: reco, tauxReponse: null, parQuestion: parQuestion, parMois: parMois, parPoint: parPoint };
+  }
+  function pctOuNC(v) { return v == null ? 'Non calculable' : C.pct(v); }
+
   function colEnquetes() {
     return S.collection('enquetes', { module: 'M13', entite: 'mod\u00e8le d\u2019enqu\u00eate', prefix: 'ENQ' });
   }
@@ -1275,6 +1669,7 @@
   }
 
   function amorcerEnquetes() {
+    amorcerPoints();
     var col = colEnquetes();
     if (col.all().length) return;
     var rnd = C.seeded(1009);
@@ -1284,7 +1679,7 @@
       description: 'Recueil \u00e0 la sortie \u2014 accueil, attente, soins, recommandation.',
       /* Propos\u00e9 faute de questionnaire dans les documents de cadrage, puis
          VALID\u00c9 par la Direction le 01/09/2026 (vague 49). */
-      aValider: false, valideLe: '2026-09-01', validePar: 'Direction',
+      aValider: false, valideLe: '2026-09-01', validePar: 'validation \u00e9crite du 01/09/2026', valideRole: 'Direction',
       source: 'Propos\u00e9 (aucun questionnaire aux documents de cadrage) ; valid\u00e9 par la Direction le 01/09/2026.',
       questions: [
         { code: 'Q_ACCUEIL', libelle: 'Qualit\u00e9 de l\u2019accueil', type: 'note' },
@@ -1296,10 +1691,13 @@
         { code: 'Q_LIBRE', libelle: 'Ce que nous pourrions am\u00e9liorer', type: 'texte' },
       ],
       creeLe: '2026-08-01',
+      versions: [{ version: 'V1', effetLe: '2026-08-01', questions: null }],
     });
+    (function () { var e = col.all()[col.all().length - 1]; e.versions[0].questions = e.questions.map(function (q) { return Object.assign({}, q); }); })();
     /* Jeu de d\u00e9monstration : des r\u00e9ponses pour que les \u00e9crans montrent
        leur usage \u2014 marqu\u00e9es comme telles par leur canal de saisie. */
     var rep = colReponses();
+    var rndPoint = C.seeded(2027); /* flux à part : le jeu déjà semé ne change pas */
     for (var k = 0; k < 26; k++) {
       var reponses = {
         Q_ACCUEIL: C.between(rnd, 3, 5), Q_ATTENTE: C.between(rnd, 2, 5),
@@ -1316,6 +1714,7 @@
         canal: C.pick(rnd, CANAUX_ENQUETE),
         reponses: reponses,
         saisiPar: 'Jeu de d\u00e9monstration',
+        version: 'V1', point: C.pick(rndPoint, POINTS_COLLECTE_DEFAUT).code,
       });
     }
     S.save();
@@ -1434,6 +1833,7 @@
     return colReponses().insert({
       enqueteId: enq.id, date: C.iso(new Date()),
       canal: o.canal || CANAUX_ENQUETE[0],
+      version: versionALaDate(enq, C.iso(new Date())).version, point: o.point || null,
       reponses: v,
       saisiPar: o.saisiPar || S.currentUser(),
       /* Le jeton est trac\u00e9 pour pouvoir COMPTER par lien et r\u00e9voquer ;
@@ -1480,7 +1880,9 @@
     return colJetons().all().filter(function (j) { return j.jeton === code; })[0] || null;
   }
   /** L'adresse de la page publique \u2014 construite depuis la page courante. */
-  function lienDuJeton(code) {
+  var HOTE_PUBLIC = 'https://sighcnt.nassieratoo.com';
+  function lienDuJeton(code, enLigne) {
+    if (enLigne) return HOTE_PUBLIC + '/s/' + encodeURIComponent(code);
     try {
       return new URL('enquete-publique' + N.EXT + '?jeton=' + encodeURIComponent(code), global.location.href).href;
     } catch (e) {
@@ -1544,7 +1946,7 @@
           { label: 'Liens ouverts', value: C.num(liens.filter(function (j) { return jetonOuvert(j); }).length),
             icon: 'share-2', tone: liens.filter(function (j) { return jetonOuvert(j); }).length ? 'warning' : 'neutral',
             hint: 'Dat\u00e9s et r\u00e9vocables' },
-          { label: 'Mod\u00e8les \u00e0 valider', value: C.num(rows.filter(function (r) { return r.aValider; }).length),
+          { label: 'Mod\u00e8les en attente de validation', value: C.num(rows.filter(function (r) { return r.aValider; }).length),
             icon: 'help-circle', tone: 'warning', hint: 'Propositions \u2014 aucun document ne les fixe' },
         ]));
 
@@ -1574,7 +1976,7 @@
             { key: 'reponses', label: 'R\u00e9ponses', align: 'right',
               value: function (r) { return colReponses().active().filter(function (x) { return x.enqueteId === r.id; }).length; } },
             { key: 'aValider', label: 'Statut', render: function (r) {
-              return r.aValider ? U.badge('Proposition \u00e0 valider', 'warning') : U.badge('Valid\u00e9', 'success');
+              return K.badgeValidation('enquetes', r.id) || (r.aValider ? U.badge('\u00c0 valider', 'warning') : U.badge('Valid\u00e9', 'success'));
             } },
           ],
           rowActions: function (r) {
@@ -1583,6 +1985,7 @@
                 onclick: function () { saisirReponse(r, afficher); } }),
               K.iconBtn('eye', 'Voir les r\u00e9ponses', function () { voirReponses(r); }),
             ];
+            actes.push(K.boutonValider('enquetes', r.id, { size: 'sm', moduleCode: 'M13', apres: afficher }));
             var partager = K.commandeIcone('share-2', 'Partager \u00e0 un tiers', function () { ouvrirPartage(r); });
             if (partager) actes.push(partager);
             var mod = K.commandeIcone('pencil', 'Modifier le mod\u00e8le', function () { editerModele(r); });
@@ -1601,9 +2004,10 @@
           + 'exige une surface publique sur Internet : c’est un <strong>ré-arbitrage d’architecture</strong>, '
           + 'pas une option à cocher — et surtout pas l’ouverture du serveur de la clinique.',
         { tone: 'warning', icon: 'wifi' }));
-        bloc.appendChild(K.note('Dans le prototype, chaque poste a son <strong>propre stockage</strong> : '
-          + 'un lien ouvert sur une autre machine y afficherait bien le formulaire, mais ses réponses '
-          + 'ne reviendraient jamais ici. Le geste se <strong>maquette</strong> — jeton, page publique, '
+        bloc.appendChild(K.note('Dans le prototype, le magasin est <strong>partagé</strong> entre les postes : '
+          + 'un lien ouvert sur une autre machine y affiche bien le formulaire, mais sans '
+          + 'session de poste la réponse n’est conservée nulle part : la page le dit au répondant et refuse '
+          + 'l’envoi. Le geste se <strong>maquette</strong> — jeton, page publique, '
           + 'QR — la <strong>collecte réelle appartient à la version web</strong>.',
         { tone: 'info', icon: 'info' }));
 
@@ -1619,6 +2023,8 @@
             { key: 'anonyme', label: 'Recueil', render: function (j) {
               return j.anonyme ? U.badge('Anonyme', 'info') : U.badge('Nominatif', 'warning');
             } },
+            { key: 'point', label: 'Point de collecte', value: function (j) { return j.point ? libellePoint(j.point) : '\u2014'; } },
+            { key: 'enLigne', label: 'Partage', value: function (j) { return j.enLigne ? 'En ligne' : 'Local'; } },
             { key: 'expireLe', label: 'Expire le', value: function (j) { return C.dateFR(j.expireLe); } },
             { key: 'reponses', label: 'Réponses', align: 'right', value: function (j) {
               return colReponses().active().filter(function (x) { return x.jetonId === j.id; }).length;
@@ -1654,11 +2060,15 @@
               { value: 'salle', label: 'Dans la clinique — QR affiché ou imprimé' },
               { value: 'tablette', label: 'Sur une tablette de la clinique (mode kiosque)' },
               { value: 'reseau', label: 'Sur le réseau local — lien communiqué' },
+              { value: 'en_ligne', label: 'En ligne : adresse publique ou code QR (le relais ne lit pas la réponse)' },
             ] },
+          { name: 'point', label: 'Point de collecte', type: 'select', required: true,
+            options: colPoints().active().map(function (x) { return { value: x.code, label: x.libelle }; }),
+            hint: 'Un lien par point : l\u2019analyse compare les services. Aucun nom, aucun num\u00e9ro de dossier n\u2019est demand\u00e9.' },
           { name: 'expireLe', label: 'Le lien expire le', type: 'date', required: true,
             hint: 'Un lien sans terme collecte des réponses des mois après la clôture.' },
           { name: 'note', label: 'Note interne', type: 'text', col: 'full' },
-        ], { anonyme: 'oui', usage: 'salle', expireLe: C.iso(C.addDays(new Date(), 30)) });
+        ], { anonyme: 'oui', usage: 'salle', point: 'accueil', expireLe: C.iso(C.addDays(new Date(), 30)) });
 
         var m2 = U.modal({
           title: 'Partager — ' + enq.titre,
@@ -1685,7 +2095,8 @@
                 var res = colJetons().insert({
                   jeton: global.SIGH.parcours.jetonEnquete(),
                   enqueteId: enq.id, enqueteTitre: enq.titre,
-                  anonyme: v2.anonyme === 'oui', usage: v2.usage,
+                  anonyme: v2.anonyme === 'oui', usage: v2.usage, point: v2.point || null, enLigne: v2.usage === 'en_ligne',
+                  version: versionALaDate(enq, C.iso(new Date())).version,
                   creeLe: C.iso(new Date()), expireLe: v2.expireLe,
                   revoqueLe: null, note: v2.note || null,
                   ouvertPar: S.currentUser(),
@@ -1699,7 +2110,7 @@
       }
 
       function montrerLien(j) {
-        var lien = lienDuJeton(j.jeton);
+        var lien = lienDuJeton(j.jeton, j.enLigne);
         var e = etatJeton(j);
         var champ = el('input.input.font-mono.text-xs', { type: 'text', value: lien, readonly: true,
           'aria-label': 'Adresse du formulaire' });
@@ -1780,6 +2191,7 @@
           body: el('div.space-y-3', null, [f2, U.card('Questions', ed.bloc)]),
           footer: [
             K.btn('Annuler', { onclick: function () { m2.close(); } }),
+            creation ? null : K.boutonValiderModale({ famille: 'enquetes' }, r, m2, afficher),
             K.btn(creation ? 'Cr\u00e9er le mod\u00e8le' : 'Enregistrer', {
               variant: 'primary', icon: 'save',
               onclick: function () {
@@ -1790,20 +2202,29 @@
                   U.toast('Un questionnaire sans question ne recueille rien.', { type: 'error' });
                   return;
                 }
-                if (creation) {
-                  colEnquetes().insert(Object.assign({}, v2, {
+                /* Lot L1 : la Direction qui enregistre VALIDE ; hors famille, le mod\u00e8le repasse \u00ab \u00e0 valider \u00bb. */
+                var valeursM = creation
+                  ? Object.assign({}, v2, {
                     reference: C.nextRef('ENQ-', 3), questions: qs,
                     aValider: true, creeLe: C.iso(new Date()),
                     source: 'Cr\u00e9\u00e9 dans l\u2019application \u2014 \u00e0 valider',
-                  }));
-                } else {
-                  colEnquetes().update(r.id, Object.assign({}, v2, { questions: qs }));
+                  })
+                  : Object.assign({}, v2, { questions: qs });
+                if (creation) valeursM.versions = [{ version: 'V1', effetLe: valeursM.creeLe, questions: qs.map(function (q) { return Object.assign({}, q); }) }];
+                else {
+                  /* Lot SAT : modifier les questions AJOUTE une version datee d'aujourd'hui ; les reponses deja recueillies gardent la leur. */
+                  var av = ajouterVersion(r, qs, C.iso(new Date()));
+                  if (av && av.refus) { U.toast(av.motif, { type: 'error', detail: 'Code ' + av.refus + '. ' + av.geste }); return; }
+                  if (av) valeursM.versions = av.versions;
                 }
-                m2.close(); afficher();
-                U.toast(creation ? 'Mod\u00e8le cr\u00e9\u00e9.' : 'Mod\u00e8le enregistr\u00e9.', { type: 'success' });
+                K.ecrireValidable(colEnquetes(), { famille: 'enquetes' }, creation ? null : r, valeursM).then(function (w) {
+                  if (K.refusEcriture(w)) return;
+                  m2.close(); afficher();
+                  U.toast(creation ? 'Mod\u00e8le cr\u00e9\u00e9.' : 'Mod\u00e8le enregistr\u00e9.', { type: 'success' });
+                });
               },
             }),
-          ],
+          ].filter(Boolean),
         });
       }
 
@@ -1823,6 +2244,53 @@
       }
     },
   });
+
+
+  /** La carte « Analyse » (lot SAT) : filtres (periode, point, version, canal) et indicateurs recalcules. */
+  function carteAnalyse(enq) {
+    var corps = el('div.space-y-3');
+    var filtres = { du: '', au: '', point: '', version: '', canal: '' };
+    var zone = el('div.space-y-3');
+    function champ(id, libelle, type, options) {
+      var c;
+      if (type === 'date') c = el('input.input', { type: 'date', id: id });
+      else {
+        c = el('select.input', { id: id });
+        options.forEach(function (o) { c.appendChild(el('option', { value: o.value, text: o.label })); });
+      }
+      return el('div', null, [el('label.label', { text: libelle, 'for': id }), c]);
+    }
+    var versions = versionsDe(enq).map(function (v) { return { value: v.version, label: v.version + ' (depuis le ' + C.dateFR(v.effetLe) + ')' }; });
+    var barre = el('div.grid.gap-3.sm:grid-cols-5', null, [
+      champ('an_du', 'Du', 'date'), champ('an_au', 'Au', 'date'),
+      champ('an_point', 'Point de collecte', 'select', [{ value: '', label: 'Tous les points' }].concat(colPoints().active().map(function (x) { return { value: x.code, label: x.libelle }; }))),
+      champ('an_version', 'Version du questionnaire', 'select', [{ value: '', label: 'Toutes les versions' }].concat(versions)),
+      champ('an_canal', 'Canal', 'select', [{ value: '', label: 'Tous les canaux' }].concat(CANAUX_ENQUETE.concat([CANAL_PUBLIC]).map(function (x) { return { value: x, label: x }; }))),
+    ]);
+    function peindre() {
+      var a = analyseSatisfaction(enq, colReponses().active(), filtres);
+      C.clear(zone);
+      zone.appendChild(U.kpiGrid([
+        { label: 'R\u00e9ponses (filtre)', value: C.num(a.reponses), icon: 'messages-square', tone: 'navy' },
+        { label: 'Taux de satisfaction', value: pctOuNC(a.satisfaction), icon: 'smile', tone: 'success', hint: 'Notes 4 ou 5 sur 5' },
+        { label: 'Taux de recommandation', value: pctOuNC(a.recommandation), icon: 'thumbs-up', tone: 'info' },
+        { label: 'Taux de r\u00e9ponse', value: pctOuNC(a.tauxReponse), icon: 'percent', tone: 'neutral', hint: 'Passages \u00e0 l\\u2019accueil non compt\u00e9s' },
+      ]));
+      zone.appendChild(K.miniTable(['Question', 'Notes', 'Moyenne', 'Satisfaction'], a.parQuestion.map(function (q) {
+        return [q.libelle, C.num(q.n), q.moyenne == null ? 'Non calculable' : C.num(q.moyenne, 1), pctOuNC(q.satisfaction)];
+      })));
+      zone.appendChild(K.miniTable(['Mois', 'R\u00e9ponses', 'Satisfaction'], a.parMois.map(function (m) { return [m.mois, C.num(m.n), pctOuNC(m.satisfaction)]; })));
+      zone.appendChild(K.miniTable(['Point de collecte', 'R\u00e9ponses', 'Satisfaction'], a.parPoint.map(function (p) { return [p.libelle, C.num(p.n), pctOuNC(p.satisfaction)]; })));
+      U.icons(zone);
+    }
+    corps.appendChild(barre); corps.appendChild(zone);
+    ['du', 'au', 'point', 'version', 'canal'].forEach(function (k) {
+      var e = barre.querySelector('#an_' + k);
+      e.addEventListener('change', function () { filtres[k] = e.value; peindre(); });
+    });
+    peindre();
+    return U.card('Analyse', corps);
+  }
 
   global.SIGH.screen('adm-satisfaction', {
     title: 'Satisfaction des patients',
@@ -1900,6 +2368,7 @@
             ]);
           }))
           : U.empty('Aucun commentaire libre recueilli.', { icon: 'message-square-text' })));
+      host.appendChild(carteAnalyse(enq));
       host.appendChild(K.source('R\u00e9ponses de l\u2019enqu\u00eate \u00ab ' + enq.titre + ' \u00bb \u2014 recalcul\u00e9 \u00e0 chaque affichage.'));
       U.icons(host);
       return null;
@@ -1921,11 +2390,11 @@
     title: 'Validations en attente',
     description: 'Tout ce qui attend une validation, class\u00e9 par poste et par responsable \u2014 avec le chemin vers le geste.',
     regle: 'Cet \u00e9cran <strong>oriente</strong>, il ne valide jamais en masse : la validation est un '
-      + '<strong>geste humain, port\u00e9 \u00e0 son poste</strong> \u2014 le biologiste valide au laboratoire, '
-      + 'le comptable au journal, la DA sur le bon. Les validations \u00e9crites des professionnels '
-      + 'nomm\u00e9s sont <strong>arriv\u00e9es le 01/09/2026</strong> (biologiste, m\u00e9decins, praticiens du '
-      + 'bloc) ; ce qui reste en attente est une <strong>donn\u00e9e manquante ou r\u00e9currente</strong>, '
-      + 'jamais une signature que la Direction pourrait porter \u00e0 leur place.',
+      + '<strong>geste humain, port\u00e9 \u00e0 son poste</strong>, le biologiste au laboratoire, '
+      + 'le comptable au journal, la DA sur le bon, la Direction \u00e0 l\u2019\u00e9cran du r\u00e9f\u00e9rentiel. '
+      + 'Les comptes de la liste des r\u00e9f\u00e9rentiels sont <strong>relus dans le magasin \u00e0 chaque '
+      + 'affichage</strong> ; chaque profil n\u2019y voit que les familles de son ressort, et la Direction '
+      + 'ne signe jamais \u00e0 la place d\u2019un professionnel nomm\u00e9.',
     render: function (root) {
       var host = el('div.space-y-4');
       root.appendChild(host);
@@ -1933,6 +2402,16 @@
 
       function c(nom) { return S.collection(nom).active(); }
       var AUJ2 = C.iso(new Date());
+      var sessionAdm = S.session() || {};
+      var roleAdm = sessionAdm.role;
+      /* Les sept profils qui ouvraient d\u00e9j\u00e0 le centre gardent tout ce qu'ils y voyaient ; le biologiste,
+         l'\u00e9chographiste et les praticiens du bloc n'y voient QUE les familles de r\u00e9f\u00e9rentiels de leur r\u00f4le. */
+      /* Un DROIT de la fiche RBAC (`voir_toutes_les_validations`), plus une liste de rôles écrite ici (lot CLO-2, C6). */
+      var restreint = !global.SIGH.nav.droitGeste(roleAdm, 'voir_toutes_les_validations');
+      function ouvrable(id) {
+        var e = id && global.SIGH.nav.get(id);
+        return !!e && global.SIGH.nav.can(roleAdm, e);
+      }
 
       var files = [
         { libelle: 'R\u00e9sultats \u00e0 valider biologiquement', poste: 'Biologiste m\u00e9dical',
@@ -1968,20 +2447,24 @@
           ecran: 'm12-echeances', icone: 'calendar-clock' },
       ];
 
-      var professionnels = [
-        /* Les validations \u00e9crites du 01/09 sont ARRIV\u00c9ES (vague 51) ; ce qui
-           reste ici n'attend PAS une signature : ce sont des DONN\u00c9ES
-           physiquement manquantes ou structurellement r\u00e9currentes. */
+      /* Cas (c) : ce qui ne se l\u00e8ve PAS par un geste. Le marquage tombe par la SAISIE de la donn\u00e9e qui manque. */
+      var cas = [
         { libelle: 'Parc technique \u2014 fiches \u00e0 compl\u00e9ter', qui: 'Ing\u00e9nierie / administration',
           compte: c('materiel').filter(function (m) { return m.aCompleter; }).length,
           ecran: 'm13-maintenance',
           motif: 'Marque, n\u00b0 de s\u00e9rie et mise en service MANQUENT physiquement : une validation ne cr\u00e9e '
             + 'pas un num\u00e9ro de s\u00e9rie \u2014 le marquage dispara\u00eet par la SAISIE, jamais par une signature.' },
+        { libelle: 'R\u00e9pertoire des ambulances : num\u00e9ros \u00e0 renseigner', qui: 'Accueil',
+          compte: S.collection('ambulances').all().length ? c('ambulances').filter(function (r) { return !r.telephone; }).length : null,
+          nonAmorce: !S.collection('ambulances').all().length,
+          ecran: 'm13-repertoire-ambulances',
+          motif: 'Aucun num\u00e9ro d\u2019urgence n\u2019est invent\u00e9 : la fiche reste vide et le dit jusqu\u2019\u00e0 la SAISIE du num\u00e9ro, '
+            + 'jamais par une signature.' },
         { libelle: 'Plages de r\u00e9f\u00e9rence par lot de r\u00e9actif', qui: 'Biologiste m\u00e9dical',
-          compte: c('plagesReactif').length,
+          compte: null, structurel: true,
           ecran: 'm5-valeurs-reference',
-          motif: 'Structurel : chaque NOUVEAU lot porte ses bornes \u2014 la notice du r\u00e9actif fait foi, '
-            + '\u00e0 chaque arrivage.' },
+          motif: 'Structurel, sans marquage : chaque NOUVEAU lot porte les bornes de SA notice, la notice du '
+            + 'r\u00e9actif fait foi, \u00e0 chaque arrivage.' },
       ];
 
       /* QUATRI\u00c8ME FAMILLE \u2014 ce qui attend un ARBITRAGE de la Direction
@@ -1990,7 +2473,31 @@
          la place du biologiste, mais elle est seule \u00e0 pouvoir fixer la dur\u00e9e
          de validit\u00e9 d'un badge. Les ranger ensemble ferait attendre l'un
          pour l'autre. */
-      var arbitrages = [
+      /* LA CONFIGURATION FISCALE \u00c0 VALIDER (Direction, 06/11/2026) : identit\u00e9 l\u00e9gale et obligations
+         fiscales se v\u00e9rifient et se valident \u00e0 la premi\u00e8re configuration, \u00e0 LEUR \u00e9cran. Les deux lignes
+         paraissent tant que l'\u00e9tat n'est pas \u00ab valid\u00e9 \u00bb, et reviennent d\u00e8s qu'une version dat\u00e9e est cr\u00e9\u00e9e
+         (\u00e9tat \u00ab modifi\u00e9 depuis la validation \u00bb). L'\u00e9tat vient du moteur, jamais recopi\u00e9 ici. */
+      var CFX = global.SIGH.configurationFiscale;
+      var etatIdentite = CFX ? CFX.etatConfigurationFiscale('identite') : { etat: 'valide' };
+      var etatObligations = CFX ? CFX.etatConfigurationFiscale('obligations') : { etat: 'valide' };
+      function attenteConfiguration(e) {
+        return e.etat === 'modifie_depuis'
+          ? 'Modifi\u00e9e le ' + (e.modifieLe ? C.dateHeure(e.modifieLe) : '?') + ' depuis la validation du ' + C.dateHeure(e.validationAnterieure.valideLe) + ' : \u00e0 revalider'
+          : '\u00c0 valider (premi\u00e8re configuration)';
+      }
+      var configurationFiscale = [];
+      if (etatIdentite.etat !== 'valide') {
+        configurationFiscale.push({ libelle: 'Identit\u00e9 l\u00e9gale \u00e0 valider (premi\u00e8re configuration)',
+          attente: attenteConfiguration(etatIdentite), ecran: 'cfg-fiscalite', configuration: 'identite',
+          motif: 'IFU, RCCM, forme, autorisation, adresse fiscale, devise et r\u00e9gime de TVA s\u2019impriment sur toutes les pi\u00e8ces : la Direction, la DAF ou l\u2019administrateur les v\u00e9rifie et valide \u00e0 l\u2019\u00e9cran Param\u00e8tres fiscaux.' });
+      }
+      if (etatObligations.etat !== 'valide') {
+        configurationFiscale.push({ libelle: 'Obligations fiscales \u00e0 valider',
+          attente: attenteConfiguration(etatObligations), ecran: 'cfg-comptabilite', configuration: 'obligations',
+          motif: 'Obligations mensuelles, IS, patente, CCIB, TVM et redevances ORTB pr\u00e9lev\u00e9es sur les salaires : \u00e0 v\u00e9rifier et valider \u00e0 l\u2019\u00e9cran Param\u00e8tres comptables & obligations.' });
+      }
+
+      var arbitrages = configurationFiscale.concat([
         { libelle: 'Dur\u00e9e de validit\u00e9 d\u2019un badge du personnel',
           attente: '24 mois (valeur d\u2019attente)', ecran: 'm10-badges',
           motif: 'Aucun document de cadrage ne la fixe. Peut aussi suivre la dur\u00e9e du contrat.' },
@@ -2002,85 +2509,128 @@
           attente: 'Restitution, perte, propri\u00e9t\u00e9', ecran: 'm10-badges-modeles',
           motif: 'Elles engagent la clinique envers le porteur : c\u2019est \u00e0 la Direction de les arr\u00eater.' },
         { libelle: 'Le badge sert-il de support de POINTAGE ?',
-          attente: 'Non \u2014 d\u00e9cision non prise', ecran: 'm10-badges',
-          motif: 'S\u2019il pointe, il se relie au registre des pr\u00e9sences et la conception change : lecteur \u00e0 '
-            + 'l\u2019entr\u00e9e, horodatage, traitement des oublis de badge.' },
-      ];
+          attente: 'Oui par d\u00e9faut (d\u00e9cision du 09/11/2026)', ecran: 'm10-badges',
+          motif: 'R\u00e9glable au poste. Reste \u00e0 arr\u00eater par la Direction : le d\u00e9lai entre deux pointages (5 minutes propos\u00e9es) '
+            + 'et le traitement des oublis de badge.' },
+      ]);
 
-      var validees = [
-        { libelle: 'Tarifs des actes (valeurs d\u2019attente du 20/08)', detail: 'ARR\u00caT\u00c9S par la Direction \u2014 plus aucun tarif provisoire au catalogue vivant ; la semence garde le marquage historique.' },
-        { libelle: 'Valorisation des 34 r\u00e9f\u00e9rences SAGE', detail: 'M\u00e9diane de cat\u00e9gorie CONFIRM\u00c9E ; r\u00e9visable \u00e0 la premi\u00e8re facture fournisseur (surcouche trac\u00e9e).' },
-        { libelle: 'Les quatre groupes d\u2019articles', detail: 'CONFIRM\u00c9S \u2014 ils cessent d\u2019\u00eatre une proposition.' },
-        { libelle: 'Questionnaire de satisfaction', detail: 'VALID\u00c9 \u2014 le recueil peut s\u2019appuyer dessus.' },
-        { libelle: 'Bornes suppl\u00e9\u00e9es du laboratoire (61 variables)', detail: 'Validation \u00e9crite du BIOLOGISTE M\u00c9DICAL (01/09) \u2014 badge \u00ab Valid\u00e9e \u00bb, jamais confondu avec \u00ab Document\u00e9e \u00bb.' },
-        { libelle: 'Liste des 55 pathologies', detail: 'Arr\u00eat\u00e9e par les M\u00c9DECINS (tableau de morbidit\u00e9, 01/09) \u2014 elle reste administrable.' },
-        { libelle: 'Check-listes du bloc, \u00e9chelles ASA/Mallampati, techniques', detail: 'Arr\u00eat\u00e9es par les PRATICIENS DU BLOC (01/09) \u2014 la provenance propos\u00e9e reste dite.' },
-        { libelle: 'Seuils d\u2019alerte du stock', detail: 'Seuils propos\u00e9s (20 % du stock repris) CONFIRM\u00c9S \u2014 r\u00e9visables r\u00e9f\u00e9rence par r\u00e9f\u00e9rence.' },
-        { libelle: 'Rapprochement groupe \u2194 centre de co\u00fbts', detail: 'ARR\u00caT\u00c9 \u2014 b\u00e9n\u00e9fice brut par groupe affich\u00e9, charges transverses non ventil\u00e9es (dit).' },
-      ];
-
+      /* LES R\u00c9F\u00c9RENTIELS : un compte par famille, relu dans le magasin (PR.referentielsAValider) : jamais un litt\u00e9ral. */
+      var PRV = global.SIGH.parcours;
+      var familles = PRV.referentielsAValider ? global.SIGH.validations.referentielsVisiblesPar(roleAdm) : [];
+      var totalFamilles = familles.reduce(function (n, x) { return n + (x.enAttente || 0); }, 0);
       var totalGestes = files.reduce(function (n, x) { return n + (x.compte || 0); }, 0);
-      host.appendChild(U.kpiGrid([
-        { label: 'Gestes de validation en attente', value: C.num(totalGestes), icon: 'list-checks',
-          tone: totalGestes ? 'warning' : 'success' },
-        { label: 'Files concern\u00e9es', value: C.num(files.filter(function (x) { return x.compte > 0; }).length) + ' / ' + files.length,
-          icon: 'layout-grid', tone: 'neutral' },
-        { label: 'R\u00e9f\u00e9rentiels en attente d\u2019un professionnel', value: C.num(professionnels.filter(function (x) { return x.compte === null || x.compte > 0; }).length),
-          icon: 'user-check', tone: 'info' },
-        { label: 'Valid\u00e9s par la Direction le 01/09', value: C.num(validees.length), icon: 'check-circle-2', tone: 'success' },
-      ]));
+      var kpis = [];
+      if (!restreint) {
+        kpis.push({ label: 'Gestes de validation en attente', value: C.num(totalGestes), icon: 'list-checks',
+          tone: totalGestes ? 'warning' : 'success' });
+        kpis.push({ label: 'Files concern\u00e9es', value: C.num(files.filter(function (x) { return x.compte > 0; }).length) + ' / ' + files.length,
+          icon: 'layout-grid', tone: 'neutral' });
+      }
+      kpis.push({ label: 'R\u00e9f\u00e9rentiels en attente de validation', value: C.num(totalFamilles), icon: 'user-check',
+        tone: totalFamilles ? 'warning' : 'success' });
+      kpis.push({ label: 'Familles concern\u00e9es', value: C.num(familles.filter(function (x) { return x.enAttente > 0; }).length) + ' / ' + familles.length,
+        icon: 'layers', tone: 'neutral' });
+      host.appendChild(U.kpiGrid(kpis));
 
-      var grille = el('div.grid.gap-3.md:grid-cols-2');
-      files.forEach(function (x) {
-        var carte = el('div.card');
-        carte.appendChild(el('div.card-body.flex.items-center.gap-3', null, [
-          el('span.shrink-0.text-navy-600', null, C.icon(x.icone, 'h-6 w-6')),
-          el('div.min-w-0.flex-1', null, [
-            el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
-            el('p.text-xs.text-slate-500', { text: x.nonAmorce
-              ? 'File non amorc\u00e9e sur ce poste \u2014 ouvrir l\u2019\u00e9cran pour la charger'
-              : 'Le geste appartient \u00e0 : ' + x.poste }),
-          ]),
-          el('span.shrink-0.text-lg.font-semibold.num', {
-            class: x.compte ? 'text-warning-700' : 'text-slate-300',
-            text: x.compte == null ? '\u2014' : C.num(x.compte),
-          }),
-          K.btn('Y aller', { size: 'sm', icon: 'arrow-right',
-            onclick: function () { if (go) go(x.ecran); } }),
-        ]));
-        grille.appendChild(carte);
-      });
-      host.appendChild(U.card('\u00c0 valider \u00c0 SON POSTE \u2014 l\u2019\u00e9cran oriente, le poste valide', grille));
-
-      host.appendChild(U.card('R\u00e9f\u00e9rentiels en attente d\u2019un PROFESSIONNEL nomm\u00e9 \u2014 la Direction ne signe pas \u00e0 sa place',
-        el('div.space-y-2', null, professionnels.map(function (x) {
-          return el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
-            el('div.min-w-0.flex-1', null, [
-              el('p.text-sm.font-medium.text-slate-800', {
-                text: x.libelle + (x.compte != null ? ' \u2014 ' + C.num(x.compte) + ' entr\u00e9e(s)' : ''),
-              }),
-              el('p.text-xs.text-slate-500', { text: x.qui + ' \u00b7 ' + x.motif }),
-            ]),
-            K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
-              onclick: function () { if (go) go(x.ecran); } }),
-          ]);
-        }))));
-
-      host.appendChild(U.card('En attente d\u2019un ARBITRAGE de la Direction \u2014 elle seule peut trancher',
-        el('div.space-y-2', null, arbitrages.map(function (x) {
-          return el('div.flex.items-start.gap-3.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+      if (!restreint) {
+        var grille = el('div.grid.gap-3.md:grid-cols-2');
+        files.forEach(function (x) {
+          var carte = el('div.card');
+          carte.appendChild(el('div.card-body.flex.items-center.gap-3', null, [
+            el('span.shrink-0.text-navy-600', null, C.icon(x.icone, 'h-6 w-6')),
             el('div.min-w-0.flex-1', null, [
               el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
-              el('p.text-xs.text-slate-600', { text: 'Valeur d\u2019attente : ' + x.attente + ' \u00b7 ' + x.motif }),
+              el('p.text-xs.text-slate-500', { text: x.nonAmorce
+                ? 'File non amorc\u00e9e sur ce poste : ouvrir l\u2019\u00e9cran pour la charger'
+                : 'Le geste appartient \u00e0 : ' + x.poste }),
             ]),
-            K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
+            el('span.shrink-0.text-lg.font-semibold.num', {
+              class: x.compte ? 'text-warning-700' : 'text-slate-300',
+              text: x.compte == null ? '\u2014' : C.num(x.compte),
+            }),
+            K.btn('Y aller', { size: 'sm', icon: 'arrow-right',
               onclick: function () { if (go) go(x.ecran); } }),
-          ]);
-        }))));
+          ]));
+          grille.appendChild(carte);
+        });
+        host.appendChild(U.card('\u00c0 valider \u00c0 SON POSTE, l\u2019\u00e9cran oriente, le poste valide', grille));
+      }
 
-      host.appendChild(U.card('Valid\u00e9es par la DIRECTION le 01/09/2026 (vague 49)',
-        K.miniTable(['R\u00e9f\u00e9rentiel', 'D\u00e9cision'],
-          validees.map(function (x) { return [x.libelle, x.detail]; }))));
+      /* Une ligne par famille : compte r\u00e9el, profil nomm\u00e9, lien vers l'\u00e9cran o\u00f9 se trouve l'artefact. Aucune commande d'\u00e9criture. */
+      host.appendChild(U.card(restreint
+        ? 'Les r\u00e9f\u00e9rentiels de votre ressort : la validation se fait \u00e0 l\u2019\u00e9cran de chacun'
+        : 'R\u00e9f\u00e9rentiels en attente de validation, par famille : la Direction ne signe pas \u00e0 la place d\u2019un professionnel nomm\u00e9',
+        familles.length
+          ? el('div.space-y-2', { 'data-familles-validation': '' }, familles.map(function (x) {
+            var ligne = el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
+              el('div.min-w-0.flex-1', null, [
+                el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
+                el('p.text-xs.text-slate-500', { text: 'Valide : ' + x.profil + (x.nonAmorce ? ' \u00b7 non amorc\u00e9 sur ce poste, ouvrir l\u2019\u00e9cran pour le charger' : '') }),
+              ]),
+              el('span.shrink-0.text-lg.font-semibold.num', {
+                class: x.enAttente ? 'text-warning-700' : 'text-slate-300',
+                text: x.enAttente == null ? '\u2014' : C.num(x.enAttente),
+              }),
+              el('span.shrink-0.text-xs.text-slate-500.self-center', { text: x.total == null ? '' : 'sur ' + C.num(x.total) }),
+              ouvrable(x.ecran)
+                ? K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right', onclick: function () { if (go) go(x.ecran); } })
+                : null,
+            ].filter(Boolean));
+            ligne.setAttribute('data-famille', x.famille);
+            ligne.setAttribute('data-en-attente', x.enAttente == null ? '' : String(x.enAttente));
+            return ligne;
+          }))
+          : el('p.text-sm.text-slate-500', { text: 'Aucun r\u00e9f\u00e9rentiel en attente de validation ne rel\u00e8ve de votre profil.' })));
+
+      /* LIGNE « SEUILS ENREGISTRÉS À VALIDER » (lot B) : le compte des versions de seuil de variation brutale à l'état Enregistré (sans effet), visible du SEUL porteur du droit de les valider
+         (le droit de la fiche RBAC, jamais une liste de rôles : même la Direction et l'administrateur ne la voient pas sans lui). Le centre ORIENTE : le geste de validation reste à l'écran
+         « Valeurs de référence » (motif obligatoire), il n'y a aucune validation en lot. */
+      var ND = global.SIGH.nav, SE = global.SIGH.laboSeuils;
+      if (ND && ND.droitGeste && SE && SE.enAttente && ND.droitGeste(roleAdm, 'valider_seuil_labo')) {
+        var attenteSeuils = SE.enAttente();
+        var ligneSeuils = el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
+          el('div.min-w-0.flex-1', null, [
+            el('p.text-sm.font-medium.text-slate-800', { text: 'Seuils enregistrés à valider' }),
+            el('p.text-xs.text-slate-500', { text: 'Seuils de variation brutale du laboratoire, sans effet tant qu’ils ne sont pas validés · valide : ' + ND.rolesAvecGeste('valider_seuil_labo').map(function (r) { return ND.ROLES[r] ? ND.ROLES[r].label : r; }).join(', ')
+              + ' · la validation se fait à l’écran « Valeurs de référence », un seuil à la fois, avec son motif.' }),
+          ]),
+          el('span.shrink-0.text-lg.font-semibold.num', { class: attenteSeuils.total ? 'text-warning-700' : 'text-slate-300', text: C.num(attenteSeuils.total) }),
+          ouvrable(SE.ECRAN) ? K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right', onclick: function () { if (go) go(SE.ECRAN); } }) : null,
+        ].filter(Boolean));
+        ligneSeuils.setAttribute('data-seuils-a-valider', '');
+        ligneSeuils.setAttribute('data-en-attente', String(attenteSeuils.total));
+        host.appendChild(U.card('Seuils de variation à valider : la validation reste à son poste, au porteur du droit', el('div.space-y-2', null, ligneSeuils)));
+      }
+
+      if (!restreint) {
+        host.appendChild(U.card('Donn\u00e9es \u00e0 compl\u00e9ter : le marquage tombe par la SAISIE, jamais par une signature',
+          el('div.space-y-2', null, cas.map(function (x) {
+            return el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
+              el('div.min-w-0.flex-1', null, [
+                el('p.text-sm.font-medium.text-slate-800', {
+                  text: x.libelle + (x.nonAmorce ? ' (non amorc\u00e9 sur ce poste)' : (x.compte != null ? ' : ' + C.num(x.compte) + ' entr\u00e9e(s)' : '')),
+                }),
+                el('p.text-xs.text-slate-500', { text: x.qui + ' \u00b7 ' + x.motif }),
+              ]),
+              ouvrable(x.ecran) ? K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
+                onclick: function () { if (go) go(x.ecran); } }) : null,
+            ].filter(Boolean));
+          }))));
+
+        host.appendChild(U.card('En attente d\u2019un ARBITRAGE de la Direction : elle seule peut trancher',
+          el('div.space-y-2', null, arbitrages.map(function (x) {
+            var ligne = el('div.flex.items-start.gap-3.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+              el('div.min-w-0.flex-1', null, [
+                el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
+                el('p.text-xs.text-slate-600', { text: (x.configuration ? '\u00c9tat : ' : 'Valeur d\u2019attente : ') + x.attente + ' \u00b7 ' + x.motif }),
+              ]),
+              K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
+                onclick: function () { if (go) go(x.ecran); } }),
+            ]);
+            if (x.configuration) ligne.setAttribute('data-configuration-fiscale', x.configuration);
+            return ligne;
+          }))));
+      }
 
       host.appendChild(K.source('Compt\u00e9 \u00e0 chaque affichage depuis les registres du magasin \u2014 rien n\u2019est fourni.'));
       U.icons(host);
@@ -2110,8 +2660,6 @@
     render: function (root) {
       var params = new URLSearchParams(global.location.search || '');
       var code = params.get('jeton');
-      var jeton = jetonParCode(code);
-      var enq = jeton ? colEnquetes().get(jeton.enqueteId) : null;
 
       var page = el('div.min-h-screen.bg-slate-100.px-4.py-8');
       var carte = el('div.mx-auto.w-full.max-w-2xl.space-y-4');
@@ -2129,7 +2677,19 @@
       entete.appendChild(el('p.text-xs.italic.text-navy-700', { text: C.BRAND.slogan }));
       carte.appendChild(entete);
 
-      if (!jeton || !jetonOuvert(jeton) || !enq) {
+      /* LECTURE ÉTROITE (vague 84). Le magasin exige une session ; cette page n'en a pas et n'en lit aucun.
+         Elle demande à `api/enquete.php` le modèle que désigne le jeton, et rien d'autre. Le serveur juge
+         le jeton (inconnu, expiré, révoqué : même 404) ; la page n'affiche ni ne conserve autre chose. */
+      var lien = base + 'api/enquete.php?jeton=' + encodeURIComponent(code || '');
+      (code ? global.fetch(lien, { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; }) : global.Promise.resolve(null))
+        .then(function (rep) {
+          if (!rep || !rep.enquete || !rep.jeton) { refuser(); return; }
+          questionnaire(rep.enquete, rep.jeton);
+        });
+
+      function refuser() {
         /* Une seule et même réponse pour « jeton inconnu », « expiré » et
            « révoqué » : distinguer les trois renseignerait sur ce qui
            existe. */
@@ -2142,9 +2702,9 @@
           el('p.mt-4.text-xs.text-slate-400', { text: 'Tél. ' + C.BRAND.telephones.join(' / ') }),
         ]));
         U.icons(page);
-        return null;
       }
 
+      function questionnaire(enq, jeton) {
       /* --- Le questionnaire ---------------------------------------------- */
       var corps = el('div.rounded-2xl.bg-white.px-6.py-6.shadow-card.space-y-4');
       corps.appendChild(el('h1.text-xl.font-bold.text-slate-900', { text: enq.titre }));
@@ -2173,8 +2733,17 @@
         var v = f.collect();
         if (!v) { U.toast('Merci de compléter les réponses attendues.', { type: 'error' }); return; }
         var nom = v._repondant; delete v._repondant;
+        /* Refus nommé (SANS_POSTE) : sans session de poste, le magasin n'écrit rien au serveur.
+           Afficher « enregistrée » serait faux : la réponse mourrait avec la page. */
+        if (!S.session()) {
+          U.toast('Réponse non transmise depuis cet appareil.', {
+            type: 'error', duration: 10000,
+            detail: 'Code SANS_POSTE. Remettez votre réponse à l’accueil : elle n’a pas été conservée.',
+          });
+          return;
+        }
         enregistrerReponse(enq, v, {
-          canal: CANAL_PUBLIC, jetonId: jeton.id,
+          canal: CANAL_PUBLIC, jetonId: jeton.id, point: jeton.point || null,
           /* ANONYME VEUT DIRE ANONYME : ni nom, ni adresse réseau, ni lien
              vers un dossier. Sinon le mot est un mensonge. */
           saisiPar: jeton.anonyme ? 'Réponse anonyme — lien partagé' : (nom || 'Répondant non nommé'),
@@ -2195,9 +2764,56 @@
         text: C.BRAND.nom + ' — ' + C.BRAND.bp,
       }));
       U.icons(page);
+      }
       return null;
     },
   });
 
+  /* ==========================================================================
+   * JOURNAL DES ENVOIS SMS (lecture seule)
+   * --------------------------------------------------------------------------
+   * Une ligne par envoi tenté depuis la passerelle (cfg-sms) : motif, statut, code du refus, fournisseur, numéro MASQUÉ (les quatre derniers
+   * chiffres), identifiant du message chez le fournisseur. JAMAIS le numéro en clair, JAMAIS le texte, JAMAIS un identifiant de compte. Un refus
+   * y est écrit comme refus : seul un message accepté par le fournisseur porte un identifiant. Ce journal ne se modifie pas : la trace d'un envoi
+   * n'est pas une fiche qu'on corrige. Conservation 12 mois puis archivage (RG-14), décision du 07/11/2026.
+   * ======================================================================== */
+  var STATUTS_SMS = { accepte: ['Accepté', 'success'], refuse: ['Refusé', 'danger'], reporte: ['Reporté', 'warning'], en_file: ['En file', 'warning'] };
+  global.SIGH.screen('m13-sms-journal', {
+    title: 'Journal des envois SMS',
+    description: 'Les envois de la passerelle SMS : motif, statut, refus nommé, numéro masqué et identifiant chez le fournisseur.',
+    regle: 'Le journal ne garde <strong>ni le texte ni le numéro en clair</strong> (quatre derniers chiffres seulement). Il se lit sans se modifier : la trace d’un envoi n’est pas une fiche qu’on corrige.',
+    render: function (root) {
+      return K.crud({
+        collection: 'messagesSms', entite: 'envoi', entiteP: 'envois', module: 'M13', readonly: true,
+        defaultSort: 'date', defaultDir: 'desc', pageSize: 15,
+        plageDates: { champ: 'date', aujourdhui: AUJ },
+        columns: [
+          { key: 'date', label: 'Date', nowrap: true, text: function (m) { return C.dateFR(m.date) + ' ' + (m.heure || ''); }, render: function (m) { return C.dateFR(m.date) + ' ' + (m.heure || ''); }, sortValue: function (m) { return String(m.date || '') + ' ' + String(m.heure || ''); } },
+          { key: 'motifLibelle', label: 'Motif' },
+          { key: 'statut', label: 'Statut', text: function (m) { return (STATUTS_SMS[m.statut] || [m.statut])[0]; }, render: function (m) { var x = STATUTS_SMS[m.statut] || [m.statut || '—', 'neutral']; return U.badge(x[0], x[1]); } },
+          { key: 'code', label: 'Refus nommé', render: function (m) { return m.code ? el('span.font-mono.text-xs', { text: m.code }) : '—'; }, text: function (m) { return m.code || ''; } },
+          { key: 'fournisseur', label: 'Fournisseur', text: function (m) { return m.fournisseur === 'vonage' ? 'Vonage' : 'Twilio'; }, render: function (m) { return m.fournisseur === 'vonage' ? 'Vonage' : 'Twilio'; } },
+          { key: 'numeroMasque', label: 'Numéro (masqué)', nowrap: true, render: function (m) { return el('span.font-mono.text-xs', { text: m.numeroMasque || '—' }); } },
+          { key: 'idMessage', label: 'Identifiant du message', render: function (m) { return m.idMessage ? el('span.font-mono.text-xs', { text: m.idMessage }) : '—'; }, text: function (m) { return m.idMessage || ''; } },
+          { key: 'par', label: 'Par' },
+        ],
+        filters: [
+          { name: 'statut', label: 'Statut', options: [{ value: 'accepte', label: 'Accepté' }, { value: 'refuse', label: 'Refusé' }, { value: 'reporte', label: 'Reporté' }, { value: 'en_file', label: 'En file' }] },
+          { name: 'motif', label: 'Motif', options: [{ value: 'test', label: 'Test d’envoi' }, { value: 'alerte_technique', label: 'Alerte technique' }, { value: 'rappel_rdv', label: 'Rappel de rendez-vous' }, { value: 'anniversaire', label: 'Souhait d’anniversaire' }, { value: 'fete', label: 'Souhait de fête' }, { value: 'relance', label: 'Relance' }, { value: 'resultat_disponible', label: 'Résultat disponible' }] },
+          { name: 'fournisseur', label: 'Fournisseur', options: [{ value: 'twilio', label: 'Twilio' }, { value: 'vonage', label: 'Vonage' }] },
+        ],
+        kpis: function (rows) {
+          var n = function (st) { return rows.filter(function (m) { return m.statut === st; }).length; };
+          return [
+            { label: 'Envois journalisés', value: rows.length, icon: 'messages-square', tone: 'navy' },
+            { label: 'Acceptés', value: n('accepte'), icon: 'check-circle-2', tone: 'success' },
+            { label: 'Refusés', value: n('refuse'), icon: 'x-circle', tone: n('refuse') ? 'danger' : 'neutral' },
+            { label: 'Reportés', value: n('reporte'), icon: 'clock', tone: n('reporte') ? 'warning' : 'neutral' },
+          ];
+        },
+        fields: [],
+      })(root);
+    },
+  });
 
 })(window);

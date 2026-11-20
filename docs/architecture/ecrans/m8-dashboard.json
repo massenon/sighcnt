@@ -1,0 +1,57 @@
+{
+ "id": "m8-dashboard",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Tableau de bord facturation",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Facturation & Caisse",
+ "description": "Chiffre d’affaires, encaissements, reliquats, répartition des règlements et recettes par activité.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Tableau de bord facturation"
+ ],
+ "actions": [
+  "Nouvelle facture",
+  "Factures",
+  "Facturation & Caisse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Chiffre d’affaires du jour",
+  "Encaissé aujourd’hui",
+  "Chiffre d’affaires du mois",
+  "Encaissé sur le mois",
+  "Nombre de factures",
+  "Reliquats en cours",
+  "Factures impayées",
+  "Part assurance à recouvrer"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Évolution du chiffre d’affaires (12 mois)",
+  "Recettes par activité",
+  "Répartition des modes de paiement",
+  "Factures par jour (mois en cours)",
+  "Dernières factures"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Patient",
+   "Nature",
+   "Montant",
+   "Réglé",
+   "Statut"
+  ]
+ ],
+ "commandes": [
+  "Toutes les factures"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 8
+}

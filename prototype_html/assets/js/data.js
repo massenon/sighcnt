@@ -19,34 +19,90 @@
    * 1. ORGANIGRAMME — source : docs/organigramme_nassiera_too.jpeg
    * Pilote la structure organisationnelle ET le RBAC (draf1 §4).
    * ======================================================================== */
+  /* LA SEMENCE DE L'ORGANIGRAMME SUIT LA PHOTO DE L'ORGANIGRAMME PAPIER (11/11/2026, décisions O1 à O5 de la Direction).
+     Intitulés alignés sur la photo (« Directrice Administrative (DA) », « Echographiste », « Aide-Soignante », « Agents de Sécurités »,
+     « Agents d’Entretiens », « Assistant comptable »), titulaire de la Directrice Administrative gardé tel quel (« épse BASSONGUI »), et le
+     surveillant général est un INFIRMIER : le titre « SG » est porté par l'AGENT (champ `titreOrganigramme` du personnel), plus par le poste
+     (`chef` ne vaut donc plus pour les Infirmiers). Aucune étoile : la photo en trace une sur cinq boîtes, la Direction a tranché qu'elle ne veut
+     rien dire (O5), aucun champ `etoile` n'existe.
+     Chaque poste porte un IDENTIFIANT STABLE (`id`) : c'est ce qui permet à une reprise de reconnaître la fiche qu'elle doit réécrire sans toucher à
+     celles que la clinique a modifiées (voir `ORGANIGRAMME_PRECEDENT`).
+     HIÉRARCHIE : lue sur les connecteurs de la photo (feuille tournée de 90 degrés, traits qui se croisent), voir ECARTS-MAQUETTE.md E2352.
+     Lisible : le Directeur Médical porte la Directrice Administrative, les Laborantins, l'Echographiste, les Médecins, les Secrétaires Médicaux,
+     les Infirmiers et les Agents d'Entretiens ; la Directrice Administrative porte le Comptable ; le Comptable porte l'Assistant comptable, qui porte le
+     Gestionnaire de Stock ; les Infirmiers portent les Sages-Femmes et l'Aide-Soignante ; les Secrétaires Médicaux portent le Chauffeur Coursier.
+     Non lisible : les Dispensatrices et les Agents de Sécurités n'ont aucun connecteur sur la photo : ils restent sous la Directrice Administrative,
+     comme dans la collection d'avant. L'organigramme n'est pas figé : le CRUD de « Organisation & organigramme » réaffecte, renomme, archive. */
   var ORGANIGRAMME = {
     source: 'DOC — Organigramme de la Clinique NASSIERA TOO',
     effectifTotal: 44,
     racine: {
-      poste: 'Directeur Médical', effectif: 1, titulaire: 'BASSONGUI Chabi Séko', role: 'dm',
+      id: 'PST001', poste: 'Directeur Médical', effectif: 1, titulaire: 'BASSONGUI Chabi Séko', role: 'dm',
       enfants: [
         {
-          poste: 'Directrice Administrative', effectif: 1, titulaire: 'TAKI Alimatou épse BASSONGUI', role: 'da',
+          id: 'PST002', poste: 'Directrice Administrative (DA)', effectif: 1, titulaire: 'TAKI Alimatou épse BASSONGUI', role: 'da',
           enfants: [
-            { poste: 'Comptable', effectif: 1, titulaire: 'KASSA Augustin', role: 'comptable',
-              enfants: [{ poste: 'Assistant Comptable', effectif: 1, titulaire: 'GBEDJI Hervé', role: 'comptable' }] },
-            { poste: 'Gestionnaire de Stock', effectif: 1, titulaire: 'MAMAN Zoukanéri', role: 'stock' },
-            { poste: 'Secrétaires Médicaux', effectif: 4, titulaire: 'OROU YO Edmond', chef: true, role: 'reception' },
-            { poste: 'Dispensatrices', effectif: 4, titulaire: 'DIEYABIDI Aïssatou', chef: true, role: 'pharmacien' },
-            { poste: 'Agents de Sécurité', effectif: 3, titulaire: 'OURTCHA TEREYAMA', chef: true, role: 'agentadmin' },
-            { poste: 'Agents d’Entretien', effectif: 3, titulaire: 'ISSA Rabiatou', chef: true, role: 'agentadmin' },
-            { poste: 'Chauffeur Coursier', effectif: 1, titulaire: 'TCHANE Nourou', role: 'ambulancier' },
+            { id: 'PST003', poste: 'Comptable', effectif: 1, titulaire: 'KASSA Augustin', role: 'comptable',
+              enfants: [{ id: 'PST004', poste: 'Assistant comptable', effectif: 1, titulaire: 'GBEDJI Hervé', role: 'comptable',
+                enfants: [{ id: 'PST005', poste: 'Gestionnaire de Stock', effectif: 1, titulaire: 'MAMAN Zoukanéri', role: 'stock' }] }] },
+            { id: 'PST007', poste: 'Dispensatrices', effectif: 4, titulaire: 'DIEYABIDI Aïssatou', chef: true, role: 'pharmacien' },
+            { id: 'PST008', poste: 'Agents de Sécurités', effectif: 3, titulaire: 'OURTCHA TEREYAMA', chef: true, role: 'agentadmin' },
           ],
         },
-        { poste: 'Médecins Généralistes', effectif: 2, titulaire: 'YENI M’PO Florent', role: 'medecin' },
-        { poste: 'Échographiste', effectif: 1, titulaire: 'AHOHOU Rodrigue', role: 'medecin' },
-        { poste: 'Laborantins', effectif: 2, titulaire: 'KINNOU Addoul Ganiou', chef: true, role: 'laborantin' },
-        { poste: 'Infirmiers', effectif: 8, titulaire: 'GARBA Yahouza', chef: true, role: 'infirmier' },
-        { poste: 'Sages-Femmes', effectif: 3, role: 'infirmier' },
-        { poste: 'Aide-Soignantes', effectif: 8, titulaire: 'TEPA Séraphine', chef: true, role: 'aide_soignant' },
+        {
+          id: 'PST014', poste: 'Infirmiers', effectif: 8, titulaire: 'GARBA Yahouza', role: 'infirmier',
+          enfants: [
+            { id: 'PST015', poste: 'Sages-Femmes', effectif: 3, role: 'infirmier' },
+            { id: 'PST016', poste: 'Aide-Soignante', effectif: 8, titulaire: 'TEPA Séraphine', chef: true, role: 'aide_soignant' },
+          ],
+        },
+        { id: 'PST013', poste: 'Laborantins', effectif: 2, titulaire: 'KINNOU Addoul Ganiou', chef: true, role: 'laborantin' },
+        { id: 'PST012', poste: 'Echographiste', effectif: 1, titulaire: 'AHOHOU Rodrigue', role: 'medecin' },
+        { id: 'PST011', poste: 'Médecins Généralistes', effectif: 2, titulaire: 'YENI M’PO Florent', role: 'medecin' },
+        { id: 'PST006', poste: 'Secrétaires Médicaux', effectif: 4, titulaire: 'OROU YO Edmond', chef: true, role: 'reception',
+          enfants: [{ id: 'PST010', poste: 'Chauffeur Coursier', effectif: 1, titulaire: 'TCHANE Nourou', role: 'ambulancier' }] },
+        { id: 'PST009', poste: 'Agents d’Entretiens', effectif: 3, titulaire: 'ISSA Rabiatou', chef: true, role: 'agentadmin' },
       ],
     },
   };
+
+  /* La semence D'AVANT le 11/11/2026 : l'organigramme à trois niveaux tiré de la collection. Elle ne sert qu'à RECONNAÎTRE une fiche que la clinique n'a
+     pas touchée : la reprise (`S.migrerOrganigramme`) ne réécrit un poste que s'il est encore identique à cette ligne ET ne porte aucune trace de
+     modification (`_modifieLe`, `_archiveLe`). Un poste qui diffère d'un seul champ, ou qui a été modifié par l'écran, n'est jamais réécrit. */
+  var ORGANIGRAMME_PRECEDENT = [
+    ['PST001', null, 'Directeur Médical', 1, 'BASSONGUI Chabi Séko', false, 'dm'],
+    ['PST002', 'PST001', 'Directrice Administrative', 1, 'TAKI Alimatou épse BASSONGUI', false, 'da'],
+    ['PST003', 'PST002', 'Comptable', 1, 'KASSA Augustin', false, 'comptable'],
+    ['PST004', 'PST003', 'Assistant Comptable', 1, 'GBEDJI Hervé', false, 'comptable'],
+    ['PST005', 'PST002', 'Gestionnaire de Stock', 1, 'MAMAN Zoukanéri', false, 'stock'],
+    ['PST006', 'PST002', 'Secrétaires Médicaux', 4, 'OROU YO Edmond', true, 'reception'],
+    ['PST007', 'PST002', 'Dispensatrices', 4, 'DIEYABIDI Aïssatou', true, 'pharmacien'],
+    ['PST008', 'PST002', 'Agents de Sécurité', 3, 'OURTCHA TEREYAMA', true, 'agentadmin'],
+    ['PST009', 'PST002', 'Agents d’Entretien', 3, 'ISSA Rabiatou', true, 'agentadmin'],
+    ['PST010', 'PST002', 'Chauffeur Coursier', 1, 'TCHANE Nourou', false, 'ambulancier'],
+    ['PST011', 'PST001', 'Médecins Généralistes', 2, 'YENI M’PO Florent', false, 'medecin'],
+    ['PST012', 'PST001', 'Échographiste', 1, 'AHOHOU Rodrigue', false, 'medecin'],
+    ['PST013', 'PST001', 'Laborantins', 2, 'KINNOU Addoul Ganiou', true, 'laborantin'],
+    ['PST014', 'PST001', 'Infirmiers', 8, 'GARBA Yahouza', true, 'infirmier'],
+    ['PST015', 'PST001', 'Sages-Femmes', 3, null, false, 'infirmier'],
+    ['PST016', 'PST001', 'Aide-Soignantes', 8, 'TEPA Séraphine', true, 'aide_soignant'],
+  ].map(function (l) { return { id: l[0], parentId: l[1], poste: l[2], effectif: l[3], titulaire: l[4], chef: l[5], role: l[6] }; });
+
+  /** L'arbre de la semence aplati en fiches de la collection `postes` (ordre du parcours en profondeur, identifiants portés par les nœuds). */
+  function postesDeLaSemence() {
+    var out = [];
+    (function aplatir(noeud, parentId) {
+      var fiche = {
+        id: noeud.id, statut: 'actif', parentId: parentId,
+        poste: noeud.poste, effectif: noeud.effectif || 0,
+        titulaire: noeud.titulaire || null, chef: !!noeud.chef, role: noeud.role,
+        source: 'Organigramme de la Clinique NASSIERA TOO', semence: 2,
+      };
+      out.push(fiche);
+      (noeud.enfants || []).forEach(function (e) { aplatir(e, noeud.id); });
+    })(ORGANIGRAMME.racine, null);
+    return out;
+  }
 
   /* Fonctions = colonnes de la grille des primes NS 132 */
   var FONCTIONS = [
@@ -133,7 +189,29 @@
         courant = st.collection('grillePrimes').active()
           .filter(function (x) { return x.primeId === primeId; })[0];
       } catch (e) { return NS132.montantOrigine(primeId, fonctionId); }
-      if (!courant) return NS132.montantOrigine(primeId, fonctionId);
+      if (!courant) {
+        /* Aucune fiche en vigueur : la prime est soit inconnue du magasin
+           (barème d'origine), soit RETIRÉE (E651). Une prime retirée reçoit une
+           date de fin : jusqu'à elle, la version sortante s'applique ; après,
+           ou sans date, la paie ne la lit plus. */
+        var traces = [];
+        try {
+          traces = st.collection('historiquePrimes').active()
+            .filter(function (x) { return x.primeId === primeId; });
+        } catch (e) { traces = []; }
+        if (!traces.length) return NS132.montantOrigine(primeId, fonctionId);
+        var couvrante = date ? traces.filter(function (v) {
+          return (!v.dateEffet || String(date) >= String(v.dateEffet))
+            && (!v.dateFin || String(date) <= String(v.dateFin));
+        }).sort(function (x, y) { return String(y.dateEffet).localeCompare(String(x.dateEffet)); })[0] : null;
+        if (couvrante) return (couvrante.montants || {})[fonctionId] || 0;
+        var retiree = traces.some(function (v) { return v.retiree; });
+        if (retiree) {
+          var debut = traces.map(function (v) { return String(v.dateEffet || ''); }).sort()[0];
+          if (!date || String(date) >= debut) return 0;
+        }
+        return NS132.montantOrigine(primeId, fonctionId);
+      }
 
       /* Sans date, ou si la version courante était déjà en vigueur : la grille
          du jour s'applique. */
@@ -155,6 +233,59 @@
         .sort(function (a, b) { return String(b.dateEffet).localeCompare(String(a.dateEffet)); })[0];
       if (enVigueur) return (enVigueur.montants || {})[fonctionId] || 0;
       return NS132.montantOrigine(primeId, fonctionId);
+    },
+
+    /**
+     * LES PRIMES À UNE DATE (E651) : le barème d'origine PLUS les primes créées
+     * à l'écran. Une prime créée dans l'application entre ainsi dans les primes
+     * fixes du mois ; la liste statique `primes` ne la connaît pas.
+     */
+    primesALaDate: function () {
+      var st = global.SIGH && global.SIGH.store;
+      var out = NS132.primes.map(function (p) { return { id: p.id, label: p.label, mode: p.mode }; });
+      if (!st) return out;
+      var ids = {};
+      out.forEach(function (p) { ids[p.id] = p; });
+      var actives = [], hist = [];
+      try { actives = st.collection('grillePrimes').active(); } catch (e) { actives = []; }
+      try { hist = st.collection('historiquePrimes').active(); } catch (e) { hist = []; }
+      actives.concat(hist).forEach(function (x) {
+        if (!x.primeId || ids[x.primeId]) return;
+        var p = { id: x.primeId, label: x.label, mode: x.mode };
+        ids[x.primeId] = p; out.push(p);
+      });
+      return out;
+    },
+
+    /**
+     * LES BÉNÉFICIAIRES D'UNE PRIME FIXE (E654). Un forfait se DÉSIGNE : une liste
+     * datée d'agents (`beneficiairesPrimes` : primeId, agentId, debut, fin).
+     * Tant qu'une prime fixe n'a AUCUNE désignation, la règle d'attente demeure
+     * (tous les agents de la fonction) et l'écran le dit ; dès la première,
+     * seuls les agents désignés à la date la perçoivent.
+     * Renvoie null (aucune désignation) ou le tableau des identifiants.
+     */
+    beneficiaires: function (primeId, date) {
+      var st = global.SIGH && global.SIGH.store;
+      if (!st) return null;
+      var l = [];
+      try { l = st.collection('beneficiairesPrimes').active().filter(function (x) { return x.primeId === primeId; }); } catch (e) { return null; }
+      if (!l.length) return null;
+      return l.filter(function (x) {
+        return (!date || !x.debut || String(date) >= String(x.debut)) && (!date || !x.fin || String(date) <= String(x.fin));
+      }).map(function (x) { return x.agentId; });
+    },
+
+    /** Montant d'une prime pour UN agent à une date : désignation comprise pour les forfaits. */
+    montantAgent: function (primeId, agent, date) {
+      var m = NS132.montant(primeId, agent.fonction, date);
+      if (!m) return 0;
+      var def = NS132.primesALaDate().filter(function (p) { return p.id === primeId; })[0];
+      if (def && def.mode === 'fixe') {
+        var liste = NS132.beneficiaires(primeId, date);
+        if (liste && liste.indexOf(agent.id) < 0) return 0;
+      }
+      return m;
     },
 
     /** Le barème d'origine de la note, indépendant du magasin. */
@@ -540,6 +671,94 @@
   ];
 
   /* ==========================================================================
+   * LISTES DE SAISIE LUES DES DEUX CÔTÉS (écran et importation, lot IMP-B2)
+   * --------------------------------------------------------------------------
+   * Un référentiel de choix écrit dans un écran ET attendu par un jeu d'import finit par diverger : l'écran propose sept catégories de biens, le fichier en accepte six. Ces
+   * listes vivent ICI, une seule fois ; l'écran les propose, le jeu d'import les contrôle.
+   * ======================================================================== */
+  var CATEGORIES_IMMOBILISATION = ['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'];
+  var SPECIALITES_PRESTATAIRE = ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie', 'Autre'];
+  var DOMAINES_UNITES_LABO = ['Hématologie', 'Biochimie', 'Hormonologie', 'Bactériologie', 'Parasitologie', 'Hémostase', 'Andrologie', 'Général'];
+  var NATURES_BUDGET = ['Charges de fonctionnement', 'Investissements', 'Charges de personnel', 'Achats de marchandises'];
+  var COURRIERS = {
+    NATURES: ['Lettre', 'Courriel', 'Note', 'Facture', 'Convocation', 'Rapport'],
+    SERVICES: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks', 'Laboratoire', 'Pharmacie'],
+    SENS: [{ value: 'arrivee', label: 'Arrivée' }, { value: 'depart', label: 'Départ' }],
+  };
+  /* ==========================================================================
+   * DOCUMENTS NUMÉRISÉS (lot DOCS-1 : courriers M13 et dossier patient M1)
+   * --------------------------------------------------------------------------
+   * Ce que les DEUX écrans et le serveur (`api/regles-fichiers.json`, engendré par `build/gen-regles-fichiers.js` depuis CE fichier) lisent d'un seul endroit : formats admis,
+   * taille par défaut, types de document du patient et leur ZONE. La taille maximale est un RÉGLAGE en base (`documentsBornes`) ; la valeur ci-dessous ne sert que tant que la
+   * clinique n'a rien réglé, et reste « à valider » (réponse Q1 de la Direction du 11/11/2026 : 10 Mo, réglable).
+   * ZONES : 1 = administratif (identité, couverture d'assurance), lisible par tout profil qui ouvre l'écran ; 2 = médical, lisible par les seuls profils cliniques (RG-13). Aucun
+   * document de cadrage ne classe les types : la zone des dix types est une PROPOSITION À VALIDER (le PRD ne cite que la pièce d'identité et la carte d'assurance pour l'accueil, et la
+   * facture est rangée en zone 2 par prudence : elle liste des actes). Les profils de la zone 2 suivent la matrice : administrateur, directeur médical, médecin, infirmier, chirurgien,
+   * anesthésiste.
+   * ======================================================================== */
+  var DOCUMENTS = {
+    FORMATS: [
+      { id: 'pdf', libelle: 'PDF', mime: 'application/pdf', ext: ['pdf'], familles: ['courrier', 'patient'] },
+      { id: 'jpeg', libelle: 'JPEG', mime: 'image/jpeg', ext: ['jpg', 'jpeg'], familles: ['courrier', 'patient'] },
+      { id: 'png', libelle: 'PNG', mime: 'image/png', ext: ['png'], familles: ['courrier', 'patient'] },
+      { id: 'webp', libelle: 'WEBP', mime: 'image/webp', ext: ['webp'], familles: ['patient'] },
+    ],
+    TAILLE_DEFAUT: 10 * 1024 * 1024,
+    TAILLE_PLANCHER: 100 * 1024,
+    TAILLE_PLAFOND: 64 * 1024 * 1024,
+    TYPES_PATIENT: [
+      { libelle: 'Ordonnance', zone: 2 }, { libelle: 'Résultat de laboratoire', zone: 2 }, { libelle: 'Compte rendu médical', zone: 2 },
+      { libelle: 'Consentement éclairé', zone: 2 }, { libelle: 'Imagerie / Échographie', zone: 2 }, { libelle: 'Bulletin d’hospitalisation', zone: 2 },
+      { libelle: 'Facture', zone: 2 }, { libelle: 'Pièce d’identité', zone: 1 }, { libelle: 'Carte d’assurance', zone: 1 }, { libelle: 'Certificat médical', zone: 2 },
+    ],
+    ROLES_ZONE_2: ['admin', 'dm', 'medecin', 'infirmier', 'chirurgien', 'anesthesiste'],
+    FAMILLES: {
+      courrier: { libelle: 'Courriers', ecran: 'm13-courriers' },
+      patient: { libelle: 'Documents du dossier patient', ecran: 'm1-documents' },
+    },
+  };
+  /** Le format admis d'un nom de fichier et d'un type MIME déclarés, pour une famille ; null s'il n'est pas admis. */
+  DOCUMENTS.formatDe = function (nom, mime, famille) {
+    var ext = (String(nom || '').toLowerCase().match(/\.([a-z0-9]+)$/) || [])[1] || '';
+    var m = String(mime || '').toLowerCase();
+    for (var i = 0; i < DOCUMENTS.FORMATS.length; i++) {
+      var f = DOCUMENTS.FORMATS[i];
+      if (f.familles.indexOf(famille) < 0) continue;
+      if (f.ext.indexOf(ext) >= 0 || (!ext && f.mime === m)) return f;
+    }
+    return null;
+  };
+  DOCUMENTS.zoneDe = function (typeLibelle) {
+    for (var i = 0; i < DOCUMENTS.TYPES_PATIENT.length; i++) if (DOCUMENTS.TYPES_PATIENT[i].libelle === typeLibelle) return DOCUMENTS.TYPES_PATIENT[i].zone;
+    return 2;   /* un type inconnu se range à la zone la plus stricte */
+  };
+  /** Une chaîne sans accent ni espace, pour un nom de fichier : lettres minuscules, chiffres et tirets. */
+  DOCUMENTS.slug = function (t) {
+    return String(t == null ? '' : t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  };
+  /** Le NOM DE TÉLÉCHARGEMENT d'une pièce (EF-DOC-4). La RÉFÉRENCE de la fiche ne change jamais (E530, E538) : ce nom se recalcule, il ne se saisit pas.
+   *  Courrier : AAAA-MM-JJ_ARR_NNNN.ext (date de la fiche, rang de la référence ARR-AAAA-NNNN) ; patient : AAAA-MM-JJ_CODE_type_NNN.ext (NNN = numéro de la référence GED-NNNNN). */
+  DOCUMENTS.nomNormalise = function (famille, fiche, ext) {
+    var date = String((fiche && fiche.date) || '').slice(0, 10) || '0000-00-00';
+    ext = String(ext || 'pdf').toLowerCase().replace(/^\./, '');
+    if (famille === 'courrier') {
+      var m = /^(ARR|DEP)-\d{4}-(\d+)$/.exec(String((fiche && fiche.reference) || ''));
+      var sens = m ? m[1] : (fiche && fiche.sens === 'depart' ? 'DEP' : 'ARR');
+      return date + '_' + sens + '_' + (m ? m[2] : '0000') + '.' + ext;
+    }
+    var n = /(\d+)$/.exec(String((fiche && fiche.reference) || ''));
+    var rang = n ? String(parseInt(n[1], 10)) : '0';
+    while (rang.length < 3) rang = '0' + rang;
+    var code = String((fiche && fiche.code) || 'SANS-DOSSIER').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return date + '_' + code + '_' + (DOCUMENTS.slug(fiche && fiche.type) || 'document') + '_' + rang + '.' + ext;
+  };
+  /** Empreinte abrégée (huit caractères) imprimée sur la fiche (PRD, section 8). */
+  DOCUMENTS.abrege = function (sha) { return String(sha || '').slice(0, 8); };
+  /** Les motifs d'un changement de couverture : la liste fermée de l'écran « Assurés & cartes », reprise telle quelle par l'importation. */
+  var MOTIFS_COUVERTURE = ['Changement d’employeur', 'Changement de compagnie par l’assuré', 'Convention non reconduite', 'Renouvellement de carte', 'Changement de police',
+    'Fin de couverture — patient redevenu non assuré', 'Correction d’une saisie erronée'];
+
+  /* ==========================================================================
    * 5. CATALOGUE DES ANALYSES DE LABORATOIRE (48)
    * source : docs/liste_des_analyses_de_labo.jpeg (+ suite)
    * NB : le document fourni ne porte QUE les désignations ; la colonne tarif est
@@ -677,6 +896,110 @@
     },
   };
 
+  /* --------------------------------------------------------------------------
+   * SEMENCE DU BARÈME DE L'AIB (09/11/2026, lot A1). Ce n'est QU'une semence : le moteur (`PR.tauxAibALaDate`) lit les collections
+   * `situationsAib` et `baremeAib` du magasin, jamais ces constantes ; on ajoute une situation, on change un taux à une date future ou on
+   * retire une version à l'écran `cfg-bareme-aib`, sans toucher au code. TOUTES les valeurs sont des PROPOSITIONS À VALIDER : aucun texte
+   * réglementaire n'est au dépôt (PRD M12, recherche du 09/11/2026). `declencheur` dit comment la fenêtre MECeF choisit la situation
+   * d'office (ifu_absent, ifu_renseigne) ou la laisse au caissier (choix).
+   * ----------------------------------------------------------------------- */
+  var SRC_COMMUNIQUE_DGI = 'Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : '
+    + 'proposition à valider, texte réglementaire à produire';
+  var SRC_REGIME_REFERENCE = 'Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : '
+    + 'proposition à valider, texte réglementaire à produire';
+  var SRC_PRESTATION = 'Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : '
+    + 'proposition à valider, texte réglementaire à produire';
+  var SITUATIONS_AIB = [
+    { code: 'ifu_actif', libelle: 'Acheteur avec IFU actif', declencheur: 'ifu_renseigne', ordre: 1,
+      description: 'L’acheteur présente un IFU de 13 chiffres. L’activité de l’IFU n’est pas vérifiée auprès de la DGI (la maquette ne peut pas l’interroger) : elle est présumée.' },
+    { code: 'ifu_inactif_ou_absent', libelle: 'Acheteur sans IFU actif', declencheur: 'ifu_absent', ordre: 2,
+      description: 'Aucun IFU renseigné (particulier) ou IFU désactivé : contribuable non conforme ou non immatriculé.' },
+    { code: 'prestation_service', libelle: 'Prestation de service retenue par le payeur', declencheur: 'choix', ordre: 3,
+      description: 'Prestation de service dont l’organisme payeur retient l’AIB sur le prix hors taxe. Choisie par le caissier, jamais d’office.' },
+    /* Lot FISC-2 (Direction, 16/11/2026, section AQ points 8 et 23) : SECOND barème, la RETENUE sur la facture d'un tiers (prescripteur, prestataire, fournisseur, assureur), par QUALITÉ du
+       tiers. Deux barèmes datés en base, jamais un taux dans un moteur. La famille `retenue_tiers` n'est jamais proposée à la caisse (la facture d'un patient ne porte aucun AIB). Le
+       comptable choisit la ligne à chaque opération (onglet « Imputations »). */
+    { code: 'personne_physique', libelle: 'Tiers, personne physique (retenue sur sa facture)', declencheur: 'choix', ordre: 4, famille: 'retenue_tiers',
+      description: 'Tiers personne physique dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office.' },
+    { code: 'personne_morale', libelle: 'Tiers, personne morale (retenue sur sa facture)', declencheur: 'choix', ordre: 5, famille: 'retenue_tiers',
+      description: 'Tiers personne morale dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office.' },
+  ];
+  var SRC_RETENUE_TIERS = 'Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 '
+    + 'cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.';
+  var BAREME_AIB = [
+    { situation: 'ifu_inactif_ou_absent', taux: 1, dateEffet: '2026-01-01', dateFin: '2026-09-06', source: SRC_REGIME_REFERENCE,
+      motif: 'Taux appliqué avant le communiqué de septembre 2026 : défaut historique de la maquette (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'ifu_inactif_ou_absent', taux: 5, dateEffet: '2026-09-07', dateFin: null, source: SRC_COMMUNIQUE_DGI,
+      motif: 'Généralisation du prélèvement de 5 % à l’émission des factures normalisées, à compter du 07/09/2026.' },
+    { situation: 'ifu_actif', taux: 1, dateEffet: '2026-01-01', dateFin: null, source: SRC_REGIME_REFERENCE,
+      motif: 'Défaut de la fenêtre MECeF quand l’acheteur a un IFU actif (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'prestation_service', taux: 3, dateEffet: '2026-01-01', dateFin: null, source: SRC_PRESTATION,
+      motif: 'Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'personne_physique', taux: 3, dateEffet: '2026-01-01', dateFin: null, source: SRC_RETENUE_TIERS,
+      motif: 'Retenue sur la facture d’un tiers personne physique (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'personne_morale', taux: 5, dateEffet: '2026-01-01', dateFin: null, source: SRC_RETENUE_TIERS,
+      motif: 'Retenue sur la facture d’un tiers personne morale (date d’effet d’attente : début de l’exercice 2026).' },
+  ];
+
+  /* --------------------------------------------------------------------------
+   * LES RÉGLAGES DE L'AIB (09/11/2026, lot L2) : quatre réglages DATÉS, versionnés comme le barème, lus dans la collection `reglagesAib`.
+   * Ce tableau ne dit que QUELLES clés existent et QUELLES valeurs elles admettent (une définition, comme au registre des paramètres du poste) ;
+   * la valeur en vigueur se lit à la base, jamais ici. Les défauts viennent de la Direction (Q5 : branchement désactivé ; Q7 : la clinique supporte
+   * le prélèvement). Aucun compte n'est présélectionné : le comptable choisit (un numéro inventé fausserait la balance). Tous les défauts naissent
+   * « à valider » : aucun texte réglementaire n'est au dépôt.
+   * ----------------------------------------------------------------------- */
+  var REGLAGES_AIB = [
+    { cle: 'chargePrelevement', type: 'choix', libelle: 'Qui supporte le prélèvement de 5 %',
+      valeurs: [{ value: 'clinique', label: 'La clinique' }, { value: 'acheteur', label: 'L’acheteur' }], defaut: 'clinique',
+      aide: 'Texte officiel manquant : réglage non arrêté. Aucun effet comptable n’en découle, la valeur est portée par chaque vente et listée aux achats.' },
+    { cle: 'branchementAchats', type: 'choix', libelle: 'Brancher l’AIB sur les écritures d’achat',
+      valeurs: [{ value: 'desactive', label: 'Désactivé (le moteur liste, n’écrit rien)' }, { value: 'actif', label: 'Activé (écrit ce qui est listé)' }], defaut: 'desactive',
+      aide: 'Désactivé par défaut. L’activation exige le compte d’acompte, le compte de contrepartie et le réglage de la charge arrêtés.' },
+    { cle: 'compteAcompte', type: 'compte', libelle: 'Compte d’acompte (débit)', defaut: null,
+      aide: 'Choisi par le comptable dans le plan comptable : aucun numéro n’est proposé d’office.' },
+    { cle: 'compteContrepartie', type: 'compte', libelle: 'Compte de contrepartie (crédit)', defaut: null,
+      aide: 'Choisi par le comptable dans le plan comptable : une écriture s’équilibre sur deux comptes que la clinique désigne.' },
+  ];
+  var REGLAGES_AIB_SEMENCE = [
+    { cle: 'chargePrelevement', valeur: 'clinique', libelle: 'Qui supporte le prélèvement de 5 % : la clinique', dateEffet: '2026-01-01', source: 'Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel',
+      motif: 'Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).' },
+    { cle: 'branchementAchats', valeur: 'desactive', libelle: 'Brancher l’AIB sur les écritures d’achat : désactivé', dateEffet: '2026-01-01', source: 'Décision de la Direction du 09/11/2026 (Q5) : branchement différé',
+      motif: 'Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026).' },
+  ];
+
+  /* LES JOURNAUX RÉSERVÉS (lot CLO C4, EF-CLO-6) : aucune saisie manuelle n'alimente le journal de clôture CL ni le journal des à-nouveaux AN ; ce qui les alimente est dit au refus. */
+  var JOURNAUX_RESERVES = [
+    { code: 'CL', libelle: 'Journal de clôture', alimente: 'la clôture de l’exercice' },
+    { code: 'AN', libelle: 'Journal des à-nouveaux', alimente: 'la clôture de l’exercice, le report des à-nouveaux et l’import des soldes d’ouverture' },
+  ];
+
+  /* --------------------------------------------------------------------------
+   * LE CIRCUIT DE CLÔTURE ANNUELLE (Direction, 11/11/2026, réponses Q1 et Q2 ; lot CLO C1, 14/11/2026) : qui démarre, qui passe les écritures d'inventaire en clôture, qui
+   * clôture définitivement, qui rouvre, et à partir de quel mois l'exercice suivant s'ouvre. Ce tableau ne DÉFINIT que les clés ; la valeur en vigueur se lit dans la collection
+   * `reglagesCloture` (une fiche par version datée, jamais réécrite). AUCUN nom de rôle n'est écrit dans un moteur ni dans un écran : les défauts ci-dessous sont SEMÉS
+   * (ils égalent les listes qui étaient en dur, sauf la clôture définitive, élargie au comptable par la Direction : la séparation « jamais la personne qui a démarré la
+   * clôture » reste). Un réglage de BRANCHE : posé à la mère, il voyage aux fileuls, jamais aux mobiles.
+   * ----------------------------------------------------------------------- */
+  var REGLAGES_CLOTURE = [
+    { cle: 'rolesDemarrer', type: 'roles', libelle: 'Qui démarre la clôture (ou reprend la saisie)', aide: 'Les rôles qui font passer un exercice de « ouvert » à « en clôture », ou le reprennent tant que rien n’est clôturé. Le droit d’écrire sur l’écran de la clôture reste exigé en plus.' },
+    { cle: 'rolesInventaire', type: 'roles', libelle: 'Qui passe les écritures d’inventaire en clôture', aide: 'Les rôles dont la saisie manuelle est acceptée dans un exercice en clôture ; les modules, eux, n’y écrivent plus.' },
+    { cle: 'rolesCloturer', type: 'roles', libelle: 'Qui clôture définitivement', aide: 'Les rôles qui prononcent la clôture définitive. Jamais la personne qui a démarré la clôture : signer n’est pas saisir.' },
+    { cle: 'rolesRouvrir', type: 'roles', libelle: 'Qui rouvre un exercice clôturé', aide: 'Les rôles qui rouvrent un exercice clôturé, avec un motif d’au moins dix caractères (contre-passation des pièces de clôture).' },
+    { cle: 'moisOuvertureSuivant', type: 'mois', libelle: 'Mois à partir duquel l’exercice suivant s’ouvre', aide: 'À partir de ce mois (1 à 12), la tâche quotidienne ouvre aussi l’exercice de l’année suivante. Aucune pièce n’est écrite.' },
+  ];
+  var REGLAGES_CLOTURE_SEMENCE = [
+    { cle: 'rolesDemarrer', valeur: ['comptable', 'da', 'admin'], dateEffet: '2026-01-01', source: 'Valeur d’avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+      motif: 'Défaut semé : les trois rôles qui démarraient la clôture avant le réglage.' },
+    { cle: 'rolesInventaire', valeur: ['comptable', 'admin'], dateEffet: '2026-01-01', source: 'Valeur d’avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+      motif: 'Défaut semé : le comptable et l’administrateur passaient déjà leurs écritures d’inventaire.' },
+    { cle: 'rolesCloturer', valeur: ['da', 'direction', 'admin', 'comptable'], dateEffet: '2026-01-01', source: 'Réponse de la Direction du 11/11/2026 (Q2) : la Directrice Administrative, la Direction, l’administrateur ou le comptable',
+      motif: 'Défaut semé : les quatre rôles nommés par la Direction.' },
+    { cle: 'rolesRouvrir', valeur: ['comptable', 'admin'], dateEffet: '2026-01-01', source: 'Valeur d’avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+      motif: 'Défaut semé : le comptable (et l’administrateur) rouvrent, comme avant le réglage.' },
+    { cle: 'moisOuvertureSuivant', valeur: 12, dateEffet: '2026-01-01', source: 'Texte de spécification de la Direction du 11/11/2026 : l’exercice N+1 s’ouvre en décembre',
+      motif: 'Défaut semé : décembre.' },
+  ];
+
   var FOURNISSEURS = [
     {
       id: 'F001', code: 'SOBAPS', nom: 'SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé',
@@ -791,6 +1114,9 @@
     { code: 'VTE', libelle: 'Journal des ventes', contrepartie: '411000' },
     { code: 'CAI', libelle: 'Journal de caisse-dépenses', contrepartie: '571000' },
     { code: 'BQ', libelle: 'Journal de banque', contrepartie: '521000' },
+    /* E719 : une dépense réglée par banque s'écrit au journal BQE ; le code
+       manquait au référentiel et la pièce n'apparaissait dans aucun journal. */
+    { code: 'BQE', libelle: 'Journal de banque, dépenses', contrepartie: '521000' },
     { code: 'SAL', libelle: 'Journal des salaires', contrepartie: '422000' },
     { code: 'IMM', libelle: 'Journal des immobilisations', contrepartie: '241000' },
     { code: 'OD', libelle: 'Journal des opérations diverses', contrepartie: null },
@@ -817,7 +1143,7 @@
     { id: 'laboratoire', label: 'Laboratoire', type: 'exploitation' },
     { id: 'pharmacie', label: 'Pharmacie', type: 'exploitation' },
     { id: 'consultation', label: 'Consultation', type: 'exploitation' },
-    { id: 'imagerie', label: 'Échographie', type: 'exploitation' },
+    { id: 'imagerie', label: 'Imagerie médicale', type: 'exploitation' },
     { id: 'maternite', label: 'Maternité', type: 'exploitation' },
     { id: 'hospitalisation', label: 'Hospitalisation et soins', type: 'exploitation' },
     /* Un seul centre de coût. Les deux libellés désignaient le même service ;
@@ -1463,50 +1789,58 @@
   var CALENDRIER_FISCAL = [
     ['ITS', 'Impôt sur les traitements salariaux', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 du mois suivant le mois d’exercice. Reporté au jour ouvrable suivant si l’échéance tombe un week-end.'],
+      'Pour le mois d’exercice précédent. Reportée au jour ouvrable suivant si l’échéance tombe un week-end.'],
     ['AIB', 'Acompte sur impôt assis sur les bénéfices', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 de chaque mois, après la déclaration préalable.'],
+      'Chaque mois, après la déclaration préalable.'],
     ['VPS', 'Versement patronal sur salaires', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 du mois suivant le mois d’exercice.'],
+      'Pour le mois d’exercice précédent.'],
     ['CNSS', 'Cotisations sociales CNSS', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 du mois suivant. Part patronale 16,4 %, part ouvrière 3,6 %.'],
+      'Pour le mois précédent. Part patronale ' + PARAM_PAIE.cnss.patronale + ' %, part ouvrière ' + PARAM_PAIE.cnss.ouvriere + ' %.'],
 
     ['IS-1', 'Impôt sur les sociétés — 1er acompte', 'annuelle', 10, 2, 25, null,
       'Premier des quatre acomptes trimestriels, assis sur l’impôt de l’exercice précédent divisé par quatre. '
-      + 'Le 10 mars — confirmé par la Direction le 25/08/2026.'],
+      + 'Calendrier confirmé par la Direction le 25/08/2026.'],
     ['IS-2', 'Impôt sur les sociétés — 2e acompte', 'annuelle', 10, 5, 25, null, 'Deuxième acompte trimestriel.'],
     ['IS-3', 'Impôt sur les sociétés — 3e acompte', 'annuelle', 10, 8, 25, null, 'Troisième acompte trimestriel.'],
     ['IS-4', 'Impôt sur les sociétés — 4e acompte', 'annuelle', 10, 11, 25, null, 'Quatrième acompte trimestriel.'],
     ['IS-SOLDE', 'Liquidation du solde de l’impôt sur les sociétés', 'annuelle', 30, 3, null, null,
-      'Le 30 avril de chaque année, PRÉALABLEMENT au dépôt des états financiers. Ajuste à la hausse ou à la '
+      'PRÉALABLEMENT au dépôt des états financiers. Ajuste à la hausse ou à la '
       + 'baisse les acomptes versés l’exercice précédent — confirmé par la Direction le 25/08/2026.'],
     ['ETATS-FIN', 'Dépôt des états financiers', 'annuelle', 30, 3, null, null,
-      'Le 30 avril de l’année suivant l’exercice clos, après la liquidation du solde.'],
+      'Pour l’exercice clos, après la liquidation du solde.'],
 
     ['PATENTE-DECL', 'Patente — déclaration prévisionnelle', 'annuelle', 31, 0, null, null,
       'Date limite de la déclaration prévisionnelle de la patente.'],
-    ['PATENTE-1', 'Patente — 1er acompte', 'annuelle', 10, 1, 50, 'Déclaration prévisionnelle au 31 janvier',
+    ['PATENTE-1', 'Patente — 1er acompte', 'annuelle', 10, 1, 50, 'Déclaration prévisionnelle de la patente',
       'Première moitié. La patente se paie une fois par an, avec possibilité de régler en deux tranches.'],
-    ['PATENTE-2', 'Patente — solde', 'annuelle', 30, 3, 50, null, 'Seconde moitié, au 30 avril.'],
+    ['PATENTE-2', 'Patente — solde', 'annuelle', 30, 3, 50, null, 'Seconde moitié.'],
 
     ['CCIB-DECL', 'CCIB — déclaration prévisionnelle', 'annuelle', 28, 1, null, null,
-      'La déclaration prévisionnelle s’effectue à la FIN DU MOIS, avant le premier acompte — '
-      + 'confirmé par la Direction le 25/08/2026.'],
-    ['CCIB-1', 'CCIB — 1re tranche', 'annuelle', 10, 2, 50, 'Déclaration prévisionnelle en fin de mois',
-      'Contribution annuelle de 300 000 FCFA, réglée en deux tranches égales de 150 000 FCFA. '
-      + 'Premier acompte le 10 mars (50 %) — confirmé par la Direction le 25/08/2026.'],
-    ['CCIB-2', 'CCIB — 2e tranche', 'annuelle', 10, 5, 50, null, 'Seconde tranche de 150 000 FCFA, le 10 juin (50 %) — confirmé par la Direction le 25/08/2026.'],
+      'La déclaration prévisionnelle précède le premier acompte. Calendrier confirmé par la Direction le 25/08/2026.'],
+    ['CCIB-1', 'CCIB — 1re tranche', 'annuelle', 10, 2, 50, 'Déclaration prévisionnelle de la CCIB',
+      'Contribution annuelle réglée en deux tranches égales ; son montant est un paramètre du calendrier. '
+      + 'Premier acompte (50 %), confirmé par la Direction le 25/08/2026.'],
+    ['CCIB-2', 'CCIB — 2e tranche', 'annuelle', 10, 5, 50, null, 'Seconde tranche (50 %), confirmée par la Direction le 25/08/2026.'],
 
     ['TVM', 'Taxe sur véhicules à moteur', 'annuelle', 30, 3, 100, null,
-      'Une fois par an, au plus tard le 30 avril.'],
+      'Une fois par an, au plus tard à l’échéance.'],
 
     ['ORTB-RADIO', 'Redevance ORTB / Radio', 'annuelle', 30, 2, 100, null,
-      'Prélevée sur TOUS les salariés sans exception — 1 000 FCFA par agent, au mois de mars.'],
+      'Prélevée sur TOUS les salariés sans exception ; le montant et le mois de prélèvement sont les paramètres ORTB.'],
     ['ORTB-TELE', 'Redevance ORTB / Télé', 'annuelle', 30, 5, 100, null,
-      'Prélevée en SUS de la radio sur les salaires supérieurs à 60 000 FCFA — 3 000 FCFA par agent, au mois de juin.'],
+      'Prélevée en SUS de la radio au-delà du seuil de salaire brut ; le seuil, le montant et le mois sont les paramètres ORTB.'],
+
+    /* DÉCISION DE LA DIRECTION DU 09/11/2026 (Q6) : le VERSEMENT des cotisations CNSS est une obligation DISTINCTE de la déclaration
+       (qui reste au jour porté par CNSS, arrêté le 25/08/2026). Son jour et sa nature NE SONT PAS ARRÊTÉS : la source est la page CNSS
+       « Déclaration et paiement » (versement dans les quinze jours ; employeur de plus de vingt salariés : mensuel), à confirmer par la
+       CNSS. Elle est dans la semence comme les autres, donc modifiable aux paramètres (jour, part, date d'effet, motif), versionnée.
+       Dernier élément de la liste : les identifiants des obligations déjà posées ne se décalent pas. */
+    ['CNSS-VERSEMENT', 'Cotisations sociales CNSS, versement', 'mensuelle', 15, null, 100, null,
+      'Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.',
+      'Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).'],
   ].map(function (e, i) {
     return {
       id: 'FIS' + C.pad(i + 1, 2), code: e[0], libelle: e[1],
@@ -1514,7 +1848,9 @@
       part: e[5], declaration: e[6], note: e[7],
       famille: e[0].split('-')[0],
       statut: 'actif',
-      source: 'Précisions du comptable — réunion du 19/08/2026',
+      /* Une obligation dont la source n'est pas le comptable le dit (e[8]) et se marque « à confirmer ». */
+      aConfirmer: e[8] ? true : false,
+      source: e[8] || 'Précisions du comptable — réunion du 19/08/2026',
     };
   });
 
@@ -1524,6 +1860,339 @@
     ortbRadio: 1000, ortbTele: 3000, ortbCumul: 4000,
   };
 
+  /* ==========================================================================
+   * LES OBLIGATIONS FISCALES VIVENT AU MAGASIN, DATÉES (Direction, 06/11/2026)
+   * --------------------------------------------------------------------------
+   * `CALENDRIER_FISCAL` et `PARAM_PAIE.ortb` restent les SEMENCES : la
+   * collection `obligationsFiscales` porte la version en vigueur de chaque
+   * obligation (type 'obligation') et une fiche de paramètres ORTB (type
+   * 'parametres', code 'ORTB-PARAMETRES') ; `historiqueObligations` garde les
+   * versions antérieures, retrouvées par leur date d'effet. C'est le modèle de
+   * la grille des primes (grillePrimes / historiquePrimes) : une échéance
+   * engendrée sous l'ancienne version ne bouge pas quand la Direction change
+   * la suivante.
+   *
+   * `obligationsALaDate(date)` et `ortbALaDate(date)` lisent le magasin À
+   * L'APPEL et retombent sur la semence tant qu'il n'est pas chargé (premier
+   * amorçage, page ouverte sans serveur). Elles ne CRÉENT jamais la collection :
+   * un `collection()` posé pendant le semis ferait semer en boucle.
+   * ======================================================================== */
+  var SOURCE_OBLIGATIONS = 'Précisions du comptable (réunion du 19/08/2026) ; calendrier confirmé par la Direction le 25/08/2026';
+
+  function semenceObligations() {
+    var out = CALENDRIER_FISCAL.map(function (o) {
+      return {
+        id: o.id, statut: 'actif', type: 'obligation',
+        code: o.code, libelle: o.libelle, famille: o.famille,
+        periodicite: o.periodicite, jour: o.jour, mois: o.mois, part: o.part,
+        declaration: o.declaration, note: o.note,
+        aConfirmer: !!o.aConfirmer,
+        source: o.aConfirmer ? o.source : SOURCE_OBLIGATIONS,
+        dateEffet: null, modifieLe: null, modifiePar: null, motif: null,
+        valideLe: null, validePar: null,
+      };
+    });
+    out.push(semenceOrtbParametres());
+    return out;
+  }
+  function semenceOrtbParametres() {
+    var o = PARAM_PAIE.ortb;
+    return {
+      id: 'ORTB-PARAMETRES', statut: 'actif', type: 'parametres',
+      code: 'ORTB-PARAMETRES', libelle: o.libelle, famille: 'ORTB',
+      seuilTele: o.seuilTele,
+      redevances: o.redevances.map(function (r) { return Object.assign({}, r); }),
+      cumulMaximum: o.cumulMaximum,
+      source: o.source,
+      dateEffet: null, modifieLe: null, modifiePar: null, motif: null,
+      valideLe: null, validePar: null,
+    };
+  }
+
+  /** Le magasin est-il chargé et lisible sans déclencher un semis ? */
+  function magasinPret() {
+    var st = global.SIGH && global.SIGH.store;
+    if (!st || typeof st.etatServeur !== 'function') return false;
+    try { return !!st.etatServeur().magasinCharge && (!st.faitAutorite || st.faitAutorite() || !st.surServeur()); } catch (e) { return false; }
+  }
+  function lireCollection(nom) {
+    try { return global.SIGH.store.collection(nom).active(); } catch (e) { return []; }
+  }
+  function dateIso(date) {
+    if (!date) return C.iso(C.aujourdhui());
+    if (typeof date === 'string') return date.slice(0, 10);
+    return C.iso(date);
+  }
+  /** Le jour d'une obligation, en toutes lettres, DÉRIVÉ de la fiche (jamais écrit à la main dans un texte) : « le 10 du mois suivant », « le 30 avril ». */
+  function libelleEcheance(o) {
+    if (!o) return '';
+    return o.periodicite === 'mensuelle' ? 'le ' + o.jour + ' du mois suivant' : 'le ' + o.jour + ' ' + C.MOIS[o.mois];
+  }
+  /** La version d'une fiche (courante ou historique) en vigueur à `d` (ISO). */
+  function versionEnVigueur(courante, historique, d) {
+    if (courante && (!courante.dateEffet || d >= String(courante.dateEffet))) return courante;
+    var couvrante = historique.filter(function (h) {
+      /* Une version « remplacée le même jour » n'a jamais été en force : elle ne couvre aucune date. */
+      return !h.memeDate && (!h.dateEffet || d >= String(h.dateEffet)) && (!h.dateFin || d <= String(h.dateFin));
+    }).sort(function (a, b) { return String(b.dateEffet || '').localeCompare(String(a.dateEffet || '')); })[0];
+    return couvrante || null;
+  }
+
+  /**
+   * Les obligations fiscales en vigueur à une date : une fiche par code.
+   * Un code sans version couvrante à cette date est ABSENT (obligation créée
+   * plus tard, ou retirée avant). Sans magasin : la semence.
+   */
+  function obligationsALaDate(date) {
+    var d = dateIso(date);
+    if (!magasinPret()) return semenceObligations().filter(function (o) { return o.type === 'obligation'; });
+    var actives = lireCollection('obligationsFiscales').filter(function (o) { return o.type !== 'parametres'; });
+    var hist = lireCollection('historiqueObligations').filter(function (o) { return o.type !== 'parametres'; });
+    if (!actives.length && !hist.length) return semenceObligations().filter(function (o) { return o.type === 'obligation'; });
+    var codes = [], vus = {};
+    actives.concat(hist).forEach(function (o) { if (o.code && !vus[o.code]) { vus[o.code] = true; codes.push(o.code); } });
+    var out = [];
+    codes.forEach(function (code) {
+      var courante = actives.filter(function (o) { return o.code === code; })[0] || null;
+      var v = versionEnVigueur(courante, hist.filter(function (h) { return h.code === code; }), d);
+      if (v) out.push(v);
+    });
+    return out;
+  }
+
+  /** Les paramètres ORTB (seuil, redevances, cumul) en vigueur à une date ; repli PARAM_PAIE.ortb. */
+  function ortbALaDate(date) {
+    var d = dateIso(date);
+    if (!magasinPret()) return PARAM_PAIE.ortb;
+    var courante = lireCollection('obligationsFiscales').filter(function (o) { return o.type === 'parametres' && o.code === 'ORTB-PARAMETRES'; })[0] || null;
+    var hist = lireCollection('historiqueObligations').filter(function (o) { return o.type === 'parametres' && o.code === 'ORTB-PARAMETRES'; });
+    var v = versionEnVigueur(courante, hist, d);
+    return v || PARAM_PAIE.ortb;
+  }
+
+  /* ==========================================================================
+   * LES PARAMÈTRES DU CALENDRIER FISCAL, DATÉS (lot A3b, Direction, 09/11/2026)
+   * --------------------------------------------------------------------------
+   * Trois valeurs vivaient dans le code : les seuils d'état du suivi (10 et 30
+   * jours, dupliqués dans cfg-fiscalite), le seuil d'alerte du planificateur
+   * (7 jours, une troisième définition de « proche ») et le montant de la CCIB.
+   * Elles sont une collection, `parametresFiscaux` : UNE FICHE PAR VERSION, la
+   * version en vigueur à une date est celle de la plus grande date d'effet qui ne
+   * la dépasse pas (la même règle que les obligations, sans seconde collection :
+   * une version à venir est une fiche dont la date d'effet n'est pas atteinte, et
+   * l'annuler l'archive). `DELAIS_FISCAUX_ATTENTE` et `MONTANTS_FISCAUX.ccib` ne
+   * sont plus que la SEMENCE, marquée à valider.
+   *
+   * UNE SEULE DÉFINITION DE « PROCHE » pour l'écran de suivi, la vue mensuelle,
+   * cfg-fiscalite, la cloche et le planificateur (api/cron.php) : `delaiAPayer`
+   * (jours avant l'échéance où le paiement est « à payer » et alerté) et
+   * `delaiDeclaration` (jours avant l'échéance où la déclaration est attendue).
+   * ======================================================================== */
+  var DELAIS_FISCAUX_ATTENTE = { delaiAPayer: 10, delaiDeclaration: 30 };
+  var SOURCE_PARAMETRES_FISCAUX = 'Valeurs d’attente de la maquette (suivi des échéances, jusqu’ici écrites dans le code) : à confirmer par la Direction';
+  function semenceParametresFiscaux() {
+    return [
+      { id: 'PFI-DELAIS', statut: 'actif', code: 'DELAIS-ALERTE', libelle: 'Délais d’alerte du calendrier fiscal',
+        delaiAPayer: DELAIS_FISCAUX_ATTENTE.delaiAPayer, delaiDeclaration: DELAIS_FISCAUX_ATTENTE.delaiDeclaration,
+        source: SOURCE_PARAMETRES_FISCAUX, aValider: true, dateEffet: null, motif: null, modifieLe: null, modifiePar: null },
+      { id: 'PFI-CCIB', statut: 'actif', code: 'CCIB-MONTANT', libelle: 'Montant annuel de la CCIB',
+        montantTotal: MONTANTS_FISCAUX.ccib.total, tranches: MONTANTS_FISCAUX.ccib.tranches,
+        source: 'Montant à confirmer par le cabinet comptable', aValider: true, dateEffet: null, motif: null, modifieLe: null, modifiePar: null },
+    ];
+  }
+  /** Les versions d'un paramètre, de la plus ancienne à la plus récente (les archivées n'y sont pas). */
+  function versionsParametreFiscal(code) {
+    var rows = magasinPret() ? lireCollection('parametresFiscaux').filter(function (p) { return p.code === code; }) : [];
+    if (!rows.length) rows = semenceParametresFiscaux().filter(function (p) { return p.code === code; });
+    return rows.slice().sort(function (a, b) { return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')); });
+  }
+  /** La version d'un paramètre en vigueur à une date (null : paramètre inconnu). */
+  function parametreFiscalALaDate(code, date) {
+    var d = dateIso(date), v = null;
+    versionsParametreFiscal(code).forEach(function (p) { if (!p.dateEffet || String(p.dateEffet).slice(0, 10) <= d) v = p; });
+    return v;
+  }
+  /** Les délais d'alerte en vigueur : { delaiAPayer, delaiDeclaration } (la semence si la collection manque). */
+  function delaisFiscauxALaDate(date) {
+    var v = parametreFiscalALaDate('DELAIS-ALERTE', date) || semenceParametresFiscaux()[0];
+    return { delaiAPayer: Number(v.delaiAPayer), delaiDeclaration: Number(v.delaiDeclaration), version: v };
+  }
+  /** Le montant de la CCIB en vigueur : { total, tranches, tranche }. */
+  function montantCcibALaDate(date) {
+    var v = parametreFiscalALaDate('CCIB-MONTANT', date) || semenceParametresFiscaux()[1];
+    var n = Number(v.tranches) || 2;
+    return { total: Number(v.montantTotal), tranches: n, tranche: Number(v.montantTotal) / n, version: v };
+  }
+
+
+  /* ==========================================================================
+   * LES PARAMÈTRES DE CLINIQUE, DATÉS (lot PARAM-CLINIQUE, décisions 10 et 14 de la Direction du 15/11/2026)
+   * --------------------------------------------------------------------------
+   * Deux valeurs vivaient dans le code : le préavis de péremption des lots (90 jours, RG-05 : `SEUIL_PEREMPTION` de l'écran
+   * du stock, son double dans la semence des lots) et les deux bornes des tranches de la balance âgée des créances (30 et 90
+   * jours, écrites dans l'écran des créances et dans le filtre des compagnies). Elles sont une collection, `parametresClinique` :
+   * UNE FICHE PAR VERSION, jamais réécrite ; la valeur en vigueur à une date est celle de la plus grande date d'effet qui ne la
+   * dépasse pas (`null` : depuis toujours, le défaut semé) ; une version à venir s'annule en l'archivant (RG-14). Ce tableau ne
+   * DÉFINIT que les clés, leurs bornes et leur défaut SEMÉ ; aucun écran ne relit une constante. Réglage de BRANCHE : posé à la
+   * mère, il voyage aux fileuls, jamais aux téléphones. Régler est un geste réservé de la fiche RBAC (`regler_parametres_clinique`).
+   * Les BORNES sont une proposition à valider (aucun document ne les fixe) : un préavis d'un jour à deux ans, une tranche courte
+   * d'un jour à un an, une tranche longue plus grande que la courte et au plus deux ans.
+   * ======================================================================== */
+  var SOURCE_PARAMETRES_CLINIQUE = 'Valeur d’avant (constante du code), semée telle quelle : décisions 10 et 14 de la Direction du 15/11/2026 (DECISIONS-A-VALIDER, section AH)';
+  var PARAMETRES_CLINIQUE = [
+    { cle: 'stock.delaiPeremptionJours', libelle: 'Préavis de péremption des lots (jours)', unite: 'jours', defaut: 90, min: 1, max: 730, module: 'M6',
+      aide: 'Un lot dont la date de péremption tombe dans ce délai est « péremption proche » : alerte, tableau de bord, ordre FEFO (RG-05). Entier de 1 à 730.' },
+    { cle: 'creances.trancheCourteJours', libelle: 'Balance âgée : fin de la première tranche (jours)', unite: 'jours', defaut: 30, min: 1, max: 365, module: 'M9',
+      aide: 'Une créance de ce nombre de jours ou moins est dans la première tranche. Entier de 1 à 365, plus petit que la fin de la deuxième tranche.' },
+    { cle: 'creances.trancheLongueJours', libelle: 'Balance âgée : fin de la deuxième tranche (jours)', unite: 'jours', defaut: 90, min: 2, max: 730, module: 'M9',
+      aide: 'Au-delà de ce nombre de jours, la créance est dans la dernière tranche (relance impérative). Entier de 2 à 730, plus grand que la fin de la première tranche.' },
+    /* Lot PTA (16/11/2026) : la tolérance avant l'alerte de retard d'une action du plan annuel. Défaut 0 : l'alerte part le lendemain de la fin du trimestre. Bornes : proposition à valider. */
+    { cle: 'plan.graceRetardJours', libelle: 'Plan annuel : jours de tolérance après la fin du trimestre avant l’alerte de retard', unite: 'jours', defaut: 0, min: 0, max: 90, module: 'M13',
+      aide: 'Une action non réalisée alerte quand son trimestre de fin est passé de plus de ce nombre de jours. Entier de 0 à 90 (0 : dès le lendemain).' },
+    /* Lot MAJ (17/11/2026) : les trois réglages de la mise à jour du logiciel (PRD-MISE-A-JOUR). Valeurs d'attente et bornes : PROPOSITIONS à valider (section BG). Lus au poste, jamais vers un téléphone. */
+    { cle: 'maj.ageMaxCopieHeures', libelle: 'Mise à jour : ancienneté maximale de la copie vérifiée (heures)', unite: 'heures', defaut: 24, min: 1, max: 168, module: 'M14',
+      aide: 'Sans copie vérifiée de moins de ce nombre d’heures, une migration ou un import refuse (MAJ_SANS_SAUVEGARDE). Entier de 1 à 168.' },
+    { cle: 'maj.retourArriereMinutes', libelle: 'Mise à jour : durée visée du retour arrière (minutes)', unite: 'minutes', defaut: 30, min: 5, max: 480, module: 'M14',
+      aide: 'Durée à laquelle la Direction s’attend pour revenir à la dernière copie vérifiée (objectif affiché, jamais un blocage). Entier de 5 à 480.' },
+    { cle: 'maj.ecartVersionTolere', libelle: 'Mise à jour : écart de version de format toléré entre la mère et un fileul', unite: 'version(s)', defaut: 1, min: 0, max: 5, module: 'M14',
+      aide: 'Au-delà de cet écart, la mère répond 426 schema_incompatible et le fileul garde ses saisies hors ligne. Entier de 0 à 5.' },
+  ];
+  function semenceParametresClinique() {
+    return PARAMETRES_CLINIQUE.map(function (d, i) {
+      return { id: 'PCL-' + C.pad(i + 1, 3), statut: 'actif', cle: d.cle, valeur: d.defaut, dateEffet: null, source: SOURCE_PARAMETRES_CLINIQUE,
+        motif: 'Défaut semé', creeLe: '2026-11-16', creePar: 'Semence du socle' };
+    });
+  }
+  function definitionParametreClinique(cle) { return PARAMETRES_CLINIQUE.filter(function (d) { return d.cle === cle; })[0] || null; }
+  /** Les versions d'un paramètre de clinique, de la plus ancienne à la plus récente (date d'effet, puis ordre de création ; les archivées n'y sont pas). */
+  function versionsParametreClinique(cle) {
+    var rows = magasinPret() ? lireCollection('parametresClinique').filter(function (p) { return p.cle === cle; }) : [];
+    if (!rows.length) rows = semenceParametresClinique().filter(function (p) { return p.cle === cle; });
+    return rows.slice().sort(function (a, b) {
+      return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')) || String(a.creeLe || '').localeCompare(String(b.creeLe || '')) || String(a.id).localeCompare(String(b.id));
+    });
+  }
+  /** La version en vigueur à une date : { valeur, dateEffet, version (fiche) } ; le défaut de la définition si aucune version ne la couvre (jamais une valeur inventée). */
+  function parametreCliniqueALaDate(cle, date) {
+    var d = dateIso(date), v = null;
+    versionsParametreClinique(cle).forEach(function (p) { if (!p.dateEffet || String(p.dateEffet).slice(0, 10) <= d) v = p; });
+    var def = definitionParametreClinique(cle);
+    if (!v) return { valeur: def ? def.defaut : null, dateEffet: null, version: null, origine: 'defaut' };
+    return { valeur: Number(v.valeur), dateEffet: v.dateEffet || null, version: v, origine: 'version' };
+  }
+  /** RG-05 : le préavis de péremption en vigueur à la date (jours). */
+  function delaiPeremptionALaDate(date) { return parametreCliniqueALaDate('stock.delaiPeremptionJours', date).valeur; }
+  /** Les deux bornes de la balance âgée en vigueur à la date : { courte, longue } (jours). */
+  function tranchesCreancesALaDate(date) {
+    return { courte: parametreCliniqueALaDate('creances.trancheCourteJours', date).valeur, longue: parametreCliniqueALaDate('creances.trancheLongueJours', date).valeur };
+  }
+  /** La tranche d'une créance de `jours` jours, selon les bornes LUES : 'moins30' (première), '30a90' (deuxième), 'plus90' (dernière). Les identifiants restent ceux des écrans. */
+  function trancheCreance(jours, t) { return jours <= t.courte ? 'moins30' : (jours <= t.longue ? '30a90' : 'plus90'); }
+  /** Les trois libellés des tranches, tirés des bornes lues (jamais « 30 » ou « 90 » écrits dans un écran). */
+  function libellesTranches(t) {
+    return { moins30: t.courte + ' jours ou moins', '30a90': 'De ' + (t.courte + 1) + ' à ' + t.longue + ' jours', plus90: 'Au-delà de ' + t.longue + ' jours',
+      courts: { moins30: '≤ ' + t.courte + ' j', '30a90': (t.courte + 1) + ' à ' + t.longue + ' j', plus90: '> ' + t.longue + ' j' } };
+  }
+  /** Le statut d'un lot À LA DATE, selon le préavis lu à cette date : 'perime', 'alerte' (péremption proche) ou 'actif'. Sans date de péremption : le statut écrit. */
+  function statutLotALaDate(l, date) {
+    if (!l || !l.datePeremption) return l ? l.statut : null;
+    var d = dateIso(date);
+    var j = Math.round((Date.parse(String(l.datePeremption).slice(0, 10) + 'T00:00:00Z') - Date.parse(d + 'T00:00:00Z')) / 86400000);
+    return j < 0 ? 'perime' : (j <= delaiPeremptionALaDate(d) ? 'alerte' : 'actif');
+  }
+
+  /* ==========================================================================
+   * LE PLAN ANNUEL DE TRAVAIL (lot PTA, 16/11/2026 ; Direction : « rien ne doit rester en dur »)
+   * --------------------------------------------------------------------------
+   * Les axes et les états d'avancement sont des RÉFÉRENTIELS EN BASE (`referentielsPlan`, défauts semés). Un état porte une NATURE (`planifiee`, `en_cours`, `realisee`) : c'est
+   * ce que les règles lisent (« une action réalisée n'alerte pas »), jamais un libellé. Les règles pures (trimestres de l'exercice, bornes du pourcentage, indicateur, totaux,
+   * retard) vivent ici ; le moteur qui écrit et refuse (adoption, version datée, reconduction) est dans `parcours.js` (`SIGH.planAnnuel`). Vecteurs : `build/vecteurs-plan-annuel.js`.
+   * ======================================================================== */
+  var PLAN_ETATS_SEMENCE = [
+    { code: 'planifiee', libelle: 'Planifiée', nature: 'planifiee', ton: 'warning' },
+    { code: 'en_cours', libelle: 'En cours', nature: 'en_cours', ton: 'info' },
+    { code: 'realisee', libelle: 'Réalisée', nature: 'realisee', ton: 'success' },
+  ];
+  var PLAN_AXES_SEMENCE = [
+    ['digitalisation', 'Digitalisation'], ['formation', 'Formation'], ['logistique', 'Logistique'], ['partenariats', 'Partenariats'], ['sante_publique', 'Santé publique'],
+    ['investissement', 'Investissement'], ['qualite', 'Qualité'], ['ressources_humaines', 'Ressources humaines'], ['finance', 'Finance'],
+  ];
+  function semenceReferentielsPlan() {
+    var n = 0, out = [];
+    PLAN_AXES_SEMENCE.forEach(function (a, i) {
+      out.push({ id: 'RFP-' + C.pad(++n, 3), statut: 'actif', type: 'axe', code: a[0], libelle: a[1], ordre: i + 1, creeLe: '2026-11-16', creePar: 'Semence du socle' });
+    });
+    PLAN_ETATS_SEMENCE.forEach(function (e, i) {
+      out.push({ id: 'RFP-' + C.pad(++n, 3), statut: 'actif', type: 'etat', code: e.code, libelle: e.libelle, nature: e.nature, ton: e.ton, ordre: i + 1, creeLe: '2026-11-16', creePar: 'Semence du socle' });
+    });
+    return out;
+  }
+  /** Les fiches d'un référentiel du plan (`axe` ou `etat`), triées par ordre ; la semence si le magasin n'est pas prêt ou n'en porte aucune. */
+  function planReferentiel(type) {
+    var rows = magasinPret() ? lireCollection('referentielsPlan').filter(function (r) { return r.type === type && r.statut !== 'archive'; }) : [];
+    if (!rows.length) rows = semenceReferentielsPlan().filter(function (r) { return r.type === type; });
+    return rows.slice().sort(function (a, b) { return (Number(a.ordre) || 0) - (Number(b.ordre) || 0) || String(a.code).localeCompare(String(b.code)); });
+  }
+  function planEtat(code) { return planReferentiel('etat').filter(function (e) { return e.code === code; })[0] || null; }
+  function planAxe(code) { return planReferentiel('axe').filter(function (e) { return e.code === code; })[0] || null; }
+  /** La NATURE d'un état d'avancement (`planifiee`, `en_cours`, `realisee`) ; `null` si l'état est inconnu (jamais « réalisée » par défaut). */
+  function planNature(codeEtat) { var e = planEtat(codeEtat); return e ? e.nature : null; }
+  /** Le dernier jour du trimestre `q` (1 à 4) d'un exercice qui commence le `debutIso` (AAAA-MM-JJ) : trois mois par trimestre, le premier jour de l'exercice faisant foi. `null` si illisible. */
+  function planFinTrimestre(debutIso, q) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(debutIso || ''));
+    q = Number(q);
+    if (!m || !(q >= 1 && q <= 4)) return null;
+    var fin = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1 + 3 * q, Number(m[3])) - 86400000);
+    return fin.toISOString().slice(0, 10);
+  }
+  /** Le pourcentage d'avancement : un NOMBRE de 0 à 100 ; `{ ok, valeur }` (valeur `null` si non renseigné, jamais 0 par défaut) ou `{ ok: false, code }`. */
+  function planPourcentage(v) {
+    if (v === undefined || v === null || v === '') return { ok: true, valeur: null };
+    var n = Number(v);
+    if (!isFinite(n) || n < 0 || n > 100) return { ok: false, code: 'POURCENTAGE_HORS_BORNES' };
+    return { ok: true, valeur: n };
+  }
+  /** Le nombre d'un champ budgétaire ou d'indicateur : `null` si non renseigné ; `undefined` si invalide (négatif ou non numérique). */
+  function planNombre(v) {
+    if (v === undefined || v === null || v === '') return null;
+    var n = Number(v);
+    return isFinite(n) && n >= 0 ? n : undefined;
+  }
+  /** L'atteinte d'un indicateur de résultat : valeur atteinte / cible, en pour cent (non borné : une cible dépassée se voit). « Non calculable » (cible absente ou nulle, valeur absente) n'est PAS zéro. */
+  function planAtteinteIndicateur(a) {
+    var cible = planNombre(a && a.cible), val = planNombre(a && a.valeurAtteinte);
+    if (cible === null || cible === undefined || cible === 0) return { calculable: false, motif: 'cible non définie' };
+    if (val === null || val === undefined) return { calculable: false, motif: 'valeur atteinte non renseignée' };
+    return { calculable: true, pct: Math.round(val / cible * 1000) / 10 };
+  }
+  /** Les totaux CALCULÉS d'une liste d'actions (jamais fournis) : budget prévu et réalisé sur les actions qui les portent, écart seulement si les deux sommes existent, pourcentage moyen des actions qui en portent un. */
+  function planTotaux(actions) {
+    var t = { nb: actions.length, prevu: null, realise: null, nbSansPrevu: 0, nbSansRealise: 0, ecart: null, tauxMoyen: null, nbSansTaux: 0, parNature: { planifiee: 0, en_cours: 0, realisee: 0, inconnue: 0 } };
+    var somTaux = 0, nTaux = 0;
+    actions.forEach(function (a) {
+      var p = planNombre(a.budgetPrevu), r = planNombre(a.budgetRealise);
+      if (p === null || p === undefined) t.nbSansPrevu++; else t.prevu = (t.prevu || 0) + p;
+      if (r === null || r === undefined) t.nbSansRealise++; else t.realise = (t.realise || 0) + r;
+      var tx = planPourcentage(a.tauxAvancement);
+      if (tx.ok && tx.valeur !== null) { somTaux += tx.valeur; nTaux++; } else t.nbSansTaux++;
+      var nat = planNature(a.avancement) || 'inconnue';
+      t.parNature[nat] = (t.parNature[nat] || 0) + 1;
+    });
+    if (t.prevu !== null && t.realise !== null) t.ecart = t.prevu - t.realise;
+    if (nTaux) t.tauxMoyen = Math.round(somTaux / nTaux * 10) / 10;
+    return t;
+  }
+  /** L'alerte de retard d'UNE action à une date : non réalisée, et le dernier jour de son trimestre de fin (plus la tolérance lue en base) est passé. Dérivée : elle retombe quand l'état devient réalisé ou que la fin est replanifiée. */
+  function planRetard(a, debutExercice, auj, graceJours) {
+    var nature = planNature(a && a.avancement);
+    if (!a || nature === null || nature === 'realisee') return { enRetard: false, motif: nature === 'realisee' ? 'realisee' : 'etat_inconnu' };
+    var fin = planFinTrimestre(debutExercice, a.trimestreFin);
+    if (!fin) return { enRetard: false, motif: 'trimestre_illisible' };
+    var limite = new Date(Date.parse(fin + 'T00:00:00Z') + (Number(graceJours) || 0) * 86400000).toISOString().slice(0, 10);
+    var jour = dateIso(auj);
+    if (jour <= limite) return { enRetard: false, motif: 'dans_les_delais', finTrimestre: fin, limite: limite };
+    return { enRetard: true, finTrimestre: fin, limite: limite, jours: Math.round((Date.parse(jour + 'T00:00:00Z') - Date.parse(fin + 'T00:00:00Z')) / 86400000) };
+  }
 
   /* ==========================================================================
    * VALORISATION DES SORTIES DE STOCK
@@ -1535,7 +2204,7 @@
    * Ce que cela change aujourd'hui : rien, ou presque. RG-02 impose que les
    * médicaments soient facturés au prix d'achat, sans marge ; le prix de vente
    * égale donc le prix d'achat, lui-même arrondi du CUMP. Sur les 184 articles
-   * de l'inventaire SAGE, l'écart entre les deux valorisations est de
+   * de l'inventaire initial, l'écart entre les deux valorisations est de
    * 1 015 FCFA au total — un effet d'arrondi, pas une différence de méthode.
    *
    * Ce que cela changera : le jour où une marge sera appliquée à un article
@@ -1567,7 +2236,7 @@
   /* ==========================================================================
    * GROUPES ET FAMILLES D'ARTICLES
    * --------------------------------------------------------------------------
-   * Les FAMILLES existent dans le document source : l'inventaire SAGE « Grand
+   * Les FAMILLES existent dans le document source : l'inventaire initial « Grand
    * Stock » classe ses 184 articles en sept catégories. Les GROUPES, eux, ne
    * figurent dans aucun document — ils sont ici une lecture à deux niveaux de
    * cette classification, proposée à la Direction et non déduite d'une source.
@@ -1729,6 +2398,7 @@
     { id: 'contrat', label: 'Contrats RH', rattachement: 'Employé', icon: 'file-signature' },
     { id: 'bulletin', label: 'Bulletins de paie', rattachement: 'Employé', icon: 'banknote' },
     { id: 'courrier', label: 'Courriers administratifs', rattachement: 'Administration', icon: 'mail' },
+    { id: 'cloture_exercice', label: 'Clôtures d’exercice', rattachement: 'Administration', icon: 'lock' },
   ];
 
   /* ==========================================================================
@@ -1815,7 +2485,7 @@
     { id: 'laboratoire', label: 'Laboratoire', categories: ['analyse'], icone: 'flask-conical' },
     { id: 'pharmacie', label: 'Pharmacie', categories: ['medicament'], icone: 'pill' },
     { id: 'consultation', label: 'Consultation', categories: ['consultation'], icone: 'stethoscope' },
-    { id: 'echographie', label: 'Échographie', categories: ['imagerie'], icone: 'scan-line',
+    { id: 'echographie', label: 'Imagerie médicale', categories: ['imagerie'], icone: 'scan-line',
       secteurs: ['Imagerie médicale'] },
     { id: 'maternite', label: 'Maternité', categories: [], icone: 'baby',
       secteurs: ['Maternité', 'Gynéco-obstétrique'] },
@@ -1847,7 +2517,7 @@
     if (/labo/.test(k)) return 'Laboratoire';
     if (/pharma|dispensation|medicament/.test(k)) return 'Pharmacie';
     if (/maternit|obstetr|gyneco|accouch|cpn|pf\b/.test(k)) return 'Maternité';
-    if (/imagerie|echograph|radio|ecg/.test(k)) return 'Échographie';
+    if (/imagerie|echograph|radio|ecg|scanner|irm|mammo/.test(k)) return 'Imagerie médicale';
     if (/consultation|medecine|accueil/.test(k)) return 'Consultation';
     if (/hospit|observation|soins|chirurgie|bloc|urgence/.test(k)) return 'Hospitalisation et soins';
     return null;
@@ -1925,7 +2595,7 @@
   GROUPES_ARTICLES.aConfirmer = false;
   GROUPES_ARTICLES.confirmesLe = '2026-09-01';
   GROUPES_ARTICLES.confirmesPar = 'Direction';
-  GROUPES_ARTICLES.source = 'Regroupement proposé à partir des sept catégories de l’inventaire SAGE — à valider par la Direction';
+  GROUPES_ARTICLES.source = 'Regroupement proposé à partir des sept catégories de l’inventaire initial — à valider par la Direction';
 
   function familleDe(categorie) {
     return FAMILLES_ARTICLES.filter(function (f) { return f.id === categorie; })[0] || null;
@@ -1961,7 +2631,7 @@
     { document: 'Fiche d’évaluation et de solde (juillet 2026)', devient: 'Modèle d’état imprimable', module: 'M10 / RAP', ecran: 'm10-evaluations', statut: 'Intégré' },
     { document: 'Tarifs des analyses de laboratoire (48)', devient: 'Catalogue laboratoire', module: 'M5', ecran: 'm5-catalogue', statut: 'Intégré — tarifs à confirmer' },
     { document: 'Tarifs des médicaments et accessoires (144)', devient: 'Catalogue tarifaire pharmacie', module: 'M6', ecran: 'cfg-tarifs', statut: 'Intégré — tarifs à confirmer' },
-    { document: 'Inventaire « Grand Stock » (SAGE 100)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-reprise', statut: 'Intégré' },
+    { document: 'Inventaire « Grand Stock » (reprise)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-import-grand-stock', statut: 'Intégré' },
     { document: 'Facture fournisseur SoBAPS (BL 26LNA00026)', devient: 'Modèle du workflow achat', module: 'M7', ecran: 'm7-receptions', statut: 'Intégré' },
     { document: 'Bon d’expression de besoins (modèle vierge)', devient: 'Workflow de demande interne', module: 'M7', ecran: 'm7-besoins', statut: 'Intégré' },
     { document: 'Classeur comptable SYSCOHADA', devient: 'Plan comptable + journaux', module: 'M12', ecran: 'm12-plan-comptable', statut: 'Intégré — partiel' },
@@ -1973,7 +2643,7 @@
   ];
 
   global.SIGH.data = {
-    ORGANIGRAMME: ORGANIGRAMME, FONCTIONS: FONCTIONS,
+    ORGANIGRAMME: ORGANIGRAMME, ORGANIGRAMME_PRECEDENT: ORGANIGRAMME_PRECEDENT, postesDeLaSemence: postesDeLaSemence, FONCTIONS: FONCTIONS,
     PARAM_EVENEMENTS: PARAM_EVENEMENTS,
     OBJECTIFS_PILOTAGE: OBJECTIFS_PILOTAGE, AXES_PILOTAGE: AXES_PILOTAGE,
     PATHOLOGIES: PATHOLOGIES, CHAPITRES_PATHOLOGIE: CHAPITRES_PATHOLOGIE,
@@ -1981,8 +2651,13 @@
     NS131: NS131, NS132: NS132,
     ASSUREURS: ASSUREURS, ANALYSES: ANALYSES,
     CATEGORIES_PRODUIT: CATEGORIES_PRODUIT, TYPES_STOCK: TYPES_STOCK, TYPES_MOUVEMENT: TYPES_MOUVEMENT,
-    FOURNISSEURS: FOURNISSEURS, PLAN_COMPTABLE: PLAN_COMPTABLE, JOURNAUX: JOURNAUX, CENTRES_COUT: CENTRES_COUT,
+    FOURNISSEURS: FOURNISSEURS, PLAN_COMPTABLE: PLAN_COMPTABLE, JOURNAUX: JOURNAUX, JOURNAUX_RESERVES: JOURNAUX_RESERVES, CENTRES_COUT: CENTRES_COUT,
     PARAM_FISCAL: PARAM_FISCAL,
+    SITUATIONS_AIB: SITUATIONS_AIB,
+    BAREME_AIB: BAREME_AIB,
+    REGLAGES_AIB: REGLAGES_AIB,
+    REGLAGES_AIB_SEMENCE: REGLAGES_AIB_SEMENCE,
+    REGLAGES_CLOTURE: REGLAGES_CLOTURE, REGLAGES_CLOTURE_SEMENCE: REGLAGES_CLOTURE_SEMENCE,
     PARAM_PAIE: PARAM_PAIE, TYPES_CHAMBRE: TYPES_CHAMBRE, CHAMBRES: CHAMBRES,
     MODES_PAIEMENT: MODES_PAIEMENT, TYPES_PLANNING: TYPES_PLANNING, SERVICES: SERVICES,
     REGLES_PLANNING: REGLES_PLANNING, regleDe: regleDe,
@@ -1994,6 +2669,11 @@
     ACTES: ACTES, SECTEURS_ACTIVITE: SECTEURS_ACTIVITE, NS145: NS145,
     NATURES_FACTURE: NATURES_FACTURE, CENTRES_COUTS: CENTRES_COUTS,
     PARAM_STOCK: PARAM_STOCK, FAMILLES_ARTICLES: FAMILLES_ARTICLES, GROUPES_ARTICLES: GROUPES_ARTICLES,
+    PARAMETRES_CLINIQUE: PARAMETRES_CLINIQUE, semenceParametresClinique: semenceParametresClinique, definitionParametreClinique: definitionParametreClinique,
+    PLAN: { semenceReferentiels: semenceReferentielsPlan, referentiel: planReferentiel, etat: planEtat, axe: planAxe, nature: planNature, finTrimestre: planFinTrimestre, pourcentage: planPourcentage, nombre: planNombre,
+      atteinteIndicateur: planAtteinteIndicateur, totaux: planTotaux, retard: planRetard },
+    versionsParametreClinique: versionsParametreClinique, parametreCliniqueALaDate: parametreCliniqueALaDate, delaiPeremptionALaDate: delaiPeremptionALaDate,
+    tranchesCreancesALaDate: tranchesCreancesALaDate, trancheCreance: trancheCreance, libellesTranches: libellesTranches, statutLotALaDate: statutLotALaDate,
     familleDe: familleDe, groupeDe: groupeDe,
     RUBRIQUES_RESULTAT: RUBRIQUES_RESULTAT, NATURE_CHARGE: NATURE_CHARGE,
     rubriqueDuCompte: rubriqueDuCompte, natureCharge: natureCharge,
@@ -2003,7 +2683,13 @@
     SECTEURS_RECETTE: SECTEURS_RECETTE, secteurNormalise: secteurNormalise,
     groupeDuSecteur: groupeDuSecteur,
     CALENDRIER_FISCAL: CALENDRIER_FISCAL, MONTANTS_FISCAUX: MONTANTS_FISCAUX,
+    semenceObligations: semenceObligations, semenceOrtbParametres: semenceOrtbParametres,
+    obligationsALaDate: obligationsALaDate, ortbALaDate: ortbALaDate,
+    libelleEcheance: libelleEcheance, DELAIS_FISCAUX_ATTENTE: DELAIS_FISCAUX_ATTENTE, semenceParametresFiscaux: semenceParametresFiscaux,
+    versionsParametreFiscal: versionsParametreFiscal, parametreFiscalALaDate: parametreFiscalALaDate,
+    delaisFiscauxALaDate: delaisFiscauxALaDate, montantCcibALaDate: montantCcibALaDate,
     CAPACITES: CAPACITES, NATURES_PRESCRIPTION: NATURES_PRESCRIPTION,
     BAREME_REFERENCE: BAREME_REFERENCE, CATEGORIES_GARANTIE: CATEGORIES_GARANTIE, UNITES_PLAFOND: UNITES_PLAFOND,
+    SPECIALITES_PRESTATAIRE: SPECIALITES_PRESTATAIRE, DOMAINES_UNITES_LABO: DOMAINES_UNITES_LABO, CATEGORIES_IMMOBILISATION: CATEGORIES_IMMOBILISATION, NATURES_BUDGET: NATURES_BUDGET, COURRIERS: COURRIERS, DOCUMENTS: DOCUMENTS, MOTIFS_COUVERTURE: MOTIFS_COUVERTURE,
   };
 })(window);

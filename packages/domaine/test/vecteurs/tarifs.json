@@ -1,0 +1,1194 @@
+{
+ "_doc": "Référentiel de prix unique : migration des listes d’avant (73 actes, 147 lignes de grille, 48 analyses) sans changer un prix, écran « Tarifs et prix » tel que la maquette le rend.",
+ "migration": {
+  "tarifs": 386,
+  "versions": 425,
+  "versions1": 386,
+  "propositionsGrille": 39,
+  "parFamille": {
+   "CONSULTATION": 6,
+   "ACTE": 42,
+   "IMAGERIE": 23,
+   "GYNECO": 31,
+   "LABO": 50,
+   "AMI": 40,
+   "HOSPITALISATION": 3,
+   "CERTIFICAT": 7,
+   "PRODUIT": 184
+  },
+  "avecActe": 73,
+  "avecGrille": 148,
+  "avecAnalyse": 48,
+  "actesEtGrille": 28,
+  "analysesEtGrille": 39,
+  "grilleSeule": 81,
+  "etatsAssure": {
+   "montant": 141,
+   "unique": 276,
+   "nc": 8
+  },
+  "version": 90
+ },
+ "exemples": {
+  "SO02": {
+   "tarif": {
+    "id": "SO02",
+    "code": "SO02",
+    "codeActe": "SO02",
+    "libelle": "Soins intraveineux (SIV)",
+    "famille": "AMI",
+    "statut": "actif",
+    "secteur": "Soins et observation",
+    "codeGrille": "SIV",
+    "codesAlias": [
+     "SIV"
+    ],
+    "libelleGrille": "Soin — injection intraveineuse",
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "SO02@origine@1",
+     "code": "SO02",
+     "version": 1,
+     "prixNonAssure": 1200,
+     "prixAssure": 800,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide"
+    }
+   ]
+  },
+  "MG01": {
+   "tarif": {
+    "id": "MG01",
+    "code": "MG01",
+    "codeActe": "MG01",
+    "libelle": "Consultation généraliste",
+    "famille": "CONSULTATION",
+    "statut": "actif",
+    "secteur": "Médecine générale",
+    "codeGrille": "CONS-GEN",
+    "codesAlias": [
+     "CONS-GEN"
+    ],
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "MG01@origine@1",
+     "code": "MG01",
+     "version": 1,
+     "prixNonAssure": 5000,
+     "prixAssure": 3000,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide"
+    }
+   ]
+  },
+  "HO02": {
+   "tarif": {
+    "id": "HO02",
+    "code": "HO02",
+    "codeActe": "HO02",
+    "libelle": "Journée d’hospitalisation — chambre VIP",
+    "famille": "HOSPITALISATION",
+    "statut": "actif",
+    "secteur": "Hospitalisation"
+   },
+   "versions": [
+    {
+     "id": "HO02@origine@1",
+     "code": "HO02",
+     "version": 1,
+     "prixNonAssure": 15000,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "origine": "migration",
+     "statut": "valide"
+    }
+   ]
+  },
+  "GY-SAA": {
+   "tarif": {
+    "id": "GY-SAA",
+    "code": "GY-SAA",
+    "codeActe": "GY-SAA",
+    "libelle": "Avortement — Soins Après Avortement (SAA)",
+    "famille": "ACTE",
+    "statut": "actif",
+    "secteur": "Gynéco-obstétrique",
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "GY-SAA@origine@1",
+     "code": "GY-SAA",
+     "version": 1,
+     "prixNonAssure": 20000,
+     "prixAssure": 15000,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide",
+     "motif": "Tarif aligné sur l’AMIU (la SAA se pratique par AMIU), arrêté par la Direction le 01/09/2026.",
+     "arreteLe": "2026-09-01"
+    }
+   ]
+  },
+  "L01": {
+   "tarif": {
+    "id": "L01",
+    "code": "L01",
+    "codeAnalyse": "L01",
+    "libelle": "AKOP",
+    "famille": "LABO",
+    "statut": "actif",
+    "codeGrille": "LAB-AKOP",
+    "codesAlias": [
+     "LAB-AKOP"
+    ],
+    "libelleGrille": "AKOP",
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "L01@origine@1",
+     "code": "L01",
+     "version": 1,
+     "prixNonAssure": 2000,
+     "prixAssure": 2000,
+     "etatAssure": "unique",
+     "origine": "migration",
+     "statut": "valide",
+     "provisoire": true
+    },
+    {
+     "id": "L01@a-dater@2",
+     "code": "L01",
+     "version": 2,
+     "prixNonAssure": 2500,
+     "prixAssure": 2000,
+     "etatAssure": "montant",
+     "origine": "semence-grille",
+     "statut": "propose",
+     "aDater": true,
+     "motif": "Prix de la grille imprimée « Tarifs des analyses de laboratoire » : proposé à la Direction (décision T2 du 11/11/2026), Oui ou Non analyse par analyse. Il ne change rien tant qu’il n’est pas validé.",
+     "proposePar": "Semence du socle",
+     "proposeLe": "2026-11-11"
+    }
+   ]
+  },
+  "L05": {
+   "tarif": {
+    "id": "L05",
+    "code": "L05",
+    "codeAnalyse": "L05",
+    "libelle": "BU",
+    "famille": "LABO",
+    "statut": "actif"
+   },
+   "versions": [
+    {
+     "id": "L05@origine@1",
+     "code": "L05",
+     "version": 1,
+     "prixNonAssure": 1000,
+     "prixAssure": 1000,
+     "etatAssure": "unique",
+     "origine": "migration",
+     "statut": "valide",
+     "provisoire": true
+    }
+   ]
+  },
+  "IMG-ECHO-PEL": {
+   "tarif": {
+    "id": "IM01",
+    "code": "IM01",
+    "codeActe": "IM01",
+    "libelle": "Échographie pelvienne",
+    "famille": "IMAGERIE",
+    "statut": "actif",
+    "secteur": "Imagerie médicale",
+    "codeGrille": "IMG-ECHO-PEL",
+    "codesAlias": [
+     "IMG-ECHO-PEL"
+    ],
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "IM01@origine@1",
+     "code": "IM01",
+     "version": 1,
+     "prixNonAssure": 9000,
+     "prixAssure": 5000,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide"
+    }
+   ]
+  },
+  "CERT-DEC": {
+   "tarif": {
+    "id": "CERT-DEC",
+    "code": "CERT-DEC",
+    "codeGrille": "CERT-DEC",
+    "libelle": "Certificat médical de décès",
+    "famille": "CERTIFICAT",
+    "statut": "actif",
+    "assurable": "sos"
+   },
+   "versions": [
+    {
+     "id": "CERT-DEC@origine@1",
+     "code": "CERT-DEC",
+     "version": 1,
+     "prixNonAssure": 10000,
+     "prixAssure": 10000,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide"
+    }
+   ]
+  },
+  "LAB-SDW": {
+   "tarif": {
+    "id": "LAB-SDW",
+    "code": "LAB-SDW",
+    "codeGrille": "LAB-SDW",
+    "libelle": "Sérodiagnostic de Widal (SDW)",
+    "famille": "LABO",
+    "statut": "actif",
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "LAB-SDW@origine@1",
+     "code": "LAB-SDW",
+     "version": 1,
+     "prixNonAssure": 6500,
+     "prixAssure": 4500,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide"
+    }
+   ]
+  },
+  "IMG-RX-THO": {
+   "tarif": {
+    "id": "IMG-RX-THO",
+    "code": "IMG-RX-THO",
+    "codeGrille": "IMG-RX-THO",
+    "libelle": "Radiographie du thorax",
+    "famille": "IMAGERIE",
+    "statut": "actif",
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "IMG-RX-THO@origine@1",
+     "code": "IMG-RX-THO",
+     "version": 1,
+     "prixNonAssure": 10000,
+     "prixAssure": 8000,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide",
+     "motif": "Tarif d’attente posé le 14/09/2026 — aucune grille remise pour cette modalité ; à arrêter par la Direction.",
+     "provisoire": true
+    }
+   ]
+  },
+  "AMIU": {
+   "tarif": {
+    "id": "MA10",
+    "code": "MA10",
+    "codeActe": "MA10",
+    "libelle": "AMIU — aspiration manuelle intra-utérine",
+    "famille": "GYNECO",
+    "statut": "actif",
+    "secteur": "Maternité",
+    "codeGrille": "AMIU",
+    "codesAlias": [
+     "AMIU"
+    ],
+    "libelleGrille": "Aspiration manuelle intra-utérine (AMIU)",
+    "assurable": true
+   },
+   "versions": [
+    {
+     "id": "MA10@origine@1",
+     "code": "MA10",
+     "version": 1,
+     "prixNonAssure": 20000,
+     "prixAssure": 15000,
+     "etatAssure": "montant",
+     "origine": "migration",
+     "statut": "valide"
+    }
+   ]
+  }
+ },
+ "ecarts": {
+  "parType": {
+   "analyse-grille": 39,
+   "analyse-sans-grille": 9,
+   "grille-sans-analyse": 1
+  },
+  "analysesSansGrille": [
+   "L05",
+   "L11",
+   "L27",
+   "L29",
+   "L30",
+   "L31",
+   "L33",
+   "L34",
+   "L48"
+  ],
+  "grilleSansAnalyse": [
+   "LAB-SDW"
+  ]
+ },
+ "ecran": {
+  "titre": "Tarifs et prixCFG",
+  "onglets": [
+   "Prestations129",
+   "Analyses50",
+   "Imagerie23",
+   "Produits184",
+   "Alertes39",
+   "Historique"
+  ],
+  "kpi": [
+   "Prestations tarifées202au jour du 16/08/2026",
+   "Prix en vigueur202",
+   "Propositions en attente39Oui ou Non à donner",
+   "Sans prix en vigueur0ligne non facturable"
+  ],
+  "vues": {
+   "prestations": {
+    "entetes": [
+     "",
+     "Code",
+     "Libellé de facturation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "En vigueur depuis",
+     "Version",
+     "État",
+     "Actions"
+    ],
+    "lignes": 15,
+    "premiere": "ABCGAbcès — grandActes médico-infirmiersNon renseigné14 00010 000Toutes compagniesL’originev1En vigueur"
+   },
+   "analyses": {
+    "entetes": [
+     "",
+     "Code",
+     "Libellé de facturation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "En vigueur depuis",
+     "Version",
+     "État",
+     "Actions"
+    ],
+    "lignes": 15,
+    "premiere": "L01AKOPAnalysesNon renseigné2 000prix uniqueToutes compagniesL’originev1Proposition en attenteValider"
+   },
+   "imagerie": {
+    "entetes": [
+     "",
+     "Code",
+     "Libellé de facturation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "En vigueur depuis",
+     "Version",
+     "État",
+     "Actions"
+    ],
+    "lignes": 15,
+    "premiere": "IM01Échographie pelvienneImagerieImagerie médicale9 0005 000Toutes compagniesL’originev1En vigueur"
+   },
+   "produits": {
+    "entetes": [
+     "",
+     "Code",
+     "Désignation",
+     "Catégorie",
+     "Prix d’achat en vigueur",
+     "Prix de vente (dérivé)",
+     "Marge",
+     "En vigueur depuis",
+     "Version",
+     "État",
+     "Actions"
+    ],
+    "lignes": 15,
+    "premiere": "ABAABAISSE LANGUEconso_medical650650Sans margeL’originev1En vigueur"
+   },
+   "alertes": {
+    "entetes": [
+     "",
+     "Code",
+     "Prestation",
+     "Non assuré en vigueur",
+     "Non assuré proposé",
+     "Variation",
+     "Assuré proposé",
+     "Date d’effet",
+     "Pièces (30 jours)",
+     "Origine",
+     "Proposée par",
+     "Motif",
+     "Actions"
+    ],
+    "lignes": 15,
+    "premiere": "L01AKOP2 0002 500+25 %2 000à fixer au Oui2Grille imprimée des analysesSemence du soclePrix de la grille imprimée « Tarifs des analyses de laboratoire » : proposé à la Direction…OuiNon"
+   }
+  }
+ },
+ "rubriques": [
+  {
+   "onglet": "prestations",
+   "label": "Prestations et actes tarifés"
+  },
+  {
+   "onglet": "analyses",
+   "label": "Prix des analyses de laboratoire"
+  },
+  {
+   "onglet": "imagerie",
+   "label": "Prix de l’imagerie médicale"
+  },
+  {
+   "onglet": "produits",
+   "label": "Produits et médicaments (lecture)"
+  },
+  {
+   "onglet": "alertes",
+   "label": "Changements de prix en attente"
+  },
+  {
+   "onglet": "historique",
+   "label": "Historique des prix et versions"
+  }
+ ],
+ "moteur": {
+  "aujourdhui": "2026-08-16",
+  "cas": [
+   {
+    "nom": "prix zéro",
+    "ok": false,
+    "code": "PRIX_ZERO",
+    "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul »).",
+    "geste": "Saisir un prix strictement positif ; la gratuité passe par la remise motivée ou la prise en charge du personnel."
+   },
+   {
+    "nom": "prix décimal",
+    "ok": false,
+    "code": "PRIX_INVALIDE",
+    "motif": "Le prix non assuré doit être un nombre entier de francs, strictement positif (le boîtier fiscal n’accepte que des montants entiers).",
+    "geste": "Corriger le prix non assuré."
+   },
+   {
+    "nom": "prix absent",
+    "ok": false,
+    "code": "PRIX_ABSENT",
+    "motif": "Le prix non assuré est absent : un prix vide n’est pas un tarif, la ligne ne se facturerait pas.",
+    "geste": "Saisir le prix non assuré."
+   },
+   {
+    "nom": "colonne assurée annoncée sans montant",
+    "ok": false,
+    "code": "PRIX_ABSENT",
+    "motif": "La colonne assurée annonce un montant, mais il est absent.",
+    "geste": "Saisir le prix assuré, ou choisir un autre état."
+   },
+   {
+    "nom": "sans motif",
+    "ok": false,
+    "code": "MOTIF_REQUIS",
+    "motif": "Un changement de prix se motive : sans motif, la Direction ne peut pas décider.",
+    "geste": "Saisir le motif du changement."
+   },
+   {
+    "nom": "sans date d’effet",
+    "ok": false,
+    "code": "DATE_EFFET_REQUISE",
+    "motif": "Un changement de prix prend effet à une date : sans date d’effet, on ne sait pas à partir de quand il s’applique.",
+    "geste": "Saisir la date d’effet."
+   },
+   {
+    "nom": "date passée",
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé sans une décision expresse.",
+    "geste": "Choisir aujourd’hui ou une date future : une date antérieure est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance."
+   },
+   {
+    "nom": "prix inchangé",
+    "ok": false,
+    "code": "PRIX_INCHANGE",
+    "motif": "Ce prix est déjà celui en vigueur à cette date : rien à proposer.",
+    "geste": "Modifier au moins un des prix, ou ne rien changer."
+   },
+   {
+    "nom": "prestation introuvable",
+    "ok": false,
+    "code": "PRESTATION_INTROUVABLE",
+    "motif": "Aucune prestation ne porte le code « NEXISTE ».",
+    "geste": "Choisir une prestation de la liste."
+   },
+   {
+    "nom": "code existant (alias)",
+    "ok": false,
+    "code": "CODE_EXISTANT",
+    "motif": "Le code « SIV » existe déjà au référentiel (code ou alias) : un code ne se réutilise pas.",
+    "geste": "Choisir un autre code, ou proposer un changement de prix à la prestation existante."
+   },
+   {
+    "nom": "un seul changement en attente",
+    "ok": false,
+    "code": "CHANGEMENT_EN_ATTENTE",
+    "motif": "Une proposition est déjà en attente de décision pour « SO02 » (version 2).",
+    "geste": "La décider (Oui ou Non) ou la retirer avant d’en proposer une autre."
+   },
+   {
+    "nom": "décision rejouée",
+    "ok": false,
+    "code": "DEJA_DECIDEE",
+    "motif": "Cette version est déjà « valide » : une décision ne se rejoue pas.",
+    "geste": "Proposer une nouvelle version si le prix doit encore changer."
+   },
+   {
+    "nom": "refus sans motif",
+    "ok": false,
+    "code": "MOTIF_REQUIS",
+    "motif": "Un refus se motive : le service doit pouvoir lire pourquoi le changement n’est pas appliqué.",
+    "geste": "Saisir le motif du refus."
+   },
+   {
+    "nom": "Oui sans date d’effet à une proposition à dater",
+    "ok": false,
+    "code": "DATE_EFFET_REQUISE",
+    "motif": "Cette proposition n’a pas de date d’effet : la décision la fixe.",
+    "geste": "Saisir la date d’effet avec le Oui."
+   },
+   {
+    "nom": "Oui avec une date passée",
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui : la proposition a attendu au-delà de sa date, et un prix ne se change pas dans le passé.",
+    "geste": "Refuser cette proposition (Non), puis la reproposer avec une date d’effet d’aujourd’hui."
+   }
+  ],
+  "futur": {
+   "proposee": {
+    "id": "SO02@2026-08-19@2",
+    "statut": "valide"
+   },
+   "avantOui": {
+    "aujourdhui": {
+     "montant": 1200,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "dansTroisJours": {
+     "montant": 1200,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    }
+   },
+   "decision": {
+    "ok": true,
+    "statut": "valide",
+    "role": "admin"
+   },
+   "apresOui": {
+    "aujourdhui": {
+     "montant": 1200,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "veille": {
+     "montant": 1200,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "jourDit": {
+     "montant": 1400,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 2,
+     "absent": false,
+     "reserveSos": false
+    },
+    "jourDitAssure": {
+     "montant": 900,
+     "tarif": "assuré",
+     "motif": null,
+     "version": 2,
+     "absent": false,
+     "reserveSos": false
+    },
+    "lendemain": {
+     "montant": 1400,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 2,
+     "absent": false,
+     "reserveSos": false
+    },
+    "grilleSIV": {
+     "nonAssure": {
+      "montant": 1200,
+      "tarif": "non assuré",
+      "motif": null,
+      "version": 1,
+      "absent": false,
+      "reserveSos": false
+     },
+     "assure": {
+      "montant": 800,
+      "tarif": "assuré",
+      "motif": null,
+      "version": 1,
+      "absent": false,
+      "reserveSos": false
+     }
+    }
+   }
+  },
+  "refus": {
+   "statut": "refuse",
+   "motif": "Vecteur : hors grille",
+   "prixInchange": true
+  },
+  "aDater": {
+   "id": "L01@a-dater@2",
+   "code": "L01",
+   "avant": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null,
+    "version": 1,
+    "absent": false,
+    "reserveSos": false
+   },
+   "apresOui": {
+    "ok": true,
+    "dateEffet": "2026-08-21",
+    "aujourdhui": {
+     "montant": 2000,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "ledit": {
+     "montant": 2500,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 2,
+     "absent": false,
+     "reserveSos": false
+    }
+   }
+  },
+  "droits": {
+   "admin": {
+    "decider": true,
+    "proposer": true,
+    "refusDecision": null
+   },
+   "da": {
+    "decider": true,
+    "proposer": true,
+    "refusDecision": null
+   },
+   "direction": {
+    "decider": true,
+    "proposer": true,
+    "refusDecision": null
+   },
+   "comptable": {
+    "decider": false,
+    "proposer": false,
+    "refusDecision": "VALIDATION_RESERVEE"
+   },
+   "caissier": {
+    "decider": false,
+    "proposer": false,
+    "refusDecision": "VALIDATION_RESERVEE"
+   },
+   "laborantin": {
+    "decider": false,
+    "proposer": false,
+    "refusDecision": "VALIDATION_RESERVEE"
+   },
+   "stock": {
+    "decider": false,
+    "proposer": false,
+    "refusDecision": "VALIDATION_RESERVEE"
+   },
+   "medecin": {
+    "decider": false,
+    "proposer": false,
+    "refusDecision": "VALIDATION_RESERVEE"
+   },
+   "reception": {
+    "decider": false,
+    "proposer": false,
+    "refusDecision": "VALIDATION_RESERVEE"
+   }
+  },
+  "immuable": {
+   "prix": true,
+   "archive": true,
+   "retrait": true
+  },
+  "voies": {
+   "SO02": {
+    "nonAssure": {
+     "montant": 1200,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "assure": {
+     "montant": 800,
+     "tarif": "assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    }
+   },
+   "SIV": {
+    "nonAssure": {
+     "montant": 1200,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "assure": {
+     "montant": 800,
+     "tarif": "assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    }
+   },
+   "IMG-ECHO-PEL": {
+    "nonAssure": {
+     "montant": 9000,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "assure": {
+     "montant": 5000,
+     "tarif": "assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    }
+   },
+   "CERT-DEC": {
+    "nonAssure": {
+     "montant": 10000,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "assure": {
+     "montant": 10000,
+     "tarif": "non assuré",
+     "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+     "version": 1,
+     "absent": false,
+     "reserveSos": true
+    }
+   },
+   "L01": {
+    "nonAssure": {
+     "montant": 2000,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "assure": {
+     "montant": 2000,
+     "tarif": "assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    }
+   },
+   "LAB-GGT": {
+    "nonAssure": {
+     "montant": 3000,
+     "tarif": "non assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    },
+    "assure": {
+     "montant": 3000,
+     "tarif": "assuré",
+     "motif": null,
+     "version": 1,
+     "absent": false,
+     "reserveSos": false
+    }
+   }
+  },
+  "projection": {
+   "actes": [
+    [
+     "SO02",
+     1200,
+     1200,
+     800
+    ]
+   ],
+   "catalogue": [
+    [
+     "SIV",
+     1200,
+     800
+    ]
+   ],
+   "parite": 0
+  }
+ },
+ "circuit": {
+  "aujourdhui": "2026-08-16",
+  "cas": [
+   {
+    "nom": "usage : une pièce du jour porte la prestation",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00123 du 16/08/2026 porte déjà « MG01 » : un prix qui prendrait effet le 16/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce.",
+    "pieceNommee": true,
+    "nbPieces": 1
+   },
+   {
+    "nom": "usage : le même changement à effet de demain",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "nom": "usage : rejoué au Oui (pièce émise pendant l’attente)",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00124 du 17/08/2026 porte déjà « MG01 » : un prix qui prendrait effet le 17/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Refuser cette proposition (Non), puis la reproposer avec une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce.",
+    "statutApres": "propose"
+   },
+   {
+    "nom": "Non avec motif (aucune version nouvelle)",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "versions": 2
+   },
+   {
+    "nom": "deux changements : un seul en attente",
+    "ok": false,
+    "code": "CHANGEMENT_EN_ATTENTE",
+    "motif": "Une proposition est déjà en attente de décision pour « MG02 » (version 2).",
+    "geste": "La décider (Oui ou Non) ou la retirer avant d’en proposer une autre."
+   },
+   {
+    "nom": "deux changements : la pièce du jour ferme la date",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00125 du 18/08/2026 porte déjà « MG02 » : un prix qui prendrait effet le 18/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce."
+   },
+   {
+    "nom": "date passée déjà utilisée (DAF, case cochée)",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00126 du 13/08/2026 porte déjà « MG03 » (et 2 autre(s) pièce(s) depuis cette date) : un prix qui prendrait effet le 11/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce."
+   },
+   {
+    "nom": "date passée sans la case (DAF)",
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé sans une décision expresse.",
+    "geste": "Cocher « Date antérieure à aujourd’hui » et motiver, ou choisir aujourd’hui ou une date future."
+   },
+   {
+    "nom": "date passée avec la case (DAF)",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "marquee": true
+   },
+   {
+    "nom": "date passée sans la case (administrateur)",
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé sans une décision expresse.",
+    "geste": "Choisir aujourd’hui ou une date future : une date antérieure est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance."
+   },
+   {
+    "nom": "date passée avec la case (administrateur)",
+    "ok": false,
+    "code": "DATE_PASSEE_RESERVEE",
+    "motif": "Une date d’effet antérieure à aujourd’hui est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance.",
+    "geste": "Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils."
+   },
+   {
+    "nom": "décision d’une date passée par l’administrateur",
+    "ok": false,
+    "code": "DATE_PASSEE_RESERVEE",
+    "motif": "Une date d’effet antérieure à aujourd’hui se décide par Directrice de l’Administration et des Finances (DAF) et Direction / Gérance.",
+    "geste": "Demander la décision à l’un de ces profils."
+   },
+   {
+    "nom": "décision d’une date passée par la Direction",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "prixHier": 30100,
+    "prixAvantHier": 30000
+   },
+   {
+    "nom": "prix zéro",
+    "ok": false,
+    "code": "PRIX_ZERO",
+    "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul »).",
+    "geste": "Saisir un prix strictement positif ; la gratuité passe par la remise motivée ou la prise en charge du personnel."
+   },
+   {
+    "nom": "prix vide",
+    "ok": false,
+    "code": "PRIX_ABSENT",
+    "motif": "Le prix non assuré est absent : un prix vide n’est pas un tarif, la ligne ne se facturerait pas.",
+    "geste": "Saisir le prix non assuré."
+   },
+   {
+    "nom": "proposition vide",
+    "ok": false,
+    "code": "PRIX_ABSENT",
+    "motif": "Le prix non assuré est absent : un prix vide n’est pas un tarif, la ligne ne se facturerait pas.",
+    "geste": "Saisir le prix non assuré."
+   },
+   {
+    "nom": "ligne identique",
+    "ok": false,
+    "code": "PRIX_INCHANGE",
+    "motif": "Ce prix est déjà celui en vigueur à cette date : rien à proposer.",
+    "geste": "Modifier au moins un des prix, ou ne rien changer."
+   },
+   {
+    "nom": "tiret de la colonne assurée",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "etatAssure": "manquant"
+   },
+   {
+    "nom": "valider en un geste (DAF)",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "statut": "valide",
+    "roleDecision": "da",
+    "prixApres": 150250,
+    "prixAttendu": 150250
+   },
+   {
+    "nom": "valider par un profil qui édite sans décider",
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "Valider un changement de prix est réservé aux rôles qui détiennent le droit « Décider un changement de prix » (fiche RBAC) : valider n’est pas modifier la fiche.",
+    "geste": "Enregistrer le changement comme proposition : la décision revient à un rôle qui détient ce droit."
+   },
+   {
+    "nom": "proposer par un profil qui édite sans décider",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "proposeRole": "comptable"
+   },
+   {
+    "nom": "décision Non avec motif",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   }
+  ],
+  "_doc": "Circuit Oui/Non des prix (lot T3) : contrôle d’usage tarif_deja_utilise (proposition et Oui rejoué), cas limites de 5.6, date passée réservée à la DAF et à la Direction, Valider en un geste, alerte et retour à l’auteur, famille du centre des validations, pro-forma à la conversion.",
+  "memeJour": {
+   "vigueur": 8200,
+   "attendu": 8200,
+   "versions": [
+    "1:valide",
+    "2:valide",
+    "3:valide"
+   ]
+  },
+  "idEditeur": "CH04@2026-08-16@2",
+  "alerte": {
+   "da": [
+    {
+     "cle": "prix:grille",
+     "titre": "38 changements de prix à valider",
+     "detail": "Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.",
+     "priorite": "important",
+     "lien": "cfg-tarifs",
+     "onglet": "alertes"
+    },
+    {
+     "cle": "prix:CH04@2026-08-16@2",
+     "titre": "Changement de prix à valider : CH04",
+     "detail": "Proposé par Vecteur comptable. Le prix en vigueur ne change pas avant le Oui.",
+     "priorite": "important",
+     "lien": "cfg-tarifs",
+     "onglet": "alertes"
+    },
+    {
+     "cle": "notif:NOTxmsvr66k8xd9it",
+     "titre": "Votre changement de prix MG04 a été accepté",
+     "detail": "Il prend effet le 15/08/2026. Décidé par Vecteur Direction.",
+     "priorite": "information",
+     "lien": "cfg-tarifs",
+     "onglet": "historique"
+    }
+   ],
+   "caissier": [],
+   "grille": 38
+  },
+  "retour": {
+   "comptable": [],
+   "apresDa": [
+    "notif:NOTxmsvr66kj17kz7",
+    "notif:NOTxmsvr66k8xd9it"
+   ]
+  },
+  "centre": {
+   "famille": {
+    "libelle": "Changements de prix en attente (Oui ou Non)",
+    "profil": "Administrateur système, Direction / Gérance, Directrice de l’Administration et des Finances (DAF)",
+    "ecran": "cfg-tarifs",
+    "enAttente": 38
+   },
+   "reelles": 38,
+   "depuisCentre": "GESTE_A_SON_POSTE"
+  },
+  "ouiATout": {
+   "sansComparaison": "COMPARAISON_REQUISE",
+   "sansDroit": "VALIDATION_RESERVEE",
+   "resultat": {
+    "acceptees": [
+     "CH05"
+    ],
+    "refusees": [
+     "CH06:TARIF_DEJA_UTILISE"
+    ],
+    "exclues": 0
+   }
+  },
+  "proforma": {
+   "defaut": 30,
+   "propose": 30,
+   "dixJours": {
+    "regle": "prix_de_la_proforma",
+    "age": 10,
+    "validite": 30,
+    "ancien": 7000,
+    "nouveau": 7300,
+    "retenu": 7000,
+    "ecart": 300
+   },
+   "quaranteJours": {
+    "regle": "prix_du_jour",
+    "age": 40,
+    "validite": 30,
+    "ancien": 7000,
+    "nouveau": 7300,
+    "retenu": 7300,
+    "ecart": 300
+   },
+   "regle": {
+    "ok": true,
+    "jours": 5,
+    "avant": 30
+   },
+   "dixJoursApres": {
+    "regle": "prix_du_jour",
+    "age": 10,
+    "validite": 5,
+    "ancien": 7000,
+    "nouveau": 7300,
+    "retenu": 7300,
+    "ecart": 300
+   },
+   "invalides": [
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE"
+   ],
+   "reserve": "REGLAGE_RESERVE",
+   "venteNonProforma": "PAS_UNE_PROFORMA"
+  }
+ }
+}

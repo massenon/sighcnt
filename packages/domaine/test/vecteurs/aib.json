@@ -1,0 +1,3177 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-aib.js : SIGH.baremeAib et SIGH.reglagesAib pilotés dans Chrome, ne pas éditer. Horloge : 16/08/2026 10 h.",
+ "aujourdhui": "2026-08-16",
+ "definitions": [
+  {
+   "cle": "chargePrelevement",
+   "type": "choix",
+   "libelle": "Qui supporte le prélèvement de 5 %",
+   "valeurs": [
+    {
+     "value": "clinique",
+     "label": "La clinique"
+    },
+    {
+     "value": "acheteur",
+     "label": "L’acheteur"
+    }
+   ],
+   "defaut": "clinique",
+   "aide": "Texte officiel manquant : réglage non arrêté. Aucun effet comptable n’en découle, la valeur est portée par chaque vente et listée aux achats."
+  },
+  {
+   "cle": "branchementAchats",
+   "type": "choix",
+   "libelle": "Brancher l’AIB sur les écritures d’achat",
+   "valeurs": [
+    {
+     "value": "desactive",
+     "label": "Désactivé (le moteur liste, n’écrit rien)"
+    },
+    {
+     "value": "actif",
+     "label": "Activé (écrit ce qui est listé)"
+    }
+   ],
+   "defaut": "desactive",
+   "aide": "Désactivé par défaut. L’activation exige le compte d’acompte, le compte de contrepartie et le réglage de la charge arrêtés."
+  },
+  {
+   "cle": "compteAcompte",
+   "type": "compte",
+   "libelle": "Compte d’acompte (débit)",
+   "defaut": null,
+   "aide": "Choisi par le comptable dans le plan comptable : aucun numéro n’est proposé d’office."
+  },
+  {
+   "cle": "compteContrepartie",
+   "type": "compte",
+   "libelle": "Compte de contrepartie (crédit)",
+   "defaut": null,
+   "aide": "Choisi par le comptable dans le plan comptable : une écriture s’équilibre sur deux comptes que la clinique désigne."
+  }
+ ],
+ "semences": {
+  "situations": [
+   {
+    "id": "SAI01",
+    "statut": "actif",
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "code": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "declencheur": "ifu_renseigne",
+    "ordre": 1,
+    "description": "L’acheteur présente un IFU de 13 chiffres. L’activité de l’IFU n’est pas vérifiée auprès de la DGI (la maquette ne peut pas l’interroger) : elle est présumée."
+   },
+   {
+    "id": "SAI02",
+    "statut": "actif",
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "code": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "declencheur": "ifu_absent",
+    "ordre": 2,
+    "description": "Aucun IFU renseigné (particulier) ou IFU désactivé : contribuable non conforme ou non immatriculé."
+   },
+   {
+    "id": "SAI03",
+    "statut": "actif",
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "code": "prestation_service",
+    "libelle": "Prestation de service retenue par le payeur",
+    "declencheur": "choix",
+    "ordre": 3,
+    "description": "Prestation de service dont l’organisme payeur retient l’AIB sur le prix hors taxe. Choisie par le caissier, jamais d’office."
+   },
+   {
+    "id": "SAI04",
+    "statut": "actif",
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "code": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "declencheur": "choix",
+    "ordre": 4,
+    "famille": "retenue_tiers",
+    "description": "Tiers personne physique dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
+   },
+   {
+    "id": "SAI05",
+    "statut": "actif",
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "code": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "declencheur": "choix",
+    "ordre": 5,
+    "famille": "retenue_tiers",
+    "description": "Tiers personne morale dont la facture normalisée a été ajoutée : la clinique retient l’AIB sur sa facture. Proposée au comptable, jamais appliquée d’office."
+   }
+  ],
+  "bareme": [
+   {
+    "id": "BAI001",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "ifu_inactif_ou_absent",
+    "taux": 1,
+    "dateEffet": "2026-01-01",
+    "dateFin": "2026-09-06",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "motif": "Taux appliqué avant le communiqué de septembre 2026 : défaut historique de la maquette (date d’effet d’attente : début de l’exercice 2026)."
+   },
+   {
+    "id": "BAI002",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "ifu_inactif_ou_absent",
+    "taux": 5,
+    "dateEffet": "2026-09-07",
+    "dateFin": null,
+    "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+    "motif": "Généralisation du prélèvement de 5 % à l’émission des factures normalisées, à compter du 07/09/2026."
+   },
+   {
+    "id": "BAI003",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "ifu_actif",
+    "taux": 1,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "motif": "Défaut de la fenêtre MECeF quand l’acheteur a un IFU actif (date d’effet d’attente : début de l’exercice 2026)."
+   },
+   {
+    "id": "BAI004",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "prestation_service",
+    "taux": 3,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+    "motif": "Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026)."
+   },
+   {
+    "id": "BAI005",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "personne_physique",
+    "taux": 3,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "motif": "Retenue sur la facture d’un tiers personne physique (date d’effet d’attente : début de l’exercice 2026)."
+   },
+   {
+    "id": "BAI006",
+    "statut": "actif",
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "situation": "personne_morale",
+    "taux": 5,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "motif": "Retenue sur la facture d’un tiers personne morale (date d’effet d’attente : début de l’exercice 2026)."
+   }
+  ],
+  "reglages": [
+   {
+    "id": "RAI001",
+    "statut": "actif",
+    "dateFin": null,
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "cle": "chargePrelevement",
+    "valeur": "clinique",
+    "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+    "dateEffet": "2026-01-01",
+    "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+    "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+   },
+   {
+    "id": "RAI002",
+    "statut": "actif",
+    "dateFin": null,
+    "aValider": true,
+    "creeLe": "2026-11-09",
+    "creePar": "Semence du socle",
+    "cle": "branchementAchats",
+    "valeur": "desactive",
+    "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+    "dateEffet": "2026-01-01",
+    "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+    "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+   }
+  ]
+ },
+ "tauxALaDate": [
+  {
+   "situation": "ifu_actif",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Acheteur avec IFU actif » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "ifu_actif",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "ifu_actif",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "ifu_actif",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "ifu_actif",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "ifu_actif",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "situation": "ifu_inactif_ou_absent",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Acheteur sans IFU actif » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "ifu_inactif_ou_absent",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "ifu_inactif_ou_absent",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": "2026-09-06",
+    "version": 1,
+    "versionId": "BAI001",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "ifu_inactif_ou_absent",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": "2026-09-06",
+    "version": 1,
+    "versionId": "BAI001",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "ifu_inactif_ou_absent",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-09-07",
+    "dateFin": null,
+    "version": 2,
+    "versionId": "BAI002",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "ifu_inactif_ou_absent",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-09-07",
+    "dateFin": null,
+    "version": 2,
+    "versionId": "BAI002",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "situation": "prestation_service",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Prestation de service retenue par le payeur » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "prestation_service",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "prestation_service",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI004",
+    "situation": "prestation_service",
+    "libelle": "Prestation de service retenue par le payeur",
+    "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "prestation_service",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI004",
+    "situation": "prestation_service",
+    "libelle": "Prestation de service retenue par le payeur",
+    "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "prestation_service",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI004",
+    "situation": "prestation_service",
+    "libelle": "Prestation de service retenue par le payeur",
+    "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "prestation_service",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI004",
+    "situation": "prestation_service",
+    "libelle": "Prestation de service retenue par le payeur",
+    "source": "Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Tiers, personne physique (retenue sur sa facture) » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "personne_physique",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "personne_physique",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "taux": 3,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI005",
+    "situation": "personne_physique",
+    "libelle": "Tiers, personne physique (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "Aucune version du barème de l’AIB ne couvre la situation « Tiers, personne morale (retenue sur sa facture) » au 31/12/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+    "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+    "situation": "personne_morale",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "personne_morale",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI006",
+    "situation": "personne_morale",
+    "libelle": "Tiers, personne morale (retenue sur sa facture)",
+    "source": "Direction, 16/11/2026 (section AQ point 8) : 3 % personne physique, 5 % personne morale, selon la Direction. Articles 132 d) et 135 du CGI et mesure DGI du 07/09/2026 cités par la Direction, jamais lus au texte officiel (absent du dépôt) : proposition à valider, hypothèse à confirmer.",
+    "date": "2026-11-09"
+   }
+  },
+  {
+   "situation": "situation_inconnue",
+   "date": "2025-12-31",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "La situation « situation_inconnue » n’est pas active au barème de l’AIB : aucun taux ne peut être rendu (un tiret n’est pas un zéro).",
+    "geste": "Choisir une situation listée, ou la créer puis lui donner une version à l’écran « Barème de l’AIB ».",
+    "situation": "situation_inconnue",
+    "date": "2025-12-31"
+   }
+  },
+  {
+   "situation": "situation_inconnue",
+   "date": "2026-01-01",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "La situation « situation_inconnue » n’est pas active au barème de l’AIB : aucun taux ne peut être rendu (un tiret n’est pas un zéro).",
+    "geste": "Choisir une situation listée, ou la créer puis lui donner une version à l’écran « Barème de l’AIB ».",
+    "situation": "situation_inconnue",
+    "date": "2026-01-01"
+   }
+  },
+  {
+   "situation": "situation_inconnue",
+   "date": "2026-09-06",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "La situation « situation_inconnue » n’est pas active au barème de l’AIB : aucun taux ne peut être rendu (un tiret n’est pas un zéro).",
+    "geste": "Choisir une situation listée, ou la créer puis lui donner une version à l’écran « Barème de l’AIB ».",
+    "situation": "situation_inconnue",
+    "date": "2026-09-06"
+   }
+  },
+  {
+   "situation": "situation_inconnue",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "La situation « situation_inconnue » n’est pas active au barème de l’AIB : aucun taux ne peut être rendu (un tiret n’est pas un zéro).",
+    "geste": "Choisir une situation listée, ou la créer puis lui donner une version à l’écran « Barème de l’AIB ».",
+    "situation": "situation_inconnue",
+    "date": "2026-09-07"
+   }
+  },
+  {
+   "situation": "situation_inconnue",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": false,
+    "code": "AIB_SANS_BAREME",
+    "motif": "La situation « situation_inconnue » n’est pas active au barème de l’AIB : aucun taux ne peut être rendu (un tiret n’est pas un zéro).",
+    "geste": "Choisir une situation listée, ou la créer puis lui donner une version à l’écran « Barème de l’AIB ».",
+    "situation": "situation_inconnue",
+    "date": "2026-11-09"
+   }
+  }
+ ],
+ "pourAcheteur": [
+  {
+   "ifu": "",
+   "date": "2026-08-16",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": "2026-09-06",
+    "version": 1,
+    "versionId": "BAI001",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-08-16",
+    "presomption": false,
+    "avertissement": null
+   }
+  },
+  {
+   "ifu": "",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 5,
+    "arrete": false,
+    "dateEffet": "2026-09-07",
+    "dateFin": null,
+    "version": 2,
+    "versionId": "BAI002",
+    "situation": "ifu_inactif_ou_absent",
+    "libelle": "Acheteur sans IFU actif",
+    "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-07",
+    "presomption": false,
+    "avertissement": null
+   }
+  },
+  {
+   "ifu": "3201642748214",
+   "date": "2026-08-16",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-08-16",
+    "presomption": true,
+    "avertissement": "IFU présumé actif : la maquette ne peut pas interroger la DGI, l’activité de l’IFU n’est pas vérifiée."
+   }
+  },
+  {
+   "ifu": "3201642748214",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-07",
+    "presomption": true,
+    "avertissement": "IFU présumé actif : la maquette ne peut pas interroger la DGI, l’activité de l’IFU n’est pas vérifiée."
+   }
+  },
+  {
+   "ifu": "123",
+   "date": "2026-08-16",
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE",
+    "motif": "L’IFU de l’acheteur (« 123 ») doit comporter exactement 13 chiffres.",
+    "geste": "Corriger l’IFU, ou le laisser vide pour un particulier."
+   }
+  },
+  {
+   "ifu": "123",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE",
+    "motif": "L’IFU de l’acheteur (« 123 ») doit comporter exactement 13 chiffres.",
+    "geste": "Corriger l’IFU, ou le laisser vide pour un particulier."
+   }
+  },
+  {
+   "ifu": " 3201 6427 48214 ",
+   "date": "2026-08-16",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-08-16",
+    "presomption": true,
+    "avertissement": "IFU présumé actif : la maquette ne peut pas interroger la DGI, l’activité de l’IFU n’est pas vérifiée."
+   }
+  },
+  {
+   "ifu": " 3201 6427 48214 ",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": true,
+    "taux": 1,
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "BAI003",
+    "situation": "ifu_actif",
+    "libelle": "Acheteur avec IFU actif",
+    "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+    "date": "2026-09-07",
+    "presomption": true,
+    "avertissement": "IFU présumé actif : la maquette ne peut pas interroger la DGI, l’activité de l’IFU n’est pas vérifiée."
+   }
+  },
+  {
+   "ifu": "320164274821x",
+   "date": "2026-08-16",
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE",
+    "motif": "L’IFU de l’acheteur (« 320164274821x ») doit comporter exactement 13 chiffres.",
+    "geste": "Corriger l’IFU, ou le laisser vide pour un particulier."
+   }
+  },
+  {
+   "ifu": "320164274821x",
+   "date": "2026-09-07",
+   "sortie": {
+    "ok": false,
+    "code": "IFU_INVALIDE",
+    "motif": "L’IFU de l’acheteur (« 320164274821x ») doit comporter exactement 13 chiffres.",
+    "geste": "Corriger l’IFU, ou le laisser vide pour un particulier."
+   }
+  }
+ ],
+ "proposes": [
+  {
+   "ifu": "",
+   "date": "2026-11-09",
+   "sortie": {
+    "ok": true,
+    "date": "2026-11-09",
+    "choix": [
+     {
+      "situation": "ifu_actif",
+      "libelle": "Acheteur avec IFU actif",
+      "declencheur": "ifu_renseigne",
+      "taux": 1,
+      "arrete": false,
+      "version": 1,
+      "versionId": "BAI003"
+     },
+     {
+      "situation": "ifu_inactif_ou_absent",
+      "libelle": "Acheteur sans IFU actif",
+      "declencheur": "ifu_absent",
+      "taux": 5,
+      "arrete": false,
+      "version": 2,
+      "versionId": "BAI002"
+     },
+     {
+      "situation": "prestation_service",
+      "libelle": "Prestation de service retenue par le payeur",
+      "declencheur": "choix",
+      "taux": 3,
+      "arrete": false,
+      "version": 1,
+      "versionId": "BAI004"
+     }
+    ],
+    "defaut": {
+     "ok": true,
+     "taux": 5,
+     "arrete": false,
+     "dateEffet": "2026-09-07",
+     "dateFin": null,
+     "version": 2,
+     "versionId": "BAI002",
+     "situation": "ifu_inactif_ou_absent",
+     "libelle": "Acheteur sans IFU actif",
+     "source": "Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : proposition à valider, texte réglementaire à produire",
+     "date": "2026-11-09",
+     "presomption": false,
+     "avertissement": null
+    },
+    "defautRefus": null
+   }
+  },
+  {
+   "ifu": "3201642748214",
+   "date": "2026-08-16",
+   "sortie": {
+    "ok": true,
+    "date": "2026-08-16",
+    "choix": [
+     {
+      "situation": "ifu_actif",
+      "libelle": "Acheteur avec IFU actif",
+      "declencheur": "ifu_renseigne",
+      "taux": 1,
+      "arrete": false,
+      "version": 1,
+      "versionId": "BAI003"
+     },
+     {
+      "situation": "ifu_inactif_ou_absent",
+      "libelle": "Acheteur sans IFU actif",
+      "declencheur": "ifu_absent",
+      "taux": 1,
+      "arrete": false,
+      "version": 1,
+      "versionId": "BAI001"
+     },
+     {
+      "situation": "prestation_service",
+      "libelle": "Prestation de service retenue par le payeur",
+      "declencheur": "choix",
+      "taux": 3,
+      "arrete": false,
+      "version": 1,
+      "versionId": "BAI004"
+     }
+    ],
+    "defaut": {
+     "ok": true,
+     "taux": 1,
+     "arrete": false,
+     "dateEffet": "2026-01-01",
+     "dateFin": null,
+     "version": 1,
+     "versionId": "BAI003",
+     "situation": "ifu_actif",
+     "libelle": "Acheteur avec IFU actif",
+     "source": "Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : proposition à valider, texte réglementaire à produire",
+     "date": "2026-08-16",
+     "presomption": true,
+     "avertissement": "IFU présumé actif : la maquette ne peut pas interroger la DGI, l’activité de l’IFU n’est pas vérifiée."
+    },
+    "defautRefus": null
+   }
+  },
+  {
+   "ifu": "",
+   "date": "2025-06-01",
+   "sortie": {
+    "ok": true,
+    "date": "2025-06-01",
+    "choix": [],
+    "defaut": null,
+    "defautRefus": {
+     "ok": false,
+     "code": "AIB_SANS_BAREME",
+     "motif": "Aucune version du barème de l’AIB ne couvre la situation « Acheteur sans IFU actif » au 01/06/2025 : le taux n’est pas arrêté, il ne vaut pas zéro.",
+     "geste": "Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.",
+     "situation": "ifu_inactif_ou_absent",
+     "date": "2025-06-01"
+    }
+   }
+  }
+ ],
+ "lectures": [
+  {
+   "date": "2026-08-16",
+   "charge": {
+    "ok": true,
+    "cle": "chargePrelevement",
+    "valeur": "clinique",
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "RAI001",
+    "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+    "date": "2026-08-16",
+    "libelle": "La clinique",
+    "message": "Réglage non arrêté : le texte officiel manque. L’AIB reste affiché comme un acompte imputable, sans écriture."
+   },
+   "branchement": {
+    "ok": true,
+    "date": "2026-08-16",
+    "actif": false,
+    "valeur": "desactive",
+    "arrete": false,
+    "versionId": "RAI002",
+    "compteAcompte": null,
+    "compteContrepartie": null,
+    "raisons": [
+     "Le branchement est désactivé : le moteur liste, il n’écrit rien."
+    ],
+    "chargeArretee": false
+   },
+   "acompte": {
+    "ok": false,
+    "code": "AIB_REGLAGE_SANS_VERSION",
+    "motif": "Aucune version du réglage « Compte d’acompte (débit) » ne couvre le 16/08/2026 : la valeur n’est pas arrêtée, rien n’est supposé.",
+    "geste": "Choisir le compte à l’écran « Barème de l’AIB », onglet « Réglages ».",
+    "cle": "compteAcompte",
+    "date": "2026-08-16"
+   },
+   "contrepartie": {
+    "ok": false,
+    "code": "AIB_REGLAGE_SANS_VERSION",
+    "motif": "Aucune version du réglage « Compte de contrepartie (crédit) » ne couvre le 16/08/2026 : la valeur n’est pas arrêtée, rien n’est supposé.",
+    "geste": "Choisir le compte à l’écran « Barème de l’AIB », onglet « Réglages ».",
+    "cle": "compteContrepartie",
+    "date": "2026-08-16"
+   },
+   "inconnu": {
+    "ok": false,
+    "code": "AIB_REGLAGE_INCONNU",
+    "motif": "Le réglage « inexistant » n’existe pas parmi les réglages de l’AIB.",
+    "geste": "Choisir un réglage listé à l’écran « Barème de l’AIB ».",
+    "cle": "inexistant"
+   }
+  },
+  {
+   "date": "2026-08-15",
+   "charge": {
+    "ok": true,
+    "cle": "chargePrelevement",
+    "valeur": "clinique",
+    "arrete": false,
+    "dateEffet": "2026-01-01",
+    "dateFin": "2026-08-15",
+    "version": 1,
+    "versionId": "RAI001",
+    "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+    "date": "2026-08-15",
+    "libelle": "La clinique",
+    "message": "Réglage non arrêté : le texte officiel manque. L’AIB reste affiché comme un acompte imputable, sans écriture."
+   },
+   "branchement": {
+    "ok": true,
+    "date": "2026-08-15",
+    "actif": false,
+    "valeur": "desactive",
+    "arrete": false,
+    "versionId": "RAI002",
+    "compteAcompte": null,
+    "compteContrepartie": null,
+    "raisons": [
+     "Le branchement est désactivé : le moteur liste, il n’écrit rien."
+    ],
+    "chargeArretee": false
+   },
+   "acompte": {
+    "ok": false,
+    "code": "AIB_REGLAGE_SANS_VERSION",
+    "motif": "Aucune version du réglage « Compte d’acompte (débit) » ne couvre le 15/08/2026 : la valeur n’est pas arrêtée, rien n’est supposé.",
+    "geste": "Choisir le compte à l’écran « Barème de l’AIB », onglet « Réglages ».",
+    "cle": "compteAcompte",
+    "date": "2026-08-15"
+   },
+   "contrepartie": {
+    "ok": false,
+    "code": "AIB_REGLAGE_SANS_VERSION",
+    "motif": "Aucune version du réglage « Compte de contrepartie (crédit) » ne couvre le 15/08/2026 : la valeur n’est pas arrêtée, rien n’est supposé.",
+    "geste": "Choisir le compte à l’écran « Barème de l’AIB », onglet « Réglages ».",
+    "cle": "compteContrepartie",
+    "date": "2026-08-15"
+   },
+   "inconnu": {
+    "ok": false,
+    "code": "AIB_REGLAGE_INCONNU",
+    "motif": "Le réglage « inexistant » n’existe pas parmi les réglages de l’AIB.",
+    "geste": "Choisir un réglage listé à l’écran « Barème de l’AIB ».",
+    "cle": "inexistant"
+   }
+  },
+  {
+   "date": "2026-08-16",
+   "charge": {
+    "ok": true,
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "arrete": true,
+    "dateEffet": "2026-08-16",
+    "dateFin": null,
+    "version": 2,
+    "versionId": "RAI-1",
+    "source": "Vecteur",
+    "date": "2026-08-16",
+    "libelle": "L’acheteur",
+    "message": null
+   },
+   "branchement": {
+    "ok": true,
+    "date": "2026-08-16",
+    "actif": true,
+    "valeur": "actif",
+    "arrete": true,
+    "versionId": "RAI-4",
+    "compteAcompte": "447000",
+    "compteContrepartie": "401110",
+    "raisons": [],
+    "compteAcompteArrete": true,
+    "compteContrepartieArrete": true,
+    "chargeArretee": true
+   },
+   "acompte": {
+    "ok": true,
+    "cle": "compteAcompte",
+    "valeur": "447000",
+    "arrete": true,
+    "dateEffet": "2026-08-16",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "RAI-2",
+    "source": null,
+    "date": "2026-08-16"
+   },
+   "contrepartie": {
+    "ok": true,
+    "cle": "compteContrepartie",
+    "valeur": "401110",
+    "arrete": true,
+    "dateEffet": "2026-08-16",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "RAI-3",
+    "source": null,
+    "date": "2026-08-16"
+   },
+   "inconnu": {
+    "ok": false,
+    "code": "AIB_REGLAGE_INCONNU",
+    "motif": "Le réglage « inexistant » n’existe pas parmi les réglages de l’AIB.",
+    "geste": "Choisir un réglage listé à l’écran « Barème de l’AIB ».",
+    "cle": "inexistant"
+   }
+  },
+  {
+   "date": "2026-12-31",
+   "charge": {
+    "ok": true,
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "arrete": true,
+    "dateEffet": "2026-08-16",
+    "dateFin": null,
+    "version": 2,
+    "versionId": "RAI-1",
+    "source": "Vecteur",
+    "date": "2026-12-31",
+    "libelle": "L’acheteur",
+    "message": null
+   },
+   "branchement": {
+    "ok": true,
+    "date": "2026-12-31",
+    "actif": true,
+    "valeur": "actif",
+    "arrete": true,
+    "versionId": "RAI-4",
+    "compteAcompte": "447000",
+    "compteContrepartie": "401110",
+    "raisons": [],
+    "compteAcompteArrete": true,
+    "compteContrepartieArrete": true,
+    "chargeArretee": true
+   },
+   "acompte": {
+    "ok": true,
+    "cle": "compteAcompte",
+    "valeur": "447000",
+    "arrete": true,
+    "dateEffet": "2026-08-16",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "RAI-2",
+    "source": null,
+    "date": "2026-12-31"
+   },
+   "contrepartie": {
+    "ok": true,
+    "cle": "compteContrepartie",
+    "valeur": "401110",
+    "arrete": true,
+    "dateEffet": "2026-08-16",
+    "dateFin": null,
+    "version": 1,
+    "versionId": "RAI-3",
+    "source": null,
+    "date": "2026-12-31"
+   },
+   "inconnu": {
+    "ok": false,
+    "code": "AIB_REGLAGE_INCONNU",
+    "motif": "Le réglage « inexistant » n’existe pas parmi les réglages de l’AIB.",
+    "geste": "Choisir un réglage listé à l’écran « Barème de l’AIB ».",
+    "cle": "inexistant"
+   }
+  }
+ ],
+ "gestes": [
+  {
+   "nom": "activation incomplète : ni comptes ni charge arrêtée",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "branchementAchats",
+    "valeur": "actif",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_BRANCHEMENT_INCOMPLET",
+    "motif": "L’activation est refusée : le compte d’acompte n’est pas choisi, le compte de contrepartie n’est pas choisi, le réglage de la charge des 5 % n’est pas arrêté.",
+    "geste": "Choisir les deux comptes à une date d’effet antérieure ou égale, arrêter la charge des 5 %, puis activer.",
+    "manque": [
+     "le compte d’acompte n’est pas choisi",
+     "le compte de contrepartie n’est pas choisi",
+     "le réglage de la charge des 5 % n’est pas arrêté"
+    ]
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "réglage inconnu",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "inexistant",
+    "valeur": "x",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_REGLAGE_INCONNU",
+    "motif": "Le réglage « inexistant » n’existe pas parmi les réglages de l’AIB.",
+    "geste": "Choisir un réglage listé."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "valeur non admise",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "personne",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_VALEUR_INVALIDE",
+    "motif": "La valeur « personne » n’est pas admise pour « Qui supporte le prélèvement de 5 % » (clinique, acheteur).",
+    "geste": "Choisir une valeur proposée."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "compte absent du plan",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "compteAcompte",
+    "valeur": "999999",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_COMPTE_INCONNU",
+    "motif": "Le compte « 999999 » n’est pas au plan comptable : aucun numéro n’est inventé.",
+    "geste": "Choisir un compte du plan comptable (ou le créer d’abord à l’écran du plan)."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "compte archivé du plan",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "compteAcompte",
+    "valeur": "411999",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_COMPTE_INCONNU",
+    "motif": "Le compte « 411999 » n’est pas au plan comptable : aucun numéro n’est inventé.",
+    "geste": "Choisir un compte du plan comptable (ou le créer d’abord à l’écran du plan)."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "motif absent",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "dateEffet": "2026-08-16",
+    "motif": "  "
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_MOTIF_ABSENT",
+    "motif": "Le motif de cette version est obligatoire.",
+    "geste": "Dire pourquoi le réglage change."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "date illisible",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "dateEffet": "demain",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DATE_INVALIDE",
+    "motif": "La date d’effet est absente ou illisible.",
+    "geste": "Choisir la date à partir de laquelle le réglage s’applique."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "date d’effet déjà prise",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "dateEffet": "2026-01-01",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DATE_EXISTANTE",
+    "motif": "Une version de ce réglage commence déjà le 01/01/2026 : une version ne se réécrit pas.",
+    "geste": "Choisir une date d’effet postérieure."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "la Direction n’écrit pas",
+   "role": "direction",
+   "fileul": false,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_ECRITURE_RESERVEE",
+    "motif": "Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« ecrire_bareme_aib ») : « Direction / Gérance » ne l’a pas.",
+    "geste": "Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.",
+    "droit": "ecrire_bareme_aib",
+    "roles": [
+     "comptable",
+     "admin",
+     "da"
+    ]
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "le caissier n’écrit pas",
+   "role": "caissier",
+   "fileul": false,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_ECRITURE_RESERVEE",
+    "motif": "Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« ecrire_bareme_aib ») : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
+    "geste": "Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.",
+    "droit": "ecrire_bareme_aib",
+    "roles": [
+     "comptable",
+     "admin",
+     "da"
+    ]
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "un fileul n’écrit pas",
+   "role": "comptable",
+   "fileul": true,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_POSTE_FILEUL",
+    "motif": "Ce poste est un fileul : le barème de l’AIB est tenu par la mère et se lit ici sans s’y écrire.",
+    "geste": "Faire la modification depuis le poste mère."
+   },
+   "versions": [
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026)."
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "la charge devient « acheteur » à effet du jour : l’ancienne se ferme à la veille, la nouvelle est arrêtée",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "source": "Vecteur",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": true,
+    "id": "RAI-1",
+    "version": 2,
+    "cle": "chargePrelevement",
+    "valeur": "acheteur",
+    "dateEffet": "2026-08-16",
+    "precedente": "RAI001",
+    "precedenteFermeeLe": "2026-08-15",
+    "enAttenteDeValidation": false
+   },
+   "versions": [
+    {
+     "id": "RAI-1",
+     "statut": "actif",
+     "cle": "chargePrelevement",
+     "valeur": "acheteur",
+     "libelle": "Qui supporte le prélèvement de 5 % : L’acheteur",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": "Vecteur",
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "compte d’acompte choisi",
+   "role": "da",
+   "fileul": false,
+   "entree": {
+    "cle": "compteAcompte",
+    "valeur": "447000",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": true,
+    "id": "RAI-2",
+    "version": 1,
+    "cle": "compteAcompte",
+    "valeur": "447000",
+    "dateEffet": "2026-08-16",
+    "precedente": null,
+    "precedenteFermeeLe": null,
+    "enAttenteDeValidation": false
+   },
+   "versions": [
+    {
+     "id": "RAI-2",
+     "statut": "actif",
+     "cle": "compteAcompte",
+     "valeur": "447000",
+     "libelle": "Compte d’acompte (débit) : 447000",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-1",
+     "statut": "actif",
+     "cle": "chargePrelevement",
+     "valeur": "acheteur",
+     "libelle": "Qui supporte le prélèvement de 5 % : L’acheteur",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": "Vecteur",
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "compte de contrepartie choisi",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "compteContrepartie",
+    "valeur": "401110",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": true,
+    "id": "RAI-3",
+    "version": 1,
+    "cle": "compteContrepartie",
+    "valeur": "401110",
+    "dateEffet": "2026-08-16",
+    "precedente": null,
+    "precedenteFermeeLe": null,
+    "enAttenteDeValidation": false
+   },
+   "versions": [
+    {
+     "id": "RAI-3",
+     "statut": "actif",
+     "cle": "compteContrepartie",
+     "valeur": "401110",
+     "libelle": "Compte de contrepartie (crédit) : 401110",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-2",
+     "statut": "actif",
+     "cle": "compteAcompte",
+     "valeur": "447000",
+     "libelle": "Compte d’acompte (débit) : 447000",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-1",
+     "statut": "actif",
+     "cle": "chargePrelevement",
+     "valeur": "acheteur",
+     "libelle": "Qui supporte le prélèvement de 5 % : L’acheteur",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": "Vecteur",
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "date antérieure à la plus récente",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "compteAcompte",
+    "valeur": "447000",
+    "dateEffet": "2026-02-01",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_DATE_ANTERIEURE",
+    "motif": "La version la plus récente de ce réglage commence le 16/08/2026 : une version insérée avant elle masquerait l’historique.",
+    "geste": "Choisir une date d’effet postérieure au 16/08/2026."
+   },
+   "versions": [
+    {
+     "id": "RAI-3",
+     "statut": "actif",
+     "cle": "compteContrepartie",
+     "valeur": "401110",
+     "libelle": "Compte de contrepartie (crédit) : 401110",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-2",
+     "statut": "actif",
+     "cle": "compteAcompte",
+     "valeur": "447000",
+     "libelle": "Compte d’acompte (débit) : 447000",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-1",
+     "statut": "actif",
+     "cle": "chargePrelevement",
+     "valeur": "acheteur",
+     "libelle": "Qui supporte le prélèvement de 5 % : L’acheteur",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": "Vecteur",
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": null,
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026)."
+    }
+   ]
+  },
+  {
+   "nom": "activation : comptes et charge arrêtés, le branchement est actif",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "branchementAchats",
+    "valeur": "actif",
+    "dateEffet": "2026-08-16",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": true,
+    "id": "RAI-4",
+    "version": 2,
+    "cle": "branchementAchats",
+    "valeur": "actif",
+    "dateEffet": "2026-08-16",
+    "precedente": "RAI002",
+    "precedenteFermeeLe": "2026-08-15",
+    "enAttenteDeValidation": false
+   },
+   "versions": [
+    {
+     "id": "RAI-4",
+     "statut": "actif",
+     "cle": "branchementAchats",
+     "valeur": "actif",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : Activé (écrit ce qui est listé)",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-3",
+     "statut": "actif",
+     "cle": "compteContrepartie",
+     "valeur": "401110",
+     "libelle": "Compte de contrepartie (crédit) : 401110",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-2",
+     "statut": "actif",
+     "cle": "compteAcompte",
+     "valeur": "447000",
+     "libelle": "Compte d’acompte (débit) : 447000",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-1",
+     "statut": "actif",
+     "cle": "chargePrelevement",
+     "valeur": "acheteur",
+     "libelle": "Qui supporte le prélèvement de 5 % : L’acheteur",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": "Vecteur",
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    }
+   ]
+  },
+  {
+   "nom": "désactivation à effet du 01/12/2026",
+   "role": "comptable",
+   "fileul": false,
+   "entree": {
+    "cle": "branchementAchats",
+    "valeur": "desactive",
+    "dateEffet": "2026-12-01",
+    "motif": "Vecteur : retour au différé"
+   },
+   "sortie": {
+    "ok": true,
+    "id": "RAI-5",
+    "version": 3,
+    "cle": "branchementAchats",
+    "valeur": "desactive",
+    "dateEffet": "2026-12-01",
+    "precedente": "RAI-4",
+    "precedenteFermeeLe": "2026-11-30",
+    "enAttenteDeValidation": false
+   },
+   "versions": [
+    {
+     "id": "RAI-5",
+     "statut": "actif",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : Désactivé (le moteur liste, n’écrit rien)",
+     "dateEffet": "2026-12-01",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur : retour au différé",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-4",
+     "statut": "actif",
+     "cle": "branchementAchats",
+     "valeur": "actif",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : Activé (écrit ce qui est listé)",
+     "dateEffet": "2026-08-16",
+     "dateFin": "2026-11-30",
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    },
+    {
+     "id": "RAI-3",
+     "statut": "actif",
+     "cle": "compteContrepartie",
+     "valeur": "401110",
+     "libelle": "Compte de contrepartie (crédit) : 401110",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-2",
+     "statut": "actif",
+     "cle": "compteAcompte",
+     "valeur": "447000",
+     "libelle": "Compte d’acompte (débit) : 447000",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": null,
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI-1",
+     "statut": "actif",
+     "cle": "chargePrelevement",
+     "valeur": "acheteur",
+     "libelle": "Qui supporte le prélèvement de 5 % : L’acheteur",
+     "dateEffet": "2026-08-16",
+     "dateFin": null,
+     "source": "Vecteur",
+     "motif": "Vecteur",
+     "creeLe": "@",
+     "creePar": "@",
+     "aValider": false,
+     "valideLe": "@",
+     "validePar": "Comptable Vecteur",
+     "valideRole": "Comptable",
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "id": "RAI001",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "chargePrelevement",
+     "valeur": "clinique",
+     "libelle": "Qui supporte le prélèvement de 5 % : la clinique",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel",
+     "motif": "Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    },
+    {
+     "id": "RAI002",
+     "statut": "actif",
+     "dateFin": "2026-08-15",
+     "aValider": true,
+     "creeLe": "@",
+     "creePar": "@",
+     "cle": "branchementAchats",
+     "valeur": "desactive",
+     "libelle": "Brancher l’AIB sur les écritures d’achat : désactivé",
+     "dateEffet": "2026-01-01",
+     "source": "Décision de la Direction du 09/11/2026 (Q5) : branchement différé",
+     "motif": "Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026).",
+     "modifieLe": "@",
+     "modifiePar": "@",
+     "_modifiePar": "@",
+     "_modifieLe": "@"
+    }
+   ]
+  }
+ ],
+ "achats": {
+  "apercuActif": {
+   "entree": {
+    "du": "2026-01-01",
+    "au": "2026-12-31"
+   },
+   "sortie": {
+    "ok": true,
+    "du": "2026-01-01",
+    "au": "2026-12-31",
+    "branchement": {
+     "ok": true,
+     "date": "2026-12-31",
+     "actif": true,
+     "valeur": "actif",
+     "arrete": true,
+     "versionId": "RAI-4",
+     "compteAcompte": "447000",
+     "compteContrepartie": "401110",
+     "raisons": [],
+     "compteAcompteArrete": true,
+     "compteContrepartieArrete": true,
+     "chargeArretee": true
+    },
+    "lignes": [
+     {
+      "factureId": "FF1",
+      "reference": "FF-A",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF2",
+      "reference": "FF-B",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur sans IFU",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI001",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF6",
+      "reference": "FF-F",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur IFU illisible",
+      "ifu": "123",
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "refus": "IFU_INVALIDE",
+      "motif": "L’IFU de l’acheteur (« 123 ») doit comporter exactement 13 chiffres."
+     },
+     {
+      "factureId": "FF7",
+      "reference": "FF-G",
+      "date": "2026-07-01",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 0,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 0
+     },
+     {
+      "factureId": "FF9",
+      "reference": "FF-I",
+      "date": "2026-07-03",
+      "fournisseur": "Fournisseur absent du répertoire",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI001",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF3",
+      "reference": "FF-C",
+      "date": "2026-10-10",
+      "fournisseur": "Fournisseur sans IFU",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "acheteur",
+      "chargeArretee": true,
+      "taux": 5,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI002",
+      "arrete": false,
+      "aib": 5000
+     },
+     {
+      "factureId": "FF4",
+      "reference": "FF-D",
+      "date": "2026-10-10",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 250050,
+      "ecriteSous": null,
+      "supporte": "acheteur",
+      "chargeArretee": true,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 2501
+     }
+    ],
+    "aEcrire": 5,
+    "ecrire": true,
+    "message": "Branchement actif : « Écrire » pose en brouillon une pièce par facture listée, rien d’autre."
+   }
+  },
+  "apercuAvant2026": {
+   "entree": {
+    "du": "2025-01-01",
+    "au": "2025-12-31"
+   },
+   "sortie": {
+    "ok": true,
+    "du": "2025-01-01",
+    "au": "2025-12-31",
+    "branchement": {
+     "ok": true,
+     "date": "2025-12-31",
+     "actif": false,
+     "valeur": "desactive",
+     "arrete": null,
+     "versionId": null,
+     "compteAcompte": null,
+     "compteContrepartie": null,
+     "raisons": [
+      "Le branchement est désactivé : le moteur liste, il n’écrit rien."
+     ],
+     "chargeArretee": false
+    },
+    "lignes": [
+     {
+      "factureId": "FF5",
+      "reference": "FF-E",
+      "date": "2025-03-10",
+      "fournisseur": "Fournisseur sans IFU",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": null,
+      "chargeArretee": null,
+      "refus": "AIB_SANS_BAREME",
+      "motif": "Aucune version du barème de l’AIB ne couvre la situation « Acheteur sans IFU actif » au 10/03/2025 : le taux n’est pas arrêté, il ne vaut pas zéro."
+     }
+    ],
+    "aEcrire": 0,
+    "ecrire": false,
+    "message": "Branchement non actif : la liste est un APERÇU, aucune écriture n’est posée. Le branchement est désactivé : le moteur liste, il n’écrit rien."
+   }
+  },
+  "apercuDesactive": {
+   "entree": {
+    "du": "2026-01-01",
+    "au": "2026-12-31"
+   },
+   "sortie": {
+    "ok": true,
+    "du": "2026-01-01",
+    "au": "2026-12-31",
+    "branchement": {
+     "ok": true,
+     "date": "2026-12-31",
+     "actif": false,
+     "valeur": "desactive",
+     "arrete": true,
+     "versionId": "RAI-5",
+     "compteAcompte": "447000",
+     "compteContrepartie": "401110",
+     "raisons": [
+      "Le branchement est désactivé : le moteur liste, il n’écrit rien."
+     ],
+     "compteAcompteArrete": true,
+     "compteContrepartieArrete": true,
+     "chargeArretee": true
+    },
+    "lignes": [
+     {
+      "factureId": "FF1",
+      "reference": "FF-A",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF2",
+      "reference": "FF-B",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur sans IFU",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI001",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF6",
+      "reference": "FF-F",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur IFU illisible",
+      "ifu": "123",
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "refus": "IFU_INVALIDE",
+      "motif": "L’IFU de l’acheteur (« 123 ») doit comporter exactement 13 chiffres."
+     },
+     {
+      "factureId": "FF7",
+      "reference": "FF-G",
+      "date": "2026-07-01",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 0,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 0
+     },
+     {
+      "factureId": "FF9",
+      "reference": "FF-I",
+      "date": "2026-07-03",
+      "fournisseur": "Fournisseur absent du répertoire",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI001",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF3",
+      "reference": "FF-C",
+      "date": "2026-10-10",
+      "fournisseur": "Fournisseur sans IFU",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "acheteur",
+      "chargeArretee": true,
+      "taux": 5,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI002",
+      "arrete": false,
+      "aib": 5000
+     },
+     {
+      "factureId": "FF4",
+      "reference": "FF-D",
+      "date": "2026-10-10",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 250050,
+      "ecriteSous": null,
+      "supporte": "acheteur",
+      "chargeArretee": true,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 2501
+     }
+    ],
+    "aEcrire": 5,
+    "ecrire": false,
+    "message": "Branchement non actif : la liste est un APERÇU, aucune écriture n’est posée. Le branchement est désactivé : le moteur liste, il n’écrit rien."
+   }
+  },
+  "refusDesactive": {
+   "entree": {
+    "du": "2026-01-01",
+    "au": "2026-12-31"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_BRANCHEMENT_DESACTIVE",
+    "motif": "Le branchement de l’AIB sur les écritures d’achat n’est pas actif : aucune écriture n’est posée. Le branchement est désactivé : le moteur liste, il n’écrit rien.",
+    "geste": "Le comptable choisit les deux comptes, arrête la charge puis active le branchement à l’écran « Barème de l’AIB », onglet « Réglages ».",
+    "raisons": [
+     "Le branchement est désactivé : le moteur liste, il n’écrit rien."
+    ]
+   },
+   "ecritures": []
+  },
+  "refusRole": {
+   "entree": {
+    "du": "2026-01-01",
+    "au": "2026-11-30"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "AIB_ECRITURE_RESERVEE",
+    "motif": "Écrire le barème de l’AIB est un droit réservé de la fiche du rôle (« ecrire_bareme_aib ») : « Caissier — Dispensaire (Pharmacie) » ne l’a pas.",
+    "geste": "Demander la modification à un rôle qui détient ce droit (comptable, Directrice Administrative ou administrateur d’origine) ; les autres consultent le barème sans l’écrire.",
+    "droit": "ecrire_bareme_aib",
+    "roles": [
+     "comptable",
+     "admin",
+     "da"
+    ]
+   },
+   "ecritures": []
+  },
+  "ecriture": {
+   "entree": {
+    "du": "2026-01-01",
+    "au": "2026-11-30"
+   },
+   "sortie": {
+    "ok": true,
+    "pieces": [
+     {
+      "factureId": "FF1",
+      "numero": "AIB-FF-A",
+      "montant": 1000
+     },
+     {
+      "factureId": "FF2",
+      "numero": "AIB-FF-B",
+      "montant": 1000
+     },
+     {
+      "factureId": "FF9",
+      "numero": "AIB-FF-I",
+      "montant": 1000
+     },
+     {
+      "factureId": "FF3",
+      "numero": "AIB-FF-C",
+      "montant": 5000
+     },
+     {
+      "factureId": "FF4",
+      "numero": "AIB-FF-D",
+      "montant": 2501
+     }
+    ],
+    "refusees": [],
+    "du": "2026-01-01",
+    "au": "2026-11-30"
+   },
+   "ecritures": [
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-D",
+     "date": "2026-10-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-D (1 %), Fournisseur avec IFU",
+     "pieceId": "FF4",
+     "pieceNumero": "FF-D",
+     "aibFactureId": "FF4",
+     "aibTaux": 1,
+     "aibSupporte": "acheteur",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "401110",
+     "compteLibelle": "Fournisseurs",
+     "debit": 0,
+     "credit": 2501,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-D",
+     "date": "2026-10-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-D (1 %), Fournisseur avec IFU",
+     "pieceId": "FF4",
+     "pieceNumero": "FF-D",
+     "aibFactureId": "FF4",
+     "aibTaux": 1,
+     "aibSupporte": "acheteur",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "447000",
+     "compteLibelle": "Etat impôts retenu à la source",
+     "debit": 2501,
+     "credit": 0,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-C",
+     "date": "2026-10-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-C (5 %), Fournisseur sans IFU",
+     "pieceId": "FF3",
+     "pieceNumero": "FF-C",
+     "aibFactureId": "FF3",
+     "aibTaux": 5,
+     "aibSupporte": "acheteur",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "401110",
+     "compteLibelle": "Fournisseurs",
+     "debit": 0,
+     "credit": 5000,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-C",
+     "date": "2026-10-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-C (5 %), Fournisseur sans IFU",
+     "pieceId": "FF3",
+     "pieceNumero": "FF-C",
+     "aibFactureId": "FF3",
+     "aibTaux": 5,
+     "aibSupporte": "acheteur",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "447000",
+     "compteLibelle": "Etat impôts retenu à la source",
+     "debit": 5000,
+     "credit": 0,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-I",
+     "date": "2026-07-03",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-I (1 %), Fournisseur absent du répertoire",
+     "pieceId": "FF9",
+     "pieceNumero": "FF-I",
+     "aibFactureId": "FF9",
+     "aibTaux": 1,
+     "aibSupporte": "clinique",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "401110",
+     "compteLibelle": "Fournisseurs",
+     "debit": 0,
+     "credit": 1000,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-I",
+     "date": "2026-07-03",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-I (1 %), Fournisseur absent du répertoire",
+     "pieceId": "FF9",
+     "pieceNumero": "FF-I",
+     "aibFactureId": "FF9",
+     "aibTaux": 1,
+     "aibSupporte": "clinique",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "447000",
+     "compteLibelle": "Etat impôts retenu à la source",
+     "debit": 1000,
+     "credit": 0,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-B",
+     "date": "2026-06-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-B (1 %), Fournisseur sans IFU",
+     "pieceId": "FF2",
+     "pieceNumero": "FF-B",
+     "aibFactureId": "FF2",
+     "aibTaux": 1,
+     "aibSupporte": "clinique",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "401110",
+     "compteLibelle": "Fournisseurs",
+     "debit": 0,
+     "credit": 1000,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-B",
+     "date": "2026-06-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-B (1 %), Fournisseur sans IFU",
+     "pieceId": "FF2",
+     "pieceNumero": "FF-B",
+     "aibFactureId": "FF2",
+     "aibTaux": 1,
+     "aibSupporte": "clinique",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "447000",
+     "compteLibelle": "Etat impôts retenu à la source",
+     "debit": 1000,
+     "credit": 0,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-A",
+     "date": "2026-06-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-A (1 %), Fournisseur avec IFU",
+     "pieceId": "FF1",
+     "pieceNumero": "FF-A",
+     "aibFactureId": "FF1",
+     "aibTaux": 1,
+     "aibSupporte": "clinique",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "401110",
+     "compteLibelle": "Fournisseurs",
+     "debit": 0,
+     "credit": 1000,
+     "_creePar": "@",
+     "_creeLe": "@"
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AIB-FF-A",
+     "date": "2026-06-10",
+     "journal": "OD",
+     "journalLibelle": "Opérations diverses",
+     "libelle": "AIB sur achat FF-A (1 %), Fournisseur avec IFU",
+     "pieceId": "FF1",
+     "pieceNumero": "FF-A",
+     "aibFactureId": "FF1",
+     "aibTaux": 1,
+     "aibSupporte": "clinique",
+     "origine": "Automatique : AIB sur achat",
+     "compte": "447000",
+     "compteLibelle": "Etat impôts retenu à la source",
+     "debit": 1000,
+     "credit": 0,
+     "_creePar": "@",
+     "_creeLe": "@"
+    }
+   ]
+  },
+  "rejeu": {
+   "sortie": {
+    "ok": true,
+    "pieces": 0,
+    "refusees": []
+   },
+   "nbEcritures": 10
+  },
+  "apercuApresEcriture": {
+   "entree": {
+    "du": "2026-01-01",
+    "au": "2026-11-30"
+   },
+   "sortie": {
+    "ok": true,
+    "du": "2026-01-01",
+    "au": "2026-11-30",
+    "branchement": {
+     "ok": true,
+     "date": "2026-11-30",
+     "actif": true,
+     "valeur": "actif",
+     "arrete": true,
+     "versionId": "RAI-4",
+     "compteAcompte": "447000",
+     "compteContrepartie": "401110",
+     "raisons": [],
+     "compteAcompteArrete": true,
+     "compteContrepartieArrete": true,
+     "chargeArretee": true
+    },
+    "lignes": [
+     {
+      "factureId": "FF1",
+      "reference": "FF-A",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 100000,
+      "ecriteSous": "AIB-FF-A",
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF2",
+      "reference": "FF-B",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur sans IFU",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": "AIB-FF-B",
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI001",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF6",
+      "reference": "FF-F",
+      "date": "2026-06-10",
+      "fournisseur": "Fournisseur IFU illisible",
+      "ifu": "123",
+      "base": 100000,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "refus": "IFU_INVALIDE",
+      "motif": "L’IFU de l’acheteur (« 123 ») doit comporter exactement 13 chiffres."
+     },
+     {
+      "factureId": "FF7",
+      "reference": "FF-G",
+      "date": "2026-07-01",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 0,
+      "ecriteSous": null,
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 0
+     },
+     {
+      "factureId": "FF9",
+      "reference": "FF-I",
+      "date": "2026-07-03",
+      "fournisseur": "Fournisseur absent du répertoire",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": "AIB-FF-I",
+      "supporte": "clinique",
+      "chargeArretee": false,
+      "taux": 1,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI001",
+      "arrete": false,
+      "aib": 1000
+     },
+     {
+      "factureId": "FF3",
+      "reference": "FF-C",
+      "date": "2026-10-10",
+      "fournisseur": "Fournisseur sans IFU",
+      "ifu": null,
+      "base": 100000,
+      "ecriteSous": "AIB-FF-C",
+      "supporte": "acheteur",
+      "chargeArretee": true,
+      "taux": 5,
+      "situation": "ifu_inactif_ou_absent",
+      "versionId": "BAI002",
+      "arrete": false,
+      "aib": 5000
+     },
+     {
+      "factureId": "FF4",
+      "reference": "FF-D",
+      "date": "2026-10-10",
+      "fournisseur": "Fournisseur avec IFU",
+      "ifu": "3201642748214",
+      "base": 250050,
+      "ecriteSous": "AIB-FF-D",
+      "supporte": "acheteur",
+      "chargeArretee": true,
+      "taux": 1,
+      "situation": "ifu_actif",
+      "versionId": "BAI003",
+      "arrete": false,
+      "aib": 2501
+     }
+    ],
+    "aEcrire": 0,
+    "ecrire": true,
+    "message": "Branchement actif : « Écrire » pose en brouillon une pièce par facture listée, rien d’autre."
+   }
+  }
+ },
+ "versionFigee": {
+  "refusee": true,
+  "valeurApres": true
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "id": "imp-transfert-lignes",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation d’un bon de transfert",
+ "acces": "ouvert",
+ "titre": "Importation d’un bon de transfert",
+ "description": "Un bon de transfert du magasin central vers la pharmacie de détail : une ligne par article (et par lot), un service destinataire pour tout le fichier.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation d’un bon de transfert"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Une feuille crée UN bon neuf, par la MÊME fabrique que le geste de l’écran : un bon numéroté APRÈS la vérification, deux mouvements symétriques par ligne, stocks gros et détail. RG-03 se contrôle ligne par ligne en nommant l’article, en tenant compte des lignes déjà posées sur le bon ; le lot est celui qui part en premier (FEFO, RG-05) : un lot précisé qui n’est pas le premier est refusé. Le service, la date et le motif sont uniques pour tout le fichier.",
+  "Jeu restreint (RG-13). Le fichier est lu et contrôlé ici, mais aucune valeur de cellule n’est recopiée dans l’historique ni dans le rapport : chaque constat porte la ligne, la colonne, le code et le geste de correction. Les lots ne sont visibles que de leur auteur et des profils qui supervisent les importations."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

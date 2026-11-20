@@ -1,0 +1,561 @@
+{
+ "_doc": "m1-reference et m1-contre-reference sur un jeu posé",
+ "jeuRefs": [
+  {
+   "id": "R1",
+   "statut": "actif",
+   "numero": "REF-00001",
+   "sens": "sortante",
+   "urgent": false,
+   "patientId": "K1",
+   "patientCode": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "formationSanitaire": "CLINIQUE",
+   "centreDestination": "CNHU Cotonou",
+   "dateReference": "2026-08-01",
+   "agentReferent": "Agent 1",
+   "symptomes": "Symptômes 1",
+   "motifs": [
+    "Absence de moyens de diagnostic"
+   ]
+  },
+  {
+   "id": "R2",
+   "statut": "actif",
+   "numero": "REF-00002",
+   "sens": "sortante",
+   "urgent": true,
+   "patientId": "K2",
+   "patientCode": "CNT/2/26",
+   "patient": "Nom2 Pre2",
+   "formationSanitaire": "CLINIQUE",
+   "centreDestination": "Hôpital de zone",
+   "dateReference": "2026-08-02",
+   "agentReferent": "Agent 2",
+   "symptomes": "Symptômes 2",
+   "motifs": [
+    "Absence de moyens de diagnostic"
+   ]
+  },
+  {
+   "id": "R3",
+   "statut": "actif",
+   "numero": "REF-00003",
+   "sens": "entrante",
+   "urgent": false,
+   "patientId": "K1",
+   "patientCode": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "formationSanitaire": "CLINIQUE",
+   "centreDestination": "Centre de santé de Perma",
+   "dateReference": "2026-08-03",
+   "agentReferent": "Agent 3",
+   "symptomes": "Symptômes 3",
+   "motifs": [
+    "Absence de moyens de diagnostic"
+   ]
+  },
+  {
+   "id": "R4",
+   "statut": "actif",
+   "numero": "REF-00004",
+   "sens": "sortante",
+   "urgent": false,
+   "patientId": "K1",
+   "patientCode": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "formationSanitaire": "CLINIQUE",
+   "centreDestination": "CNHU Cotonou",
+   "dateReference": "2026-08-04",
+   "agentReferent": "Agent 4",
+   "symptomes": "Symptômes 4",
+   "motifs": [
+    "Absence de moyens de diagnostic"
+   ]
+  },
+  {
+   "id": "R5",
+   "statut": "archive",
+   "numero": "REF-00005",
+   "sens": "sortante",
+   "urgent": false,
+   "patientId": "K1",
+   "patientCode": "CNT/1/26",
+   "patient": "Nom1 Pre1",
+   "formationSanitaire": "CLINIQUE",
+   "centreDestination": "CNHU Cotonou",
+   "dateReference": "2026-08-05",
+   "agentReferent": "Agent 5",
+   "symptomes": "Symptômes 5",
+   "motifs": [
+    "Absence de moyens de diagnostic"
+   ]
+  }
+ ],
+ "jeuContre": [
+  {
+   "id": "C1",
+   "statut": "actif",
+   "reference": "CRF-00001",
+   "numeroReference": "REF-00001",
+   "patientId": "K1",
+   "patient": "Nom1 Pre1",
+   "patientCode": "CNT/1/26",
+   "centreAccueil": "CNHU",
+   "dateArrivee": "2026-08-11",
+   "diagnosticEntree": "DE",
+   "diagnosticSortie": "DS",
+   "evolution": "Guéri(e)",
+   "concordance": true,
+   "justifiee": true,
+   "chefService": "Dr X"
+  },
+  {
+   "id": "C2",
+   "statut": "actif",
+   "reference": "CRF-00002",
+   "numeroReference": "REF-00002",
+   "patientId": "K1",
+   "patient": "Nom1 Pre1",
+   "patientCode": "CNT/1/26",
+   "centreAccueil": "CNHU",
+   "dateArrivee": "2026-08-12",
+   "diagnosticEntree": "DE",
+   "diagnosticSortie": "DS",
+   "evolution": "Décédé(e)",
+   "concordance": false,
+   "justifiee": false,
+   "chefService": "Dr X",
+   "motifNonJustifiee": "Disponible sur place"
+  }
+ ],
+ "reference": {
+  "kpis": [
+   [
+    "Fiches de référence",
+    "4"
+   ],
+   [
+    "Sortantes",
+    "3"
+   ],
+   [
+    "Entrantes",
+    "1",
+    "patients adressés à la clinique"
+   ],
+   [
+    "Sans contre-référence",
+    "1",
+    "le centre d’accueil n’a pas encore répondu"
+   ]
+  ],
+  "onglets": [
+   "Toutes4",
+   "Sortantes3",
+   "Entrantes1",
+   "Contre-référence attendue1"
+  ],
+  "entetes": [
+   "N° DE RÉFÉRENCE",
+   "SENS",
+   "PATIENT",
+   "CENTRE DESTINATAIRE",
+   "DATE",
+   "AGENT RÉFÉRENT",
+   "CONTRE-RÉFÉRENCE",
+   "ACTIONS"
+  ],
+  "lignes": [
+   [
+    "REF-00004",
+    "Sortante",
+    "Nom1 Pre1 — CNT/1/26",
+    "CNHU Cotonou",
+    "04/08/2026",
+    "Agent 4",
+    "Attendue",
+    ""
+   ],
+   [
+    "REF-00003",
+    "Entrante",
+    "Nom1 Pre1 — CNT/1/26",
+    "Centre de santé de Perma",
+    "03/08/2026",
+    "Agent 3",
+    "—",
+    ""
+   ],
+   [
+    "REF-00002 URGENT",
+    "Sortante",
+    "Nom2 Pre2 — CNT/2/26",
+    "Hôpital de zone",
+    "02/08/2026",
+    "Agent 2",
+    "Reçue le 12/08/2026",
+    ""
+   ],
+   [
+    "REF-00001",
+    "Sortante",
+    "Nom1 Pre1 — CNT/1/26",
+    "CNHU Cotonou",
+    "01/08/2026",
+    "Agent 1",
+    "Reçue le 11/08/2026",
+    ""
+   ]
+  ],
+  "parOnglet": {
+   "Sortantes": [
+    "REF-00004",
+    "REF-00002 URGENT",
+    "REF-00001"
+   ],
+   "Entrantes": [
+    "REF-00003"
+   ],
+   "Contre-référence attendue": [
+    "REF-00004"
+   ]
+  },
+  "creations": [
+   {
+    "nom": "fiche minimale : le numéro suit le registre (archivés compris)",
+    "saisie": {
+     "sens": "sortante",
+     "patientCode": "CNT/2/26",
+     "formationSanitaire": "CLINIQUE NASSIERA TOO",
+     "symptomes": "Détresse respiratoire",
+     "motifs": [
+      "Absence de personnel qualifié"
+     ],
+     "centreDestination": "CNHU Parakou",
+     "dateReference": "2026-10-30",
+     "agentReferent": "AHOHOU Rodrigue — IDE — 97000000"
+    },
+    "crees": [
+     {
+      "statut": "actif",
+      "sens": "sortante",
+      "urgent": false,
+      "patientCode": "CNT/2/26",
+      "formationSanitaire": "CLINIQUE NASSIERA TOO",
+      "centreAlerte": false,
+      "dateAdmission": "",
+      "heureAdmission": "",
+      "pouls": null,
+      "temperature": null,
+      "tension": "",
+      "abordVeineux": false,
+      "contactNom": "",
+      "contactAdresse": "",
+      "symptomes": "Détresse respiratoire",
+      "traitements": "",
+      "observations": "",
+      "motifs": [
+       "Absence de personnel qualifié"
+      ],
+      "motifAutre": "",
+      "centreDestination": "CNHU Parakou",
+      "dateReference": "2026-10-30",
+      "heureReference": "",
+      "moyen": "",
+      "agentReferent": "AHOHOU Rodrigue — IDE — 97000000",
+      "departLe": "",
+      "arriveeLe": "",
+      "ambulancier": "",
+      "numero": "REF-00006",
+      "patientId": "K2",
+      "patient": "Nom2 Pre2",
+      "age": 36,
+      "sexe": "M",
+      "adresse": "Perma"
+     }
+    ],
+    "toasts": [
+     "Fiche de référence créé."
+    ],
+    "modaleOuverte": false
+   },
+   {
+    "nom": "fiche complète entrante, urgente",
+    "saisie": {
+     "sens": "entrante",
+     "patientCode": "CNT/3/26",
+     "formationSanitaire": "CLINIQUE NASSIERA TOO",
+     "symptomes": "Détresse respiratoire",
+     "motifs": [
+      "Autre (à préciser)"
+     ],
+     "centreDestination": "CNHU Parakou",
+     "dateReference": "2026-10-30",
+     "agentReferent": "AHOHOU Rodrigue — IDE — 97000000",
+     "urgent": true,
+     "centreAlerte": true,
+     "pouls": 110,
+     "temperature": 38.5,
+     "tension": "10/6",
+     "abordVeineux": true,
+     "heureReference": "14h30",
+     "moyen": "Ambulance",
+     "motifAutre": "Hémorragie"
+    },
+    "crees": [
+     {
+      "statut": "actif",
+      "sens": "entrante",
+      "urgent": true,
+      "patientCode": "CNT/3/26",
+      "formationSanitaire": "CLINIQUE NASSIERA TOO",
+      "centreAlerte": true,
+      "dateAdmission": "",
+      "heureAdmission": "",
+      "pouls": 110,
+      "temperature": 38.5,
+      "tension": "10/6",
+      "abordVeineux": true,
+      "contactNom": "",
+      "contactAdresse": "",
+      "symptomes": "Détresse respiratoire",
+      "traitements": "",
+      "observations": "",
+      "motifs": [
+       "Autre (à préciser)"
+      ],
+      "motifAutre": "Hémorragie",
+      "centreDestination": "CNHU Parakou",
+      "dateReference": "2026-10-30",
+      "heureReference": "14h30",
+      "moyen": "Ambulance",
+      "agentReferent": "AHOHOU Rodrigue — IDE — 97000000",
+      "departLe": "",
+      "arriveeLe": "",
+      "ambulancier": "",
+      "numero": "REF-00007",
+      "patientId": "K3",
+      "patient": "Nom3 Pre3",
+      "age": 36,
+      "sexe": "F",
+      "adresse": "Perma"
+     }
+    ],
+    "toasts": [
+     "Fiche de référence créé."
+    ],
+    "modaleOuverte": false
+   },
+   {
+    "nom": "motif de référence absent : refusé",
+    "saisie": {
+     "sens": "sortante",
+     "patientCode": "CNT/2/26",
+     "formationSanitaire": "CLINIQUE NASSIERA TOO",
+     "symptomes": "Détresse respiratoire",
+     "motifs": [],
+     "centreDestination": "CNHU Parakou",
+     "dateReference": "2026-10-30",
+     "agentReferent": "AHOHOU Rodrigue — IDE — 97000000"
+    },
+    "crees": [],
+    "toasts": [
+     "Le formulaire comporte des erreurs."
+    ],
+    "modaleOuverte": true
+   }
+  ],
+  "details": {
+   "avecRetour": "Fiches de référence 6 Sortantes 4 Entrantes 2 patients adressés à la clinique Sans contre-référence 2 le centre d’accueil n’a pas encore répondu Une fiche entrante ouvre un dossier local sans effacer la pièce d’origine : celle-ci est numérisée et conservée au dossier, avec sa couverture d’assurance. Le patient référé arrive avec ses documents — les jeter reviendrait à perdre tout ce que le centre d’origine a déjà fait. Toutes6 Sortantes4 Entrantes2 Contre-référence attendue2 Colonnes Exporter Nouvelle fiche de référence N° DE RÉFÉRENCE SENS PATIENT CENTRE DESTINATAIRE DATE AGENT RÉFÉRENT CONTRE-RÉFÉRENCE ACTIONS REF-00001 Sortante Nom1 Pre1 — CNT/1/26 CNHU Cotonou 01/08/2026 Agent 1 Reçue le 11/08/2026 Affichage de 1 à 1 sur 1 enregistrement Le formulaire comporte des erreurs. REF-00001 N° DE RÉFÉRENCE REF-00001 SENS Sortante — patient orienté ailleurs URGENCE Non PATIENT Nom1 Pre1 — CNT/1/26 FORMATION SANITAIRE CLINIQUE CENTRE D’ACCUEIL ALERTÉ Non CONSTANTES — ABORD VEINEUX Non posé CENTRE DESTINATAIRE CNHU Cotonou DATE ET HEURE 01/08/2026 MOYEN DE TRANSPORT — AGENT RÉFÉRENT Agent 1 DÉPART — ARRIVÉE — AMBULANCIER — Symptômes dominants / diagnostic Symptômes 1 Motif de la référence MOTIF Absence de moyens de diagnostic Contre-référence reçue le 11/08/2026 — diagnostic de sortie : DS · concordance : OUI · référence justifiée.",
+   "sansRetourSortante": "Fiches de référence 6 Sortantes 4 Entrantes 2 patients adressés à la clinique Sans contre-référence 2 le centre d’accueil n’a pas encore répondu Une fiche entrante ouvre un dossier local sans effacer la pièce d’origine : celle-ci est numérisée et conservée au dossier, avec sa couverture d’assurance. Le patient référé arrive avec ses documents — les jeter reviendrait à perdre tout ce que le centre d’origine a déjà fait. Toutes6 Sortantes4 Entrantes2 Contre-référence attendue2 Colonnes Exporter Nouvelle fiche de référence N° DE RÉFÉRENCE SENS PATIENT CENTRE DESTINATAIRE DATE AGENT RÉFÉRENT CONTRE-RÉFÉRENCE ACTIONS REF-00004 Sortante Nom1 Pre1 — CNT/1/26 CNHU Cotonou 04/08/2026 Agent 4 Attendue Affichage de 1 à 1 sur 1 enregistrement Le formulaire comporte des erreurs. REF-00004 N° DE RÉFÉRENCE REF-00004 SENS Sortante — patient orienté ailleurs URGENCE Non PATIENT Nom1 Pre1 — CNT/1/26 FORMATION SANITAIRE CLINIQUE CENTRE D’ACCUEIL ALERTÉ Non CONSTANTES — ABORD VEINEUX Non posé CENTRE DESTINATAIRE CNHU Cotonou DATE ET HEURE 04/08/2026 MOYEN DE TRANSPORT — AGENT RÉFÉRENT Agent 4 DÉPART — ARRIVÉE — AMBULANCIER — Symptômes dominants / diagnostic Symptômes 4 Motif de la référence MOTIF Absence de moyens de diagnostic Aucune contre-référence reçue à ce jour. Son absence est suivie : c’est un indicateur de la relation avec le centre d’accueil, pas un oubli de saisie.",
+   "entrante": "Fiches de référence 6 Sortantes 4 Entrantes 2 patients adressés à la clinique Sans contre-référence 2 le centre d’accueil n’a pas encore répondu Une fiche entrante ouvre un dossier local sans effacer la pièce d’origine : celle-ci est numérisée et conservée au dossier, avec sa couverture d’assurance. Le patient référé arrive avec ses documents — les jeter reviendrait à perdre tout ce que le centre d’origine a déjà fait. Toutes6 Sortantes4 Entrantes2 Contre-référence attendue2 Colonnes Exporter Nouvelle fiche de référence N° DE RÉFÉRENCE SENS PATIENT CENTRE DESTINATAIRE DATE AGENT RÉFÉRENT CONTRE-RÉFÉRENCE ACTIONS REF-00003 Entrante Nom1 Pre1 — CNT/1/26 Centre de santé de Perma 03/08/2026 Agent 3 — Affichage de 1 à 1 sur 1 enregistrement Le formulaire comporte des erreurs. REF-00003 N° DE RÉFÉRENCE REF-00003 SENS Entrante — patient adressé à la clinique URGENCE Non PATIENT Nom1 Pre1 — CNT/1/26 FORMATION SANITAIRE CLINIQUE CENTRE D’ACCUEIL ALERTÉ Non CONSTANTES — ABORD VEINEUX Non posé CENTRE DESTINATAIRE Centre de santé de Perma DATE ET HEURE 03/08/2026 MOYEN DE TRANSPORT — AGENT RÉFÉRENT Agent 3 DÉPART — ARRIVÉE — AMBULANCIER — Symptômes dominants / diagnostic Symptômes 3 Motif de la référence MOTIF Absence de moyens de diagnostic"
+  }
+ },
+ "contre": {
+  "kpis": [
+   [
+    "Contre-références reçues",
+    "2"
+   ],
+   [
+    "Diagnostics concordants",
+    "1",
+    "50.0 % des retours"
+   ],
+   [
+    "Références justifiées",
+    "1",
+    "50.0 % des retours"
+   ],
+   [
+    "Décès au centre d’accueil",
+    "1"
+   ]
+  ],
+  "entetes": [
+   "RÉFÉRENCE",
+   "FICHE DE RÉFÉRENCE",
+   "PATIENT",
+   "CENTRE D’ACCUEIL",
+   "ARRIVÉE",
+   "ÉVOLUTION",
+   "CONCORDANCE",
+   "JUSTIFIÉE",
+   "ACTIONS"
+  ],
+  "lignes": [
+   [
+    "CRF-00002",
+    "REF-00002",
+    "Nom1 Pre1",
+    "CNHU",
+    "12/08/2026",
+    "Décédé(e)",
+    "NON",
+    "NON",
+    ""
+   ],
+   [
+    "CRF-00001",
+    "REF-00001",
+    "Nom1 Pre1",
+    "CNHU",
+    "11/08/2026",
+    "Guéri(e)",
+    "Oui",
+    "Oui",
+    ""
+   ]
+  ],
+  "optionsReference": [
+   "REF-00006 — Nom2 Pre2",
+   "REF-00001 — Nom1 Pre1",
+   "REF-00002 — Nom2 Pre2",
+   "REF-00004 — Nom1 Pre1"
+  ],
+  "creations": [
+   {
+    "nom": "retour d'une fiche sortante : le patient vient de la fiche",
+    "saisie": {
+     "numeroReference": "REF-00004",
+     "centreAccueil": "CNHU Parakou",
+     "dateArrivee": "2026-10-30",
+     "diagnosticEntree": "Détresse",
+     "diagnosticSortie": "Pneumopathie",
+     "evolution": "Guéri(e)",
+     "chefService": "Dr Y"
+    },
+    "crees": [
+     {
+      "statut": "actif",
+      "numeroReference": "REF-00004",
+      "centreAccueil": "CNHU Parakou",
+      "service": "",
+      "dateArrivee": "2026-10-30",
+      "heureArrivee": "",
+      "agentReferent": "",
+      "structureProvenance": "",
+      "hospitalise": false,
+      "numeroDossier": "",
+      "diagnosticEntree": "Détresse",
+      "diagnosticSortie": "Pneumopathie",
+      "concordance": false,
+      "justifiee": false,
+      "motifNonJustifiee": "",
+      "evolution": "Guéri(e)",
+      "observations": "",
+      "chefService": "Dr Y",
+      "reference": "CRF-00003",
+      "patientId": "K1",
+      "patient": "Nom1 Pre1",
+      "patientCode": "CNT/1/26"
+     }
+    ],
+    "toasts": [
+     "Contre-référence créé."
+    ]
+   },
+   {
+    "nom": "discordance, non justifiée, décès",
+    "saisie": {
+     "numeroReference": "REF-00002",
+     "centreAccueil": "CNHU Parakou",
+     "dateArrivee": "2026-10-30",
+     "diagnosticEntree": "Détresse",
+     "diagnosticSortie": "Pneumopathie",
+     "evolution": "Décédé(e)",
+     "chefService": "Dr Y",
+     "concordance": false,
+     "justifiee": false,
+     "motifNonJustifiee": "Plateau technique disponible"
+    },
+    "crees": [
+     {
+      "statut": "actif",
+      "numeroReference": "REF-00002",
+      "centreAccueil": "CNHU Parakou",
+      "service": "",
+      "dateArrivee": "2026-10-30",
+      "heureArrivee": "",
+      "agentReferent": "",
+      "structureProvenance": "",
+      "hospitalise": false,
+      "numeroDossier": "",
+      "diagnosticEntree": "Détresse",
+      "diagnosticSortie": "Pneumopathie",
+      "concordance": false,
+      "justifiee": false,
+      "motifNonJustifiee": "Plateau technique disponible",
+      "evolution": "Décédé(e)",
+      "observations": "",
+      "chefService": "Dr Y",
+      "reference": "CRF-00004",
+      "patientId": "K2",
+      "patient": "Nom2 Pre2",
+      "patientCode": "CNT/2/26"
+     }
+    ],
+    "toasts": [
+     "Contre-référence créé."
+    ]
+   },
+   {
+    "nom": "chef de service absent : refusé",
+    "saisie": {
+     "numeroReference": "REF-00004",
+     "centreAccueil": "CNHU Parakou",
+     "dateArrivee": "2026-10-30",
+     "diagnosticEntree": "Détresse",
+     "diagnosticSortie": "Pneumopathie",
+     "evolution": "Guéri(e)",
+     "chefService": ""
+    },
+    "crees": [],
+    "toasts": [
+     "Le formulaire comporte des erreurs."
+    ]
+   }
+  ],
+  "kpisApres": [
+   [
+    "Contre-références reçues",
+    "4"
+   ],
+   [
+    "Diagnostics concordants",
+    "1",
+    "25.0 % des retours"
+   ],
+   [
+    "Références justifiées",
+    "1",
+    "25.0 % des retours"
+   ],
+   [
+    "Décès au centre d’accueil",
+    "2"
+   ]
+  ]
+ }
+}

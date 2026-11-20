@@ -1,0 +1,40 @@
+{
+ "id": "mecef-avoirs",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "Avoirs & annulations",
+ "acces": "ouvert",
+ "titre": "Avoirs & annulations",
+ "description": "Émission des avoirs rectificatifs et suivi des factures annulées auprès de l’administration fiscale.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée",
+  "Avoirs & annulations"
+ ],
+ "actions": [
+  "Tableau de bord fiscal",
+  "Factures normalisées",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Avoirs émis",
+  "Montant des avoirs",
+  "TVA régularisée",
+  "Factures annulées"
+ ],
+ "cartes": [
+  "Registre des avoirs"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Émettre un avoir"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

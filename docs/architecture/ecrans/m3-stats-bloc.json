@@ -1,0 +1,45 @@
+{
+ "id": "m3-stats-bloc",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Statistiques du bloc & anesthésie",
+ "acces": "ouvert",
+ "titre": "Statistiques du bloc & de l’anesthésie",
+ "description": "Comptes rendus opératoires, comptes rendus d’anesthésie et CPA — calculés depuis les registres du bloc.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Statistiques du bloc & anesthésie"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus opératoires",
+  "Comptes rendus d’anesthésie",
+  "CPA enregistrées",
+  "Interventions sans CPA",
+  "Incidents per-opératoires NOMMÉS",
+  "Surveillances prolongées en réveil"
+ ],
+ "cartes": [
+  "Interventions par opérateur",
+  "Anesthésies par technique",
+  "Conclusions des CPA"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Toute la période"
+ ],
+ "champs": [
+  "Du",
+  "au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 6
+}

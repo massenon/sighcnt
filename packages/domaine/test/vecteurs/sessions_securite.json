@@ -1,0 +1,1488 @@
+{
+ "jour": "2026-11-03",
+ "comptes": [
+  {
+   "id": "USR000",
+   "identifiant": "admin.systeme",
+   "nomComplet": "Administrateur système",
+   "role": "admin",
+   "actif": true
+  },
+  {
+   "id": "USR001",
+   "identifiant": "s.bassongui",
+   "nomComplet": "BASSONGUI Chabi Séko",
+   "role": "dm",
+   "actif": true
+  },
+  {
+   "id": "USR002",
+   "identifiant": "a.taki",
+   "nomComplet": "TAKI Alimatou",
+   "role": "da",
+   "actif": true
+  },
+  {
+   "id": "USR003",
+   "identifiant": "a.kassa",
+   "nomComplet": "KASSA Augustin",
+   "role": "comptable",
+   "actif": true
+  },
+  {
+   "id": "USR004",
+   "identifiant": "h.gbedji",
+   "nomComplet": "GBEDJI Hervé",
+   "role": "assistant_comptable",
+   "actif": true
+  },
+  {
+   "id": "USR005",
+   "identifiant": "f.yeni",
+   "nomComplet": "YENI M’PO Florent",
+   "role": "medecin",
+   "actif": true
+  },
+  {
+   "id": "USR006",
+   "identifiant": "o.taki",
+   "nomComplet": "TAKI Orou",
+   "role": "medecin",
+   "actif": true
+  },
+  {
+   "id": "USR007",
+   "identifiant": "r.ahohou",
+   "nomComplet": "AHOHOU Rodrigue",
+   "role": "echographiste",
+   "actif": true
+  },
+  {
+   "id": "USR008",
+   "identifiant": "g.kinnou",
+   "nomComplet": "KINNOU A. Ganiou",
+   "role": "laborantin",
+   "actif": true
+  },
+  {
+   "id": "USR009",
+   "identifiant": "y.agossou",
+   "nomComplet": "AGOSSOU Yahouza",
+   "role": "laborantin",
+   "actif": true
+  },
+  {
+   "id": "USR010",
+   "identifiant": "y.garba",
+   "nomComplet": "GARBA Yahouza",
+   "role": "surveillant",
+   "actif": true
+  },
+  {
+   "id": "USR011",
+   "identifiant": "b.idrissou",
+   "nomComplet": "IDRISSOU ANIKI Baba-Toundé",
+   "role": "infirmier",
+   "actif": true
+  }
+ ],
+ "demoFiches": [
+  {
+   "id": "SES-D01",
+   "utilisateurId": "USR000",
+   "identifiant": "admin.systeme",
+   "nomComplet": "Administrateur système",
+   "role": "admin",
+   "poste": "POSTE-COMPTA",
+   "adresseIp": "192.168.1.28",
+   "inactivite": 17,
+   "etat": "suspendue",
+   "heureDebut": "09:40",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D02",
+   "utilisateurId": "USR001",
+   "identifiant": "s.bassongui",
+   "nomComplet": "BASSONGUI Chabi Séko",
+   "role": "dm",
+   "poste": "POSTE-LABO",
+   "adresseIp": "192.168.1.15",
+   "inactivite": 8,
+   "etat": "active",
+   "heureDebut": "07:05",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D03",
+   "utilisateurId": "USR002",
+   "identifiant": "a.taki",
+   "nomComplet": "TAKI Alimatou",
+   "role": "da",
+   "poste": "POSTE-DIR",
+   "adresseIp": "192.168.1.19",
+   "inactivite": 2,
+   "etat": "active",
+   "heureDebut": "07:21",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D04",
+   "utilisateurId": "USR003",
+   "identifiant": "a.kassa",
+   "nomComplet": "KASSA Augustin",
+   "role": "comptable",
+   "poste": "POSTE-COMPTA",
+   "adresseIp": "192.168.1.26",
+   "inactivite": 9,
+   "etat": "active",
+   "heureDebut": "11:05",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D05",
+   "utilisateurId": "USR004",
+   "identifiant": "h.gbedji",
+   "nomComplet": "GBEDJI Hervé",
+   "role": "assistant_comptable",
+   "poste": "POSTE-PHARMA",
+   "adresseIp": "192.168.1.14",
+   "inactivite": 24,
+   "etat": "suspendue",
+   "heureDebut": "09:02",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D06",
+   "utilisateurId": "USR005",
+   "identifiant": "f.yeni",
+   "nomComplet": "YENI M’PO Florent",
+   "role": "medecin",
+   "poste": "POSTE-SOINS",
+   "adresseIp": "192.168.1.42",
+   "inactivite": 4,
+   "etat": "active",
+   "heureDebut": "09:59",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D07",
+   "utilisateurId": "USR006",
+   "identifiant": "o.taki",
+   "nomComplet": "TAKI Orou",
+   "role": "medecin",
+   "poste": "POSTE-CAISSE",
+   "adresseIp": "192.168.1.23",
+   "inactivite": 18,
+   "etat": "suspendue",
+   "heureDebut": "13:03",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D08",
+   "utilisateurId": "USR007",
+   "identifiant": "r.ahohou",
+   "nomComplet": "AHOHOU Rodrigue",
+   "role": "echographiste",
+   "poste": "POSTE-DIR",
+   "adresseIp": "192.168.1.29",
+   "inactivite": 23,
+   "etat": "suspendue",
+   "heureDebut": "12:55",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D09",
+   "utilisateurId": "USR008",
+   "identifiant": "g.kinnou",
+   "nomComplet": "KINNOU A. Ganiou",
+   "role": "laborantin",
+   "poste": "POSTE-CAISSE",
+   "adresseIp": "192.168.1.32",
+   "inactivite": 25,
+   "etat": "suspendue",
+   "heureDebut": "10:33",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D10",
+   "utilisateurId": "USR009",
+   "identifiant": "y.agossou",
+   "nomComplet": "AGOSSOU Yahouza",
+   "role": "laborantin",
+   "poste": "POSTE-CAISSE",
+   "adresseIp": "192.168.1.22",
+   "inactivite": 21,
+   "etat": "suspendue",
+   "heureDebut": "08:39",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D11",
+   "utilisateurId": "USR010",
+   "identifiant": "y.garba",
+   "nomComplet": "GARBA Yahouza",
+   "role": "surveillant",
+   "poste": "POSTE-DIR",
+   "adresseIp": "192.168.1.15",
+   "inactivite": 8,
+   "etat": "active",
+   "heureDebut": "08:47",
+   "source": "demonstration",
+   "statut": "actif"
+  },
+  {
+   "id": "SES-D12",
+   "utilisateurId": "USR011",
+   "identifiant": "b.idrissou",
+   "nomComplet": "IDRISSOU ANIKI Baba-Toundé",
+   "role": "infirmier",
+   "poste": "POSTE-DIR",
+   "adresseIp": "192.168.1.45",
+   "inactivite": 16,
+   "etat": "suspendue",
+   "heureDebut": "10:08",
+   "source": "demonstration",
+   "statut": "actif"
+  }
+ ],
+ "ouverture": {
+  "jour": "2026-11-03",
+  "kpis": [
+   [
+    "Sessions ouvertes",
+    "13"
+   ],
+   [
+    "Postes distincts",
+    "7"
+   ],
+   [
+    "Verrouillées pour inactivité",
+    "7"
+   ],
+   [
+    "Clôturées",
+    "0"
+   ],
+   [
+    "Délai de verrouillage",
+    "15 min"
+   ]
+  ],
+  "tableau": {
+   "entetes": [
+    "Identifiant",
+    "Utilisateur",
+    "Rôle",
+    "Poste",
+    "Adresse réseau",
+    "Ouverture",
+    "Inactivité",
+    "État",
+    "Clôture",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "o.taki",
+     "TAKI Orou",
+     "Médecin",
+     "POSTE-CAISSE",
+     "192.168.1.23",
+     "13h03",
+     "18 min",
+     "Suspendue",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "r.ahohou",
+     "AHOHOU Rodrigue",
+     "Technicien d’échographie",
+     "POSTE-DIR",
+     "192.168.1.29",
+     "12h55",
+     "23 min",
+     "Suspendue",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "a.kassa",
+     "KASSA Augustin",
+     "Comptable",
+     "POSTE-COMPTA",
+     "192.168.1.26",
+     "11h05",
+     "9 min",
+     "Active",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "g.kinnou",
+     "KINNOU A. Ganiou",
+     "Biologiste médical",
+     "POSTE-CAISSE",
+     "192.168.1.32",
+     "10h33",
+     "25 min",
+     "Suspendue",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "c.bassongui",
+     "BASSONGUI Chabi Séko",
+     "Administrateur système",
+     "127.0.0.1",
+     "—",
+     "10h13",
+     "—",
+     "Active",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "b.idrissou",
+     "IDRISSOU ANIKI Baba-Toundé",
+     "Infirmier / Sage-femme",
+     "POSTE-DIR",
+     "192.168.1.45",
+     "10h08",
+     "16 min",
+     "Suspendue",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "f.yeni",
+     "YENI M’PO Florent",
+     "Médecin",
+     "POSTE-SOINS",
+     "192.168.1.42",
+     "09h59",
+     "4 min",
+     "Active",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "admin.systeme",
+     "Administrateur système",
+     "Administrateur système",
+     "POSTE-COMPTA",
+     "192.168.1.28",
+     "09h40",
+     "17 min",
+     "Suspendue",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "h.gbedji",
+     "GBEDJI Hervé",
+     "Assistant de Direction",
+     "POSTE-PHARMA",
+     "192.168.1.14",
+     "09h02",
+     "24 min",
+     "Suspendue",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "y.garba",
+     "GARBA Yahouza",
+     "Surveillant",
+     "POSTE-DIR",
+     "192.168.1.15",
+     "08h47",
+     "8 min",
+     "Active",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "y.agossou",
+     "AGOSSOU Yahouza",
+     "Biologiste médical",
+     "POSTE-CAISSE",
+     "192.168.1.22",
+     "08h39",
+     "21 min",
+     "Suspendue",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "a.taki",
+     "TAKI Alimatou",
+     "Directrice de l’Administration et des Finances (DAF)",
+     "POSTE-DIR",
+     "192.168.1.19",
+     "07h21",
+     "2 min",
+     "Active",
+     "—",
+     "Clôturer"
+    ],
+    [
+     "s.bassongui",
+     "BASSONGUI Chabi Séko",
+     "Directeur Médical",
+     "POSTE-LABO",
+     "192.168.1.15",
+     "07h05",
+     "8 min",
+     "Active",
+     "—",
+     "Clôturer"
+    ]
+   ]
+  },
+  "moi": {
+   "identifiant": "c.bassongui",
+   "nomComplet": "BASSONGUI Chabi Séko",
+   "role": "admin",
+   "etat": "active",
+   "source": "poste",
+   "adresseIp": null
+  },
+  "sessionId": "SESxmw0j5ponlixj0"
+ },
+ "geste": {
+  "boutonOffert": true,
+  "confirmation": {
+   "titre": "Clôturer la session de BASSONGUI Chabi Séko ?",
+   "texte": "Clôturer la session de BASSONGUI Chabi Séko ?L’utilisateur sera déconnecté du poste POSTE-LABO à son prochain geste. L’opération est journalisée. Une session clôturée ne se rouvre pas.AnnulerClôturer la session",
+   "boutons": [
+    "",
+    "Annuler",
+    "Clôturer la session"
+   ]
+  },
+  "apresAnnulation": "active",
+  "fiche": {
+   "etat": "cloturee",
+   "clotureLePresent": true,
+   "cloturePar": "BASSONGUI Chabi Séko",
+   "clotureParIdentifiant": "c.bassongui",
+   "clotureMotif": null,
+   "cloturePropre": false,
+   "statut": "actif"
+  },
+  "toasts": [
+   {
+    "message": "Session clôturée.",
+    "type": "success",
+    "detail": "BASSONGUI Chabi Séko (POSTE-LABO)"
+   }
+  ],
+  "audit": {
+   "action": "Modification",
+   "module": "M14",
+   "entite": "session",
+   "reference": "SES-D02"
+  },
+  "kpisApres": [
+   [
+    "Sessions ouvertes",
+    "12"
+   ],
+   [
+    "Postes distincts",
+    "6"
+   ],
+   [
+    "Verrouillées pour inactivité",
+    "7"
+   ],
+   [
+    "Clôturées",
+    "1"
+   ],
+   [
+    "Délai de verrouillage",
+    "15 min"
+   ]
+  ],
+  "ligneApres": [
+   "s.bassongui",
+   "BASSONGUI Chabi Séko",
+   "Directeur Médical",
+   "POSTE-LABO",
+   "192.168.1.15",
+   "07h05",
+   "8 min",
+   "Clôturée",
+   "03/11/2026 à 10h13par BASSONGUI Chabi Séko",
+   ""
+  ],
+  "boutonApres": false,
+  "filtreOptions": [
+   [
+    "",
+    "État"
+   ],
+   [
+    "active",
+    "Actives"
+   ],
+   [
+    "suspendue",
+    "Suspendues"
+   ],
+   [
+    "cloturee",
+    "Clôturées"
+   ],
+   [
+    "ouverte",
+    "Ouvertes (actives et suspendues)"
+   ]
+  ],
+  "filtreClotures": 1,
+  "filtreOuvertes": 12,
+  "proprePresent": true,
+  "confirmationPropre": {
+   "titre": "Clôturer VOTRE session ?",
+   "texte": "Clôturer VOTRE session ?Il s’agit de votre propre session : vous serez déconnecté immédiatement de ce poste et ramené à la connexion. L’opération est journalisée.AnnulerClôturer ma session",
+   "boutons": [
+    "",
+    "Annuler",
+    "Clôturer ma session"
+   ]
+  }
+ },
+ "cas": [
+  {
+   "nom": "session inconnue",
+   "id": "SES-INEXISTANTE",
+   "opts": {},
+   "role": "admin",
+   "avantEtat": null,
+   "resultat": {
+    "ok": false,
+    "code": "SESSION_INCONNUE",
+    "motif": "Cette session n’existe pas au registre.",
+    "geste": "Actualiser la liste des sessions."
+   },
+   "patch": null
+  },
+  {
+   "nom": "profil sans droit d’édition (caissier)",
+   "id": "SES-D01",
+   "opts": {},
+   "role": "caissier",
+   "avantEtat": "suspendue",
+   "resultat": {
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "Le profil courant ne peut pas clôturer de session.",
+    "geste": "Demander la clôture à l’administrateur système."
+   },
+   "patch": null
+  },
+  {
+   "nom": "session d’un autre agent, avec motif",
+   "id": "SES-D01",
+   "opts": {
+    "motif": "Poste laissé ouvert"
+   },
+   "role": "admin",
+   "avantEtat": "suspendue",
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "patch": {
+    "etat": "cloturee",
+    "clotureLePresent": true,
+    "cloturePar": "BASSONGUI Chabi Séko",
+    "clotureParIdentifiant": "c.bassongui",
+    "clotureMotif": "Poste laissé ouvert",
+    "cloturePropre": false
+   }
+  },
+  {
+   "nom": "déjà clôturée",
+   "id": "SES-D01",
+   "opts": {},
+   "role": "admin",
+   "avantEtat": "cloturee",
+   "resultat": {
+    "ok": false,
+    "code": "DEJA_CLOTUREE",
+    "motif": "Cette session est déjà clôturée (le 03/11/2026 à 10h13, par BASSONGUI Chabi Séko). Une session clôturée ne se rouvre pas.",
+    "geste": "L’agent ouvre une nouvelle session en se reconnectant."
+   },
+   "patch": null
+  },
+  {
+   "nom": "sa propre session sans confirmation",
+   "id": "SESxmw0j5ponlixj0",
+   "opts": {},
+   "role": "admin",
+   "avantEtat": "active",
+   "resultat": {
+    "ok": false,
+    "code": "SESSION_PROPRE",
+    "motif": "C’est VOTRE session : la clôturer vous déconnecte aussitôt de ce poste.",
+    "geste": "Confirmer explicitement la clôture de votre propre session."
+   },
+   "patch": null
+  },
+  {
+   "nom": "sa propre session, confirmée",
+   "id": "SESxmw0j5ponlixj0",
+   "opts": {
+    "confirmePropre": true
+   },
+   "role": "admin",
+   "avantEtat": "active",
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "patch": {
+    "etat": "cloturee",
+    "clotureLePresent": true,
+    "cloturePar": "BASSONGUI Chabi Séko",
+    "clotureParIdentifiant": "c.bassongui",
+    "clotureMotif": null,
+    "cloturePropre": true
+   }
+  },
+  {
+   "nom": "session d’un autre agent, sans motif",
+   "id": "SES-D03",
+   "opts": {},
+   "role": "admin",
+   "avantEtat": "active",
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "patch": {
+    "etat": "cloturee",
+    "clotureLePresent": true,
+    "cloturePar": "BASSONGUI Chabi Séko",
+    "clotureParIdentifiant": "c.bassongui",
+    "clotureMotif": null,
+    "cloturePropre": false
+   }
+  }
+ ],
+ "secOuverture": {
+  "kpis": [
+   [
+    "Comptes actifs",
+    "47"
+   ],
+   [
+    "Comptes bloqués",
+    "0"
+   ],
+   [
+    "Mots de passe à renouveler",
+    "0"
+   ],
+   [
+    "Double facteur manquant",
+    "0"
+   ],
+   [
+    "Tentatives refusées",
+    "0"
+   ],
+   [
+    "Sessions ouvertes",
+    "9"
+   ]
+  ],
+  "onglets": [
+   "Politique",
+   "Comptes",
+   "Tentatives de connexion",
+   "Sessions9"
+  ],
+  "politique": {
+   "entetes": [
+    "Paramètre",
+    "Valeur",
+    "Source",
+    "Application"
+   ],
+   "lignes": [
+    [
+     "Longueur minimale du mot de passe",
+     "8 caractères",
+     "Politique affichée par l’écran de réinitialisation (écart E1107)",
+     "Affichée, non appliquée : la création de compte exige 8 caractères"
+    ],
+    [
+     "Durée de validité du mot de passe",
+     "90 jours",
+     "Renouvellement à 90 jours affiché par la maquette (écart E1107)",
+     "Calculée par cet écran (mots de passe à renouveler)"
+    ],
+    [
+     "Historique des mots de passe interdits",
+     "5 derniers",
+     "Proposition à valider : aucun document ne fixe cette profondeur",
+     "Non appliquée par la maquette"
+    ],
+    [
+     "Échecs de connexion avant blocage",
+     "3 échecs",
+     "CDCT §12.2 (verrouillage après échecs successifs) ; trois échecs retenus au poste (A5)",
+     "Appliquée par le poste ; la maquette bloque à la main et refuse la connexion d’un compte bloqué"
+    ],
+    [
+     "Durée du verrou après échecs",
+     "15 minutes",
+     "Quinze minutes retenues au poste (A5)",
+     "Appliquée par le poste, non par le serveur de la maquette"
+    ],
+    [
+     "Inactivité avant verrouillage de l’écran",
+     "15 minutes",
+     "CDCT §12.2 (déconnexion automatique sur poste partagé : 15 minutes)",
+     "Appliquée : verrou de session de ce poste"
+    ],
+    [
+     "Composition du mot de passe",
+     "Majuscule, minuscule, chiffre et caractère spécial",
+     "Politique affichée par l’écran de réinitialisation (écart E1107)",
+     "Affichée, non appliquée par la maquette"
+    ],
+    [
+     "Double facteur obligatoire pour les rôles",
+     "Directeur Médical, Directrice de l’Administration et des Finances (DAF), Direction / Gérance, Administrateur système",
+     "CDCT §12.2 nomme l’Administrateur et la Direction ; la création de compte l’impose aussi à la DAF et au Directeur Médical",
+     "Appliquée à la création d’un compte (m14-utilisateurs)"
+    ]
+   ]
+  },
+  "parametres": [
+   {
+    "cle": "longueurMin",
+    "libelle": "Longueur minimale du mot de passe",
+    "unite": "caractères",
+    "min": 8,
+    "max": 64,
+    "source": "Politique affichée par l’écran de réinitialisation (écart E1107)",
+    "application": "Affichée, non appliquée : la création de compte exige 8 caractères"
+   },
+   {
+    "cle": "expirationJours",
+    "libelle": "Durée de validité du mot de passe",
+    "unite": "jours",
+    "min": 0,
+    "max": 365,
+    "source": "Renouvellement à 90 jours affiché par la maquette (écart E1107)",
+    "application": "Calculée par cet écran (mots de passe à renouveler)"
+   },
+   {
+    "cle": "historique",
+    "libelle": "Historique des mots de passe interdits",
+    "unite": "derniers",
+    "min": 0,
+    "max": 24,
+    "source": "Proposition à valider : aucun document ne fixe cette profondeur",
+    "application": "Non appliquée par la maquette"
+   },
+   {
+    "cle": "echecsMax",
+    "libelle": "Échecs de connexion avant blocage",
+    "unite": "échecs",
+    "min": 1,
+    "max": 10,
+    "source": "CDCT §12.2 (verrouillage après échecs successifs) ; trois échecs retenus au poste (A5)",
+    "application": "Appliquée par le poste ; la maquette bloque à la main et refuse la connexion d’un compte bloqué"
+   },
+   {
+    "cle": "blocageMin",
+    "libelle": "Durée du verrou après échecs",
+    "unite": "minutes",
+    "min": 1,
+    "max": 1440,
+    "source": "Quinze minutes retenues au poste (A5)",
+    "application": "Appliquée par le poste, non par le serveur de la maquette"
+   },
+   {
+    "cle": "inactiviteMin",
+    "libelle": "Inactivité avant verrouillage de l’écran",
+    "unite": "minutes",
+    "min": 1,
+    "max": 120,
+    "source": "CDCT §12.2 (déconnexion automatique sur poste partagé : 15 minutes)",
+    "application": "Appliquée : verrou de session de ce poste"
+   }
+  ],
+  "defaut": {
+   "longueurMin": 8,
+   "expirationJours": 90,
+   "historique": 5,
+   "echecsMax": 3,
+   "blocageMin": 15,
+   "inactiviteMin": 15,
+   "id": "POL-001",
+   "statut": "actif",
+   "_creePar": "Système",
+   "_creeLe": "2026-11-03"
+  },
+  "rolesDoubleFacteur": [
+   "dm",
+   "da",
+   "direction",
+   "admin"
+  ]
+ },
+ "comptesCas": [
+  {
+   "nom": "bloquer sans motif",
+   "avant": {
+    "bloque": false,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Un motif est obligatoire pour bloquer un compte.",
+    "geste": "Saisir le motif du blocage."
+   },
+   "diff": {}
+  },
+  {
+   "nom": "bloquer un compte inconnu",
+   "avant": {
+    "bloque": false,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": false,
+    "code": "COMPTE_INCONNU",
+    "motif": "Ce compte n’existe pas.",
+    "geste": "Actualiser la liste."
+   },
+   "diff": {}
+  },
+  {
+   "nom": "débloquer un compte non bloqué",
+   "avant": {
+    "bloque": false,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": false,
+    "code": "NON_BLOQUE",
+    "motif": "Ce compte n’est pas bloqué.",
+    "geste": "Aucun déblocage à faire."
+   },
+   "diff": {}
+  },
+  {
+   "nom": "bloquer son propre compte",
+   "avant": {
+    "bloque": false,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": false,
+    "code": "COMPTE_PROPRE",
+    "motif": "Vous ne pouvez pas bloquer votre propre compte.",
+    "geste": "Demander à un autre administrateur de le faire."
+   },
+   "diff": {}
+  },
+  {
+   "nom": "bloquer avec motif",
+   "avant": {
+    "bloque": false,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "diff": {
+    "bloque": true,
+    "bloqueLe": "<date>",
+    "bloquePar": "BASSONGUI Chabi Séko",
+    "bloqueMotif": "Départ du poste"
+   }
+  },
+  {
+   "nom": "bloquer deux fois",
+   "avant": {
+    "bloque": true,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": false,
+    "code": "DEJA_BLOQUE",
+    "motif": "Ce compte est déjà bloqué.",
+    "geste": "Le débloquer si l’accès doit être rendu."
+   },
+   "diff": {}
+  },
+  {
+   "nom": "débloquer",
+   "avant": {
+    "bloque": true,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "diff": {
+    "bloque": false,
+    "debloqueLe": "<date>",
+    "debloquePar": "BASSONGUI Chabi Séko"
+   }
+  },
+  {
+   "nom": "débloquer un compte bloqué par ses échecs",
+   "avant": {
+    "bloque": false,
+    "echecs": 3,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "diff": {
+    "echecs": 0
+   }
+  },
+  {
+   "nom": "imposer la réinitialisation",
+   "avant": {
+    "bloque": false,
+    "echecs": 0,
+    "doitChanger": false,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "diff": {
+    "doitChangerMotDePasse": true,
+    "reinitialisationImposeeLe": "<date>",
+    "reinitialisationImposeePar": "BASSONGUI Chabi Séko"
+   }
+  },
+  {
+   "nom": "imposer la réinitialisation deux fois",
+   "avant": {
+    "bloque": false,
+    "echecs": 0,
+    "doitChanger": true,
+    "motDePasseDefiniLe": null
+   },
+   "resultat": {
+    "ok": false,
+    "code": "DEJA_IMPOSEE",
+    "motif": "La réinitialisation est déjà imposée à ce compte : l’agent doit choisir un nouveau mot de passe à sa prochaine connexion.",
+    "geste": "Rien à faire."
+   },
+   "diff": {}
+  }
+ ],
+ "politiqueCas": [
+  {
+   "nom": "longueur trop courte",
+   "valeurs": {
+    "longueurMin": 7
+   },
+   "resultat": {
+    "ok": false,
+    "code": "VALEUR_HORS_BORNES",
+    "motif": "Longueur minimale du mot de passe : une valeur entière entre 8 et 64 est attendue.",
+    "geste": "Corriger la valeur de « Longueur minimale du mot de passe »."
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 5,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03"
+   }
+  },
+  {
+   "nom": "longueur trop longue",
+   "valeurs": {
+    "longueurMin": 65
+   },
+   "resultat": {
+    "ok": false,
+    "code": "VALEUR_HORS_BORNES",
+    "motif": "Longueur minimale du mot de passe : une valeur entière entre 8 et 64 est attendue.",
+    "geste": "Corriger la valeur de « Longueur minimale du mot de passe »."
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 5,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03"
+   }
+  },
+  {
+   "nom": "expiration négative",
+   "valeurs": {
+    "expirationJours": -1
+   },
+   "resultat": {
+    "ok": false,
+    "code": "VALEUR_HORS_BORNES",
+    "motif": "Durée de validité du mot de passe : une valeur entière entre 0 et 365 est attendue.",
+    "geste": "Corriger la valeur de « Durée de validité du mot de passe »."
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 5,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03"
+   }
+  },
+  {
+   "nom": "expiration à zéro (n’expire pas)",
+   "valeurs": {
+    "expirationJours": 0
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 0,
+    "historique": 5,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03",
+    "modifieeLe": "2026-11-03T10:13:46.545Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-11-03T10:13:46.545Z"
+   }
+  },
+  {
+   "nom": "historique à 24",
+   "valeurs": {
+    "historique": 24
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 24,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03",
+    "modifieeLe": "2026-11-03T10:13:46.545Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-11-03T10:13:46.545Z"
+   }
+  },
+  {
+   "nom": "échecs à zéro",
+   "valeurs": {
+    "echecsMax": 0
+   },
+   "resultat": {
+    "ok": false,
+    "code": "VALEUR_HORS_BORNES",
+    "motif": "Échecs de connexion avant blocage : une valeur entière entre 1 et 10 est attendue.",
+    "geste": "Corriger la valeur de « Échecs de connexion avant blocage »."
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 24,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03",
+    "modifieeLe": "2026-11-03T10:13:46.545Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-11-03T10:13:46.545Z"
+   }
+  },
+  {
+   "nom": "échecs à dix",
+   "valeurs": {
+    "echecsMax": 10
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 5,
+    "echecsMax": 10,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03",
+    "modifieeLe": "2026-11-03T10:13:46.545Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-11-03T10:13:46.545Z"
+   }
+  },
+  {
+   "nom": "blocage à 1441",
+   "valeurs": {
+    "blocageMin": 1441
+   },
+   "resultat": {
+    "ok": false,
+    "code": "VALEUR_HORS_BORNES",
+    "motif": "Durée du verrou après échecs : une valeur entière entre 1 et 1440 est attendue.",
+    "geste": "Corriger la valeur de « Durée du verrou après échecs »."
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 5,
+    "echecsMax": 10,
+    "blocageMin": 15,
+    "inactiviteMin": 15,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03",
+    "modifieeLe": "2026-11-03T10:13:46.545Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-11-03T10:13:46.545Z"
+   }
+  },
+  {
+   "nom": "inactivité à 120",
+   "valeurs": {
+    "inactiviteMin": 120
+   },
+   "resultat": {
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 5,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 120,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03",
+    "modifieeLe": "2026-11-03T10:13:46.545Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-11-03T10:13:46.545Z"
+   }
+  },
+  {
+   "nom": "inactivité fractionnaire",
+   "valeurs": {
+    "inactiviteMin": 10.5
+   },
+   "resultat": {
+    "ok": false,
+    "code": "VALEUR_HORS_BORNES",
+    "motif": "Inactivité avant verrouillage de l’écran : une valeur entière entre 1 et 120 est attendue.",
+    "geste": "Corriger la valeur de « Inactivité avant verrouillage de l’écran »."
+   },
+   "politique": {
+    "longueurMin": 8,
+    "expirationJours": 90,
+    "historique": 5,
+    "echecsMax": 3,
+    "blocageMin": 15,
+    "inactiviteMin": 120,
+    "id": "POL-001",
+    "statut": "actif",
+    "_creePar": "Système",
+    "_creeLe": "2026-11-03",
+    "modifieeLe": "2026-11-03T10:13:46.545Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-11-03T10:13:46.545Z"
+   }
+  }
+ ],
+ "expiration": [
+  {
+   "age": 0,
+   "restant": 91,
+   "reinit": false
+  },
+  {
+   "age": 10,
+   "restant": 81,
+   "reinit": false
+  },
+  {
+   "age": 89,
+   "restant": 2,
+   "reinit": false
+  },
+  {
+   "age": 90,
+   "restant": 1,
+   "reinit": false
+  },
+  {
+   "age": 91,
+   "restant": 0,
+   "reinit": false
+  },
+  {
+   "age": 200,
+   "restant": -109,
+   "reinit": true
+  },
+  {
+   "age": null,
+   "restant": null,
+   "reinit": false
+  },
+  {
+   "age": 5,
+   "imposee": true,
+   "restant": 86,
+   "reinit": true
+  }
+ ],
+ "bloquage": [
+  {
+   "echecs": 0,
+   "bloque": false,
+   "attendu": false
+  },
+  {
+   "echecs": 2,
+   "bloque": false,
+   "attendu": false
+  },
+  {
+   "echecs": 3,
+   "bloque": false,
+   "attendu": true
+  },
+  {
+   "echecs": 7,
+   "bloque": false,
+   "attendu": true
+  },
+  {
+   "echecs": 0,
+   "bloque": true,
+   "attendu": true
+  }
+ ],
+ "comptesOnglet": {
+  "kpisAvant": [
+   [
+    "Comptes actifs",
+    "47"
+   ],
+   [
+    "Comptes bloqués",
+    "0"
+   ],
+   [
+    "Mots de passe à renouveler",
+    "0"
+   ],
+   [
+    "Double facteur manquant",
+    "0"
+   ],
+   [
+    "Tentatives refusées",
+    "0"
+   ],
+   [
+    "Sessions ouvertes",
+    "9"
+   ]
+  ],
+  "tableau": {
+   "entetes": [
+    "Identifiant",
+    "Utilisateur",
+    "Rôle",
+    "Accès",
+    "Échecs",
+    "Double facteur",
+    "Mot de passe",
+    "Sessions",
+    "Actions"
+   ],
+   "nbLignes": 15
+  },
+  "filtreOptions": [
+   [
+    "",
+    "Situation"
+   ],
+   [
+    "bloques",
+    "Comptes bloqués"
+   ],
+   [
+    "reinit",
+    "À réinitialiser"
+   ],
+   [
+    "sessions",
+    "Avec session ouverte"
+   ],
+   [
+    "sansmfa",
+    "Double facteur manquant"
+   ]
+  ],
+  "boutonsAvant": [
+   "Bloquer"
+  ],
+  "modaleBlocage": {
+   "titre": "Bloquer le compte de Compte à pourvoir",
+   "texte": "Bloquer le compte de Compte à pourvoirUn compte bloqué ne peut plus ouvrir de session tant qu’un administrateur ne l’a pas débloqué. Les sessions déjà ouvertes ne sont pas fermées : utiliser « Clôturer les sessions ».Motif *AnnulerBloquer le compte",
+   "boutons": [
+    "",
+    "Annuler",
+    "Bloquer le compte"
+   ]
+  },
+  "kpisApres": [
+   [
+    "Comptes actifs",
+    "47"
+   ],
+   [
+    "Comptes bloqués",
+    "1"
+   ],
+   [
+    "Mots de passe à renouveler",
+    "1"
+   ],
+   [
+    "Double facteur manquant",
+    "0"
+   ],
+   [
+    "Tentatives refusées",
+    "0"
+   ],
+   [
+    "Sessions ouvertes",
+    "9"
+   ]
+  ],
+  "toasts": [
+   [
+    "Session clôturée.",
+    "BASSONGUI Chabi Séko (POSTE-LABO)"
+   ],
+   [
+    "Compte bloqué.",
+    "Compte à pourvoir"
+   ]
+  ]
+ },
+ "etats": {
+  "active": "Active",
+  "suspendue": "Suspendue",
+  "cloturee": "Clôturée"
+ },
+ "idDemo": "USRC06"
+}

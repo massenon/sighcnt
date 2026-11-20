@@ -28,6 +28,10 @@
     devise: 'F CFA',
     valorisation: 'CMUP',
     reference: 'IMPORT-SAGE-20260715',
+    /* LE LIBELLÉ VISIBLE du lot (12/11/2026, lot T5b) : l'identifiant ci-dessus est une DONNÉE (il est écrit sur les 184 fiches, au réglage de validation et
+       aux vecteurs) et ne change pas ; ce qui se LIT à l'écran, sur le bordereau et au journal ne nomme plus l'ancien logiciel. */
+    referenceAffichee: 'IMPORT-INVENTAIRE-20260715',
+    origine: 'Inventaire initial (reprise)',
     totalArticles: 175,
     totalUnites: 12080,
     totalValorise: 3976459,

@@ -1,0 +1,28 @@
+{
+ "id": "hub-mere",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Exploitation de la synchronisation",
+ "acces": "ouvert",
+ "titre": "Exploitation de la synchronisation",
+ "description": "Tous les écrans du module MERE — Exploitation de la synchronisation.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

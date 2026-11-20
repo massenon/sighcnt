@@ -1,0 +1,71 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "etat": "en_attente"
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": "attente_prelevement"
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": "preleve"
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": "en_cours"
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": "saisi"
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": "valide_technique"
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": "valide"
+   },
+   "sortie": true
+  },
+  {
+   "entree": {
+    "etat": "rectifie"
+   },
+   "sortie": true
+  },
+  {
+   "entree": {
+    "etat": "inconnu"
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": ""
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "etat": null
+   },
+   "sortie": false
+  }
+ ]
+}

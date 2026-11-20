@@ -16,10 +16,16 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function personnel() { return S.collection('personnel').active(); }
   function planning() { return S.collection('planning').active(); }
+  /* Lots L4 à L6 : le moteur du planning (régime individuel, circuit de validation, propositions) vit au socle (parcours.js). */
+  function PRH() { return global.SIGH.planningRh; }
+  function roleCourant() { var x = S.session && S.session(); return (x && x.role) || ''; }
+  /** Une vacation COMPTE (primes, statistiques) seulement validée ; celles d'avant le circuit (sans état) le sont. */
+  function vacationCompte(p) { return !p.validationEtat || p.validationEtat === 'validee'; }
+  function planningCompte() { return planning().filter(vacationCompte); }
 
   function fonctionLabel(id) {
     var f = D.FONCTIONS.filter(function (x) { return x.id === id; })[0];
@@ -42,13 +48,14 @@
     return t ? t.couleur : 'neutral';
   }
   function anciennete(e) {
+    if (!e.dateEmbauche) return { ans: 0, mois: 0, absente: true };   /* « non calculable » n'est pas zéro : les écrans le disent */
     var mois = Math.floor(C.daysBetween(e.dateEmbauche, AUJ) / 30.44);
     return { ans: Math.floor(mois / 12), mois: mois % 12 };
   }
 
   /* --- Comptage des vacations sur une période ------------------------------ */
   function vacations(employeId, annee, mois) {
-    return planning().filter(function (p) {
+    return planningCompte().filter(function (p) {
       if (p.employeId !== employeId) return false;
       var d = C.toDate(p.date);
       return d.getFullYear() === annee && d.getMonth() === mois;
@@ -70,8 +77,8 @@
         var auj = planning().filter(function (x) { return x.date === C.iso(AUJ); });
         return [
           { label: 'Effectif total', value: C.num(p.length), icon: 'users-round', tone: 'navy', hint: 'Organigramme de la clinique' },
-          { label: 'Masse salariale (base)', value: C.money(C.sum(p, 'salaireBase')), icon: 'banknote', tone: 'info' },
-          { label: 'Salaire moyen', value: C.money(p.length ? C.sum(p, 'salaireBase') / p.length : 0), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale (base)', value: C.moneyOu(C.sumOuNul(p, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
+          { label: 'Salaire moyen', value: C.moneyOu(C.moyenneOuNul(p, 'salaireBase'), 'Non renseigné'), icon: 'calculator', tone: 'neutral' },
           { label: 'Ancienneté moyenne', value: (p.length ? Math.round(C.sum(p, function (e) { return anciennete(e).ans; }) / p.length * 10) / 10 : 0) + ' ans', icon: 'award', tone: 'success' },
           { label: 'De garde aujourd’hui', value: C.num(auj.filter(function (x) { return x.type === 'garde'; }).length), icon: 'moon', tone: 'danger' },
           { label: 'En permanence', value: C.num(auj.filter(function (x) { return x.type === 'permanence'; }).length), icon: 'sun', tone: 'warning' },
@@ -111,6 +118,9 @@
                 render: function () {
                   var g = C.groupBy(personnel(), 'service');
                   var keys = Object.keys(g);
+                  if (C.sumOuNul(personnel(), 'salaireBase') === null) {
+                    return el('p.text-sm.text-slate-500', { text: 'Aucun salaire de base renseigné : la masse salariale par service n’est pas calculable.' });
+                  }
                   return G.barres(keys, [{ label: 'Masse salariale', data: keys.map(function (k) { return C.sum(g[k], 'salaireBase'); }) }],
                     { horizontal: true, height: 320 });
                 },
@@ -158,6 +168,166 @@
   /* ==========================================================================
    * PERSONNEL
    * ======================================================================== */
+  /* ==========================================================================
+   * Lot PLAN-INDIV (16/11/2026) : valeurs d'attente de la fiche et onglet « Planning personnalisé » (moteur : SIGH.planningRh, parcours.js)
+   * ======================================================================== */
+  function peutGeste(g) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(roleCourant(), g)); }
+  function etatLigneApplication(etat) {
+    return { a_poser: 'À poser', occupe: 'Jour occupé (conservé)', refuse: 'Refusé', libre: 'Libre (hors modèle)', sans_modele: 'Avant le modèle' }[etat] || etat;
+  }
+  /** La valeur d'une fiche, avec sa mention « valeur d'attente » et le bouton « Confirmer » (geste réservé) si elle en porte une. */
+  function valeurAvecAttente(e, cle, texte, redessiner) {
+    if (PRH().valeursAttente(e).indexOf(cle) < 0) return texte;
+    var noeuds = [el('span', { text: texte && texte !== '' ? String(texte) : '—' }), el('span.ml-2', { dataset: { attente: cle } }, U.badge('Valeur d’attente', 'warning'))];
+    if (peutGeste('confirmer_valeur_attente_personnel')) {
+      noeuds.push(el('span.ml-2', null, K.btn('Confirmer', { size: 'sm', onclick: function () { confirmerAttente(e, cle, redessiner); } })));
+    }
+    return noeuds;
+  }
+  function confirmerAttente(e, cle, redessiner) {
+    var f = U.form([{ name: 'motif', label: 'Motif (document ou décision qui arrête la valeur)', type: 'textarea', rows: 2, required: true, col: 'full' }], {});
+    var m = U.modal({
+      title: 'Confirmer : ' + PRH().libelleChampAttente(cle), subtitle: e.nomComplet + ' · ' + e.matricule, size: 'md',
+      body: el('div.space-y-3', null, [K.note('La valeur est gardée telle quelle et ne porte plus la mention « valeur d’attente ». Le geste est journalisé (RG-12).', { tone: 'info' }), f]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Confirmer la valeur', { variant: 'primary', icon: 'check', onclick: function () {
+          var v = f.collect(); if (!v) return;
+          var r = PRH().confirmerValeurAttente({ employeId: e.id, champ: cle, motif: v.motif });
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          m.close(); U.toast('Valeur confirmée.', { type: 'success', detail: PRH().libelleChampAttente(cle), undo: function () { r.undo(); if (redessiner) redessiner(); } });
+          if (redessiner) redessiner();
+        } }),
+      ],
+    });
+  }
+  function ongletInfos(e0) {
+    var panel = el('div');
+    function dessiner() {
+      var e = S.collection('personnel').get(e0.id) || e0;
+      var a = anciennete(e);
+      var rd = dessiner;
+      C.clear(panel);
+      panel.appendChild(U.descList([
+        ['Matricule', e.matricule], ['Nom et prénoms', e.nomComplet],
+        ['Sexe', e.sexe === 'F' ? 'Féminin' : 'Masculin'],
+        ['Fonction', fonctionLabel(e.fonction)], ['Poste', e.poste],
+        ['Service', e.service], ['Catégorie / échelon', valeurAvecAttente(e, 'categorie', e.categorie, rd)],
+        ['Date d’embauche', valeurAvecAttente(e, 'dateEmbauche', e.dateEmbauche ? C.dateFR(e.dateEmbauche) : '', rd)],
+        ['Ancienneté', a.absente ? 'Non calculable (date d’embauche absente)' : a.ans + ' an(s) ' + a.mois + ' mois'],
+        ['Numéro CNSS', valeurAvecAttente(e, 'cnss', e.cnss, rd)], ['Téléphone', e.telephone],
+        ['Situation matrimoniale', e.situation],
+        ['Salaire de base', valeurAvecAttente(e, 'salaireBase', C.moneyOu(e.salaireBase, 'Non renseigné'), rd)],
+      ]));
+      U.icons(panel);
+    }
+    dessiner();
+    return panel;
+  }
+  function ongletPlanningPerso(e) {
+    var panel = el('div.space-y-4', { dataset: { planningPerso: e.id } });
+    function dessiner() {
+      C.clear(panel);
+      var h = PRH().historiquePlanningPerso(e.id);
+      var cour = PRH().planningPersoALaDate(e.id, C.iso(AUJ));
+      var actions = [];
+      if (peutGeste('regler_planning_personnalise')) actions.push(K.btn('Définir une version', { variant: 'primary', size: 'sm', icon: 'calendar-plus', onclick: function () { definirPerso(e, dessiner); } }));
+      if (PRH().peutPoserPlanning() && h.length) actions.push(K.btn('Appliquer à une période', { size: 'sm', icon: 'calendar-check', onclick: function () { appliquerPerso(e, dessiner); } }));
+      panel.appendChild(K.note('Le planning personnalisé est un <strong>modèle</strong> (une semaine type ou un mois type). Il ne compte pour <strong>aucune prime</strong> : seules les vacations <strong>validées</strong> du planning comptent (RG-11). '
+        + '« Appliquer à une période » pose des vacations, jamais sur un jour occupé.', { tone: 'info' }));
+      if (actions.length) panel.appendChild(el('div.flex.flex-wrap.gap-2', null, actions));
+      if (!h.length) { panel.appendChild(U.empty('Aucun planning personnalisé : cet agent suit la grille de son régime.', { icon: 'calendar' })); return; }
+      var v = h[h.length - 1];
+      panel.appendChild(el('p.text-sm.font-medium.text-slate-800', { dataset: { modele: 'courant' }, text: 'Version ' + v.version + ' (' + (v.periodicite === 'mensuel' ? 'mensuel' : 'hebdomadaire') + ') à compter du ' + C.dateFR(v.dateEffet) + (cour && cour.id !== v.id ? ' · en vigueur aujourd’hui : version ' + (h.filter(function (x) { return x.id === cour.id; })[0] || {}).version : '') }));
+      panel.appendChild(K.miniTable([
+        { label: v.periodicite === 'mensuel' ? 'Jour du mois' : 'Jour', render: function (j) { return v.periodicite === 'mensuel' ? String(j.jour) : PRH().JOURS_SEMAINE[j.jour - 1]; } },
+        { label: 'Vacation', render: function (j) { return U.badge(typePlanningLabel(j.type), typePlanningTone(j.type)); } },
+      ], v.jours, { empty: 'Aucun jour.' }));
+      panel.appendChild(el('p.text-xs.font-medium.text-slate-500.pt-2', { text: 'Historique des versions' }));
+      panel.appendChild(K.miniTable([
+        { label: 'Version', align: 'right', render: function (x) { return String(x.version); } },
+        { label: 'Date d’effet', render: function (x) { return C.dateFR(x.dateEffet); } },
+        { label: 'Périodicité', render: function (x) { return x.periodicite === 'mensuel' ? 'Mensuel' : 'Hebdomadaire'; } },
+        { label: 'Jours', align: 'right', render: function (x) { return String(x.jours.length); } },
+        { label: 'Motif', render: function (x) { return x.motif || '—'; } },
+        { label: 'Défini par', render: function (x) { return (x.creePar || '—') + (x.creeLe ? ' le ' + C.dateFR(x.creeLe) : ''); } },
+      ], h, { empty: 'Aucune version.' }));
+      U.icons(panel);
+    }
+    dessiner();
+    return panel;
+  }
+  function definirPerso(e, apres) {
+    var perSel = el('select.input#ppe_periodicite', null, PRH().PERIODICITES_PERSO.map(function (p) { return el('option', { value: p.id, text: p.libelle }); }));
+    var dateIn = el('input.input#ppe_date', { type: 'date', value: C.iso(AUJ) });
+    var motifIn = el('textarea.input#ppe_motif', { rows: 2 });
+    var grille = el('div.grid.gap-2', { class: 'grid-cols-2 sm:grid-cols-4' });
+    var selects = [];
+    function dessinerGrille() {
+      C.clear(grille); selects = [];
+      var mensuel = perSel.value === 'mensuel', n = mensuel ? 31 : 7;
+      for (var i = 1; i <= n; i++) {
+        (function (i) {
+          var s = el('select.input', { dataset: { jour: String(i) } }, [el('option', { value: '', text: 'Libre' })].concat(D.TYPES_PLANNING.map(function (t) { return el('option', { value: t.id, text: t.label }); })));
+          selects.push({ jour: i, s: s });
+          grille.appendChild(el('label.text-xs.text-slate-600', null, [el('span.block', { text: mensuel ? 'Jour ' + i : PRH().JOURS_SEMAINE[i - 1] }), s]));
+        })(i);
+      }
+    }
+    perSel.addEventListener('change', dessinerGrille);
+    dessinerGrille();
+    var m = U.modal({
+      title: 'Planning personnalisé', subtitle: e.nomComplet + ' · une version datée : elle ne se réécrit pas.', size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('Le modèle est contrôlé comme la grille : type permis par le régime de l’agent à la date d’effet, repos entre deux gardes (la semaine est lue en boucle).', { tone: 'info' }),
+        el('div.grid.gap-3', { class: 'sm:grid-cols-2' }, [el('label', null, [el('span.label', { text: 'Périodicité' }), perSel]), el('label', null, [el('span.label', { text: 'Date d’effet' }), dateIn])]),
+        grille,
+        el('label', null, [el('span.label', { text: 'Motif' }), motifIn]),
+      ]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Enregistrer la version', { variant: 'primary', icon: 'save', onclick: function () {
+          var jours = selects.filter(function (x) { return x.s.value; }).map(function (x) { return { jour: x.jour, type: x.s.value }; });
+          var r = PRH().definirPlanningPerso({ employeId: e.id, periodicite: perSel.value, dateEffet: dateIn.value, motif: motifIn.value, jours: jours });
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          m.close(); U.toast('Planning personnalisé enregistré.', { type: 'success', detail: 'Version ' + r.version + ' à compter du ' + C.dateFR(r.dateEffet) }); if (apres) apres();
+        } }),
+      ],
+    });
+  }
+  function appliquerPerso(e, apres) {
+    var du = el('input.input#ppa_du', { type: 'date', value: C.iso(AUJ) });
+    var au = el('input.input#ppa_au', { type: 'date', value: C.iso(C.addDays(AUJ, 27)) });
+    var zone = el('div#ppa_apercu');
+    var m;
+    function montrer(r) {
+      C.clear(zone);
+      if (!r.ok) { zone.appendChild(K.note(r.motif + ' ' + r.geste, { tone: 'danger' })); return; }
+      zone.appendChild(el('p.text-xs.text-slate-600.mb-2', { dataset: { bilan: 'apercu' }, text: (r.apercu ? 'Aperçu : ' : 'Appliqué : ') + r.aPoser + ' à poser, ' + r.occupes + ' jour(s) occupé(s) conservé(s), ' + r.refuses + ' refusé(s), ' + r.libres + ' libre(s).' }));
+      zone.appendChild(K.miniTable([
+        { label: 'Date', render: function (l) { return C.dateFR(l.date); } },
+        { label: 'État', render: function (l) { return etatLigneApplication(l.etat) + (l.code ? ' (' + l.code + ')' : ''); } },
+        { label: 'Vacation', render: function (l) { return l.type ? typePlanningLabel(l.type) : '—'; } },
+      ], r.lignes.filter(function (l) { return l.etat !== 'libre'; }), { empty: 'Rien à poser sur cette période.' }));
+    }
+    m = U.modal({
+      title: 'Appliquer le planning personnalisé', subtitle: e.nomComplet, size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('L’aperçu n’écrit rien. Un jour déjà occupé n’est jamais écrasé ; chaque jour passe par le contrôle de la grille (repos, double affectation).', { tone: 'info' }),
+        el('div.grid.gap-3', { class: 'sm:grid-cols-2' }, [el('label', null, [el('span.label', { text: 'Du' }), du]), el('label', null, [el('span.label', { text: 'Au' }), au])]),
+        zone,
+      ]),
+      footer: [
+        K.btn('Fermer', { onclick: function () { m.close(); } }),
+        K.btn('Aperçu', { icon: 'eye', onclick: function () { montrer(PRH().appliquerPlanningPerso({ employeId: e.id, du: du.value, au: au.value })); } }),
+        K.btn('Appliquer', { variant: 'primary', icon: 'check', onclick: function () {
+          var r = PRH().appliquerPlanningPerso({ employeId: e.id, du: du.value, au: au.value, ecrire: true });
+          montrer(r); if (r.ok) { U.toast(r.poses + ' vacation(s) posée(s).', { type: 'success', detail: r.occupes + ' jour(s) occupé(s) conservé(s)', undo: r.undo }); if (apres) apres(); }
+        } }),
+      ],
+    });
+  }
+
   function ficheEmploye(e) {
     var a = anciennete(e);
     var wrap = el('div.space-y-4');
@@ -178,19 +348,11 @@
     wrap.appendChild(U.tabs([
       {
         id: 'infos', label: 'Informations',
-        render: function () {
-          return U.descList([
-            ['Matricule', e.matricule], ['Nom et prénoms', e.nomComplet],
-            ['Sexe', e.sexe === 'F' ? 'Féminin' : 'Masculin'],
-            ['Fonction', fonctionLabel(e.fonction)], ['Poste', e.poste],
-            ['Service', e.service], ['Catégorie / échelon', e.categorie],
-            ['Date d’embauche', C.dateFR(e.dateEmbauche)],
-            ['Ancienneté', a.ans + ' an(s) ' + a.mois + ' mois'],
-            ['Numéro CNSS', e.cnss], ['Téléphone', e.telephone],
-            ['Situation matrimoniale', e.situation],
-            ['Salaire de base', C.money(e.salaireBase)],
-          ]);
-        },
+        render: function () { return ongletInfos(e); },
+      },
+      {
+        id: 'planning-perso', label: 'Planning personnalisé',
+        render: function () { return ongletPlanningPerso(e); },
       },
       {
         id: 'planning', label: 'Planning du mois',
@@ -213,8 +375,8 @@
       {
         id: 'primes', label: 'Primes (NS 132)',
         render: function () {
-          var lignes = D.NS132.primes.map(function (pr) {
-            var montant = D.NS132.montant(pr.id, e.fonction);
+          var lignes = D.NS132.primesALaDate().map(function (pr) {
+            var montant = D.NS132.montantAgent(pr.id, e, C.iso(AUJ));
             if (!montant) return null;
             var nb = pr.mode === 'fixe' ? 1 : (pr.id === 'garde' ? gardes : (pr.id === 'permanence' ? permanences : 0));
             return { prime: pr.label, mode: pr.mode === 'fixe' ? 'Forfait mensuel' : 'Par occurrence', montant: montant, nb: nb, total: montant * nb };
@@ -248,10 +410,11 @@
             : U.empty('Aucun relevé de présence.', { icon: 'calendar-check' })));
           box.appendChild(U.card('Congés', cong.length
             ? K.miniTable([
-              { label: 'Type', render: function (x) { return x.type || x.typeConge || '—'; } },
+              /* E621 : les congés portent `nature` et `duree` — l’onglet lisait `type` et `jours`, donc « — » partout. */
+              { label: 'Type', render: function (x) { return x.nature || x.type || x.typeConge || '—'; } },
               { label: 'Du', render: function (x) { return C.dateFR(x.dateDebut); } },
               { label: 'Au', render: function (x) { return C.dateFR(x.dateFin); } },
-              { label: 'Jours', align: 'right', render: function (x) { return String(x.jours || '—'); } },
+              { label: 'Jours', align: 'right', render: function (x) { return String(x.duree || x.jours || '—'); } },
               { label: 'État', render: function (x) { return U.statut(x.statutConge || 'valide'); } },
             ], C.sortBy(cong, 'dateDebut', 'desc'))
             : U.empty('Aucun congé enregistré.', { icon: 'palmtree' })));
@@ -356,7 +519,7 @@
     title: 'Personnel',
     description: 'Dossiers des agents : identité, fonction, catégorie, ancienneté, numéro CNSS et rémunération de base.',
     render: K.crud({
-      collection: 'personnel', entite: 'agent', entiteP: 'agents', module: 'M10',
+      collection: 'personnel', entite: 'agent', entiteP: 'agents', module: 'M10', importer: 'personnel',
       defaultSort: 'matricule', pageSize: 15, drawerWidth: 'max-w-3xl',
       source: 'Organigramme de la Clinique NASSIERA TOO.',
       columns: [
@@ -379,14 +542,14 @@
         {
           key: 'anciennete', label: 'Ancienneté', align: 'right',
           value: function (e) { return C.daysBetween(e.dateEmbauche, AUJ); },
-          text: function (e) { var a = anciennete(e); return a.ans + ' ans ' + a.mois + ' mois'; },
-          render: function (e) { var a = anciennete(e); return a.ans + ' a. ' + a.mois + ' m.'; },
+          text: function (e) { var a = anciennete(e); return a.absente ? 'Non calculable' : a.ans + ' ans ' + a.mois + ' mois'; },
+          render: function (e) { var a = anciennete(e); return a.absente ? 'Non calculable' : a.ans + ' a. ' + a.mois + ' m.'; },
         },
         { key: 'cnss', label: 'N° CNSS', nowrap: true, render: function (e) { return el('span.font-mono.text-xs.text-slate-500', { text: e.cnss }); } },
         {
           key: 'salaireBase', label: 'Salaire de base', align: 'right',
-          text: function (e) { return C.money(e.salaireBase, false); },
-          render: function (e) { return el('span.font-semibold', { text: C.money(e.salaireBase, false) }); },
+          text: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); },
+          render: function (e) { return el('span.font-semibold', { text: C.moneyOu(e.salaireBase, 'Non renseigné', false) }); },
         },
       ],
       fields: [
@@ -396,19 +559,25 @@
         { name: 'prenom', label: 'Prénom(s)', required: true },
         { name: 'sexe', label: 'Sexe', type: 'select', required: true, options: [{ value: 'M', label: 'Masculin' }, { value: 'F', label: 'Féminin' }] },
         { name: 'telephone', label: 'Téléphone', type: 'tel' },
+        { name: 'dateNaissance', label: 'Date de naissance', type: 'date', help: 'Sert aux vœux d’anniversaire par SMS, seulement si l’agent y consent.' },
+        {
+          /* Accord de l’agent pour recevoir les vœux d’anniversaire de la clinique par SMS (lot SMS-R). DÉCOCHÉ PAR DÉFAUT (Direction, 16/11/2026) : contrairement au patient, rien ne part sans un oui. */
+          name: 'consentementSms', label: 'Accepte de recevoir les vœux d’anniversaire par SMS', type: 'checkbox', col: 'full', value: false,
+          help: 'Décoché par défaut. L’agent peut le retirer à tout moment ; la date et l’auteur du changement sont journalisés.',
+        },
         { name: 'situation', label: 'Situation matrimoniale', type: 'select', options: ['Célibataire', 'Marié(e)', 'Divorcé(e)', 'Veuf(ve)'] },
         { type: 'section', label: 'Affectation' },
         { name: 'fonction', label: 'Fonction', type: 'select', required: true, options: optionsFonctions() },
         { name: 'poste', label: 'Poste occupé', col: 'full' },
         { name: 'service', label: 'Service', type: 'select', required: true, options: D.SERVICES },
         { name: 'categorie', label: 'Catégorie / échelon', placeholder: 'ex. E3-1' },
-        { name: 'dateEmbauche', label: 'Date d’embauche', type: 'date', required: true },
+        { name: 'dateEmbauche', label: 'Date d’embauche', type: 'date' },
         { type: 'section', label: 'Rémunération et couverture sociale' },
-        { name: 'salaireBase', label: 'Salaire de base (FCFA)', type: 'money', required: true, min: 0 },
+        { name: 'salaireBase', label: 'Salaire de base (FCFA)', type: 'money', min: 0 },
         { name: 'cnss', label: 'Numéro CNSS' },
       ],
-      transform: function (v) { v.nomComplet = v.nom + ' ' + v.prenom; return v; },
-      onCreate: function () { return { dateEmbauche: C.iso(AUJ), salaireBase: 60000, categorie: 'E1-1', sexe: 'F' }; },
+      transform: function (v, rec) { v.nomComplet = v.nom + ' ' + v.prenom; return global.SIGH.parcours.tracerConsentementSmsPersonnel(v, rec); },
+      onCreate: function () { return { sexe: 'F' }; },   /* lot PLAN-INDIV : plus aucune valeur pré-remplie (salaire, catégorie, date d'embauche inventés) */
       filters: [
         { name: 'fonction', label: 'Fonction', options: optionsFonctions() },
         { name: 'service', label: 'Service', options: D.SERVICES },
@@ -417,8 +586,8 @@
       kpis: function (rows) {
         return [
           { label: 'Effectif', value: C.num(rows.length), icon: 'users-round', tone: 'navy' },
-          { label: 'Masse salariale', value: C.money(C.sum(rows, 'salaireBase')), icon: 'banknote', tone: 'info' },
-          { label: 'Salaire moyen', value: C.money(rows.length ? C.sum(rows, 'salaireBase') / rows.length : 0), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale', value: C.moneyOu(C.sumOuNul(rows, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
+          { label: 'Salaire moyen', value: C.moneyOu(C.moyenneOuNul(rows, 'salaireBase'), 'Non renseigné'), icon: 'calculator', tone: 'neutral' },
           { label: 'Femmes / Hommes', value: C.num(rows.filter(function (e) { return e.sexe === 'F'; }).length) + ' / ' + C.num(rows.filter(function (e) { return e.sexe === 'M'; }).length), icon: 'users', tone: 'success' },
         ];
       },
@@ -430,7 +599,7 @@
           sousTitre: e.nomComplet + ' — matricule ' + e.matricule,
           cartouche: [['Matricule', e.matricule], ['Nom et prénoms', e.nomComplet],
             ['Fonction', fonctionLabel(e.fonction)], ['Service', e.service],
-            ['Catégorie / échelon', e.categorie], ['Ancienneté', a.ans + ' an(s) ' + a.mois + ' mois']],
+            ['Catégorie / échelon', e.categorie], ['Ancienneté', a.absente ? 'Non calculable' : a.ans + ' an(s) ' + a.mois + ' mois']],
           contenu: P.tableau([{ label: 'Rubrique', key: 'k' }, { label: 'Information', key: 'v' }], [
             { k: 'Sexe', v: e.sexe === 'F' ? 'Féminin' : 'Masculin' },
             { k: 'Situation matrimoniale', v: e.situation },
@@ -438,7 +607,7 @@
             { k: 'Date d’embauche', v: C.dateFR(e.dateEmbauche) },
             { k: 'Poste occupé', v: e.poste },
             { k: 'Numéro CNSS', v: e.cnss },
-            { k: 'Salaire de base', v: C.money(e.salaireBase) },
+            { k: 'Salaire de base', v: C.moneyOu(e.salaireBase, 'Non renseigné') },
           ]),
           signatures: [{ role: 'L’Agent', nom: e.nomComplet }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
         });
@@ -492,6 +661,74 @@
   });
 
   /* ==========================================================================
+   * FICHE DE L'ÉQUIPE (lot SURV, Direction 16/11/2026, section AQ point 37) : lecture RESTREINTE du personnel de son équipe, ouverte par le geste réservé
+   * `ouvrir_fiche_personnel_equipe`. Ni salaire, ni catégorie, ni date d'embauche, ni numéro CNSS, ni assurance, ni primes (RG-13) : la liste blanche des champs est dans le
+   * moteur (`SIGH.planningRh.ficheEquipe`), cet écran ne lit JAMAIS la fiche du personnel directement. Les commandes (définir, appliquer) sont celles de l'onglet « Planning
+   * personnalisé » : absentes sans leur geste, et le moteur refuse un agent hors de l'équipe.
+   * ======================================================================== */
+  global.SIGH.screen('m10-fiche-equipe', {
+    title: 'Fiche de mon équipe',
+    description: 'Lecture restreinte des agents de votre équipe : identité, fonction, service et planning.',
+    render: function (root) {
+      var eq = PRH().equipeDeLaSession();
+      var host = el('div.space-y-4', { dataset: { ficheEquipe: 'ecran' } });
+      if (!eq.ok) {
+        host.appendChild(K.note(eq.motif + ' ' + eq.geste, { tone: 'danger' }));
+        root.appendChild(host);
+        return null;
+      }
+      var agents = C.sortBy(eq.agents, 'matricule');
+      host.appendChild(K.note('Lecture restreinte : aucune donnée de paie. ' + (eq.portee === 'equipe' ? 'Périmètre : votre service, sans vous-même.' : 'Périmètre : tout le personnel (vous le lisez déjà en entier).'), { tone: 'info' }));
+      host.appendChild(el('p.text-xs.text-slate-500', { dataset: { equipeEffectif: String(agents.length) }, text: 'Équipe : ' + agents.length + ' agent(s).' }));
+      if (!agents.length) { host.appendChild(U.empty('Aucun agent dans votre équipe.', { icon: 'users' })); root.appendChild(host); return null; }
+      var sel = U.combo(agents.map(function (a) { return { value: a.id, label: a.nomComplet, detail: 'Mat. ' + a.matricule + ' · ' + a.poste, icon: 'id-card' }; }),
+        { value: agents[0].id, searchPlaceholder: 'Nom, matricule ou poste…', placeholder: 'Choisir un agent' });
+      sel.classList.add('max-w-lg');
+      var barre = el('div.card', null, el('div.card-body', null, [el('label.label', { text: 'Agent de l’équipe' }), sel]));
+      var corps = el('div.card-body');
+      host.appendChild(barre);
+      host.appendChild(el('div.card', null, corps));
+      function afficher() {
+        C.clear(corps);
+        var r = PRH().ficheEquipe(sel.value);
+        if (!r.ok) { corps.appendChild(K.note(r.motif + ' ' + r.geste, { tone: 'danger' })); return; }
+        var f = r.fiche;
+        var mois = AUJ.getMonth(), annee = AUJ.getFullYear();
+        var wrap = el('div.space-y-4', { dataset: { ficheEquipe: f.id } });
+        wrap.appendChild(el('div.flex.items-start.gap-3.rounded-lg.bg-navy-50.p-3', null, [
+          el('span.grid.h-12.w-12.shrink-0.place-items-center.rounded-full.bg-navy-900.text-sm.font-semibold.text-white', { text: C.initials(f.nomComplet) }),
+          el('div.min-w-0.flex-1', null, [
+            el('p.text-sm.font-semibold.text-slate-900', { text: f.nomComplet }),
+            el('p.text-xs.text-navy-700', { text: f.poste }),
+            el('p.mt-1.text-xs.text-slate-500', { text: 'Matricule ' + f.matricule + ' · ' + f.service }),
+          ]),
+        ]));
+        wrap.appendChild(U.tabs([
+          { id: 'infos', label: 'Informations', render: function () {
+            return U.descList([['Matricule', f.matricule], ['Nom et prénoms', f.nomComplet], ['Sexe', f.sexe === 'F' ? 'Féminin' : 'Masculin'], ['Fonction', fonctionLabel(f.fonction)], ['Poste', f.poste], ['Service', f.service]]);
+          } },
+          { id: 'planning-perso', label: 'Planning personnalisé', render: function () { return ongletPlanningPerso(f); } },
+          { id: 'planning', label: 'Planning du mois', render: function () {
+            var v = C.sortBy(vacations(f.id, annee, mois), 'date');
+            if (!v.length) return U.empty('Aucune vacation programmée ce mois-ci.', { icon: 'calendar' });
+            return K.miniTable([
+              { label: 'Date', render: function (p) { return C.dateJour(p.date); } },
+              { label: 'Vacation', render: function (p) { return U.badge(typePlanningLabel(p.type), typePlanningTone(p.type)); } },
+              { label: 'Statut', render: function (p) { return U.statut(p.statut === 'validee' ? 'validee' : 'brouillon'); } },
+            ], v);
+          } },
+        ]));
+        corps.appendChild(wrap);
+        U.icons(corps);
+      }
+      sel.addEventListener('change', afficher);
+      root.appendChild(host);
+      afficher();
+      return null;
+    },
+  });
+
+  /* ==========================================================================
    * CONTRATS
    * ======================================================================== */
   global.SIGH.screen('m10-contrats', {
@@ -499,7 +736,7 @@
     description: 'Contrats de travail des agents : nature, durée, période d’essai et échéances.',
     render: function (root) {
       var col = S.collection('contrats', { module: 'M10', entite: 'Contrat' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('contrats')) {
         var rnd = C.seeded(1217);
         personnel().forEach(function (e, i) {
           var cdd = rnd() > 0.7;
@@ -553,10 +790,11 @@
             { name: 'salaire', label: 'Salaire mensuel (FCFA)', type: 'money', required: true, min: 0 },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.poste = e.poste; v.fonction = e.fonction; }
-          if (!v.reference) v.reference = C.nextRef('CT-', 4);
+          /* E620 : la référence venait de C.nextRef (compteur de page → CT-0001 déjà pris) ET était réécrite à chaque modification. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CT-', 4, col.all());
           v.statutContrat = 'en_vigueur';
           return v;
         },
@@ -598,6 +836,51 @@
   });
 
   /* ==========================================================================
+   * RÉGLAGES DU PLANNING ET DES PRÉSENCES (lots L5 et L6, Direction 09/11/2026) : le circuit de validation et « l'agent modifie directement ».
+   * Réglés au POSTE, enregistrés en base avec leur défaut (surveillant seul, non), jamais au panneau web du relais. Une seule carte, partagée par les écrans
+   * qui s'y réfèrent. La commande est ABSENTE hors administrateur et Directrice Administrative ; le moteur refuse de toute façon (REGLAGE_RESERVE).
+   * ======================================================================== */
+  function carteReglagesRh(apres) {
+    var R = PRH();
+    var circuit = R.CIRCUITS.filter(function (x) { return x.id === R.circuit(); })[0];
+    var direct = R.agentModifieDirectement();
+    var peut = ['admin', 'da'].indexOf(roleCourant()) >= 0;
+    var actions = [];
+    if (peut) {
+      actions.push(K.btn('Régler', { size: 'sm', icon: 'settings-2', onclick: function () {
+        var f = U.form([
+          { name: 'circuit', label: 'Circuit de validation des présences, absences, congés et ordres de mission', type: 'select', required: true, col: 'full',
+            options: R.CIRCUITS.map(function (c) { return { value: c.id, label: c.libelle }; }) },
+          { name: 'direct', label: 'L’agent modifie directement son planning (sans validation du surveillant)', type: 'checkbox', col: 'full' },
+        ], { circuit: R.circuit(), direct: R.agentModifieDirectement() });
+        var m = U.modal({
+          title: 'Réglages du planning et des présences', size: 'md',
+          body: el('div.space-y-3', null, [K.note('Ces réglages se règlent au poste et se synchronisent. Une pièce déjà tranchée garde le circuit sous lequel elle l’a été.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r1 = R.definirCircuit(v.circuit);
+              if (!r1.ok) { U.toast(r1.motif, { type: 'error', detail: r1.geste }); return; }
+              var r2 = R.definirAgentDirect(v.direct === true);
+              if (!r2.ok) { U.toast(r2.motif, { type: 'error', detail: r2.geste }); return; }
+              m.close(); if (apres) apres();
+              U.toast('Réglages enregistrés.', { type: 'success' });
+            } }),
+          ],
+        });
+      } }));
+    }
+    return U.card('Réglages du planning et des présences', el('div.space-y-2', null, [
+      U.descList([
+        ['Circuit de validation', circuit ? circuit.libelle : '—'],
+        ['L’agent modifie directement son planning', direct ? 'Oui' : 'Non : il propose, le surveillant valide'],
+      ], 'grid-cols-1'),
+      el('p.text-xs.text-slate-500', { text: 'Une présence, une absence, un congé ou un ordre de mission non validé est visible mais ne compte pas. Un planning proposé ne change rien tant qu’il n’est pas validé.' }),
+    ]), actions);
+  }
+
+  /* ==========================================================================
    * PLANNING & GARDES
    * ======================================================================== */
   global.SIGH.screen('m10-planning', {
@@ -610,13 +893,22 @@
     render: function (root) {
       var col = S.collection('planning', { module: 'M10', entite: 'Planning' });
       var host = el('div.space-y-4');
-      var semaineDebut = C.addDays(AUJ, -3);
       var blocRegimes = el('div');
+      var blocIndividuels = el('div');
+      var blocFiltres = el('div');
+      var blocGrille = el('div');
       var blocRegistre = el('div');
       var blocGraphes = el('div');
+      /* Les filtres avancés du planning (Direction, 09/11/2026) : UNE barre, deux lectures (la grille et le registre). */
+      var F = { q: '', agent: '', matricule: '', service: '', fonction: '', regime: '', type: '', du: '', au: '', validation: '', validePar: '' };
+      var reglagesRh = el('div');
+      /* Déclaré AVANT le premier rendu : une affectation lue par un premier rendu se déclare avant l'appel (piège du dépôt). */
+      var FONCTIONS_PLANNING = ['medecin', 'infirmier', 'sage_femme', 'aide_soignant', 'tsl', 'securite', 'entretien'];
 
       host.appendChild(blocRegimes);
+      host.appendChild(blocIndividuels);
       rendreRegimes();
+      rendreIndividuels();
 
       /* Régimes de travail par catégorie, tels que relevés sur les plannings */
       function tableRegimes() {
@@ -708,59 +1000,283 @@
         { label: 'En repos', value: C.num(auj.filter(function (p) { return p.type.indexOf('repos') === 0; }).length), icon: 'bed', tone: 'info' },
       ]));
 
-      /* Grille hebdomadaire */
-      var jours = [];
-      for (var i = 0; i < 7; i++) jours.push(C.addDays(semaineDebut, i));
-      var agents = C.sortBy(personnel().filter(function (e) {
-        return ['medecin', 'infirmier', 'sage_femme', 'aide_soignant', 'tsl', 'securite', 'entretien'].indexOf(e.fonction) !== -1;
-      }), 'nomComplet');
-
-      var grilleWrap = el('div.overflow-x-auto');
-      var grille = el('table.tbl.min-w-\\[60rem\\]');
-      var thead = el('thead'), htr = el('tr');
-      htr.appendChild(el('th', { text: 'Agent' }));
-      jours.forEach(function (j) {
-        htr.appendChild(el('th.text-center', {
-          class: C.iso(j) === C.iso(AUJ) ? 'bg-navy-50 text-navy-800' : '',
-          html: C.JOURS[j.getDay()].slice(0, 3) + '.<br>' + j.getDate() + '/' + C.pad(j.getMonth() + 1),
-        }));
-      });
-      thead.appendChild(htr); grille.appendChild(thead);
-      var tb = el('tbody');
-      agents.forEach(function (e) {
-        var tr = el('tr');
-        tr.appendChild(el('td', null, el('div.min-w-0', null, [
-          el('p.truncate.text-sm.font-medium.text-slate-800', { text: e.nomComplet }),
-          el('p.truncate.text-xs.text-slate-400', { text: fonctionLabel(e.fonction) }),
-        ])));
-        jours.forEach(function (j) {
-          var v = col.active().filter(function (p) { return p.employeId === e.id && p.date === C.iso(j); })[0];
-          var td = el('td.text-center');
-          var btn = el('button.mx-auto.block.w-full.rounded.px-1.py-1.text-\\[10px\\].font-medium.transition-colors', {
-            type: 'button',
-            class: v ? ('bg-' + typePlanningTone(v.type) + '-100 text-' + typePlanningTone(v.type) + '-800 hover:bg-' + typePlanningTone(v.type) + '-200')
-              : 'text-slate-300 hover:bg-slate-100',
-            text: v ? typePlanningLabel(v.type).replace('Permanence', 'Perm.').replace('Remplacement', 'Rempl.') : '+',
-            onclick: function () { affecter(e, j, v); },
-          });
-          td.appendChild(btn);
-          tr.appendChild(td);
-        });
-        tb.appendChild(tr);
-      });
-      grille.appendChild(tb);
-      grilleWrap.appendChild(grille);
-
-      host.appendChild(U.card('Planning du ' + C.dateFR(jours[0]) + ' au ' + C.dateFR(jours[6]), grilleWrap, [
-        K.btn('Imprimer le planning', { size: 'sm', icon: 'printer', onclick: imprimer }),
-      ]));
-
+      /* Grille hebdomadaire et registre : lus à travers les filtres avancés */
+      host.appendChild(reglagesRh);
+      host.appendChild(blocFiltres);
+      host.appendChild(blocGrille);
       host.appendChild(blocRegistre);
       host.appendChild(blocGraphes);
-      rendreRegistre();
-      rendreGraphes();
+      rendreReglages();
+      rendreFiltres();
+      rafraichirVue();
       root.appendChild(host);
       return null;
+
+      /* ----------------------------------------------------------------------
+       * Filtres avancés du planning et du registre des vacations (09/11/2026).
+       * Ils sont relevés SUR LA PAGE par print.js : l'état imprimé retrace ce qui est en force.
+       * -------------------------------------------------------------------- */
+      function joursGrille() {
+        var d0 = F.du ? C.toDate(F.du) : C.addDays(AUJ, -3);
+        var j = [];
+        for (var i = 0; i < 7; i++) j.push(C.addDays(d0, i));
+        return j;
+      }
+      function regimeDeAgent(e) { return PRH().regimeALaDate(e.id, e.fonction, C.iso(AUJ)); }
+      function agentRetenu(e, pourVacation) {
+        if (F.agent && e.id !== F.agent) return false;
+        if (F.matricule && e.matricule !== F.matricule) return false;
+        if (F.service && e.service !== F.service) return false;
+        if (F.fonction && e.fonction !== F.fonction) return false;
+        if (pourVacation) return true;
+        if (F.regime) {
+          var r = regimeDeAgent(e);
+          if (F.regime === '__individuel' ? !r.individuel : r.categorie !== F.regime) return false;
+        }
+        if (F.q && (e.nomComplet + ' ' + e.matricule + ' ' + (e.poste || '')).toLowerCase().indexOf(F.q.toLowerCase()) < 0) return false;
+        return true;
+      }
+      function vacationRetenue(p) {
+        if (F.type && p.type !== F.type) return false;
+        if (F.du && p.date < F.du) return false;
+        if (F.au && p.date > F.au) return false;
+        var etat = p.validationEtat || 'validee';
+        if (F.validation && etat !== F.validation) return false;
+        if (F.validePar && (p.validePar || '__aucun') !== F.validePar) return false;
+        if (F.regime) {
+          if (F.regime === '__individuel' ? !(p.derogations && p.derogations.length) : (p.regimeLibelle || (regleDe(p.fonction) || {}).libelle) !== F.regime) return false;
+        }
+        var e = S.collection('personnel').get(p.employeId);
+        if (e && !agentRetenu(e, true)) return false;
+        if (!e && (F.agent || F.matricule || F.service || F.fonction)) return false;
+        if (F.q && ((p.employe || '') + ' ' + (e ? e.matricule : '') + ' ' + typePlanningLabel(p.type) + ' ' + (p.service || '')).toLowerCase().indexOf(F.q.toLowerCase()) < 0) return false;
+        return true;
+      }
+      function vacationsFiltrees() { return col.active().filter(vacationRetenue); }
+      function agentsPlanning() {
+        return C.sortBy(personnel().filter(function (e) { return FONCTIONS_PLANNING.indexOf(e.fonction) !== -1 && agentRetenu(e); }), 'nomComplet');
+      }
+      function filtresEnForce() { return Object.keys(F).some(function (k) { return F[k]; }); }
+
+      function rendreFiltres() {
+        C.clear(blocFiltres);
+        function liste(id, label, cle, options, vide) {
+          var sel = el('select.select', { id: id });
+          sel.appendChild(el('option', { value: '' }, vide));
+          options.forEach(function (o) { sel.appendChild(el('option', { value: o.value }, o.label)); });
+          sel.value = F[cle];
+          sel.addEventListener('change', function () { F[cle] = sel.value; rafraichirVue(); });
+          return el('div', null, [el('label.label', { for: id, text: label }), sel]);
+        }
+        function date(id, label, cle) {
+          var inp = el('input.input', { type: 'date', id: id, value: F[cle] });
+          inp.addEventListener('change', function () { F[cle] = inp.value; rafraichirVue(); });
+          return el('div', null, [el('label.label', { for: id, text: label }), inp]);
+        }
+        var agents = C.sortBy(personnel().filter(function (e) { return FONCTIONS_PLANNING.indexOf(e.fonction) !== -1; }), 'nomComplet');
+        var regimes = colRegimes().active().map(function (r) { return { value: r.libelle, label: r.libelle }; })
+          .concat([{ value: '__individuel', label: 'Dérogation individuelle' }]);
+        var validateurs = {};
+        col.active().forEach(function (p) { if (p.validePar) validateurs[p.validePar] = true; });
+        var recherche = el('input.input', { type: 'search', id: 'pl_f_q', placeholder: 'Agent, matricule, vacation, service', value: F.q });
+        recherche.addEventListener('input', function () { F.q = recherche.value; rafraichirVue(); });
+        var corps = el('div.card-body.grid.gap-3.md\\:grid-cols-3.lg\\:grid-cols-4');
+        corps.appendChild(el('div.md\\:col-span-2', null, [el('label.label', { for: 'pl_f_q', text: 'Recherche' }), recherche]));
+        corps.appendChild(liste('pl_f_agent', 'Agent', 'agent', agents.map(function (e) { return { value: e.id, label: e.nomComplet }; }), 'Tous les agents'));
+        corps.appendChild(liste('pl_f_matricule', 'Matricule', 'matricule', agents.map(function (e) { return { value: e.matricule, label: e.matricule + ' · ' + e.nomComplet }; }), 'Tous les matricules'));
+        corps.appendChild(liste('pl_f_service', 'Service', 'service', D.SERVICES.map(function (x) { return { value: x.value || x, label: x.label || x }; }), 'Tous les services'));
+        corps.appendChild(liste('pl_f_fonction', 'Fonction', 'fonction', FONCTIONS_PLANNING.map(function (f) { return { value: f, label: fonctionLabel(f) }; }), 'Toutes les fonctions'));
+        corps.appendChild(liste('pl_f_regime', 'Régime', 'regime', regimes, 'Tous les régimes'));
+        corps.appendChild(liste('pl_f_type', 'Type de vacation', 'type', D.TYPES_PLANNING.map(function (t) { return { value: t.id, label: t.label }; }), 'Tous les types'));
+        corps.appendChild(liste('pl_f_validation', 'Validation', 'validation', [{ value: 'validee', label: 'Validées' }, { value: 'a_valider', label: 'À valider' }], 'Validées ou non'));
+        corps.appendChild(liste('pl_f_validepar', 'Validé par', 'validePar', Object.keys(validateurs).sort().map(function (n) { return { value: n, label: n }; })
+          .concat([{ value: '__aucun', label: 'Validation non renseignée (avant le circuit)' }]), 'Tous les validateurs'));
+        corps.appendChild(date('pl_f_du', 'Du', 'du'));
+        corps.appendChild(date('pl_f_au', 'Au', 'au'));
+        corps.appendChild(el('div.flex.items-end.gap-2', null, [
+          K.btn('Effacer les filtres', { icon: 'filter-x', onclick: function () {
+            Object.keys(F).forEach(function (k) { F[k] = ''; });
+            rendreFiltres(); rafraichirVue();
+          } }),
+        ]));
+        blocFiltres.appendChild(U.card('Filtres avancés du planning', corps));
+        U.icons(blocFiltres);
+      }
+
+      function rafraichirVue() { rendreGrille(); rendreRegistre(); rendreGraphes(); }
+
+      function rendreGrille() {
+        C.clear(blocGrille);
+        var jours = joursGrille();
+        var agents = agentsPlanning();
+        var modifiable = K.droits('M10').editer && ['admin', 'da', 'surveillant'].indexOf(roleCourant()) >= 0;
+        var grilleWrap = el('div.overflow-x-auto');
+        var grille = el('table.tbl.min-w-\\[60rem\\]');
+        var thead = el('thead'), htr = el('tr');
+        htr.appendChild(el('th', { text: 'Agent' }));
+        jours.forEach(function (j) {
+          htr.appendChild(el('th.text-center', {
+            class: C.iso(j) === C.iso(AUJ) ? 'bg-navy-50 text-navy-800' : '',
+            html: C.JOURS[j.getDay()].slice(0, 3) + '.<br>' + j.getDate() + '/' + C.pad(j.getMonth() + 1),
+          }));
+        });
+        thead.appendChild(htr); grille.appendChild(thead);
+        var tb = el('tbody');
+        agents.forEach(function (e) {
+          var tr = el('tr');
+          var r = regimeDeAgent(e);
+          tr.appendChild(el('td', null, el('div.min-w-0', null, [
+            el('p.truncate.text-sm.font-medium.text-slate-800', { text: e.nomComplet }),
+            el('p.truncate.text-xs.text-slate-400', { text: fonctionLabel(e.fonction) + (r.individuel ? ' · régime individuel' : '') }),
+          ])));
+          jours.forEach(function (j) {
+            var v = col.active().filter(function (p) { return p.employeId === e.id && p.date === C.iso(j); })[0];
+            var td = el('td.text-center');
+            var masque = v && !vacationRetenue(v);
+            var libelle = v ? typePlanningLabel(v.type).replace('Permanence', 'Perm.').replace('Remplacement', 'Rempl.') : (modifiable ? '+' : '·');
+            var classe = masque ? 'text-slate-300'
+              : (v ? ('bg-' + typePlanningTone(v.type) + '-100 text-' + typePlanningTone(v.type) + '-800' + (modifiable ? ' hover:bg-' + typePlanningTone(v.type) + '-200' : '')) : 'text-slate-300' + (modifiable ? ' hover:bg-slate-100' : ''));
+            var cellule = el(modifiable ? 'button.mx-auto.block.w-full.rounded.px-1.py-1.text-\\[10px\\].font-medium.transition-colors' : 'span.mx-auto.block.w-full.rounded.px-1.py-1.text-\\[10px\\].font-medium', {
+              type: modifiable ? 'button' : null, class: classe, text: masque ? '·' : libelle,
+              title: masque ? 'Masquée par les filtres' : null,
+              onclick: modifiable ? function () { affecter(e, j, v); } : null,
+            });
+            td.appendChild(cellule);
+            tr.appendChild(td);
+          });
+          tb.appendChild(tr);
+        });
+        grille.appendChild(tb);
+        grilleWrap.appendChild(grille);
+        blocGrille.appendChild(U.card('Planning du ' + C.dateFR(jours[0]) + ' au ' + C.dateFR(jours[6]),
+          agents.length ? grilleWrap : U.empty('Aucun agent ne correspond aux filtres.', { icon: 'users', hint: 'Effacer un filtre pour élargir la sélection.' }), [
+            K.btn('Imprimer le planning', { size: 'sm', icon: 'printer', onclick: imprimer }),
+          ]));
+        U.icons(blocGrille);
+      }
+
+      /* --------------------------------------------------------------------
+       * Régimes INDIVIDUELS (lot L4) : une dérogation champ par champ, versionnée par date.
+       * ------------------------------------------------------------------ */
+      function texteDerogations(r) {
+        var morceaux = [];
+        if (r.remplace) {
+          morceaux.push('Remplace la catégorie (rien n’est hérité)');
+          morceaux.push('Vacations : ' + r.vacations.map(typePlanningLabel).join(', '));
+          morceaux.push('Repos : ' + (r.repos ? typePlanningLabel(r.repos) : 'aucun codifié'));
+          morceaux.push('Cycle : ' + (r.cycle ? r.cycle + ' jours' : 'non défini'));
+          morceaux.push('Honoraire : ' + (r.honoraire != null ? C.money(r.honoraire, false) : 'non défini'));
+          return morceaux;
+        }
+        if (r.derogations.indexOf('vacations') >= 0) morceaux.push('Vacations : ' + r.vacations.map(typePlanningLabel).join(', '));
+        if (r.derogations.indexOf('repos') >= 0) morceaux.push('Repos : ' + (r.repos ? typePlanningLabel(r.repos) : 'aucun codifié'));
+        if (r.derogations.indexOf('cycle') >= 0) morceaux.push('Cycle : ' + r.cycle + ' jours');
+        if (r.derogations.indexOf('honoraire') >= 0) morceaux.push('Honoraire : ' + C.money(r.honoraire, false));
+        if (r.derogations.indexOf('honorairePeriodicite') >= 0) morceaux.push('Périodicité : ' + (r.honorairePeriodicite === 'occurrence' ? 'par occurrence' : 'mensuelle'));
+        return morceaux;
+      }
+      function peutDeroger() { return peutGeste('regler_regime_individuel') && K.droits('M10').editer; }   /* geste réservé (lot PLAN-INDIV), plus un nom de rôle */
+      function rendreIndividuels() {
+        C.clear(blocIndividuels);
+        var ids = {};
+        S.collection('regimesIndividuels').active().forEach(function (v) { ids[v.employeId] = true; });
+        S.collection('planningsPersonnalises').active().forEach(function (v) { ids[v.employeId] = true; });
+        var lignes = Object.keys(ids).map(function (id) {
+          var e = S.collection('personnel').get(id);
+          if (!e) return null;
+          var r = PRH().regimeALaDate(e.id, e.fonction, C.iso(AUJ));
+          return { e: e, r: r, versions: PRH().historique(e.id).length, perso: PRH().historiquePlanningPerso(e.id) };
+        }).filter(Boolean);
+        var actions = [];
+        if (peutDeroger()) actions.push(K.btn('Déroger pour un agent', { variant: 'primary', size: 'sm', icon: 'user-cog', onclick: function () { deroger(null); } }));
+        var corps = K.miniTable([
+          { label: 'Agent', render: function (l) { return el('div', null, [el('p.text-sm.font-medium.text-slate-800', { text: l.e.nomComplet }), el('p.text-xs.text-slate-400', { text: l.e.matricule + ' · ' + fonctionLabel(l.e.fonction) }) ]); } },
+          { label: 'Catégorie', render: function (l) { return l.r.categorie || '—'; } },
+          { label: 'Aujourd’hui', render: function (l) {
+            return l.r.individuel
+              ? el('div.space-y-0\\.5', null, texteDerogations(l.r).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }))
+              : el('span.text-xs.text-slate-400', { text: 'Suit sa catégorie' });
+          } },
+          { label: 'Mode', render: function (l) { return l.r.mode === 'remplace' ? 'Remplace' : (l.r.mode === 'deroge' ? 'Déroge' : '—'); } },
+          { label: 'Depuis', render: function (l) { return l.r.dateEffet ? C.dateFR(l.r.dateEffet) : '—'; } },
+          { label: 'Planning personnalisé', render: function (l) {
+            var d = l.perso[l.perso.length - 1];
+            return d ? el('span.text-xs.text-slate-700', { dataset: { persoAgent: l.e.id }, text: (d.periodicite === 'mensuel' ? 'Mensuel' : 'Hebdomadaire') + ' depuis le ' + C.dateFR(d.dateEffet) + ' (' + l.perso.length + ' version' + (l.perso.length > 1 ? 's' : '') + ')' }) : el('span.text-xs.text-slate-400', { text: 'Aucun' });
+          } },
+          { label: 'Versions', align: 'right', render: function (l) { return String(l.versions); } },
+          { label: '', align: 'right', render: function (l) {
+            var a = [K.iconBtn('history', 'Historique des versions', function () { historique(l.e); }, 'ghost')];
+            if (peutDeroger()) a.push(K.iconBtn('pencil', 'Nouvelle version pour cet agent', function () { deroger(l.e); }));
+            return el('div.flex.justify-end.gap-1', null, a);
+          } },
+        ], lignes, { empty: 'Aucun agent n’a de régime individuel ni de planning personnalisé : tous suivent le régime de leur catégorie.' });
+        blocIndividuels.appendChild(U.card('Régimes individuels (dérogations champ par champ)', el('div.space-y-3', null, [
+          K.note('Le régime de la <strong>catégorie</strong> reste la règle. Une version individuelle est au choix « <strong>déroge</strong> » (seuls les champs renseignés changent, le reste suit la catégorie) '
+            + 'ou « <strong>remplace</strong> » (rien n’est hérité : vacations et repos exigés). Chaque version est une <strong>version datée</strong> qui ne se réécrit pas ; les vacations déjà posées gardent le régime sous lequel '
+            + 'elles l’ont été.', { tone: 'info' }),
+          corps,
+        ]), actions));
+        U.icons(blocIndividuels);
+      }
+
+      function historique(e) {
+        var h = PRH().historique(e.id);
+        var m = U.modal({
+          title: 'Historique du régime de ' + e.nomComplet, subtitle: e.matricule + ' · ' + fonctionLabel(e.fonction), size: 'lg',
+          body: K.miniTable([
+            { label: 'Version', align: 'right', render: function (x) { return String(x.version); } },
+            { label: 'Date d’effet', render: function (x) { return C.dateFR(x.dateEffet); } },
+            { label: 'Mode', render: function (x) { return x.retourCategorie ? '—' : (x.mode === 'remplace' ? 'Remplace' : 'Déroge'); } },
+            { label: 'Contenu', render: function (x) {
+              if (x.retourCategorie) return el('span.text-xs.text-slate-500', { text: 'Retour au régime de la catégorie' });
+              if (x.mode === 'remplace') return el('div', null, texteDerogations({ remplace: true, derogations: Object.keys(x.champs), vacations: x.champs.vacations || [], repos: x.champs.repos === 'aucun' ? null : x.champs.repos, cycle: x.champs.cycle, honoraire: x.champs.honoraire === undefined ? null : x.champs.honoraire }).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }));
+              var r = { derogations: Object.keys(x.champs), vacations: x.champs.vacations || [], repos: x.champs.repos === 'aucun' ? null : x.champs.repos, cycle: x.champs.cycle, honoraire: x.champs.honoraire, honorairePeriodicite: x.champs.honorairePeriodicite };
+              return el('div', null, texteDerogations(r).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }));
+            } },
+            { label: 'Motif', render: function (x) { return x.motif || '—'; } },
+            { label: 'Posée par', render: function (x) { return (x.creePar || '—') + (x.creeLe ? ' le ' + C.dateFR(x.creeLe) : ''); } },
+          ], h, { empty: 'Aucune version.' }),
+          footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+        });
+      }
+
+      function deroger(agent) {
+        var f = U.form([
+          { name: 'employeId', label: 'Agent', type: 'select', required: true, options: optionsEmployes(), col: 'full' },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true },
+          { name: 'mode', label: 'Mode', type: 'select', options: [{ value: 'deroge', label: 'Déroge : seuls les champs renseignés changent, le reste suit la catégorie' }, { value: 'remplace', label: 'Remplace : rien n’est hérité (vacations et repos exigés)' }], col: 'full' },
+          { name: 'retourCategorie', label: 'Revenir au régime de la catégorie (retire la dérogation)', type: 'checkbox', col: 'full' },
+          { type: 'section', label: 'Champs dérogés (laisser vide pour suivre la catégorie)' },
+          { name: 'vacations', label: 'Vacations', type: 'multiselect', col: 'full',
+            options: D.TYPES_PLANNING.filter(function (t) { return t.duree > 0; }).map(function (t) { return { value: t.id, label: t.label + ' (' + t.debut + ' → ' + t.fin + ')' }; }) },
+          { name: 'repos', label: 'Repos', type: 'select', options: [{ value: '', label: 'Suit la catégorie' }, { value: 'repos24', label: 'Repos 24h' }, { value: 'repos48', label: 'Repos 48h' }, { value: 'aucun', label: 'Aucun repos codifié' }] },
+          { name: 'cycle', label: 'Cycle (jours)', type: 'number', min: 1 },
+          { name: 'honoraire', label: 'Honoraire (FCFA)', type: 'number', min: 0 },
+          { name: 'honorairePeriodicite', label: 'Périodicité de l’honoraire', type: 'select', options: [{ value: '', label: 'Suit la catégorie' }, { value: 'mensuelle', label: 'Mensuelle' }, { value: 'occurrence', label: 'Par occurrence' }] },
+          { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { employeId: agent ? agent.id : '', dateEffet: C.iso(AUJ), mode: 'deroge', vacations: [], repos: '', honorairePeriodicite: '' });
+        var m = U.modal({
+          title: 'Régime individuel', subtitle: 'Une version datée : elle ne se réécrit pas.', size: 'lg',
+          body: el('div.space-y-3', null, [K.note('Seuls les champs renseignés dérogent à la catégorie. La date d’effet est aujourd’hui ou à venir : les vacations passées gardent leur régime.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer la version', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r = PRH().deroger({ employeId: v.employeId, dateEffet: v.dateEffet, mode: v.mode, retourCategorie: v.retourCategorie === true, motif: v.motif,
+                champs: { vacations: v.vacations, repos: v.repos, cycle: v.cycle, honoraire: v.honoraire, honorairePeriodicite: v.honorairePeriodicite } });
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+              m.close(); rendreIndividuels(); rafraichirVue();
+              U.toast(r.retourCategorie ? 'Retour au régime de la catégorie enregistré.' : 'Dérogation enregistrée.', { type: 'success', detail: 'Version ' + r.version + ' à compter du ' + C.dateFR(r.dateEffet), undo: function () { r.undo(); rendreIndividuels(); rafraichirVue(); } });
+            } }),
+          ],
+        });
+      }
+
+      function rendreReglages() {
+        C.clear(reglagesRh);
+        reglagesRh.appendChild(carteReglagesRh(rendreReglages));
+        U.icons(reglagesRh);
+      }
 
       function colRegimes() {
         return S.collection('regimesTravail', { module: 'M10', entite: 'régime de travail', prefix: 'REG' });
@@ -777,30 +1293,30 @@
       function rendreRegistre() {
         C.clear(blocRegistre);
         blocRegistre.appendChild(U.dataTable({
-        title: 'Registre des vacations',
-        rows: function () { return col.active(); },
+        title: 'Registre des vacations' + (filtresEnForce() ? ' (filtré)' : ''),
+        rows: function () { return vacationsFiltrees(); },
         exportName: 'planning', pageSize: 15,
         defaultSort: 'date', defaultDir: 'desc',
-        filters: [
-          { name: 'type', label: 'Type de vacation', options: D.TYPES_PLANNING.map(function (t) { return { value: t.id, label: t.label }; }) },
-          { name: 'service', label: 'Service', options: D.SERVICES },
-        ],
+        actions: [K.btn('Imprimer l’état', { size: 'sm', icon: 'printer', onclick: imprimerRegistre })],
         columns: [
           { key: 'date', label: 'Date', nowrap: true, text: function (p) { return C.dateFR(p.date); }, render: function (p) { return C.dateFR(p.date); } },
+          { key: 'matricule', label: 'Mat.', nowrap: true, value: function (p) { var e = S.collection('personnel').get(p.employeId); return e ? e.matricule : ''; } },
           { key: 'employe', label: 'Agent' },
           { key: 'fonction', label: 'Fonction', text: fonctionLabel, render: function (p) { return fonctionLabel(p.fonction); } },
           { key: 'service', label: 'Service' },
           { key: 'type', label: 'Vacation', text: typePlanningLabel, render: function (p) { return U.badge(typePlanningLabel(p.type), typePlanningTone(p.type)); } },
           {
             key: 'regime', label: 'Régime appliqué',
-            value: function (p) { return p.regimeLibelle || (regleDe(p.fonction) || {}).libelle || '—'; },
+            value: function (p) { return (p.regimeLibelle || (regleDe(p.fonction) || {}).libelle || '—') + ((p.derogations && p.derogations.length) ? ' (individuel)' : ''); },
             render: function (p) {
               var lib = p.regimeLibelle || (regleDe(p.fonction) || {}).libelle;
               if (!lib) return el('span.text-xs.text-slate-300', { text: '—' });
-              return el('span.text-xs.text-slate-500', { text: lib });
+              return el('span.text-xs.text-slate-500', { text: lib + ((p.derogations && p.derogations.length) ? ' (individuel)' : '') });
             },
           },
-          { key: 'statut2', label: 'Statut', value: function (p) { return p.statut; }, render: function (p) { return U.statut('validee'); } },
+          { key: 'statut2', label: 'Validation', value: function (p) { return p.validationEtat === 'a_valider' ? 'À valider' : 'Validée'; },
+            render: function (p) { return p.validationEtat === 'a_valider' ? U.badge('À valider', 'warning') : U.statut('validee'); } },
+          { key: 'validePar', label: 'Validé par', value: function (p) { return p.validePar || ''; }, render: function (p) { return el('span.text-xs.text-slate-500', { text: p.validePar || '—' }); } },
         ],
         }));
         U.icons(blocRegistre);
@@ -811,8 +1327,8 @@
        * ------------------------------------------------------------------ */
       function rendreGraphes() {
         C.clear(blocGraphes);
-        var vacations = col.active().filter(function (v) {
-          return ['garde', 'garde_hospi', 'garde_soins', 'soiree', 'permanence', 'incineration'].indexOf(v.type) !== -1;
+        var vacations = vacationsFiltrees().filter(function (v) {
+          return vacationCompte(v) && ['garde', 'garde_hospi', 'garde_soins', 'soiree', 'permanence', 'incineration'].indexOf(v.type) !== -1;
         });
 
         var parAgent = C.groupBy(vacations, 'employe');
@@ -1045,16 +1561,15 @@
 
       /** Le registre des vacations suit toute modification de régime. */
       function rafraichirTout() {
-        rendreRegimes(); rendreRegistre(); rendreGraphes();
+        rendreRegimes(); rendreIndividuels(); rafraichirVue();
       }
 
       function affecter(e, jour, existant) {
         /* Les vacations proposées sont celles du régime de la catégorie, afin
            qu'aucun poste étranger à la fonction ne puisse être affecté. */
-        var regle = regleDe(e.fonction);
-        var autorises = regle
-          ? regle.vacations.concat([regle.repos, 'conge', 'absence', 'remplacement'].filter(Boolean))
-          : D.TYPES_PLANNING.map(function (t) { return t.id; });
+        var regle = PRH().regimeALaDate(e.id, e.fonction, C.iso(jour));
+        if (!regle.categorie && !regle.individuel) regle = null;
+        var autorises = PRH().typesAutorises(e.id, e.fonction, C.iso(jour));
         var options = D.TYPES_PLANNING
           .filter(function (t) { return autorises.indexOf(t.id) !== -1; })
           .map(function (t) { return { value: t.id, label: t.label + (t.debut ? ' (' + t.debut + ' → ' + t.fin + ')' : '') }; });
@@ -1067,7 +1582,8 @@
         var body = el('div.space-y-3', null, [
           U.descList([['Agent', e.nomComplet], ['Fonction', fonctionLabel(e.fonction)],
             ['Date', C.dateJour(jour)], ['Vacation actuelle', existant ? typePlanningLabel(existant.type) : 'Aucune']], 'grid-cols-2'),
-          regle ? K.note('<strong>' + regle.libelle + '</strong> — ' + regle.mention, { tone: 'info' }) : null,
+          regle ? K.note('<strong>' + regle.libelle + '</strong>' + (regle.individuel ? ' · <strong>dérogation individuelle</strong> (' + texteDerogations(regle).join(' ; ') + ')' : '')
+            + (regle.mention ? ' — ' + regle.mention : ''), { tone: 'info' }) : null,
           f,
         ].filter(Boolean));
 
@@ -1078,9 +1594,10 @@
             existant ? K.btn('Retirer', {
               variant: 'danger', icon: 'trash-2',
               onclick: function () {
-                var res = col.archive(existant.id);
-                m.close(); global.location.reload();
-                U.toast('Vacation retirée.', { type: 'success', undo: res.undo });
+                var r = PRH().retirerVacation(existant.id, 'Vacation retirée du planning');
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                m.close(); rafraichirVue();
+                U.toast('Vacation retirée.', { type: 'success', undo: function () { r.undo(); rafraichirVue(); } });
               },
             }) : null,
             K.btn('Annuler', { onclick: function () { m.close(); } }),
@@ -1089,42 +1606,41 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                /* Contrôle d'incompatibilité : le repos qui suit une garde de
-                   24 h interdit d'en programmer une nouvelle immédiatement.
-                   La durée du repos dépend du régime de la catégorie. */
-                var estGarde24 = ['garde', 'garde_hospi'].indexOf(v.type) !== -1;
-                if (estGarde24) {
-                  var joursRepos = (regle && regle.repos === 'repos48') ? 2 : 1;
-                  for (var k = 1; k <= joursRepos; k++) {
-                    var veille = col.active().filter(function (p) {
-                      return p.employeId === e.id && p.date === C.iso(C.addDays(jour, -k))
-                        && ['garde', 'garde_hospi'].indexOf(p.type) !== -1;
-                    })[0];
-                    if (veille) {
-                      U.toast('Incompatibilité — le repos de ' + (joursRepos * 24) + ' h qui suit une garde n’est pas respecté.', {
-                        type: 'error',
-                        detail: 'Garde déjà programmée le ' + C.dateFR(C.addDays(jour, -k)) + ' pour ' + e.nomComplet + '.',
-                      });
-                      return;
-                    }
-                  }
-                }
-                v.date = C.iso(jour); v.employeId = e.id; v.employe = e.nomComplet;
-                v.fonction = e.fonction; v.service = e.service; v.statut = 'validee';
-                /* La vacation porte le régime sous lequel elle a été posée :
-                   sans cette trace, une modification ultérieure du régime
-                   rendrait l'historique illisible. */
-                v.regimeLibelle = regle ? regle.libelle : null;
-                var res = existant ? col.update(existant.id, v) : col.insert(v);
-                m.close(); global.location.reload();
-                U.toast('Vacation enregistrée.', { type: 'success', undo: res.undo });
+                /* Le contrôle d'incompatibilité (repos après une garde, double affectation) vit au MOTEUR : une seule règle, quelle que soit la voie.
+                   La vacation porte le régime sous lequel elle est posée, dérogation individuelle comprise. */
+                var r = PRH().poserVacation({ employeId: e.id, date: C.iso(jour), type: v.type, observation: v.observation, existantId: existant ? existant.id : null });
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                var res = r;
+                m.close(); rafraichirVue();
+                U.toast('Vacation enregistrée.', { type: 'success', undo: function () { res.undo(); rafraichirVue(); } });
               },
             }),
           ].filter(Boolean),
         });
       }
 
+      function imprimerRegistre() {
+        var rows = vacationsFiltrees().slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+        P.etat({
+          titre: 'Registre des vacations',
+          sousTitre: filtresEnForce() ? 'Extrait filtré du registre' : 'Registre complet',
+          cartouche: [['Vacations retenues', C.num(rows.length)], ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: P.tableau([
+            { label: 'Date', value: function (p) { return C.dateFR(p.date); } },
+            { label: 'Agent', key: 'employe' },
+            { label: 'Fonction', value: function (p) { return fonctionLabel(p.fonction); } },
+            { label: 'Service', key: 'service' },
+            { label: 'Vacation', value: function (p) { return typePlanningLabel(p.type); } },
+            { label: 'Régime', value: function (p) { return (p.regimeLibelle || '—') + ((p.derogations && p.derogations.length) ? ' (individuel)' : ''); } },
+            { label: 'Validation', value: function (p) { return p.validationEtat === 'a_valider' ? 'À valider' : 'Validée'; } },
+            { label: 'Validé par', value: function (p) { return p.validePar || '—'; } },
+          ], rows),
+          signatures: [{ role: 'Le Surveillant Général', nom: 'GARBA Yahouza' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
+        });
+      }
+
       function imprimer() {
+        var jours = joursGrille(), agents = agentsPlanning();
         var lignes = [];
         agents.forEach(function (e) {
           var ligne = { agent: e.nomComplet, fonction: fonctionLabel(e.fonction) };
@@ -1149,6 +1665,140 @@
           signatures: [{ role: 'Le Surveillant Général', nom: 'GARBA Yahouza' },
             { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' },
             { role: 'Le Directeur Médical', nom: 'BASSONGUI Chabi Séko' }],
+        });
+      }
+    },
+  });
+
+  /* ==========================================================================
+   * PROPOSITIONS DE PLANNING (lot L6, Direction, 09/11/2026, Planning Q4)
+   * --------------------------------------------------------------------------
+   * L'agent PROPOSE une modification ou un échange de son planning, le surveillant valide. Une proposition ne change JAMAIS le planning validé tant qu'elle n'est
+   * pas validée ; le contrôle d'incompatibilité est fait à la proposition (l'agent l'apprend tout de suite) et refait à la validation. Réglage du poste
+   * « l'agent modifie directement » (non par défaut) : il pose alors SES vacations sans validation, le même contrôle s'appliquant ; un échange touche un autre
+   * agent et passe toujours par la validation. L'écran est celui de TOUT agent (`universel`) : chacun n'y voit que ses propres propositions (RG-13) ; le
+   * surveillant, la DAF et l'administrateur voient tout et tranchent.
+   * ======================================================================== */
+  global.SIGH.screen('m10-propositions-planning', {
+    title: 'Propositions de planning',
+    description: 'L’agent propose une modification ou un échange de son planning ; le surveillant valide.',
+    regle: 'Une proposition <strong>ne change jamais le planning validé</strong> tant qu’elle n’est pas validée par le surveillant. Le contrôle d’incompatibilité (repos après une garde) est fait '
+      + 'à la proposition puis refait à la validation. Chaque agent ne voit que <strong>ses propres</strong> propositions. Selon le réglage du poste, l’agent peut aussi modifier directement ses vacations ; '
+      + 'un échange avec un collègue passe toujours par la validation.',
+    render: function (root) {
+      var R = PRH();
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      dessiner();
+      return null;
+
+      function etatBadge(p) {
+        var m = { proposee: ['À valider', 'warning'], validee: ['Validée', 'success'], refusee: ['Refusée', 'danger'], annulee: ['Retirée', 'neutral'] }[p.etat] || [p.etat, 'neutral'];
+        return U.badge(m[0], m[1]);
+      }
+      function typeLabel(id) { return (R.TYPES_PROPOSITION.filter(function (t) { return t.id === id; })[0] || {}).libelle || id; }
+
+      function dessiner() {
+        C.clear(host);
+        var moi = R.employeDeSession();
+        var valideur = ['surveillant', 'da', 'admin'].indexOf(roleCourant()) >= 0;
+        var rows = R.propositionsVisibles().slice().sort(function (a, b) { return String(b.proposeeLe).localeCompare(String(a.proposeeLe)); });
+        host.appendChild(carteReglagesRh(dessiner));
+        host.appendChild(U.kpiGrid([
+          { label: 'À valider', value: C.num(rows.filter(function (p) { return p.etat === 'proposee'; }).length), icon: 'hourglass', tone: 'warning' },
+          { label: 'Validées', value: C.num(rows.filter(function (p) { return p.etat === 'validee'; }).length), icon: 'check-circle-2', tone: 'success' },
+          { label: 'Refusées', value: C.num(rows.filter(function (p) { return p.etat === 'refusee'; }).length), icon: 'x-circle', tone: 'danger' },
+        ], 'grid-cols-3'));
+        if (!moi && !valideur) {
+          host.appendChild(K.note('Votre compte ne correspond à aucun agent du personnel : aucune proposition ne peut être rattachée. Se connecter avec le compte nominatif de l’agent.', { tone: 'warning' }));
+        }
+        var actions = [];
+        if (moi) actions.push(K.btn('Proposer une modification', { variant: 'primary', size: 'sm', icon: 'calendar-plus', onclick: proposer }));
+        host.appendChild(U.dataTable({
+          title: valideur ? 'Propositions des agents' : 'Mes propositions',
+          rows: rows, exportName: 'propositions-planning', pageSize: 15, searchable: true, actions: actions,
+          columns: [
+            { key: 'proposeeLe', label: 'Proposée le', nowrap: true, text: function (p) { return C.dateFR(p.proposeeLe); }, render: function (p) { return C.dateFR(p.proposeeLe); } },
+            { key: 'employe', label: 'Agent' },
+            { key: 'type', label: 'Demande', text: function (p) { return typeLabel(p.type); }, render: function (p) { return typeLabel(p.type); } },
+            { key: 'vacation', label: 'Vacation visée', value: function (p) { return p.vacationDate ? C.dateFR(p.vacationDate) + ' · ' + typePlanningLabel(p.vacationType) : ''; } },
+            { key: 'propose', label: 'Proposition', value: function (p) {
+              if (p.type === 'retrait') return 'Retirer la vacation';
+              if (p.type === 'echange') return 'Avec ' + (p.contrepartie || '—') + ' (' + C.dateFR(p.contrepartieDate) + ' · ' + typePlanningLabel(p.contrepartieType) + ')';
+              return C.dateFR(p.date) + ' · ' + typePlanningLabel(p.typeVacation);
+            } },
+            { key: 'motif', label: 'Motif' },
+            { key: 'etat', label: 'État', text: function (p) { return p.etat; }, render: function (p) {
+              return el('div', null, [etatBadge(p), p.motifRefus ? el('p.text-xs.text-danger-700', { text: 'Motif du refus : ' + p.motifRefus }) : null].filter(Boolean));
+            } },
+          ],
+          rowActions: function (p) {
+            var a = [];
+            if (p.etat !== 'proposee') return a;
+            if (moi && p.employeId === moi.id) a.push(K.iconBtn('undo-2', 'Retirer ma proposition', function () { retirer(p); }, 'ghost'));
+            if (valideur) {
+              a.push(K.iconBtn('check', 'Valider cette proposition', function () { trancher(p, 'valider'); }));
+              a.push(K.iconBtn('x', 'Refuser cette proposition', function () { trancher(p, 'refuser'); }, 'ghost'));
+            }
+            return a;
+          },
+        }));
+        U.icons(host);
+      }
+
+      function proposer() {
+        var moi = R.employeDeSession();
+        var auj = C.iso(AUJ);
+        var miennes = planning().filter(function (v) { return v.employeId === moi.id && v.date >= auj; });
+        var autres = planning().filter(function (v) { return v.employeId !== moi.id && v.date >= auj && (D.TYPES_PLANNING.filter(function (t) { return t.id === v.type; })[0] || {}).duree > 0; });
+        var f = U.form([
+          { name: 'type', label: 'Demande', type: 'select', required: true, col: 'full', options: R.TYPES_PROPOSITION.map(function (t) { return { value: t.id, label: t.libelle }; }) },
+          { name: 'vacationId', label: 'Ma vacation', type: 'select', required: true, col: 'full', condition: { controle: 'type', quand: ['modification', 'retrait', 'echange'] },
+            options: C.sortBy(miennes, 'date').map(function (v) { return { value: v.id, label: C.dateFR(v.date) + ' · ' + typePlanningLabel(v.type) }; }) },
+          { name: 'contrepartieId', label: 'Vacation du collègue', type: 'select', required: true, col: 'full', condition: { controle: 'type', quand: ['echange'] },
+            options: C.sortBy(autres, 'date').map(function (v) { return { value: v.id, label: v.employe + ' · ' + C.dateFR(v.date) + ' · ' + typePlanningLabel(v.type) }; }) },
+          { name: 'date', label: 'Date', type: 'date', required: true, condition: { controle: 'type', quand: ['ajout', 'modification'] } },
+          { name: 'typeVacation', label: 'Vacation', type: 'select', required: true, condition: { controle: 'type', quand: ['ajout', 'modification'] },
+            options: D.TYPES_PLANNING.map(function (t) { return { value: t.id, label: t.label }; }) },
+          { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { type: 'ajout', date: C.iso(C.addDays(AUJ, 1)) });
+        var m = U.modal({
+          title: 'Proposer une modification de mon planning', subtitle: moi.nomComplet, size: 'lg',
+          body: el('div.space-y-3', null, [
+            K.note(R.agentModifieDirectement()
+              ? 'Réglage du poste : vos modifications s’appliquent <strong>aussitôt</strong> (le contrôle du repos reste opposable). Un échange passe toujours par la validation du surveillant.'
+              : 'Votre proposition ne change rien tant que le <strong>surveillant</strong> ne l’a pas validée.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Transmettre la proposition', { variant: 'primary', icon: 'send', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r = R.proposer({ type: v.type, date: v.date, typeVacation: v.typeVacation, vacationId: v.vacationId, contrepartieId: v.contrepartieId, motif: v.motif });
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+              m.close(); dessiner();
+              U.toast(r.direct ? 'Planning modifié directement.' : 'Proposition transmise au surveillant.', { type: 'success', undo: function () { r.undo(); dessiner(); } });
+            } }),
+          ],
+        });
+      }
+
+      function retirer(p) {
+        var r = R.annulerProposition(p.id);
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        dessiner();
+        U.toast('Proposition retirée.', { type: 'success', undo: function () { r.undo(); dessiner(); } });
+      }
+
+      function trancher(p, decision) {
+        var resume = typeLabel(p.type) + ' · ' + p.employe;
+        var etape = decision === 'valider'
+          ? U.confirm({ title: 'Valider cette proposition ?', message: resume + '. Le planning est modifié à la validation, le contrôle du repos étant refait.', confirmLabel: 'Valider' })
+          : U.confirm({ title: 'Refuser cette proposition ?', message: resume + '. Le refus exige son <strong>motif</strong> : l’agent le lira.', confirmLabel: 'Refuser', danger: true, requireMotif: true });
+        etape.then(function (rep) {
+          if (!rep) return;
+          var r = R.trancherProposition({ id: p.id, decision: decision, motif: rep && rep.motif });
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          dessiner();
+          U.toast(decision === 'valider' ? 'Proposition validée : planning modifié.' : 'Proposition refusée.', { type: 'success', undo: decision === 'refuser' ? function () { r.undo(); dessiner(); } : null });   /* une validation a modifié le planning : elle ne s'annule pas par un clic, on propose une nouvelle modification */
         });
       }
     },
@@ -1262,6 +1912,7 @@
       function lignes() {
         var d1 = dDebut.value, d2 = dFin.value;
         return col.active().filter(function (v) {
+          if (!vacationCompte(v)) return false;   /* RG-11 : le planning VALIDÉ seul compte */
           if (VACATIONS_TRAVAILLEES.indexOf(v.type) === -1) return false;
           if (d1 && v.date < d1) return false;
           if (d2 && v.date > d2) return false;
@@ -1427,47 +2078,137 @@
 
   /* ==========================================================================
    * PRÉSENCES & ABSENCES
+   * --------------------------------------------------------------------------
+   * Lot L5 (Direction, 09/11/2026) : le pointage passe par le CIRCUIT de validation (surveillant seul par défaut). Un pointage non validé est visible et
+   * NE COMPTE PAS (taux de présence, retards, absences). Motif codé, justificatif d'absence, régularisation datée avec auteur : un pointage validé ne se
+   * modifie pas directement (garde du magasin), il se régularise.
    * ======================================================================== */
+  /** Le retard se mesure depuis le début des vacations du jour, 08:00 (D.TYPES_PLANNING) : c'est le seul repère horaire documenté. */
+  var DEBUT_VACATIONS = '08:00';
+  function minutesDe(h) { var m = /^(\d{1,2}):(\d{2})/.exec(h || ''); return m ? Number(m[1]) * 60 + Number(m[2]) : null; }
+  function retardMinutes(r) {
+    if (r.etat !== 'retard') return 0;
+    var a = minutesDe(r.heureArrivee), d = minutesDe(DEBUT_VACATIONS);
+    return a == null ? 0 : Math.max(0, a - d);
+  }
+  var ETATS_VALIDATION_RH = {
+    a_valider: ['À valider', 'warning'], valide_surveillant: ['Validé par le surveillant, DAF attendue', 'info'], valide: ['Validé', 'success'], refuse: ['Refusé', 'danger'],
+  };
+  function badgeValidation(nom, r) {
+    var x = ETATS_VALIDATION_RH[PRH().etatValidation(nom, r)] || ['—', 'neutral'];
+    return U.badge(x[0], x[1]);
+  }
+  /** Les commandes de validation d'une pièce : ABSENTES si le rôle courant n'est pas l'étape attendue (jamais grisées). */
+  function commandesValidation(nom, r, apres) {
+    var p = PRH().peutTrancher(nom, r);
+    var a = [];
+    if (!p.ok) return a;
+    var def = { presences: 'ce pointage', conges: 'cette demande de congé', missions: 'cet ordre de mission' }[nom];
+    a.push(K.iconBtn('check', 'Valider ' + def, function (ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
+      U.confirm({ title: 'Valider ' + def + ' ?', message: 'La validation est celle de <strong>' + (p.etape === 'daf' ? 'la directrice administrative' : 'le surveillant') + '</strong>, consignée au journal (RG-12). '
+        + 'Circuit en vigueur : ' + PRH().CIRCUITS.filter(function (c) { return c.id === PRH().circuit(); })[0].libelle + '.', confirmLabel: 'Valider' }).then(function (ok) {
+        if (!ok) return;
+        var res = PRH().trancher({ collection: nom, id: r.id, decision: 'valider' });
+        if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
+        if (apres) apres();
+        U.toast(res.complet ? 'Pièce validée.' : 'Étape validée : la pièce attend la directrice administrative.', { type: 'success', undo: function () { res.undo(); if (apres) apres(); } });
+      });
+    }));
+    a.push(K.iconBtn('x', 'Refuser ' + def, function (ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
+      U.confirm({ title: 'Refuser ' + def + ' ?', message: 'Le refus exige son <strong>motif</strong> : l’agent le lira.', confirmLabel: 'Refuser', danger: true, requireMotif: true }).then(function (rep) {
+        if (!rep) return;
+        var res = PRH().trancher({ collection: nom, id: r.id, decision: 'refuser', motif: rep.motif });
+        if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
+        if (apres) apres();
+        U.toast('Pièce refusée.', { type: 'success', detail: 'Le motif est visible de l’agent.', undo: function () { res.undo(); if (apres) apres(); } });
+      });
+    }, 'ghost'));
+    return a;
+  }
+
   global.SIGH.screen('m10-presences', {
     title: 'Présences & absences',
     description: 'Pointage quotidien, retards et absences, avec incidence sur l’évaluation mensuelle.',
+    regle: 'Un pointage est <strong>validé</strong> selon le circuit réglé au poste (surveillant seul par défaut). Tant qu’il ne l’est pas, il est visible mais <strong>ne compte pas</strong> '
+      + 'dans les retards, les absences ni le taux de présence. Un pointage validé ne se modifie pas : il se <strong>régularise</strong> (motif, date et auteur consignés).',
     render: function (root) {
       /* Le registre est amorcé AU SOCLE : trois écrans le lisent, et une page
          ne charge que le module de son écran. */
       var col = S.collection('presences', { module: 'M10', entite: 'Presence' });
 
+      /* Déclarés AVANT le premier rendu (piège du dépôt). */
+      var F = { q: '', agent: '', matricule: '', service: '', etat: '', motifCode: '', retardMin: '', hDe: '', hA: '', validation: '', validePar: '' };
       var host = el('div.space-y-4');
-      var blocKpi = el('div'), blocTable = el('div'), blocGraphes = el('div');
+      var blocReglages = el('div'), blocKpi = el('div'), blocTable = el('div'), blocGraphes = el('div');
 
       /* Plage de dates : le registre couvre vingt-cinq jours par agent, soit
          plus de mille lignes. Sans bornes, on ne trouve rien. */
-      var dDebut = el('input.input', { type: 'date', value: C.iso(C.addDays(AUJ, -30)) });
-      var dFin = el('input.input', { type: 'date', value: C.iso(AUJ) });
+      var dDebut = el('input.input', { type: 'date', id: 'pr_f_du', value: C.iso(C.addDays(AUJ, -30)) });
+      var dFin = el('input.input', { type: 'date', id: 'pr_f_au', value: C.iso(AUJ) });
       var barre = el('div.card');
-      barre.appendChild(el('div.card-body.flex.flex-wrap.items-end.gap-3', null, [
-        el('div', null, [el('label.label', { text: 'Du' }), dDebut]),
-        el('div', null, [el('label.label', { text: 'Au' }), dFin]),
-        K.btn('Appliquer', { variant: 'primary', icon: 'filter', onclick: rafraichir }),
-        K.btn('Mois en cours', {
-          icon: 'calendar',
-          onclick: function () {
-            var d = new Date(AUJ.getFullYear(), AUJ.getMonth(), 1);
-            dDebut.value = C.iso(d); dFin.value = C.iso(AUJ); rafraichir();
-          },
-        }),
-        K.btn('Sept derniers jours', {
-          icon: 'calendar-days',
-          onclick: function () { dDebut.value = C.iso(C.addDays(AUJ, -6)); dFin.value = C.iso(AUJ); rafraichir(); },
-        }),
+      var corps = el('div.card-body.grid.gap-3.md\\:grid-cols-3.lg\\:grid-cols-4');
+      function liste(id, label, cle, options, vide) {
+        var sel = el('select.select', { id: id });
+        sel.appendChild(el('option', { value: '' }, vide));
+        options.forEach(function (o) { sel.appendChild(el('option', { value: o.value }, o.label)); });
+        sel.value = F[cle];
+        sel.addEventListener('change', function () { F[cle] = sel.value; rafraichir(); });
+        return el('div', null, [el('label.label', { for: id, text: label }), sel]);
+      }
+      function saisie(id, label, cle, type, attrs) {
+        var inp = el('input.input', Object.assign({ type: type, id: id, value: F[cle] }, attrs || {}));
+        inp.addEventListener('input', function () { F[cle] = inp.value; rafraichir(); });
+        return el('div', null, [el('label.label', { for: id, text: label }), inp]);
+      }
+      var agentsListe = C.sortBy(personnel(), 'nomComplet');
+      var validateurs = {};
+      col.active().forEach(function (r) { if (r.validePar) validateurs[r.validePar] = true; });
+      corps.appendChild(el('div', null, [el('label.label', { for: 'pr_f_du', text: 'Du' }), dDebut]));
+      corps.appendChild(el('div', null, [el('label.label', { for: 'pr_f_au', text: 'Au' }), dFin]));
+      corps.appendChild(saisie('pr_f_q', 'Recherche', 'q', 'search', { placeholder: 'Agent, matricule, motif' }));
+      corps.appendChild(liste('pr_f_agent', 'Agent', 'agent', agentsListe.map(function (e) { return { value: e.id, label: e.nomComplet }; }), 'Tous les agents'));
+      corps.appendChild(liste('pr_f_matricule', 'Matricule', 'matricule', agentsListe.map(function (e) { return { value: e.matricule, label: e.matricule + ' · ' + e.nomComplet }; }), 'Tous les matricules'));
+      corps.appendChild(liste('pr_f_service', 'Service', 'service', D.SERVICES.map(function (x) { return { value: x.value || x, label: x.label || x }; }), 'Tous les services'));
+      corps.appendChild(liste('pr_f_etat', 'État', 'etat', [{ value: 'present', label: 'Présent' }, { value: 'retard', label: 'Retard' }, { value: 'absent', label: 'Absent' }, { value: 'conge', label: 'Congé' }], 'Tous les états'));
+      corps.appendChild(liste('pr_f_motif', 'Motif codé', 'motifCode', PRH().MOTIFS_ABSENCE.map(function (m) { return { value: m.id, label: m.libelle }; }).concat([{ value: '__aucun', label: 'Sans motif codé' }]), 'Tous les motifs'));
+      corps.appendChild(saisie('pr_f_retard', 'Retard minimal (minutes après 08:00)', 'retardMin', 'number', { min: '0' }));
+      corps.appendChild(saisie('pr_f_hde', 'Arrivée de', 'hDe', 'time'));
+      corps.appendChild(saisie('pr_f_ha', 'Arrivée à', 'hA', 'time'));
+      corps.appendChild(liste('pr_f_validation', 'Validation', 'validation', Object.keys(ETATS_VALIDATION_RH).map(function (k) { return { value: k, label: ETATS_VALIDATION_RH[k][0] }; }), 'Validées ou non'));
+      corps.appendChild(liste('pr_f_validepar', 'Validé par', 'validePar', Object.keys(validateurs).sort().map(function (n) { return { value: n, label: n }; })
+        .concat([{ value: '__aucun', label: 'Validation non renseignée (avant le circuit)' }]), 'Tous les validateurs'));
+      corps.appendChild(el('div.flex.flex-wrap.items-end.gap-2.md\\:col-span-2', null, [
+        K.btn('Mois en cours', { icon: 'calendar', onclick: function () {
+          var d = new Date(AUJ.getFullYear(), AUJ.getMonth(), 1);
+          dDebut.value = C.iso(d); dFin.value = C.iso(AUJ); rafraichir();
+        } }),
+        K.btn('Sept derniers jours', { icon: 'calendar-days', onclick: function () { dDebut.value = C.iso(C.addDays(AUJ, -6)); dFin.value = C.iso(AUJ); rafraichir(); } }),
+        K.btn('Effacer les filtres', { icon: 'filter-x', onclick: function () {
+          Object.keys(F).forEach(function (k) { F[k] = ''; });
+          dDebut.value = C.iso(C.addDays(AUJ, -30)); dFin.value = C.iso(AUJ);
+          ['pr_f_q', 'pr_f_agent', 'pr_f_matricule', 'pr_f_service', 'pr_f_etat', 'pr_f_motif', 'pr_f_retard', 'pr_f_hde', 'pr_f_ha', 'pr_f_validation', 'pr_f_validepar'].forEach(function (i) {
+            var c = document.getElementById(i); if (c) c.value = '';
+          });
+          rafraichir();
+        } }),
       ]));
+      [dDebut, dFin].forEach(function (c) { c.addEventListener('change', rafraichir); });
+      barre.appendChild(el('div.card-head', null, el('h3.card-title', { text: 'Filtres avancés des présences' })));
+      barre.appendChild(corps);
+      host.appendChild(blocReglages);
       host.appendChild(barre);
       host.appendChild(blocKpi);
       host.appendChild(blocTable);
       host.appendChild(blocGraphes);
 
+      rendreReglages();
       rafraichir();
       root.appendChild(host);
       return null;
+
+      function rendreReglages() { C.clear(blocReglages); blocReglages.appendChild(carteReglagesRh(rendreReglages)); U.icons(blocReglages); }
 
       function dansPlage() {
         return col.active().filter(function (r) {
@@ -1475,6 +2216,29 @@
           if (dFin.value && r.date > dFin.value) return false;
           return true;
         });
+      }
+      /** Les lignes retenues par tous les filtres avancés (le registre, l'export et l'état imprimé lisent la même liste). */
+      function filtrees() {
+        var q = F.q.trim().toLowerCase();
+        return dansPlage().filter(function (r) {
+          if (F.agent && r.employeId !== F.agent) return false;
+          if (F.matricule && r.matricule !== F.matricule) return false;
+          if (F.service && r.service !== F.service) return false;
+          if (F.etat && r.etat !== F.etat) return false;
+          if (F.motifCode && (F.motifCode === '__aucun' ? !!r.motifCode : r.motifCode !== F.motifCode)) return false;
+          if (F.retardMin !== '' && retardMinutes(r) < Number(F.retardMin)) return false;
+          var a = minutesDe(r.heureArrivee);
+          if (F.hDe && (a == null || a < minutesDe(F.hDe))) return false;
+          if (F.hA && (a == null || a > minutesDe(F.hA))) return false;
+          if (F.validation && PRH().etatValidation('presences', r) !== F.validation) return false;
+          if (F.validePar && (r.validePar || '__aucun') !== F.validePar) return false;
+          if (q && ((r.employe || '') + ' ' + (r.matricule || '') + ' ' + (r.motif || '') + ' ' + (r.justificatif || '')).toLowerCase().indexOf(q) < 0) return false;
+          return true;
+        });
+      }
+      function comptees() { return filtrees().filter(function (r) { return PRH().compte('presences', r); }); }
+      function filtresEnForce() {
+        return Object.keys(F).some(function (k) { return F[k] !== ''; });
       }
 
       function rafraichir() { rendreKpi(); rendreTable(); rendreGraphes(); }
@@ -1490,46 +2254,111 @@
           },
           { name: 'heureArrivee', label: 'Heure d’arrivée', type: 'time' },
           { name: 'heureDepart', label: 'Heure de départ', type: 'time' },
+          { name: 'motifCode', label: 'Motif codé', type: 'select', options: [{ value: '', label: 'Aucun (non justifié)' }].concat(PRH().MOTIFS_ABSENCE.map(function (m) { return { value: m.id, label: m.libelle }; })) },
+          { name: 'justificatif', label: 'Justificatif (référence du document)', hint: 'Certificat médical, ordre de mission, décision de congé' },
           { name: 'motif', label: 'Motif / justification', col: 'full' },
         ];
       }
 
       function rendreKpi() {
-        var mois = dansPlage();
+        var tous = filtrees(), mois = comptees();
         C.clear(blocKpi);
         blocKpi.appendChild(U.kpiGrid([
-          { label: 'Pointages de la période', value: C.num(mois.length), icon: 'clipboard-check', tone: 'navy' },
+          { label: 'Pointages comptés', value: C.num(mois.length), icon: 'clipboard-check', tone: 'navy', hint: 'validés seulement' },
           { label: 'Présences', value: C.num(mois.filter(function (r) { return r.etat === 'present'; }).length), icon: 'check-circle-2', tone: 'success' },
           { label: 'Retards', value: C.num(mois.filter(function (r) { return r.etat === 'retard'; }).length), icon: 'clock-alert', tone: 'warning', hint: 'Critère NS 131' },
           { label: 'Absences', value: C.num(mois.filter(function (r) { return r.etat === 'absent'; }).length), icon: 'user-x', tone: 'danger' },
+          { label: 'À valider', value: C.num(tous.filter(function (r) { var e = PRH().etatValidation('presences', r); return e === 'a_valider' || e === 'valide_surveillant'; }).length), icon: 'hourglass', tone: 'warning', hint: 'visibles, ne comptent pas' },
         ]));
-        blocKpi.appendChild(K.note('Les retards et absences non justifiées alimentent le critère '
+        blocKpi.appendChild(K.note('Les retards et absences <strong>validés</strong> et non justifiés alimentent le critère '
           + '<strong>« Ponctualité et assiduité »</strong> du barème NS 131, avec incidence directe sur la fiche '
-          + 'd’évaluation et le solde du mois.', { tone: 'info' }));
+          + 'd’évaluation et le solde du mois. Un pointage à valider est visible mais ne compte pas.', { tone: 'info' }));
         U.icons(blocKpi);
+      }
+
+      function regulariser(r) {
+        var f = U.form([
+          { name: 'etat', label: 'Nouvel état', type: 'select', required: true, options: [{ value: 'present', label: 'Présent' }, { value: 'retard', label: 'Retard' }, { value: 'absent', label: 'Absent' }, { value: 'conge', label: 'Congé' }] },
+          { name: 'motifCode', label: 'Motif codé', type: 'select', options: [{ value: '', label: 'Aucun (non justifié)' }].concat(PRH().MOTIFS_ABSENCE.map(function (m) { return { value: m.id, label: m.libelle }; })) },
+          { name: 'justificatif', label: 'Justificatif (référence du document)', col: 'full' },
+          { name: 'motif', label: 'Motif de la régularisation', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { etat: r.etat, motifCode: r.motifCode || '', justificatif: r.justificatif || '' });
+        var m = U.modal({
+          title: 'Régulariser le pointage', subtitle: r.employe + ' · ' + C.dateFR(r.date), size: 'md',
+          body: el('div.space-y-3', null, [K.note('La régularisation est <strong>datée</strong> et porte son auteur et son motif : l’état d’avant reste lisible au journal.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Régulariser', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var res = PRH().regulariser(r.id, { etat: v.etat, motifCode: v.motifCode, justificatif: v.justificatif, motif: v.motif });
+              if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
+              m.close(); rafraichir();
+              U.toast('Pointage régularisé.', { type: 'success', undo: function () { res.undo(); rafraichir(); } });
+            } }),
+          ],
+        });
+      }
+
+      function imprimerEtat() {
+        var rows = filtrees().slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+        var lib = { present: 'Présent', retard: 'Retard', absent: 'Absent', conge: 'Congé' };
+        /* Les filtres relevés par print.js ne couvrent pas les heures ni le seuil de retard : on les déclare tous, pour que la pièce retrace la sélection. */
+        var filtres = [['Période', C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value)]];
+        function val(id) { var c = document.getElementById(id); return c ? c.value : ''; }
+        function txt(id) { var c = document.getElementById(id); return c && c.value ? (c.tagName === 'SELECT' ? c.options[c.selectedIndex].textContent.trim() : c.value) : ''; }
+        [['pr_f_agent', 'Agent'], ['pr_f_matricule', 'Matricule'], ['pr_f_service', 'Service'], ['pr_f_etat', 'État'], ['pr_f_motif', 'Motif codé'], ['pr_f_validation', 'Validation'],
+          ['pr_f_validepar', 'Validé par'], ['pr_f_retard', 'Retard minimal (minutes)'], ['pr_f_hde', 'Arrivée de'], ['pr_f_ha', 'Arrivée à'], ['pr_f_q', 'Recherche']].forEach(function (x) {
+          if (val(x[0])) filtres.push([x[1], txt(x[0])]);
+        });
+        P.etat({
+          titre: 'État des présences et absences',
+          sousTitre: C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value),
+          filtres: filtres,
+          cartouche: [['Pointages retenus', C.num(rows.length)], ['Dont validés', C.num(rows.filter(function (r) { return PRH().compte('presences', r); }).length)],
+            ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: P.tableau([
+            { label: 'Date', value: function (r) { return C.dateFR(r.date); } },
+            { label: 'Mat.', key: 'matricule' },
+            { label: 'Agent', key: 'employe' },
+            { label: 'Service', key: 'service' },
+            { label: 'État', value: function (r) { return lib[r.etat] || r.etat; } },
+            { label: 'Arrivée', value: function (r) { return r.heureArrivee || ''; } },
+            { label: 'Motif', value: function (r) { var m = (PRH().MOTIFS_ABSENCE.filter(function (x) { return x.id === r.motifCode; })[0] || {}).libelle; return m || r.motif || ''; } },
+            { label: 'Justificatif', value: function (r) { return r.justificatif || ''; } },
+            { label: 'Validation', value: function (r) { return (ETATS_VALIDATION_RH[PRH().etatValidation('presences', r)] || ['—'])[0]; } },
+            { label: 'Validé par', value: function (r) { return r.validePar || ''; } },
+          ], rows),
+          signatures: [{ role: 'Le Surveillant Général', nom: 'GARBA Yahouza' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
+        });
       }
 
       function rendreTable() {
         C.clear(blocTable);
-        blocTable.appendChild(U.dataTable({
-        title: 'Registre des présences — ' + C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value),
-        rows: function () { return dansPlage(); }, exportName: 'presences', pageSize: 20,
-        actions: [K.creer(col, champsPointage(), {
+        var creation = K.creer(col, champsPointage(), {
           module: 'M10', label: 'Ajouter un pointage', titre: 'Nouveau pointage', entite: 'Pointage',
-          defauts: function () { return { date: C.iso(AUJ), etat: 'present', heureArrivee: '07:45' }; },
+          defauts: function () { return { date: C.iso(AUJ), etat: 'present', heureArrivee: '07:45', motifCode: '' }; },
           transform: function (v) {
             var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
             if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service; }
-            return v;
+            /* UN POINTAGE NAÎT À VALIDER : visible, il ne compte qu'une fois tranché par le circuit. */
+            return Object.assign(v, PRH().naissance());
           },
           apres: rafraichir,
-        })].filter(Boolean),
-        rowActions: K.actionsLigne(col, champsPointage(), { module: 'M10', refresh: rafraichir }),
+        });
+        var actionsLigne = K.actionsLigne(col, champsPointage(), { module: 'M10', refresh: rafraichir });
+        blocTable.appendChild(U.dataTable({
+        title: 'Registre des présences — ' + C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value) + (filtresEnForce() ? ' (filtré)' : ''),
+        rows: function () { return filtrees(); }, exportName: 'presences', pageSize: 20,
+        actions: [creation, K.btn('Imprimer l’état', { size: 'sm', icon: 'printer', onclick: imprimerEtat })].filter(Boolean),
+        rowActions: function (r) {
+          var a = commandesValidation('presences', r, rafraichir);
+          if (PRH().etatValidation('presences', r) === 'valide' && ['surveillant', 'da', 'admin'].indexOf(roleCourant()) >= 0) {
+            a.push(K.iconBtn('pen-line', 'Régulariser ce pointage', function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); regulariser(r); }, 'ghost'));
+          }
+          var base = actionsLigne(r);
+          return a.concat(Array.isArray(base) ? base : (base ? [base] : []));
+        },
         defaultSort: 'date', defaultDir: 'desc',
-        filters: [
-          { name: 'etat', label: 'État', options: [{ value: 'present', label: 'Présent' }, { value: 'retard', label: 'Retard' }, { value: 'absent', label: 'Absent' }] },
-          { name: 'service', label: 'Service', options: D.SERVICES },
-        ],
         columns: [
           { key: 'date', label: 'Date', nowrap: true, text: function (r) { return C.dateFR(r.date); }, render: function (r) { return C.dateFR(r.date); } },
           { key: 'matricule', label: 'Mat.', align: 'right', nowrap: true },
@@ -1538,24 +2367,30 @@
           {
             key: 'etat', label: 'État',
             render: function (r) {
-              var m = { present: ['Présent', 'success'], retard: ['Retard', 'warning'], absent: ['Absent', 'danger'] };
-              return U.badge(m[r.etat][0], m[r.etat][1]);
+              var m = { present: ['Présent', 'success'], retard: ['Retard', 'warning'], absent: ['Absent', 'danger'], conge: ['Congé', 'info'] };
+              var x = m[r.etat] || [r.etat, 'neutral'];
+              return U.badge(x[0], x[1]);
             },
           },
           { key: 'heureArrivee', label: 'Arrivée', align: 'right' },
           { key: 'heureDepart', label: 'Départ', align: 'right' },
-          { key: 'motif', label: 'Motif' },
+          { key: 'motif', label: 'Motif', render: function (r) {
+            var cod = (PRH().MOTIFS_ABSENCE.filter(function (x) { return x.id === r.motifCode; })[0] || {}).libelle;
+            return cod ? el('div', null, [U.badge(cod, 'neutral'), r.justificatif ? el('p.text-xs.text-slate-400', { text: r.justificatif }) : null].filter(Boolean)) : (r.motif || '');
+          } },
+          { key: 'validation', label: 'Validation', value: function (r) { return PRH().etatValidation('presences', r); },
+            render: function (r) { return el('div', null, [badgeValidation('presences', r), r.regularisations && r.regularisations.length ? el('p.text-xs.text-slate-400', { text: 'Régularisé ' + r.regularisations.length + ' fois' }) : null].filter(Boolean)); } },
         ],
         }));
         U.icons(blocTable);
       }
 
       function rendreGraphes() {
-        var mois = dansPlage();
+        var mois = comptees();
         C.clear(blocGraphes);
         if (!mois.length) {
           blocGraphes.appendChild(U.card('Statistiques',
-            U.empty('Aucun pointage sur la plage retenue.', { icon: 'calendar-x' })));
+            U.empty('Aucun pointage validé sur la plage et les filtres retenus.', { icon: 'calendar-x' })));
           return;
         }
         var parService = C.groupBy(mois, 'service');
@@ -1604,7 +2439,7 @@
     regle: 'Le régime observé prévoit <strong>2 jours de repos hebdomadaire</strong> et <strong>10 jours de congés annuels</strong>.',
     render: function (root) {
       var col = S.collection('conges', { module: 'M10', entite: 'Conge' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('conges')) {
         var rnd = C.seeded(1423);
         personnel().slice(0, 22).forEach(function (e, i) {
           var debut = C.addDays(AUJ, C.between(rnd, -120, 60));
@@ -1672,6 +2507,9 @@
       return K.crud({
         collection: 'conges', entite: 'congé', entiteP: 'congés', module: 'M10',
         apresTableau: graphiquesConges,
+        /* Lot L5 : le circuit de validation (réglage du poste) s'affiche ici et gouverne la décision ; la décision ne se saisit plus à la main. */
+        avantTableau: function (c, rafraichir) { return carteReglagesRh(rafraichir); },
+        actionsSup: function (c, rafraichir) { return commandesValidation('conges', c, rafraichir); },
         defaultSort: 'dateDebut', defaultDir: 'desc', pageSize: 15,
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (c) { return el('span.font-mono.text-xs', { text: c.reference }); } },
@@ -1684,10 +2522,14 @@
           { key: 'remplacant', label: 'Remplaçant' },
           {
             key: 'statutConge', label: 'Décision',
+            text: function (c) { return ({ valide: 'Accordé', en_attente: 'En attente', refuse: 'Refusé' })[c.statutConge] || ''; },
             render: function (c) {
               var m = { valide: ['Accordé', 'success'], en_attente: ['En attente', 'warning'], refuse: ['Refusé', 'danger'] };
               var x = m[c.statutConge] || ['—', 'neutral'];
-              return U.badge(x[0], x[1]);
+              var etat = PRH().etatValidation('conges', c);
+              return el('div', null, [U.badge(x[0], x[1]),
+                etat === 'valide_surveillant' ? el('p.text-xs.text-info-700', { text: 'Surveillant : validé, DAF attendue' }) : null,
+                c.motifRefus ? el('p.text-xs.text-danger-700', { text: 'Motif : ' + c.motifRefus }) : null].filter(Boolean));
             },
           },
         ],
@@ -1701,15 +2543,17 @@
               name: 'remplacant', label: 'Remplaçant désigné', type: 'select',
               options: personnel().map(function (e) { return { value: e.nomComplet, label: e.nomComplet }; }),
             },
-            { name: 'statutConge', label: 'Décision', type: 'select', required: true, options: [{ value: 'en_attente', label: 'En attente' }, { value: 'valide', label: 'Accordé' }, { value: 'refuse', label: 'Refusé' }] },
             { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service; }
           v.duree = Math.max(1, C.daysBetween(v.dateDebut, v.dateFin));
-          if (!v.reference) v.reference = C.nextRef('CG-', 4);
+          /* E620 (suite) : même défaut que les contrats. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CG-', 4, col.all());
+          /* UNE DEMANDE NAÎT À VALIDER (lot L5) : la décision ne se saisit pas à la main, elle se tranche par le circuit. */
+          if (!rec) { v.statutConge = 'en_attente'; Object.assign(v, PRH().naissance()); }
           return v;
         },
         beforeSave: function (v) {
@@ -1781,6 +2625,60 @@
   function colHistoriqueBareme() {
     return S.collection('historiqueBareme', { module: 'M10', entite: 'version de barème', prefix: 'HBA' });
   }
+
+  /* ------------------------------------------------------------------------
+   * LE BARÈME EN VIGUEUR À UNE DATE (E650).
+   * ------------------------------------------------------------------------
+   * Les évaluations, les retenues, les fiches imprimées et les sanctions lisent
+   * ce moteur, plus la note d'origine : le barème est VERSIONNÉ par date
+   * (baremeNS131 pour la version courante, historiqueBareme pour les sorties),
+   * comme la grille des primes. Une évaluation garde le barème de SA date
+   * (`dateBareme`) : relever un taux ne change pas une retenue prononcée.
+   * Sans fiche au magasin, la note d'origine reste le repli.
+   * ---------------------------------------------------------------------- */
+  function dateBaremeDe(e) {
+    return (e && e.dateBareme) || D.NS131.dateEffet;
+  }
+  function criteresBaremeALaDate(date) {
+    var courants = [], hist = [];
+    try { courants = S.collection('baremeNS131').active(); } catch (err) { courants = []; }
+    try { hist = S.collection('historiqueBareme').active(); } catch (err) { hist = []; }
+    var d = date || C.iso(AUJ);
+    var out = [];
+    var vus = {};
+    function entree(b, id) {
+      return { num: b.num, id: id, label: b.label, criteres: (b.criteres || []).slice(), sanctions: b.sanctions || {} };
+    }
+    courants.forEach(function (b) {
+      var id = b.critereId;
+      vus[id] = true;
+      if (!b.dateEffet || String(d) >= String(b.dateEffet)) { out.push(entree(b, id)); return; }
+      /* Antérieure à la version courante : la version sortante qui couvrait la date. */
+      var v = hist.filter(function (x) {
+        return x.critereId === id && (!x.dateEffet || String(d) >= String(x.dateEffet)) && (!x.dateFin || String(d) <= String(x.dateFin));
+      }).sort(function (x, y) { return String(y.dateEffet).localeCompare(String(x.dateEffet)); })[0];
+      if (v) { out.push(entree(v, id)); return; }
+      var o = D.NS131.criteres.filter(function (c) { return c.id === id; })[0];
+      if (o) out.push(entree(o, id));
+    });
+    /* Un critère retiré : encore en vigueur aux dates que sa version couvre. */
+    hist.forEach(function (x) {
+      if (vus[x.critereId]) return;
+      if ((!x.dateEffet || String(d) >= String(x.dateEffet)) && (!x.dateFin || String(d) <= String(x.dateFin))) {
+        vus[x.critereId] = true; out.push(entree(x, x.critereId));
+      }
+    });
+    if (!courants.length && !hist.length) {
+      D.NS131.criteres.forEach(function (c) { out.push(entree(c, c.id)); });
+    }
+    return out.sort(function (a, b) { return String(a.num).localeCompare(String(b.num)); });
+  }
+  function prelevementALaDate(criteresEval, date) {
+    return criteresBaremeALaDate(date).reduce(function (t, c) {
+      return t + ((c.sanctions || {})[(criteresEval || {})[c.id]] || 0);
+    }, 0);
+  }
+  global.SIGH.bareme131 = { criteres: criteresBaremeALaDate, prelevement: prelevementALaDate };
 
   function blocBaremeNS131(rafraichir) {
     var ouvert = global.SIGH.baremeModifiable && global.SIGH.baremeModifiable();
@@ -2086,25 +2984,25 @@
          été saisie. */
       (function amorcer() {
         var db = S.raw();
-        if (db.evaluations && db.evaluations.length) return;
+        if ((db.evaluations && db.evaluations.length) || !S.amorcable('evaluations')) return;
         var rnd = C.seeded(1131), n = 0;
         var mois = C.MOIS[AUJ.getMonth() - 1 < 0 ? 11 : AUJ.getMonth() - 1];
-        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' 2026';
+        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' ' + AUJ.getFullYear();
         db.evaluations = personnel().slice(0, 24).map(function (e) {
           var criteres = {};
-          D.NS131.criteres.forEach(function (c) {
+          criteresBaremeALaDate(C.iso(AUJ)).forEach(function (c) {
             criteres[c.id] = C.pick(rnd, ['bonne', 'bonne', 'bonne', 'moyenne', 'faible']);
           });
-          var pct = D.NS131.prelevement(criteres);
+          var pct = prelevementALaDate(criteres, C.iso(AUJ));
           return {
             id: 'EVAL' + C.pad(++n, 4),
-            reference: 'EV-2026-' + C.pad(n, 4),
+            reference: 'EV-' + AUJ.getFullYear() + '-' + C.pad(n, 4),
             employeId: e.id, employe: e.nomComplet, matricule: e.matricule,
             service: e.service, fonction: e.fonction, categorie: e.categorie,
             periode: periode, criteres: criteres,
             prelevementPct: pct,
             prelevementMontant: Math.round(e.salaireBase * pct / 100),
-            salaireBrut: e.salaireBase,
+            salaireBrut: e.salaireBase, dateBareme: C.iso(AUJ),
             observations: '',
             evaluateur: 'TAKI Alimatou',
             statut: 'actif',
@@ -2149,7 +3047,7 @@
           { key: 'matricule', label: 'Mat.', align: 'right', nowrap: true },
           { key: 'employe', label: 'Agent' },
           { key: 'service', label: 'Service' },
-        ].concat(D.NS131.criteres.map(function (c) {
+        ].concat(criteresBaremeALaDate(C.iso(AUJ)).map(function (c) {
           return {
             key: 'crit_' + c.id, label: c.label.split(' ')[0],
             value: function (e) { return (e.criteres || {})[c.id]; },
@@ -2180,8 +3078,8 @@
         rowActions: function (e) {
           return [
             K.iconBtn('printer', 'Imprimer la fiche', function () { etatFiche(e); }),
-            K.iconBtn('pencil', 'Modifier', function () { ouvrir(e); }),
-          ];
+            K.commandeIcone('pencil', 'Modifier', function () { ouvrir(e); }),
+          ].filter(Boolean);
         },
       });
       host.appendChild(table);
@@ -2189,12 +3087,16 @@
       return null;
 
       function ouvrir(record) {
+        /* Le barème en vigueur à la date de l'évaluation (E650) : celle de la
+           fiche existante, ou le jour de la saisie. */
+        var dateB = (record && record.dateBareme) || (record ? dateBaremeDe(record) : C.iso(AUJ));
+        var critsB = criteresBaremeALaDate(dateB);
         var champs = [
           { name: 'employeId', label: 'Agent', type: 'select', required: true, options: optionsEmployes(), col: 'full' },
-          { name: 'periode', label: 'Période évaluée', type: 'select', required: true, options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'; }) },
+          { name: 'periode', label: 'Période évaluée', type: 'select', required: true, options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' ' + AUJ.getFullYear(); }) },
           { type: 'section', label: 'Éléments d’évaluation — barème ' + D.NS131.reference },
         ];
-        D.NS131.criteres.forEach(function (c) {
+        critsB.forEach(function (c) {
           champs.push({
             name: 'crit_' + c.id, label: c.num + ' — ' + c.label, type: 'select', required: true,
             options: D.NS131.niveaux.map(function (n) {
@@ -2206,11 +3108,11 @@
         });
         champs.push({ name: 'observations', label: 'Observations de l’évaluateur', type: 'textarea', rows: 2, col: 'full' });
 
-        var valeurs = record ? Object.assign({}, record) : { periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' 2026' };
+        var valeurs = record ? Object.assign({}, record) : { periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' ' + AUJ.getFullYear() };
         if (record && record.criteres) {
-          D.NS131.criteres.forEach(function (c) { valeurs['crit_' + c.id] = record.criteres[c.id]; });
+          critsB.forEach(function (c) { valeurs['crit_' + c.id] = record.criteres[c.id]; });
         } else {
-          D.NS131.criteres.forEach(function (c) { valeurs['crit_' + c.id] = 'bonne'; });
+          critsB.forEach(function (c) { valeurs['crit_' + c.id] = 'bonne'; });
         }
 
         var f = U.form(champs, valeurs);
@@ -2218,11 +3120,11 @@
 
         function majApercu() {
           var evalv = {};
-          D.NS131.criteres.forEach(function (c) {
+          critsB.forEach(function (c) {
             var ctrl = f.controls['crit_' + c.id];
             evalv[c.id] = ctrl ? ctrl.value : 'bonne';
           });
-          var pct = D.NS131.prelevement(evalv);
+          var pct = prelevementALaDate(evalv, dateB);
           var emp = personnel().filter(function (x) { return x.id === f.controls.employeId.value; })[0];
           var brut = emp ? emp.salaireBase : 0;
           C.clear(apercu);
@@ -2235,7 +3137,7 @@
           U.icons(apercu);
         }
 
-        D.NS131.criteres.forEach(function (c) {
+        critsB.forEach(function (c) {
           var ctrl = f.controls['crit_' + c.id];
           if (ctrl) ctrl.addEventListener('change', majApercu);
         });
@@ -2257,8 +3159,8 @@
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 var emp = personnel().filter(function (x) { return x.id === v.employeId; })[0];
                 var criteres = {};
-                D.NS131.criteres.forEach(function (c) { criteres[c.id] = v['crit_' + c.id]; });
-                var pct = D.NS131.prelevement(criteres);
+                critsB.forEach(function (c) { criteres[c.id] = v['crit_' + c.id]; });
+                var pct = prelevementALaDate(criteres, dateB);
                 var enr = {
                   employeId: v.employeId,
                   employe: emp ? emp.nomComplet : '', matricule: emp ? emp.matricule : '',
@@ -2269,7 +3171,7 @@
                   prelevementMontant: emp ? Math.round(emp.salaireBase * pct / 100) : 0,
                   salaireBrut: emp ? emp.salaireBase : 0,
                   observations: v.observations,
-                  reference: (record && record.reference) || C.nextRef('EV-', 4),
+                  dateBareme: dateB, reference: (record && record.reference) || C.referenceSuivante('EV-' + AUJ.getFullYear() + '-', 4, col.all().concat(col.archived())),
                   evaluateur: S.currentUser(),
                 };
                 var res = record ? col.update(record.id, enr) : col.insert(enr);
@@ -2315,7 +3217,7 @@
                   return p ? el('span.font-semibold.text-danger-600', { text: '− ' + p + ' %' }) : '—';
                 },
               },
-            ], D.NS131.criteres)),
+            ], criteresBaremeALaDate(dateBaremeDe(e)))),
             e.observations ? U.card('Observations', el('p.text-sm.text-slate-700', { text: e.observations })) : null,
           ]),
           footer: [
@@ -2354,7 +3256,7 @@
             var p = c.sanctions[n] || 0;
             return '1) ' + lib + '   2) ' + (p ? p + ' %' : 'Aucune') + '   3) ' + (p ? C.money(Math.round(brut * p / 100), false) : '0');
           } },
-        ], D.NS131.criteres, {
+        ], criteresBaremeALaDate(dateBaremeDe(e)), {
           total: { num: '', label: '', '1) Résultat  2) Sanction  3) Prélèvement': '' },
           totalLabel: 'TOTAL À PRÉLEVER : ' + C.money(prelev, false),
         }));
@@ -2414,7 +3316,7 @@
               { label: 'Bonne', value: function () { return 'Aucune'; } },
               { label: 'Moyenne (1er niveau)', value: function (c) { return '1 à 2 — moins ' + c.sanctions.moyenne + ' % du salaire brut'; } },
               { label: 'Faible à mauvaise (2e niveau)', value: function (c) { return '3 et plus — ' + c.sanctions.faible + ' % du salaire brut'; } },
-            ], D.NS131.criteres),
+            ], criteresBaremeALaDate(dateBaremeDe(null))),
             el('p.mt-3', { text: D.NS131.mention + ' Entre en vigueur à compter de sa date de signature.' }),
             el('p.mt-2.text-\\[10px\\]', { text: 'Ampliation : ' + D.NS131.ampliation }),
           ]),
@@ -2459,11 +3361,11 @@
           {
             key: 'motifs', label: 'Critères sanctionnés', sortable: false,
             text: function (e) {
-              return D.NS131.criteres.filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; })
+              return criteresBaremeALaDate(dateBaremeDe(e)).filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; })
                 .map(function (c) { return c.label; }).join(', ');
             },
             render: function (e) {
-              var liste = D.NS131.criteres.filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; });
+              var liste = criteresBaremeALaDate(dateBaremeDe(e)).filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; });
               if (!liste.length) return '—';
               return el('div.flex.flex-wrap.gap-1', null, liste.map(function (c) {
                 return U.badge(c.label, 'danger');
@@ -2493,7 +3395,7 @@
                     var p = c.sanctions[(e.criteres || {})[c.id]] || 0;
                     return p ? p + ' %' : '—';
                   } },
-                ], D.NS131.criteres),
+                ], criteresBaremeALaDate(dateBaremeDe(e))),
                 e.observations ? el('p.mt-2.italic', { text: 'Observations : ' + e.observations }) : null,
               ]),
               signatures: [{ role: 'L’Agent', nom: e.employe, mention: 'Pris connaissance' },
@@ -2511,10 +3413,11 @@
         /* Un critère est « sanctionné » quand son résultat entraîne une retenue.
            C'est le croisement qui intéresse la Direction : sur quel axe du
            barème NS 131 la clinique perd-elle le plus de points ? */
-        var parCritere = D.NS131.criteres.map(function (c) {
+        var parCritere = criteresBaremeALaDate(C.iso(AUJ)).map(function (c) {
           var touchees = evals.filter(function (e) {
             var r = (e.criteres || {})[c.id];
-            return r && (c.sanctions[r] || 0) > 0;
+            var cv = criteresBaremeALaDate(dateBaremeDe(e)).filter(function (x) { return x.id === c.id; })[0];
+            return r && cv && (cv.sanctions[r] || 0) > 0;
           });
           return {
             label: c.label, n: touchees.length,
@@ -2621,12 +3524,15 @@
         tr.appendChild(el('td.text-right', null,
           el('span.text-xs.text-slate-500', { text: pr.dateEffet ? C.dateFR(pr.dateEffet) : '—' })));
         var actes = [];
+        if (pr.mode === 'fixe') actes.push(K.iconBtn('users', 'Bénéficiaires du forfait', function () { beneficiairesPrime(pr); }));
         if (K.droits('M10').editer) actes.push(K.iconBtn('pencil', 'Modifier cette prime', function () { editerPrime(pr); }));
         if (K.droits('M10').annuler) actes.push(K.iconBtn('archive', 'Retirer cette prime', function () { archiverPrime(pr); }, 'ghost'));
         tr.appendChild(el('td.text-right.whitespace-nowrap', null, el('div.flex.justify-end.gap-1', null, actes)));
         tb.appendChild(tr);
       });
       t.appendChild(tb);
+      /* Lot EXP : la grille des primes se coche et s'exporte (garde-tableaux : consultation). */
+      grilleWrap.appendChild(U.equiperTableau(t, { nom: 'grille-primes', titre: 'Grille des primes' }));
       grilleWrap.appendChild(t);
 
       var actionsGrille = [
@@ -2853,32 +3759,129 @@
         });
       }
 
+      /* --------------------------------------------------------------------
+       * LES BÉNÉFICIAIRES D'UN FORFAIT (E654) : une liste DATÉE d'agents.
+       * Un forfait se désigne ; tant qu'aucun agent n'est désigné, la règle
+       * d'attente (tous les agents de la fonction) s'applique et l'écran le dit.
+       * Une désignation ne se supprime pas : on y met fin à une date.
+       * ------------------------------------------------------------------ */
+      function colBeneficiaires() {
+        return S.collection('beneficiairesPrimes', { module: 'M10', entite: 'bénéficiaire de prime', prefix: 'BPR' });
+      }
+      function beneficiairesPrime(prime) {
+        var droit = K.droits('M10').editer;
+        var eligibles = personnel().filter(function (a) { return (prime.montants || {})[a.fonction] > 0; });
+        var corps = el('div.space-y-3');
+        var m = U.modal({
+          title: 'Bénéficiaires : ' + prime.label, subtitle: D.NS132.reference, size: 'lg', body: corps,
+          footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+        });
+        dessinerBeneficiaires();
+
+        function dessinerBeneficiaires() {
+          C.clear(corps);
+          var liste = colBeneficiaires().active().filter(function (x) { return x.primeId === prime.primeId; });
+          corps.appendChild(K.note(liste.length
+            ? 'Seuls les agents désignés, aux dates indiquées, perçoivent ce forfait.'
+            : '<strong>Aucun bénéficiaire désigné.</strong> Règle d’attente : le forfait est versé à tous les agents '
+              + 'dont la fonction figure à la grille. Désigner un premier agent la remplace par la liste.',
+          { tone: liste.length ? 'info' : 'warning', icon: 'users' }));
+          if (liste.length) {
+            corps.appendChild(K.miniTable([
+              { label: 'Agent', render: function (x) { return x.agent; } },
+              { label: 'Depuis le', render: function (x) { return C.dateFR(x.debut); } },
+              { label: 'Jusqu’au', render: function (x) { return x.fin ? C.dateFR(x.fin) : 'en cours'; } },
+              { label: '', render: function (x) {
+                if (!droit || x.fin) return '';
+                return K.iconBtn('calendar-x', 'Mettre fin à la désignation', function () {
+                  var res = colBeneficiaires().update(x.id, { fin: C.iso(AUJ) });
+                  dessinerBeneficiaires(); rendreAcquises();
+                  U.toast('Désignation terminée.', { type: 'success', detail: x.agent + ' : jusqu’au ' + C.dateFR(C.iso(AUJ)) + '.',
+                    undo: function () { res.undo(); dessinerBeneficiaires(); rendreAcquises(); } });
+                }, 'ghost');
+              } },
+            ], C.sortBy(liste, 'agent')));
+          }
+          if (!droit) { U.icons(corps); return; }
+          var f = U.form([
+            { name: 'agents', label: 'Agents à désigner', type: 'multiselect', required: true, col: 'full',
+              options: eligibles.map(function (a) { return { value: a.id, label: a.nomComplet + ' (' + fonctionLabel(a.fonction) + ')' }; }) },
+            { name: 'debut', label: 'Depuis le', type: 'date', required: true },
+          ], { debut: C.iso(AUJ) });
+          corps.appendChild(U.card('Désigner des bénéficiaires', el('div.space-y-3', null, [
+            f,
+            K.btn('Désigner', { variant: 'primary', icon: 'user-plus', onclick: function () {
+              var v = f.collect();
+              if (!v) return;
+              var deja = {};
+              liste.forEach(function (x) { if (!x.fin) deja[x.agentId] = true; });
+              var ajoutes = [];
+              (v.agents || []).forEach(function (id) {
+                if (deja[id]) return;
+                var a = eligibles.filter(function (x) { return x.id === id; })[0];
+                if (!a) return;
+                colBeneficiaires().insert({ primeId: prime.primeId, primeLabel: prime.label, agentId: a.id, agent: a.nomComplet,
+                  matricule: a.matricule, debut: v.debut, fin: null, designePar: S.currentUser() });
+                ajoutes.push(a.nomComplet);
+              });
+              if (!ajoutes.length) { U.toast('Ces agents sont déjà désignés.', { type: 'warning' }); return; }
+              S.log('Désignation des bénéficiaires d’une prime fixe', 'M10', 'Prime', prime.primeId, null, { agents: ajoutes, debut: v.debut });
+              dessinerBeneficiaires(); rendreAcquises();
+              U.toast(ajoutes.length + ' bénéficiaire(s) désigné(s).', { type: 'success', detail: prime.label });
+            } }),
+          ])));
+          U.icons(corps);
+        }
+      }
+
       function archiverPrime(prime) {
-        U.confirm({
-          title: 'Retirer la prime « ' + prime.label + ' » ?',
-          message: '<strong>Attention.</strong> Cette prime cesse d’être calculée sur les bulletins à venir. '
-            + 'Les bulletins déjà édités ne changent pas — les versions antérieures de la grille restent '
-            + 'consultables.<br><br>'
-            + 'Conformément à <strong>RG-14</strong>, la prime est <strong>archivée</strong> et non supprimée : '
-            + 'elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut '
-            + 'être retirée que par une note qui l’abroge.',
-          confirmLabel: 'Retirer la prime', danger: true, requireMotif: true,
-        }).then(function (rep) {
-          if (!rep) return;
-          colHistorique().insert({
-            primeId: prime.primeId, label: prime.label, mode: prime.mode,
-            montants: Object.assign({}, prime.montants),
-            dateEffet: prime.dateEffet || D.NS132.dateEffet,
-            dateFin: C.iso(C.addDays(AUJ, -1)),
-            remplaceePar: 'Prime retirée — ' + rep.motif,
-            archiveePar: S.currentUser(),
-          });
-          var res = colGrille().archive(prime.id, rep.motif);
-          rendreGrille(); rendreAcquises();
-          U.toast('Prime retirée de la grille.', {
-            type: 'success', detail: 'Archivage logique (RG-14) — restaurable depuis la corbeille.',
-            undo: function () { res.undo(); rendreGrille(); rendreAcquises(); },
-          });
+        /* Une prime retirée reçoit une DATE DE FIN (E651) : la paie la lit
+           jusqu'à ce jour inclus, et plus jamais après. */
+        var fRetrait = U.form([
+          { name: 'dateFin', label: 'Dernier jour de la prime', type: 'date', required: true,
+            hint: 'La paie lit la prime jusqu’à cette date incluse, et plus après.' },
+          { name: 'motif', label: 'Motif du retrait', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { dateFin: C.iso(C.addDays(AUJ, -1)) });
+        var mRetrait = U.modal({
+          title: 'Retirer la prime « ' + prime.label + ' » ?', subtitle: D.NS132.reference, size: 'lg',
+          body: el('div.space-y-3', null, [
+            K.note('<strong>Attention.</strong> Cette prime cesse d’être calculée après sa date de fin. '
+              + 'Les bulletins déjà édités ne changent pas : les versions antérieures de la grille restent '
+              + 'consultables. Conformément à <strong>RG-14</strong>, la prime est <strong>archivée</strong> et non supprimée : '
+              + 'elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut '
+              + 'être retirée que par une note qui l’abroge.', { tone: 'warning', icon: 'shield-alert' }),
+            fRetrait,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { mRetrait.close(); } }),
+            K.btn('Retirer la prime', {
+              variant: 'danger', icon: 'archive',
+              onclick: function () {
+                var rep = fRetrait.collect();
+                if (!rep) return;
+                if (prime.dateEffet && String(rep.dateFin) < String(prime.dateEffet)) {
+                  U.toast('La date de fin précède l’entrée en vigueur de la prime.', { type: 'error',
+                    detail: 'En vigueur depuis le ' + C.dateFR(prime.dateEffet) + '.' });
+                  return;
+                }
+                mRetrait.close();
+                colHistorique().insert({
+                  primeId: prime.primeId, label: prime.label, mode: prime.mode,
+                  montants: Object.assign({}, prime.montants),
+                  dateEffet: prime.dateEffet || D.NS132.dateEffet,
+                  dateFin: rep.dateFin, retiree: true,
+                  remplaceePar: 'Prime retirée : ' + rep.motif,
+                  archiveePar: S.currentUser(),
+                });
+                var res = colGrille().archive(prime.id, rep.motif);
+                rendreGrille(); rendreAcquises();
+                U.toast('Prime retirée de la grille.', {
+                  type: 'success', detail: 'Dernier jour : ' + C.dateFR(rep.dateFin) + '. Archivage logique (RG-14), restaurable depuis la corbeille.',
+                  undo: function () { res.undo(); rendreGrille(); rendreAcquises(); },
+                });
+              },
+            }),
+          ],
         });
       }
 
@@ -2892,8 +3895,11 @@
         var permanences = compter(e.id, annee, mois, 'permanence');
         var pGarde = D.NS132.montant('garde', e.fonction) * gardes;
         var pPerm = D.NS132.montant('permanence', e.fonction) * permanences;
-        var fixes = D.NS132.primes.filter(function (p) { return p.mode === 'fixe'; })
-          .reduce(function (s, p) { return s + D.NS132.montant(p.id, e.fonction); }, 0);
+        /* Les primes fixes : barème d'origine ET primes créées à l'écran (E651),
+           retirées exclues à partir de leur date de fin, forfait versé aux seuls
+           bénéficiaires désignés quand il y en a (E654). */
+        var fixes = D.NS132.primesALaDate().filter(function (p) { return p.mode === 'fixe'; })
+          .reduce(function (s, p) { return s + D.NS132.montantAgent(p.id, e, C.iso(AUJ)); }, 0);
         return {
           id: e.id, matricule: e.matricule, employe: e.nomComplet,
           fonction: e.fonction, service: e.service,
@@ -3005,7 +4011,7 @@
     description: 'Intervenants extérieurs rémunérés à l’acte : circoncision, hydrotubation, accouchement, analyses, hospitalisation.',
     render: function (root) {
       var col = S.collection('prestataires', { module: 'M10', entite: 'PrestataireExterne' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('prestataires')) {
         var rnd = C.seeded(1531);
         var ACTES = ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'];
         for (var i = 0; i < 14; i++) {
@@ -3072,7 +4078,7 @@
       }
 
       return K.crud({
-        collection: 'prestataires', entite: 'prestataire', entiteP: 'prestataires', module: 'M10',
+        collection: 'prestataires', entite: 'prestataire', entiteP: 'prestataires', module: 'M10', importer: 'prestataires',
         defaultSort: 'nom', pageSize: 15,
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (p) { return el('span.font-mono.text-xs', { text: p.reference }); } },
@@ -3096,14 +4102,15 @@
         ],
         fields: [
           { name: 'nom', label: 'Nom du prestataire', required: true, col: 'full' },
-          { name: 'specialite', label: 'Spécialité / type d’acte', type: 'select', required: true, options: ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie', 'Autre'] },
+          { name: 'specialite', label: 'Spécialité / type d’acte', type: 'select', required: true, options: D.SPECIALITES_PRESTATAIRE },
           { name: 'telephone', label: 'Téléphone', type: 'tel' },
           { name: 'tarifActe', label: 'Tarif par acte (FCFA)', type: 'money', required: true, min: 0 },
           { name: 'actesRealises', label: 'Actes réalisés (mois en cours)', type: 'number', min: 0 },
           { name: 'ifu', label: 'IFU du prestataire' },
           { name: 'factureNormalisee', label: 'Facture normalisée fournie', type: 'checkbox', col: 'full' },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('PE-', 4); return v; },
+        /* E620 (suite) : même défaut que les contrats. */
+        transform: function (v, rec) { v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('PE-', 4, col.all()); return v; },
         onCreate: function () { return { actesRealises: 0, factureNormalisee: false }; },
         filters: [{ name: 'specialite', label: 'Spécialité', options: ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'] }],
         apresTableau: graphiquesPrestataires,
@@ -3431,7 +4438,7 @@
                 v.montantParAgent = Number(v.montantParAgent) || D.PARAM_EVENEMENTS.montantStandard;
                 var ben = personnel().filter(function (e) { return e.id === v.beneficiaireId; })[0];
                 v.beneficiaire = ben ? ben.nomComplet : null;
-                v.reference = C.nextRef('EVT-', 4);
+                v.reference = C.referenceSuivante('EVT-', 4, colEvenements().all());
                 var res = colEvenements().insert(v);
                 var n = engendrerParticipations(res.record);
                 S.log('Création d’un événement du personnel', 'M10', 'Événement', res.record.id, null,
@@ -3527,17 +4534,19 @@
           danger: b.regles > 0, requireMotif: true,
         }).then(function (rep) {
           if (!rep) return;
-          var archivees = 0;
+          var archivees = 0; var annulations = [];
           participationsDe(evt.id).forEach(function (x) {
             if (x.statutPaiement === 'paye') return;
-            colParticipations().archive(x.id, rep.motif); archivees++;
+            annulations.push(colParticipations().archive(x.id, rep.motif).undo); archivees++;
           });
           var res = colEvenements().archive(evt.id, rep.motif);
           afficher();
           U.toast('Événement annulé.', {
             type: 'success',
             detail: C.num(archivees) + ' participation(s) non réglée(s) archivée(s).',
-            undo: function () { res.undo(); afficher(); },
+            /* L'annulation restitue l'événement ET ses participations : ne restaurer que l'événement laissait ses participations archivées,
+               donc un événement vivant dont le montant attendu avait fondu (E741). */
+            undo: function () { res.undo(); annulations.forEach(function (u) { u(); }); afficher(); },
           });
         });
       }
@@ -3681,7 +4690,7 @@
               render: function (x) {
                 return el('div.min-w-0', null, [
                   el('p.truncate.text-sm.font-medium.text-slate-800', { text: x.agent }),
-                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + fonctionLabel(x.fonction) }),
+                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + (x.fonction ? fonctionLabel(x.fonction) : '—') }),
                 ]);
               },
             },
@@ -3817,7 +4826,7 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                var recu = C.nextRef('REC-PART-', 4);
+                var recu = C.referenceSuivante('REC-PART-', 4, colParticipations().all().map(function (p) { return { reference: p.recu }; }));
                 var res = colParticipations().update(x.id, {
                   statutPaiement: 'paye', mode: 'comptant',
                   montantVerse: Number(v.montantVerse), datePaiement: v.datePaiement,
@@ -3952,6 +4961,16 @@
    * lui est prescrit, parce que son dossier patient porte `personnelId`.
    * Ouvrir une saisie ici créerait une seconde vérité, divergente du dossier.
    * ======================================================================== */
+  /** L7 : un montant PORTÉ par la prestation est un nombre ; son absence est « non renseigné » (null), jamais un zéro ni le prix courant du catalogue. */
+  function montantAssurance(v) {
+    if (v === null || v === undefined || v === '') return null;
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  function totalAssurance(rows) { return rows.reduce(function (t, r) { return t + (r.valeur == null ? 0 : r.valeur); }, 0); }
+  function sansMontantAssurance(rows) { return rows.filter(function (r) { return r.valeur == null; }).length; }
+  function texteMontantAssurance(v) { return v == null ? 'Non renseigné' : C.money(v, false); }
+
   global.SIGH.screen('m10-assurance-personnel', {
     title: 'Assurance du personnel',
     description: 'Prestations dispensées aux agents de la clinique, prises en charge à 100 % — hors recettes et hors comptabilité.',
@@ -4014,14 +5033,14 @@
             patientId: pat.id, code: pat.code, matricule: pat.matricule,
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Consultation', detail: c.type + ' — ' + (c.motif || ''),
-            praticien: c.medecin, valeur: Number(c.tarif) || 0,
+            praticien: c.medecin, valeur: montantAssurance(c.tarif),
           });
         });
 
         S.collection('demandesAnalyses').active().forEach(function (a) {
           var pat = parPatient[a.patientId];
           if (!pat) return;
-          var d = String(a.date || a.dateDemande || '').slice(0, 10);
+          var d = String(a.date || a.dateDemande || a.dateHeure || '').slice(0, 10);
           if (!d || (min && d < min)) return;
           var analyse = D.ANALYSES.filter(function (x) { return x.code === a.analyse || x.libelle === a.analyse; })[0];
           out.push({
@@ -4030,7 +5049,8 @@
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Analyse', detail: a.analyse || (analyse ? analyse.libelle : 'Analyse'),
             praticien: a.prescripteur || a.demandeur || '—',
-            valeur: Number(a.montant) || (analyse ? Number(analyse.prix) || 0 : 0),
+            /* L7 : le montant PORTÉ par la demande, jamais le prix courant du catalogue : une demande ancienne sans montant est « non renseignée ». */
+            valeur: montantAssurance(a.montant != null && a.montant !== '' ? a.montant : a.prix),
           });
         });
 
@@ -4044,7 +5064,7 @@
             patientId: pat.id, code: pat.code, matricule: pat.matricule,
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Hospitalisation', detail: (h.service || '') + ' — lit ' + (h.lit || '—'),
-            praticien: h.medecin || '—', valeur: Number(h.montant) || 0,
+            praticien: h.medecin || '—', valeur: montantAssurance(h.montant),
           });
         });
 
@@ -4064,8 +5084,8 @@
             hint: 'sur ' + C.num(personnel().length) + ' agents' },
           { label: 'Prestations prises en charge', value: C.num(rows.length), icon: 'stethoscope', tone: 'info' },
           {
-            label: 'Valeur de l’avantage', value: C.money(C.sum(rows, 'valeur')), icon: 'gift', tone: 'success',
-            hint: 'Ni recette, ni créance',
+            label: 'Valeur de l’avantage', value: C.money(totalAssurance(rows)), icon: 'gift', tone: 'success',
+            hint: sansMontantAssurance(rows) ? 'Ni recette, ni créance · ' + sansMontantAssurance(rows) + ' sans montant renseigné (non comptées)' : 'Ni recette, ni créance',
           },
           {
             label: 'Agents effectivement soignés',
@@ -4117,10 +5137,10 @@
             { key: 'praticien', label: 'Praticien' },
             {
               key: 'valeur', label: 'Valeur', align: 'right',
-              text: function (r) { return C.money(r.valeur, false); },
+              text: function (r) { return texteMontantAssurance(r.valeur); },
               render: function (r) {
                 return el('div.text-right', null, [
-                  el('span.text-sm.text-slate-500', { text: C.money(r.valeur, false) }),
+                  el('span.text-sm.text-slate-500', { text: texteMontantAssurance(r.valeur) }),
                   el('p.text-xs.font-semibold.text-success-700', { text: 'pris en charge 100 %' }),
                 ]);
               },
@@ -4128,7 +5148,8 @@
           ],
           rowActions: function (r) {
             return [K.iconBtn('folder-open', 'Ouvrir le dossier du patient', function () {
-              global.SIGH.app.go('m1-dossier', { patient: r.patientId });
+              /* Le dossier s'ouvre depuis le répertoire des patients (fusion du 31/08/2026) : « m1-dossier » n'a jamais existé. */
+              global.SIGH.app.go('m1-patients');
             })];
           },
         }));
@@ -4138,13 +5159,13 @@
         var parFonction = C.groupBy(rows, 'fonctionLabel');
         var parAgent = C.groupBy(rows, 'agent');
         var noms = Object.keys(parAgent)
-          .sort(function (a, b) { return C.sum(parAgent[b], 'valeur') - C.sum(parAgent[a], 'valeur'); })
+          .sort(function (a, b) { return totalAssurance(parAgent[b]) - totalAssurance(parAgent[a]); })
           .slice(0, 10);
 
         vue.appendChild(el('div.grid.gap-4.lg\:grid-cols-3', null, [
           U.card('Valeur par nature de prestation',
             G.camembert(Object.keys(parNature),
-              Object.keys(parNature).map(function (k) { return C.sum(parNature[k], 'valeur'); }),
+              Object.keys(parNature).map(function (k) { return totalAssurance(parNature[k]); }),
               { height: 260, legend: 'bottom' })),
           U.card('Prestations par fonction',
             G.barres(Object.keys(parFonction),
@@ -4152,7 +5173,7 @@
               { horizontal: true, height: 260 })),
           U.card('Les dix agents les plus pris en charge',
             K.ranking(noms.map(function (k) {
-              return { label: k, value: C.sum(parAgent[k], 'valeur'), tone: 'success' };
+              return { label: k, value: totalAssurance(parAgent[k]), tone: 'success' };
             }), { format: function (v) { return C.money(v, false); } })),
         ]));
 
@@ -4161,7 +5182,7 @@
         if (mois.length > 1) {
           vue.appendChild(U.card('Valeur mensuelle de l’avantage',
             G.ligne(mois.map(function (m) { return C.moisAnnee(new Date(m + '-01')); }),
-              [{ label: 'FCFA', data: mois.map(function (m) { return C.sum(parMois[m], 'valeur'); }), color: G.TONES.vert }],
+              [{ label: 'FCFA', data: mois.map(function (m) { return totalAssurance(parMois[m]); }), color: G.TONES.vert }],
               { height: 240 })));
         }
 
@@ -4181,7 +5202,7 @@
             consultations: v.filter(function (x) { return x.nature === 'Consultation'; }).length,
             analyses: v.filter(function (x) { return x.nature === 'Analyse'; }).length,
             hospitalisations: v.filter(function (x) { return x.nature === 'Hospitalisation'; }).length,
-            valeur: C.sum(v, 'valeur'),
+            valeur: totalAssurance(v), sansMontant: sansMontantAssurance(v),
           };
         }).sort(function (a, b) { return b.valeur - a.valeur; });
 
@@ -4191,7 +5212,7 @@
           cartouche: [['Période', selPeriode.options[selPeriode.selectedIndex].text],
             ['Agents concernés', C.num(lignes.length)],
             ['Prestations', C.num(rows.length)],
-            ['Valeur totale', C.money(C.sum(rows, 'valeur'))],
+            ['Valeur totale', C.money(totalAssurance(rows))],
             ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
           contenu: el('div.space-y-3', null, [
             P.tableau([
@@ -4201,7 +5222,7 @@
               { label: 'Consult.', align: 'right', value: function (r) { return C.num(r.consultations); }, somme: function (r) { return r.consultations; }, formatTotal: function (v) { return C.num(v); } },
               { label: 'Analyses', align: 'right', value: function (r) { return C.num(r.analyses); }, somme: function (r) { return r.analyses; }, formatTotal: function (v) { return C.num(v); } },
               { label: 'Hospit.', align: 'right', value: function (r) { return C.num(r.hospitalisations); }, somme: function (r) { return r.hospitalisations; }, formatTotal: function (v) { return C.num(v); } },
-              { label: 'Valeur prise en charge', align: 'right', value: function (r) { return C.money(r.valeur, false); }, somme: function (r) { return r.valeur; } },
+              { label: 'Valeur prise en charge', align: 'right', value: function (r) { return C.money(r.valeur, false) + (r.sansMontant ? ' (' + r.sansMontant + ' non renseignée' + (r.sansMontant > 1 ? 's' : '') + ')' : ''); }, somme: function (r) { return r.valeur; } },
             ], lignes, { total: true, totalLabel: 'TOTAL' }),
             el('p.mt-3.text-\[10px\].italic', {
               text: 'Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par '
@@ -4227,15 +5248,23 @@
       + 'Les vacations restent celles du <strong>planning validé</strong> — même collection que « Planning & gardes », '
       + 'donc toute modification y est immédiatement visible. Le repos de 24 h qui suit une garde reste opposable.',
     render: function (root) {
-      var agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; });
+      /* E749 : `agents` était lu UNE fois au rendu — un agent créé ou archivé ici ne paraissait ni dans la grille de rotation ni aux indicateurs avant le
+         rechargement de la page (« enregistré mais introuvable »). La liste est relue à chaque rafraîchissement. */
+      var agents = [];
+      function relireAgents() { agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; }); }
       var host = el('div.space-y-4');
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
-        { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
-        { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
-        { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
-      ]));
+      var blocKpi = el('div');
+      host.appendChild(blocKpi);
+      function rendreKpi() {
+        C.clear(blocKpi);
+        blocKpi.appendChild(U.kpiGrid([
+          { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
+          { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
+          { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
+          { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
+        ]));
+        U.icons(blocKpi);
+      }
 
       /* Légendes reprises telles quelles des plannings de la clinique */
       var legendes = el('div.grid.gap-3.sm\\:grid-cols-2');
@@ -4272,7 +5301,7 @@
       root.appendChild(host);
       return null;
 
-      function rendreTout() { rendreGrille(); rendreAgents(); rendreGraphes(); }
+      function rendreTout() { relireAgents(); rendreKpi(); rendreGrille(); rendreAgents(); rendreGraphes(); }
 
       function rendreGrille() {
       C.clear(blocGrille);
@@ -4384,7 +5413,8 @@
                   confirmLabel: 'Retirer', danger: true,
                 }).then(function (ok) {
                   if (!ok) return;
-                  var res = colPlanning.archive(existant.id);
+                  var res = PRH().retirerVacation(existant.id, 'Vacation retirée de la rotation');
+                  if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
                   m.close(); rendreTout();
                   U.toast('Vacation retirée.', {
                     type: 'success',
@@ -4399,24 +5429,10 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                /* Le repos de 24 h qui suit une garde reste opposable ici
-                   comme au planning général : deux gardes consécutives pour un
-                   agent de sécurité sont refusées. */
-                if (v.type === 'garde') {
-                  var veille = planning().filter(function (x) {
-                    return x.employeId === agent.id && x.date === C.iso(C.addDays(jour, -1)) && x.type === 'garde';
-                  })[0];
-                  if (veille) {
-                    U.toast('Incompatibilité — le repos de 24 h qui suit une garde n’est pas respecté.', {
-                      type: 'error',
-                      detail: 'Garde déjà programmée le ' + C.dateFR(C.addDays(jour, -1)) + ' pour ' + agent.nomComplet + '.',
-                    });
-                    return;
-                  }
-                }
-                v.date = C.iso(jour); v.employeId = agent.id; v.employe = agent.nomComplet;
-                v.fonction = agent.fonction; v.service = agent.service; v.statut = 'validee';
-                var res = existant ? colPlanning.update(existant.id, v) : colPlanning.insert(v);
+                /* Le contrôle du repos et de la double affectation est celui du MOTEUR, le même que le planning général. */
+                var r = PRH().poserVacation({ employeId: agent.id, date: C.iso(jour), type: v.type, observation: v.observation, existantId: existant ? existant.id : null });
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                var res = r;
                 m.close(); rendreTout();
                 U.toast('Rotation enregistrée.', {
                   type: 'success',
@@ -4442,7 +5458,7 @@
           entite: 'Agent',
           defauts: function () { return { fonction: 'securite', dateEmbauche: C.iso(AUJ), salaireBase: 40000 }; },
           transform: function (v) {
-            if (!v.matricule) v.matricule = C.nextRef('SE-', 3);
+            if (!v.matricule) v.matricule = C.referenceSuivante('SE-', 3, S.collection('personnel').all().map(function (e) { return { reference: e.matricule }; }));
             /* Sécurité, entretien et chauffeurs sont rattachés à la Direction :
                un seul intitulé de service, comme partout ailleurs. */
             v.service = 'Direction';
@@ -4459,7 +5475,7 @@
           { key: 'fonction', label: 'Fonction', text: fonctionLabel, render: function (e) { return U.badge(fonctionLabel(e.fonction), e.fonction === 'securite' ? 'navy' : 'info'); } },
           { key: 'poste', label: 'Poste' },
           { key: 'dateEmbauche', label: 'Embauche', nowrap: true, text: function (e) { return C.dateFR(e.dateEmbauche); }, render: function (e) { return C.dateFR(e.dateEmbauche); } },
-          { key: 'salaireBase', label: 'Salaire', align: 'right', text: function (e) { return C.money(e.salaireBase, false); }, render: function (e) { return C.money(e.salaireBase, false); } },
+          { key: 'salaireBase', label: 'Salaire', align: 'right', text: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); }, render: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); } },
         ],
         }));
         U.icons(blocAgents);
@@ -4540,12 +5556,13 @@
 
   var STATUTS_MISSION = [
     { id: 'projet', label: 'En projet', tone: 'neutral' },
-    { id: 'a_valider', label: 'En attente de validation DA', tone: 'warning' },
+    { id: 'a_valider', label: 'En attente de validation', tone: 'warning' },
     { id: 'validee', label: 'Validée', tone: 'info' },
     { id: 'en_cours', label: 'En cours', tone: 'info' },
     { id: 'terminee', label: 'Terminée', tone: 'success' },
     { id: 'reportee', label: 'Reportée', tone: 'warning' },
     { id: 'annulee', label: 'Annulée', tone: 'danger' },
+    { id: 'refusee', label: 'Refusée', tone: 'danger' },
   ];
 
   function statutMission(id) {
@@ -4554,7 +5571,7 @@
 
   function amorcerMissions() {
     var db = S.raw();
-    if (db.missions && db.missions.length) return;
+    if ((db.missions && db.missions.length) || !S.amorcable('missions')) return;
     var agents = S.collection('personnel').active();
     var rnd = C.seeded(1042);
     var OBJETS = [
@@ -4618,10 +5635,6 @@
       { name: 'moyen', label: 'Moyen de déplacement', type: 'select', options: ['Véhicule de service', 'Transport en commun', 'Ambulance', 'Moyen personnel'] },
       { name: 'dateDepart', label: 'Date de départ', type: 'date', required: true },
       { name: 'dateRetour', label: 'Date de retour', type: 'date', required: true },
-      {
-        name: 'statutMission', label: 'État', type: 'select', required: true,
-        options: STATUTS_MISSION.map(function (s) { return { value: s.id, label: s.label }; }),
-      },
       { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
     ];
   }
@@ -4631,8 +5644,8 @@
     description: 'Missions et formations du personnel : affectation, prise en charge, validation et états signés.',
     regle: 'Un départ en mission ou en formation suppose un <strong>ordre écrit</strong> précisant l’agent, '
       + 'l’objet, la destination, les dates et la <strong>structure qui prend en charge</strong>. '
-      + 'La <strong>Directrice Administrative valide</strong> avant le départ ; l’ordre imprimé porte les '
-      + 'signatures de départ et de retour, et justifie l’absence au planning.',
+      + 'L’<strong>avis du chef de service</strong> est consigné, puis l’ordre est validé selon le <strong>circuit réglé au poste</strong> (surveillant seul par défaut) avant le départ ; '
+      + 'l’ordre imprimé porte les signatures de départ et de retour, et justifie l’absence au planning.',
     render: function (root) {
       amorcerMissions();
       dessiner();
@@ -4650,7 +5663,7 @@
           {
             label: 'En attente de validation', value: C.num(aValider.length), icon: 'stamp',
             tone: aValider.length ? 'warning' : 'success',
-            hint: aValider.length ? 'Validation de la DA attendue' : 'Rien en attente',
+            hint: aValider.length ? 'Validation attendue (circuit réglé au poste)' : 'Rien en attente',
           },
           { label: 'Missions en cours', value: C.num(enCours.length), icon: 'plane', tone: 'info' },
           { label: 'Terminées', value: C.num(rows.filter(function (m) { return m.statutMission === 'terminee'; }).length), icon: 'check-circle-2', tone: 'success' },
@@ -4658,25 +5671,29 @@
 
         if (aValider.length) {
           host.appendChild(K.note('<strong>' + aValider.length + ' ordre(s) en attente de validation.</strong> '
-            + 'Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative.',
+            + 'Aucun départ ne devrait intervenir avant la validation du circuit.',
           { tone: 'warning', icon: 'stamp' }));
         }
 
+        host.appendChild(carteReglagesRh(dessiner));
         var creer = K.creer(colMissions(), champsMission, {
           titre: 'Nouvel ordre de mission', entite: 'Ordre de mission',
           defauts: function () {
             return {
-              nature: 'Mission', statutMission: 'a_valider',
+              nature: 'Mission',
               dateDepart: C.iso(AUJ), dateRetour: C.iso(C.addDays(AUJ, 2)),
               structurePrise: C.BRAND.nom,
             };
           },
           transform: function (v) {
             var a = S.collection('personnel').get(v.agentId);
-            v.reference = 'OM-2026-' + C.pad(colMissions().all().length + 1, 4);
+            /* Millésime = année de la date de départ (la pièce), rang par année, archivés compris. */
+            v.reference = C.referenceSuivante('OM-' + String(v.dateDepart || C.iso(AUJ)).slice(0, 4) + '-', 4, colMissions().all().concat(colMissions().archived()));
             v.agent = a ? a.nomComplet : '—';
             v.fonction = a ? a.poste : '';
-            return v;
+            /* UN ORDRE NAÎT À VALIDER (lot L5) : l'avis du chef de service puis le circuit le tranchent ; l'état ne se saisit pas à la main. */
+            v.statutMission = 'a_valider';
+            return Object.assign(v, PRH().naissance());
           },
           apres: dessiner,
         });
@@ -4735,24 +5752,31 @@
             {
               key: 'valideePar', label: 'Validation',
               render: function (m) {
-                return m.valideePar
-                  ? el('div', null, [
+                var etat = PRH().etatValidation('missions', m);
+                var avis = m.avisChefService;
+                return el('div', null, [
+                  m.valideePar ? el('div', null, [
                     el('p.text-xs.text-success-700', { text: m.valideePar }),
                     el('p.text-\\[10px\\].text-slate-400', { text: m.valideeLe ? C.dateFR(m.valideeLe) : '' }),
-                  ])
-                  : el('span.text-xs.text-warning-600', { text: 'non validé' });
+                  ]) : (etat === 'refuse' ? el('p.text-xs.text-danger-700', { text: 'Refusé : ' + (m.motifRefus || '') })
+                    : el('span.text-xs.text-warning-600', { text: etat === 'valide_surveillant' ? 'validé par le surveillant, DAF attendue' : 'non validé' })),
+                  avis ? el('p.text-xs.text-slate-500', { text: 'Avis ' + (avis.avis === 'favorable' ? 'favorable' : 'défavorable') + ' de ' + avis.chef }) : el('p.text-xs.text-slate-400', { text: 'Avis du chef de service : à consigner' }),
+                ]);
               },
             },
           ],
           onRowClick: fiche,
           rowActions: function (m) {
             var actions = [];
-            if (m.statutMission === 'a_valider') {
-              actions.push(K.iconBtn('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
+            /* E623 : valider, terminer et reporter ÉCRIVENT — commandes déclarées comme telles (absentes sans le droit d'édition). */
+            var ecrit = function (c) { if (c) actions.push(c); };
+            if (m.statutMission === 'a_valider' && ['surveillant', 'da', 'admin'].indexOf(roleCourant()) >= 0 && PRH().etatValidation('missions', m) !== 'valide') {
+              actions.push(K.iconBtn('message-square-quote', 'Avis du chef de service', function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); avisChef(m); }, 'ghost'));
             }
+            commandesValidation('missions', m, dessiner).forEach(function (x) { actions.push(x); });
             if (m.statutMission === 'validee' || m.statutMission === 'en_cours') {
-              actions.push(K.iconBtn('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
-              actions.push(K.iconBtn('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
+              ecrit(K.commandeIcone('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
+              ecrit(K.commandeIcone('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
             }
             actions.push(K.iconBtn('printer', 'Imprimer l’ordre', function () { imprimer(m); }));
             return actions.concat(K.actionsLigne(colMissions(), champsMission, { entite: 'ordre de mission' })(m));
@@ -4764,23 +5788,26 @@
         U.icons(root);
       }
 
-      function valider(m) {
-        U.confirm({
-          title: 'Valider l’ordre de mission ' + m.reference + ' ?',
-          message: 'La validation autorise le départ de ' + m.agent + ' du ' + C.dateFR(m.dateDepart)
-            + ' au ' + C.dateFR(m.dateRetour) + ', aux frais de ' + m.structurePrise + '. '
-            + 'Elle est journalisée au nom de la Directrice Administrative (RG-12).',
-          confirmLabel: 'Valider l’ordre',
-        }).then(function (ok) {
-          if (!ok) return;
-          var res = colMissions().update(m.id, {
-            statutMission: 'validee', valideePar: 'TAKI Alimatou', valideeLe: C.iso(AUJ),
-          });
-          dessiner();
-          U.toast('Ordre de mission validé.', {
-            type: 'success', detail: m.agent + ' — départ le ' + C.dateFR(m.dateDepart),
-            undo: function () { res.undo(); dessiner(); },
-          });
+      /** L'avis du chef de service, consigné par un habilité du circuit (le chef n'a pas de compte : il donne son avis, un autre le consigne). */
+      function avisChef(m) {
+        var f = U.form([
+          { name: 'chef', label: 'Chef de service qui donne l’avis', type: 'select', required: true, col: 'full',
+            options: C.sortBy(personnel().filter(function (e) { return e.id !== m.agentId; }), 'nomComplet').map(function (e) { return { value: e.nomComplet, label: e.nomComplet, detail: e.poste }; }) },
+          { name: 'avis', label: 'Avis', type: 'select', required: true, options: [{ value: 'favorable', label: 'Favorable' }, { value: 'defavorable', label: 'Défavorable' }] },
+          { name: 'motif', label: 'Motif (obligatoire si défavorable)', type: 'textarea', rows: 2, col: 'full' },
+        ], { avis: 'favorable', chef: m.avisChefService ? m.avisChefService.chef : '' });
+        var mod = U.modal({
+          title: 'Avis du chef de service', subtitle: m.reference + ' · ' + m.agent, size: 'md', body: f,
+          footer: [
+            K.btn('Annuler', { onclick: function () { mod.close(); } }),
+            K.btn('Consigner l’avis', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r = PRH().avisMission(m.id, { avis: v.avis, chef: v.chef, motif: v.motif });
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+              mod.close(); dessiner();
+              U.toast('Avis consigné.', { type: 'success', undo: function () { r.undo(); dessiner(); } });
+            } }),
+          ],
         });
       }
 
@@ -4841,7 +5868,7 @@
             ]),
           ]),
           signatures: [{ role: 'L’agent', nom: m.agent },
-            { role: 'La Directrice Administrative', nom: m.valideePar || 'TAKI Alimatou' }],
+            { role: 'La Directrice Administrative', nom: m.valideePar || '' }],
         });
       }
     },
@@ -5029,7 +6056,8 @@
       /* La collection est amorcée par CET écran : lui seul la lit. */
       function amorcer() {
         var col = colFichesPoste();
-        if (col.all().length) return;
+        /* Un jeu vidé ne recense plus les postes d'office : les fiches de démonstration ne renaissent pas. */
+        if (col.all().length || !S.amorcable('fichesPoste')) return;
         documentees().forEach(function (f) { col.insert(Object.assign({ redigee: true }, f)); });
         /* Les autres postes reçoivent une fiche VIDE, marquée : la clinique
            n'a remis que deux documents, en inventer douze donnerait des
@@ -5093,11 +6121,18 @@
             hint: 'ils rendent l’évaluation NS 131 mesurable' },
         ]));
 
-        vue.appendChild(K.note('Seules <strong>deux fiches</strong> proviennent d’un document remis par la '
-          + 'clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est '
-          + '<strong>vide, marquée « à rédiger »</strong> — les inventer donnerait à la clinique des missions '
-          + 'qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents.',
-        { tone: 'warning', icon: 'file-question' }));
+        if (!rows.length) {
+          vue.appendChild(K.note('Aucune fiche de poste n’est enregistrée. Les fiches de démonstration (deux '
+            + 'descriptions remises par la clinique, vingt-six postes recensés « à rédiger ») reviennent avec '
+            + '« Régénérer le jeu de données » ; sinon, créer une fiche avec « Nouvelle fiche de poste ».',
+          { tone: 'info', icon: 'file-question' }));
+        } else {
+          vue.appendChild(K.note('Seules <strong>deux fiches</strong> proviennent d’un document remis par la '
+            + 'clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est '
+            + '<strong>vide, marquée « à rédiger »</strong> — les inventer donnerait à la clinique des missions '
+            + 'qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents.',
+          { tone: 'warning', icon: 'file-question' }));
+        }
 
         vue.appendChild(U.dataTable({
           rows: C.sortBy(rows, 'intitule'),
@@ -5474,6 +6509,7 @@
 
       function pointages() {
         return S.collection('presences').active().filter(function (x) {
+          if (!PRH().compte('presences', x)) return false;   /* un pointage non validé ne compte pas dans le taux de présence */
           var d = String(x.date || '').slice(0, 10);
           if (dDu.value && d < dDu.value) return false;
           if (dAu.value && d > dAu.value) return false;
@@ -5671,10 +6707,9 @@
     },
     pointage: {
       libelle: 'Le badge sert-il de support de POINTAGE ?',
-      valeur: 'Non — décision non prise',
-      motif: 'S’il pointe, il se relie au registre des présences (M10) et la conception change : '
-        + 'lecteur à l’entrée, horodatage, traitement des oublis de badge. Tant que ce n’est pas '
-        + 'tranché, le badge IDENTIFIE seulement.',
+      valeur: 'Oui par défaut (décision du 09/11/2026)',
+      motif: 'Réglable au poste : un badge vérifié valide crée un pointage « à valider » au registre des présences (M10). '
+        + 'Reste à arrêter par la Direction : le délai entre deux pointages (5 minutes proposées) et le traitement des oublis de badge.',
     },
   };
 
@@ -5759,6 +6794,86 @@
       message: 'Valable jusqu’au ' + (b.expireLe ? C.dateFR(b.expireLe) : '—') + '.' };
   }
 
+  /* ==========================================================================
+   * LE BADGE SERT DE POINTAGE (lot L8, 10/11/2026, Direction, Planning Q7)
+   * --------------------------------------------------------------------------
+   * Décision du 09/11/2026 (la remarque l'emporte sur la case « différer ») : le badge sert de pointage, réglage oui/non, OUI par défaut, relié au registre des
+   * présences. Un badge présenté et vérifié VALIDE crée au registre un pointage « à valider » (arrivée, puis départ au passage suivant) : il suit le circuit du lot L5,
+   * donc ne compte pas tant qu'il n'est pas validé (RG-11). Le code QR ne porte toujours que le matricule et le numéro de série (vague 54) : la vérification passe par
+   * le logiciel, qui lit le badge au registre. REFUS NOMMÉS (code, motif, geste) : badge illisible, inconnu, retiré, expiré, non remis, incohérent avec son matricule,
+   * pointage désactivé, deux pointages trop rapprochés, journée complète, présence déjà validée ou autre qu'un pointage. Chaque passage, refusé ou non, est journalisé.
+   * LE DÉLAI ENTRE DEUX POINTAGES est un paramètre en base (minutes) : aucun document ne le fixe, le défaut de 5 minutes est une PROPOSITION « à valider ».
+   * Ce que le badge n'infère PAS : le retard (aucun document ne fixe l'heure d'arrivée attendue) ; l'état naît « présent » et le surveillant régularise s'il y a lieu.
+   * ======================================================================== */
+  var DELAI_POINTAGE_DEFAUT = 5;
+  var ROLES_POINTAGE_BADGE = ['surveillant', 'da', 'admin', 'direction', 'rh'];
+  function refusPointage(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste }, extra || {}); }
+  function pointageBadgeActif() { return S.reglage('planningBadgeSertDePointage', true) !== false; }
+  function delaiPointageBadge() {
+    var v = Number(S.reglage('planningBadgeDelaiMinutes', DELAI_POINTAGE_DEFAUT));
+    return isFinite(v) && v >= 0 ? v : DELAI_POINTAGE_DEFAUT;
+  }
+  function reglerPointageBadge(o) {
+    o = o || {};
+    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusPointage('REGLAGE_RESERVE', 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+    var delai = o.delai === undefined || o.delai === null || o.delai === '' ? delaiPointageBadge() : Number(o.delai);
+    if (!isFinite(delai) || delai < 0 || delai !== Math.floor(delai) || delai > 720) return refusPointage('DELAI_INVALIDE', 'Le délai entre deux pointages est un nombre entier de minutes, de 0 à 720.', 'Saisir un nombre entier de minutes.');
+    var avant = { actif: pointageBadgeActif(), delai: delaiPointageBadge() };
+    var actif = o.actif === undefined ? avant.actif : o.actif === true;
+    S.setReglage('planningBadgeSertDePointage', actif);
+    S.setReglage('planningBadgeDelaiMinutes', delai);
+    S.log('Le badge sert de pointage', 'M10', 'reglage', 'planningBadgeSertDePointage', avant, { actif: actif, delai: delai, motif: o.motif || null });
+    return { ok: true, actif: actif, delai: delai, avant: avant };
+  }
+  function minutesHeure(h) { var m = /^(\d{1,2}):(\d{2})/.exec(String(h || '')); return m ? Number(m[1]) * 60 + Number(m[2]) : null; }
+  function journaliserPointage(texte, b, code, motif) {
+    S.journaliserAcces({ action: 'Pointage par badge', module: 'M10', entite: 'Badge', reference: b ? b.numero : String(texte).slice(0, 40), cible: b ? b.agent : null,
+      ecran: 'm10-badges-verification', motif: code + (motif ? ' : ' + motif : ''), trouve: !!b });
+  }
+  /** Présente un badge au pointage : { ok, geste: 'arrivee' | 'depart', presenceId } ou le refus nommé. `o.date` et `o.heure` (HH:MM) fixent l'instant, sinon l'horloge. */
+  function pointerParBadge(texte, o) {
+    o = o || {};
+    var jour = o.date || C.iso(C.aujourdhui());
+    var heure = o.heure || (function () { var d = new Date(); return C.pad(d.getHours(), 2) + ':' + C.pad(d.getMinutes(), 2); })();
+    function refus(code, motif, geste, b, extra) { journaliserPointage(texte, b || null, code, motif); return refusPointage(code, motif, geste, extra); }
+    if (ROLES_POINTAGE_BADGE.indexOf(roleCourant()) < 0) return refus('POINTAGE_RESERVE', 'Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).', 'Présenter le badge à un habilité.');
+    if (!pointageBadgeActif()) return refus('POINTAGE_DESACTIVE', 'Le badge ne sert pas de pointage : le réglage est coupé au poste de la mère.', 'Vérifier le badge seulement, ou demander à la Directrice Administrative d’activer le pointage par badge.');
+    var lu = global.SIGH.parcours.lireBadgeQR(texte);
+    if (!lu) return refus('BADGE_ILLISIBLE', 'Aucun numéro de badge n’a été lu.', 'Scanner le badge ou saisir son numéro de série.');
+    var b = colBadges().all().filter(function (x) { return String(x.numero || '').toUpperCase() === String(lu.numero || '').toUpperCase(); })[0] || null;
+    var v = verdictBadge(b, jour);
+    var codes = { inconnu: 'BADGE_INCONNU', retire: 'BADGE_RETIRE', expire: 'BADGE_EXPIRE', non_remis: 'BADGE_NON_REMIS' };
+    if (v.code !== 'valide') return refus(codes[v.code] || 'BADGE_REFUSE', v.label + '. ' + v.message, v.code === 'expire' ? 'Faire rééditer le badge, et déclarer la présence au registre.' : 'Ne pas pointer ; déclarer la présence au registre, ou signaler le badge à la RH.', b);
+    if (lu.matricule && b.matricule && String(lu.matricule) !== String(b.matricule)) return refus('BADGE_INCOHERENT', 'Le code présenté annonce le matricule ' + lu.matricule + ', le registre porte le matricule ' + b.matricule + ' pour ce numéro de série.', 'Retenir le badge et le signaler à la RH.', b);
+    var agent = S.collection('personnel').get(b.personnelId);
+    if (!agent || agent.statut === 'archive') return refus('AGENT_INTROUVABLE', 'L’agent de ce badge n’existe plus au personnel.', 'Signaler le badge à la RH.', b);
+    var col = S.collection('presences', { module: 'M10', entite: 'Presence' });
+    var duJour = col.active().filter(function (x) { return x.employeId === agent.id && x.date === jour; });
+    var h = minutesHeure(heure);
+    var dernier = null;
+    duJour.forEach(function (x) { [x.heureArrivee, x.heureDepart].forEach(function (t) { var m = minutesHeure(t); if (m !== null && (dernier === null || m > dernier)) dernier = m; }); });
+    var delai = delaiPointageBadge();
+    if (dernier !== null && delai > 0 && h - dernier < delai) return refus('POINTAGE_TROP_RAPPROCHE', 'Deux pointages de ' + agent.nomComplet + ' à moins de ' + delai + ' minute' + (delai > 1 ? 's' : '') + ' d’intervalle : le dernier date de ' + C.pad(Math.floor(dernier / 60), 2) + ':' + C.pad(dernier % 60, 2) + '.', 'Attendre ' + (delai - (h - dernier)) + ' minute(s) avant de pointer de nouveau.', b, { delai: delai });
+    var ouverte = duJour.filter(function (x) { return x.heureArrivee && !x.heureDepart; })[0];
+    var autre = duJour.filter(function (x) { return !x.heureArrivee; })[0];
+    if (ouverte) {
+      if (ouverte.validationEtat === 'valide') return refus('POINTAGE_PRESENCE_VALIDEE', 'La présence du jour de ' + agent.nomComplet + ' est déjà validée : un pointage validé ne se modifie pas.', 'La régulariser au registre des présences (motif, date et auteur consignés).', b);
+      var rd = col.update(ouverte.id, { heureDepart: heure, departParBadge: b.id }, { journal: { action: 'Départ pointé par badge', module: 'M10', entite: 'Presence', avant: { heureDepart: null }, apres: { heureDepart: heure, badge: b.numero } } });
+      if (!rd) return refus('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture du départ.', 'Relire le journal d’audit.', b);
+      journaliserPointage(texte, b, 'DEPART', heure);
+      return { ok: true, geste: 'depart', presenceId: ouverte.id, agentId: agent.id, badgeId: b.id, heure: heure, etat: PRH_validation(ouverte), undo: rd.undo };
+    }
+    if (duJour.length) return refus(autre ? 'POINTAGE_PRESENCE_EXISTANTE' : 'POINTAGE_JOURNEE_COMPLETE', autre ? 'Une présence du jour est déjà portée pour ' + agent.nomComplet + ' (' + autre.etat + ') sans heure d’arrivée.' : 'L’arrivée et le départ de ' + agent.nomComplet + ' sont déjà pointés aujourd’hui.', autre ? 'La régulariser au registre des présences.' : 'Aucun pointage de plus aujourd’hui ; régulariser au registre si une heure est fausse.', b);
+    var naissance = PRH().naissance();
+    var rec = Object.assign({ date: jour, employeId: agent.id, employe: agent.nomComplet, matricule: agent.matricule, service: agent.service, etat: 'present', heureArrivee: heure, origine: 'badge', badgeId: b.id, badgeNumero: b.numero }, naissance);
+    var ri = col.insert(rec, { journal: { action: 'Arrivée pointée par badge', module: 'M10', entite: 'Presence', avant: null, apres: { agent: agent.nomComplet, heureArrivee: heure, badge: b.numero, validationEtat: 'a_valider' } } });
+    if (!ri) return refus('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture du pointage.', 'Relire le journal d’audit.', b);
+    journaliserPointage(texte, b, 'ARRIVEE', heure);
+    return { ok: true, geste: 'arrivee', presenceId: ri.record.id, agentId: agent.id, badgeId: b.id, heure: heure, etat: 'a_valider', undo: ri.undo };
+  }
+  function PRH_validation(rec) { return PRH().etatValidation('presences', rec); }
+  global.SIGH.pointageBadge = { actif: pointageBadgeActif, delai: delaiPointageBadge, regler: reglerPointageBadge, pointer: pointerParBadge, DELAI_DEFAUT: DELAI_POINTAGE_DEFAUT, ROLES: ROLES_POINTAGE_BADGE };
+
   /* --------------------------------------------------------------------------
    * Amorçage — trois écrans de M10 lisent ces collections, et une page ne
    * charge que le module de son écran : l'amorçage vit donc au module, appelé
@@ -5785,7 +6900,7 @@
     }
 
     var col = colBadges();
-    if (col.all().length) return;
+    if (col.all().length || !S.amorcable('badges')) return;
     var rnd = C.seeded(2609);
     var agents = C.sortBy(personnel(), 'matricule').slice(0, 14);
     var n = 0;
@@ -6087,7 +7202,7 @@
           confirmLabel: 'Remis',
         }).then(function (rep) {
           if (!rep) return;
-          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(AUJ) });
+          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(C.aujourdhui()) });
           afficher();
           U.toast('Badge remis.', { type: 'success',
             undo: function () { res.undo(); afficher(); } });
@@ -6185,13 +7300,13 @@
       + 'l’établissement, si bien qu’une autre clinique n’a rien à retoucher. L’en-tête officiel ne '
       + 's’y applique <strong>pas</strong> tel quel — un badge n’est pas un état administratif : logo, '
       + 'dénomination et devise, mais ni IFU ni RCCM, qui sont des mentions fiscales. Les mentions du '
-      + 'verso sont une <strong>proposition à valider</strong> : elles engagent la clinique envers le porteur.',
+      + 'verso engagent la clinique envers le porteur : un modèle n’est arrêté que par la Direction, la DAF ou l’administrateur.',
     render: function (root) {
       amorcerBadges();
       return K.crud({
         collection: 'modelesBadge', module: 'M10',
         entite: 'modèle de badge', entiteP: 'modèles de badge',
-        pageSize: 8, defaultSort: 'libelle',
+        pageSize: 8, defaultSort: 'libelle', validation: { famille: 'modeles_badge' },
         columns: [
           { key: 'libelle', label: 'Modèle' },
           { key: 'format', label: 'Format' },
@@ -6203,7 +7318,7 @@
             return m.defaut ? U.badge('Modèle par défaut', 'success') : el('span.text-slate-300', { text: '—' });
           } },
           { key: 'aValider', label: 'Statut', render: function (m) {
-            return m.aValider ? U.badge('Proposition à valider', 'warning') : U.badge('Arrêté', 'success');
+            return K.badgeValidation('modeles_badge', m.id) || (m.aValider ? U.badge('À valider', 'warning') : U.badge('Arrêté', 'success'));
           } },
         ],
         fields: [
@@ -6359,13 +7474,21 @@
       var bouton = K.btn('Vérifier', { variant: 'primary', icon: 'scan-face', onclick: verifier });
       saisie.addEventListener('keydown', function (e) { if (e.key === 'Enter') verifier(); });
 
+      var PB = global.SIGH.pointageBadge;
+      var peutPointer = PB.ROLES.indexOf(roleCourant()) >= 0 && PB.actif();
+      var boutonPointer = peutPointer ? K.btn('Pointer', { variant: 'success', icon: 'log-in', onclick: pointer }) : null;
+      var blocPointage = el('div');
+      host.appendChild(blocPointage);
+      rendrePointage();
+
       host.appendChild(U.card('Badge présenté', el('div.space-y-3', null, [
         el('div.flex.flex-wrap.items-end.gap-2', null, [
           el('div.min-w-\\[18rem\\].flex-1', null, [
             el('label.label', { text: 'Numéro de série ou code scanné' }), saisie,
           ]),
           bouton,
-        ]),
+          boutonPointer,
+        ].filter(Boolean)),
         K.note('La <strong>saisie manuelle est acceptée</strong> autant que le scan : refuser le numéro '
           + 'à la main rendrait le contrôle impossible le jour où le QR est abîmé — c’est-à-dire le jour '
           + 'où il sert le plus.', { tone: 'info', icon: 'keyboard' }),
@@ -6383,6 +7506,61 @@
 
       U.icons(host);
       return null;
+
+      function rendrePointage() {
+        C.clear(blocPointage);
+        var actions = [];
+        if (['admin', 'da'].indexOf(roleCourant()) >= 0) {
+          actions.push(K.btn('Régler', { size: 'sm', icon: 'settings-2', onclick: function () {
+            var f = U.form([
+              { name: 'actif', label: 'Le badge sert de pointage', type: 'checkbox', col: 'full' },
+              { name: 'delai', label: 'Délai minimal entre deux pointages (minutes)', type: 'number', required: true, col: 'full' },
+            ], { actif: PB.actif(), delai: PB.delai() });
+            var m = U.modal({
+              title: 'Pointage par badge', size: 'md',
+              body: el('div.space-y-3', null, [K.note('Le délai de ' + PB.DELAI_DEFAUT + ' minutes est une proposition à valider par la Direction. Le réglage se règle à la mère et se synchronise.', { tone: 'info' }), f]),
+              footer: [K.btn('Annuler', { onclick: function () { m.close(); } }),
+                K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+                  var v = f.collect(); if (!v) return;
+                  var r = PB.regler({ actif: v.actif === true, delai: v.delai });
+                  if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                  m.close(); global.SIGH.app.go('m10-badges-verification');
+                  U.toast('Réglage enregistré.', { type: 'success' });
+                } })],
+            });
+          } }));
+        }
+        blocPointage.appendChild(U.card('Pointage par badge', el('div.space-y-2', null, [
+          U.descList([
+            ['Le badge sert de pointage', PB.actif() ? 'Oui' : 'Non'],
+            ['Délai minimal entre deux pointages', PB.delai() + ' minute' + (PB.delai() > 1 ? 's' : '') + (PB.delai() === PB.DELAI_DEFAUT ? ' (valeur d’attente, à valider)' : '')],
+          ], 'grid-cols-1'),
+          el('p.text-xs.text-slate-500', { text: 'Un badge vérifié valide crée une présence « à valider » (arrivée, puis départ au passage suivant) : elle ne compte pas tant que le circuit de validation ne l’a pas tranchée.' }),
+        ]), actions));
+        U.icons(blocPointage);
+      }
+
+      function pointer() {
+        var texte = String(saisie.value || '').trim();
+        C.clear(reponse);
+        if (!texte) { U.toast('Saisir ou scanner un numéro de badge.', { type: 'warning' }); return; }
+        var r = PB.pointer(texte);
+        if (!r.ok) {
+          reponse.appendChild(el('div.rounded-xl.border.border-danger-300.bg-danger-50.p-4', null, [
+            el('p.text-xl.font-bold.text-danger-700', { text: 'Pointage refusé' }),
+            el('p.mt-1.text-sm.text-slate-700', { text: r.motif }),
+            el('p.mt-1.text-xs.text-slate-500', { text: r.geste }),
+          ]));
+          U.icons(reponse);
+          return;
+        }
+        var ag = S.collection('personnel').get(r.agentId);
+        reponse.appendChild(el('div.rounded-xl.border.border-success-300.bg-success-50.p-4', null, [
+          el('p.text-xl.font-bold.text-success-700', { text: r.geste === 'arrivee' ? 'Arrivée pointée' : 'Départ pointé' }),
+          el('p.mt-1.text-sm.text-slate-700', { text: (ag ? ag.nomComplet : '') + ' à ' + r.heure + '. Présence à valider par le circuit.' }),
+        ]));
+        U.icons(reponse);
+      }
 
       function verifier() {
         var texte = String(saisie.value || '').trim();
@@ -6437,6 +7615,137 @@
       }
     },
   });
+
+
+  /* ==========================================================================
+   * MON ESPACE (lot L7, 10/11/2026) : l'espace « Mes » de l'agent, ses dix-sept rubriques, en LECTURE
+   * --------------------------------------------------------------------------
+   * Ouvert à tout agent connecté sous son propre compte (`universel`), y compris sur un poste partagé en secours (Direction, Planning Q6). Chaque rubrique est
+   * lue par `SIGH.espaceMes.lire`, filtrée sur l'agent de la session : aucun droit d'écran sur une collection entière n'est accordé pour cela. Rien ne se saisit
+   * ici : chaque geste (demande de congé, pointage, proposition) reste à son écran, qui porte ses propres droits.
+   * ======================================================================== */
+  var COLONNES_MES = {
+    fiche_poste: [['Intitulé', 'intitule'], ['Rattachement', 'rattachement'], ['Résumé', 'resume']],
+    fiche_paie: [['Référence', 'reference'], ['Période', 'periode'], ['Brut', 'brut', 'money'], ['Retenues', 'totalRetenues', 'money'], ['Net à payer', 'net', 'money'], ['Diffusée le', 'dateDiffusion', 'date']],
+    contrat: [['Référence', 'reference'], ['Nature', 'nature'], ['Poste', 'poste'], ['Début', 'dateDebut', 'date'], ['Fin', 'dateFin', 'date']],
+    planning: [['Date', 'date', 'date'], ['Vacation', 'type'], ['Service', 'service'], ['Régime', 'regime']],
+    presences: [['Date', 'date', 'date'], ['État', 'etat'], ['Arrivée', 'heureArrivee'], ['Départ', 'heureDepart']],
+    conges: [['Référence', 'reference'], ['Nature', 'nature'], ['Du', 'dateDebut', 'date'], ['Au', 'dateFin', 'date'], ['Décision', 'statutConge']],
+    missions: [['Référence', 'reference'], ['Objet', 'objet'], ['Destination', 'destination'], ['Départ', 'dateDepart', 'date'], ['Retour', 'dateRetour', 'date'], ['Décision', 'statutMission']],
+    primes: [['Période', 'periode'], ['Primes', 'totalPrimes', 'money'], ['Heures supplémentaires', 'heuresSupMontant', 'money']],
+    evenements: [['Référence', 'reference'], ['Événement', 'libelle'], ['Date', 'date', 'date']],
+    participations: [['Événement', 'evenementLibelle'], ['Montant', 'montant', 'money'], ['Mode', 'mode'], ['Règlement', 'statutPaiement']],
+    agenda: [['Date', 'date', 'date'], ['Patient', 'patient'], ['Nature', 'type'], ['Motif', 'motif']],
+    rendez_vous: [['Date', 'date', 'date'], ['Praticien', 'medecin'], ['Nature', 'type'], ['Motif', 'motif']],
+  };
+  function celluleMes(v, f) {
+    if (v === null || v === undefined || v === '') return '—';
+    if (f === 'date') return C.dateFR(v);
+    if (f === 'money') return C.money(v, false);
+    return String(v);
+  }
+  global.SIGH.screen('m10-mes', {
+    title: 'Mon espace',
+    description: 'Mes informations d’agent, en lecture : poste, paie, contrat, planning, présences, congés, missions, primes, événements, assurance, notes de service, agenda.',
+    regle: 'Cet espace montre <strong>vos</strong> données et celles d’aucun autre agent (RG-13). Il se lit, il ne se saisit pas : chaque demande reste à son écran. '
+      + 'Sur un <strong>poste partagé</strong>, ouvrez votre propre session ; le compte d’un poste n’a pas d’espace « Mes ». '
+      + 'À la déconnexion, l’affichage est vidé ; au verrou, seule la rubrique ouverte est gardée. La fiche de paie est la <strong>pièce émise</strong>, jamais recalculée.',
+    render: function (root) {
+      var host = el('div.space-y-4');
+      var E = global.SIGH.espaceMes;
+      var a = E.agent();
+      if (['admin', 'da'].indexOf(roleCourant()) >= 0) host.appendChild(carteCopiePaie(function () { global.SIGH.app.go('m10-mes'); }));
+      if (!a.ok) {
+        host.appendChild(U.card('Espace non disponible', U.empty(a.motif, { icon: 'user-x', hint: a.geste })));
+        root.appendChild(host);
+        U.icons(host);
+        return null;
+      }
+      var courante = E.etat('rubrique');
+      if (!E.rubrique(courante)) courante = E.RUBRIQUES[0].id;
+      var liste = el('div.card');
+      var contenu = el('div.space-y-4');
+      host.appendChild(el('div.grid.gap-4.lg\\:grid-cols-4', null, [liste, el('div.lg\\:col-span-3', null, contenu)]));
+      root.appendChild(host);
+      dessiner();
+      return null;
+
+      function dessiner() {
+        C.clear(liste); C.clear(contenu);
+        var corps = el('div.card-body.space-y-1');
+        E.RUBRIQUES.forEach(function (r) {
+          var lu = E.lire(r.id);
+          var b = el('button.flex.w-full.items-center.justify-between.rounded-lg.px-3.py-2.text-left.text-sm', {
+            type: 'button', class: r.id === courante ? 'bg-navy-50 font-semibold text-navy-900' : 'text-slate-700 hover:bg-slate-50',
+            onclick: function () { courante = r.id; E.etat('rubrique', r.id); dessiner(); },
+          }, [el('span', { text: r.libelle }), el('span.text-xs.text-slate-500', { text: lu.ok ? C.num(lu.total) : '—' })]);
+          corps.appendChild(b);
+        });
+        liste.appendChild(el('div.card-head', null, el('h3.card-title', { text: 'Rubriques' })));
+        liste.appendChild(corps);
+        contenu.appendChild(rubrique(courante));
+        U.icons(host);
+      }
+
+      function rubrique(id) {
+        var r = E.rubrique(id), lu = E.lire(id);
+        if (!lu.ok) return U.card(r.libelle, U.empty(lu.motif, { icon: 'lock', hint: lu.geste }));
+        var corps = el('div.space-y-3');
+        if (r.lectureSeule) corps.appendChild(K.note('<strong>Lecture seule.</strong> La clinique soigne ses agents à 100 % : rien ne se saisit ici, rien ne remonte à la comptabilité.', { tone: 'info', icon: 'lock' }));
+        if (r.id === 'fiche_paie') corps.appendChild(K.note('Pièce <strong>émise</strong> (diffusée) : elle n’est jamais recalculée. Copie chiffrée sur le téléphone : ' + (E.copiePaieActive() ? '<strong>activée</strong>' : '<strong>désactivée</strong>') + ' au poste de la mère.', { tone: 'info', icon: 'smartphone' }));
+        if (r.calcule === 'garde' || r.calcule === 'permanence') {
+          corps.appendChild(U.kpiGrid([{ label: r.calcule === 'garde' ? 'Gardes effectuées' : 'Permanences assurées', value: C.num(lu.total), icon: 'calendar-check', tone: 'navy', hint: 'Planning validé seul' }], 'grid-cols-1'));
+        } else if (r.calcule === 'presence') {
+          corps.appendChild(U.kpiGrid([
+            { label: 'Présences', value: C.num(lu.presents), icon: 'user-check', tone: 'success' },
+            { label: 'Retards', value: C.num(lu.retards), icon: 'clock', tone: 'warning' },
+            { label: 'Absences', value: C.num(lu.absents), icon: 'user-x', tone: 'danger' },
+          ], 'grid-cols-3'));
+        } else if (r.calcule === 'notes') {
+          corps.appendChild(K.miniTable(['Note', 'Objet', 'Version'], [D.NS131, D.NS132].map(function (n) { return [n.reference, n.objet, 'Version ' + n.version]; })));
+        } else if (r.calcule === 'assurance') {
+          var as = E.assurance(E.agent().agent);
+          corps.appendChild(U.kpiGrid([
+            { label: 'Prestations prises en charge', value: C.num(as.lignes.length), icon: 'stethoscope', tone: 'info' },
+            { label: 'Valeur de l’avantage', value: C.money(as.total), icon: 'gift', tone: 'success', hint: as.sansMontant ? as.sansMontant + ' sans montant renseigné (non comptées)' : 'Ni recette, ni créance' },
+          ], 'grid-cols-2'));
+          corps.appendChild(as.lignes.length
+            ? K.miniTable(['Date', 'Nature', 'Valeur'], C.sortBy(as.lignes, 'date').reverse().map(function (l) { return [C.dateFR(l.date), l.nature, l.valeur === null ? 'Non renseigné' : C.money(l.valeur, false)]; }))
+            : U.empty('Aucune prestation.', { icon: 'shield-check' }));
+        } else {
+          var cols = COLONNES_MES[r.id] || [];
+          var fiches = lu.ids.map(function (i) { return S.collection(r.source).get(i); }).filter(Boolean);
+          corps.appendChild(fiches.length
+            ? K.miniTable(cols.map(function (c) { return c[0]; }), fiches.map(function (f) { return cols.map(function (c) { return celluleMes(f[c[1]], c[2]); }); }))
+            : U.empty('Aucune fiche à votre nom.', { icon: 'inbox' }));
+        }
+        corps.appendChild(K.lien(r.ecran, 'Ouvrir l’écran de gestion', { size: 'sm', icon: 'arrow-right' }));
+        return U.card(r.libelle, corps);
+      }
+    },
+  });
+
+  function carteCopiePaie(apres) {
+    var E = global.SIGH.espaceMes;
+    return U.card('Copie de la fiche de paie sur le téléphone', el('div.space-y-2', null, [
+      U.descList([['Copie chiffrée sur le téléphone de l’agent', E.copiePaieActive() ? 'Oui' : 'Non']], 'grid-cols-1'),
+      el('p.text-xs.text-slate-500', { text: 'La copie ne porte que la pièce émise de l’agent lui-même, jamais celle d’un autre ni l’ensemble de la paie. Elle se règle à la mère et se synchronise.' }),
+    ]), [K.btn('Régler', { size: 'sm', icon: 'settings-2', onclick: function () {
+      var f = U.form([{ name: 'oui', label: 'La fiche de paie émise de l’agent est copiée, chiffrée, sur son téléphone', type: 'checkbox', col: 'full' }], { oui: E.copiePaieActive() });
+      var m = U.modal({
+        title: 'Copie de la fiche de paie sur le téléphone', size: 'md',
+        body: el('div.space-y-3', null, [K.note('Désactiver retire la copie des téléphones à leur prochaine synchronisation.', { tone: 'info' }), f]),
+        footer: [K.btn('Annuler', { onclick: function () { m.close(); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+            var v = f.collect(); if (!v) return;
+            var r = E.definirCopiePaie(v.oui === true);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            m.close(); if (apres) apres();
+            U.toast('Réglage enregistré.', { type: 'success' });
+          } })],
+      });
+    } })]);
+  }
 
 
 })(window);

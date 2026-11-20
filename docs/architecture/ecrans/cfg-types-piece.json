@@ -1,0 +1,50 @@
+{
+ "id": "cfg-types-piece",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Types de pièces certifiantes",
+ "acces": "ouvert",
+ "titre": "Types de pièces certifiantes",
+ "description": "Les quatorze certificats et attestations que la clinique délivre.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Types de pièces certifiantes"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Deux sigles servent chacun à deux pièces dans les documents sources : CMA pour l’accouchement et pour l’aptitude, CMD pour le décès et pour le genre de mort. Les sigles sont conservés tels quels — renuméroter d’office romprait la correspondance avec les registres papier tenus depuis des années. Trancher appartient à la Direction."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Types de pièces",
+  "Tarifés au catalogue",
+  "Sigles en collision",
+  "Pièces délivrées"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Sigle",
+   "Pièce",
+   "Direction",
+   "Tarif",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau type de pièce",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

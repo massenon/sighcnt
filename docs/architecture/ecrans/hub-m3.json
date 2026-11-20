@@ -1,0 +1,32 @@
+{
+ "id": "hub-m3",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Hospitalisation",
+ "acces": "ouvert",
+ "titre": "Hospitalisation",
+ "description": "Tous les écrans du module M3 — Hospitalisation.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Patients & Dossier médical",
+  "Consultations & prescriptions",
+  "Maternité, Naissances & Décès"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

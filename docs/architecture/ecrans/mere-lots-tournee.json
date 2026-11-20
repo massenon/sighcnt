@@ -1,0 +1,50 @@
+{
+ "id": "mere-lots-tournee",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Lots de tournée (mobiles)",
+ "acces": "ouvert",
+ "titre": "Lots de tournée (mobiles)",
+ "description": "Les dossiers déposés chaque jour sur le téléphone d’un soignant, leur validité et ce qui n’est pas encore remonté.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation",
+  "Lots de tournée (mobiles)"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration.",
+  "Une saisie faite à domicile remonte par le relais dès que le téléphone retrouve le réseau ; la mère la relève, la distribue aux postes et accuse réception."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots actifs",
+  "Dossiers sur le terrain",
+  "Saisies à remonter"
+ ],
+ "cartes": [
+  "Lots"
+ ],
+ "tableaux": [
+  [
+   "Appareil",
+   "Tournée",
+   "Dossiers",
+   "Déposé",
+   "Expire",
+   "Saisies non parties",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Composer un lot"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

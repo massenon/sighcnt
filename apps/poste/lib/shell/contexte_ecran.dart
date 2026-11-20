@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+import 'package:sigh_domaine/sigh_domaine.dart';
+
+import '../core/donnees_navigation.dart';
+import '../donnees/magasin.dart';
+
+/// Ce qu'un écran porté reçoit de la coque : son identifiant, le rôle de l'agent, ses droits SUR CET ÉCRAN (jamais ceux d'un autre module),
+/// le magasin de données et la navigation. Équivalent de `K.droits()` et de `app.go()` de la maquette.
+class ContexteEcran extends InheritedWidget {
+  const ContexteEcran({
+    super.key,
+    required this.ecranId,
+    required this.role,
+    required this.droit,
+    required this.magasin,
+    required this.aller,
+    this.utilisateur = '',
+    this.agentConnecte,
+    this.horloge,
+    this.ouvre,
+    this.donnees,
+    this.ecranPorte,
+    required super.child,
+  });
+
+  final String ecranId;
+  final String role;
+  final Droit droit;
+  final Magasin magasin;
+
+  /// `app.go(id)` : ouvre un autre écran (refusé par la coque s'il est fermé au rôle).
+  final void Function(String id) aller;
+
+  /// `ecranOuvert(id)` : l'écran est-il ouvert au profil de l'agent ? (parcours des tableaux de bord : une étape fermée reste visible mais non cliquable). `null` = non branché : tout est réputé ouvert.
+  final bool Function(String id)? ouvre;
+
+  /// Manifeste, droits et parité (écrans qui décrivent le logiciel lui-même : aide, plan du site). `null` = non branché.
+  final DonneesNavigation? donnees;
+
+  /// `ecransPortes` de la coque : l'écran a-t-il un widget à ce poste ? Sert à ne jamais RÉOUVRIR (activités, `cfg-modules`) un écran que le poste ne porte pas encore :
+  /// rouvert, il afficherait le gabarit « écran indisponible ». `null` = non branché : tout écran est réputé porté.
+  final bool Function(String id)? ecranPorte;
+
+  /// Nom affiché de l'agent connecté (RG-12 : aucune action anonyme).
+  final String utilisateur;
+
+  /// L'agent NOMINATIF de la session (A1) : `null` quand le poste n'a pas de session nominative (développement, tests).
+  final Agent? agentConnecte;
+
+  /// L'agent qui agit : l'agent de la session, sinon l'agent de DÉMONSTRATION du rôle (déterministe, nom = [utilisateur]). Les écrans ne lisent jamais
+  /// [utilisateur] pour s'attribuer un geste : ils passent par `acteur(contexte)` du kit, qui lit ceci.
+  Agent get agent => agentConnecte ?? agentDemonstration(role, nom: utilisateur.isEmpty ? null : utilisateur);
+
+  /// Horloge du poste, fixable par un test ; `null` = l'horloge réelle (`C.aujourdhui()`).
+  final DateTime Function()? horloge;
+  DateTime get aujourdhui => (horloge ?? DateTime.now)();
+
+  /// Le MÊME contexte autour d'un autre enfant : une fenêtre ouverte depuis l'écran (modale, tiroir) vit sous le navigateur, hors de l'arbre de l'écran, et doit
+  /// retrouver ses droits, son magasin et son agent (la fenêtre du bouton « Importer les données »).
+  Widget enveloppe(Widget child) => ContexteEcran(
+        ecranId: ecranId,
+        role: role,
+        droit: droit,
+        magasin: magasin,
+        aller: aller,
+        utilisateur: utilisateur,
+        agentConnecte: agentConnecte,
+        horloge: horloge,
+        ouvre: ouvre,
+        donnees: donnees,
+        ecranPorte: ecranPorte,
+        child: child,
+      );
+
+  static ContexteEcran of(BuildContext context) {
+    final c = context.dependOnInheritedWidgetOfExactType<ContexteEcran>();
+    assert(c != null,
+        'ContexteEcran absent : l’écran doit être monté par la coque.');
+    return c!;
+  }
+
+  static ContexteEcran? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ContexteEcran>();
+
+  @override
+  bool updateShouldNotify(ContexteEcran o) =>
+      o.ecranId != ecranId ||
+      o.role != role ||
+      o.droit != droit ||
+      o.agentConnecte != agentConnecte ||
+      o.magasin != magasin ||
+      o.ouvre != ouvre;
+}
+
+/// Un écran qui déclare lui-même son en-tête de page (`SIGH.screen({title, description, regle, actions})`).
+mixin EcranMaquette on Widget {
+  /// Titre de la page quand il diffère de l'intitulé du ruban (`SIGH.screen({title})`).
+  String? get titre => null;
+
+  String? get description => null;
+
+  /// Texte brut (les balises de mise en forme de la maquette sont retirées).
+  String? get regle => null;
+
+  /// La règle d'en-tête lue dans le contexte de l'écran (une valeur de paramètre en vigueur, par exemple) : par défaut [regle].
+  String? regleDe(BuildContext context) => regle;
+  List<Widget> actionsEntete(BuildContext context) => const [];
+}
+
+/// `<strong>…</strong>` et consorts de la maquette → texte brut.
+String sansBalises(String s) =>
+    s.replaceAll(RegExp(r'<[^>]+>'), '').replaceAll('&amp;', '&');

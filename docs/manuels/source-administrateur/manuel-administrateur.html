@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Manuel administrateur SIGH-CNT</title>
+<link rel="stylesheet" href="manuel.css">
+</head>
+<body>
+
+<!-- ============================== COUVERTURE ============================== -->
+<section class="couverture">
+  <div class="couv-haut">
+    <img src="logo.jpeg" alt="Logo de la clinique" class="couv-logo">
+    <div class="couv-clinique">CLINIQUE NASSIERA TOO SARL<br><span>Natitingou, Bénin</span></div>
+  </div>
+  <div class="couv-centre">
+    <div class="couv-produit">SIGH-CNT</div>
+    <h1 class="couv-titre">Manuel administrateur</h1>
+    <p class="couv-sous">Installation et configuration des postes de travail,<br>de la synchronisation et du relais web</p>
+  </div>
+  <div class="couv-bas">
+    <p class="couv-devise">« Votre santé, notre raison de vivre »</p>
+    <table class="couv-meta">
+      <tr><td>Version du document</td><td>1.0, du 16/11/2026</td></tr>
+      <tr><td>Destinataires</td><td>Administrateur système, Directrice de l’Administration et des Finances (DAF), prestataire chargé de l’hébergement</td></tr>
+      <tr><td>Relais web</td><td><code>sighcnt.nassieratoo.com</code></td></tr>
+      <tr><td>Diffusion</td><td>Interne à la clinique. Ne contient aucun secret.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================== SOMMAIRE ============================== -->
+<section class="sommaire">
+  <h1 class="sans-saut" id="sommaire">Sommaire</h1>
+  <ol class="toc" id="toc"></ol>
+</section>
+
+<!-- ============================== AVANT DE COMMENCER ============================== -->
+<h1 id="ch0">Avant de commencer</h1>
+
+<h2 id="s0-1">À qui s’adresse ce manuel</h2>
+<p>Ce manuel s’adresse à la personne qui installe et administre SIGH-CNT : l’administrateur système, la DAF, ou le prestataire qui gère l’hébergement du relais web. Il ne décrit pas le travail quotidien des agents (accueil, soins, caisse, stock) : ce travail est décrit dans le <strong>Manuel d’utilisation</strong>.</p>
+<p>SIGH-CNT est composé de trois parties :</p>
+<ul>
+  <li><strong>Le poste de travail</strong> : l’application installée sur chaque ordinateur de la clinique. Un seul poste est la <strong>mère</strong> (le poste de référence de la clinique). Les autres postes sont des <strong>fileuls</strong>.</li>
+  <li><strong>L’application mobile</strong> : elle sert aux soignants et à la réception de secours. Elle ne parle jamais au réseau local : elle passe par le relais web.</li>
+  <li><strong>Le relais web</strong> : un site installé sur l’hébergement cPanel de la clinique, à l’adresse <code>sighcnt.nassieratoo.com</code>. Il transporte des enveloppes chiffrées. Il ne peut lire aucun dossier.</li>
+</ul>
+
+<figure class="schema">
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Liberation Sans, sans-serif">
+  <defs><marker id="fl" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#12315e"/></marker></defs>
+  <rect x="10" y="20" width="420" height="215" rx="14" fill="#f1f5fb" stroke="#9dc0e4"/>
+  <text x="24" y="44" font-size="14" font-weight="700" fill="#12315e">Réseau local de la clinique</text>
+  <rect x="150" y="60" width="140" height="56" rx="10" fill="#12315e"/>
+  <text x="220" y="84" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">Poste mère</text>
+  <text x="220" y="103" font-size="11" fill="#e0eaf6" text-anchor="middle">référence de la clinique</text>
+  <rect x="30" y="165" width="110" height="46" rx="10" fill="#fff" stroke="#3765a6"/>
+  <text x="85" y="193" font-size="13" fill="#12315e" text-anchor="middle">Fileul (accueil)</text>
+  <rect x="165" y="165" width="110" height="46" rx="10" fill="#fff" stroke="#3765a6"/>
+  <text x="220" y="193" font-size="13" fill="#12315e" text-anchor="middle">Fileul (caisse)</text>
+  <rect x="300" y="165" width="110" height="46" rx="10" fill="#fff" stroke="#3765a6"/>
+  <text x="355" y="193" font-size="13" fill="#12315e" text-anchor="middle">Fileul (labo)</text>
+  <line x1="85" y1="163" x2="185" y2="118" stroke="#12315e" stroke-width="2" marker-end="url(#fl)"/>
+  <line x1="220" y1="163" x2="220" y2="120" stroke="#12315e" stroke-width="2" marker-end="url(#fl)"/>
+  <line x1="355" y1="163" x2="255" y2="118" stroke="#12315e" stroke-width="2" marker-end="url(#fl)"/>
+  <rect x="520" y="60" width="220" height="56" rx="10" fill="#fff8eb" stroke="#d97706"/>
+  <text x="630" y="84" font-size="14" font-weight="700" fill="#7c2d12" text-anchor="middle">Relais web (cPanel)</text>
+  <text x="630" y="103" font-size="11" fill="#7c2d12" text-anchor="middle">sighcnt.nassieratoo.com</text>
+  <line x1="292" y1="88" x2="516" y2="88" stroke="#12315e" stroke-width="2" marker-end="url(#fl)"/>
+  <text x="404" y="80" font-size="11" fill="#12315e" text-anchor="middle">la mère relève</text>
+  <text x="404" y="106" font-size="11" fill="#12315e" text-anchor="middle">toutes les 10 à 15 s</text>
+  <rect x="560" y="165" width="140" height="46" rx="10" fill="#fff" stroke="#3765a6"/>
+  <text x="630" y="193" font-size="13" fill="#12315e" text-anchor="middle">Téléphones</text>
+  <line x1="630" y1="163" x2="630" y2="120" stroke="#12315e" stroke-width="2" marker-end="url(#fl)"/>
+  <text x="510" y="240" font-size="11" fill="#475569">Tout ce qui quitte la clinique est chiffré par la clé de clinique.</text>
+</svg>
+<figcaption>Les postes fileuls se synchronisent avec la mère sur le réseau local. La mère et les téléphones passent par le relais web.</figcaption>
+</figure>
+
+<h2 id="s0-2">Conventions du manuel</h2>
+<ul>
+  <li>Les éléments d’interface sont écrits en <strong>gras</strong>, exactement comme à l’écran : cliquez sur <strong>Enregistrer</strong>.</li>
+  <li>Un chemin de navigation se lit avec la flèche : <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Utilisateurs</strong>.</li>
+  <li>Les étapes numérotées se font dans l’ordre. Les listes à puces n’ont pas d’ordre.</li>
+  <li>Sur les captures, un <span class="rouge">cadre rouge numéroté</span> montre le bouton à utiliser. Son numéro renvoie à l’étape du texte.</li>
+  <li>Le texte <code>en police fixe</code> est à taper tel quel (une commande, un nom de fichier, une adresse).</li>
+</ul>
+
+<h3>Les encadrés</h3>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Une précision utile.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention</p><p>Une erreur fréquente, une modification de rôle, ou une fonction pas encore vérifiée.</p></div></div>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Un risque de perte de données ou une action irréversible.</p></div></div>
+<div class="enc astuce"><div class="ico">✅</div><div><p class="t">Astuce, bonne pratique</p><p>Un raccourci ou la bonne configuration.</p></div></div>
+<div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où regarder</p><p>L’écran où vous observez une donnée.</p></div></div>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage</p><p>Un réglage technique ou global.</p></div></div>
+
+<h2 id="s0-3">Trois règles à garder en tête</h2>
+<ul>
+  <li><strong>Rien ne se supprime.</strong> On archive, et l’archivage s’annule (RG-14). Une fiche archivée reste lisible.</li>
+  <li><strong>Une commande absente veut dire « pas le droit ».</strong> Le logiciel n’affiche pas un bouton grisé : il le retire. Si un agent ne voit pas un bouton, vérifiez ses droits (chapitre 3).</li>
+  <li><strong>Toute action est signée.</strong> Chaque modification est journalisée avec son auteur, sa date et l’ancienne valeur (RG-12). Il n’y a aucune action anonyme.</li>
+</ul>
+
+<h2 id="s0-4">État de vérification de ce manuel</h2>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention : ce qui n’a pas encore été vérifié en conditions réelles</p>
+<ul>
+  <li>L’installateur Windows et l’application de poste n’ont <strong>jamais été compilés ni lancés sur un vrai Windows</strong> dans l’environnement de rédaction. La protection de la clé du poste par Windows (DPAPI) n’est pas éprouvée.</li>
+  <li>Le chiffrement de la base locale (SQLCipher) n’est pas encore branché sur le poste.</li>
+  <li>Le relais n’a pas encore été déployé sur l’hébergement cPanel réel. Les captures du panneau viennent d’une copie lancée en local.</li>
+  <li>La synchronisation n’a pas été mesurée entre deux ordinateurs physiques reliés par un vrai routeur.</li>
+  <li>L’imprimante Xprinter XP-Q800 et le boîtier MECeF n’ont pas été branchés.</li>
+</ul></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">D’où viennent les captures</p><p>Les écrans du poste sont montrés depuis la <strong>maquette de référence</strong>, avec des données de démonstration. Le poste reprend les mêmes écrans et les mêmes libellés ; quand un écran du poste diffère, le texte le dit. Les noms de personnes visibles sur les captures sont des noms de démonstration (« AGENT Démo »). Les écrans du relais viennent d’une copie du panneau lancée en local.</p></div></div>
+
+<!-- ============================== CHAPITRE 1 ============================== -->
+<h1 id="ch1">1. Installation des postes</h1>
+
+<h2 id="s1-1">1.1 Prérequis</h2>
+<h3>Pour chaque ordinateur de la clinique</h3>
+<ul>
+  <li>Windows 64 bits (l’installateur refuse un Windows 32 bits).</li>
+  <li>Un compte Windows administrateur pour installer (l’installation se fait dans <code>Program Files</code>).</li>
+  <li>De l’espace disque pour les données du poste. Elles vivent dans <code>%LOCALAPPDATA%\SIGHCNT\donnees</code>.</li>
+  <li>Pour la mère : un ordinateur allumé pendant les heures d’ouverture, relié au réseau local et à Internet.</li>
+  <li>Pour un fileul : l’adresse de la mère sur le réseau local (par exemple <code>http://192.168.1.10:9000</code>).</li>
+</ul>
+<h3>Pour construire l’installateur (une fois par version)</h3>
+<ul>
+  <li>Flutter avec le bureau Windows activé.</li>
+  <li>Visual Studio 2022, charge de travail « Développement Desktop en C++ ».</li>
+  <li>Inno Setup 6.</li>
+  <li>Le code source de SIGH-CNT (dossier <code>apps\poste</code>).</li>
+</ul>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage : la version</p><p>La version de l’application se change à un seul endroit : le fichier <code>apps\poste\pubspec.yaml</code>. L’installateur reprend cette version dans son nom.</p></div></div>
+
+<h2 id="s1-2">1.2 Construire l’installateur Windows</h2>
+<ol class="etapes">
+  <li>Ouvrez une invite de commande dans le dossier <code>apps\poste</code>.</li>
+  <li>Tapez <code>build_windows.bat</code> puis appuyez sur Entrée.</li>
+  <li>Attendez la fin des neuf étapes : <strong>[1/9] Prerequis</strong>, fermeture de l’application, version, <code>flutter pub get</code>, génération de code, <code>flutter build windows --release</code>, runtime Visual C++, vérification des fichiers, <strong>[9/9] Installateur</strong>.</li>
+  <li>Lisez le message <strong>TERMINE</strong> : il donne le chemin du fichier, sa taille et son empreinte SHA-256.</li>
+  <li>Récupérez <code>build\installer\SIGH_Poste_Setup_&lt;version&gt;.exe</code> et son fichier <code>.sha256</code>.</li>
+</ol>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">En cas d’échec</p><p>Le script s’arrête à la première étape en échec, affiche <strong>*** CONSTRUCTION INTERROMPUE ***</strong> et nomme le fichier manquant. Corrigez ce point, puis relancez le script.</p></div></div>
+<div class="enc astuce"><div class="ico">✅</div><div><p class="t">Bonne pratique</p><p>Avant d’installer sur un poste, comparez l’empreinte SHA-256 du fichier copié avec celle du fichier <code>.sha256</code>. Deux empreintes différentes veulent dire un fichier abîmé pendant la copie.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention : SmartScreen</p><p>L’installateur n’est pas signé par un certificat de code (décision différée, PRD de l’installateur, question Q5). Windows peut afficher un avertissement SmartScreen au premier lancement. Vérifiez l’empreinte, puis choisissez d’exécuter quand même.</p></div></div>
+
+<h2 id="s1-3">1.3 Installer le poste</h2>
+<ol class="etapes">
+  <li>Copiez <code>SIGH_Poste_Setup_&lt;version&gt;.exe</code> sur l’ordinateur.</li>
+  <li>Double-cliquez sur le fichier. Acceptez la demande de droits administrateur.</li>
+  <li>L’assistant d’installation est en français. Le dossier proposé est <code>Program Files\SIGH-CNT</code> : gardez-le.</li>
+  <li>Cochez si vous le voulez l’option d’icône sur le bureau (elle est décochée par défaut).</li>
+  <li>Cliquez sur <strong>Installer</strong>, puis laissez cochée la case qui lance <strong>SIGH-CNT Poste</strong> à la fin.</li>
+</ol>
+<p>Le raccourci <strong>SIGH-CNT Poste</strong> est créé dans le menu Démarrer, dans le groupe <strong>SIGH-CNT</strong>.</p>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Où vivent les données</p><p>Rien ne s’écrit dans <code>Program Files</code>. La base du poste, sa clé, sa configuration (<code>poste.json</code>) et, sur la mère, les sauvegardes, vivent dans <code>%LOCALAPPDATA%\SIGHCNT\donnees</code>. Les exports que vous faites vont dans votre dossier <strong>Téléchargements</strong>. Une mise à jour ne touche jamais ces dossiers.</p></div></div>
+<div class="enc astuce"><div class="ico">✅</div><div><p class="t">Mettre à jour un poste</p><p>Lancez le nouvel installateur par-dessus l’ancien. Il ferme l’application, remplace les fichiers du programme et garde les données.</p></div></div>
+
+<h2 id="s1-4">1.4 Premier démarrage : choisir le rôle du poste</h2>
+<p>Au premier lancement, un poste qui n’a encore aucun compte affiche l’écran <strong>Installation du poste</strong>. Deux choix sont proposés :</p>
+<ul>
+  <li><strong>Première installation de la clinique</strong> : ce poste devient le poste principal. Vous créez le compte administrateur, puis vous configurez la clinique. Faites ce choix <strong>une seule fois</strong>, sur l’ordinateur qui sera la mère.</li>
+  <li><strong>Rejoindre une clinique existante</strong> : la clinique est déjà installée sur un autre poste. Vous saisissez l’adresse de ce poste et un code d’appairage. Aucune configuration n’est à refaire. Faites ce choix sur tous les autres ordinateurs (section 1.7).</li>
+</ul>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>L’assistant ne s’ouvre que sur un poste jamais installé et sans aucun compte. Un poste qui porte déjà des comptes garde son chemin habituel : l’écran de connexion.</p></div></div>
+
+<h2 id="s1-5">1.5 Créer le premier administrateur et noter le code de secours</h2>
+<h3>1. Créer l’administrateur</h3>
+<ol class="etapes">
+  <li>Cliquez sur <strong>Première installation de la clinique</strong>.</li>
+  <li>Dans l’écran <strong>Créer l’administrateur</strong>, remplissez <strong>Nom complet</strong> (au format NOM Prénom).</li>
+  <li>Saisissez l’<strong>Identifiant</strong> : trois caractères au moins, en minuscules, chiffres, point, tiret ou tiret bas (par exemple <code>prenom.nom</code>).</li>
+  <li>Choisissez un <strong>Mot de passe</strong> (8 caractères au moins) et recopiez-le dans <strong>Confirmer le mot de passe</strong>.</li>
+  <li>Cliquez sur <strong>Créer le compte</strong>.</li>
+</ol>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Vous choisissez vous-même votre mot de passe. Il n’est écrit nulle part : le poste n’en garde qu’une empreinte.</p></div></div>
+<h3>2. Ranger le code de secours</h3>
+<p>L’écran <strong>Votre code de secours</strong> s’affiche. Ce code de 25 caractères (format <code>XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</code>) permet de retrouver l’accès administrateur si vous perdez votre mot de passe.</p>
+<ol class="etapes">
+  <li>Cliquez sur <strong>Imprimer</strong>. La feuille porte le titre <strong>Code de secours de l’administrateur</strong> et la mention <strong>Document confidentiel à ranger au coffre</strong>.</li>
+  <li>Rangez la feuille au coffre de la Direction.</li>
+  <li>Cochez <strong>J’ai rangé ce code en lieu sûr.</strong></li>
+  <li>Cliquez sur <strong>Ouvrir le tableau de bord</strong>.</li>
+</ol>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Le code de secours ne s’affiche qu’une fois. Sans lui et sans mot de passe, plus personne ne peut administrer le poste. Ne l’envoyez jamais par messagerie et ne le photographiez pas.</p></div></div>
+<h3>3. Mot de passe administrateur perdu</h3>
+<ol class="etapes">
+  <li>Sur l’écran de connexion, ouvrez <strong>Mot de passe administrateur perdu</strong>.</li>
+  <li>Saisissez votre <strong>Identifiant</strong>, le <strong>Code de secours</strong> de 25 caractères, puis un <strong>Nouveau mot de passe</strong> et sa confirmation.</li>
+  <li>Cliquez sur <strong>Remplacer le mot de passe</strong>.</li>
+  <li>L’écran <strong>Mot de passe remplacé</strong> affiche un <strong>nouveau</strong> code de secours : l’ancien est consommé. Imprimez le nouveau et rangez-le au coffre.</li>
+  <li>Cliquez sur <strong>Retour à la connexion</strong>.</li>
+</ol>
+
+<h2 id="s1-6">1.6 Les configurations à faire avant l’utilisation</h2>
+<p>Après la création du premier compte, la fenêtre <strong>Configurations à faire avant l’utilisation</strong> s’ouvre. Faites ces étapes dans l’ordre : ce qui est réglé sur la mère est repris par les autres postes et les mobiles. Chaque étape porte un état : <strong>À faire</strong>, <strong>Reportée</strong> ou <strong>Faite</strong>.</p>
+<table class="tab">
+<tr><th>Étape</th><th>Ce que vous faites</th><th>Voir</th></tr>
+<tr><td><strong>1. Activer la mère</strong></td><td>Relais web, secret de la mère et clé de clinique. Une seule mère par clinique. Si le relais est injoignable, vous pouvez reporter : rien n’est diffusé tant que la mère n’est pas activée.</td><td>Section 2.1</td></tr>
+<tr><td><strong>2. Configurer la clinique</strong></td><td>Huit écrans à ouvrir et à vérifier : <strong>Papier à en-tête officiel</strong>, <strong>Paramètres fiscaux (IFU / RCCM)</strong>, <strong>Activité des modules</strong>, <strong>Tarifs et prix</strong>, <strong>Natures de facture</strong>, <strong>Paramètres comptables &amp; obligations</strong>, <strong>Configuration fiscale (MECeF)</strong>, <strong>Rôles &amp; permissions</strong>.</td><td>Chapitres 3, 4 et 6</td></tr>
+<tr><td><strong>3. Créer les comptes des agents</strong></td><td>Un compte par agent, avec son rôle.</td><td>Section 3.2</td></tr>
+<tr><td><strong>4. Appairer les postes et les mobiles</strong></td><td>Depuis la mère, un code par appareil.</td><td>Sections 2.4 et 2.5</td></tr>
+</table>
+<p>Quand les quatre étapes sont faites, cliquez sur <strong>Clore l’assistant</strong>. Le message <strong>L’assistant d’installation est clos.</strong> confirme la fin.</p>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention : un second administrateur est obligatoire</p><p>Le poste refuse de clore l’assistant tant qu’il n’y a qu’un seul administrateur actif. Créez un second compte administrateur à l’écran <strong>Utilisateurs</strong> et définissez-lui un mot de passe. Ainsi, la clinique n’est jamais bloquée par l’absence d’une seule personne.</p></div></div>
+<div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où regarder</p><p>La même progression se lit sur la mère à l’écran <strong>Poste mère</strong> ➔ <strong>Cycle de vie</strong> ➔ <strong>Assistant de première mise en service</strong> (figure ci-dessous). Chaque étape se reprend avec <strong>Ouvrir</strong>.</p></div></div>
+<figure><img src="captures/mere-mise-en-service.png" alt=""><figcaption>L’assistant de première mise en service sur la mère : étapes faites, en cours et à faire.</figcaption></figure>
+
+<h2 id="s1-7">1.7 Rejoindre une clinique existante (poste fileul)</h2>
+<p>Préparez d’abord un code d’appairage sur la mère (section 2.4). Le code a 8 caractères, il ne sert qu’une fois et il expire au bout de 15 minutes.</p>
+<ol class="etapes">
+  <li>Sur le nouvel ordinateur, à l’écran <strong>Installation du poste</strong>, cliquez sur <strong>Rejoindre une clinique existante</strong>.</li>
+  <li>Dans <strong>Adresse de la mère</strong>, saisissez l’adresse de la mère sur le réseau local, au format <code>http://adresse:port</code> (par exemple <code>http://192.168.1.10:9000</code>).</li>
+  <li>Dans <strong>Code d’appairage</strong>, saisissez les 8 caractères affichés par la console de la mère.</li>
+  <li>Cliquez sur <strong>Rejoindre</strong>.</li>
+  <li>L’écran <strong>Poste rattaché</strong> s’affiche : la mère diffuse sa configuration, cela prend quelques secondes. Attendez le message <strong>Réception de la configuration</strong>.</li>
+  <li>Cliquez sur <strong>Aller à la connexion</strong>. Les agents se connectent avec les comptes créés sur la mère.</li>
+</ol>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Un fileul ne refait aucune configuration : comptes, rôles, tarifs et identité viennent de la mère. Il <strong>reçoit</strong> la configuration et refuse de l’écrire, en le disant.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Erreurs fréquentes</p><ul>
+<li><strong>Adresse invalide</strong> : l’adresse doit commencer par <code>http://</code> et finir par le port (<code>:9000</code> par défaut).</li>
+<li><strong>Code expiré ou déjà utilisé</strong> : demandez un nouveau code sur la mère.</li>
+<li>La mère est éteinte ou le pare-feu Windows de la mère bloque le port : le fileul ne la joint pas.</li></ul></div></div>
+
+<h2 id="s1-8">1.8 Désinstaller un poste</h2>
+<p>La désinstallation se lance depuis <strong>Paramètres Windows</strong> ➔ <strong>Applications</strong> ➔ <strong>SIGH-CNT Poste</strong>, ou depuis le raccourci de désinstallation du groupe <strong>SIGH-CNT</strong>.</p>
+<ol class="etapes">
+  <li>Le programme ferme l’application en cours.</li>
+  <li>Il propose une sauvegarde : <strong>Voulez-vous faire une SAUVEGARDE de ce poste avant de continuer ?</strong> Répondez <strong>Oui</strong>. La copie part dans <code>Documents\SIGH-CNT-Sauvegarde-AAAA-MM-JJ_HHMM</code> et n’est jamais supprimée.</li>
+  <li>Il affiche un avertissement : désinstaller supprime aussi <strong>toutes</strong> les données du poste. <strong>Non</strong> est le choix par défaut et annule tout.</li>
+  <li>Répondez <strong>Oui</strong> seulement si vous voulez vraiment tout supprimer.</li>
+</ol>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte : perte définitive</p><p>Les saisies qui n’ont pas encore été synchronisées sont perdues, définitivement. Sur la <strong>mère</strong>, la base est la copie de référence de la clinique : les fileuls ne la reconstituent pas entièrement. Ne désinstallez jamais la mère sans une sauvegarde vérifiée (chapitre 5). Pour remplacer la mère par une autre machine, utilisez la restauration (section 5.5), jamais une copie de fichiers.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Mode silencieux</p><p>Lancé en mode silencieux (<code>/SILENT</code> ou <code>/VERYSILENT</code>), le désinstallateur ne pose aucune question et <strong>garde</strong> les données.</p></div></div>
+
+<!-- ============================== CHAPITRE 2 ============================== -->
+<h1 id="ch2">2. Postes et synchronisation</h1>
+
+<h2 id="s2-1">2.1 Activer le mode mère</h2>
+<p>La mère est le même logiciel qu’un fileul, avec ses modules complémentaires (synchronisation, supervision, sauvegardes). Elle s’active sur <strong>un seul</strong> ordinateur, le serveur local de la clinique.</p>
+<h3>1. Préparer les trois informations</h3>
+<ul>
+  <li><strong>L’adresse du relais web</strong> : <code>sighcnt.nassieratoo.com</code>. Tapez le nom seul, sans <code>https://</code> : le poste l’ajoute.</li>
+  <li><strong>Le secret de la mère</strong> : le même texte que <code>RELAIS_SECRET_MERE</code> dans le fichier <code>.env</code> du relais (section 7.3). Long et aléatoire, 32 caractères au moins.</li>
+  <li><strong>La clé de clinique</strong> : 16 caractères au moins. Elle chiffre tout ce qui quitte la clinique.</li>
+</ul>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte : la clé de clinique</p><p>La clé de clinique n’est jamais envoyée au relais. Sans elle, rien de ce qui a quitté la clinique (journal chiffré, sauvegardes hors site) ne peut être restauré. Écrivez-la sur papier, mettez-la sous scellé, et confiez-la à un détenteur nommé par la Direction (section 2.6).</p></div></div>
+<h3>2. Activer</h3>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Ce poste (mode fileul / mère)</strong> (figure 1). Pendant l’installation, vous pouvez aussi cliquer sur <strong>Activer maintenant</strong> dans la fenêtre des configurations.</li>
+  <li>Cliquez sur <strong>Activer le mode mère</strong> (figure 2).</li>
+  <li>Remplissez <strong>Adresse du relais web</strong>, <strong>Secret de la mère</strong>, <strong>Clé de clinique (16 caractères au moins)</strong>.</li>
+  <li>Remplissez si vous le voulez <strong>Nom de ce poste (facultatif)</strong>, par exemple « Poste principal, bureau de la Direction ». C’est le nom que le panneau du relais affichera.</li>
+  <li>Cliquez sur <strong>Activer</strong>. Le mode du poste passe à <strong>Mère</strong> et le service de synchronisation à <strong>En marche</strong> (figure 3).</li>
+</ol>
+<figure><img src="captures/ruban-systeme.png" alt=""><figcaption>Le ruban : <strong>Système</strong> ouvre ses rangées. L’entrée <strong>Ce poste (mode fileul / mère)</strong> est réservée à l’administrateur et à la DAF.</figcaption></figure>
+<figure><img src="captures/cfg-poste.png" alt=""><figcaption>L’écran <strong>Ce poste</strong> d’un fileul : bouton <strong>Activer le mode mère</strong>.</figcaption></figure>
+<figure><img src="captures/cfg-poste-mere.png" alt=""><figcaption>Après l’activation : mode <strong>Mère</strong>, service <strong>En marche</strong>, groupe <strong>Poste mère</strong> ouvert dans le ruban.</figcaption></figure>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Une seule mère par clinique</p><p>L’activation exige de joindre le relais. Si une autre mère est déjà déclarée, le relais refuse en la nommant : « Une mère est déjà active : … Il ne peut y avoir qu’un seul poste mère par clinique. » Une mère qui a donné signe de vie depuis moins de 5 minutes ne peut pas être remplacée : arrêtez-la d’abord. L’activation est atomique : si le service ne démarre pas, le poste reste fileul.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Messages d’erreur à l’activation</p><ul>
+<li><strong>Le relais n’a pas répondu</strong> : vérifiez Internet et l’adresse. Vous pouvez cliquer sur <strong>Reporter l’activation</strong> et revenir plus tard.</li>
+<li><strong>Le secret de la mère est refusé par le relais</strong> : le texte saisi diffère de <code>RELAIS_SECRET_MERE</code>.</li>
+<li><strong>Adresse du relais invalide (ex. sighcnt.nassieratoo.com)</strong> : corrigez la saisie.</li></ul></div></div>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage : le réseau local</p><p>La mère écoute par défaut sur le port <code>9000</code>. Autorisez ce port dans le pare-feu Windows de la mère pour le réseau privé de la clinique, et donnez à la mère une adresse fixe sur le routeur. Les fileuls la joignent à <code>http://&lt;adresse de la mère&gt;:9000</code>.</p></div></div>
+
+<h2 id="s2-2">2.2 La console de la mère</h2>
+<p>Une fois la mère active, le ruban affiche le groupe <strong>Poste mère</strong>. Il est réservé à l’administrateur et à la DAF. Il a cinq rangées :</p>
+<table class="tab">
+<tr><th>Rangée</th><th>Écrans</th></tr>
+<tr><td><strong>Exploitation de la synchronisation</strong></td><td><strong>Supervision</strong>, <strong>Appareils et appairage</strong>, <strong>Conflits et doublons</strong>, <strong>« À traiter » consolidé</strong>, <strong>Journal des opérations</strong>, <strong>Plages de numéros et baux de stock</strong>, <strong>Lots de tournée (mobiles)</strong></td></tr>
+<tr><td><strong>Sécurité et continuité</strong></td><td><strong>Journal technique</strong>, <strong>Sauvegardes et restauration</strong>, <strong>Clé de clinique</strong>, <strong>Intégrité et altérations</strong>, <strong>Réinitialisation de production</strong></td></tr>
+<tr><td><strong>Liaison avec le relais</strong></td><td><strong>Relais en ligne</strong>, <strong>Indicateurs publiés</strong></td></tr>
+<tr><td><strong>Plateforme locale</strong></td><td><strong>Service et démarrage</strong>, <strong>Base de données locale</strong>, <strong>Réseau local</strong>, <strong>Planificateur</strong>, <strong>Notifications serveur</strong></td></tr>
+<tr><td><strong>Cycle de vie</strong></td><td><strong>Assistant de première mise en service</strong>, <strong>Mises à jour et compatibilité</strong>, <strong>Import de migration</strong></td></tr>
+</table>
+
+<h2 id="s2-3">2.3 Superviser la mère</h2>
+<p>Ouvrez <strong>Poste mère</strong> ➔ <strong>Exploitation de la synchronisation</strong> ➔ <strong>Supervision</strong>. L’écran donne la santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité.</p>
+<figure><img src="captures/mere-supervision.png" alt=""><figcaption>La supervision : santé globale, époque, opérations, retard vers le relais, puis un contrôle par ligne. Le bouton <strong>Sauvegarder maintenant</strong> (1) lance une sauvegarde chiffrée.</figcaption></figure>
+<ul>
+  <li>Un contrôle qui ne peut pas être mesuré est affiché <strong>Inconnu</strong>. Il ne rassure jamais : l’état global est le <strong>pire</strong> des contrôles.</li>
+  <li>Un poste dont l’horloge dérive de plus de 2 minutes est signalé <strong>Horloge à vérifier</strong>. Remettez l’heure de cet ordinateur à jour.</li>
+  <li>Un poste silencieux depuis longtemps est signalé <strong>À surveiller</strong>.</li>
+</ul>
+<div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où regarder</p><p>Le retard de réplication vers le relais se lit aussi à <strong>Poste mère</strong> ➔ <strong>Liaison avec le relais</strong> ➔ <strong>Relais en ligne</strong> (section 2.7). Les conflits à trancher sont à <strong>Conflits et doublons</strong>.</p></div></div>
+
+<h2 id="s2-4">2.4 Appairer un poste fileul</h2>
+<ol class="etapes">
+  <li>Sur la mère, ouvrez <strong>Poste mère</strong> ➔ <strong>Exploitation de la synchronisation</strong> ➔ <strong>Appareils et appairage</strong>.</li>
+  <li>Cliquez sur <strong>Appairer un poste</strong> (figure, cadre 1).</li>
+  <li>Saisissez le <strong>Nom de l’appareil</strong> (par exemple « Caisse principale », « Laboratoire »).</li>
+  <li>Cliquez sur <strong>Générer le code</strong>. Le <strong>Code d’appairage</strong> s’affiche : <strong>À usage unique, valable 15 minutes.</strong></li>
+  <li>Sur le nouveau poste, faites <strong>Rejoindre une clinique existante</strong> avec ce code (section 1.7).</li>
+  <li>Vérifiez que le poste apparaît dans la liste avec l’état <strong>Actif</strong>.</li>
+</ol>
+<figure><img src="captures/mere-appareils.png" alt=""><figcaption>Appareils et appairage : (1) <strong>Appairer un poste</strong>, (2) <strong>Appairer un mobile</strong>, (3) <strong>Révoquer</strong> un appareil.</figcaption></figure>
+<p>Pour chaque appareil, la liste donne son type, sa fonction, l’agent, le dernier contact, le retard (opérations en attente), l’horloge, la version et l’état.</p>
+
+<h2 id="s2-5">2.5 Appairer un téléphone</h2>
+<p>Un téléphone ne parle jamais au réseau local : il passe par le relais web. La mère doit donc être active et reliée au relais.</p>
+<ol class="etapes">
+  <li>Sur la mère, à <strong>Appareils et appairage</strong>, cliquez sur <strong>Appairer un mobile</strong>.</li>
+  <li>Choisissez le <strong>Profil du téléphone</strong> : <strong>Soignant</strong> ou <strong>Réception de secours</strong>.</li>
+  <li>Pour un soignant, choisissez la <strong>Fonction du soignant</strong> (médecin, sage-femme, infirmier, aide-soignant). La fonction est fixée par ce code : le téléphone ne peut ni la choisir ni la changer.</li>
+  <li>Cliquez sur <strong>Générer le code</strong>.</li>
+  <li>Sur le téléphone, saisissez le code d’appairage et la <strong>clé de la clinique</strong> (ou faites lire le QR d’appairage affiché par la mère, section 2.6).</li>
+</ol>
+<figure><img src="captures/mere-appareils-mobile.png" alt=""><figcaption>La fenêtre <strong>Code d’appairage, mobile</strong> : profil et fonction fixés par le code.</figcaption></figure>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Ne transmettez jamais la clé de la clinique par messagerie, SMS ou courriel. Saisissez-la vous-même sur le téléphone, ou faites lire le QR sur place.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Changer la fonction d’un téléphone</p><p>Un appareil déjà appairé ne reprend pas un autre code. Pour changer sa fonction, révoquez-le, puis appairez-le de nouveau avec un nouveau code.</p></div></div>
+
+<h3>Révoquer un appareil</h3>
+<ol class="etapes">
+  <li>À <strong>Appareils et appairage</strong>, cliquez sur <strong>Révoquer</strong> sur la ligne de l’appareil.</li>
+  <li>Confirmez. L’appareil ne pourra plus synchroniser.</li>
+</ol>
+<p>Un poste révoqué garde ses données locales et se met en état <strong>suspendu</strong> à son retour. Un téléphone révoqué est effacé à son prochain contact. La fiche de l’appareil reste dans la liste (RG-14).</p>
+
+<h2 id="s2-6">2.6 La clé de clinique</h2>
+<p>Ouvrez <strong>Poste mère</strong> ➔ <strong>Sécurité et continuité</strong> ➔ <strong>Clé de clinique</strong>.</p>
+<figure><img src="captures/mere-cle-clinique.png" alt=""><figcaption>La clé de clinique : empreinte de contrôle, date de création, copie papier. (1) <strong>Imprimer la copie papier</strong>, (2) <strong>Faire tourner la clé</strong>.</figcaption></figure>
+<ol class="etapes">
+  <li>Cliquez sur <strong>Imprimer la copie papier</strong> (1).</li>
+  <li>Mettez la feuille sous scellé et notez le numéro du scellé.</li>
+  <li>Enregistrez l’attestation : date, détenteur, numéro de scellé, personne qui a contrôlé. Tant que le détenteur n’est pas désigné, l’écran affiche <strong>Détenteur de la copie papier non désigné</strong>.</li>
+</ol>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Le bouton <strong>Afficher le QR d’appairage mobile</strong> sert à appairer un téléphone sur place sans recopier la clé. Le bouton <strong>Faire tourner la clé</strong> (2) remplace la clé : faites-le seulement en cas de soupçon de fuite, et imprimez aussitôt la nouvelle copie papier.</p></div></div>
+
+<h2 id="s2-7">2.7 La liaison avec le relais</h2>
+<p>Ouvrez <strong>Poste mère</strong> ➔ <strong>Liaison avec le relais</strong> ➔ <strong>Relais en ligne</strong>.</p>
+<figure><img src="captures/mere-relais.png" alt=""><figcaption>Relais en ligne : état de la liaison, dernier battement, retard de réplication, enveloppes au relais. (1) <strong>Tester la liaison</strong>, (2) <strong>Faire tourner le secret de la mère</strong>.</figcaption></figure>
+<ul>
+  <li>La mère <strong>interroge</strong> le relais toutes les 10 à 15 secondes. Le relais n’appelle jamais la mère : elle est derrière le routeur de la clinique.</li>
+  <li>Si Internet est coupé, les fileuls continuent de se synchroniser avec la mère. Le retard vers le relais monte et se voit. Au retour d’Internet, la mère rattrape seule.</li>
+  <li>Si la mère se tait plus de 5 minutes, le relais lève une alerte « battement ».</li>
+</ul>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Faire tourner le secret de la mère</p><p>Changez d’abord <code>RELAIS_SECRET_MERE</code> dans le <code>.env</code> du relais (section 7.3), puis saisissez le même texte sur la mère avec <strong>Faire tourner le secret de la mère</strong>. Entre les deux gestes, la mère ne peut plus déposer.</p></div></div>
+
+<h2 id="s2-8">2.8 Le mode pair (échanges entre postes par le relais)</h2>
+<p>Le mode pair permet à des postes de s’échanger leurs opérations par le relais, sans passer par la mère (utile si la mère est éteinte). Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Échanges entre postes (mode pair)</strong>.</p>
+<ol class="etapes">
+  <li>Remplissez <strong>Adresse du relais</strong>, <strong>Nom de ce poste</strong> et <strong>Code d’appairage (usage unique)</strong>.</li>
+  <li>Cochez <strong>Activer le mode pair sur ce poste</strong>.</li>
+  <li>Cliquez sur <strong>Enregistrer la configuration</strong> (1).</li>
+  <li>Sur le premier poste seulement, cliquez sur <strong>Générer la clé</strong> (2). Notez la clé : elle ne sera plus affichée. Tous les postes doivent porter la même clé.</li>
+</ol>
+<figure><img src="captures/cfg-pair.png" alt=""><figcaption>Le mode pair : configuration, clé unique de la clinique, récupération de la clé par courriel.</figcaption></figure>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Le réglage prend effet au prochain lancement du poste. Les opérations sont chiffrées de bout en bout : le relais ne voit que des enveloppes.</p></div></div>
+
+<h2 id="s2-9">2.9 Ce qui se passe pendant une coupure</h2>
+<table class="tab">
+<tr><th>Situation</th><th>Ce qui continue</th><th>Ce qui attend</th></tr>
+<tr><td>Un fileul ne joint plus la mère</td><td>Saisie, caisse, impression, sortie de stock dans la <strong>part</strong> du poste, numérotation dans sa plage. La pastille dit <strong>Hors ligne depuis N min</strong>.</td><td>Les validations faites par un autre poste, la configuration de la mère.</td></tr>
+<tr><td>La mère n’a plus Internet</td><td>Toute la clinique, sur le réseau local.</td><td>Les téléphones, la copie au relais. La mère rattrape seule au retour.</td></tr>
+<tr><td>Retour de la liaison</td><td colspan="2">Tout remonte une seule fois. Deux postes qui ont modifié le même champ sont <strong>marqués en conflit</strong> à la mère, jamais écrasés en silence. Un stock devenu négatif hors ligne est détecté et marqué (RG-03).</td></tr>
+</table>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Le détail, avec la preuve de chaque affirmation, est dans le guide <code>docs/guides/PANNE-DE-CONNEXION.md</code>.</p></div></div>
+
+<!-- ============================== CHAPITRE 3 ============================== -->
+<h1 id="ch3">3. Utilisateurs et droits</h1>
+
+<h2 id="s3-1">3.1 Comprendre les droits : rôle, fonction, secteur, gestes réservés</h2>
+<p>Les droits de SIGH-CNT ont trois axes, plus les gestes réservés :</p>
+<table class="tab">
+<tr><th>Axe</th><th>Ce qu’il décide</th><th>Où il se règle</th></tr>
+<tr><td><strong>Rôle</strong></td><td>Les écrans ouverts (voir, éditer, annuler, lecture seule).</td><td>Sur le compte de l’agent ; la fiche du rôle à <strong>Rôles &amp; permissions (RBAC)</strong>.</td></tr>
+<tr><td><strong>Fonction</strong></td><td>Les données : qui prescrit, qui exécute les soins, quels résultats il voit.</td><td>Onglet <strong>Habilitations métier</strong>.</td></tr>
+<tr><td><strong>Secteur</strong></td><td>Le périmètre : « son secteur » ou « tous ».</td><td>Onglet <strong>Habilitations métier</strong> et fiche des soignants (<strong>Prescripteurs &amp; exécutants de soins</strong>).</td></tr>
+<tr><td><strong>Geste réservé</strong></td><td>Un acte qui engage un professionnel nommé (valider un seuil du laboratoire, décider un prix, régler la clôture, exporter un tableau…). Il ne se déduit d’aucun droit d’écran.</td><td>Bouton <strong>Régler les gestes réservés de ce rôle</strong> de la fiche du rôle.</td></tr>
+</table>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">RG-13, le cloisonnement</p><p>Le médical est réservé au soignant habilité ; le financier et les RH aux profils comptables et RH. Fermer un module le retire du ruban et de la recherche globale : l’écran devient inatteignable, pas seulement invisible. Le moteur refuse aussi l’écriture : masquer un bouton ne protège rien, le logiciel contrôle chaque geste.</p></div></div>
+
+<h2 id="s3-2">3.2 Créer un compte utilisateur</h2>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Utilisateurs</strong>.</li>
+  <li>Cliquez sur <strong>Nouveau</strong> (figure, cadre 1).</li>
+  <li>Dans la fenêtre <strong>Nouveau compte</strong>, saisissez l’<strong>Identifiant de connexion</strong> (format usuel : initiale du prénom, point, nom).</li>
+  <li>Choisissez l’<strong>Agent rattaché</strong> (sa fiche du personnel) et le <strong>Service</strong>.</li>
+  <li>Choisissez le <strong>Rôle (RBAC)</strong>.</li>
+  <li>Laissez cochés <strong>Compte actif</strong> et <strong>Changement obligatoire à la première connexion</strong>. Cochez <strong>Authentification à deux facteurs</strong> pour un profil à privilèges élevés.</li>
+  <li>Saisissez un <strong>Mot de passe</strong> provisoire (huit caractères au moins) et sa confirmation.</li>
+  <li>Cliquez sur <strong>Créer</strong>.</li>
+  <li>Remettez le mot de passe provisoire à l’agent en main propre. Il devra le changer à sa première connexion.</li>
+</ol>
+<figure><img src="captures/m14-utilisateurs.png" alt=""><figcaption>La liste des comptes. (1) <strong>Nouveau</strong>.</figcaption></figure>
+<figure><img src="captures/m14-utilisateurs-form.png" alt=""><figcaption>La fenêtre <strong>Nouveau compte</strong>. (1) <strong>Créer</strong>.</figcaption></figure>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Aucun compte partagé</p><p>Chaque agent a son identifiant individuel. Un compte partagé rend la journalisation inutile (RG-12). Un compte archivé ou désactivé est refusé à la connexion.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Un agent quitte la clinique</p><p>Ne supprimez pas son compte : archivez-le (bouton d’archivage de la ligne). Il ne peut plus se connecter, et son historique reste lisible.</p></div></div>
+<div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où regarder</p><p><strong>Sécurité des utilisateurs</strong> (réservé à l’administrateur) : échecs de connexion, comptes bloqués, double facteur. <strong>Sessions actives</strong> : qui est connecté et depuis quel poste. <strong>Journal d’audit</strong> : qui a fait quoi, avec l’ancienne et la nouvelle valeur.</p></div></div>
+
+<h2 id="s3-3">3.3 Régler la fiche des droits d’un rôle</h2>
+<p>Ouvrez <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Rôles &amp; permissions (RBAC)</strong>.</p>
+<figure><img src="captures/m14-roles.png" alt=""><figcaption>Rôles &amp; permissions : (1) <strong>Matrice des droits</strong>, (2) <strong>Détail par rôle</strong>, (3) <strong>Habilitations métier</strong>.</figcaption></figure>
+<h3>1. Modifier les droits d’un rôle par module</h3>
+<ol class="etapes">
+  <li>Ouvrez l’onglet <strong>Détail par rôle</strong>.</li>
+  <li>Sur la carte du rôle, cliquez sur <strong>Droits</strong>.</li>
+  <li>Dans la fenêtre <strong>Droits du rôle « … »</strong>, cochez pour chaque module <strong>Voir</strong>, <strong>Éditer</strong>, <strong>Annuler</strong> ou <strong>Lecture seule</strong>. Les boutons <strong>Tout ouvrir</strong>, <strong>Tout en lecture seule</strong> et <strong>Tout fermer</strong> agissent sur toutes les lignes.</li>
+  <li>Cliquez sur <strong>Enregistrer les droits</strong>.</li>
+</ol>
+<figure><img src="captures/m14-roles-droits.png" alt=""><figcaption>La fenêtre des droits d’un rôle : trois droits par module ; la lecture seule est la combinaison « voir sans agir ».</figcaption></figure>
+<h3>2. Régler les gestes réservés d’un rôle</h3>
+<ol class="etapes">
+  <li>Ouvrez l’onglet <strong>Matrice des droits</strong>.</li>
+  <li>Sur la ligne du rôle, cliquez sur l’icône <strong>Régler les gestes réservés de ce rôle</strong> (tampon).</li>
+  <li>Cochez ou décochez chaque geste dans la colonne <strong>Accordé</strong>. La colonne <strong>Origine</strong> rappelle le réglage d’origine.</li>
+  <li>Cliquez sur <strong>Enregistrer</strong>. Le bouton <strong>Retirer les réglages</strong> rend à chaque geste son réglage d’origine.</li>
+</ol>
+<figure><img src="captures/m14-roles-gestes.png" alt=""><figcaption>Les gestes réservés d’un rôle : un droit par geste.</figcaption></figure>
+<p>Les autres icônes de la ligne d’un rôle : <strong>Modifier les droits de ce rôle</strong>, <strong>Régler écran par écran</strong>, <strong>Régler les importations de ce rôle</strong>, <strong>Renommer ce rôle</strong>, <strong>Archiver ce rôle</strong>.</p>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Attention : modifier un rôle</p><p>Un changement de rôle s’applique à <strong>tous</strong> les comptes de ce rôle, sur tous les postes, après synchronisation. Une surcharge accorde autant qu’elle restreint. Un rôle archivé ferme les comptes qui le portent. Prévenez les agents concernés avant d’enregistrer.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Les gestes réservés semés</p><table class="tab petite">
+<tr><th>Geste</th><th>Rôles par défaut</th></tr>
+<tr><td>Valider un seuil de variation brutale du laboratoire</td><td>Biologiste médical</td></tr>
+<tr><td>Corriger le texte lu par machine d’un scan</td><td>La plupart des rôles qui numérisent</td></tr>
+<tr><td>Voir toutes les files du centre « Validations en attente »</td><td>DAF, administrateur, Direction, Directeur Médical, comptable, surveillant, agent administratif</td></tr>
+<tr><td>Régler le circuit de la clôture annuelle</td><td>Administrateur, DAF</td></tr>
+<tr><td>Décider un changement de prix</td><td>Administrateur, DAF, Direction</td></tr>
+<tr><td>Régler les paramètres de clinique</td><td>Administrateur, DAF</td></tr>
+<tr><td>Exporter ou imprimer les lignes d’un tableau</td><td>Tous les rôles</td></tr>
+</table></div></div>
+
+<h2 id="s3-4">3.4 Fonction et secteur</h2>
+<p>L’onglet <strong>Habilitations métier</strong> donne, pour chaque fonction, ce qu’elle voit des données (résultats d’analyses, échographies : <strong>Toutes</strong>, <strong>Son secteur</strong>, <strong>Aucune</strong>), si elle <strong>Peut prescrire</strong> et si elle <strong>Exécute les soins</strong>. Le rôle ouvre les écrans, la fonction décide des données, le secteur en fixe le périmètre.</p>
+<p>Les six secteurs sont : Laboratoire, Pharmacie, Consultation, Imagerie médicale, Maternité, Hospitalisation et soins, plus la Direction transverse. Le secteur d’exercice d’un soignant se règle à <strong>Prescripteurs &amp; exécutants de soins</strong> (champ <strong>Secteurs d’exercice</strong>).</p>
+
+<!-- ============================== CHAPITRE 4 ============================== -->
+<h1 id="ch4">4. Paramètres de la clinique</h1>
+
+<h2 id="s4-1">4.1 Où se règlent les paramètres, et comment ils voyagent</h2>
+<p>Les paramètres de la clinique (taux, dates, seuils, circuits, modes) sont enregistrés en base avec une valeur par défaut. Ils se <strong>versionnent par date</strong> : une nouvelle valeur s’applique à partir de sa date d’effet, et l’ancienne reste lisible.</p>
+<ul>
+  <li>Ils se règlent sur la <strong>mère</strong>, par un rôle qui porte le droit. Un fileul les <strong>reçoit</strong> et refuse de les écrire, en le disant.</li>
+  <li>Ils ne partent jamais vers un téléphone.</li>
+  <li>Ils se déposent au relais web, chiffrés : le relais ne les lit pas.</li>
+</ul>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage : régler un paramètre de clinique</p>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Règles métier versionnées</strong>.</li>
+  <li>Dans <strong>Paramètres de clinique (datés)</strong>, cliquez sur <strong>Régler</strong> sur la ligne voulue (par exemple <strong>Préavis de péremption des lots (jours)</strong>).</li>
+  <li>Saisissez la valeur dans les bornes affichées, la date d’effet et le motif, puis enregistrez.</li>
+</ol></div></div>
+<figure><img src="captures/cfg-regles.png" alt=""><figcaption>Les paramètres de clinique datés : valeur en vigueur, depuis quand, bornes, version à venir. (1) <strong>Régler</strong>.</figcaption></figure>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Pas encore porté partout</p><p>La Direction a décidé le 16/11/2026 qu’une mise à jour des informations de la clinique (identité, en-têtes, fiscalité) se propage à tous les postes. La mesure de ce qui voyage aujourd’hui et de ce qui reste sur son poste est prévue au lot IDENT. En attendant, vérifiez l’identité imprimée sur chaque poste après une modification.</p></div></div>
+
+<h2 id="s4-2">4.2 Identité imprimée et papier à en-tête</h2>
+<p>L’identité de la clinique alimente automatiquement tous les états imprimables : facture, ordonnance, bulletin de paie, bon de sortie, état comptable. Aucune mention légale ne se saisit document par document.</p>
+<h3>1. Régler l’identité visible</h3>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Identité &amp; papier à en-tête</strong>.</li>
+  <li>Vérifiez <strong>Dénomination sociale</strong>, <strong>Sigle</strong>, <strong>Devise ou slogan</strong>, <strong>Adresse géographique</strong>, <strong>Pays</strong>, <strong>Adresse électronique</strong>, <strong>Téléphones (séparés par « / »)</strong>, <strong>Ligne rendez-vous</strong>.</li>
+  <li>Déposez le logo, le cachet et la signature numérisée dans <strong>Ressources graphiques</strong> avec <strong>Déposer une ressource</strong>.</li>
+  <li>Cliquez sur <strong>Enregistrer</strong> (1), puis sur <strong>Prévisualiser un état</strong> (2) pour contrôler le rendu.</li>
+</ol>
+<figure><img src="captures/cfg-branding.png" alt="" class="haute"><figcaption>Identité &amp; papier à en-tête : paramètres, aperçu du papier à en-tête, ressources graphiques.</figcaption></figure>
+<h3>2. Régler l’identité légale (IFU, RCCM)</h3>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Configuration Clinique</strong> ➔ <strong>Paramètres fiscaux (IFU / RCCM)</strong>.</li>
+  <li>Vérifiez <strong>IFU (13 chiffres)</strong>, <strong>RCCM</strong>, <strong>Autorisation d’ouverture</strong>, <strong>Adresse fiscale</strong>, <strong>Devise</strong>, <strong>Régime de TVA</strong>.</li>
+  <li>Cliquez sur <strong>Enregistrer</strong> (1).</li>
+  <li>À la première configuration, cliquez sur <strong>Valider l’identité légale</strong> (2). La validation appartient à la Direction, à la DAF ou à l’administrateur système.</li>
+</ol>
+<figure><img src="captures/cfg-fiscalite.png" alt="" class="haute"><figcaption>Paramètres fiscaux : identification fiscale, versions de l’identité légale, numérotation des documents.</figcaption></figure>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Une pièce émise ne se réécrit jamais</p><p>Modifier l’identité crée une <strong>nouvelle version datée</strong>. Une facture déjà émise garde l’en-tête de sa date. Choisissez la date d’effet avec soin.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Écart à corriger : le numéro RCCM</p><p>Le jeu de départ porte le RCCM <code>RB/NAT/2016-B-268</code>, visible sur les captures. La Direction a indiqué le 16/11/2026 que le numéro à jour est <code>NAT/2021/M02-020</code>. Posez-le comme nouvelle version datée de l’identité légale, avec le motif « numéro RCCM à jour ».</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Trois gabarits d’impression</p><p>A4 (documents), rouleau 80 mm (caisse) et carte CR80 (badge, sans IFU ni RCCM). Tous reprennent l’en-tête officiel et un pied normalisé : pagination, date, utilisateur, identifiant.</p></div></div>
+
+<h2 id="s4-3">4.3 Importer des données de départ</h2>
+<p>Ouvrez <strong>Système</strong> ➔ <strong>Importation de données</strong> ➔ <strong>Jeux d’import et historique des lots</strong>. Chaque jeu (patients, personnel, tarifs, fournisseurs, plan comptable, stock détail initial…) a sa page.</p>
+<figure><img src="captures/imp-accueil.png" alt=""><figcaption>Les jeux d’import. (1) <strong>Historique des lots</strong>, (2) <strong>Tailles maximales</strong>.</figcaption></figure>
+<ol class="etapes">
+  <li>Ouvrez la page du jeu, par exemple <strong>Importation du répertoire patients</strong>.</li>
+  <li>Dans <strong>1. Télécharger le modèle</strong>, cliquez sur <strong>Télécharger le modèle (.xlsx)</strong>. Le classeur a trois feuilles : « Données », « Instructions », « Listes ».</li>
+  <li>Remplissez la feuille « Données » en respectant les colonnes obligatoires et les valeurs permises.</li>
+  <li>Téléversez le fichier. Le logiciel l’analyse en entier <strong>avant</strong> d’écrire quoi que ce soit.</li>
+  <li>Lisez le rapport. Un refus se nomme : ligne, colonne, valeur, motif, geste de correction. Corrigez et recommencez.</li>
+  <li>Validez l’import. Le lot apparaît dans <strong>Historique des lots</strong>.</li>
+</ol>
+<figure><img src="captures/imp-patients.png" alt=""><figcaption>La page d’un jeu : modèle, colonnes, types, valeurs permises, exemple.</figcaption></figure>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><ul>
+<li>Un import <strong>n’invente rien</strong>. Un lot s’annule en l’archivant (RG-14).</li>
+<li>Le même fichier importé deux fois est reconnu comme le même lot : la mère le confirme une fois.</li>
+<li>Le répertoire patients ne reprend que l’identité administrative, jamais le dossier médical. Le code patient (RG-01, format <code>CNT/[n°]/[année]</code>) est attribué par le logiciel.</li>
+<li>Les jeux qui écrivent la configuration sont réservés à la mère.</li></ul></div></div>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage : qui peut importer</p><p>Le droit d’importer se règle par jeu et par rôle : icône <strong>Régler les importations de ce rôle</strong> à <strong>Rôles &amp; permissions (RBAC)</strong>.</p></div></div>
+
+<h2 id="s4-4">4.4 Clôture d’exercice</h2>
+<p>Ouvrez <strong>Financier</strong> ➔ <strong>Comptabilité SYSCOHADA</strong> ➔ <strong>Exercices &amp; clôtures</strong>. Un exercice a trois états : <strong>ouvert</strong>, <strong>en clôture</strong> (les modules n’écrivent plus), <strong>clôturé</strong> (lecture seule).</p>
+<figure><img src="captures/m12-cloture.png" alt=""><figcaption>Exercices &amp; clôtures. (1) onglet <strong>Circuit de clôture</strong>, (2) <strong>Pré-clôture</strong>.</figcaption></figure>
+<h3>1. Régler le circuit de clôture</h3>
+<p>Le circuit dit qui démarre la clôture, qui passe les écritures d’inventaire, qui clôture définitivement, qui rouvre, et le mois d’ouverture de l’exercice suivant. Il faut le geste réservé <strong>Régler le circuit de la clôture annuelle</strong>.</p>
+<ol class="etapes">
+  <li>Ouvrez l’onglet <strong>Circuit de clôture</strong>.</li>
+  <li>Modifiez les rôles de chaque réglage.</li>
+  <li>Saisissez la <strong>Date d’effet</strong> et le <strong>Motif du changement (obligatoire)</strong>.</li>
+  <li>Cliquez sur <strong>Enregistrer le circuit</strong>. Une nouvelle version datée est créée ; les anciennes restent à <strong>Historique des versions (jamais réécrites)</strong>.</li>
+</ol>
+<figure><img src="captures/m12-circuit.png" alt=""><figcaption>Le circuit en vigueur aujourd’hui et l’historique de ses versions.</figcaption></figure>
+<h3>2. Clôturer un exercice</h3>
+<ol class="etapes">
+  <li>Sur la ligne de l’exercice, cliquez sur <strong>Pré-clôture</strong>. Lisez les contrôles.</li>
+  <li>Cliquez sur <strong>Démarrer la clôture</strong>. Rien n’est figé : la saisie peut reprendre tant que la clôture définitive n’est pas faite.</li>
+  <li>Une <strong>autre personne</strong> que celle qui a démarré clique sur <strong>Clôturer définitivement</strong>, avec un motif. Le logiciel passe d’un seul tenant la pièce de clôture (journal CL), la pièce d’à-nouveaux (journal AN) de l’exercice suivant, le verrou et l’archive.</li>
+</ol>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Après la clôture définitive, l’exercice est en lecture seule. Une réouverture se fait avec <strong>Rouvrir</strong>, par un rôle autorisé, avec un motif, par contre-passation. Sur un fileul, une pièce datée d’un exercice clos est refusée par la mère au moment de la synchronisation.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>La caisse continue d’encaisser pendant la clôture : une pièce s’enregistre toujours dans l’exercice de sa date. Les soldes d’ouverture inconnus restent « inconnus », jamais zéro.</p></div></div>
+
+<!-- ============================== CHAPITRE 5 ============================== -->
+<h1 id="ch5">5. Sécurité et sauvegardes</h1>
+
+<h2 id="s5-1">5.1 Les trois niveaux de sauvegarde</h2>
+<table class="tab">
+<tr><th>Niveau</th><th>Ce qui est copié</th><th>Où</th><th>Section</th></tr>
+<tr><td>Sauvegarde locale de la mère</td><td>Base de la mère (chiffrée, chaque nuit, gardée 7 jours) et fichiers numérisés</td><td>La destination réglée par la clinique</td><td>5.2 et 5.3</td></tr>
+<tr><td>Sauvegarde hors site</td><td>Les mêmes copies, en blocs chiffrés par la clé de clinique</td><td>Relais web ou dossier distant monté</td><td>5.4</td></tr>
+<tr><td>Journal chiffré au relais</td><td>Les opérations synchronisées</td><td>Relais web</td><td>5.5</td></tr>
+</table>
+
+<h2 id="s5-2">5.2 Choisir la destination de la sauvegarde locale</h2>
+<ol class="etapes">
+  <li>Ouvrez <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Tâches planifiées</strong>.</li>
+  <li>Dans <strong>Sauvegarde du magasin et des fichiers numérisés</strong>, lisez la <strong>Destination</strong>.</li>
+  <li>Cliquez sur <strong>Destination de la sauvegarde</strong> (1) et choisissez un autre disque ou un partage réseau.</li>
+</ol>
+<figure><img src="captures/m14-taches.png" alt=""><figcaption>Tâches planifiées : la destination de la sauvegarde et le registre des tâches.</figcaption></figure>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Même disque que les données</p><p>Par défaut, la copie est sur le même disque que les données. Elle ne protège pas d’une panne de disque. Désignez un autre disque ou un partage réseau dès l’installation.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Sur le poste</p><p>Sur l’application de poste, la sauvegarde et sa destination se règlent à <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Sauvegardes &amp; restauration</strong> (carte <strong>Sauvegarde hors site</strong> comprise), et à la console de la mère.</p></div></div>
+
+<h2 id="s5-3">5.3 Sauvegarder et vérifier depuis la mère</h2>
+<p>Ouvrez <strong>Poste mère</strong> ➔ <strong>Sécurité et continuité</strong> ➔ <strong>Sauvegardes et restauration</strong>.</p>
+<figure><img src="captures/mere-sauvegardes.png" alt=""><figcaption>Sauvegardes et restauration de la mère. (1) <strong>Sauvegarder maintenant</strong>, (2) <strong>Vérifier la dernière</strong>, (3) onglet <strong>Restaurer</strong>.</figcaption></figure>
+<ol class="etapes">
+  <li>Cliquez sur <strong>Sauvegarder maintenant</strong> (1) avant toute opération sensible (mise à jour, clôture, import important).</li>
+  <li>Cliquez sur <strong>Vérifier la dernière</strong> (2). La colonne <strong>Vérification</strong> passe à <strong>Vérifiée</strong>.</li>
+</ol>
+<div class="enc astuce"><div class="ico">✅</div><div><p class="t">Bonne pratique</p><p>Une sauvegarde jamais restaurée n’est pas une sauvegarde. Faites une restauration à blanc chaque mois sur une machine propre (section 5.5), et notez la date.</p></div></div>
+<figure><img src="captures/m14-sauvegardes.png" alt=""><figcaption>Sauvegardes &amp; restauration (module Sécurité) : fichiers disponibles, historique. (1) <strong>Générer une sauvegarde</strong>, (2) <strong>Restaurer</strong>.</figcaption></figure>
+
+<h2 id="s5-4">5.4 Activer la sauvegarde hors site</h2>
+<p>La copie hors site protège contre la perte de la clinique entière (vol, incendie, panne de disque). Elle est <strong>désactivée par défaut</strong>. Elle se règle sur la <strong>mère</strong>, par l’administrateur ou la DAF.</p>
+<p>Elle se règle dans l’application de poste, carte <strong>Sauvegarde hors site</strong> de l’écran <strong>Sauvegardes &amp; restauration</strong> (cette carte n’existe pas dans la maquette, elle est décrite ici depuis le code du poste).</p>
+<ol class="etapes">
+  <li>Sur la mère, ouvrez <strong>Système</strong> ➔ <strong>Sécurité &amp; Utilisateurs</strong> ➔ <strong>Sauvegardes &amp; restauration</strong>.</li>
+  <li>Dans la carte <strong>Sauvegarde hors site</strong>, cliquez sur <strong>Régler la copie hors site</strong>.</li>
+  <li>Cochez <strong>Copie hors site active</strong>.</li>
+  <li>Choisissez la <strong>Destination du magasin</strong> et la <strong>Destination des fichiers numérisés</strong> : <strong>Relais web</strong>, <strong>Dossier distant monté</strong> ou <strong>Aucune destination</strong>. Pour un dossier distant, saisissez son chemin complet.</li>
+  <li>Réglez <strong>Copies du magasin gardées (2 à 60)</strong>, <strong>Copies des fichiers gardées (2 à 60)</strong>, <strong>Fréquence des fichiers (minutes, 15 à 1440)</strong>, <strong>Heure du contrôle de nuit (0 à 23)</strong> et <strong>Blocs vérifiés chaque nuit (0 à 200)</strong>.</li>
+  <li>Saisissez le <strong>Motif (consigné dans le journal)</strong>.</li>
+  <li>Cliquez sur <strong>Enregistrer</strong>. Le message <strong>Réglage enregistré.</strong> s’affiche.</li>
+  <li>Lancez une première copie avec <strong>Copier le magasin maintenant</strong>, puis <strong>Copier les fichiers maintenant</strong>. Contrôlez avec <strong>Contrôler les copies</strong>.</li>
+</ol>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Ce que voit le relais</p><p>La copie est chiffrée au poste mère par la clé de la clinique <strong>avant</strong> de partir. Le relais ou le dossier distant ne reçoit que des blocs opaques : des identifiants, des tailles, des dates. Un fileul lit le réglage, mais ne le pose pas.</p></div></div>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage : la place sur l’hébergement</p><p>L’espace d’un cPanel mutualisé est limité. Le panneau du relais affiche l’espace utilisé (écran <strong>Sauvegarde du relais</strong>, section 7.8). Au-delà de N copies, la plus ancienne est <strong>archivée</strong> (toujours restaurable). Elle n’est purgée que si l’espace manque. Si l’espace manque encore, la copie est refusée avec le code <code>ESPACE_RELAIS_INSUFFISANT</code> et rien d’actuel n’est détruit : augmentez le quota, réduisez le nombre de copies gardées, ou passez à un dossier distant.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Pas encore fait ni vérifié</p><p>La copie par SFTP n’existe pas. La mesure réelle sur l’hébergement cPanel (espace, taille maximale d’une requête, temps d’exécution) reste à faire avant la mise en service.</p></div></div>
+
+<h2 id="s5-5">5.5 Restaurer, remplacer la mère</h2>
+<h3>1. Restaurer une copie hors site</h3>
+<ol class="etapes">
+  <li>Dans la carte <strong>Sauvegarde hors site</strong>, cliquez sur <strong>Restaurer une copie</strong>.</li>
+  <li>Choisissez le type : <strong>Magasin (base de la mère)</strong> ou <strong>Fichiers numérisés</strong>, puis la copie.</li>
+  <li>Saisissez un <strong>Dossier NEUF de destination (chemin complet)</strong>.</li>
+  <li>Tapez le mot de confirmation demandé (« Pour confirmer, tapez … »).</li>
+  <li>Cliquez sur <strong>Restaurer</strong>. Le message <strong>Copie restaurée et vérifiée.</strong> confirme.</li>
+</ol>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>La restauration vérifie chaque bloc (empreinte, authentification, longueur) avant d’écrire. Un bloc altéré ou manquant est refusé et nommé : rien n’est restauré à moitié. La base en service n’est jamais touchée.</p></div></div>
+<h3>2. Remplacer la mère par une nouvelle machine</h3>
+<ol class="etapes">
+  <li>Installez le poste sur la nouvelle machine (chapitre 1).</li>
+  <li>Sur l’écran <strong>Sauvegardes et restauration</strong> de la mère, ouvrez l’onglet <strong>Remplacer la mère</strong> et suivez ses étapes.</li>
+  <li>La restauration passe par le journal chiffré du relais avec la clé de clinique : sans la bonne clé, rien n’est écrit.</li>
+</ol>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Remplacer la mère se fait par <strong>restauration</strong> sur la nouvelle machine, jamais par copie de fichiers. Une seule mère peut être active par clinique : l’ancienne doit être arrêtée. La restauration incrémente l’époque : les anciens appareils ne ressuscitent rien.</p></div></div>
+
+<!-- ============================== CHAPITRE 6 ============================== -->
+<h1 id="ch6">6. Impression et MECeF</h1>
+
+<h2 id="s6-1">6.1 L’imprimante de caisse Xprinter XP-Q800</h2>
+<p>La caisse imprime ses reçus sur une imprimante thermique directe <strong>Xprinter XP-Q800</strong> (ou une variante de même châssis, XP-N160II ou XP-C260N) : rouleau 80 mm, massicot, liaison USB ou Ethernet selon la version (à vérifier à l’arrière de l’appareil). C’est l’imprimante du gabarit rouleau 80 mm. Ce n’est pas le boîtier MECeF.</p>
+<h3>1. Installer l’imprimante sous Windows</h3>
+<ol class="etapes">
+  <li>Branchez l’imprimante (USB) ou reliez-la au réseau (Ethernet). Chargez un rouleau de 80 mm.</li>
+  <li>Installez le pilote Windows fourni par le fabricant avec l’imprimante.</li>
+  <li>Dans <strong>Paramètres Windows</strong> ➔ <strong>Imprimantes et scanners</strong>, définissez la XP-Q800 comme <strong>imprimante par défaut</strong> du poste de caisse.</li>
+  <li>Imprimez une page de test depuis Windows.</li>
+</ol>
+<h3>2. Imprimer un ticket depuis le poste</h3>
+<ol class="etapes">
+  <li>À la caisse, ouvrez l’aperçu du <strong>Ticket de caisse</strong>. Le gabarit fait 80 mm de large, sa hauteur suit le contenu.</li>
+  <li>Cliquez sur <strong>Imprimer</strong> : le poste envoie le document à l’imprimante <strong>par défaut</strong> du système. Vous pouvez aussi <strong>Enregistrer en PDF</strong>.</li>
+</ol>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Non vérifié sur matériel réel</p><p>L’impression vers une imprimante physique n’a pas été essayée dans l’environnement de rédaction, ni la coupe du massicot. Sans imprimante par défaut, le poste affiche un refus nommé : « Vérifier qu’une imprimante par défaut est installée. » Faites un essai de ticket complet sur la vraie caisse avant la mise en service.</p></div></div>
+<div class="enc astuce"><div class="ico">✅</div><div><p class="t">Bonne pratique</p><p>Sur le poste de caisse, la XP-Q800 est l’imprimante par défaut. Les documents A4 (factures détaillées, états) s’impriment depuis un autre poste, ou en choisissant l’imprimante A4 dans la boîte d’impression du lecteur PDF.</p></div></div>
+
+<h2 id="s6-2">6.2 MECeF : choisir le mode de certification</h2>
+<p>Le MECeF certifie les factures normalisées. La Direction a retenu le <strong>boîtier physique</strong>, avec une certification locale à la caisse. Deux modes existent : <strong>Boîtier physique</strong> (défaut) et <strong>e-MECeF</strong>.</p>
+<ol class="etapes">
+  <li>Ouvrez <strong>Financier</strong> ➔ <strong>MECeF — Facture normalisée</strong> ➔ <strong>Configuration fiscale</strong>.</li>
+  <li>Dans <strong>Mode de certification</strong>, lisez le <strong>Mode en vigueur</strong>.</li>
+  <li>Cliquez sur <strong>Régler le mode</strong> (1) (sur le poste : choisissez le mode puis <strong>Enregistrer le mode</strong>).</li>
+  <li>Vérifiez les <strong>Paramètres fiscaux</strong> : ils sont en lecture seule ici et viennent de l’identité légale (section 4.2).</li>
+</ol>
+<figure><img src="captures/mecef-config.png" alt="" class="haute"><figcaption>Configuration fiscale : mode de certification, paramètres fiscaux, mentions portées sur chaque facture.</figcaption></figure>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage</p><p>Le mode se règle par l’administrateur ou la Directrice Administrative. Il est enregistré en base (paramètre <code>mecef.mode</code>), versionné par date.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Boîtier en attente des réponses du fournisseur</p><p>Le modèle du boîtier, son interface et son protocole ne figurent dans aucun document remis. Les questions au fournisseur et à la DGI ont été remises à la Direction. Tant que l’adaptateur du boîtier n’est pas branché :</p>
+<ul><li>une vente est encaissée et reste <strong>en attente de certification</strong> ;</li>
+<li>elle ne reçoit <strong>aucun numéro</strong> : aucun numéro n’est fabriqué comme s’il était fiscal ;</li>
+<li>elle se retransmet quand l’adaptateur sera branché, sans consommer l’essai du caissier.</li></ul>
+<p>Le mode e-MECeF est dans le même cas : non configuré, le dossier d’interface de la DGI est requis. La maquette, elle, simule un appareil de démonstration et le dit ; le poste n’a aucun adaptateur.</p></div></div>
+<div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où regarder</p><p>Les factures en attente se lisent à <strong>Transmission &amp; réponses</strong>. Le <strong>Journal des transactions</strong> est immuable : une facture erronée se corrige par un avoir (<strong>Avoirs &amp; annulations</strong>), jamais par modification.</p></div></div>
+
+<!-- ============================== CHAPITRE 7 ============================== -->
+<h1 id="ch7">7. Le relais web sur cPanel</h1>
+
+<h2 id="s7-1">7.1 Ce que fait le relais, ce qu’il ne voit jamais</h2>
+<p>Le relais est installé sur l’hébergement mutualisé cPanel de la clinique, au domaine <code>sighcnt.nassieratoo.com</code>. Il est <strong>opaque</strong> : il stocke des enveloppes chiffrées de bout en bout et des indicateurs sans nom de patient. Il ne détient aucune clé.</p>
+<table class="tab">
+<tr><th>Le relais voit</th><th>Le relais ne voit jamais</th></tr>
+<tr><td>
+<ul><li>L’identifiant et l’état de chaque appareil</li>
+<li>Le sens, le rang, la taille et la date d’une enveloppe</li>
+<li>Les indicateurs publiés par la mère (agrégats sans nom)</li>
+<li>L’état de synchronisation des fileuls (compteurs, horodatages)</li>
+<li>L’identifiant, la taille et la date d’un bloc de sauvegarde</li></ul></td>
+<td><ul><li>Le contenu d’une enveloppe (chiffré)</li>
+<li>Un nom de patient, un dossier, un motif</li>
+<li>Le nom d’une collection ou d’un champ</li>
+<li>Le contenu, le nom ou le nombre de fichiers d’une sauvegarde</li>
+<li>La clé de clinique</li></ul></td></tr>
+</table>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Protégez-le comme un serveur de santé</p><p>Même compromis, le relais ne livre pas de dossier. Mais il porte l’accès aux boîtes des téléphones et les sauvegardes chiffrées. HTTPS obligatoire, mot de passe superadmin long, secret de la mère long.</p></div></div>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Contraintes de l’hébergement</p><p>PHP 8.2 ou plus, PostgreSQL, une tâche cron chaque minute. Pas de SSH, pas de Redis, pas de WebSocket, pas de <code>npm</code>. Le panneau n’utilise aucune ressource externe.</p></div></div>
+
+<h2 id="s7-2">7.2 Déployer le relais</h2>
+<h3>1. Préparer le dossier sur un poste de développement</h3>
+<ol class="etapes">
+  <li>Dans le dossier <code>apps/web</code>, lancez <code>composer install --no-dev --optimize-autoloader</code>. Cela produit le dossier <code>vendor/</code> (cPanel n’a ni Composer ni SSH).</li>
+  <li>Lancez <code>php artisan key:generate --show</code> et gardez la valeur affichée pour <code>APP_KEY</code>.</li>
+</ol>
+<h3>2. Téléverser</h3>
+<ol class="etapes">
+  <li>Téléversez <strong>tout le dossier</strong> <code>apps/web</code> <strong>hors</strong> de <code>public_html</code>, par exemple dans <code>~/sigh-relais/</code> (Gestionnaire de fichiers de cPanel, ou « Git Version Control » si l’hébergeur le propose).</li>
+  <li>Dans cPanel, faites pointer le domaine <code>sighcnt.nassieratoo.com</code> vers <code>~/sigh-relais/public</code>.</li>
+  <li>Activez le certificat HTTPS du domaine (AutoSSL ou équivalent de l’hébergeur).</li>
+</ol>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>La racine web doit être <code>public/</code>, rien d’autre. Le reste du dossier contient <code>.env</code>, <code>vendor/</code> et le code : il ne doit jamais être servi.</p></div></div>
+<h3>3. Base de données et PHP</h3>
+<ol class="etapes">
+  <li>cPanel ➔ <strong>PostgreSQL Databases</strong> : créez la base, l’utilisateur, et accordez tous les privilèges.</li>
+  <li>cPanel ➔ <strong>MultiPHP Manager</strong> : choisissez PHP 8.2 ou plus pour le domaine.</li>
+  <li>cPanel ➔ <strong>Select PHP Version</strong> : activez les extensions <code>pdo_pgsql</code>, <code>mbstring</code>, <code>openssl</code>, <code>ctype</code>, <code>json</code>.</li>
+  <li>Donnez les droits d’écriture aux dossiers <code>storage/</code> et <code>bootstrap/cache/</code> (755, ou 775 si l’hébergeur l’exige).</li>
+</ol>
+
+<h2 id="s7-3">7.3 Le fichier .env</h2>
+<p>Copiez <code>production.env.exemple</code> en <code>.env</code> à la racine du dossier téléversé, puis renseignez-le. Le tableau donne les variables, <strong>jamais leurs valeurs secrètes</strong>.</p>
+<table class="tab">
+<tr><th>Variable</th><th>Valeur attendue</th></tr>
+<tr><td><code>APP_ENV</code></td><td><code>production</code></td></tr>
+<tr><td><code>APP_DEBUG</code></td><td><code>false</code></td></tr>
+<tr><td><code>APP_URL</code></td><td><code>https://sighcnt.nassieratoo.com</code></td></tr>
+<tr><td><code>APP_KEY</code></td><td>la valeur produite par <code>key:generate --show</code> (secret)</td></tr>
+<tr><td><code>DB_CONNECTION</code>, <code>DB_HOST</code>, <code>DB_PORT</code>, <code>DB_DATABASE</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code></td><td>la base PostgreSQL créée dans cPanel (mot de passe : secret)</td></tr>
+<tr><td><code>SESSION_SECURE_COOKIE</code></td><td><code>true</code> (cookie réservé à HTTPS)</td></tr>
+<tr><td><code>RELAIS_SECRET_MERE</code></td><td>un texte long et aléatoire, 32 caractères au moins (secret). Le <strong>même</strong> texte se saisit sur la mère.</td></tr>
+<tr><td><code>RELAIS_SEUIL_BATTEMENT_MS</code></td><td>le silence de la mère toléré avant l’alerte (5 minutes par défaut)</td></tr>
+<tr><td><code>RELAIS_BANC</code></td><td><code>false</code> (les crochets du banc d’essai sont fermés)</td></tr>
+</table>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Les secrets</p><p>Le <code>.env</code> n’est jamais versé au dépôt de code, jamais envoyé par courriel, jamais photographié. Rangez une copie des secrets avec la copie papier de la clé de clinique. La clé de clinique, elle, ne va <strong>jamais</strong> sur le relais.</p></div></div>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Messagerie du relais</p><p>Le serveur d’envoi et son mot de passe se règlent dans le panneau (<strong>Paramètres du relais</strong>, carte <strong>Messagerie SMTP du relais</strong>), pas dans le dépôt. Le mot de passe est chiffré et jamais relu. Un bouton <strong>Envoyer un message de test</strong> nomme l’étape en échec.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Écart à confirmer : deux noms de domaine</p><p>Le relais est servi à <code>sighcnt.nassieratoo.com</code>. Les valeurs de messagerie proposées par défaut dans le dépôt utilisent un autre nom : serveur <code>mail.sigh.nassieratoo.com</code>, adresse <code>contact@sigh.nassieratoo.com</code>. Le guide de déploiement (<code>DEPLOIEMENT-CPANEL.md</code>) ne nomme pas le domaine (il écrit <code>relais.exemple.bj</code>). Confirmez auprès de l’hébergeur le nom exact du serveur de messagerie et corrigez les valeurs par défaut si besoin.</p></div></div>
+
+<h2 id="s7-4">7.4 Commandes ponctuelles et tâche cron</h2>
+<p>Sans SSH, une commande se lance par une <strong>tâche cron à usage unique</strong> : cPanel ➔ <strong>Cron Jobs</strong>, réglez l’heure sur la minute suivante, attendez l’exécution, puis <strong>supprimez la tâche</strong>. Le chemin de PHP est <code>/usr/local/bin/php</code> (ou <code>ea-php82</code> selon l’hébergeur).</p>
+<table class="tab">
+<tr><th>Besoin</th><th>Commande</th></tr>
+<tr><td>Exporter la base avant une migration</td><td><code>cd ~/sigh-relais &amp;&amp; /usr/local/bin/php artisan relais:exporter --avant-migration</code></td></tr>
+<tr><td>Créer les tables</td><td><code>cd ~/sigh-relais &amp;&amp; /usr/local/bin/php artisan migrate --force</code></td></tr>
+<tr><td>Créer le compte superadmin</td><td><code>cd ~/sigh-relais &amp;&amp; /usr/local/bin/php artisan relais:superadmin &lt;courriel&gt; --mot-de-passe='&lt;mot de passe&gt;'</code></td></tr>
+<tr><td>Vider les caches après une mise à jour</td><td><code>cd ~/sigh-relais &amp;&amp; /usr/local/bin/php artisan optimize:clear</code></td></tr>
+<tr><td>Voir les volumes (sans contenu)</td><td><code>php artisan relais:statut</code></td></tr>
+</table>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>Après la création du compte superadmin, effacez aussitôt la ligne de cron qui contient le mot de passe.</p></div></div>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Longueur du mot de passe superadmin</p><p>La commande accepte 8 caractères au moins, mais l’écran <strong>Comptes superadmin</strong> et le fichier lisez-moi du relais demandent 12 caractères au moins. Choisissez au moins 12 caractères. L’écart de texte est à corriger dans le code.</p></div></div>
+<h3>La tâche permanente</h3>
+<p>Créez une seule tâche permanente, chaque minute :</p>
+<pre>* * * * * cd ~/sigh-relais &amp;&amp; /usr/local/bin/php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</pre>
+<p>Elle déclenche les tâches planifiées du relais :</p>
+<ul>
+  <li><code>relais:surveiller</code> chaque minute : marque le passage du cron (écran <strong>Hébergement</strong>), lève ou résout les alertes ;</li>
+  <li><code>relais:exporter</code> chaque jour à 03:00 : export de la base du relais ;</li>
+  <li><code>relais:purger --oui</code> chaque jour à 03:10 : purge de l’<strong>audit</strong> au-delà de 365 jours (30 au minimum). Les enveloppes ne sont jamais purgées depuis le relais.</li>
+</ul>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Écart à corriger dans le guide</p><p>Le guide <code>DEPLOIEMENT-CPANEL.md</code> (section 4) dit « Rien n’est planifié aujourd’hui côté relais ». C’est dépassé : les trois tâches ci-dessus sont planifiées par le code du relais. Sans le cron, l’écran <strong>Hébergement</strong> affiche une alerte « Tâche cron non exécutée ».</p></div></div>
+
+<h2 id="s7-5">7.5 Brancher la mère et contrôler avant la mise en service</h2>
+<ol class="etapes">
+  <li>Sur la mère, faites <strong>Activer le mode mère</strong> avec l’adresse <code>sighcnt.nassieratoo.com</code> et le même secret que <code>RELAIS_SECRET_MERE</code> (section 2.1).</li>
+  <li>Ouvrez le panneau : le <strong>Tableau de bord du relais</strong> doit afficher <strong>Mère</strong> ➔ <strong>En ligne</strong> (section 7.6).</li>
+</ol>
+<h3>Liste de contrôle</h3>
+<ul class="cases">
+  <li><code>https://sighcnt.nassieratoo.com/panneau</code> redirige vers la connexion ; l’accueil <code>/</code> aussi ; aucune autre page publique.</li>
+  <li><code>https://sighcnt.nassieratoo.com/.env</code> et <code>…/vendor/autoload.php</code> renvoient une erreur 404.</li>
+  <li><code>RELAIS_BANC=false</code>, <code>APP_DEBUG=false</code>, HTTPS forcé.</li>
+  <li>Aucune route <code>banc/*</code> ne répond (elles renvoient 404 sans <code>RELAIS_BANC</code>).</li>
+  <li>Une sauvegarde de la base du relais est planifiée.</li>
+  <li>La clé de clinique n’est ni sur le relais, ni dans le dépôt : copie papier sous scellé chez la Direction, détenteur nommé.</li>
+  <li>L’écran <strong>Hébergement</strong> ne montre aucune alerte.</li>
+</ul>
+
+<h2 id="s7-6">7.6 Le panneau superadmin : connexion et tableau de bord</h2>
+<ol class="etapes">
+  <li>Ouvrez <code>https://sighcnt.nassieratoo.com/panneau</code>.</li>
+  <li>Saisissez le <strong>Courriel</strong> et le <strong>Mot de passe</strong> du compte superadmin.</li>
+  <li>Cliquez sur <strong>Se connecter</strong> (1).</li>
+</ol>
+<figure><img src="captures/p-connexion.png" alt="" class="moyenne"><figcaption>La connexion au panneau : accès réservé à l’administrateur système. Six essais par minute au plus.</figcaption></figure>
+<p>Le menu du panneau a quatorze entrées : <strong>Tableau de bord du relais</strong>, <strong>Appareils</strong>, <strong>Boîtes aux lettres</strong>, <strong>Codes d’appairage</strong>, <strong>Indicateurs reçus</strong>, <strong>Synchronisation</strong>, <strong>Alertes et notifications</strong>, <strong>Journal d’audit du relais</strong>, <strong>Comptes superadmin</strong>, <strong>Paramètres du relais</strong>, <strong>Hébergement</strong>, <strong>Sauvegarde du relais</strong>, <strong>Preuve d’opacité</strong>, <strong>Consultation des copies</strong>. Un compte qui n’est pas superadmin ne voit aucune entrée.</p>
+<figure><img src="captures/p-tableau.png" alt=""><figcaption>Le tableau de bord : (1) la mère est-elle vivante ? Appareils actifs, enveloppes, alertes en cours. Actualisé toutes les 15 secondes.</figcaption></figure>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Sur la capture</p><p>La copie locale tourne sur un ordinateur de test : les alertes « Espace disque faible » et « Tâche cron non exécutée » sont réelles pour cet ordinateur. Sur l’hébergement, elles disparaissent quand le disque a de la place et que le cron tourne.</p></div></div>
+
+<h2 id="s7-7">7.7 Appareils, codes, synchronisation, alertes</h2>
+<h3>Appareils</h3>
+<p>L’écran <strong>Appareils</strong> liste les appareils appairés : fonction, identifiant, état, dernier contact, enveloppes en attente.</p>
+<figure><img src="captures/p-appareils.png" alt=""><figcaption>Les appareils vus par le relais. (1) <strong>Révoquer</strong>.</figcaption></figure>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Révoquer ici ne suffit pas</p><p><strong>Révoquer</strong> coupe l’accès au relais. La fiche de l’appareil sur la console de la mère reste à mettre à jour. À l’inverse, une révocation faite sur la mère coupe aussi l’accès au relais : préférez révoquer depuis la mère (section 2.5).</p></div></div>
+<h3>Codes d’appairage</h3>
+<p>Le relais ne stocke que l’<strong>empreinte</strong> d’un code, jamais le code lui-même. Un code utilisé est refusé ; un code expire au bout de 15 minutes.</p>
+<figure><img src="captures/p-codes.png" alt=""><figcaption>Codes d’appairage : valides, utilisés, expirés.</figcaption></figure>
+<h3>Synchronisation</h3>
+<p>L’écran <strong>Synchronisation</strong> (lecture seule) montre la mère, ses fileuls et les mobiles : dernier contact, retard, boîtes en attente. Une valeur que personne n’a publiée se lit « non publié », jamais zéro.</p>
+<figure><img src="captures/p-synchronisation.png" alt=""><figcaption>Synchronisation : état de la mère, des fileuls (publiés par la mère) et des mobiles.</figcaption></figure>
+<h3>Alertes et notifications</h3>
+<figure><img src="captures/p-alertes.png" alt=""><figcaption>Les règles d’alerte : battement manquant, appareil bloqué, disque, cron, fileul ou mobile silencieux, boîte qui grossit.</figcaption></figure>
+<div class="enc param"><div class="ico">⚙️</div><div><p class="t">Paramétrage des seuils</p><p>Les seuils du battement, du disque et du cron se règlent dans le <code>.env</code>. Ceux de la synchronisation (fileul, mobile, boîte aux lettres) se règlent en base, dans <strong>Paramètres du relais</strong>. Toutes les valeurs de départ sont des propositions à valider par la Direction.</p></div></div>
+
+<h2 id="s7-8">7.8 Paramètres, hébergement, sauvegarde du relais</h2>
+<h3>Paramètres du relais</h3>
+<figure><img src="captures/p-parametres.png" alt=""><figcaption>Paramètres du relais : chaque valeur dit où elle se règle. Le secret de la mère n’est jamais affiché.</figcaption></figure>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>Les paramètres de la clinique (taux, dates, circuits, modes) ne se règlent pas ici : ils se règlent au poste, voyagent chiffrés, et le relais ne les lit pas.</p></div></div>
+<h3>Hébergement</h3>
+<figure><img src="captures/p-hebergement.png" alt=""><figcaption>Hébergement : PHP, base, cron, disque, certificat. (1) Le passage du cron <code>schedule:run</code>.</figcaption></figure>
+<div class="enc regarder"><div class="ico">🔍</div><div><p class="t">Où regarder</p><p>Après la mise en service, consultez <strong>Hébergement</strong> chaque semaine : la ligne <strong>Cron schedule:run</strong> doit être <strong>OK</strong>, le disque sous le seuil, le certificat TLS valide.</p></div></div>
+<h3>Sauvegarde du relais</h3>
+<ol class="etapes">
+  <li>Ouvrez <strong>Sauvegarde du relais</strong>.</li>
+  <li>Cliquez sur <strong>Exporter maintenant</strong> (1). Le fichier est déposé dans <code>storage/app/exports</code>.</li>
+  <li>Téléchargez-le par le Gestionnaire de fichiers de cPanel et rangez-le hors de l’hébergement.</li>
+</ol>
+<figure><img src="captures/p-sauvegarde.png" alt=""><figcaption>Sauvegarde du relais : exports de la base et, plus bas, l’espace utilisé par les sauvegardes hors site de la mère.</figcaption></figure>
+<div class="enc info"><div class="ico">ℹ️</div><div><p class="t">Information</p><p>L’export contient les enveloppes du journal, les appareils, les réglages et l’audit, déjà chiffrés. Il n’embarque pas les blocs des copies hors site (ils sont déjà des copies chiffrées, dans <code>storage/app/sauvegardes</code>). Perdre la base du relais ne perd pas les données de la clinique, qui vivent sur la mère, mais perdrait les boîtes des téléphones non relevées.</p></div></div>
+
+<h2 id="s7-9">7.9 Preuve d’opacité, journal, comptes superadmin</h2>
+<figure><img src="captures/p-opacite.png" alt=""><figcaption>Preuve d’opacité : aucune clé au relais, entropie des enveloppes, tableau « ce que le relais voit ».</figcaption></figure>
+<p>L’écran <strong>Preuve d’opacité</strong> démontre que l’hébergeur ne peut rien lire : il mesure l’entropie des enveloppes stockées (un bon chiffrement approche 8 bits par octet) et vérifie qu’aucun bloc de sauvegarde ne porte une signature de fichier ou du texte lisible.</p>
+<p>L’écran <strong>Journal d’audit du relais</strong> donne qui a fait quoi sur le panneau : connexions, révocations, codes, changements de paramètres. Aucune action anonyme (RG-12).</p>
+<h3>Changer le mot de passe superadmin</h3>
+<ol class="etapes">
+  <li>Ouvrez <strong>Comptes superadmin</strong>.</li>
+  <li>Saisissez le <strong>Mot de passe actuel</strong>, le <strong>Nouveau mot de passe</strong> et la <strong>Confirmation</strong>.</li>
+  <li>Cliquez sur <strong>Changer le mot de passe</strong> (1).</li>
+</ol>
+<figure><img src="captures/p-superadmin.png" alt=""><figcaption>Comptes superadmin : comptes, sessions ouvertes, changement de mot de passe.</figcaption></figure>
+<div class="enc attention"><div class="ico">⚠️</div><div><p class="t">Double facteur</p><p>Le double facteur n’est pas encore pris en charge par le relais : la colonne le dit. Un nouveau compte superadmin se crée seulement par la commande <code>relais:superadmin</code> (section 7.4), jamais par une inscription publique.</p></div></div>
+<h3>Consultation des copies</h3>
+<p>L’écran <strong>Consultation des copies</strong> permet de lire les dossiers copiés par les postes, avec la clé de la clinique saisie dans la page. La clé reste dans votre navigateur et n’est jamais envoyée au serveur ; fermer la page l’oublie.</p>
+<div class="enc alerte"><div class="ico">🛑</div><div><p class="t">Alerte</p><p>N’utilisez la consultation des copies que sur un ordinateur de confiance, jamais sur un poste public. Fermez la page juste après.</p></div></div>
+
+<h2 id="s7-10">7.10 Mettre à jour le relais</h2>
+<ol class="etapes">
+  <li>Exportez la base du relais (<code>relais:exporter --avant-migration</code> par cron à usage unique, ou <strong>Exporter maintenant</strong>).</li>
+  <li>Préparez le nouveau code sur le poste de développement (section 7.2, étape 1).</li>
+  <li>Téléversez en écrasant, en <strong>conservant</strong> <code>.env</code> et <code>storage/</code>.</li>
+  <li>Lancez <code>migrate --force</code> par cron à usage unique.</li>
+  <li>Lancez <code>optimize:clear</code> par cron à usage unique.</li>
+  <li>Vérifiez le tableau de bord : <strong>Mère</strong> ➔ <strong>En ligne</strong>.</li>
+</ol>
+
+<!-- ============================== ANNEXES ============================== -->
+<h1 id="ch8">Annexes</h1>
+
+<h2 id="s8-1">A. Ce qui n’est pas couvert ou pas vérifié</h2>
+<table class="tab">
+<tr><th>Sujet</th><th>État au 16/11/2026</th></tr>
+<tr><td>Installateur Windows, poste sous Windows</td><td>Écrit, jamais compilé ni exécuté sur un vrai Windows. Les cinq cas de désinstallation sont à rejouer sur un vrai poste.</td></tr>
+<tr><td>Protection de la clé du poste (DPAPI), chiffrement de la base (SQLCipher)</td><td>Non éprouvés ; SQLCipher non branché.</td></tr>
+<tr><td>Relais sur l’hébergement cPanel réel</td><td>Non déployé. Espace disque, taille de requête et temps d’exécution à mesurer.</td></tr>
+<tr><td>Deux postes physiques, vrai routeur, Android</td><td>Non exercés ; la synchronisation est prouvée sur un seul ordinateur (processus réels).</td></tr>
+<tr><td>Imprimante Xprinter XP-Q800</td><td>Non branchée ; impression par l’imprimante par défaut du système non essayée sur matériel.</td></tr>
+<tr><td>Boîtier MECeF, e-MECeF</td><td>Aucun adaptateur : en attente des réponses du fournisseur et de la DGI.</td></tr>
+<tr><td>Sauvegarde hors site par SFTP</td><td>Non faite.</td></tr>
+<tr><td>Propagation de l’identité de la clinique à tous les postes</td><td>Décidée le 16/11/2026, mesure prévue au lot IDENT.</td></tr>
+<tr><td>Double facteur du panneau superadmin</td><td>Non pris en charge.</td></tr>
+<tr><td>Captures des écrans du poste</td><td>Prises sur la maquette de référence ; la carte <strong>Sauvegarde hors site</strong> et l’assistant d’installation du poste sont décrits depuis leur code, sans capture.</td></tr>
+</table>
+
+<h2 id="s8-2">B. Écarts à corriger repérés pendant la rédaction</h2>
+<ul>
+  <li>Nom du serveur de messagerie (<code>mail.sigh.nassieratoo.com</code>) différent du domaine du relais (<code>sighcnt.nassieratoo.com</code>) : à confirmer auprès de l’hébergeur (section 7.3).</li>
+  <li><code>DEPLOIEMENT-CPANEL.md</code> section 4 : « Rien n’est planifié » est dépassé (section 7.4) ; le guide n’écrit pas le domaine de la clinique.</li>
+  <li>Mot de passe superadmin : 8 caractères pour la commande, 12 pour le panneau et le lisez-moi (section 7.4).</li>
+  <li>RCCM du jeu de départ ancien (<code>RB/NAT/2016-B-268</code>) ; numéro à jour <code>NAT/2021/M02-020</code> à poser en version datée (section 4.2).</li>
+</ul>
+
+<h2 id="s8-3">C. Petit glossaire</h2>
+<table class="tab">
+<tr><td><strong>Mère</strong></td><td>Le poste de référence de la clinique, sur le réseau local. Une seule par clinique.</td></tr>
+<tr><td><strong>Fileul</strong></td><td>Un poste rattaché à la mère.</td></tr>
+<tr><td><strong>Relais web</strong></td><td>Le site sur l’hébergement cPanel qui transporte les enveloppes chiffrées.</td></tr>
+<tr><td><strong>Appairage</strong></td><td>Le rattachement d’un poste ou d’un téléphone par un code à usage unique.</td></tr>
+<tr><td><strong>Clé de clinique</strong></td><td>La clé qui chiffre tout ce qui quitte la clinique. Jamais au relais.</td></tr>
+<tr><td><strong>Secret de la mère</strong></td><td>Le texte qui identifie la mère auprès du relais (<code>RELAIS_SECRET_MERE</code>).</td></tr>
+<tr><td><strong>Enveloppe</strong></td><td>Un paquet d’opérations chiffré, déposé au relais.</td></tr>
+<tr><td><strong>Battement</strong></td><td>Le signe de vie que la mère envoie au relais.</td></tr>
+<tr><td><strong>Geste réservé</strong></td><td>Un acte qui engage un professionnel nommé, accordé par rôle.</td></tr>
+<tr><td><strong>Version datée</strong></td><td>Une nouvelle valeur qui s’applique à partir d’une date, sans effacer l’ancienne.</td></tr>
+<tr><td><strong>MECeF</strong></td><td>Le dispositif de certification des factures normalisées (boîtier physique retenu).</td></tr>
+</table>
+
+<p class="fin">Fin du manuel administrateur. Sources : <code>docs/guides/</code>, <code>docs/architecture/adr/</code> (ADR-0005 à 0007), <code>apps/web</code>, <code>apps/poste/lib</code>, <code>prototype_html/</code>, <code>docs/decisions/DECISIONS-A-VALIDER.md</code>.</p>
+
+</body>
+</html>

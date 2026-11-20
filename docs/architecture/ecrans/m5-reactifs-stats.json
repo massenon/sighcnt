@@ -1,0 +1,48 @@
+{
+ "id": "m5-reactifs-stats",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Statistiques des réactifs",
+ "acces": "ouvert",
+ "titre": "Statistiques des réactifs",
+ "description": "État du stock de réactifs et consommables de laboratoire : valeur, seuils, péremptions, demandes par section.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Statistiques des réactifs"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Références suivies",
+  "Valeur du stock",
+  "Sous le seuil d’alerte",
+  "Lots périmés / en alerte"
+ ],
+ "cartes": [
+  "Demandes d’analyses par section — activité qui consomme les réactifs",
+  "Références de laboratoire — état du stock"
+ ],
+ "tableaux": [
+  [
+   "Désignation",
+   "Catégorie",
+   "Stock",
+   "Seuil",
+   "Valeur (P.A.)"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

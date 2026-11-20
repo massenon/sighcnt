@@ -11,12 +11,38 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       N = global.SIGH.nav, P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   var NIVEAUX = ['Consultation', 'Création', 'Modification', 'Validation', 'Suppression', 'Impression'];
 
   function personnel() { return S.collection('personnel').active(); }
   function roleLabel(id) { return N.ROLES[id] ? N.ROLES[id].label : id; }
+
+  /* --- Appel SYNCHRONE à api/auth.php ---------------------------------------
+     Une création de compte doit être acceptée ou refusée par le serveur AVANT
+     que la fiche n'existe : la fiche sans compte de connexion serait un compte
+     qui n'ouvre rien. L'appel est donc synchrone (la modale du kit n'offre pas
+     de point d'attente), court, et porte le jeton de la session de l'appelant.
+     Retourne { ok, status, corps } ; status 0 = serveur injoignable (repli
+     navigateur : aucune connexion n'existe alors, la fiche seule est écrite). */
+  function appelAuth(corps) {
+    var racine = '';
+    try { racine = (global.document.documentElement.getAttribute('data-root')) || ''; } catch (e) { racine = ''; }
+    var jeton = '';
+    try { jeton = (S.session() || {}).jeton || global.localStorage.getItem('sigh-cnt:jeton') || ''; } catch (e) { jeton = ''; }
+    try {
+      var x = new global.XMLHttpRequest();
+      x.open('POST', racine + 'api/auth.php', false);
+      x.setRequestHeader('Content-Type', 'application/json');
+      if (jeton) x.setRequestHeader('X-Sigh-Jeton', jeton);
+      x.send(JSON.stringify(corps));
+      var o = null;
+      try { o = JSON.parse(x.responseText); } catch (e) { o = null; }
+      return { ok: x.status >= 200 && x.status < 300, status: x.status, corps: o };
+    } catch (e) {
+      return { ok: false, status: 0, corps: null };
+    }
+  }
 
   /* --- Amorçage des comptes utilisateurs ----------------------------------- */
   function utilisateurs() {
@@ -55,7 +81,7 @@
       var role = mapping[e.nomComplet];
       if (!role) {
         role = { medecin: 'medecin', infirmier: 'infirmier', sage_femme: 'infirmier',
-          aide_soignant: 'infirmier', tsl: 'laborantin', biomedical: 'biomedical', dispensatrice: 'caissier',
+          aide_soignant: 'infirmier', tsl: 'laborantin', biomedical: 'laborantin', dispensatrice: 'caissier',
           caissiere: 'caissier', accueil: 'reception', comptable: 'comptable',
           stock: 'stock', securite: 'agentadmin', entretien: 'agentadmin',
           chauffeur: 'ambulancier', direction: 'direction' }[e.fonction] || 'reception';
@@ -129,9 +155,14 @@
    * ======================================================================== */
   global.SIGH.screen('m14-utilisateurs', {
     title: 'Utilisateurs',
-    description: 'Comptes individuels, rôles attribués, état d’activation et double facteur.',
+    description: 'Registre des comptes individuels : rôles attribués, état d’activation et double facteur (fiches de gestion).',
     regle: '<strong>Aucun compte partagé</strong> : chaque agent dispose d’un identifiant individuel. '
-      + 'Le double facteur est exigé pour les profils à privilèges élevés (Administrateur et Direction).',
+      + 'Le double facteur est marqué pour les profils à privilèges élevés (Administrateur et Direction). '
+      + 'La connexion croise la fiche à chaque ouverture de session : un compte <strong>archivé ou désactivé</strong> est refusé, '
+      + 'un compte <strong>bloqué</strong> aussi, et le <strong>rôle de la fiche</strong> est celui de la session. Un compte créé ici reçoit '
+      + 'un mot de passe provisoire (haché par le serveur, jamais conservé dans la fiche) à changer à la première connexion. '
+      + 'Le double facteur est marqué mais pas encore vérifié par le serveur de la maquette ; une modification faite ici vaut à la <strong>prochaine</strong> connexion, '
+      + 'pas pour une session déjà ouverte.',
     render: function (root) {
       utilisateurs();
       return K.crud({
@@ -212,8 +243,8 @@
             record ? null : { type: 'section', label: 'Mot de passe' },
             record ? null : {
               name: 'motDePasse', label: 'Mot de passe', type: 'password', required: true,
-              help: 'Huit caractères au minimum. Il n’est pas conservé en clair : '
-                + 'l’agent devra le changer à sa première connexion.',
+              help: 'Huit caractères au minimum. Mot de passe provisoire : le serveur le hache et ne le renvoie jamais ; '
+                + 'la fiche ne garde que la date de définition. L’agent devra le changer à sa première connexion.',
             },
             record ? null : {
               name: 'motDePasseConfirmation', label: 'Confirmer le mot de passe',
@@ -225,7 +256,7 @@
             },
           ].filter(Boolean);
         },
-        transform: function (v) {
+        transform: function (v, record) {
           /* Le secret ne franchit pas cette ligne : on note qu'il a été posé,
              par qui et quand — c'est ce que le journal doit pouvoir montrer —
              et l'on efface la saisie avant l'écriture. */
@@ -238,8 +269,12 @@
           delete v.motDePasseConfirmation;
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.nomComplet = e.nomComplet; v.matricule = e.matricule; v.poste = e.poste; v.service = v.service || e.service; }
-          if (!v.dernierAcces) v.dernierAcces = C.iso(AUJ);
-          if (v.echecs == null) v.echecs = 0;
+          /* E591 — ces deux valeurs sont celles d’un compte NEUF. À la modification, le formulaire ne les porte pas : les poser ici remettait le « dernier
+             accès » à aujourd’hui et les échecs de connexion à zéro à chaque correction d’une fiche — la trace même que cet écran existe pour montrer. */
+          if (!record) {
+            if (!v.dernierAcces) v.dernierAcces = C.iso(AUJ);
+            if (v.echecs == null) v.echecs = 0;
+          }
           if (['dm', 'da', 'direction', 'admin'].indexOf(v.role) !== -1) v.mfa = true;
           return v;
         },
@@ -255,6 +290,13 @@
             }
             if (mdp !== String(v.motDePasseConfirmation || '')) {
               return 'Les deux mots de passe saisis ne correspondent pas.';
+            }
+            /* Le serveur crée le compte de connexion (haché, changement imposé) ou refuse, en nommant pourquoi. */
+            var r = appelAuth({ action: 'creer_compte', identifiant: v.identifiant, role: v.role,
+              nom: (personnel().filter(function (x) { return x.id === v.employeId; })[0] || {}).nomComplet || v.identifiant,
+              motDePasse: mdp });
+            if (!r.ok && r.status !== 0) {
+              return (r.corps && r.corps.detail) || 'Le serveur a refusé la création du compte.';
             }
           }
           return null;
@@ -406,6 +448,8 @@
 
       root.appendChild(host);
       host.appendChild(vue);
+      /* E590 — l’affectation vivait APRÈS le return (code mort) : le bouton « Nouveau rôle » ne faisait rien. Elle se pose avant le premier rendu. */
+      creerRoleRef.fn = creerRole;
       afficher();
       return null;
 
@@ -506,12 +550,16 @@
           tr.appendChild(el('td.text-right.whitespace-nowrap', null, [
             K.iconBtn('sliders-horizontal', 'Modifier les droits de ce rôle', function () { editerRole(r); }),
             K.iconBtn('list-tree', 'Régler écran par écran', function () { editerEcrans(r); }),
+            K.iconBtn('file-up', 'Régler les importations de ce rôle', function () { editerImports(r); }),
+            K.iconBtn('stamp', 'Régler les gestes réservés de ce rôle', function () { editerGestes(r); }),
             K.iconBtn('pencil', 'Renommer ce rôle', function () { renommerRole(r); }),
             K.iconBtn('archive', 'Archiver ce rôle', function () { archiverRole(r); }, 'ghost'),
           ]));
           tb.appendChild(tr);
         });
         t.appendChild(tb);
+        /* Lot EXP : la matrice se coche et s'exporte (garde-tableaux : consultation). */
+        matrice.appendChild(U.equiperTableau(t, { nom: 'matrice-roles', titre: 'Matrice des rôles et des modules' }));
         matrice.appendChild(t);
 
         wrap.appendChild(K.note('Chaque case résume les trois droits du rôle sur le module : '
@@ -1004,6 +1052,149 @@
       }
 
       /* --------------------------------------------------------------------
+       * IMPORTATION : UN DROIT PAR JEU (lot IMP-A, 11/11/2026)
+       * --------------------------------------------------------------------
+       * Trois cases par jeu d'import (voir, importer, annuler), à côté des trois cases par module et par écran, SANS les modifier. Ce droit n'est pas celui d'éditer l'écran
+       * qui héberge le bouton : le gestionnaire qui édite « Référentiel produits » n'importe pas pour autant un jeu qu'il ne détient pas. La Direction a demandé qu'on puisse
+       * ouvrir l'import à l'assistant comptable PLUS TARD, sans code : c'est cette fenêtre. Les jeux refusés (clinique, paie nominative, pièces émises, sécurité) n'existent
+       * pas ici : il n'y a rien à leur accorder. Une case cochée l'emporte sur le défaut du manifeste, dans les deux sens.
+       * ------------------------------------------------------------------ */
+      function editerImports(roleId) {
+        var f = ficheRole(roleId);
+        var etat = {};
+        var corps = el('div.space-y-3');
+        corps.appendChild(K.note('Le droit d’importer est <strong>propre à chaque jeu</strong> : <strong>voir</strong> (le modèle, l’historique de ses lots, la rangée « Importation de données » du ruban), '
+          + '<strong>importer</strong> (vérifier un fichier et confirmer) et <strong>annuler</strong> (défaire un lot). Il n’est <strong>ni déduit ni emporté</strong> par le droit d’éditer un écran. '
+          + 'Une case cochée ici l’emporte sur le défaut du manifeste ; un rôle créé part de zéro. Les importations cliniques, de paie nominative, de pièces émises et de sécurité n’existent pas : aucun jeu à accorder.',
+          { tone: 'info', icon: 'file-up' }));
+        var zone = el('div.max-h-\[22rem\].overflow-auto.rounded-lg.border.border-slate-200');
+        var t = el('table.tbl');
+        t.appendChild(el('thead', null, el('tr', null, [
+          el('th', { text: 'Jeu d’import' }), el('th.text-center', { text: 'Voir' }), el('th.text-center', { text: 'Importer' }),
+          el('th.text-center', { text: 'Annuler' }), el('th.text-right', { text: 'Origine' }),
+        ])));
+        var tb = el('tbody');
+        N.IMPORTS.forEach(function (j) {
+          var courant = N.droitImport(roleId, j.id);
+          var regle = !!(f && f.droitsImport && f.droitsImport[j.id]);
+          var tr = el('tr', { 'data-jeu': j.id });
+          tr.appendChild(el('td', null, el('div.min-w-0', null, [
+            el('p.truncate.text-sm.text-slate-800', { text: j.libelle }),
+            el('p.text-xs.text-slate-400', { text: j.id + ' · ' + (j.sensibilite === 'restreinte' ? 'restreint (valeurs jamais recopiées)' : 'courant') + ' · doublon : ' + j.doublon }),
+          ])));
+          var cases = {};
+          ['voir', 'importer', 'annuler'].forEach(function (k) {
+            var cb = el('input.checkbox', { type: 'checkbox', 'data-droit': k });
+            cb.checked = !!courant[k];
+            cases[k] = cb;
+            cb.addEventListener('change', function () {
+              if (k !== 'voir' && cb.checked) cases.voir.checked = true;
+              if (!cases.voir.checked) { cases.importer.checked = false; cases.annuler.checked = false; }
+              etat[j.id] = { voir: cases.voir.checked, importer: cases.importer.checked, annuler: cases.annuler.checked };
+            });
+            tr.appendChild(el('td.text-center', null, cb));
+          });
+          tr.appendChild(el('td.text-right', null, regle ? U.badge('Réglé', 'navy') : el('span.text-xs.text-slate-400', { text: 'défaut du manifeste' })));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        zone.appendChild(t);
+        corps.appendChild(zone);
+        var m = U.modal({
+          title: 'Importations du rôle « ' + N.ROLES[roleId].label + ' »',
+          subtitle: 'Un droit par jeu d’import', size: 'xl', body: corps,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Retirer les réglages d’importation', {
+              icon: 'rotate-ccw',
+              onclick: function () {
+                enregistrer(roleId, { droitsImport: {} }, 'Retrait des réglages d’importation');
+                m.close();
+                U.toast('Réglages d’importation retirés.', { type: 'success', detail: 'Chaque jeu suit de nouveau le défaut du manifeste.' });
+              },
+            }),
+            K.btn('Enregistrer', {
+              variant: 'primary', icon: 'save',
+              onclick: function () {
+                var existants = (f && f.droitsImport) ? Object.assign({}, f.droitsImport) : {};
+                Object.keys(etat).forEach(function (id) { existants[id] = etat[id]; });
+                enregistrer(roleId, { droitsImport: existants, statut: 'actif' }, 'Réglage des droits d’importation');
+                m.close();
+                var ouverts = Object.keys(existants).filter(function (id) { return existants[id].importer; });
+                U.toast('Droits d’importation enregistrés.', { type: 'success', detail: C.num(Object.keys(existants).length) + ' jeu(x) réglé(s), dont ' + C.num(ouverts.length) + ' à importer.' });
+              },
+            }),
+          ],
+        });
+        U.icons(corps);
+      }
+
+      /* --------------------------------------------------------------------
+       * GESTES RÉSERVÉS : UN DROIT PAR GESTE (lot B, 13/11/2026)
+       * --------------------------------------------------------------------
+       * Une case par geste que le manifeste réserve (aujourd'hui : valider un seuil de variation brutale du laboratoire). Le droit s'accorde au RÔLE, jamais à un agent. Une case
+       * cochée ou décochée ici l'emporte sur l'origine du manifeste, dans les deux sens ; « Retirer les réglages » rend chaque geste à son origine. Ce droit n'ouvre pas l'écran
+       * du geste : l'écran se règle par « Régler écran par écran ».
+       * ------------------------------------------------------------------ */
+      function editerGestes(roleId) {
+        var f = ficheRole(roleId);
+        var etat = {};
+        var corps = el('div.space-y-3');
+        corps.appendChild(K.note('Un <strong>geste réservé</strong> engage un professionnel nommé : il ne se déduit d’aucun droit d’écran. Une case cochée ici l’emporte sur l’origine du manifeste, '
+          + 'dans les deux sens. Le droit s’accorde au <strong>rôle</strong>, jamais à un agent ; il n’ouvre <strong>pas</strong> l’écran du geste (à régler écran par écran).',
+        { tone: 'info', icon: 'stamp' }));
+        var zone = el('div.rounded-lg.border.border-slate-200');
+        var t = el('table.tbl');
+        t.appendChild(el('thead', null, el('tr', null, [
+          el('th', { text: 'Geste' }), el('th.text-center', { text: 'Accordé' }), el('th.text-right', { text: 'Origine' }),
+        ])));
+        var tb = el('tbody');
+        N.GESTES.forEach(function (g) {
+          var regle = !!(f && f.droitsGestes && (f.droitsGestes[g.id] === true || f.droitsGestes[g.id] === false));
+          var tr = el('tr', { 'data-geste': g.id });
+          tr.appendChild(el('td', null, el('div.min-w-0', null, [
+            el('p.text-sm.text-slate-800', { text: g.libelle }),
+            el('p.text-xs.text-slate-400', { text: g.id + ' · écran du geste : ' + g.ecran }),
+          ])));
+          var cb = el('input.checkbox', { type: 'checkbox', 'data-geste-case': g.id });
+          cb.checked = N.droitGeste(roleId, g.id);
+          cb.addEventListener('change', function () { etat[g.id] = cb.checked; });
+          tr.appendChild(el('td.text-center', null, cb));
+          tr.appendChild(el('td.text-right', null, regle ? U.badge('Réglé', 'navy') : el('span.text-xs.text-slate-400', { text: 'origine du manifeste' })));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        zone.appendChild(t);
+        corps.appendChild(zone);
+        var m = U.modal({
+          title: 'Gestes réservés du rôle « ' + N.ROLES[roleId].label + ' »',
+          subtitle: 'Un droit par geste', size: 'lg', body: corps,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Retirer les réglages', {
+              icon: 'rotate-ccw',
+              onclick: function () {
+                enregistrer(roleId, { droitsGestes: {} }, 'Retrait des réglages de gestes réservés');
+                m.close();
+                U.toast('Réglages de gestes retirés.', { type: 'success', detail: 'Chaque geste suit de nouveau l’origine du manifeste.' });
+              },
+            }),
+            K.btn('Enregistrer', {
+              variant: 'primary', icon: 'save',
+              onclick: function () {
+                var existants = (f && f.droitsGestes) ? Object.assign({}, f.droitsGestes) : {};
+                Object.keys(etat).forEach(function (id) { existants[id] = etat[id]; });
+                enregistrer(roleId, { droitsGestes: existants, statut: 'actif' }, 'Réglage des gestes réservés');
+                m.close();
+                U.toast('Gestes réservés enregistrés.', { type: 'success' });
+              },
+            }),
+          ],
+        });
+        U.icons(corps);
+      }
+
+      /* --------------------------------------------------------------------
        * CRÉATION D'UN RÔLE
        * --------------------------------------------------------------------
        * Un rôle créé part de ZÉRO : il n'apparaît dans aucune liste du
@@ -1011,7 +1202,6 @@
        * rien ouvert. C'est le comportement sûr — l'inverse donnerait tous les
        * droits à un rôle qu'on vient d'inventer.
        * ------------------------------------------------------------------ */
-      creerRoleRef.fn = creerRole;
       function creerRole() {
         var f = U.form([
           { name: 'libelle', label: 'Intitulé du rôle', type: 'text', required: true, col: 'full' },
@@ -1071,6 +1261,20 @@
                 tousModules().forEach(function (x) {
                   ferme[x.code] = { voir: false, editer: false, annuler: false };
                 });
+                /* Un écran UNIVERSEL ne cède que devant une surcharge d'ÉCRAN (nav.js, 29/10/2026) : fermer les
+                   modules ne suffit plus à garder un rôle neuf à zéro écran. On les ferme donc nommément — l'administrateur
+                   rouvre ensuite, un par un, ce qu'il veut. */
+                /* Et AUCUN jeu d'import : un rôle neuf part de zéro, nommément (lot IMP-A). */
+                var fermesImport = {};
+                N.IMPORTS.forEach(function (j) { fermesImport[j.id] = { voir: false, importer: false, annuler: false }; });
+                /* Et AUCUN geste réservé (lot B) : un rôle neuf part de zéro, nommément. */
+                var fermesGestes = {};
+                N.GESTES.forEach(function (g) { fermesGestes[g.id] = false; });
+                var fermesEcrans = {};
+                N.ids().forEach(function (idEcran) {
+                  var e = N.get(idEcran);
+                  if (e && e.universel) fermesEcrans[idEcran] = { voir: false, editer: false, annuler: false };
+                });
                 /* Upsert : si une fiche existe déjà pour cet identifiant —
                    un rôle archivé qu'on recrée, par exemple — on la reprend
                    plutôt que d'en poser une seconde. */
@@ -1080,7 +1284,7 @@
                     nouveau: true, statut: 'actif', libelle: v.libelle,
                     libelleCourt: v.libelleCourt || v.libelle, libelleOrigine: v.libelle,
                     couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                    droits: ferme, droitsEcrans: {},
+                    droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport, droitsGestes: fermesGestes,
                   });
                   N.invaliderRbac();
                   m.close(); afficher();
@@ -1092,7 +1296,7 @@
                   libelle: v.libelle, libelleCourt: v.libelleCourt || v.libelle,
                   libelleOrigine: v.libelle,
                   couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                  droits: ferme, droitsEcrans: {},
+                  droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport, droitsGestes: fermesGestes,
                   definiLe: C.iso(AUJ), definiPar: S.currentUser(),
                 });
                 N.invaliderRbac();
@@ -1242,84 +1446,606 @@
   });
 
   /* ==========================================================================
-   * SESSIONS ACTIVES
+   * SESSIONS DE POSTE
+   * --------------------------------------------------------------------------
+   * Le registre `sessionsUtilisateur` tient UNE FICHE PAR SESSION : active,
+   * suspendue (verrou d'inactivité) ou clôturée. « Clôturer » change le STATUT
+   * de la fiche (date, heure et auteur écrits, RG-12) ; le poste visé retombe sur
+   * la connexion à son prochain geste. Une session clôturée ne se rouvre pas et
+   * ne se supprime pas (RG-14) : elle reste au registre, filtrable.
+   *
+   * Les douze premières fiches sont le jeu de DÉMONSTRATION (tirage à graine
+   * 3413, comptes actifs) : amorcées par l'écran, marquées `source:
+   * 'demonstration'`. Les sessions réelles de ce poste s'ajoutent à la
+   * connexion (`SIGH.sessions.assurer`). L'inactivité n'est relevée que pour le
+   * jeu de démonstration : le poste ne mesure pas l'activité de ses propres
+   * sessions, il pose seulement le verrou.
    * ======================================================================== */
+  function amorcerSessions() {
+    var col = S.collection('sessionsUtilisateur', { module: 'M14', entite: 'session', prefix: 'SES' });
+    if (!S.amorcable('sessionsUtilisateur')) return col;
+    var db = S.raw();
+    if ((db.sessionsUtilisateur || []).some(function (f) { return f.source === 'demonstration'; })) return col;
+    var rnd = C.seeded(3413);
+    utilisateurs().active().filter(function (u) { return u.actif; }).slice(0, 12).forEach(function (u, i) {
+      var debut = new Date(AUJ.getTime());
+      debut.setHours(C.between(rnd, 7, 15), C.between(rnd, 0, 59), 0, 0);
+      var inactivite = C.between(rnd, 0, 25);
+      var poste = 'POSTE-' + C.pick(rnd, ['ACCUEIL', 'CAISSE', 'PHARMA', 'LABO', 'COMPTA', 'DIR', 'SOINS']);
+      var ip = '192.168.1.' + C.between(rnd, 10, 60);
+      db.sessionsUtilisateur.push({
+        id: 'SES-D' + C.pad(i + 1, 2), statut: 'actif', source: 'demonstration', utilisateurId: u.id,
+        identifiant: u.identifiant, nomComplet: u.nomComplet, role: u.role, poste: poste, adresseIp: ip,
+        debut: debut.toISOString(), derniereActivite: debut.toISOString(), inactivite: inactivite,
+        etat: inactivite >= 15 ? 'suspendue' : 'active',
+        _creePar: 'Système', _creeLe: debut.toISOString(),
+      });
+    });
+    S.save();
+    return col;
+  }
+
   global.SIGH.screen('m14-sessions', {
     title: 'Sessions actives',
-    regle: 'Écran <strong>calculé</strong> : les sessions reflètent les connexions en cours. '
-      + 'Elles ne se créent ni ne se modifient — elles se <strong>terminent</strong>, et la clôture '
-      + 'est journalisée (RG-12).',
+    regle: 'Le registre tient une fiche par session : <strong>active</strong>, <strong>suspendue</strong> ou <strong>clôturée</strong>. '
+      + 'Une session ne se crée ni ne se modifie ici : elle se <strong>clôture</strong> (statut, date, heure et auteur écrits, RG-12). '
+      + 'Une session clôturée ne se rouvre pas et ne s’efface pas (RG-14) ; le poste retombe sur la connexion à son prochain geste.',
     description: 'Connexions en cours, postes de travail et délai d’inactivité avant verrouillage.',
     render: function (root) {
-      var users = utilisateurs().active().filter(function (u) { return u.actif; });
-      var rnd = C.seeded(3413);
-      var rows = users.slice(0, 12).map(function (u, i) {
-        var debut = new Date(AUJ.getTime());
-        debut.setHours(C.between(rnd, 7, 15), C.between(rnd, 0, 59));
-        var inactivite = C.between(rnd, 0, 25);
-        return {
-          id: u.id, identifiant: u.identifiant, nomComplet: u.nomComplet,
-          role: u.role, poste: 'POSTE-' + C.pick(rnd, ['ACCUEIL', 'CAISSE', 'PHARMA', 'LABO', 'COMPTA', 'DIR', 'SOINS']),
-          adresseIp: '192.168.1.' + C.between(rnd, 10, 60),
-          debut: debut.toISOString(),
-          inactivite: inactivite,
-          verrouillage: inactivite >= 15,
-        };
-      });
-
+      amorcerSessions();
+      var M = global.SIGH.sessions;
       var host = el('div.space-y-4');
-      host.appendChild(U.kpiGrid([
-        { label: 'Sessions ouvertes', value: C.num(rows.length), icon: 'monitor', tone: 'navy' },
-        { label: 'Postes distincts', value: C.num(Object.keys(C.groupBy(rows, 'poste')).length), icon: 'network', tone: 'info' },
-        { label: 'Verrouillées pour inactivité', value: C.num(rows.filter(function (r) { return r.verrouillage; }).length), icon: 'lock', tone: 'warning' },
-        { label: 'Délai de verrouillage', value: '15 min', icon: 'timer', tone: 'neutral', hint: 'Postes partagés' },
-      ]));
-
-      host.appendChild(K.note('Sur les postes partagés — accueil et caisse — un délai d’inactivité de 15 minutes entraîne le <strong>verrouillage automatique de l’écran</strong>.', { tone: 'info', icon: 'lock' }));
-
-      host.appendChild(U.dataTable({
-        title: 'Sessions en cours', rows: rows, exportName: 'sessions', pageSize: 15,
-        columns: [
-          { key: 'identifiant', label: 'Identifiant', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold', { text: r.identifiant }); } },
-          { key: 'nomComplet', label: 'Utilisateur' },
-          { key: 'role', label: 'Rôle', text: roleLabel, render: function (r) { return U.badge(roleLabel(r.role), 'navy'); } },
-          { key: 'poste', label: 'Poste', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.poste }); } },
-          { key: 'adresseIp', label: 'Adresse réseau', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.text-slate-500', { text: r.adresseIp }); } },
-          {
-            key: 'debut', label: 'Ouverture', nowrap: true,
-            text: function (r) { return C.heure(r.debut); },
-            render: function (r) { return C.heure(r.debut); },
-          },
-          {
-            key: 'inactivite', label: 'Inactivité', align: 'right',
-            render: function (r) {
-              return el('span.num', { class: r.inactivite >= 15 ? 'font-semibold text-warning-600' : 'text-slate-600', text: r.inactivite + ' min' });
-            },
-          },
-          {
-            key: 'verrouillage', label: 'État',
-            text: function (r) { return r.verrouillage ? 'Verrouillée' : 'Active'; },
-            render: function (r) { return r.verrouillage ? U.badge('Verrouillée', 'warning') : U.badge('Active', 'success'); },
-          },
-        ],
-        rowActions: function (r) {
-          return [K.btn('Clôturer', {
-            size: 'sm', variant: 'danger', icon: 'log-out',
-            onclick: function () {
-              U.confirm({
-                title: 'Clôturer la session de ' + r.nomComplet + ' ?',
-                message: 'L’utilisateur sera immédiatement déconnecté du poste ' + r.poste + '. L’opération est journalisée.',
-                confirmLabel: 'Clôturer la session', danger: true,
-              }).then(function (ok) {
-                if (!ok) return;
-                S.log('Modification', 'M14', 'SessionUtilisateur', r.identifiant, { etat: 'ouverte' }, { etat: 'close' });
-                U.toast('Session clôturée.', { type: 'success', detail: r.nomComplet + ' — ' + r.poste });
-              });
-            },
-          })];
-        },
-      }));
       root.appendChild(host);
+
+      function lignes() {
+        var cle = function (f) { return f.debut || ''; };
+        return C.sortBy(M.collection().all().filter(function (f) { return f.statut !== 'archive'; }), cle, 'desc').map(function (f) {
+          return {
+            id: f.id, identifiant: f.identifiant, nomComplet: f.nomComplet, role: f.role, poste: f.poste,
+            adresseIp: f.adresseIp || null, debut: f.debut, etat: f.etat || 'active',
+            inactivite: f.source === 'demonstration' ? f.inactivite : null,
+            clotureLe: f.clotureLe || null, cloturePar: f.cloturePar || null,
+          };
+        });
+      }
+
+      function demander(r) {
+        var propre = (S.session() || {}).sessionId === r.id;
+        U.confirm({
+          title: propre ? 'Clôturer VOTRE session ?' : 'Clôturer la session de ' + r.nomComplet + ' ?',
+          message: propre
+            ? 'Il s’agit de votre propre session : vous serez déconnecté immédiatement de ce poste et ramené à la connexion. L’opération est journalisée.'
+            : 'L’utilisateur sera déconnecté du poste ' + r.poste + ' à son prochain geste. L’opération est journalisée. Une session clôturée ne se rouvre pas.',
+          confirmLabel: propre ? 'Clôturer ma session' : 'Clôturer la session', danger: true,
+        }).then(function (ok) {
+          if (!ok) return;
+          var res = M.cloturer(r.id, { confirmePropre: propre });
+          if (!res.ok) {
+            U.toast(res.motif, { type: 'error', detail: res.geste });
+            afficher();
+            return;
+          }
+          U.toast('Session clôturée.', { type: 'success', detail: r.nomComplet + ' (' + r.poste + ')' });
+          if (res.propre) { global.SIGH.app.controlerCloture(); return; }
+          afficher();
+        });
+      }
+
+      /* LE VERROU D'UN POSTE DE SECOURS (P3, 11/11/2026) : délai en base (5 minutes, À VALIDER), poste désigné au poste lui-même. La commande est ABSENTE
+         pour qui ne règle pas (administrateur et Directrice Administrative seuls) ; le moteur refait le contrôle. */
+      function carteSecours() {
+        var VS = global.SIGH.verrouSecours;
+        var secours = VS.posteDeSecours();
+        var corps = el('div.space-y-3');
+        corps.appendChild(K.note('Un poste partagé de secours, où un agent sans téléphone ouvre sa propre session, se verrouille plus vite qu’un poste ordinaire. '
+          + 'Le délai de secours est une <strong>valeur d’attente proposée par l’équipe, à valider par la Direction</strong> : aucun document ne la fixe. '
+          + 'Le délai ordinaire (CDCT 12.2) ne change pas.', { tone: 'info', icon: 'timer' }));
+        corps.appendChild(el('dl', { class: 'grid gap-2 text-sm sm:grid-cols-3' }, [
+          el('div', null, [el('dt.text-xs.text-slate-500', { text: 'Poste ordinaire' }), el('dd.font-semibold.text-slate-800', { text: VS.delaiOrdinaire() + ' min', 'data-secours': 'ordinaire' })]),
+          el('div', null, [el('dt.text-xs.text-slate-500', { text: 'Poste de secours' }), el('dd.flex.items-center.gap-2.font-semibold.text-slate-800', null, [
+            el('span', { text: VS.delaiSecours() + ' min', 'data-secours': 'secours' }), U.badge('À valider', 'warning')])]),
+          el('div', null, [el('dt.text-xs.text-slate-500', { text: 'Ce poste' }), el('dd.font-semibold.text-slate-800', { 'data-secours': 'ce-poste',
+            text: (secours ? 'Poste de secours' : 'Poste ordinaire') + ' : verrou à ' + VS.delaiPoste() + ' min' })]),
+        ]));
+        var actions = [];
+        if (VS.peutRegler() && K.droits('M14').editer) {
+          actions.push(K.btn('Régler le délai de secours', { size: 'sm', icon: 'sliders-horizontal', onclick: function () {
+            var f = U.form([
+              { name: 'minutes', label: 'Délai de verrou d’un poste de secours (minutes)', type: 'number', required: true, min: VS.BORNES[0], max: VS.BORNES[1], col: 'full',
+                help: 'Entier de ' + VS.BORNES[0] + ' à ' + VS.BORNES[1] + '. Valeur d’attente de ' + VS.DEFAUT_MIN + ' minutes, à valider par la Direction.' },
+              { name: 'motif', label: 'Motif (facultatif)', col: 'full' },
+            ], { minutes: VS.delaiSecours() });
+            var m = U.modal({ title: 'Délai de verrou d’un poste de secours', size: 'md', body: f, footer: [
+              K.btn('Annuler', { onclick: function () { m.close(); } }),
+              K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+                var v = f.collect(); if (!v) return;
+                var r = VS.definirDelai({ minutes: v.minutes, motif: v.motif });
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                m.close(); U.toast('Délai de secours réglé à ' + r.minutes + ' min.', { type: 'success' }); afficher();
+              } }),
+            ] });
+          } }));
+          actions.push(K.btn(secours ? 'Retirer la désignation de ce poste' : 'Désigner ce poste comme poste de secours', { size: 'sm', icon: 'monitor', onclick: function () {
+            var r = VS.definirPoste(!secours);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            U.toast(r.secours ? 'Ce poste est un poste de secours : verrou à ' + r.delaiMinutes + ' min.' : 'Ce poste est un poste ordinaire : verrou à ' + r.delaiMinutes + ' min.', { type: 'success' });
+            afficher();
+          } }));
+        }
+        return U.card('Verrou d’un poste de secours', corps, actions);
+      }
+
+      function afficher() {
+        C.clear(host);
+        var rows = lignes();
+        var ouvertes = rows.filter(function (r) { return r.etat !== 'cloturee'; });
+        host.appendChild(U.kpiGrid([
+          { label: 'Sessions ouvertes', value: C.num(ouvertes.length), icon: 'monitor', tone: 'navy' },
+          { label: 'Postes distincts', value: C.num(Object.keys(C.groupBy(ouvertes, 'poste')).length), icon: 'network', tone: 'info' },
+          { label: 'Verrouillées pour inactivité', value: C.num(rows.filter(function (r) { return r.etat === 'suspendue'; }).length), icon: 'lock', tone: 'warning' },
+          { label: 'Clôturées', value: C.num(rows.filter(function (r) { return r.etat === 'cloturee'; }).length), icon: 'log-out', tone: 'neutral', hint: 'Conservées au registre' },
+          { label: 'Délai de verrouillage', value: '15 min', icon: 'timer', tone: 'neutral', hint: 'Postes partagés' },
+        ]));
+
+        host.appendChild(K.note('Sur les postes partagés (accueil et caisse), un délai d’inactivité de 15 minutes entraîne le <strong>verrouillage automatique de l’écran</strong>. '
+          + 'Clôturer une session va plus loin : elle est <strong>fermée</strong>, et l’agent doit se reconnecter.', { tone: 'info', icon: 'lock' }));
+        host.appendChild(carteSecours());
+
+        var libEtat = function (e) { return M.ETATS[e] || e; };
+        host.appendChild(U.dataTable({
+          title: 'Sessions', rows: rows, exportName: 'sessions', pageSize: 15,
+          filters: [{ name: 'etat', label: 'État', options: [
+            { value: 'active', label: 'Actives' }, { value: 'suspendue', label: 'Suspendues' }, { value: 'cloturee', label: 'Clôturées' },
+            { value: 'ouverte', label: 'Ouvertes (actives et suspendues)' },
+          ], match: function (r, v) { return v === 'ouverte' ? r.etat !== 'cloturee' : r.etat === v; } }],
+          columns: [
+            { key: 'identifiant', label: 'Identifiant', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold', { text: r.identifiant }); } },
+            { key: 'nomComplet', label: 'Utilisateur' },
+            { key: 'role', label: 'Rôle', text: function (r) { return roleLabel(r.role); }, render: function (r) { return U.badge(roleLabel(r.role), 'navy'); } },
+            { key: 'poste', label: 'Poste', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.poste }); } },
+            { key: 'adresseIp', label: 'Adresse réseau', nowrap: true, text: function (r) { return r.adresseIp || '—'; }, render: function (r) { return el('span.font-mono.text-xs.text-slate-500', { text: r.adresseIp || '—' }); } },
+            {
+              key: 'debut', label: 'Ouverture', nowrap: true,
+              text: function (r) { return C.heure(r.debut); },
+              render: function (r) { return C.heure(r.debut); },
+            },
+            {
+              key: 'inactivite', label: 'Inactivité', align: 'right',
+              text: function (r) { return r.inactivite == null ? '—' : r.inactivite + ' min'; },
+              render: function (r) {
+                if (r.inactivite == null) return el('span.text-slate-400', { text: '—' });
+                return el('span.num', { class: r.inactivite >= 15 ? 'font-semibold text-warning-600' : 'text-slate-600', text: r.inactivite + ' min' });
+              },
+            },
+            {
+              key: 'etat', label: 'État',
+              text: function (r) { return libEtat(r.etat); },
+              render: function (r) {
+                return U.badge(libEtat(r.etat), r.etat === 'cloturee' ? 'neutral' : r.etat === 'suspendue' ? 'warning' : 'success');
+              },
+            },
+            {
+              key: 'clotureLe', label: 'Clôture', nowrap: true,
+              text: function (r) { return r.clotureLe ? C.dateHeure(r.clotureLe) + ' ' + (r.cloturePar || '') : '—'; },
+              render: function (r) {
+                if (!r.clotureLe) return el('span.text-slate-400', { text: '—' });
+                return el('div', null, [
+                  el('p.text-xs.text-slate-700', { text: C.dateHeure(r.clotureLe) }),
+                  el('p.text-xs.text-slate-400', { text: 'par ' + (r.cloturePar || '') }),
+                ]);
+              },
+            },
+          ],
+          rowActions: function (r) {
+            if (r.etat === 'cloturee') return [];
+            return [K.commande('Clôturer', {
+              moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'log-out',
+              onclick: function () { demander(r); },
+            })];
+          },
+        }));
+      }
+      afficher();
+      return null;
+    },
+  });
+
+  /* ==========================================================================
+   * SECURITÉ DES UTILISATEURS (01/11/2026)
+   * --------------------------------------------------------------------------
+   * Retour de la Direction : « l'écran Sécurité des utilisateurs n'est pas
+   * implémenté ». Aucun écran ne portait ce nom : la sécurité des comptes était
+   * éparpillée entre `m14-utilisateurs` (création, double facteur), `m14-roles`
+   * (tentatives refusées) et `m14-sessions`. Cet écran RASSEMBLE, il ne
+   * duplique pas : la politique est ici (une fiche, `politiqueSecurite`), les
+   * comptes restent ceux de `m14-utilisateurs`, les tentatives celles de
+   * `tentativesConnexion`, les sessions celles du registre de `m14-sessions`.
+   *
+   * SOURCES ET HONNÊTETÉ. Chaque paramètre dit d'où il vient. Ce qu'aucun
+   * document ne fixe est marqué « proposition à valider » : la profondeur de
+   * l'historique des mots de passe n'a aucune source. Et chaque paramètre dit
+   * s'il est APPLIQUÉ par la maquette : seul le délai d'inactivité l'est
+   * (verrou de session) ; le verrou après échecs est appliqué par le serveur (5 échecs en
+   * 15 minutes) et par le poste (A5).
+   *
+   * Un mot de passe ne passe jamais ici : « imposer la réinitialisation »
+   * oblige l'agent à en choisir un nouveau à sa prochaine connexion, rien de
+   * plus. Droits : administrateur seul.
+   * ======================================================================== */
+  var POLITIQUE_DEFAUT = {
+    longueurMin: 8, expirationJours: 90, historique: 5, echecsMax: 3, blocageMin: 15, inactiviteMin: 15,
+  };
+  var PARAMETRES_POLITIQUE = [
+    { cle: 'longueurMin', libelle: 'Longueur minimale du mot de passe', unite: 'caractères', min: 8, max: 64,
+      source: 'Politique affichée par l’écran de réinitialisation (écart E1107)',
+      application: 'Appliquée : 8 caractères minimum à la création et au changement (serveur)' },
+    { cle: 'expirationJours', libelle: 'Durée de validité du mot de passe', unite: 'jours', min: 0, max: 365,
+      source: 'Renouvellement à 90 jours affiché par la maquette (écart E1107)',
+      application: 'Calculée par cet écran (mots de passe à renouveler)' },
+    { cle: 'historique', libelle: 'Historique des mots de passe interdits', unite: 'derniers', min: 0, max: 24,
+      source: 'Proposition à valider : aucun document ne fixe cette profondeur',
+      application: 'Non appliquée par la maquette' },
+    { cle: 'echecsMax', libelle: 'Échecs de connexion avant blocage', unite: 'échecs', min: 1, max: 10,
+      source: 'CDCT §12.2 (verrouillage après échecs successifs) ; trois échecs retenus au poste (A5)',
+      application: 'Serveur de la maquette : verrou après 5 échecs en 15 minutes (valeur fixe, non liée à ce paramètre), compte bloqué refusé' },
+    { cle: 'blocageMin', libelle: 'Durée du verrou après échecs', unite: 'minutes', min: 1, max: 1440,
+      source: 'Quinze minutes retenues au poste (A5)',
+      application: 'Serveur de la maquette : 15 minutes fixes, levées par le temps ou par « Débloquer »' },
+    { cle: 'inactiviteMin', libelle: 'Inactivité avant verrouillage de l’écran', unite: 'minutes', min: 1, max: 120,
+      source: 'CDCT §12.2 (déconnexion automatique sur poste partagé : 15 minutes)',
+      application: 'Appliquée : verrou de session de ce poste' },
+  ];
+  var ROLES_DOUBLE_FACTEUR = ['dm', 'da', 'direction', 'admin'];
+
+  function colPolitique() {
+    return S.collection('politiqueSecurite', { module: 'M14', entite: 'politique de sécurité', prefix: 'POL' });
+  }
+  /** La politique en vigueur : la fiche du magasin, amorcée avec les valeurs de référence (sans écriture au journal). */
+  function politique() {
+    var col = colPolitique();
+    var db = S.raw();
+    if (!(db.politiqueSecurite || []).length && S.amorcable('politiqueSecurite')) {
+      db.politiqueSecurite.push(Object.assign({ id: 'POL-001', statut: 'actif', _creePar: 'Système', _creeLe: C.iso(AUJ) }, POLITIQUE_DEFAUT));
+      S.save();
+    }
+    var f = col.all()[0];
+    return Object.assign({}, POLITIQUE_DEFAUT, f || {});
+  }
+  function enregistrerPolitique(valeurs) {
+    for (var i = 0; i < PARAMETRES_POLITIQUE.length; i++) {
+      var p = PARAMETRES_POLITIQUE[i], v = valeurs[p.cle];
+      if (v == null || !isFinite(v) || Math.floor(v) !== v || v < p.min || v > p.max) {
+        return { ok: false, code: 'VALEUR_HORS_BORNES', motif: p.libelle + ' : une valeur entière entre ' + p.min + ' et ' + p.max + ' est attendue.',
+          geste: 'Corriger la valeur de « ' + p.libelle + ' ».' };
+      }
+    }
+    politique();
+    var col = colPolitique(), f = col.all()[0];
+    var patch = {};
+    PARAMETRES_POLITIQUE.forEach(function (p) { patch[p.cle] = valeurs[p.cle]; });
+    patch.modifieeLe = new Date().toISOString();
+    var r = f ? col.update(f.id, patch) : col.insert(Object.assign({ id: 'POL-001' }, patch));
+    return r ? { ok: true, politique: politique() } : { ok: false, code: 'ECRITURE_REFUSEE', motif: 'Le magasin a refusé l’écriture.', geste: 'Réessayer.' };
+  }
+
+  function refusSecurite(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  function compteDe(id) { return S.collection('utilisateurs').get(id); }
+  function estBloque(u, pol) { return !!u.bloque || (u.echecs || 0) >= (pol || politique()).echecsMax; }
+  function jourDe(x) { var d = new Date(x); return isNaN(d.getTime()) ? null : d; }
+  /** Jours restants avant expiration du mot de passe ; null si la date de définition n'est pas relevée ou s'il n'expire pas. */
+  function joursAvantExpiration(u, pol) {
+    var p = pol || politique();
+    var d = u.motDePasseDefiniLe ? jourDe(u.motDePasseDefiniLe) : null;
+    if (!d || !p.expirationJours) return null;
+    return p.expirationJours - Math.floor((AUJ.getTime() - d.getTime()) / 86400000);
+  }
+  function aReinitialiser(u, pol) {
+    if (u.doitChangerMotDePasse === true) return true;
+    var j = joursAvantExpiration(u, pol);
+    return j != null && j < 0;
+  }
+  function sessionsOuvertesDe(u) {
+    return global.SIGH.sessions.collection().all().filter(function (f) {
+      return f.identifiant === u.identifiant && f.etat !== 'cloturee' && f.statut !== 'archive';
+    });
+  }
+
+  function bloquerCompte(id, motif) {
+    var u = compteDe(id), s = S.session() || {};
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    if (!String(motif || '').trim() || String(motif).trim().length < 3) {
+      return refusSecurite('MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour bloquer un compte.', 'Saisir le motif du blocage.');
+    }
+    if (u.identifiant === s.identifiant) {
+      return refusSecurite('COMPTE_PROPRE', 'Vous ne pouvez pas bloquer votre propre compte.', 'Demander à un autre administrateur de le faire.');
+    }
+    if (estBloque(u)) return refusSecurite('DEJA_BLOQUE', 'Ce compte est déjà bloqué.', 'Le débloquer si l’accès doit être rendu.');
+    var r = S.collection('utilisateurs').update(id, {
+      bloque: true, bloqueLe: new Date().toISOString(), bloquePar: S.currentUser(), bloqueMotif: String(motif).trim(),
+    });
+    return r ? { ok: true, compte: r.record } : refusSecurite('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer.');
+  }
+  function debloquerCompte(id) {
+    var u = compteDe(id);
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    if (!estBloque(u)) return refusSecurite('NON_BLOQUE', 'Ce compte n’est pas bloqué.', 'Aucun déblocage à faire.');
+    var r = S.collection('utilisateurs').update(id, {
+      bloque: false, echecs: 0, debloqueLe: new Date().toISOString(), debloquePar: S.currentUser(),
+    });
+    /* Lève aussi le verrou d'échecs du serveur (5 échecs en 15 minutes), sans attendre le temps. */
+    if (r) appelAuth({ action: 'deverrouiller', identifiant: u.identifiant });
+    return r ? { ok: true, compte: r.record } : refusSecurite('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer.');
+  }
+  function imposerReinitialisation(id) {
+    var u = compteDe(id);
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    if (u.doitChangerMotDePasse === true) {
+      return refusSecurite('DEJA_IMPOSEE', 'La réinitialisation est déjà imposée à ce compte : l’agent doit choisir un nouveau mot de passe à sa prochaine connexion.', 'Rien à faire.');
+    }
+    var r = S.collection('utilisateurs').update(id, {
+      doitChangerMotDePasse: true, reinitialisationImposeeLe: new Date().toISOString(), reinitialisationImposeePar: S.currentUser(),
+    });
+    return r ? { ok: true, compte: r.record } : refusSecurite('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer.');
+  }
+  function cloturerSessionsDe(id) {
+    var u = compteDe(id);
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    var ouvertes = sessionsOuvertesDe(u);
+    if (!ouvertes.length) return refusSecurite('AUCUNE_SESSION', 'Ce compte n’a aucune session ouverte.', 'Rien à clôturer.');
+    var propre = (S.session() || {}).sessionId;
+    if (ouvertes.some(function (f) { return f.id === propre; })) {
+      return refusSecurite('SESSION_PROPRE', 'L’une de ces sessions est la vôtre.', 'Clôturez-la depuis « Sessions actives », avec sa confirmation explicite.');
+    }
+    var n = 0;
+    for (var i = 0; i < ouvertes.length; i++) {
+      var r = global.SIGH.sessions.cloturer(ouvertes[i].id, { motif: 'Clôture depuis Sécurité des utilisateurs' });
+      if (!r.ok) return r;
+      n++;
+    }
+    return { ok: true, sessions: n };
+  }
+
+  global.SIGH.securiteUtilisateurs = {
+    politique: politique, enregistrerPolitique: enregistrerPolitique, PARAMETRES: PARAMETRES_POLITIQUE,
+    bloquer: bloquerCompte, debloquer: debloquerCompte, imposerReinitialisation: imposerReinitialisation,
+    cloturerSessions: cloturerSessionsDe, estBloque: estBloque, aReinitialiser: aReinitialiser,
+    joursAvantExpiration: joursAvantExpiration, ROLES_DOUBLE_FACTEUR: ROLES_DOUBLE_FACTEUR,
+  };
+
+  global.SIGH.screen('m14-securite-utilisateurs', {
+    title: 'Sécurité des utilisateurs',
+    description: 'Politique de mot de passe, verrouillage, double facteur, comptes bloqués et tentatives de connexion.',
+    regle: 'Écran réservé à l’<strong>administrateur système</strong>. La politique est une fiche unique ; chaque paramètre dit sa <strong>source</strong> '
+      + 'et s’il est <strong>appliqué</strong> par la maquette. Un mot de passe ne s’affiche ni ne se conserve ici : on <strong>marque</strong> '
+      + 'la réinitialisation comme imposée (le serveur la lit à la connexion suivante et impose le changement avant toute session). Bloquer, débloquer et clôturer sont journalisés (RG-12) ; rien n’est supprimé (RG-14).',
+    render: function (root) {
+      utilisateurs();
+      amorcerSessions();
+      var SEC = global.SIGH.securiteUtilisateurs;
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      var ongletCourant = null;
+
+      function toastRefus(res) { U.toast(res.motif, { type: 'error', detail: res.geste }); }
+
+      function lignesComptes() {
+        var pol = politique();
+        return C.sortBy(S.collection('utilisateurs').active(), 'nomComplet').map(function (u) {
+          var j = joursAvantExpiration(u, pol);
+          return {
+            id: u.id, identifiant: u.identifiant, nomComplet: u.nomComplet, role: u.role, actif: !!u.actif,
+            bloque: estBloque(u, pol), bloqueMotif: u.bloqueMotif || null, echecs: u.echecs || 0,
+            mfa: !!u.mfa, mfaExige: ROLES_DOUBLE_FACTEUR.indexOf(u.role) !== -1,
+            definiLe: u.motDePasseDefiniLe || null, jours: j, reinit: aReinitialiser(u, pol), imposee: u.doitChangerMotDePasse === true,
+            sessions: sessionsOuvertesDe(u).length,
+          };
+        });
+      }
+
+      function demanderBlocage(r) {
+        var zone = el('textarea.input', { rows: 3, id: 'motif-blocage', placeholder: 'Motif du blocage (obligatoire)' });
+        var m = U.modal({
+          title: 'Bloquer le compte de ' + r.nomComplet, size: 'md',
+          body: el('div.space-y-3', null, [
+            K.note('Un compte bloqué ne peut plus ouvrir de session tant qu’un administrateur ne l’a pas débloqué. Les sessions déjà ouvertes ne sont pas fermées : utiliser « Clôturer les sessions ».', { tone: 'warning', icon: 'shield-alert' }),
+            el('label.label', { for: 'motif-blocage', text: 'Motif *' }), zone,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Bloquer le compte', {
+              variant: 'danger', icon: 'lock',
+              onclick: function () {
+                var res = bloquerCompte(r.id, zone.value);
+                if (!res.ok) { toastRefus(res); return; }
+                m.close();
+                U.toast('Compte bloqué.', { type: 'success', detail: r.nomComplet });
+                afficher();
+              },
+            }),
+          ],
+        });
+      }
+
+      function agir(libelle, fn, r, texteOk) {
+        U.confirm({ title: libelle + ' : ' + r.nomComplet + ' ?', message: texteOk, confirmLabel: libelle, danger: false }).then(function (ok) {
+          if (!ok) return;
+          var res = fn(r.id);
+          if (!res.ok) { toastRefus(res); return; }
+          U.toast(libelle + ' effectué.', { type: 'success', detail: r.nomComplet });
+          afficher();
+        });
+      }
+
+      function ongletPolitique() {
+        var pol = politique();
+        var rows = PARAMETRES_POLITIQUE.map(function (p) {
+          return { cle: p.cle, libelle: p.libelle, valeur: pol[p.cle] + ' ' + p.unite, source: p.source, application: p.application };
+        });
+        rows.push({ cle: 'complexite', libelle: 'Composition du mot de passe', valeur: 'Majuscule, minuscule, chiffre et caractère spécial',
+          source: 'Politique affichée par l’écran de réinitialisation (écart E1107)', application: 'Affichée, non appliquée par la maquette' });
+        rows.push({ cle: 'mfa', libelle: 'Double facteur obligatoire pour les rôles',
+          valeur: ROLES_DOUBLE_FACTEUR.map(function (r) { return roleLabel(r); }).join(', '),
+          source: 'CDCT §12.2 nomme l’Administrateur et la Direction ; la création de compte l’impose aussi à la DAF et au Directeur Médical',
+          application: 'Marqué à la création d’un compte ; la connexion le transmet mais le serveur de la maquette ne vérifie pas encore de second facteur' });
+        var corps = el('div.space-y-4');
+        corps.appendChild(K.note('Les valeurs de cette liste sont celles que la maquette <strong>affiche</strong> ou que le poste <strong>applique</strong>. '
+          + 'La profondeur de l’historique des mots de passe est une <strong>proposition à valider</strong> : aucun document ne la fixe.', { tone: 'info', icon: 'info' }));
+        corps.appendChild(U.dataTable({
+          title: 'Politique de sécurité des comptes', rows: rows, exportName: 'politique-securite', pageSize: 20, searchable: false,
+          columns: [
+            { key: 'libelle', label: 'Paramètre' },
+            { key: 'valeur', label: 'Valeur', nowrap: true, render: function (r) { return el('span.font-semibold.text-slate-800', { text: r.valeur }); } },
+            { key: 'source', label: 'Source', render: function (r) { return el('span.text-xs.text-slate-600', { text: r.source }); } },
+            { key: 'application', label: 'Application', render: function (r) { return el('span.text-xs.text-slate-600', { text: r.application }); } },
+          ],
+          actions: [K.commande('Modifier la politique', { moduleCode: 'M14', icon: 'sliders-horizontal', variant: 'primary', onclick: modifierPolitique })],
+        }));
+        return corps;
+      }
+
+      function modifierPolitique() {
+        var pol = politique();
+        var f = U.form(PARAMETRES_POLITIQUE.map(function (p) {
+          return { name: p.cle, label: p.libelle + ' (' + p.unite + ')', type: 'number', required: true, value: pol[p.cle] };
+        }), pol);
+        var m = U.modal({
+          title: 'Modifier la politique de sécurité', size: 'lg',
+          body: el('div.space-y-3', null, [
+            K.note('Chaque valeur est bornée. Le délai d’inactivité s’applique aussitôt au verrou de session de ce poste ; les autres valeurs sont celles que le poste applique et que cet écran calcule.', { tone: 'info' }),
+            f,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer', {
+              variant: 'primary', icon: 'save',
+              onclick: function () {
+                var v = f.collect();
+                if (!v) return;
+                var res = enregistrerPolitique(v);
+                if (!res.ok) { toastRefus(res); return; }
+                m.close();
+                U.toast('Politique de sécurité enregistrée.', { type: 'success' });
+                afficher();
+              },
+            }),
+          ],
+        });
+      }
+
+      function ongletComptes() {
+        var rows = lignesComptes();
+        return U.dataTable({
+          title: 'Comptes et situation de sécurité', rows: rows, exportName: 'securite-comptes', pageSize: 15,
+          filters: [{ name: 'situation', label: 'Situation', options: [
+            { value: 'bloques', label: 'Comptes bloqués' }, { value: 'reinit', label: 'À réinitialiser' },
+            { value: 'sessions', label: 'Avec session ouverte' }, { value: 'sansmfa', label: 'Double facteur manquant' },
+          ], match: function (r, v) {
+            if (v === 'bloques') return r.bloque;
+            if (v === 'reinit') return r.reinit;
+            if (v === 'sessions') return r.sessions > 0;
+            return r.mfaExige && !r.mfa;
+          } }],
+          columns: [
+            { key: 'identifiant', label: 'Identifiant', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold', { text: r.identifiant }); } },
+            { key: 'nomComplet', label: 'Utilisateur' },
+            { key: 'role', label: 'Rôle', text: function (r) { return roleLabel(r.role); }, render: function (r) { return U.badge(roleLabel(r.role), 'navy'); } },
+            { key: 'bloque', label: 'Accès', text: function (r) { return r.bloque ? 'Bloqué' : (r.actif ? 'Ouvert' : 'Désactivé'); },
+              render: function (r) { return r.bloque ? U.badge('Bloqué', 'danger') : (r.actif ? U.badge('Ouvert', 'success') : U.badge('Désactivé', 'neutral')); } },
+            { key: 'echecs', label: 'Échecs', align: 'right', text: function (r) { return String(r.echecs); },
+              render: function (r) { return r.echecs ? el('span.font-semibold.text-warning-600', { text: String(r.echecs) }) : '—'; } },
+            { key: 'mfa', label: 'Double facteur',
+              text: function (r) { return r.mfa ? 'Activé' : (r.mfaExige ? 'Manquant' : 'Non requis'); },
+              render: function (r) { return r.mfa ? U.badge('Activé', 'info') : (r.mfaExige ? U.badge('Manquant', 'danger') : el('span.text-xs.text-slate-400', { text: 'Non requis' })); } },
+            { key: 'reinit', label: 'Mot de passe',
+              text: function (r) { return r.imposee ? 'Réinitialisation imposée' : (r.reinit ? 'À renouveler' : (r.jours == null ? 'Date non relevée' : 'Valide')); },
+              render: function (r) {
+                if (r.imposee) return U.badge('Réinitialisation imposée', 'warning');
+                if (r.reinit) return U.badge('À renouveler', 'warning');
+                if (r.jours == null) return el('span.text-xs.text-slate-400', { text: 'Date non relevée' });
+                return el('span.text-xs.text-slate-600', { text: 'Valide, ' + r.jours + ' j restants' });
+              } },
+            { key: 'sessions', label: 'Sessions', align: 'right', render: function (r) { return String(r.sessions); } },
+          ],
+          rowActions: function (r) {
+            return [
+              r.bloque
+                ? K.commande('Débloquer', { moduleCode: 'M14', size: 'sm', icon: 'lock-open', onclick: function () {
+                  agir('Débloquer', debloquerCompte, r, 'Le compte retrouve l’accès et son compteur d’échecs repart de zéro. L’opération est journalisée.'); } })
+                : (r.actif ? K.commande('Bloquer', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'lock', onclick: function () { demanderBlocage(r); } }) : null),
+              r.imposee ? null : K.commande('Imposer la réinitialisation', { moduleCode: 'M14', size: 'sm', icon: 'key-round', onclick: function () {
+                agir('Imposer la réinitialisation', imposerReinitialisation, r, 'Le compte est marqué « réinitialisation imposée » et l’opération est journalisée. À sa prochaine connexion, l’agent doit choisir un nouveau mot de passe avant d’ouvrir la session. Aucun mot de passe n’est affiché ni conservé ici.'); } }),
+              r.sessions ? K.commande('Clôturer les sessions', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'log-out', onclick: function () {
+                agir('Clôturer les sessions', cloturerSessionsDe, r, 'Les ' + r.sessions + ' session(s) ouverte(s) de ce compte seront clôturées ; le poste retombe sur la connexion à son prochain geste.'); } }) : null,
+            ].filter(Boolean);
+          },
+        });
+      }
+
+      function ongletTentatives() {
+        var rows = colTentatives().active().map(function (t) {
+          return Object.assign({}, t, { quand: t.horodatage ? C.dateHeure(new Date(t.horodatage)) : '—', roleLabel: roleLabel(t.role) });
+        }).sort(function (a, b) { return String(b.horodatage).localeCompare(String(a.horodatage)); });
+        if (!rows.length) {
+          return U.card('Tentatives de connexion refusées', U.empty('Aucune tentative refusée.', { icon: 'shield-check', hint: 'Les refus de connexion apparaissent ici avec leur motif.' }));
+        }
+        return U.dataTable({
+          title: 'Tentatives de connexion refusées', rows: rows, exportName: 'securite-tentatives', pageSize: 15,
+          columns: [
+            { key: 'quand', label: 'Date et heure', nowrap: true },
+            { key: 'identifiant', label: 'Identifiant', render: function (r) { return el('span.font-mono.text-xs', { text: r.identifiant || '—' }); } },
+            { key: 'nom', label: 'Compte' },
+            { key: 'roleLabel', label: 'Rôle' },
+            { key: 'motif', label: 'Motif du refus', render: function (r) { return el('span.text-xs.text-danger-700', { text: r.motif }); } },
+          ],
+        });
+      }
+
+      function ongletSessions() {
+        var ouvertes = global.SIGH.sessions.collection().all().filter(function (f) { return f.etat !== 'cloturee' && f.statut !== 'archive'; });
+        var corps = el('div.space-y-4');
+        corps.appendChild(K.note('Le détail des sessions, leur clôture et leur historique sont à l’écran <strong>Sessions actives</strong>.', { tone: 'info', icon: 'monitor' }));
+        corps.appendChild(U.dataTable({
+          title: 'Sessions ouvertes', rows: ouvertes.map(function (f) { return { id: f.id, identifiant: f.identifiant, nomComplet: f.nomComplet, poste: f.poste, etat: f.etat }; }),
+          exportName: 'securite-sessions', pageSize: 10,
+          columns: [
+            { key: 'identifiant', label: 'Identifiant', nowrap: true },
+            { key: 'nomComplet', label: 'Utilisateur' },
+            { key: 'poste', label: 'Poste', nowrap: true },
+            { key: 'etat', label: 'État', text: function (r) { return global.SIGH.sessions.ETATS[r.etat] || r.etat; },
+              render: function (r) { return r.etat === 'suspendue' ? U.badge('Suspendue', 'warning') : U.badge('Active', 'success'); } },
+          ],
+          actions: [K.btn('Ouvrir les sessions actives', { icon: 'monitor', onclick: function () { global.SIGH.app.go('m14-sessions'); } })],
+        }));
+        return corps;
+      }
+
+      function afficher() {
+        C.clear(host);
+        var voulu = ongletCourant;
+        var pol = politique();
+        var comptes = lignesComptes();
+        var actifs = comptes.filter(function (r) { return r.actif; });
+        var tentatives = colTentatives().active().length;
+        var ouvertes = global.SIGH.sessions.collection().all().filter(function (f) { return f.etat !== 'cloturee' && f.statut !== 'archive'; });
+        host.appendChild(U.kpiGrid([
+          { label: 'Comptes actifs', value: C.num(actifs.length), icon: 'user-check', tone: 'navy' },
+          { label: 'Comptes bloqués', value: C.num(comptes.filter(function (r) { return r.bloque; }).length), icon: 'lock', tone: comptes.some(function (r) { return r.bloque; }) ? 'danger' : 'success' },
+          { label: 'Mots de passe à renouveler', value: C.num(comptes.filter(function (r) { return r.reinit; }).length), icon: 'key-round', tone: 'warning' },
+          { label: 'Double facteur manquant', value: C.num(actifs.filter(function (r) { return r.mfaExige && !r.mfa; }).length), icon: 'shield-alert', tone: 'warning' },
+          { label: 'Tentatives refusées', value: C.num(tentatives), icon: 'shield-x', tone: tentatives ? 'danger' : 'neutral' },
+          { label: 'Sessions ouvertes', value: C.num(ouvertes.length), icon: 'monitor', tone: 'info', hint: 'Verrou à ' + pol.inactiviteMin + ' min' },
+        ]));
+        var onglets = U.tabs([
+          { id: 'politique', label: 'Politique', render: ongletPolitique },
+          { id: 'comptes', label: 'Comptes', badge: comptes.filter(function (r) { return r.bloque || r.reinit; }).length || undefined, render: ongletComptes },
+          { id: 'tentatives', label: 'Tentatives de connexion', badge: tentatives || undefined, render: ongletTentatives },
+          { id: 'sessions', label: 'Sessions', badge: ouvertes.length, render: ongletSessions },
+        ], { onChange: function (id) { ongletCourant = id; } });
+        host.appendChild(onglets);
+        if (voulu && voulu !== 'politique') setTimeout(function () { onglets.selectTab(voulu); }, 5);
+        U.icons(host);
+      }
+      afficher();
       return null;
     },
   });
@@ -1477,6 +2203,41 @@
   });
 
   /* ==========================================================================
+   * METTRE À JOUR LE LOGICIEL (lot MAJ, 17/11/2026)
+   * La mise à jour sans perte de données est un mécanisme du POSTE (dossier de données chiffré, version du format des fichiers, migration, export portable SGX2,
+   * clé de clinique) : la maquette range ses données dans PostgreSQL, elle n'a ni dossier de données, ni version de format de fichier, ni migration à jouer. L'écran
+   * de la maquette est donc le PARCOURS écrit (étapes, refus nommés, droit), sans geste simulé ; l'écran réel et ses gestes vivent au poste (mère et fileul).
+   * ======================================================================== */
+  global.SIGH.screen('m14-mise-a-jour', {
+    title: 'Mettre à jour le logiciel',
+    description: 'Préparer la mise à jour, essai à blanc, migrer, annuler, exporter et importer la base : sans perdre une donnée.',
+    regle: 'Aucune mise à jour sans <strong>copie vérifiée</strong> de moins de 24 h ; la <strong>mère</strong> est mise à jour avant les fileuls ; rien n’est supprimé, tout refus est <strong>nommé</strong>. '
+      + 'Réservé au droit <strong>lancer_mise_a_jour</strong> de la fiche RBAC (administrateur et Directrice Administrative par défaut).',
+    render: function (root) {
+      var host = el('div.space-y-4');
+      host.appendChild(K.note('<strong>Écran propre au poste.</strong> La maquette range ses données dans PostgreSQL : elle n’a ni dossier de données chiffré, ni version de format de fichier, ni migration. '
+        + 'Les gestes ci-dessous se jouent au poste (mère et fileul) ; cette page en donne le parcours.', { tone: 'info', icon: 'info' }));
+      var etapes = [
+        ['1', 'Préparer la mise à jour', 'Copie chiffrée, restauration vérifiée dans un dossier neuf, comptes et empreintes consignés au journal d’audit', 'MAJ_SANS_SAUVEGARDE'],
+        ['2', 'Essai à blanc', 'Dit ce qui changerait, sans rien écrire', ''],
+        ['3', 'Migrer les données', 'Contrôle des comptes avant et après : « N fiches avant, N après », toute différence nommée', 'DONNEES_PLUS_RECENTES'],
+        ['4', 'Annuler la mise à jour', 'Dernière copie vérifiée, liste des saisies postérieures, rien écrasé en silence', 'RETOUR_SANS_COPIE_VERIFIEE'],
+        ['5', 'Exporter la base', 'Un fichier chiffré unique (base, fichiers numérisés, manifeste signé, version du format)', ''],
+        ['6', 'Importer une base', 'Sur la mère ET sur un fileul ; la clé de clinique est exigée', 'IMPORT_SANS_CLE, IMPORT_AUTRE_CLINIQUE, IMPORT_ALTERE, IMPORT_SANS_COPIE_PREALABLE'],
+      ];
+      var liste = el('ol.list-decimal.space-y-2.pl-5.text-sm');
+      etapes.forEach(function (e) {
+        liste.appendChild(el('li', {}, [el('strong', {}, e[1]), ' : ' + e[2] + (e[3] ? ' (refus nommés : ' + e[3] + ')' : '')]));
+      });
+      host.appendChild(U.card('Parcours en six étapes', liste));
+      host.appendChild(K.note('Un fileul de format trop ancien reçoit <strong>426 schema_incompatible</strong> : il n’envoie rien et garde ses saisies hors ligne. '
+        + 'Un fileul qui importe une base plus ancienne que sa dernière synchronisation est averti (<strong>IMPORT_PLUS_ANCIEN_QUE_SYNC</strong>, non bloquant).', { tone: 'warning', icon: 'alert-triangle' }));
+      root.appendChild(host);
+      return null;
+    },
+  });
+
+  /* ==========================================================================
    * SAUVEGARDES & RESTAURATION
    * ======================================================================== */
   global.SIGH.screen('m14-sauvegardes', {
@@ -1538,7 +2299,7 @@
         return o > 1024 * 1024 ? (o / 1024 / 1024).toFixed(1) + ' Mo' : Math.round(o / 1024) + ' Ko';
       }
 
-      if (!colFichiers.all().length) {
+      if (!colFichiers.all().length && S.amorcable('fichiersSauvegarde')) {
         var rndB = C.seeded(88);
         for (var fb = 0; fb < 6; fb++) {
           var dB = C.addDays(AUJ, -fb * 7);
@@ -1591,10 +2352,13 @@
         ],
         rowActions: function (r) {
           return [K.iconBtn('download', 'Télécharger', function () {
+            /* La maquette ne conserve pas le contenu d'une sauvegarde datée (5 Mo par fiche dépasseraient le quota) :
+               sans contenu porté par la fiche, le fichier servi est l'ÉTAT COURANT, et le toast le dit. */
             var contenu = r.contenu || JSON.stringify(S.raw(), null, 2);
             var ok = telecharger(r.fichier, contenu);
-            U.toast(ok ? 'Sauvegarde téléchargée.' : 'Téléchargement impossible depuis ce poste.', {
-              type: ok ? 'success' : 'error', detail: r.fichier,
+            U.toast(ok ? (r.contenu ? 'Sauvegarde téléchargée.' : 'État courant du magasin téléchargé.') : 'Téléchargement impossible depuis ce poste.', {
+              type: ok ? (r.contenu ? 'success' : 'warning') : 'error',
+              detail: ok && !r.contenu ? 'La maquette ne conserve pas le contenu de la sauvegarde datée ' + r.fichier + ' : le fichier remis est l’état d’aujourd’hui.' : r.fichier,
             });
           })];
         },
@@ -1605,15 +2369,18 @@
               var cols = collectionsBase();
               var nom = 'sigh-cnt-' + C.iso(AUJ).replace(/-/g, '') + '-' + C.pad(colFichiers.all().length + 1, 2) + '.json';
               var contenu = JSON.stringify(S.raw(), null, 2);
+              /* Le fichier est remis AU MOMENT de la génération : c'est le seul exemplaire, la fiche n'en garde que les métadonnées. */
+              var remis = telecharger(nom, contenu);
+              if (!remis) { U.toast('Téléchargement impossible depuis ce poste : aucune sauvegarde n’a été générée.', { type: 'error' }); return; }
               var res = colFichiers.insert({
                 fichier: nom, date: C.iso(AUJ), heure: C.heure(new Date().toISOString()),
                 portee: 'Base complète', tables: cols.length,
                 taille: contenu.length, genereePar: S.currentUser(),
               });
               tableFichiers.refresh();
-              U.toast('Sauvegarde ' + nom + ' générée.', {
+              U.toast('Sauvegarde ' + nom + ' générée et téléchargée.', {
                 type: 'success',
-                detail: cols.length + ' tables — ' + poidsFichier(contenu.length),
+                detail: cols.length + ' tables, ' + poidsFichier(contenu.length) + '. Conservez ce fichier : la maquette n’en garde pas le contenu.',
                 undo: function () { res.undo(); tableFichiers.refresh(); },
               });
             },
@@ -1628,36 +2395,10 @@
 
       host.appendChild(K.note('La sauvegarde <strong>hebdomadaire est automatique</strong> ; l’utilisateur est '
         + 'invité à en télécharger une copie sur un support externe. Une sauvegarde qui reste sur le poste '
-        + 'ne protège de rien.', { tone: 'info', icon: 'database-backup' }));
+        + 'ne protège de rien. La sauvegarde serveur se lance depuis « Tâches planifiées » ; '
+        + 'le test de restauration relève de api/restaurer.php (simulation par défaut), hors de cet écran.', { tone: 'info', icon: 'database-backup' }));
 
       host.appendChild(el('div.flex.flex-wrap.gap-2', null, [
-        K.btn('Lancer une sauvegarde manuelle', {
-          variant: 'primary', icon: 'database-backup',
-          onclick: function () {
-            U.confirm({
-              title: 'Lancer une sauvegarde immédiate ?',
-              message: 'Une sauvegarde complète de la base de données sera effectuée sur le disque local dédié. L’opération est journalisée.',
-              confirmLabel: 'Lancer la sauvegarde',
-            }).then(function (ok) {
-              if (!ok) return;
-              S.log('Création', 'M14', 'Sauvegarde', 'BK-MANUELLE', null, { type: 'manuelle' });
-              U.toast('Sauvegarde effectuée avec succès.', { type: 'success', detail: 'Volume : 412 Mo — durée : 9 s' });
-            });
-          },
-        }),
-        K.btn('Tester une restauration', {
-          icon: 'rotate-ccw',
-          onclick: function () {
-            U.confirm({
-              title: 'Tester la procédure de restauration ?',
-              message: 'La restauration sera effectuée sur l’environnement de test, sans incidence sur les données de production.',
-              confirmLabel: 'Lancer le test',
-            }).then(function (ok) {
-              if (!ok) return;
-              U.toast('Test de restauration réussi.', { type: 'success', detail: 'Intégrité des données vérifiée sur l’environnement de test.' });
-            });
-          },
-        }),
         K.btn('Exporter le journal des sauvegardes', {
           icon: 'printer',
           onclick: function () {
@@ -1932,6 +2673,157 @@
           }),
         });
       }
+    },
+  });
+
+
+  /* ==========================================================================
+   * TÂCHES PLANIFIÉES (vague 69)
+   * --------------------------------------------------------------------------
+   * L'écran ne calcule rien : il LIT le registre que tient le planificateur du
+   * serveur (api/cron.php) et rend visible ce qui, sans lui, tournerait dans
+   * le noir — quand la dernière exécution a eu lieu, si elle a réussi, combien
+   * d'alertes elle a produites. Une tâche qui n'a pas tourné depuis longtemps
+   * se DIT en rouge : un planificateur arrêté ne prévient personne de lui-même.
+   * ======================================================================== */
+  global.SIGH.screen('m14-taches', {
+    title: 'Tâches planifiées',
+    description: 'Ce que le serveur évalue à heure fixe : échéances, péremptions, seuils de stock, rendez-vous du lendemain, créances âgées, sauvegarde du magasin et des fichiers numérisés, contrôle d’intégrité des fichiers, et ce qu’il a trouvé.',
+    regle: 'Le planificateur (<code>api/cron.php</code>) tourne <strong>sans écran ouvert</strong>. Il lit les registres, n’en écrit aucun, '
+      + 'et applique les seuils que la clinique a fixés. Une alerte <strong>disparaît quand sa cause cesse</strong> ; elle n’est jamais supprimée (RG-14). '
+      + 'Installer la tâche du système toutes les 5 minutes ; à défaut, le serveur se déclenche lui-même quand un poste est ouvert. '
+      + 'Les sauvegardes vont à la <strong>destination réglée par la clinique</strong> (par défaut le dossier <code>api/sauvegardes</code>, sur le <strong>même disque</strong> que les données : '
+      + 'une copie sur le même disque ne protège pas d’une panne de disque).',
+    render: function (root) {
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      var droits = K.droits('M14');
+      function jeton() { return S.jetonServeur ? S.jetonServeur() : null; }
+      function racine() { return (document.documentElement.getAttribute('data-root')) || ''; }
+      function appeler(opts) {
+        return global.fetch(racine() + 'api/notifications.php' + (opts.query || ''), {
+          method: opts.method || 'GET',
+          headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton() || '' },
+          body: opts.corps ? JSON.stringify(opts.corps) : undefined,
+        }).then(function (r) { return r.json().then(function (o) { if (!r.ok) throw new Error(o.detail || o.erreur || String(r.status)); return o; }); });
+      }
+      /* LA DESTINATION DES SAUVEGARDES (lot SAUV-F) : réglage en base, défaut dit, vérifiée par le SERVEUR (le navigateur ne voit pas son disque) avant d'être
+         enregistrée ; la tâche la revérifie à chaque passage. Réservé à l'administrateur et à la DAF ET au droit d'écrire de l'écran : une commande de réglage se garde
+         par le rôle ET par le droit. Le mot « même disque » vient du serveur, jamais d'une supposition de l'écran. */
+      var ROLES_DESTINATION = ['admin', 'da'];
+      function peutRegler() { var se = S.session() || {}; return ROLES_DESTINATION.indexOf(se.role) >= 0; }
+      function attendreEnvoi(apres) {
+        var debut = Date.now();
+        if (S.pousserMaintenant) S.pousserMaintenant();
+        (function boucle() {
+          if (!S.fileEnAttente || S.fileEnAttente() === 0 || Date.now() - debut > 8000) { apres(); return; }
+          setTimeout(boucle, 100);
+        })();
+      }
+      function ouvrirDestination(sv) {
+        var champ = el('input.input', { type: 'text', 'aria-label': 'Dossier de sauvegarde', placeholder: '/mnt/sauvegarde ou D:\\Sauvegardes', spellcheck: 'false' });
+        champ.value = sv && !sv.defaut ? sv.destination : '';
+        var motif = el('textarea.textarea', { rows: 2, placeholder: 'Motif du réglage', 'aria-label': 'Motif' });
+        var msg = el('p.text-xs.text-danger-700', { role: 'alert', 'data-sauv-refus': '' });
+        var modal;
+        function enregistrer(chemin) {
+          msg.textContent = '';
+          msg.removeAttribute('data-code');
+          if (!String(motif.value || '').trim()) { msg.textContent = 'MOTIF_REQUIS : un réglage de destination se motive. Saisir le motif du réglage.'; return; }
+          appeler({ method: 'POST', corps: { action: 'sauvegarde_verifier', chemin: chemin } }).then(function (r) {
+            if (!r.ok) { msg.setAttribute('data-code', r.code || ''); msg.textContent = (r.code || 'REFUSE') + ' : ' + r.motif + ' ' + r.geste; return; }
+            S.log('Destination de la sauvegarde', 'M14', 'reglage', 'sauvegardeFichiers', { destination: sv && !sv.defaut ? sv.destination : 'défaut' },
+              { destination: chemin || 'défaut', motif: String(motif.value).slice(0, 60) });
+            S.setReglage('sauvegardeFichiers', chemin ? { destination: chemin, regleLe: new Date().toISOString(), reglePar: S.currentUser() } : null);
+            modal.close();
+            U.toast(chemin ? 'Destination de la sauvegarde réglée.' : 'Destination ramenée au défaut.', { type: 'success', detail: r.mot || '' });
+            attendreEnvoi(peindre);
+          }, function (e) { msg.textContent = 'La vérification par le serveur a échoué : ' + e.message; });
+        }
+        var corps = el('div.space-y-3', null, [
+          K.note('Dossier où le serveur copie le magasin (7 derniers jours) et les fichiers numérisés (copie incrémentale, conservation <strong>illimitée</strong>). '
+            + 'Le serveur vérifie que le dossier existe, qu’il est inscriptible et qu’il ne recouvre pas les fichiers ; il n’est <strong>jamais créé</strong> pour vous. '
+            + 'Laissé vide, la copie va au défaut <code>api/sauvegardes</code>, sur le même disque que les données.', { tone: 'info' }),
+          el('div', null, [el('label.label', { text: 'Dossier de sauvegarde (chemin complet)' }), champ]),
+          el('div', null, [el('label.label', { text: 'Motif (consigné dans le journal)' }), motif]),
+          msg,
+        ]);
+        modal = U.modal({ title: 'Destination de la sauvegarde', size: 'md', body: corps, footer: [
+          K.btn('Annuler', { onclick: function () { modal.close(); } }),
+          K.btn('Revenir au défaut', { onclick: function () { enregistrer(''); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'check', onclick: function () {
+            if (!String(champ.value).trim()) { msg.textContent = 'DESTINATION_VIDE : aucun chemin n’est indiqué. Saisir le chemin complet, ou utiliser « Revenir au défaut ».'; return; }
+            enregistrer(String(champ.value).trim());
+          } }),
+        ] });
+      }
+      function carteSauvegarde(sv) {
+        if (!sv) return null;
+        var lignes = [
+          el('p.text-sm', null, [el('strong', { text: 'Destination : ' }), el('code', { text: sv.destination, 'data-sauv-destination': '' }),
+            el('span.text-slate-500', { text: sv.defaut ? ' (par défaut : le dossier api/sauvegardes)' : ' (réglée par la clinique)' })]),
+        ];
+        if (sv.ok === false) {
+          lignes.push(K.note('<strong>Destination inatteignable.</strong> ' + sv.code + ' : ' + sv.motif + ' ' + sv.geste + ' Aucune sauvegarde n’est écrite tant que ce n’est pas réglé.', { tone: 'danger', icon: 'alert-triangle' }));
+        } else if (sv.memeDisque === false) {
+          lignes.push(K.note(sv.mot, { tone: 'success', icon: 'hard-drive' }));
+        } else {
+          lignes.push(K.note('<strong>' + (sv.memeDisque === true ? 'Même disque que les données. ' : 'Disque indéterminé. ') + '</strong>' + sv.mot.replace(/^Même disque que les données : /, ''), { tone: 'warning', icon: 'hard-drive' }));
+        }
+        lignes.push(el('p.text-xs.text-slate-500', { text: 'Dossier des fichiers numérisés : ' + sv.dossierFichiers + (sv.dossierPresent ? '' : ' (pas encore créé : aucun scan déposé)') + '. Les fichiers ne sont jamais supprimés de la sauvegarde.' }));
+        var bouton = peutRegler() ? K.commande('Destination de la sauvegarde', { icon: 'hard-drive', size: 'sm', onclick: function () { ouvrirDestination(sv); }, droit: 'editer' }) : null;
+        return U.card('Sauvegarde du magasin et des fichiers numérisés', el('div.space-y-2', { 'data-carte-sauvegarde': '' }, lignes.concat(bouton ? [bouton] : [])));
+      }
+      function peindre() {
+        C.clear(host);
+        host.appendChild(U.loading ? U.loading(3) : el('p.text-sm.text-slate-500', { text: 'Lecture du registre…' }));
+        appeler({ query: '?action=taches' }).then(function (o) {
+          C.clear(host);
+          var taches = o.taches || [];
+          var vieilles = taches.filter(function (t) {
+            return !t.derniere_le || (Date.now() - new Date(String(t.derniere_le).replace(' ', 'T') + 'Z').getTime()) > (Number(t.frequence_min) * 3 * 60000);
+          });
+          var enErreur = taches.filter(function (t) { return t.dernier_statut === 'erreur'; });
+          host.appendChild(U.kpiGrid([
+            { label: 'Tâches actives', value: C.num(taches.length), icon: 'timer', tone: 'navy' },
+            { label: 'En erreur', value: C.num(enErreur.length), icon: 'alert-triangle', tone: enErreur.length ? 'danger' : 'success' },
+            { label: 'En retard sur leur fréquence', value: C.num(vieilles.length), icon: 'clock-alert', tone: vieilles.length ? 'warning' : 'success', hint: 'Plus de trois périodes sans exécution' },
+            { label: 'Alertes ouvertes (dernière passe)', value: C.num(C.sum(taches, 'alertes')), icon: 'bell-ring', tone: 'neutral' },
+          ]));
+          if (vieilles.length) {
+            host.appendChild(K.note('<strong>' + vieilles.length + ' tâche(s) n’ont pas tourné à leur fréquence.</strong> Vérifier que la tâche du système '
+              + '(cron Linux ou Planificateur de tâches Windows) est installée et active.', { tone: 'warning', icon: 'clock-alert' }));
+          }
+          var carte = carteSauvegarde(o.sauvegarde);
+          if (carte) host.appendChild(carte);
+          var lignes = taches.map(function (t) {
+            return [
+              t.libelle, 'toutes les ' + t.frequence_min + ' min',
+              t.derniere_le ? C.dateFR(String(t.derniere_le).slice(0, 10)) + ' ' + String(t.derniere_le).slice(11, 16) + ' UTC' : 'jamais',
+              t.dernier_statut === 'erreur' ? 'Erreur — ' + (t.dernier_message || '')
+                : (t.dernier_statut ? 'Réussie' + (t.dernier_message ? ' : ' + t.dernier_message : '') : '—'),
+              t.duree_ms != null ? t.duree_ms + ' ms' : '—', C.num(t.alertes || 0),
+              K.commande('Exécuter', { type: 'button', onclick: function () {
+                appeler({ method: 'POST', corps: { action: 'executer', code: t.code } }).then(function () {
+                  U.toast('Tâche exécutée : ' + t.libelle, { type: 'success' }); peindre();
+                }, function (e) { U.toast('Exécution refusée : ' + e.message, { type: 'error' }); });
+              }, droit: 'editer' }),
+            ];
+          });
+          host.appendChild(U.card('Registre des tâches', K.miniTable(['Tâche', 'Fréquence', 'Dernière exécution', 'Résultat', 'Durée', 'Alertes', ''], lignes)));
+          var histo = (o.executions || []).map(function (e) {
+            return [String(e.debut).slice(0, 16).replace('T', ' '), e.code, e.statut === 'ok' ? 'Réussie' : 'Erreur', e.origine || '—', String(e.duree_ms) + ' ms', C.num(e.alertes)];
+          });
+          host.appendChild(U.card('Dernières exécutions', histo.length
+            ? K.miniTable(['Début (UTC)', 'Tâche', 'Résultat', 'Déclenchée par', 'Durée', 'Alertes'], histo)
+            : U.empty('Aucune exécution enregistrée.', { icon: 'timer' })));
+        }, function (e) {
+          C.clear(host);
+          host.appendChild(U.errorState('Le registre du planificateur est inaccessible : ' + e.message + '. Sans serveur (ouverture locale), aucune tâche planifiée ne tourne.', peindre));
+        });
+      }
+      peindre();
+      return null;
     },
   });
 

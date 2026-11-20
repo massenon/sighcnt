@@ -1,0 +1,122 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/gen-regles-fichiers.js : ne pas éditer. Règle par famille de api/fichiers.php. roles[rôle][famille] = [voir, éditer, annuler] lus de packages/rbac/data/rbac.json (matrice d'origine) ; zone2 = profils qui lisent les types de zone 2 (D.DOCUMENTS.ROLES_ZONE_2) ; types = zone de chaque type de document du patient.",
+ "familles": {
+  "courrier": "m13-courriers",
+  "patient": "m1-documents"
+ },
+ "roles": {
+  "admin": {
+   "courrier": [1,1,1],
+   "patient": [1,1,1]
+  },
+  "agentadmin": {
+   "courrier": [1,1,1],
+   "patient": [0,0,0]
+  },
+  "anesthesiste": {
+   "courrier": [0,0,0],
+   "patient": [1,0,0]
+  },
+  "assistant_comptable": {
+   "courrier": [1,1,0],
+   "patient": [0,0,0]
+  },
+  "chirurgien": {
+   "courrier": [0,0,0],
+   "patient": [1,1,0]
+  },
+  "da": {
+   "courrier": [1,1,1],
+   "patient": [1,1,1]
+  },
+  "direction": {
+   "courrier": [1,1,1],
+   "patient": [1,0,0]
+  },
+  "dm": {
+   "courrier": [0,0,0],
+   "patient": [1,1,0]
+  },
+  "infirmier": {
+   "courrier": [0,0,0],
+   "patient": [1,1,0]
+  },
+  "medecin": {
+   "courrier": [0,0,0],
+   "patient": [1,1,0]
+  },
+  "reception": {
+   "courrier": [1,1,0],
+   "patient": [1,1,0]
+  }
+ },
+ "zone2": [
+  "admin",
+  "dm",
+  "medecin",
+  "infirmier",
+  "chirurgien",
+  "anesthesiste"
+ ],
+ "types": {
+  "Ordonnance": 2,
+  "Résultat de laboratoire": 2,
+  "Compte rendu médical": 2,
+  "Consentement éclairé": 2,
+  "Imagerie / Échographie": 2,
+  "Bulletin d’hospitalisation": 2,
+  "Facture": 2,
+  "Pièce d’identité": 1,
+  "Carte d’assurance": 1,
+  "Certificat médical": 2
+ },
+ "formats": [
+  {
+   "id": "pdf",
+   "mime": "application/pdf",
+   "ext": [
+    "pdf"
+   ],
+   "familles": [
+    "courrier",
+    "patient"
+   ]
+  },
+  {
+   "id": "jpeg",
+   "mime": "image/jpeg",
+   "ext": [
+    "jpg",
+    "jpeg"
+   ],
+   "familles": [
+    "courrier",
+    "patient"
+   ]
+  },
+  {
+   "id": "png",
+   "mime": "image/png",
+   "ext": [
+    "png"
+   ],
+   "familles": [
+    "courrier",
+    "patient"
+   ]
+  },
+  {
+   "id": "webp",
+   "mime": "image/webp",
+   "ext": [
+    "webp"
+   ],
+   "familles": [
+    "patient"
+   ]
+  }
+ ],
+ "tailleDefaut": 10485760,
+ "taillePlancher": 102400,
+ "taillePlafond": 67108864
+}

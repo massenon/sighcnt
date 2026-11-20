@@ -1,0 +1,32 @@
+{
+ "id": "hub-m8",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Facturation & Caisse",
+ "acces": "ouvert",
+ "titre": "Facturation & Caisse",
+ "description": "Tous les écrans du module M8 — Facturation & Caisse.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse"
+ ],
+ "actions": [
+  "Tableau de bord facturation",
+  "Nouvelle facture",
+  "Facturation & Caisse"
+ ],
+ "regle": [
+  "Assurances & Créances",
+  "MECeF — Facture normalisée",
+  "Comptabilité SYSCOHADA"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

@@ -1,0 +1,112 @@
+# PLAN — Implémentation SIGH : Flutter (poste fileul, poste mère, mobile) + Laravel (relais en ligne et panneau)
+
+| | |
+|---|---|
+| **Statut** | **lancé le 29/10/2026** (squelettes créés, banc de protocole vert) — la poursuite reste **conditionnée à l'acceptation d'ADR-0005** |
+| **Mise à jour** | 29/10/2026 : la **PWA est retirée** (décision Direction) ; le « hub » devient le **poste mère** (Flutter) ; Laravel devient le **relais en ligne opaque** + panneau superadmin |
+| **Entrées** | demande de la Direction du 27/10/2026 ; `PRD-FLUTTER-poste-fidelite-maquette` ; `ADR-0001/0003/0005` ; maquette `prototype_html/` (exécutable de référence) |
+| **Compagnon** | [`guides/BIBLIOTHEQUE-DOCUMENTAIRE.md`](../guides/BIBLIOTHEQUE-DOCUMENTAIRE.md) — les 40 documents demandés, un par un |
+
+## 1. Principe directeur
+
+La demande décrit une **bibliothèque documentaire** (instructions maîtres, système de conception, spécifications module par module, standards, tests) à produire **avant** d'écrire le code, et que Claude Code consommera ensuite. Ce dépôt a déjà la matière première — la maquette et 70 vagues de décisions dans `CLAUDE.md`. Le plan **n'invente rien** : chaque document est *extrait* de la maquette ou *dérivé* d'une décision existante, et ce qui n'a aucune source est une **proposition marquée à valider**.
+
+Ordre : **extraire → décider → spécifier → bâtir → recetter.** Jamais l'inverse.
+
+## 2. Exigences non fonctionnelles — calibrées sur la clinique
+
+Les chiffres de la demande (100 000 utilisateurs, 99,99 %) sont des chiffres de gabarit. **Proposition** à valider (Q4 d'ADR-0005) :
+
+| Catégorie | Cible proposée | Source / mesure |
+|---|---|---|
+| **Performance** | liste 20 000 lignes < 1 s ; recherche patient < 300 ms ; API p95 < 500 ms ; ouverture d'écran < 2 s | banc ADR-0003 critère 5 |
+| **Volume** | ~18 000 dossiers aujourd'hui, croissance à confirmer ; recherche sur l'ensemble < 300 ms ; poste : toutes les identités + jeu chaud clinique ; pièces à la demande | ADR-0005 §4 |
+| **Charge** | 15 postes + 5 téléphones + 5 sessions PWA en écriture continue ; sync p95 < 5 s | idem |
+| **Sécurité** | SQLCipher au poste ; TLS ; hachage des mots de passe ; RBAC serveur **et** poste ; journal d'audit RG-12 ; révocation d'appareil ; **aucune donnée de santé en cache navigateur clair** ; secrets hors dépôt | RG-12/13, CLAUDE.md |
+| **Disponibilité** | **le poste ne s'arrête jamais** (autonome) ; serveur : 99,5 % mensuel, reprise < 1 h, sauvegarde quotidienne + réplica hors site, restauration à blanc trimestrielle | ADR-0001 |
+| **Maintenabilité** | un schéma source, une matrice RBAC source, des vecteurs de tests partagés ; couverture des vecteurs = 100 % des moteurs exposés | ADR-0005 |
+| **Portabilité** | Windows 10/11, Linux ; Android (iOS si le parc le demande) ; PWA : Chrome/Edge/Safari récents | — |
+| **Utilisabilité** | français ; typographie ≥ 11 pt ; états vide/chargement/erreur partout ; accessibilité clavier ; formats français (U+202F, U+00A0) | CLAUDE.md, vague 33 |
+
+## 3. Phases
+
+| Phase | Objet | Livrables (voir bibliothèque) | Porte de sortie |
+|---|---|---|---|
+| **P0 — Cadrage de la pile** | Trancher ADR-0005 ; répondre Q1–Q5 | ADR-0005 acceptée ou rejetée ; audit de `sigh_web/` | décision écrite de la Direction |
+| **P1 — Extraction** | Sortir de la maquette tout ce qui se *lit* : manifeste, RBAC, dictionnaire, jetons de conception, vecteurs de tests, captures | `PARITE-MAQUETTE`, `ROLES_ET_PERMISSIONS`, `DICTIONNAIRE_DONNEES`, jetons de design, vecteurs JSON, captures de référence | vecteurs rejoués verts sur la maquette |
+| **P2 — Spécification** | Rédiger les documents de la bibliothèque, groupe par groupe (§4) | groupes A → F | revue Direction par groupe |
+| **P3 — Socle technique** | `packages/domaine` (Dart), service de la mère (HTTP + PostgreSQL + pont P2), client P1 des postes, relais Laravel (enveloppes, battement, indicateurs, panneau), schéma unique, thème Flutter | dépôts initialisés, CI, **les 26 scénarios du banc rejoués sur le code réel** | banc passé sur Dart et Laravel |
+| **P4 — Tranche 1 : caisse + MECeF + impression** | Première tranche verticale **de bout en bout** : fileul ↔ mère ↔ relais ↔ panneau | PRD §P0-9 | recette caisse, revue d'ADR |
+| **P5 → Pn — Tranches** | pharmacie → laboratoire → hospitalisation/maternité → comptabilité → RH/paie → administration | une recette par tranche | parité x / 306 |
+| **P6 — Mobile** | Application minimale (soignant, consultations à domicile ; réception de secours) par le relais chiffré | `apps/mobile` | scénarios R10, R13, R15 rejoués sur Dart + audit de sécurité de l'appareil |
+| **P7 — Mise en service** | Clinique pilote, formation par rôle, bascule | guide d'exploitation, rollback | recette globale |
+
+Pas de dates : elles dépendent de l'effectif Flutter/Dart/Laravel (non documenté) et du résultat du banc.
+
+## 3 bis. État d'avancement (30/10/2026)
+
+| Étape | État | Où |
+|---|---|---|
+| ADR-0005 (révisions 1 à 3), PRD Flutter, spec de synchronisation, bibliothèque documentaire | **rédigés** (ADR *proposé*, non accepté) | `docs/` |
+| Banc de protocole : mère, fileuls, relais chiffré, mobile, coupures, SIGKILL, restauration | **vert** : 26 scénarios, 128 vérifications, sur **trois implémentations** (Node, Dart + relais Laravel) et sur **PostgreSQL** (`banc:cible`, `banc:pg`) ; mutations détectées | `packages/sync/banc/` |
+| P1 : extraction (matrice RBAC, manifeste, jetons, vecteurs, parité, ERD) | **fait**, engendré par `prototype_html/build/` | `packages/rbac`, `packages/referentiels`, `docs/architecture/` |
+| `packages/domaine` (Dart) | **compilé et testé** : formats, périodes, secteurs, jetons, contrat de synchronisation ; rejoue les vecteurs de la maquette. **Aucune règle à état** (`repartir`, `encaisser`, avoir, exercice, BFR) n'est portée | `packages/domaine/` |
+| `packages/sync_dart` (mère, fileul, mobile, supervision, sauvegarde chiffrée) | **fait**, SQLite et PostgreSQL ; tests enveloppes (interopérables avec Node), dépôt, supervision | `packages/sync_dart/` |
+| `apps/web` (relais Laravel 12 + panneau Livewire) | **fait** : 23 tests PHPUnit, panneau vérifié en navigateur | `apps/web/` |
+| `apps/poste` : console de la mère (supervision, appareils, conflits, journal, maintenance) | **fait**, 14 tests de widgets, `analyze` propre | `apps/poste/` |
+| `apps/poste` : écrans métier (caisse, patients…) | **non commencé** — aucune tranche verticale portée | — |
+| `apps/mobile` | **squelette** : aucun écran de tournée ni de réception de secours | `apps/mobile/` |
+| P0 : acceptation d'ADR-0005 ; audit de `sigh_web/` (code jamais fourni) ; réponses Q1–Q8 | **en attente de la Direction** | — |
+
+**Non fait, et à ne pas laisser croire** : SQLCipher (base locale non chiffrée), installation de la mère comme service Windows/Linux, compilation native Android/Windows/Linux des applications, tests de charge, revue de sécurité, désignation du détenteur de la clé papier, branchement de `sigh_sync` dans les applications Flutter, portage de toute tranche métier (caisse + MECeF en premier).
+
+## 4. Groupes documentaires (l'ordre est la dépendance)
+
+| Groupe | Contenu | Dépend de |
+|---|---|---|
+| **A. Fondations** | Instructions maîtres, glossaire, dictionnaire médical, structure de pages, ordre des sections | CLAUDE.md |
+| **B. Produit** | BRS, PRD (exist.), SRS, FRS, NFRS (§2), règles de gestion, cartographie des modules, processus métier par page | A |
+| **C. Architecture & données** | Architecture (ADR-0005), RBAC, dictionnaire de données, ERD, migrations, synchronisation bidirectionnelle | B |
+| **D. Conception UI/UX** | Système de conception, mise en page, tableaux/filtres, modales et CRUD, responsive, notifications/toasts, impression PDF | B, extraction P1 |
+| **E. Spécifications de modules** | M1…M14, MECeF, GED, RAP, PIL : écran par écran, onglet par onglet | B, C, D |
+| **F. Standards, tests, revue** | Conventions Laravel/Livewire/Vue/Flutter, sécurité, tests, UAT, revue senior, sprints | C, D, E |
+
+## 5. Bibliothèque de compétences (skills) — qui produit quoi
+
+Compétences **du dépôt** (`.claude/skills/`) : `/prd`, `/adr`, `/spec`, `/plan`, `/test-plan`, `/review`, `/release`. Compétences de l'environnement utiles : `product-management:write-spec`, `engineering:architecture`, `engineering:system-design`, `engineering:testing-strategy`, `engineering:code-review`, `engineering:documentation`, `engineering:deploy-checklist`, `design:design-system`, `design:design-handoff`, `design:accessibility-review`, `design:ux-copy`, `sdlc-kit:*`.
+
+| Besoin | Compétence | Écrit dans |
+|---|---|---|
+| Décision de pile | `/adr`, `engineering:architecture` | `docs/architecture/adr/` |
+| Exigences d'un module | `/prd`, `product-management:write-spec` | `docs/prd/` |
+| Spécification écran par écran | `/spec` | `docs/specs/` |
+| Découpage en tranches et sprints | `/plan` | `docs/plans/` |
+| Stratégie de test, UAT, jeux de données | `/test-plan`, `engineering:testing-strategy` | `docs/test-plans/` |
+| Système de conception, jetons | `design:design-system`, `design:design-handoff` | `docs/design/` |
+| Accessibilité | `design:accessibility-review` | `docs/design/` |
+| Libellés médicaux, messages | `design:ux-copy` | `docs/design/` |
+| Revue de code senior / QA architecte | `/review`, `engineering:code-review` | `docs/reviews/` |
+| Livraison et retour arrière | `/release`, `engineering:deploy-checklist` | `docs/releases/` |
+
+Les trois documents « instructions pour Claude Code » (Laravel/Livewire/Vue, Flutter, conversion Tailwind→Dart) sont des **skills du projet** à ajouter dans `.claude/skills/` une fois P2 validée : ils portent la méthode, pas l'état du projet.
+
+## 6. Conversion Tailwind → Flutter
+
+La maquette est en Tailwind compilé. Plutôt qu'un document de conversion à la main :
+
+1. extraire les **jetons** (`tailwind.config.js`, `src/input.css` : couleurs navy/sémantique, rayons, ombres, espacements, Inter) vers **un seul fichier JSON de jetons** ;
+2. en engendrer le `ThemeData` Flutter, les variables CSS Livewire/Vue, et la page de référence ;
+3. interdire toute valeur en dur hors jetons (revue + lint).
+
+C'est le seul moyen de tenir **trois interfaces** (Flutter, Livewire, Vue) à parité sans trois dérives.
+
+## 7. Risques
+
+| Risque | Mitigation |
+|---|---|
+| Règles métier en double PHP/Dart | option A d'ADR-0005 + vecteurs partagés en CI |
+| Trois interfaces à tenir | jetons uniques ; Livewire limité au panneau ; PWA limitée aux profils distants |
+| Documentation sans source (inventée) | chaque document cite sa source ; sinon « proposition à valider » |
+| Dérive de fidélité | PRD Flutter, règle « pas de redesign » |
+| Cache PWA et données de santé | audit de sécurité en P6, file d'envoi seule |
+| `sigh_web/` hors contrôle de version | audit en P0 avant toute reprise |

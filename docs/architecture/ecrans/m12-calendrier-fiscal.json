@@ -1,0 +1,56 @@
+{
+ "id": "m12-calendrier-fiscal",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Calendrier fiscal mensuel",
+ "acces": "ouvert",
+ "titre": "Calendrier fiscal mensuel",
+ "description": "Les échéances fiscales et sociales du mois, jour par jour, avec leur état : payée, en retard, à payer, à venir.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Calendrier fiscal mensuel"
+ ],
+ "actions": [
+  "Suivi des échéances",
+  "Obligations & règles",
+  "Tableau de bord comptable"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Échéances du mois",
+  "En retard",
+  "À payer ou à déclarer",
+  "Payées"
+ ],
+ "cartes": [
+  "Octobre 2026",
+  "Le mois en grille",
+  "Les échéances du mois"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Code",
+   "Obligation",
+   "Délai",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Mois précédent",
+  "Mois suivant",
+  "Aujourd’hui",
+  "AIB",
+  "CNSS",
+  "ITS",
+  "VPS",
+  "CNSS-VERSEMENT",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

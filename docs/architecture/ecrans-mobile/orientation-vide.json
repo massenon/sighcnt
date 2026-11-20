@@ -1,0 +1,21 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « orientation-vide ». Ne pas éditer à la main.",
+ "titre": "Orienter un patient",
+ "sous": null,
+ "textes": [
+  "Ouvrez d’abord un dossier."
+ ],
+ "champs": [],
+ "boutons": [],
+ "onglets": [
+  "Accueil",
+  "Synchro",
+  "À traiter",
+  "Réglages"
+ ],
+ "notes": [],
+ "cartes": [],
+ "items": [],
+ "kpis": [],
+ "vide": "Ouvrez d’abord un dossier."
+}
