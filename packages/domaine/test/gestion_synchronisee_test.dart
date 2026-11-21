@@ -62,8 +62,8 @@ void main() {
 
     test('une autre collection n\'a pas d\'identité par le contenu', () {
       expect(identiteSyncGestion('patients', {'code': 'CNT/1/26'}), isNull);
-      expect(collectionsGestionSynchronisees, {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan', 'planningsPersonnalises', ...collectionsTiersSynchronisees},
-          reason: 'le lot PTA y ajoute le plan annuel et son adoption, le lot PLAN-INDIV le planning personnalisé, le lot TIERS la facture à un tiers payeur et ses pièces');
+      expect(collectionsGestionSynchronisees, {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan', 'planningsPersonnalises', ...collectionsTiersSynchronisees, ...collectionsVersementsSynchronisees},
+          reason: 'le lot PTA y ajoute le plan annuel et son adoption, le lot PLAN-INDIV le planning personnalisé, le lot TIERS la facture à un tiers payeur et ses pièces, le lot PAIE-V les versements de caisse');
       expect(collectionsGestionJamaisMobile, containsAll(collectionsGestionSynchronisees), reason: 'RG-13 : aucune de ces collections vers un téléphone');
     });
   });
