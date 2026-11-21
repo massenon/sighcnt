@@ -51,7 +51,7 @@ sources.forEach((s) => { let m; while ((m = re.exec(s))) { if (!MODULE_DE[m[1]])
    décidé ici une fois. `taches` (la file du parcours inter-modules) reste au socle, c'est sa place. */
 const MODULE_PAR_DEFAUT = { ambulance: 'M13', assureurs: 'M9', audit: 'M14', comptes: 'M14', courriers: 'M13', cpon: 'M4', fournisseurs: 'M7',
   lots: 'M6', planificationFamiliale: 'M4', ptme: 'M4', registreSONU: 'M4', reunions: 'M13', soins: 'M2', soinsCuratifsMaternite: 'M4',
-  tiersPayeurs: 'M8', facturesTiers: 'M8', avoirsTiers: 'M8', reglementsTiers: 'M8', lettragesTiers: 'M8' };
+  tiersPayeurs: 'M8', facturesTiers: 'M8', avoirsTiers: 'M8', reglementsTiers: 'M8', lettragesTiers: 'M8', versementsCaisse: 'M8', modalitesVersement: 'M8' };
 Object.keys(MODULE_PAR_DEFAUT).forEach((n) => { if (!MODULE_DE[n]) MODULE_DE[n] = MODULE_PAR_DEFAUT[n]; });
 const SCHEMAS = { M1: 'm1', M2: 'm2', M3: 'm3', M4: 'm4', M5: 'm5', M6: 'm6', M7: 'm7', M8: 'm8', M9: 'm9', M10: 'm10', M11: 'm11',
   M12: 'm12', M13: 'm13', M14: 'm14', MECEF: 'mecef', GED: 'ged', RAP: 'rap', PIL: 'pil', CFG: 'cfg', DASH: 'dash', AUTH: 'auth', SUP: 'sup', IMP: 'imp' };

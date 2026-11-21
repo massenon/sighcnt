@@ -11,7 +11,7 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `m10` — M10 Ressources humaines | 23 | 1 | 287 | 0 |
 | `m11` — M11 Paie & primes | 4 | 0 | 66 | 0 |
 | `m12` — M12 Comptabilité SYSCOHADA | 15 | 2 | 219 | 0 |
-| `m13` — M13 Administration & ambulance | 17 | 3 | 221 | 7 |
+| `m13` — M13 Administration & ambulance | 17 | 3 | 221 | 0 |
 | `m14` — M14 Sécurité & audit | 10 | 0 | 151 | 0 |
 | `m2` — M2 RDV, visites, consultations, imagerie | 10 | 4 | 242 | 0 |
 | `m3` — M3 Hospitalisation & bloc | 10 | 3 | 181 | 0 |
@@ -19,7 +19,7 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `m5` — M5 Laboratoire | 9 | 0 | 135 | 0 |
 | `m6` — M6 Pharmacie & stocks | 8 | 1 | 82 | 0 |
 | `m7` — M7 Achats & fournisseurs | 6 | 4 | 78 | 0 |
-| `m8` — M8 Facturation & caisse | 7 | 2 | 176 | 21 |
+| `m8` — M8 Facturation & caisse | 9 | 2 | 223 | 29 |
 | `m9` — M9 Assurances & créances | 5 | 1 | 60 | 0 |
 | `socle` — Socle commun (référentiels lus par plusieurs modules) | 4 | 0 | 59 | 0 |
 | `sup` — Support | 1 | 0 | 17 | 0 |
@@ -1617,7 +1617,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `reconduite_depuis` | reconduiteDepuis | text |  |
 | `responsable` | responsable | text |  |
 
-### `m13.points_collecte` (collection « pointsCollecte », 7 fiches)
+### `m13.points_collecte` (collection « pointsCollecte », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3379,7 +3379,7 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
-### `m8.avoirs_tiers` (collection « avoirsTiers », 1 fiches)
+### `m8.avoirs_tiers` (collection « avoirsTiers », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3466,7 +3466,7 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 
 Table fille `m8.factures_lignes` — 0 lignes : id text, paye_le timestamptz, remise integer, montant integer, paye_par text, acte_code text, quantite integer, categorie text, demande_id text, produit_id text, designation text, montant_brut integer, motif_remise text, part_patient integer, montant_regle integer, part_assureur integer, prix_unitaire integer, part_personnel integer, statut_paiement text, prix_unitaire_net integer, demande_imagerie_id text, taux_remise integer
 
-### `m8.factures_tiers` (collection « facturesTiers », 8 fiches)
+### `m8.factures_tiers` (collection « facturesTiers », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3514,9 +3514,9 @@ Table fille `m8.factures_lignes` — 0 lignes : id text, paye_le timestamptz, re
 | `delai_paiement_jours` | delaiPaiementJours | integer |  |
 | `part_patient_restante` | partPatientRestante | integer |  |
 
-Table fille `m8.factures_tiers_lignes` — 9 lignes : ligne_id text, montant integer, facture_id text, designation text, facture_numero text
+Table fille `m8.factures_tiers_lignes` — 0 lignes : ligne_id text, montant integer, facture_id text, designation text, facture_numero text
 
-### `m8.lettrages_tiers` (collection « lettragesTiers », 2 fiches)
+### `m8.lettrages_tiers` (collection « lettragesTiers », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3539,7 +3539,27 @@ Table fille `m8.factures_tiers_lignes` — 9 lignes : ligne_id text, montant int
 | `motif_archivage` | _motifArchivage | text |  |
 | `reglement_numero` | reglementNumero | text |  |
 
-### `m8.reglements_tiers` (collection « reglementsTiers », 1 fiches)
+### `m8.modalites_versement` (collection « modalitesVersement », 8 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `code` | code | text |  |
+| `actif` | actif | boolean |  |
+| `motif` | motif | text |  |
+| `cree_le` | creeLe | date |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `cree_par` | creePar | text |  |
+| `famille` | famille | text |  |
+| `libelle` | libelle | text |  |
+| `date_effet` | dateEffet | text |  |
+| `compte` | compte | text |  |
+| `compte_libelle` | compteLibelle | text |  |
+| `exige_operateur` | exigeOperateur | boolean |  |
+| `exige_reference` | exigeReference | boolean |  |
+
+### `m8.reglements_tiers` (collection « reglementsTiers », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3561,7 +3581,7 @@ Table fille `m8.factures_tiers_lignes` — 9 lignes : ligne_id text, montant int
 | `motif_archivage` | _motifArchivage | text |  |
 | `reference_paiement` | referencePaiement | text |  |
 
-### `m8.tiers_payeurs` (collection « tiersPayeurs », 9 fiches)
+### `m8.tiers_payeurs` (collection « tiersPayeurs », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3588,6 +3608,43 @@ Table fille `m8.factures_tiers_lignes` — 9 lignes : ligne_id text, montant int
 | `modifie_le` | _modifieLe | timestamptz |  |
 | `modifie_par` | _modifiePar | text |  |
 | `motif` | motif | text |  |
+
+### `m8.versements_caisse` (collection « versementsCaisse », 21 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `rang` | rang | integer |  |
+| `type` | type | text |  |
+| `agent` | agent | text |  |
+| `compte` | compte | text |  |
+| `groupe` | groupe | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `montant` | montant | integer |  |
+| `origine` | origine | text |  |
+| `patient` | patient | text |  |
+| `cree_par` | _creePar | text |  |
+| `modalite` | modalite | text |  |
+| `facture_id` | factureId | text |  |
+| `operateur` | operateur | text |  |
+| `patient_id` | patientId | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `horodatage` | horodatage | timestamptz |  |
+| `reste_apres` | resteApres | integer |  |
+| `archive_par` | _archivePar | text |  |
+| `ecriture_ids` | ecritureIds | jsonb |  |
+| `patient_code` | patientCode | text |  |
+| `type_libelle` | typeLibelle | text |  |
+| `compte_libelle` | compteLibelle | text |  |
+| `facture_numero` | factureNumero | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+| `modalite_libelle` | modaliteLibelle | text |  |
+| `operateur_libelle` | operateurLibelle | text |  |
+| `hors_jour` | horsJour | boolean |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 
 ### `m9.assureurs` (collection « assureurs », 0 fiches)
 

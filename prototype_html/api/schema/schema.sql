@@ -7263,6 +7263,42 @@ CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_date" ON "m8"."lettrages_tiers" (
 CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_statut" ON "m8"."lettrages_tiers" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_reglement_id" ON "m8"."lettrages_tiers" ("reglement_id");
 CREATE INDEX IF NOT EXISTS "ix_lettrages_tiers_facture_tiers_id" ON "m8"."lettrages_tiers" ("facture_tiers_id");
+CREATE TABLE IF NOT EXISTS "m8"."modalites_versement" (
+  "id" text PRIMARY KEY,
+  "code" text,
+  "actif" boolean,
+  "motif" text,
+  "cree_le" date,
+  "source" text,
+  "statut" text,
+  "cree_par" text,
+  "famille" text,
+  "libelle" text,
+  "date_effet" text,
+  "compte" text,
+  "compte_libelle" text,
+  "exige_operateur" boolean,
+  "exige_reference" boolean,
+  "extra" jsonb
+);
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "actif" boolean; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "cree_le" date; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "famille" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "date_effet" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "compte" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "compte_libelle" text; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "exige_operateur" boolean; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "exige_reference" boolean; -- @montee
+ALTER TABLE "m8"."modalites_versement" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."modalites_versement" IS 'Collection « modalitesVersement » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_modalites_versement_code" ON "m8"."modalites_versement" ("code");
+CREATE INDEX IF NOT EXISTS "ix_modalites_versement_statut" ON "m8"."modalites_versement" ("statut");
 CREATE TABLE IF NOT EXISTS "m8"."reglements_tiers" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -7357,6 +7393,79 @@ COMMENT ON TABLE "m8"."tiers_payeurs" IS 'Collection « tiersPayeurs » — M8 F
 CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_code" ON "m8"."tiers_payeurs" ("code");
 CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_type" ON "m8"."tiers_payeurs" ("type");
 CREATE INDEX IF NOT EXISTS "ix_tiers_payeurs_statut" ON "m8"."tiers_payeurs" ("statut");
+CREATE TABLE IF NOT EXISTS "m8"."versements_caisse" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "rang" integer,
+  "type" text,
+  "agent" text,
+  "compte" text,
+  "groupe" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "montant" integer,
+  "origine" text,
+  "patient" text,
+  "cree_par" text,
+  "modalite" text,
+  "facture_id" text,
+  "operateur" text,
+  "patient_id" text,
+  "archive_le" timestamptz,
+  "horodatage" timestamptz,
+  "reste_apres" integer,
+  "archive_par" text,
+  "ecriture_ids" jsonb,
+  "patient_code" text,
+  "type_libelle" text,
+  "compte_libelle" text,
+  "facture_numero" text,
+  "motif_archivage" text,
+  "modalite_libelle" text,
+  "operateur_libelle" text,
+  "hors_jour" boolean,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "extra" jsonb
+);
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "rang" integer; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "agent" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "compte" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "groupe" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "origine" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "patient" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "modalite" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "facture_id" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "operateur" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "horodatage" timestamptz; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "reste_apres" integer; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "ecriture_ids" jsonb; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "patient_code" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "type_libelle" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "compte_libelle" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "facture_numero" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "modalite_libelle" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "operateur_libelle" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "hors_jour" boolean; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m8"."versements_caisse" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m8"."versements_caisse" IS 'Collection « versementsCaisse » — M8 Facturation & caisse';
+CREATE INDEX IF NOT EXISTS "ix_versements_caisse_date" ON "m8"."versements_caisse" ("date");
+CREATE INDEX IF NOT EXISTS "ix_versements_caisse_type" ON "m8"."versements_caisse" ("type");
+CREATE INDEX IF NOT EXISTS "ix_versements_caisse_statut" ON "m8"."versements_caisse" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_versements_caisse_facture_id" ON "m8"."versements_caisse" ("facture_id");
+CREATE INDEX IF NOT EXISTS "ix_versements_caisse_patient_id" ON "m8"."versements_caisse" ("patient_id");
 CREATE TABLE IF NOT EXISTS "m9"."assureurs" (
   "n" integer,
   "id" text PRIMARY KEY,
