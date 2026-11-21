@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' show IdentiteImprimee;
 
 import '../../donnees/magasin.dart';
+import '../../donnees/versements_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/identite_poste.dart';
 import '../../impression/piece.dart';
@@ -30,12 +31,14 @@ Future<void> imprimerFacture(BuildContext ctx, Fiche f,
           identite: _identite(c, f)));
 }
 
-Future<void> imprimerRecu(BuildContext ctx, Fiche f, {Fiche? versement}) {
+Future<void> imprimerRecu(BuildContext ctx, Fiche f, {Fiche? versement, List<Fiche>? lot}) {
   final c = ContexteEcran.of(ctx);
   return afficherApercu(
       ctx,
       pieceRecu(f,
           versement: versement,
+          versementsPiece: versementsDePiecePoste(c.magasin, f['id']),
+          lot: lot,
           utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference: _ref(c),

@@ -18,6 +18,9 @@ const modesPaiement = [
   ('mtn', 'MTN Mobile Money', 'smartphone'),
   ('moov', 'Moov Money', 'smartphone'),
   ('assurance', 'Prise en charge assurance', 'shield-check'),
+  // Lot PAIE-V : le mode PORTÉ PAR LA PIÈCE réglée en plusieurs versements (`mixte`) ou par un opérateur de mobile money autre que MTN et Moov.
+  ('mobile_money', 'Mobile money (autre opérateur)', 'smartphone'),
+  ('mixte', 'Plusieurs modes de règlement', 'layers'),
 ];
 
 String modeLabel(Object? id) =>
@@ -117,10 +120,8 @@ PieceA4 pieceFacture(Fiche f,
       'k': 'dont part NON ASSURÉE (aucune couverture)',
       'v': m(partNonAssuree(lignes))
     },
-    {'k': 'TOTAL DÛ', 'v': m(f['reliquat'] ?? f['partPatient'])},
-    {'k': 'Montant réglé', 'v': m(f['montantPaye'])},
-    {'k': 'Reste à payer', 'v': m(f['reliquat'])},
-    {'k': 'Base normalisée MECeF', 'v': m(f['baseMecef'] ?? f['montantPaye'])},
+    // LOT PAIE-V (Direction, 20/11/2026) : la facture normalisée ne porte QUE le montant total (ci-dessous, en chiffres et en lettres). Ni mode, ni versement, ni réglé,
+    // ni reste : le reçu de paiement les détaille.
   ]);
   return PieceA4(
     titre: proforma ? 'Facture pro-forma' : 'Facture normalisée',
@@ -164,7 +165,7 @@ PieceA4 pieceFacture(Fiche f,
       BlocTexte(
           proforma
               ? 'Facture pro-forma — document non fiscal, établi à titre d’estimation. Elle ne vaut pas facture normalisée et ne peut servir de justificatif comptable.'
-              : 'Facture normalisée conforme au dispositif de facturation électronique en vigueur en République du Bénin. Mode de règlement : ${modeLabel(f['modePaiement'])}.',
+              : 'Facture normalisée conforme au dispositif de facturation électronique en vigueur en République du Bénin.',
           italique: true),
       if (!proforma && f['numeroMecef'] != null)
         BlocTexte(
@@ -181,6 +182,10 @@ PieceA4 pieceFacture(Fiche f,
 /// Reçu de paiement : détaille les PRESTATIONS réglées ET celles qui restent dues (quel examen précis a été payé, lequel attend).
 PieceA4 pieceRecu(Fiche f,
     {Fiche? versement,
+
+    /// LOT PAIE-V : les versements de la pièce (le reçu les DÉTAILLE : type, modalité, opérateur, référence, montant) et ceux du lot qui vient d'être saisi (« encaissé ce jour »).
+    List<Fiche> versementsPiece = const [],
+    List<Fiche>? lot,
     required String utilisateur,
     required DateTime edite,
     required String reference,
@@ -225,7 +230,10 @@ PieceA4 pieceRecu(Fiche f,
         ColonneEtat(libelle: 'Rubrique', valeur: (x) => x['k']),
         ColonneEtat(libelle: 'Montant', valeur: (x) => x['v'], droite: true),
       ], lignes: r);
-  final encaisse = versement != null
+  final referencesPiece = [for (final v in versementsPiece) if ('${v['referenceTransaction'] ?? ''}'.isNotEmpty) '${v['referenceTransaction']}'];
+  final encaisse = lot != null
+      ? lot.fold<num>(0, (a, v) => a + n(v['montant']))
+      : versement != null
       ? n(versement['montant'])
       : n(f['dernierReglement'] is Map
           ? (f['dernierReglement'] as Map)['montant']
@@ -244,11 +252,22 @@ PieceA4 pieceRecu(Fiche f,
       ('Date', dateFR(edite)),
       ('Mode de règlement', modeLabel(mode)),
       ('Encaissé par', utilisateur),
-      ('Référence transaction', '${versement?['reference'] ?? f['referenceTransaction'] ?? '—'}'),
+      ('Référence transaction', '${versement?['reference'] ?? (referencesPiece.isNotEmpty ? referencesPiece.join(', ') : (f['referenceTransaction'] ?? '—'))}'),
       ('RCCM', i.rccm),
     ],
     identite: i,
     blocs: [
+      if (versementsPiece.isNotEmpty)
+        BlocTableau(
+            TableauEtat(colonnes: [
+              ColonneEtat(libelle: 'N°', valeur: (x) => '${x['rang']}'),
+              ColonneEtat(libelle: 'Heure', valeur: (x) => '${x['horodatage'] ?? ''}'.length >= 16 ? '${x['horodatage']}'.substring(11, 16) : ''),
+              ColonneEtat(libelle: 'Type', valeur: (x) => x['typeLibelle']),
+              ColonneEtat(libelle: 'Modalité', valeur: (x) => '${x['modaliteLibelle']}${x['operateurLibelle'] != null ? ' (${x['operateurLibelle']})' : ''}'),
+              ColonneEtat(libelle: 'Référence', valeur: (x) => x['referenceTransaction'] ?? '—'),
+              ColonneEtat(libelle: 'Montant', valeur: (x) => m(x['montant']), droite: true, somme: (x) => n(x['montant'])),
+            ], lignes: versementsPiece, libelleTotal: 'TOTAL VERSÉ'),
+            titre: 'Versements'),
       if (payees.isNotEmpty)
         BlocTableau(tl(payees), titre: 'Prestations réglées'),
       if (f['lignes'] is! List || (f['lignes'] as List).isEmpty)

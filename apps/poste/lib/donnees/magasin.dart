@@ -11,6 +11,7 @@ import 'circuit_cloture_poste.dart';
 import 'persistance.dart';
 import 'plan_annuel_poste.dart' show gardePlanAnnuelPoste;
 import 'tiers_poste.dart' show gardeFactureTiersPoste, gardeFigeePoste;
+import 'versements_poste.dart' show gardeModaliteVersementPoste, gardeVersementPoste;
 
 typedef Fiche = Map<String, Object?>;
 
@@ -446,6 +447,8 @@ class Magasin {
     'adoptionsPlan': 'M13',
     'referentielsPlan': 'M13',
     'reglagesPlan': 'M13',
+    'modalitesVersement': 'M8',
+    'versementsCaisse': 'M8',
     'ambulance': 'M13',
     'ambulances': 'M13',
     'materiel': 'M13',
@@ -621,6 +624,10 @@ class Magasin {
         if (nom == 'avoirsTiers') c.garder((op, f) => gardeFigeePoste(nom, this, op, f, const ['numero', 'factureTiersId', 'montant', 'motif', 'date']));
         if (nom == 'reglementsTiers') c.garder((op, f) => gardeFigeePoste(nom, this, op, f, const ['numero', 'tiersCode', 'montant', 'date', 'referencePaiement', 'mode']));
         if (nom == 'lettragesTiers') c.garder((op, f) => gardeFigeePoste(nom, this, op, f, const ['reglementId', 'factureTiersId', 'montant', 'date']));
+        // Lot PAIE-V : un versement enregistré ne se réécrit jamais et une insertion directe est contrôlée comme le moteur (dû, référence, modalité archivée, part d'un assureur) ;
+        // une version de modalité de versement est figée (tenu AU MOTEUR, comme `S.garder`).
+        if (nom == 'versementsCaisse') c.garder((op, f) => gardeVersementPoste(this, op, f));
+        if (nom == 'modalitesVersement') c.garder((op, f) => gardeModaliteVersementPoste(this, op, f));
         if (nom == 'adoptionsPlan') {
           c.garder((op, f) => op == 'inserer' ? null : 'ADOPTION_FIGEE : une adoption ne se réécrit pas ni ne s’annule (RG-14) ; le contenu du plan évolue par version datée.');
         }
@@ -781,6 +788,8 @@ class Magasin {
     'adoptionsPlan',
     'referentielsPlan',
     'reglagesPlan',
+    // Lot PAIE-V : les types, modalités et opérateurs de mobile money de la caisse (versions datées, semés au socle).
+    'modalitesVersement',
     'ambulance',
     'ambulances',
     'materiel',

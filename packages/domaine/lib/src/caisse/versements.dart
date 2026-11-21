@@ -246,3 +246,13 @@ RefusVersement? refusRejeuVersement(Map<String, Object?> facture, Map<String, Ob
   final date = _jour(entrant['date'] ?? '');
   return refusUnVersement(facture, entrant, date, dejaVerse, fiches);
 }
+
+/// Ancien mode de la maquette (`modePaiement`) vers la modalité de versement (`{modalite, operateur?}`) ; null pour un mode qui n'est pas un versement de caisse
+/// (la prise en charge d'une assurance). Sert aux encaissements faits par montant et mode uniques, qui laissent AUSSI une fiche de versement.
+Map<String, String>? modaliteDepuisMode(Object? mode) => switch ('$mode') {
+      'especes' => {'modalite': 'especes'},
+      'tpe' => {'modalite': 'tpe'},
+      'mtn' => {'modalite': 'mobile_money', 'operateur': 'mtn'},
+      'moov' => {'modalite': 'mobile_money', 'operateur': 'moov'},
+      _ => null,
+    };

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' as d show iso;
 
 import '../../core/icones.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../donnees/parcours_caisse.dart';
+import '../../donnees/versements_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'acheteur_normalise.dart';
 import 'commun.dart';
 import 'factures.dart';
 import 'impression.dart';
+import 'saisie_versements.dart';
 
 /// `m8-paiements` — écran de travail de la caisse : il ne crée pas de facture, il ENCAISSE celles qui sont dues.
 class EcranPaiements extends StatefulWidget with EcranMaquette {
@@ -183,39 +186,13 @@ class _EcranPaiementsState extends State<EcranPaiements> {
             return ligneSansPrix(l) || l['statutPaiement'] == 'paye' ? a : a + n(l['partPatient']);
           })
         : n(f['reliquat']);
-    final form = ControleurFormulaire(const [
-      ChampDef(
-          nom: 'montant',
-          libelle: 'Montant encaissé (FCFA)',
-          type: TypeChamp.nombre,
-          requis: true),
-      ChampDef(
-          nom: 'modePaiement',
-          libelle: 'Mode de règlement',
-          type: TypeChamp.select,
-          requis: true,
-          options: [
-            OptionChamp('especes', 'Espèces'),
-            OptionChamp('tpe', 'TPE (carte bancaire)'),
-            OptionChamp('mtn', 'MTN Mobile Money'),
-            OptionChamp('moov', 'Moov Money'),
-          ]),
-      ChampDef(
-          nom: 'reference',
-          libelle: 'Référence de la transaction',
-          aide:
-              'N° de transaction Mobile Money ou ticket TPE, le cas échéant.'),
-      ChampDef(
-          nom: 'observation',
-          libelle: 'Observation',
-          type: TypeChamp.textarea,
-          lignes: 2,
-          col: ColChamp.plein),
-    ], {
-      'montant': '${reste.round()}',
-      'modePaiement':
-          '${f['modePaiement']}' == 'assurance' ? 'especes' : f['modePaiement'],
-    });
+    // LOT PAIE-V (Direction, 20/11/2026) : autant de versements que nécessaire, de modes différents, saisis dans UNE fenêtre. Le reste dû se calcule en direct ; le moteur
+    // refuse un versement qui dépasse le dû, un mobile money sans référence, une modalité archivée, la part d'un assureur (refus nommés, rien n'est écrit).
+    final saisie = ControleurSaisieVersements();
+    final observation = ControleurFormulaire(const [
+      ChampDef(nom: 'observation', libelle: 'Observation', type: TypeChamp.textarea, lignes: 2, col: ColChamp.plein),
+    ]);
+    final jour = d.iso(c0.aujourdhui);
     afficherModale<void>(ctx,
         titre: 'Encaissement',
         sousTitre: '${f['numero']} — ${f['patient']}',
@@ -229,86 +206,57 @@ class _EcranPaiementsState extends State<EcranPaiements> {
                 ('Montant total', money(f['montantTTC'])),
                 ('Part patient', money(f['partPatient'])),
                 ('Déjà réglé', money(f['montantPaye'])),
-                ('Reste à payer', money(f['reliquat'])),
+                ('Reste à payer', money(reste)),
               ]),
+              if ('${f['assureur'] ?? ''}'.isNotEmpty)
+                Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text('Seule la part du patient se règle en caisse : la part de l’assureur (${money(f['partAssurance'])}) suit le circuit des règlements d’assureurs.')),
               const SizedBox(height: 12),
-              FormulaireSigh(controleur: form),
+              SaisieVersements(fiches: modalitesVersementPoste(c0.magasin), jour: jour, reste: reste, controleur: saisie),
+              const SizedBox(height: 8),
+              FormulaireSigh(controleur: observation),
             ]),
         pied: (fermer) => [
               BoutonSigh(
                   libelle: 'Annuler',
                   variante: VarianteBouton.secondaire,
                   onPressed: fermer),
+              // Encaisser est une ÉCRITURE : la commande est absente sans le droit d'éditer (la liste ne l'offre pas) ; le moteur refuse aussi.
               BoutonSigh(
-                  libelle: 'Valider l’encaissement',
+                  key: const ValueKey('valider-versements'),
+                  libelle: 'Valider les versements',
                   icone: LucideIcons.check,
                   onPressed: () {
-                    final v = form.valider();
-                    if (v == null) {
-                      ToastsSigh.afficher(
-                          ctx, 'Le formulaire comporte des erreurs.',
-                          type: TypeToast.erreur);
+                    final saisis = saisie.lire();
+                    if (saisis == null) {
+                      ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
                       return;
                     }
-                    final montant = n(v['montant']);
-                    if (montant <= 0) {
-                      ToastsSigh.afficher(
-                          ctx, 'Le montant doit être supérieur à zéro.',
-                          type: TypeToast.erreur);
-                      return;
-                    }
-                    // Refus nommé : on n'encaisse jamais plus que le reste dû.
-                    if (montant > reste) {
-                      ToastsSigh.afficher(ctx,
-                          'Le montant dépasse le reste dû (${money(reste)}).',
-                          type: TypeToast.erreur);
-                      return;
-                    }
-                    // L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval, base MECeF et ÉCRITURE
-                    // comptable (571, 411 de la part assureur, 706). Un encaissement ne s'annule pas : remboursement ou avoir.
+                    // L'encaissement passe par le MOTEUR : lignes réglées, analyses et imagerie libérées, tâches d'aval, base MECeF et ÉCRITURE comptable par versement.
+                    // Un encaissement ne s'annule pas : remboursement ou avoir.
                     final c = ContexteEcran.of(ctx);
                     final ResultatCaisse res;
                     try {
-                      res = encaisserFacture(c.magasin, '${f['id']}',
-                          montant: montant,
-                          mode: '${v['modePaiement']}',
-                          maintenant: c.aujourdhui);
+                      res = encaisserFacture(c.magasin, '${f['id']}', versements: saisis, maintenant: c.aujourdhui);
                     } on RefusCaisse catch (e) {
-                      ToastsSigh.afficher(ctx, 'Encaissement refusé.',
-                          type: TypeToast.erreur,
-                          detail: e.motif,
-                          duree: const Duration(seconds: 9));
+                      ToastsSigh.afficher(ctx, 'Encaissement refusé.', type: TypeToast.erreur, detail: e.motif, duree: const Duration(seconds: 9));
                       return;
                     }
-                    if (!(res.montantRegle > 0)) {
-                      ToastsSigh.afficher(ctx,
-                          'Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.',
-                          type: TypeToast.erreur);
-                      return;
-                    }
-                    // La référence de la transaction et l'observation s'ÉCRIVENT sur la facture (même champ que m8-caisse) : elles ne
-                    // vivaient que sur le reçu imprimé une fois, et la réimpression affichait un tiret.
-                    final ref = '${v['reference'] ?? ''}'.trim();
-                    final obs = '${v['observation'] ?? ''}'.trim();
-                    if (ref.isNotEmpty || obs.isNotEmpty) {
-                      c.magasin.collection('factures').mettreAJour('${f['id']}', {
-                        if (ref.isNotEmpty) 'referenceTransaction': ref,
-                        if (obs.isNotEmpty) 'observationReglement': obs,
-                      });
-                    }
+                    final obs = '${observation['observation'] ?? ''}'.trim();
+                    if (obs.isNotEmpty) c.magasin.collection('factures').mettreAJour('${f['id']}', {'observationReglement': obs});
                     fermer();
                     annoncerNormalisation(ctx, res.normalisation);
                     ToastsSigh.afficher(ctx,
-                        'Encaissement de ${money(res.montantRegle)} enregistré.',
+                        'Encaissement de ${money(res.montantRegle)} enregistré (${res.versements.length} versement${res.versements.length > 1 ? 's' : ''}).',
                         type: TypeToast.succes,
                         detail: (res.restantDu > 0
                                 ? 'Reliquat de ${money(res.restantDu)}.'
                                 : 'Facture soldée.') +
                             (res.ecritures.isNotEmpty
-                                ? ' Écriture comptable posée en brouillon.'
+                                ? ' Une écriture comptable par versement, en brouillon.'
                                 : ''));
-                    imprimerRecu(ctx, _col!.parId(f['id'])!,
-                        versement: {'montant': montant, ...v});
+                    imprimerRecu(ctx, _col!.parId(f['id'])!, lot: res.versements);
                   }),
             ]);
   }

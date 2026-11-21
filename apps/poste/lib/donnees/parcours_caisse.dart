@@ -5,6 +5,7 @@ import '../core/service_parametres.dart';
 import '../modules/m2/cs_commun.dart' show StockMagasin;
 import 'magasin.dart';
 import 'normalisation_mecef.dart';
+import 'versements_poste.dart';
 
 /// LOT TARIF-FIX-2 : le réglage de clinique « encaisser le reste d'une pièce en attente de prix » à la date du geste (paramètre versionné, défaut semé « non »).
 bool encaissementPartielPoste(Magasin m, DateTime maintenant) =>
@@ -66,6 +67,7 @@ class ResultatCaisse {
     required this.ecritures,
     required this.annuler,
     this.normalisation,
+    this.versements = const [],
   });
   final Fiche facture;
   final bool deja;
@@ -79,6 +81,9 @@ class ResultatCaisse {
   /// Références des examens (analyses, imagerie) libérés.
   final List<String> demandesLiberees;
   final List<Fiche> ecritures;
+
+  /// LOT PAIE-V : les fiches de versement posées par cet encaissement (une par versement, liées à leur écriture comptable).
+  final List<Fiche> versements;
 
   /// Restitue TOUT ce que l'encaissement a écrit (facture, tâches, demandes, écritures) — une annulation visible, jamais partielle.
   final VoidCallback annuler;
@@ -101,6 +106,10 @@ ResultatCaisse encaisserFacture(
 
   /// La fenêtre « Facture normalisée » : `ifu`, `nom`, `aibTaux`. Contrôlée AVANT toute écriture (E2299).
   Map<String, Object?>? acheteur,
+
+  /// LOT PAIE-V (Direction, 20/11/2026) : des versements successifs de modes différents (type, modalite, operateur, referenceTransaction, montant) au lieu d'un
+  /// montant et d'un mode uniques. Contrôlés un par un AVANT toute écriture (refus nommés) ; une écriture équilibrée et une fiche PAR versement.
+  List<Map<String, Object?>>? versements,
 }) {
   var fac = m.collection('factures').parId(factureId);
   if (fac == null) {
@@ -123,6 +132,10 @@ ResultatCaisse encaisserFacture(
     ecritures: m.collection('ecritures').actives,
     acheteur: acheteur,
     encaissementPartiel: encaissementPartielPoste(m, maintenant),
+    versements: versements,
+    modalites: modalitesVersementPoste(m),
+    rangDepart: versementsDePiecePoste(m, factureId).length,
+    agent: m.utilisateur,
   );
   // E2 (corrigé le 31/10/2026) : un versement au-delà du dû d'une pièce sans lignes est REFUSÉ en nommant le défaut ; rien n'est écrit.
   if (r.refus != null) {
@@ -240,10 +253,40 @@ ResultatCaisse encaisserFacture(
 
   // Le comptable est informé par une écriture (brouillon), à CHAQUE versement.
   final ecr = <Fiche>[];
-  for (final e in r.ecritures) {
-    final ins = m.collection('ecritures').inserer(e, prefixe: 'ECR');
-    ecr.add(ins.fiche);
-    annulations.add(ins.annuler);
+  final versementsPoses = <Fiche>[];
+  if (versements != null) {
+    // LOT PAIE-V : UNE écriture équilibrée PAR versement, puis la fiche du versement, liée à ses écritures (aucun champ nul).
+    var rang = 0;
+    final groupe = 'LOT-${maintenant.microsecondsSinceEpoch}';
+    for (final parVersement in r.ecrituresParVersement) {
+      final ids = <String>[];
+      for (final e in parVersement) {
+        final ins = m.collection('ecritures').inserer(e, prefixe: 'ECR');
+        ecr.add(ins.fiche);
+        ids.add('${ins.fiche['id']}');
+        annulations.add(ins.annuler);
+      }
+      final fiche = {...r.versements[rang], 'groupe': groupe, 'ecritureIds': ids};
+      final ins = m.collection('versementsCaisse').inserer(fiche, prefixe: 'VRS');
+      versementsPoses.add(ins.fiche);
+      annulations.add(ins.annuler);
+      rang++;
+    }
+  } else {
+    for (final e in r.ecritures) {
+      final ins = m.collection('ecritures').inserer(e, prefixe: 'ECR');
+      ecr.add(ins.fiche);
+      annulations.add(ins.annuler);
+    }
+    // LOT PAIE-V : l'ancien chemin (montant et mode uniques) laisse AUSSI sa fiche de versement.
+    final montantRegle = r.montantRegle ?? 0;
+    if (montantRegle > 0) {
+      final vh = versementHeritagePoste(m, f, montantRegle, '${f['modePaiement']}', maintenant);
+      if (vh != null) {
+        versementsPoses.add(vh);
+        annulations.add(() => m.collection('versementsCaisse').archiver(vh['id']));
+      }
+    }
   }
   m.journaliser('Encaissement', 'M8', 'facture', '${f['numero']}', {
     'statutPaiement': fac['statutPaiement']
@@ -252,7 +295,8 @@ ResultatCaisse encaisserFacture(
     'montantPaye': f['montantPaye'],
     'verse': r.montantRegle,
     'lignes': r.lignesReglees.length,
-    'restantDu': r.restantDu
+    'restantDu': r.restantDu,
+    if (versements != null) 'versements': versementsPoses.length,
   });
 
   // TOUTE VENTE SOLDÉE EST NORMALISÉE (Direction, 07/11/2026) ; un règlement partiel attend le solde, et une pièce à la charge de l'assureur seul
@@ -276,6 +320,7 @@ ResultatCaisse encaisserFacture(
     debloquees: debloquees,
     demandesLiberees: liberees,
     ecritures: ecr,
+    versements: versementsPoses,
     annuler: () {
       for (final u in annulations.reversed) {
         u();

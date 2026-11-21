@@ -257,13 +257,13 @@
    "entree": {
     "valeur": 80000
    },
-   "sortie": "quatre-vingts mille"
+   "sortie": "quatre-vingt mille"
   },
   {
    "entree": {
     "valeur": 80001
    },
-   "sortie": "quatre-vingts mille un"
+   "sortie": "quatre-vingt mille un"
   },
   {
    "entree": {
@@ -281,7 +281,7 @@
    "entree": {
     "valeur": 200000
    },
-   "sortie": "deux cents mille"
+   "sortie": "deux cent mille"
   },
   {
    "entree": {
@@ -311,7 +311,7 @@
    "entree": {
     "valeur": 2500000
    },
-   "sortie": "deux millions cinq cents mille"
+   "sortie": "deux millions cinq cent mille"
   },
   {
    "entree": {

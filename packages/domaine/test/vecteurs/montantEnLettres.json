@@ -5,13 +5,13 @@
    "entree": {
     "valeur": 0
    },
-   "sortie": "zéro francs CFA"
+   "sortie": "zéro franc CFA"
   },
   {
    "entree": {
     "valeur": 1
    },
-   "sortie": "un francs CFA"
+   "sortie": "un franc CFA"
   },
   {
    "entree": {
@@ -35,7 +35,7 @@
    "entree": {
     "valeur": 80000
    },
-   "sortie": "quatre-vingts mille francs CFA"
+   "sortie": "quatre-vingt mille francs CFA"
   },
   {
    "entree": {
@@ -47,7 +47,7 @@
    "entree": {
     "valeur": 1000000
    },
-   "sortie": "un million francs CFA"
+   "sortie": "un million de francs CFA"
   },
   {
    "entree": {

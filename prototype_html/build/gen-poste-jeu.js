@@ -19,6 +19,8 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   /* activités fermées : les fiches de la maquette (la banque de sang), puis les fermetures PROPRES AU POSTE ci-dessous */
   /* lot PTA : le plan annuel (vide à l'export : sa démonstration est semée par son écran), ses référentiels et le réglage des signataires semés au socle */
   'planAnnuel', 'adoptionsPlan', 'referentielsPlan', 'reglagesPlan',
+  /* lot PAIE-V : les modalités de versement (types, modalités, opérateurs de mobile money) semées au socle ; les versements eux-mêmes naissent de l'encaissement */
+  'modalitesVersement',
   'modulesActifs'];
 /* FERMETURES PROPRES AU POSTE (Direction, 11/11/2026) : deux écrans restent fermés (calendrier fiscal et barème de l'AIB) ; le lot SMS-R (16/11/2026) a porté les deux écrans SMS (MODP02 et MODP04 retirés, réouverture des postes déjà installés par `reouvrirFermeturesLevees`). À l'origine, quatre écrans que la maquette porte et que le poste ne porte pas encore. Ils sont fermés par la collection
    `modulesActifs` (activité fermée par écran, pour tous les rôles, administrateur compris), jamais par un nom de rôle. La maquette NE LES FERME PAS : ces fiches

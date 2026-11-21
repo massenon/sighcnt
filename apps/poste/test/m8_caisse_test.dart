@@ -90,8 +90,9 @@ void main() {
             of: find.byKey(const Key('kit:champ:montant')),
             matching: find.byType(TextField)),
         '${(f['reliquat'] as num) + 1}');
-    await toucher(t, find.text('Valider l’encaissement'));
-    expect(find.textContaining('dépasse le reste dû'), findsOneWidget);
+    await toucher(t, find.text('Valider les versements'));
+    // Lot PAIE-V : le MOTEUR refuse, nommé (code, motif, geste) ; l'ancien contrôle de l'écran n'existe plus.
+    expect(find.textContaining('VERSEMENT_SUPERIEUR_AU_DU'), findsOneWidget);
     expect(m.collection('factures').parId(f['id'])!['montantPaye'], avant);
     await t.pump(const Duration(seconds: 15));
   });
@@ -106,7 +107,7 @@ void main() {
     expect(find.text('FACTURE NORMALISÉE'), findsNothing);
     expect(find.text('IFU de l’acheteur'), findsNothing);
     expect(find.text('Taux d’AIB'), findsNothing);
-    await toucher(t, find.text('Valider l’encaissement'));
+    await toucher(t, find.text('Valider les versements'));
     final apres = m.collection('factures').parId(f['id'])!;
     expect(apres['statutPaiement'], 'soldee');
     expect(apres['aibTaux'], 0);
@@ -129,7 +130,7 @@ void main() {
     final ecrAvant = m.collection('ecritures').actives.length;
     await ouvrir(t, m, 'm8-paiements');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Encaisser').first);
-    await toucher(t, find.text('Valider l’encaissement'));
+    await toucher(t, find.text('Valider les versements'));
     final changee = m
         .collection('factures')
         .actives
