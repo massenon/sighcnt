@@ -64,13 +64,15 @@ const FAMILLES = {
   planAnnuel: 'A', adoptionsPlan: 'A',
   /* Lot TIERS : la facture à un tiers payeur, ses avoirs, règlements et lettrages (A, identité par le contenu, jamais vers un téléphone ; une pièce émise ne se réécrit jamais au rejeu). */
   tiersPayeurs: 'A', facturesTiers: 'A', avoirsTiers: 'A', reglementsTiers: 'A', lettragesTiers: 'A',
+  /* Lot PAIE-V : le versement de caisse d'une pièce (A, identité par le contenu, jamais vers un téléphone ; la mère refuse au rejeu un versement qui ferait dépasser le dû de la part du patient). */
+  versementsCaisse: 'A',
   /* Lot CMD (AQ point 1) : la commande de stock gros voyage (A : champ à champ), identité commune par le contenu posée par le poste (`identiteSyncCommande` du domaine), référence provisoire par poste
      que la mère remplace par le rang définitif à l'adoption (`referenceCommandeDefinitive`), validation jamais écrite directement par un autre poste. Jamais vers un téléphone (RG-13). */
   commandes: 'A',
 };
 const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers', 'lecturesOcr']);
 /* Lot SYNC-CFG : les collections de gestion (identité commune par le contenu, jamais vers un téléphone). */
-const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises', 'planAnnuel', 'adoptionsPlan', 'tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers']);
+const GESTION = new Set(['budgets', 'immobilisations', 'couverturesAssurance', 'planningsPersonnalises', 'planAnnuel', 'adoptionsPlan', 'tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers', 'versementsCaisse']);
 /* Lot TIERS : les champs d'une facture à un tiers payeur qui ne se réécrivent plus une fois la pièce émise (mêmes champs que `tiersChampsFiges` du domaine, dont celle-ci est la copie de référence). */
 const TIERS_FIGES = ['tiersCode', 'tiersVersionId', 'tiersVersion', 'tiersNom', 'ifuAcheteur', 'nomAcheteur', 'tiersAdresse', 'delaiPaiementJours', 'patientId', 'patientNom', 'patientCode', 'date', 'lignes', 'base', 'ht', 'tva', 'numero', 'aibDecision', 'aibTaux', 'aibMontant', 'net', 'partPatientRestante', 'sourcesCle'];
 /* Lot CMD : la commande de stock gros (jamais vers un téléphone ; mêmes règles que `commande_synchronisee.dart`, dont celle-ci est la copie de référence). */
@@ -215,6 +217,22 @@ function traiter(op, app) {
     const figee = TIERS_FIGES.find((k) => JSON.stringify(f.data[k] === undefined ? null : f.data[k]) !== JSON.stringify(apres[k] === undefined ? null : apres[k]));
     if (figee) return refus('FACTURE_TIERS_FIGEE', `La facture à un tiers payeur ${f.data.numero || ''} est émise : le champ « ${figee} » ne se réécrit jamais (une pièce émise se corrige par un avoir).`, 'Émettre un avoir, puis refaire la facture.');
     if (f.data.numeroMecef && String(apres.numeroMecef || '') !== String(f.data.numeroMecef)) return refus('FACTURE_TIERS_NUMERO_MECEF_FIGE', 'Un numéro MECeF posé ne se réécrit jamais.', 'Laisser le numéro tel que l\'appareil l\'a rendu.');
+  }
+
+  /* Lot PAIE-V : un versement enregistré ne se réécrit jamais, et la mère REFUSE au rejeu un versement qui, ajouté à ceux déjà reçus pour la pièce, ferait dépasser le dû de la part du patient (deux
+     fileuls qui encaissent la même pièce hors ligne). Cette mère de référence ne tient que le PLAFOND ; la mère Dart refait le contrôle complet du domaine (`refusRejeuVersement` : référence, modalité
+     archivée, part d'un assureur). */
+  if (op.collection === 'versementsCaisse' && app.role !== 'mere' && (op.type === 'creer' || op.type === 'modifier')) {
+    if (op.type === 'modifier' && f) {
+      const fige = Object.keys(f.data).find((k) => !k.startsWith('_') && k !== 'statut' && Object.prototype.hasOwnProperty.call(op.champs || {}, k) && JSON.stringify(f.data[k]) !== JSON.stringify(op.champs[k]));
+      if (fige) return refus('VERSEMENT_FIGE', `Un versement enregistré ne se réécrit jamais : le champ « ${fige} » est figé.`, 'Corriger par un avoir ou un remboursement');
+    } else if (op.type === 'creer' && !f) {
+      const fac = lire('factures', String((op.champs || {}).factureId));
+      if (!fac) return refus('VERSEMENT_PIECE_INTROUVABLE', 'La pièce du versement n’est pas connue de la mère.', 'Attendre la synchronisation de la pièce');
+      const deja = db.prepare("SELECT data FROM fiches WHERE collection='versementsCaisse' AND archive=0").all().map((r) => JSON.parse(r.data)).filter((v) => v.factureId === op.champs.factureId).reduce((n, v) => n + (Number(v.montant) || 0), 0);
+      const reste = Math.max(0, Number(fac.data.partPatient != null ? fac.data.partPatient : fac.data.montantTTC) - deja);
+      if (!(Number(op.champs.montant) > 0) || Number(op.champs.montant) > reste) return refus('VERSEMENT_SUPERIEUR_AU_DU', `Versement de ${op.champs.montant} refusé : la pièce ${fac.data.numero || ''} ne doit plus que ${reste}. Un versement ne dépasse jamais le dû de la part du patient.`, 'Rendre le trop-perçu ou corriger par un avoir');
+    }
   }
 
   /* A, C et R : fusion par champ */

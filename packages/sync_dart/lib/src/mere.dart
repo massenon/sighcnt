@@ -30,6 +30,8 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         collectionsGestionJamaisMobile,
         collectionsIdentiteJamaisMobile,
         collectionsGestionSynchronisees,
+        collectionsVersementsConfiguration,
+        refusRejeuVersement,
         qualCollectionsJamaisMobile,
         cpcRefusRejeuBudget,
         cpcRefusRejeuPiece,
@@ -125,6 +127,8 @@ const familleDeBase = <String, String>{
   'planAnnuel': 'A', 'adoptionsPlan': 'A',
   // Lot TIERS : la facture à un tiers payeur, ses avoirs, règlements et lettrages (famille A, identité par le contenu, jamais vers un téléphone). Une pièce émise ne se réécrit jamais au rejeu.
   'tiersPayeurs': 'A', 'facturesTiers': 'A', 'avoirsTiers': 'A', 'reglementsTiers': 'A', 'lettragesTiers': 'A',
+  // Lot PAIE-V : le versement de caisse d'une pièce (famille A, identité par le contenu, jamais vers un téléphone). La mère refuse au rejeu un versement qui ferait dépasser le dû.
+  'versementsCaisse': 'A',
   // Lot CMD (AQ point 1) : la commande de stock gros voyage. Famille A, identité commune par le contenu (`identiteSyncCommande`), référence provisoire par poste que la mère remplace par le rang
   // définitif à l'adoption, validation seulement par décision signée appliquée à la mère. Jamais vers un téléphone (RG-13).
   'commandes': 'A',
@@ -133,7 +137,7 @@ const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
 /// Les collections de CONFIGURATION que la mère diffuse aux POSTES : les essentielles du paramétrage plus les comptes. Les noms viennent du domaine (la même
 /// liste que le vidage des jeux de test conserve), jamais recopiés ici. Le poste en choisit l'usage ; la mère ne fait que les accepter et les journaliser.
-final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs', ...paCollectionsConfiguration}
+final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs', ...paCollectionsConfiguration, ...collectionsVersementsConfiguration}
     .difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'})
     .difference(familleDeBase.keys.toSet());
 
@@ -453,6 +457,34 @@ class Mere {
     if (collection == 'facturesTiers' && app.role != 'mere' && type == 'modifier') {
       final r = refusRejeuFactureTiers(f?.data, {...?f?.data, ...champsOp});
       if (r != null) return refus(r['code']!, r['motif']!, r['geste']!);
+    }
+
+    // LOT PAIE-V : la MÈRE refait au rejeu le contrôle du versement d'un AUTRE poste (même fonction que la garde du magasin du poste, domaine) : un versement qui, ajouté à ceux déjà reçus pour la pièce,
+    // ferait dépasser le dû de la part du patient (deux fileuls qui encaissent la même pièce hors ligne), sans référence exigée, sur une modalité archivée à sa date ou sur la part d'un assureur est
+    // REFUSÉ (refus nommé, rien n'est écrit) ; un versement déjà enregistré ne se réécrit jamais (`VERSEMENT_FIGE`).
+    if (collection == 'versementsCaisse' && app.role != 'mere' && (type == 'creer' || type == 'modifier')) {
+      if (type == 'modifier') {
+        final avant = f?.data;
+        if (avant != null) {
+          for (final k in avant.keys) {
+            if (k.startsWith('_') || k == 'statut' || !champsOp.containsKey(k)) continue;
+            if ('${avant[k]}' != '${champsOp[k]}') {
+              return refus('VERSEMENT_FIGE', 'Un versement enregistré ne se réécrit jamais : le champ « $k » est figé.', 'Corriger par un avoir ou un remboursement');
+            }
+          }
+        }
+      } else if (f == null) {
+        final fac = await lire('factures', '${champsOp['factureId']}');
+        if (fac == null) return refus('VERSEMENT_PIECE_INTROUVABLE', 'La pièce du versement n’est pas connue de la mère.', 'Attendre la synchronisation de la pièce');
+        final deja = <Map<String, Object?>>[
+          for (final r in await base.select("SELECT data FROM fiches WHERE collection='versementsCaisse' AND archive=0")) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
+        ].where((v) => v['factureId'] == champsOp['factureId']).fold<double>(0, (n, v) => n + (v['montant'] is num ? (v['montant'] as num).toDouble() : 0));
+        final modalites = <Map<String, Object?>>[
+          for (final r in await base.select("SELECT data FROM fiches WHERE collection='modalitesVersement' AND archive=0")) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
+        ];
+        final r = refusRejeuVersement(fac.data, champsOp, deja, modalites);
+        if (r != null) return refus(r.code, r.motif, r.geste ?? 'Rendre le trop-perçu ou corriger par un avoir');
+      }
     }
 
     // LOT SYNC-CFG : le BUDGET d'un exercice CLOS reçu d'un autre poste est refusé au rejeu, comme une pièce (même garde que le magasin du poste, `cpcGardeBudgets`). Refus nommé.

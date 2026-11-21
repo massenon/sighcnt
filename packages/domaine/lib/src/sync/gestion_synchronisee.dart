@@ -36,11 +36,18 @@ import '../fichiers/sha256.dart';
 ///  - avoir : le numéro de la facture annulée (un seul avoir par pièce) ; règlement : le tiers, la date, le montant et la référence du paiement ; lettrage : la référence du règlement et la facture lettrée.
 /// Une pièce émise ne se réécrit jamais (`refusRejeuFactureTiers`, tenu par la mère au rejeu comme par le magasin du poste).
 const Set<String> collectionsTiersSynchronisees = {'tiersPayeurs', 'facturesTiers', 'avoirsTiers', 'reglementsTiers', 'lettragesTiers'};
-const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan', 'planningsPersonnalises', ...collectionsTiersSynchronisees};
+///
+/// LOT PAIE-V (20/11/2026) : les VERSEMENTS DE CAISSE d'une pièce (type, modalité, opérateur, référence de la transaction, montant) voyagent aussi (famille A, identité par le contenu : la pièce, l'instant,
+/// la modalité, l'opérateur, la référence et le montant ; deux postes qui rejouent le même versement n'en font qu'un), jamais vers un téléphone (RG-13 : mobile money et références de transaction d'un patient).
+/// Un versement enregistré ne se réécrit jamais ; la MÈRE refuse au rejeu un versement qui ferait dépasser le dû de la part du patient (`refusRejeuVersement`, deux fileuls qui encaissent la même pièce
+/// hors ligne). Les modalités de versement (`modalitesVersement`) sont de la CONFIGURATION de la mère : elles voyagent par le canal de configuration, jamais vers un téléphone.
+const Set<String> collectionsVersementsSynchronisees = {'versementsCaisse'};
+const Set<String> collectionsVersementsConfiguration = {'modalitesVersement'};
+const Set<String> collectionsGestionSynchronisees = {'budgets', 'immobilisations', 'couverturesAssurance', 'planAnnuel', 'adoptionsPlan', 'planningsPersonnalises', ...collectionsTiersSynchronisees, ...collectionsVersementsSynchronisees};
 
 /// Elles ne vont JAMAIS vers un téléphone (RG-13) : la comptabilité et l'assurance d'un patient ne sont lues par aucun écran du mobile ; un téléphone perdu n'emporte ni budget, ni
 /// patrimoine, ni police d'assurance.
-const Set<String> collectionsGestionJamaisMobile = {...collectionsGestionSynchronisees, 'referentielsPlan', 'reglagesPlan'};
+const Set<String> collectionsGestionJamaisMobile = {...collectionsGestionSynchronisees, 'referentielsPlan', 'reglagesPlan', ...collectionsVersementsConfiguration};
 
 /// Le code du refus d'un lot de tournée qui nomme l'une d'elles.
 const String codeGestionInterditeAuMobile = 'gestion_interdite_au_mobile';
@@ -90,6 +97,9 @@ String? identiteSyncGestion(String collection, Map<String, Object?> f, {String? 
     case 'lettragesTiers':
       if ('${f['reglementRef'] ?? ''}'.isEmpty || '${f['factureNumero'] ?? ''}'.isEmpty) return null;
       return 'LTP-${_empreinte([f['tiersCode'], f['reglementRef'], f['factureNumero'], f['montant']])}';
+    case 'versementsCaisse':
+      if ('${f['factureId'] ?? ''}'.isEmpty || '${f['horodatage'] ?? ''}'.isEmpty || '${f['montant'] ?? ''}'.isEmpty || '${f['modalite'] ?? ''}'.isEmpty) return null;
+      return 'VRS-${_empreinte([f['factureId'], f['horodatage'], f['modalite'], f['operateur'], f['referenceTransaction'], f['montant']])}';
     case 'couverturesAssurance':
       final p = (patientSync == null || patientSync.isEmpty) ? '${f['patientId'] ?? ''}' : patientSync;
       if (p.isEmpty) return null;

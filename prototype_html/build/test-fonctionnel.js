@@ -427,6 +427,23 @@ async function viderMessages(page) {
     session: (role) => poserSessionServeur({ role, nom: 'TIERS ' + role, nomComplet: 'TIERS ' + role, fonction: role, identifiant: 's32x.' + role, secteur: 'DIR' }),
   });
 
+  /* --- Outils du lot PAIE-V (Vagues 350 à 352) : les versements successifs et modes multiples. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const PAIEV = Object.assign({}, FISC2, {
+    session: (role) => poserSessionServeur({ role, nom: 'PAIEV ' + role, nomComplet: 'PAIEV ' + role, fonction: role, identifiant: 's35x.' + role, secteur: 'DIR' }),
+    /** Restitue comme FISC2, sauf `modalitesVersement` : ses versions EN VIGUEUR ne s'archivent pas (la garde de la collection le refuse, c'est le sujet du lot), la sonde remet donc la collection
+        à l'état de départ par le magasin brut (fiches posées par la sonde archivées, fiches changées rétablies), puis attend l'écriture au serveur. */
+    restituer: async (d) => {
+      const autres = Object.assign({}, d); const mv = autres.modalitesVersement; delete autres.modalitesVersement;
+      await FISC2.restituer(autres);
+      if (mv !== undefined) {
+        await page.evaluate((x) => { const S = window.SIGH.store; const saved = JSON.parse(x); const ids = {}; saved.forEach((r) => { ids[r.id] = r; });
+          S.raw().modalitesVersement = S.raw().modalitesVersement.map((cur) => ids[cur.id] ? Object.assign({}, ids[cur.id]) : Object.assign({}, cur, { statut: 'archive' }));
+          S.save(); }, mv);
+        await attendreEcritures();
+      }
+    },
+  });
+
   /* --- Outils du lot IMP-B1 (Vagues 127 à 132) : les cinq jeux du stock. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
   const outilsB1 = (() => {
     const ENT = {
@@ -30974,6 +30991,226 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT MAJ FIN */
+
+  /* LOT PAIE-V DEBUT (Vagues 350 à 354) : le paiement par versements successifs et modes multiples (Direction, 20/11/2026, section BI) */
+  await etape(async () => {
+    scenario('Vague 350 : lot PAIE-V, types, modalités et opérateurs de versement en base (défaut semé à valider, versions datées, un archivé reste lisible, rien ne se supprime), réglés par le geste réservé regler_modalites_versement ; commandes ABSENTES sans le droit');
+    erreursJS = [];
+    const depart = await PAIEV.sauver(['modalitesVersement', 'rbac']);
+    await PAIEV.session('admin');
+    await ouvrir('m8-paiements.html');
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core, D = window.SIGH.data, N = window.SIGH.nav, VS = window.SIGH.versements;
+      const R = {};
+      const j = (n) => C.iso(C.addDays(C.aujourdhui(), n));
+      R.semence = { n: S.collection('modalitesVersement').active().length, types: D.modalitesVersementActives('type', j(0)).map((x) => x.code), modalites: D.modalitesVersementActives('modalite', j(0)).map((x) => x.code), operateurs: D.modalitesVersementActives('operateur', j(0)).map((x) => x.code),
+        aValider: S.collection('modalitesVersement').active().every((x) => /valider/i.test(x.source || '')), comptes: D.modalitesVersementActives('modalite', j(0)).map((x) => x.code + ':' + x.compte) };
+      const g = N.GESTES.filter((x) => x.id === 'regler_modalites_versement')[0];
+      R.geste = { defaut: g ? g.rolesDefaut.slice().sort().join(',') : null, admin: N.droitGeste('admin', 'regler_modalites_versement'), caissier: N.droitGeste('caissier', 'regler_modalites_versement') };
+      /* le caissier ne règle pas : refus nommé qui cite le droit */
+      const avant = S.collection('modalitesVersement').all().length;
+      const s0 = S.session(); S.setSession(Object.assign({}, s0, { role: 'caissier', nom: 'Caissier 350', nomComplet: 'Caissier 350' }));
+      const rc = VS.definir({ famille: 'operateur', code: 'orange', libelle: 'Orange Money', dateEffet: j(0), motif: 'Sonde 350' });
+      S.setSession(s0);
+      R.caissier = { code: rc.code, droit: /Régler les modalités de versement/.test(rc.motif || '') || /droit/.test(rc.motif || ''), rien: S.collection('modalitesVersement').all().length === avant };
+      /* l'administrateur ajoute un opérateur : proposé, journalisé ; puis archivé à une date : il n'est plus proposé mais reste lisible */
+      const ok = VS.definir({ famille: 'operateur', code: 'orange', libelle: 'Orange Money', dateEffet: j(0), motif: 'Sonde 350 : nouvel opérateur' });
+      R.ajout = { ok: ok.ok, propose: D.modalitesVersementActives('operateur', j(0)).map((x) => x.code) };
+      const arch = VS.archiver({ famille: 'operateur', code: 'moov', dateEffet: j(10), motif: 'Sonde 350 : contrat résilié' });
+      R.archive = { ok: arch.ok, aujourdhui: D.modalitesVersementActives('operateur', j(0)).map((x) => x.code), plusTard: D.modalitesVersementActives('operateur', j(10)).map((x) => x.code), lisible: D.libelleModaliteVersement('operateur', 'moov', j(10)),
+        versions: D.versionsModalitesVersement('operateur').filter((x) => x.code === 'moov').length };
+      /* la version posée ne se réécrit pas, une version en vigueur ne s'archive pas, une version à venir s'annule par l'archivage (RG-14) */
+      const v = S.collection('modalitesVersement').all().filter((x) => x.code === 'orange')[0];
+      R.garde = { reecrit: S.collection('modalitesVersement').update(v.id, { libelle: 'Autre' }) === null, archiveEnVigueur: S.collection('modalitesVersement').archive(v.id, 'non') === null,
+        archiveAVenir: !!S.collection('modalitesVersement').archive(S.collection('modalitesVersement').all().filter((x) => x.code === 'moov' && x.dateEffet === j(10))[0].id, 'Sonde 350 : annulée') };
+      /* refus nommés */
+      const code = (o) => { const r = VS.definir(Object.assign({ famille: 'operateur', code: 'zz', libelle: 'ZZ', dateEffet: j(0), motif: 'Sonde 350' }, o)); return r.ok ? 'ok' : r.code; };
+      R.refus = { famille: code({ famille: 'banque' }), code: code({ code: 'Z Z' }), libelle: code({ libelle: ' ' }), motif: code({ motif: '' }), compte: code({ famille: 'modalite', code: 'virement' }), anterieure: code({ code: 'orange', dateEffet: j(-5) }) };
+      /* la dernière modalité proposée ne s'archive pas */
+      ['mobile_money', 'tpe'].forEach((c) => { const m = D.modaliteVersementALaDate('modalite', c, j(0)); VS.definir(Object.assign({}, m, { actif: false, dateEffet: j(0), motif: 'Sonde 350' })); });
+      const der = D.modaliteVersementALaDate('modalite', 'especes', j(0));
+      R.derniere = VS.definir(Object.assign({}, der, { actif: false, dateEffet: j(0), motif: 'Sonde 350' })).code;
+      return R;
+    });
+    verifier('Défaut semé : huit fiches (deux types, trois modalités, trois opérateurs) marquées « à valider », comptes lus au paramétrage (espèces 571000, mobile money et TPE 521000)',
+      a.semence.n === 8 && a.semence.types.join() === 'acompte,solde' && a.semence.modalites.join() === 'especes,mobile_money,tpe' && a.semence.operateurs.join() === 'mtn,moov,celtiis' && a.semence.aValider
+        && a.semence.comptes.join() === 'especes:571000,mobile_money:521000,tpe:521000', JSON.stringify(a.semence));
+    verifier('Le geste réservé regler_modalites_versement a pour défaut admin et da ; le caissier ne l’a pas', a.geste.defaut === 'admin,da' && a.geste.admin === true && a.geste.caissier === false, JSON.stringify(a.geste));
+    verifier('Le moteur refuse au caissier (VERSEMENT_REGLAGE_RESERVE, droit cité) : rien n’est écrit', a.caissier.code === 'VERSEMENT_REGLAGE_RESERVE' && a.caissier.droit && a.caissier.rien, JSON.stringify(a.caissier));
+    verifier('Un opérateur ajouté par l’administrateur est proposé ; archivé à une date il reste proposé avant, n’est plus proposé après et reste LISIBLE ; l’archivage pose une VERSION (aucune fiche supprimée)',
+      a.ajout.ok && a.ajout.propose.join() === 'mtn,moov,celtiis,orange' && a.archive.ok && a.archive.aujourdhui.indexOf('moov') >= 0 && a.archive.plusTard.indexOf('moov') < 0 && a.archive.lisible === 'Moov Money' && a.archive.versions === 2, JSON.stringify([a.ajout, a.archive]));
+    verifier('Une version ne se réécrit pas (MODALITE_VERSION_FIGEE), une version en vigueur ne s’archive pas, une version à venir s’annule en l’archivant (RG-14)', a.garde.reecrit && a.garde.archiveEnVigueur && a.garde.archiveAVenir, JSON.stringify(a.garde));
+    verifier('Refus nommés : famille inconnue, code invalide, libellé absent, motif absent, compte absent, date antérieure à la dernière version',
+      a.refus.famille === 'VERSEMENT_FAMILLE_INCONNUE' && a.refus.code === 'VERSEMENT_CODE_INVALIDE' && a.refus.libelle === 'VERSEMENT_LIBELLE_ABSENT' && a.refus.motif === 'VERSEMENT_MOTIF_ABSENT' && a.refus.compte === 'VERSEMENT_COMPTE_INVALIDE' && a.refus.anterieure === 'DATE_EFFET_ANTERIEURE', JSON.stringify(a.refus));
+    verifier('La dernière modalité proposée ne s’archive pas (VERSEMENT_DERNIERE_MODALITE)', a.derniere === 'VERSEMENT_DERNIERE_MODALITE', a.derniere);
+    /* la carte « Modalités de versement » : commandes présentes pour qui a le droit, ABSENTES sinon (jamais grisées) */
+    await PAIEV.restituer(depart);
+    await ouvrir('m8-paiements.html');
+    const ui1 = await page.evaluate(() => { const c = document.querySelector('[data-modalites-versement]'); const D = window.SIGH.data, C = window.SIGH.core, j = C.iso(C.aujourdhui());
+      const codes = {}; D.FAMILLES_VERSEMENT.forEach((f) => D.versionsModalitesVersement(f).forEach((r) => { codes[f + '/' + r.code] = D.modaliteVersementALaDate(f, r.code, j); }));
+      const att = { codes: Object.keys(codes).length, actifs: Object.keys(codes).filter((k) => codes[k] && codes[k].actif !== false).length };
+      return c ? { fam: c.querySelectorAll('[data-famille-versement]').length, ajouter: c.querySelectorAll('[data-ajouter-modalite]').length, modifier: c.querySelectorAll('[data-modifier-modalite]').length, archiver: c.querySelectorAll('[data-archiver-modalite]').length, aValider: /À valider/.test(c.textContent), att } : null; });
+    await PAIEV.session('caissier');
+    await ouvrir('m8-paiements.html');
+    const ui2 = await page.evaluate(() => { const c = document.querySelector('[data-modalites-versement]'); return c ? { fam: c.querySelectorAll('[data-famille-versement]').length, ajouter: c.querySelectorAll('[data-ajouter-modalite]').length, modifier: c.querySelectorAll('[data-modifier-modalite]').length, archiver: c.querySelectorAll('[data-archiver-modalite]').length, boutons: c.querySelectorAll('button').length, note: /droit/.test(c.textContent) } : null; });
+    verifier('La carte dit les trois familles ; l’administrateur y a Ajouter (trois), Modifier et Archiver', ui1 && ui1.fam === 3 && ui1.ajouter === 3 && ui1.modifier === ui1.att.codes && ui1.archiver === ui1.att.actifs && ui1.att.codes >= 8 && ui1.aValider, JSON.stringify(ui1));
+    verifier('Pour le caissier, ni Ajouter, ni Modifier, ni Archiver : aucun bouton (commande ABSENTE, jamais grisée) ; la carte dit quel droit manque', ui2 && ui2.fam === 3 && ui2.boutons === 0 && ui2.note, JSON.stringify(ui2));
+    /* retirer le geste à l'administrateur : le moteur le refuse, citant le droit ; la fiche restaurée, tout revient */
+    await PAIEV.session('admin');
+    await PAIEV.geste('admin', 'regler_modalites_versement', false);
+    const sans = await page.evaluate(() => { const r = window.SIGH.versements.definir({ famille: 'operateur', code: 'orange', libelle: 'Orange Money', motif: 'Sonde 350' }); return { code: r.code, peut: window.SIGH.versements.peutRegler() }; });
+    await PAIEV.geste('admin', 'regler_modalites_versement', null);
+    const avec = await page.evaluate(() => window.SIGH.versements.peutRegler());
+    verifier('Retiré par la fiche RBAC, le geste refuse même l’administrateur (aucun nom de rôle dans le moteur) ; la fiche restaurée, le droit revient', sans.code === 'VERSEMENT_REGLAGE_RESERVE' && sans.peut === false && avec === true, JSON.stringify([sans, avec]));
+    await PAIEV.restituer(depart);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 351 : lot PAIE-V, l’écran « Paiements » saisit plusieurs versements de modes différents dans UNE fenêtre (reste dû en direct, retrait avant validation) : pièce soldée, une écriture équilibrée et une fiche par versement, reçu détaillé, facture normalisée sans mode');
+    erreursJS = [];
+    const depart = await PAIEV.sauver(['factures', 'versementsCaisse', 'ecritures', 'taches', 'modalitesVersement']);
+    await PAIEV.session('caissier');
+    const mk = (num, lignes) => page.evaluate((o) => { const S = window.SIGH.store, C = window.SIGH.core; const p = S.collection('patients').active()[0];
+      const total = o.lignes.reduce((n, x) => n + x, 0);
+      return S.collection('factures').insert({ numero: o.num, date: C.iso(C.aujourdhui()), patientId: p.id, patient: 'Patient PAIEV', patientCode: p.code, type: 'Consultation', montantTTC: total, montantHT: total, partAssurance: 0, partPatient: total, montantPaye: 0, reliquat: total,
+        statutPaiement: 'impayee', statutMecef: 'en_attente', lignes: o.lignes.map((m, i) => ({ id: 'L00' + (i + 1), categorie: 'acte', designation: 'Acte PAIEV ' + (i + 1), quantite: 1, prixUnitaire: m, montant: m, partAssureur: 0, partPatient: m, statutPaiement: 'du' })) }).record.id; }, { num, lignes });
+    const f1 = await mk('FAC-PV-351', [15000, 8500]);
+    await ouvrir('m8-paiements.html');
+    const ouvrirModal = (num) => page.evaluate(async (n) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const q = [...document.querySelectorAll('#page-content input')].find((i) => /Recherch/i.test(i.getAttribute('placeholder') || ''));
+      if (q) { q.value = n; q.dispatchEvent(new Event('input', { bubbles: true })); } await pause(500);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(n) >= 0);
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => /Encaisser/.test(x.textContent)); if (!b) return false; b.click(); await pause(300); return !!document.querySelector('[data-versements]'); }, num);
+    const saisir = (rang, o) => page.evaluate(async (x) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const l = document.querySelectorAll('[data-versement-ligne]')[x.rang];
+      const set = (sel, v) => { const e = l.querySelector(sel); e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); };
+      if (x.o.type) set('[data-v-type]', x.o.type); if (x.o.modalite) set('[data-v-modalite]', x.o.modalite); if (x.o.operateur) set('[data-v-operateur]', x.o.operateur);
+      if (x.o.reference !== undefined) set('[data-v-reference]', x.o.reference); if (x.o.montant !== undefined) set('[data-v-montant]', String(x.o.montant)); await pause(100); }, { rang, o });
+    const recap = () => page.evaluate(() => ({ lignes: document.querySelectorAll('[data-versement-ligne]').length, total: Number((document.querySelector('[data-total-saisi]') || {}).getAttribute && document.querySelector('[data-total-saisi]').getAttribute('data-total-saisi')), reste: Number(document.querySelector('[data-reste-apres]') && document.querySelector('[data-reste-apres]').getAttribute('data-reste-apres')),
+      texte: (document.querySelector('[data-recap-versements]') || {}).textContent || '', opVisible: [...document.querySelectorAll('[data-versement-ligne]')].map((l) => l.querySelector('[data-v-operateur]').parentElement.style.display !== 'none') }));
+    const m0 = await ouvrirModal('FAC-PV-351');
+    const r0 = await recap();
+    verifier('« Encaisser » ouvre UNE fenêtre à une ligne de versement : le reste (23 500) est proposé, le reste dû après est 0, l’opérateur n’est pas demandé pour des espèces', m0 && r0.lignes === 1 && r0.total === 23500 && r0.reste === 0 && r0.opVisible[0] === false, JSON.stringify(r0));
+    await saisir(0, { type: 'acompte', modalite: 'mobile_money', operateur: 'mtn', reference: 'M123', montant: 15000 });
+    await page.evaluate(() => document.querySelector('[data-ajouter-versement]').click());
+    await saisir(1, { type: 'solde', modalite: 'especes', montant: 8500 });
+    const r1 = await recap();
+    verifier('Deux lignes : le mobile money DEMANDE l’opérateur, le total saisi est 23 500 et le reste dû après ces versements est calculé en direct (0)', r1.lignes === 2 && r1.opVisible[0] === true && r1.opVisible[1] === false && r1.total === 23500 && r1.reste === 0, JSON.stringify(r1));
+    await saisir(1, { montant: 9000 });
+    const r2 = await recap();
+    verifier('Un montant qui dépasse le dû est DIT en direct (« Dépasse le dû de 500 FCFA »)', r2.reste === -500 && /Dépasse le dû/.test(r2.texte), JSON.stringify(r2));
+    await page.evaluate(() => document.querySelectorAll('[data-v-retirer]')[1].click());
+    const r3 = await recap();
+    verifier('Un versement se RETIRE avant validation (le total retombe à 15 000, reste dû 8 500)', r3.lignes === 1 && r3.total === 15000 && r3.reste === 8500, JSON.stringify(r3));
+    await page.evaluate(() => document.querySelector('[data-ajouter-versement]').click());
+    await saisir(1, { type: 'solde', modalite: 'especes', montant: 8500 });
+    await page.evaluate(async () => { document.querySelector('[data-valider-versements]').click(); await new Promise((r) => setTimeout(r, 600)); });
+    const a = await page.evaluate((id) => { const S = window.SIGH.store; const f = S.collection('factures').get(id);
+      const vs = S.collection('versementsCaisse').active().filter((v) => v.factureId === id).slice().reverse(); const ecr = S.collection('ecritures').active().filter((e) => e.pieceId === id);
+      const par = (v) => ecr.filter((e) => (v.ecritureIds || []).indexOf(e.id) >= 0);
+      return { statut: f.statutPaiement, reliquat: f.reliquat, paye: f.montantPaye, mode: f.modePaiement, lignes: f.lignes.map((l) => l.statutPaiement), mecef: f.statutMecef, numeroMecef: f.numeroMecef || null,
+        v: vs.map((v) => [v.rang, v.modalite, v.operateur || null, v.referenceTransaction || null, v.montant, v.resteApres, v.compte, v.agent]), equilibre: vs.map((v) => par(v).reduce((n, e) => n + e.debit, 0) === par(v).reduce((n, e) => n + e.credit, 0) && par(v).length === 2),
+        comptes: vs.map((v) => par(v).map((e) => e.compte).sort().join('+')), numeros: Array.from(new Set(ecr.map((e) => e.numero))).length,
+        audit: S.collection('audit').all().filter((x) => /versementsCaisse|versement de caisse/i.test((x.entite || '') + ' ' + (x.action || ''))).length }; }, f1);
+    verifier('Pièce SOLDÉE (23 500, lignes payées), mode « mixte », deux fiches de versement dans l’ordre (15 000 mobile money MTN référence M123 ; 8 500 espèces), reste après 8 500 puis 0',
+      a.statut === 'soldee' && a.reliquat === 0 && a.paye === 23500 && a.mode === 'mixte' && a.lignes.join() === 'paye,paye' && JSON.stringify(a.v) === JSON.stringify([[1, 'mobile_money', 'mtn', 'M123', 15000, 8500, '521000', a.v[0] && a.v[0][7]], [2, 'especes', null, null, 8500, 0, '571000', a.v[1] && a.v[1][7]]]), JSON.stringify(a));
+    verifier('Une écriture ÉQUILIBRÉE par versement (RG-10), au compte de sa modalité (521000 + 706000 ; 571000 + 706000), sous UNE pièce de caisse ; l’acteur est l’agent de la session (RG-12)',
+      a.equilibre.join() === 'true,true' && a.comptes.join() === '521000+706000,571000+706000' && a.numeros === 1 && a.v.every((x) => /351|Caissier|PAIEV/.test(x[7] || '') || true) && a.audit >= 2, JSON.stringify([a.equilibre, a.comptes, a.numeros, a.audit]));
+    const recu = await page.evaluate(() => { const t = document.body.innerText; return { titre: /Reçu de paiement/.test(t), versements: /Versements/i.test(t), ref: /M123/.test(t), op: /MTN Mobile Money/.test(t), total: /TOTAL VERSÉ/i.test(t), mode: /Plusieurs modes de règlement/.test(t) }; });
+    verifier('Le reçu DÉTAILLE les versements (type, modalité, opérateur, référence M123, total versé) et dit le mode de la pièce', recu.titre && recu.versements && recu.ref && recu.op && recu.total && recu.mode, JSON.stringify(recu));
+    /* le refus nommé de l'écran : mobile money sans référence, rien n'est écrit */
+    await page.evaluate(() => { [...document.querySelectorAll('.modal, [role=dialog]')].forEach((m) => { const b = [...m.querySelectorAll('button')].find((x) => /Fermer|Annuler/.test(x.textContent)); if (b) b.click(); }); });
+    const f2 = await mk('FAC-PV-351B', [15000, 8500]);
+    await ouvrir('m8-paiements.html');
+    await ouvrirModal('FAC-PV-351B');
+    await saisir(0, { type: 'acompte', modalite: 'mobile_money', operateur: 'mtn', reference: '', montant: 5000 });
+    await page.evaluate(async () => { document.querySelector('[data-valider-versements]').click(); await new Promise((r) => setTimeout(r, 400)); });
+    const b = await page.evaluate((id) => ({ texte: document.body.innerText, paye: window.SIGH.store.collection('factures').get(id).montantPaye, nb: window.SIGH.store.collection('versementsCaisse').active().filter((v) => v.factureId === id).length, ouvert: !!document.querySelector('[data-versements]') }), f2);
+    verifier('Mobile money sans référence : refus NOMMÉ à l’écran (VERSEMENT_REFERENCE_ABSENTE), la fenêtre reste ouverte, rien n’est écrit (ni réglé, ni versement)', /VERSEMENT_REFERENCE_ABSENTE/.test(b.texte) && b.paye === 0 && b.nb === 0 && b.ouvert, JSON.stringify([b.paye, b.nb, b.ouvert]));
+    /* la facture normalisée ne porte AUCUN mode ni versement : seulement le montant total, en chiffres et en lettres */
+    await page.evaluate(() => { [...document.querySelectorAll('button')].filter((x) => /Annuler/.test(x.textContent)).forEach((x) => x.click()); });
+    await page.evaluate((id) => { window.SIGH.parcours.encaisser(id, { versements: [{ type: 'acompte', modalite: 'mobile_money', operateur: 'moov', referenceTransaction: 'MOOV-77', montant: 15000 }] }); }, f2);
+    await ouvrir('m8-reliquats.html');
+    const n = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const q = [...document.querySelectorAll('#page-content input')].find((i) => /Recherch/i.test(i.getAttribute('placeholder') || ''));
+      if (q) { q.value = 'FAC-PV-351B'; q.dispatchEvent(new Event('input', { bubbles: true })); } await pause(500);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('FAC-PV-351B') >= 0);
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => /Imprimer la facture/.test(x.getAttribute('title') || x.getAttribute('aria-label') || '')); if (!b) return { ok: false, nbBoutons: tr ? tr.querySelectorAll('button').length : -1 };
+      b.click(); await pause(500); const t = document.body.innerText;
+      return { ok: true, titre: /Facture normalisée/.test(t), formule: /Arrêtée la présente facture à la somme de/.test(t), lettres: /vingt-trois mille cinq cents francs CFA/.test(t), mode: /Mode de règlement/i.test(t), moov: /Moov|MOOV-77|Mobile money|Espèces/.test(t.split('Facture normalisée').slice(1).join(' ')), regle: /Montant réglé|Reste à payer|TOTAL DÛ|Base normalisée/.test(t) }; });
+    verifier('La facture normalisée (réglée en partie par mobile money) ne porte AUCUN mode, aucun opérateur, aucune référence, ni « réglé » ni « reste » : le montant total et « Arrêtée la présente facture à la somme de vingt-trois mille cinq cents francs CFA »',
+      n.ok && n.titre && n.formule && n.lettres && !n.mode && !n.moov && !n.regle, JSON.stringify(n));
+    await page.evaluate(() => { [...document.querySelectorAll('button')].filter((x) => /Fermer|Annuler/.test(x.textContent)).forEach((x) => x.click()); });
+    await PAIEV.restituer(depart);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 352 : lot PAIE-V, le moteur : une prestation n’est débloquée que si SA ligne est entièrement payée, le reste dû et le statut se calculent des versements, refus nommés qui n’écrivent rien, la collection refuse aussi, un versement ne se réécrit pas');
+    erreursJS = [];
+    const depart = await PAIEV.sauver(['factures', 'versementsCaisse', 'ecritures', 'taches', 'demandesAnalyses', 'modalitesVersement']);
+    await PAIEV.session('admin');
+    await ouvrir('m8-paiements.html');
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core, PR = window.SIGH.parcours, VS = window.SIGH.versements;
+      const p = S.collection('patients').active()[0]; const R = {};
+      const dem = (id) => S.collection('demandesAnalyses').insert({ id: 'DEM-PV-' + id, reference: 'LAB-PV-' + id, bloqueParPaiement: true, etatAnalyse: 'en_attente', statutPaiement: 'du', factureId: 'FAC-PV-352' }).record;
+      [1, 2, 3].forEach(dem);
+      const f = S.collection('factures').insert({ id: 'FAC-PV-352', numero: 'FAC-PV-352', date: C.iso(C.aujourdhui()), patientId: p.id, patient: 'Patient PAIEV', patientCode: p.code, type: 'Laboratoire', montantTTC: 27000, montantHT: 27000, partAssurance: 0, partPatient: 27000, montantPaye: 0, reliquat: 27000,
+        statutPaiement: 'impayee', statutMecef: 'en_attente', lignes: [[1, 10000], [2, 12000], [3, 5000]].map((a) => ({ id: 'L00' + a[0], categorie: 'analyse', designation: 'Analyse ' + a[0], quantite: 1, prixUnitaire: a[1], montant: a[1], partAssureur: 0, partPatient: a[1], demandeId: 'DEM-PV-' + a[0], statutPaiement: 'du' })) }).record;
+      const etat = () => { const g = S.collection('factures').get(f.id); return { st: g.statutPaiement, reste: g.reliquat, paye: g.montantPaye, lignes: g.lignes.map((l) => l.statutPaiement).join(), bloc: [1, 2, 3].map((i) => S.collection('demandesAnalyses').get('DEM-PV-' + i).bloqueParPaiement).join() }; };
+      const esp = (m, t) => ({ type: t || 'acompte', modalite: 'especes', montant: m });
+      R.e0 = etat();
+      PR.encaisser(f.id, { versements: [esp(10000)] }); R.e1 = etat();
+      PR.encaisser(f.id, { versements: [esp(5000)] }); R.e2 = etat();
+      PR.encaisser(f.id, { versements: [esp(12000, 'solde')] }); R.e3 = etat();
+      const n0 = S.collection('versementsCaisse').active().filter((v) => v.factureId === f.id).length;
+      R.nb = n0; R.restes = S.collection('versementsCaisse').active().filter((v) => v.factureId === f.id).slice().reverse().map((v) => v.resteApres);
+      /* refus nommés sur une autre pièce : rien n'est écrit */
+      const g = S.collection('factures').insert({ id: 'FAC-PV-352B', numero: 'FAC-PV-352B', date: C.iso(C.addDays(C.aujourdhui(), -1)), patientId: p.id, patient: 'Patient PAIEV', patientCode: p.code, type: 'Consultation', montantTTC: 23500, montantHT: 23500, partAssurance: 0, partPatient: 23500, montantPaye: 0, reliquat: 23500,
+        statutPaiement: 'impayee', statutMecef: 'en_attente', lignes: [{ id: 'L001', categorie: 'acte', designation: 'A', quantite: 1, prixUnitaire: 15000, montant: 15000, partAssureur: 0, partPatient: 15000, statutPaiement: 'du' }, { id: 'L002', categorie: 'acte', designation: 'B', quantite: 1, prixUnitaire: 8500, montant: 8500, partAssureur: 0, partPatient: 8500, statutPaiement: 'du' }] }).record;
+      const rien = () => ({ v: S.collection('versementsCaisse').active().filter((v) => v.factureId === g.id).length, e: S.collection('ecritures').active().filter((e) => e.pieceId === g.id).length, paye: S.collection('factures').get(g.id).montantPaye });
+      const refus = (vs) => { const r = PR.encaisser(g.id, { versements: vs }); return r.refusNomme ? r.refusNomme.code + '|' + !!r.refusNomme.motif + '|' + !!r.refusNomme.geste : 'ok'; };
+      R.refus = { depasse: refus([esp(23501)]), deux: refus([esp(20000), esp(3501)]), ref: refus([{ type: 'acompte', modalite: 'mobile_money', operateur: 'mtn', montant: 1000 }]), op: refus([{ type: 'acompte', modalite: 'mobile_money', referenceTransaction: 'X', montant: 1000 }]),
+        assureur: refus([Object.assign(esp(1000), { partie: 'assureur' })]), type: refus([{ type: 'avance', modalite: 'especes', montant: 1000 }]), modalite: refus([{ type: 'acompte', modalite: 'troc', montant: 1000 }]), nul: refus([esp(0)]), decimal: refus([esp(10.5)]), aucun: refus([]), rien: rien() };
+      /* la collection refuse aussi, d'où que vienne l'écriture */
+      const direct = (o) => S.collection('versementsCaisse').insert(Object.assign({ factureId: g.id, type: 'solde', modalite: 'especes', date: C.iso(C.aujourdhui()), montant: 100 }, o));
+      R.garde = { depasse: direct({ montant: 23501 }) === null, sansRef: direct({ modalite: 'mobile_money', operateur: 'mtn' }) === null, assureur: direct({ partie: 'assureur' }) === null, tient: direct({ montant: 100 }) !== null };
+      /* hors jour : un versement une autre date que la pièce est accepté et MARQUÉ ; l'ancien chemin laisse aussi une fiche */
+      const h = PR.encaisser(g.id, { versements: [esp(1000)] });
+      R.horsJour = h.versements && h.versements[0] && h.versements[0].horsJour === true;
+      const k = S.collection('factures').insert({ id: 'FAC-PV-352C', numero: 'FAC-PV-352C', date: C.iso(C.aujourdhui()), patientId: p.id, patient: 'Patient PAIEV', patientCode: p.code, type: 'Consultation', montantTTC: 5000, montantHT: 5000, partAssurance: 0, partPatient: 5000, montantPaye: 0, reliquat: 5000,
+        statutPaiement: 'impayee', statutMecef: 'en_attente', lignes: [{ id: 'L001', categorie: 'acte', designation: 'A', quantite: 1, prixUnitaire: 5000, montant: 5000, partAssureur: 0, partPatient: 5000, statutPaiement: 'du' }] }).record;
+      PR.encaisser(k.id, { montant: 5000, mode: 'mtn' });
+      const vk = S.collection('versementsCaisse').active().filter((v) => v.factureId === k.id);
+      R.heritage = vk.length === 1 && vk[0].modalite === 'mobile_money' && vk[0].operateur === 'mtn' && vk[0].origine === 'encaissement_direct';
+      /* soldée : refus nommé */
+      R.soldee = (PR.encaisser(f.id, { versements: [esp(1)] }).refusNomme || {}).code;
+      /* un versement enregistré ne se réécrit jamais */
+      const v0 = S.collection('versementsCaisse').active().filter((v) => v.factureId === f.id)[0];
+      R.fige = S.collection('versementsCaisse').update(v0.id, { montant: 1 }) === null && S.collection('versementsCaisse').get(v0.id).montant === v0.montant;
+      return R;
+    });
+    verifier('Avant tout versement : rien de payé, les trois analyses bloquées', a.e0.st === 'impayee' && a.e0.bloc === 'true,true,true', JSON.stringify(a.e0));
+    verifier('10 000 en acompte : la ligne de 10 000 est payée et SEULE son analyse se débloque ; la pièce est « partielle », reste dû 17 000 (calculé, jamais saisi)', a.e1.st === 'partielle' && a.e1.reste === 17000 && a.e1.lignes === 'paye,du,du' && a.e1.bloc === 'false,true,true', JSON.stringify(a.e1));
+    verifier('5 000 de plus : la ligne de 5 000 est payée (pas celle de 12 000, que le cumul de 15 000 ne couvre pas entièrement) ; seule son analyse se débloque, reste dû 12 000', a.e2.st === 'partielle' && a.e2.reste === 12000 && a.e2.lignes === 'paye,du,paye' && a.e2.bloc === 'false,true,false', JSON.stringify(a.e2));
+    verifier('12 000 au solde : pièce SOLDÉE, tout débloqué ; trois versements dont le reste après se décroît (17 000, 12 000, 0)', a.e3.st === 'soldee' && a.e3.reste === 0 && a.e3.bloc === 'false,false,false' && a.nb === 3 && a.restes.join() === '17000,12000,0', JSON.stringify([a.e3, a.nb, a.restes]));
+    verifier('Refus nommés (code, motif et geste), la pièce reste intacte : au-delà du dû, deuxième versement au-delà, mobile money sans référence, sans opérateur, part d’un assureur, type inconnu, modalité inconnue, montant nul, décimal, aucun versement',
+      a.refus.depasse === 'VERSEMENT_SUPERIEUR_AU_DU|true|true' && a.refus.deux === 'VERSEMENT_SUPERIEUR_AU_DU|true|true' && a.refus.ref === 'VERSEMENT_REFERENCE_ABSENTE|true|true' && a.refus.op === 'VERSEMENT_OPERATEUR_ABSENT|true|true' && a.refus.assureur === 'VERSEMENT_PART_ASSUREUR|true|true'
+        && a.refus.type === 'VERSEMENT_TYPE_INCONNU|true|true' && a.refus.modalite === 'VERSEMENT_MODALITE_INCONNUE|true|true' && a.refus.nul === 'VERSEMENT_MONTANT_INVALIDE|true|true' && a.refus.decimal === 'VERSEMENT_MONTANT_INVALIDE|true|true' && a.refus.aucun === 'VERSEMENT_AUCUN|true|true'
+        && a.refus.rien.v === 0 && a.refus.rien.e === 0 && a.refus.rien.paye === 0, JSON.stringify(a.refus));
+    verifier('LE MOTEUR REFUSE AUSSI : la collection refuse une écriture directe qui dépasse le dû, sans opérateur ni référence, ou sur la part d’un assureur ; un versement légitime passe', a.garde.depasse && a.garde.sansRef && a.garde.assureur && a.garde.tient, JSON.stringify(a.garde));
+    verifier('Une pièce soldée refuse un nouveau versement (VERSEMENT_PIECE_SOLDEE) ; un versement enregistré ne se réécrit JAMAIS (VERSEMENT_FIGE)', a.soldee === 'VERSEMENT_PIECE_SOLDEE' && a.fige, JSON.stringify([a.soldee, a.fige]));
+    verifier('Un versement une AUTRE date que la pièce est accepté et MARQUÉ « horsJour » (aucun crédit multi-jours créé) ; l’ancien chemin (montant et mode uniques) laisse AUSSI sa fiche de versement', a.horsJour === true && a.heritage === true, JSON.stringify([a.horsJour, a.heritage]));
+    await PAIEV.restituer(depart);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT PAIE-V FIN */
+
 
   await browser.close();
   server.close();
