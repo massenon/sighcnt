@@ -25,6 +25,7 @@
       class: (opts.variant ? 'btn-' + opts.variant : 'btn-secondary') + (opts.size ? ' btn-' + opts.size : ''),
       onclick: opts.onclick, title: opts.title,
     });
+    if (opts.attrs) Object.keys(opts.attrs).forEach(function (k) { b.setAttribute(k, opts.attrs[k]); });   /* attributs de sonde (lot PAIE-V) */
     if (opts.icon) b.appendChild(C.icon(opts.icon, 'h-4 w-4'));
     if (label) b.appendChild(document.createTextNode(label));
     return b;

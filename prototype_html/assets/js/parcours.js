@@ -2254,7 +2254,8 @@
     return prefixe + C.pad(max + 1, 5);
   }
 
-  function ecrireEncaissement(facture, montantRegle) {
+  function ecrireEncaissement(facture, montantRegle, opts) {
+    opts = opts || {};
     var lignes = [];
     var constatee = creanceAssureurDejaConstatee(facture);
     /* L'EN-TÊTE d'une facture porte `partAssurance` ; `partAssureur` n'existe que sur les LIGNES (correction du 06/11/2026, E2260) :
@@ -2269,7 +2270,7 @@
       numero: numero, date: date,
       journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
       libelle: 'Encaissement facture ' + (facture.numero || facture.id)
-        + ' — ' + (facture.patient || ''),
+        + ' — ' + (facture.patient || '') + (opts.libelleMode ? ' — ' + opts.libelleMode : ''),
       pieceId: facture.id, pieceNumero: facture.numero,
       origine: 'Automatique — Caisse',
       statut: 'brouillon',
@@ -2277,7 +2278,7 @@
 
     if (montantRegle > 0) {
       lignes.push(Object.assign({}, base, {
-        compte: COMPTES_CAISSE.caisse.num, compteLibelle: COMPTES_CAISSE.caisse.libelle,
+        compte: opts.compte || COMPTES_CAISSE.caisse.num, compteLibelle: opts.compteLibelle || COMPTES_CAISSE.caisse.libelle,
         debit: montantRegle, credit: 0,
       }));
     }
@@ -2309,6 +2310,216 @@
       { debit: debit, credit: credit, lignes: posees.length });
     return posees;
   }
+
+  /* ==========================================================================
+   * LES VERSEMENTS SUCCESSIFS ET LES MODES MULTIPLES (lot PAIE-V, Direction, 20/11/2026 ; PRD-paiement-par-versements-multimodes)
+   * --------------------------------------------------------------------------
+   * Un patient règle SA part en autant de versements que nécessaire, de modes différents (espèces, mobile money d'un opérateur, TPE). Chaque versement est une FICHE (`versementsCaisse`,
+   * jamais réécrite) : pièce, type, modalité, opérateur, référence de la transaction (saisie à la main : aucune interface avec un opérateur), montant, agent, instant, et ses écritures
+   * comptables (une par versement, équilibrée, RG-10, au compte de la modalité). Les types, modalités et opérateurs sont des PARAMÈTRES DE CLINIQUE datés (`modalitesVersement`, data.js),
+   * réglés par le geste réservé `regler_modalites_versement`. Le reste dû et le statut se CALCULENT des versements, jamais saisis. Une prestation n'est débloquée que si SA ligne est
+   * entièrement payée : l'argent versé qui ne couvre pas encore une ligne entière reste un acompte non affecté (il compte dans le réglé, ne débloque rien). La part d'un assureur n'est
+   * jamais un versement de caisse. Un refus se NOMME (code, motif, geste) et n'écrit rien ; la garde de la collection refuse aussi.
+   * ======================================================================== */
+  var GESTE_REGLER_MODALITES_VERSEMENT = 'regler_modalites_versement';
+  META.versementsCaisse = { module: 'M8', entite: 'versement de caisse', prefix: 'VRS' };
+  META.modalitesVersement = { module: 'M8', entite: 'modalité de versement', prefix: 'MVS' };
+  function colVersements() { return col('versementsCaisse'); }
+  function colModalitesVersement() { return col('modalitesVersement'); }
+  function peutReglerModalitesVersement(role) {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_REGLER_MODALITES_VERSEMENT));
+  }
+  /** Le reste dû par le patient sur une pièce, CALCULÉ : la part patient des lignes valorisées moins ce qu'il a déjà versé (jamais un champ saisi). */
+  function resteDuPiece(fac) {
+    var lignes = (fac && fac.lignes) || [];
+    var du = lignes.length ? C.sum(lignes.filter(function (l) { return !ligneSansPrix(l); }), 'partPatient') : Number(fac && fac.partPatient != null ? fac.partPatient : (fac && fac.montantTTC) || 0);
+    return Math.max(0, du - Number((fac && fac.montantPaye) || 0));
+  }
+  /** Les versements ACTIFS d'une pièce, dans l'ordre d'enregistrement. */
+  function versementsDePiece(factureId) {
+    return colVersements().all().filter(function (v) { return v.factureId === factureId && v.statut !== 'archive'; }).slice().reverse();
+  }
+  /** Ancien mode de la maquette (`modePaiement`) vers la modalité de versement. Sert aux encaissements d'avant le lot et aux écritures directes. */
+  function modaliteDepuisMode(mode) {
+    var t = { especes: { modalite: 'especes' }, tpe: { modalite: 'tpe' }, mtn: { modalite: 'mobile_money', operateur: 'mtn' }, moov: { modalite: 'mobile_money', operateur: 'moov' } };
+    return t[mode] || null;
+  }
+  /** Le mode porté par la pièce (registre, tableaux de bord) : la modalité unique si tous les versements en ont une, « mixte » sinon. */
+  function modePieceDepuis(lignes) {
+    var codes = {};
+    lignes.forEach(function (v) { codes[(v.modalite === 'mobile_money' && (v.operateur === 'mtn' || v.operateur === 'moov')) ? v.operateur : v.modalite] = true; });
+    var ks = Object.keys(codes);
+    return ks.length === 1 ? ks[0] : 'mixte';
+  }
+  /** Contrôle d'UN versement contre une pièce à une date (pur, sans écriture) : null si recevable, sinon le refus nommé. `dejaVerse` : ce que la pièce a déjà reçu (versements antérieurs, ceux du même lot compris). */
+  function refusUnVersement(fac, v, date, dejaVerse) {
+    var n = Number(v.montant);
+    if (v.partie === 'assureur' || v.cible === 'assureur' || !(Number(fac.partPatient) > 0 || (fac.lignes || []).some(function (l) { return (l.partPatient || 0) > 0; }))) {
+      return refusCfg('VERSEMENT_PART_ASSUREUR', 'Un versement de caisse ne règle que la part du PATIENT : la part d’un assureur ou d’un tiers payeur n’est pas un versement de caisse.',
+        'Régler la part de l’assureur par le circuit des règlements d’assureurs ou des tiers payeurs.');
+    }
+    if (v.montant === '' || v.montant == null || !isFinite(n) || n !== Math.floor(n) || n <= 0) {
+      return refusCfg('VERSEMENT_MONTANT_INVALIDE', 'Le montant d’un versement est un nombre entier de francs strictement positif (reçu « ' + (v.montant == null ? '' : v.montant) + ' »).', 'Saisir un montant entier supérieur à 0.');
+    }
+    var typ = D.modaliteVersementALaDate('type', v.type, date);
+    if (!v.type || !typ) return refusCfg('VERSEMENT_TYPE_INCONNU', 'Le type de versement « ' + (v.type || '') + ' » n’existe pas.', 'Choisir un type de versement de la liste.');
+    if (typ.actif === false) return refusCfg('VERSEMENT_MODALITE_ARCHIVEE', 'Le type de versement « ' + typ.libelle + ' » est archivé : il n’est plus proposé à la saisie.', 'Choisir un type de versement proposé.', { famille: 'type' });
+    var mod = D.modaliteVersementALaDate('modalite', v.modalite, date);
+    if (!v.modalite || !mod) return refusCfg('VERSEMENT_MODALITE_INCONNUE', 'La modalité de versement « ' + (v.modalite || '') + ' » n’existe pas.', 'Choisir une modalité de la liste.');
+    if (mod.actif === false) return refusCfg('VERSEMENT_MODALITE_ARCHIVEE', 'La modalité « ' + mod.libelle + ' » est archivée : elle n’est plus proposée à la saisie.', 'Choisir une modalité proposée (une modalité archivée reste lisible sur les pièces passées).', { famille: 'modalite' });
+    if (mod.exigeOperateur) {
+      var op = D.modaliteVersementALaDate('operateur', v.operateur, date);
+      if (!v.operateur) return refusCfg('VERSEMENT_OPERATEUR_ABSENT', 'La modalité « ' + mod.libelle + ' » exige l’opérateur.', 'Choisir l’opérateur de la transaction.');
+      if (!op) return refusCfg('VERSEMENT_OPERATEUR_INCONNU', 'L’opérateur « ' + v.operateur + ' » n’existe pas.', 'Choisir un opérateur de la liste.');
+      if (op.actif === false) return refusCfg('VERSEMENT_MODALITE_ARCHIVEE', 'L’opérateur « ' + op.libelle + ' » est archivé : il n’est plus proposé à la saisie.', 'Choisir un opérateur proposé.', { famille: 'operateur' });
+    }
+    if (mod.exigeReference && !String(v.referenceTransaction == null ? '' : v.referenceTransaction).trim()) {
+      return refusCfg('VERSEMENT_REFERENCE_ABSENTE', 'La modalité « ' + mod.libelle + ' » exige la référence de la transaction (saisie à la main).', 'Saisir la référence de la transaction relevée sur le message de l’opérateur.');
+    }
+    var reste = resteDuPiece(Object.assign({}, fac, { montantPaye: dejaVerse }));
+    if (n > reste) {
+      return refusCfg('VERSEMENT_SUPERIEUR_AU_DU', 'Versement de ' + C.money(n) + ' refusé : la pièce ' + (fac.numero || fac.id) + ' ne doit plus que ' + C.money(reste) + '. Un versement ne dépasse jamais le dû de la part du patient.',
+        'Réduire le montant (le reste dû est ' + C.money(reste) + ') ; un trop-perçu se rend, il ne s’enregistre pas.', { reste: reste });
+    }
+    return null;
+  }
+  /** Contrôle d'un LOT de versements saisis ensemble (pur, sans écriture) : { ok, lignes (normalisées), total } ou le refus nommé du premier versement fautif (rang dit). */
+  function controlerVersements(fac, versements, date) {
+    date = date || aujIso();
+    if (!fac) return refusCfg('VERSEMENT_PIECE_INTROUVABLE', 'La pièce à régler est introuvable.', 'Rafraîchir l’écran et choisir une pièce.');
+    if (fac.statutPaiement === 'soldee') {
+      return refusCfg('VERSEMENT_PIECE_SOLDEE', 'La pièce ' + (fac.numero || fac.id) + ' est soldée : aucun versement ne s’y ajoute.', 'Pour rendre un trop-perçu ou corriger, émettre un avoir ou un remboursement ; la pièce ne se réécrit pas.');
+    }
+    if (!versements || !versements.length) return refusCfg('VERSEMENT_AUCUN', 'Aucun versement à enregistrer.', 'Ajouter au moins un versement.');
+    var cumul = Number(fac.montantPaye || 0), lignes = [], total = 0;
+    for (var i = 0; i < versements.length; i++) {
+      var v = versements[i], refus = refusUnVersement(fac, v, date, cumul);
+      if (refus) return Object.assign(refus, { rang: i + 1, motif: (versements.length > 1 ? 'Versement ' + (i + 1) + ' : ' : '') + refus.motif });
+      var mod = D.modaliteVersementALaDate('modalite', v.modalite, date), typ = D.modaliteVersementALaDate('type', v.type, date);
+      var op = mod.exigeOperateur ? D.modaliteVersementALaDate('operateur', v.operateur, date) : null;
+      var ref = String(v.referenceTransaction == null ? '' : v.referenceTransaction).trim();
+      var l = { type: v.type, typeLibelle: typ.libelle, modalite: v.modalite, modaliteLibelle: mod.libelle, compte: mod.compte, compteLibelle: mod.compteLibelle || mod.libelle, montant: Number(v.montant) };
+      if (op) { l.operateur = op.code; l.operateurLibelle = op.libelle; }
+      if (ref) l.referenceTransaction = ref;
+      lignes.push(l); cumul += l.montant; total += l.montant;
+    }
+    return { ok: true, lignes: lignes, total: total };
+  }
+  /** Le résumé CALCULÉ d'une pièce : versé, reste dû, statut (jamais saisis) et ses versements. */
+  function resumeVersements(factureId) {
+    var fac = col('factures').get(factureId);
+    if (!fac) return null;
+    var lots = versementsDePiece(factureId), reste = resteDuPiece(fac);
+    return { facture: fac.numero, verse: C.sum(lots, 'montant'), reste: reste, statut: reste <= 0 && !facturePrixManquants(fac).length ? 'soldee' : ((fac.montantPaye || 0) > 0 ? 'partielle' : 'impayee'), versements: lots };
+  }
+  /* L'ÉCRITURE de chaque versement : équilibrée (RG-10), au compte de SA modalité (lu au paramétrage). Retourne les lignes d'écriture posées par versement. */
+  function ecrireVersements(fac, lignes) {
+    return lignes.map(function (l) {
+      return ecrireEncaissement(fac, l.montant, { compte: l.compte, compteLibelle: l.compteLibelle, libelleMode: l.modaliteLibelle + (l.operateurLibelle ? ' ' + l.operateurLibelle : '') + (l.referenceTransaction ? ' réf. ' + l.referenceTransaction : '') });
+    });
+  }
+  /* La FICHE du versement : écrite après l'écriture comptable, qui lui est liée. Aucun champ nul. */
+  function fichesVersements(fac, lignes, ecrituresParVersement, ctx) {
+    var base = Number(fac.montantPaye || 0) - C.sum(lignes, 'montant'), cumul = base, groupe = 'LOT-' + C.uid();
+    var deja = versementsDePiece(fac.id).length;
+    return lignes.map(function (l, i) {
+      cumul += l.montant;
+      var f = Object.assign({}, l, { factureId: fac.id, factureNumero: fac.numero, patientId: fac.patientId, patient: fac.patient, rang: deja + i + 1, groupe: groupe,
+        date: ctx.date, horodatage: new Date().toISOString(), agent: ctx.agent, origine: ctx.origine || 'caisse',
+        resteApres: Math.max(0, resteDuPiece(Object.assign({}, fac, { montantPaye: cumul }))), ecritureIds: (ecrituresParVersement[i] || []).map(function (e) { return e.id; }) });
+      if (fac.patientCode) f.patientCode = fac.patientCode;
+      if (ctx.horsJour) f.horsJour = true;
+      return colVersements().insert(f).record;
+    });
+  }
+  /** Un encaissement fait par un ancien chemin (montant et mode uniques) ou à la création d'une pièce : il laisse UNE fiche de versement, sans exiger de référence. */
+  function versementHeritage(fac, montant, mode) {
+    var m = modaliteDepuisMode(mode);
+    if (!(montant > 0) || !m) return null;
+    var date = aujIso(), mod = D.modaliteVersementALaDate('modalite', m.modalite, date), typ = D.modaliteVersementALaDate('type', montant >= resteDuPiece(Object.assign({}, fac, { montantPaye: (fac.montantPaye || 0) - montant })) ? 'solde' : 'acompte', date)
+      || D.modaliteVersementALaDate('type', 'acompte', date);
+    if (!mod) return null;
+    var op = m.operateur ? D.modaliteVersementALaDate('operateur', m.operateur, date) : null;
+    var l = { type: typ ? typ.code : 'acompte', typeLibelle: typ ? typ.libelle : 'Acompte', modalite: m.modalite, modaliteLibelle: mod.libelle, compte: mod.compte, compteLibelle: mod.compteLibelle || mod.libelle, montant: montant };
+    if (op) { l.operateur = op.code; l.operateurLibelle = op.libelle; }
+    return fichesVersements(fac, [l], [[]], { date: date, agent: acteur(), origine: 'encaissement_direct', horsJour: false })[0];
+  }
+  /** Régler : une NOUVELLE VERSION datée d'un type, d'une modalité ou d'un opérateur (jamais une réécriture). Rend { ok, id, famille, code, actif, dateEffet } ou le refus nommé. */
+  function definirModaliteVersement(o) {
+    o = o || {};
+    if (!peutReglerModalitesVersement()) {
+      return refusCfg('VERSEMENT_REGLAGE_RESERVE', 'Régler les modalités de versement est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+        'Demander à un rôle qui détient le droit « Régler les modalités de versement de la caisse » (matrice des droits).', { roles: global.SIGH.nav.rolesAvecGeste(GESTE_REGLER_MODALITES_VERSEMENT) });
+    }
+    var fileul = controleEcritureCfg();
+    if (fileul) return fileul;
+    if (D.FAMILLES_VERSEMENT.indexOf(o.famille) < 0) return refusCfg('VERSEMENT_FAMILLE_INCONNUE', 'La famille « ' + o.famille + ' » n’existe pas (type, modalité ou opérateur).', 'Choisir type, modalité ou opérateur.');
+    if (!/^[a-z][a-z0-9_]{1,31}$/.test(String(o.code || ''))) return refusCfg('VERSEMENT_CODE_INVALIDE', 'Le code « ' + (o.code || '') + ' » est invalide : minuscules, chiffres et tiret bas, de 2 à 32 caractères, commençant par une lettre.', 'Saisir un code court, par exemple « celtiis ».');
+    if (!String(o.libelle || '').trim()) return refusCfg('VERSEMENT_LIBELLE_ABSENT', 'Le libellé est obligatoire.', 'Saisir le libellé affiché au guichet.');
+    if (o.famille === 'modalite' && !/^\d{6}$/.test(String(o.compte || ''))) return refusCfg('VERSEMENT_COMPTE_INVALIDE', 'Une modalité porte le compte comptable de son encaissement : six chiffres (reçu « ' + (o.compte || '') + ' »).', 'Saisir le compte, par exemple 571000 (caisse) ou 521000.');
+    if (!o.motif || String(o.motif).trim().length < 3) return refusCfg('VERSEMENT_MOTIF_ABSENT', 'Un motif est obligatoire pour régler une modalité de versement.', 'Saisir le motif du changement.');
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : aujIso();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusCfg('DATE_EFFET_INVALIDE', 'Date d’effet illisible : attendu AAAA-MM-JJ.', 'Choisir la date d’effet.');
+    var versions = D.versionsModalitesVersement(o.famille).filter(function (r) { return r.code === o.code && r.dateEffet; });
+    var derniere = versions[versions.length - 1] || null;
+    if (derniere && dateEffet < String(derniere.dateEffet).slice(0, 10)) return refusCfg('DATE_EFFET_ANTERIEURE', 'La date d’effet précède celle de la dernière version : une version ne s’insère pas dans le passé.', 'Choisir une date d’effet égale ou postérieure.');
+    var actif = o.actif !== false;
+    if (!actif && o.famille === 'modalite' && D.modalitesVersementActives('modalite', dateEffet).filter(function (r) { return r.code !== o.code; }).length === 0) {
+      return refusCfg('VERSEMENT_DERNIERE_MODALITE', 'La dernière modalité proposée ne s’archive pas : la caisse ne pourrait plus enregistrer de versement.', 'Ajouter ou réactiver une autre modalité d’abord.');
+    }
+    var fiche = { famille: o.famille, code: o.code, libelle: String(o.libelle).trim(), actif: actif, dateEffet: dateEffet, motif: String(o.motif).trim(), source: String(o.source || '').trim() || null,
+      creeLe: new Date().toISOString(), creePar: acteur() };
+    if (o.famille === 'modalite') { fiche.compte = String(o.compte); fiche.compteLibelle = String(o.compteLibelle || '').trim() || String(o.libelle).trim(); fiche.exigeReference = !!o.exigeReference; fiche.exigeOperateur = !!o.exigeOperateur; }
+    var avant = D.modaliteVersementALaDate(o.famille, o.code, dateEffet);
+    var res = colModalitesVersement().insert(fiche, { journal: { action: actif ? 'Modalité de versement : nouvelle version' : 'Modalité de versement : archivée', module: 'M8', entite: 'modalitesVersement',
+      avant: avant ? { code: avant.code, libelle: avant.libelle, actif: avant.actif !== false } : null, apres: { famille: o.famille, code: o.code, libelle: fiche.libelle, actif: actif, dateEffet: dateEffet, motif: fiche.motif } } });
+    if (!res) return refusCfg('VERSEMENT_REGLAGE_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Relire le journal.');
+    return { ok: true, id: res.record.id, famille: o.famille, code: o.code, actif: actif, dateEffet: dateEffet, undo: res.undo };
+  }
+  /** Archiver un code : une version `actif: false` qui garde les valeurs d'avant (RG-14 : il reste lisible sur les pièces passées). */
+  function archiverModaliteVersement(o) {
+    o = o || {};
+    var cur = D.modaliteVersementALaDate(o.famille, o.code, o.dateEffet || aujIso());
+    if (!cur) return refusCfg('VERSEMENT_CODE_INCONNU', 'Le code « ' + (o.code || '') + ' » n’existe pas dans cette famille.', 'Choisir un code de la liste.');
+    return definirModaliteVersement(Object.assign({}, cur, { actif: false, dateEffet: o.dateEffet, motif: o.motif }));
+  }
+  S.garder('modalitesVersement', function (op, rec) {
+    if (op === 'archiver') {
+      return !rec.dateEffet || String(rec.dateEffet).slice(0, 10) <= aujIso() ? 'MODALITE_VERSION_FIGEE : une version en vigueur ne s’archive pas ; poser une version qui archive le code.' : null;
+    }
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colModalitesVersement().get(rec.id) : null;
+    if (!avant) return null;
+    var fige = ['famille', 'code', 'libelle', 'actif', 'dateEffet', 'compte', 'compteLibelle', 'exigeReference', 'exigeOperateur'];
+    if (fige.some(function (k) { return JSON.stringify(avant[k] == null ? null : avant[k]) !== JSON.stringify(rec[k] == null ? null : rec[k]); })) {
+      return 'MODALITE_VERSION_FIGEE : une version d’une modalité de versement ne se réécrit pas. Ajouter une nouvelle version datée.';
+    }
+    return null;
+  });
+  S.garder('versementsCaisse', function (op, rec) {
+    if (op === 'modifier') {
+      var avant = rec && rec.id ? colVersements().get(rec.id) : null;
+      if (!avant) return null;
+      var fige = Object.keys(avant).filter(function (k) { return k.charAt(0) !== '_' && k !== 'statut'; });
+      if (fige.some(function (k) { return JSON.stringify(avant[k] == null ? null : avant[k]) !== JSON.stringify(rec[k] == null ? null : rec[k]); })) {
+        return 'VERSEMENT_FIGE : un versement enregistré ne se réécrit jamais ; la correction passe par un avoir ou un remboursement.';
+      }
+      return null;
+    }
+    if (op !== 'inserer' || rec.origine === 'encaissement_direct') return null;
+    /* LE MOTEUR REFUSE AUSSI : une écriture directe qui dépasserait le dû, sans référence ou sur une modalité archivée est refusée par la collection, d'où qu'elle vienne. */
+    var fac = col('factures').get(rec.factureId);
+    if (!fac) return 'VERSEMENT_PIECE_INTROUVABLE : la pièce du versement n’existe pas.';
+    var deja = C.sum(versementsDePiece(fac.id), 'montant');
+    var refus = refusUnVersement(fac, rec, rec.date || aujIso(), Math.max(deja, 0));
+    return refus ? refus.code + ' : ' + refus.motif : null;
+  });
+  global.SIGH.versements = {
+    GESTE: GESTE_REGLER_MODALITES_VERSEMENT, controler: controlerVersements, controlerUn: refusUnVersement, reste: resteDuPiece, resume: resumeVersements, deLaPiece: versementsDePiece,
+    definir: definirModaliteVersement, archiver: archiverModaliteVersement, peutRegler: peutReglerModalitesVersement, modaliteDepuisMode: modaliteDepuisMode, modePiece: modePieceDepuis,
+    actives: D.modalitesVersementActives, aLaDate: D.modaliteVersementALaDate, libelle: D.libelleModaliteVersement, heritage: versementHeritage,
+  };
 
   /* ==========================================================================
    * LE STOCK EST INFORMÉ
@@ -2382,7 +2593,10 @@
     opts = opts || {};
     var fac = col('factures').get(factureId);
     if (!fac) throw new Error('Facture introuvable.');
-    if (fac.statutPaiement === 'soldee') return { facture: fac, deja: true, lignesReglees: [] };
+    if (fac.statutPaiement === 'soldee') {
+      if (opts.versements) return refusDeVersements(fac, controlerVersements(fac, opts.versements, aujIso()));
+      return { facture: fac, deja: true, lignesReglees: [] };
+    }
 
     /* LOT TARIF-FIX-2 : une ligne sans prix se VALORISE d'abord (prix en vigueur à la date de la pièce) ; ce qui reste sans prix refuse l'encaissement, NOMMÉ, avant
        toute écriture : la pièce entière par défaut, la seule ligne quand le réglage de la clinique permet l'encaissement du reste. Rien ne part au MECeF. */
@@ -2403,6 +2617,13 @@
           debloquees: [], ecritures: [], lignesReglees: [], montantRegle: 0, restantDu: null, demandesLiberees: [],
         };
       }
+    }
+
+    /* LOT PAIE-V : les versements se contrôlent AVANT toute écriture, un par un, contre le reste dû de la part du patient ; un refus nomme le versement fautif et n'écrit rien. */
+    var versementsOk = null;
+    if (opts.versements) {
+      versementsOk = controlerVersements(fac, opts.versements, aujIso());
+      if (!versementsOk.ok) return refusDeVersements(fac, versementsOk);
     }
 
     /* La fenêtre « Facture normalisée » (IFU de l'acheteur, nom, AIB) se contrôle AVANT toute écriture : un refus nommé n'écrit rien. */
@@ -2428,7 +2649,16 @@
     var reglees = [];
     var paye = 0;
 
-    if (opts.lignes && opts.lignes.length) {
+    if (versementsOk) {
+      /* Les versements s'ajoutent à ce que la pièce a déjà reçu ; une ligne n'est réglée que si le CUMUL la couvre ENTIÈREMENT, dans l'ordre de la pièce (même règle que le montant global).
+         Ce qui ne couvre pas encore une ligne entière reste un acompte non affecté : il compte dans le réglé, il ne débloque rien. */
+      paye = versementsOk.total;
+      var creditV = Number(fac.montantPaye || 0) + paye - C.sum(toutes.filter(function (l) { return l.statutPaiement === 'paye'; }), 'partPatient');
+      toutes.forEach(function (l) {
+        if (l.statutPaiement === 'paye' || ligneSansPrix(l)) return;
+        if (l.partPatient <= creditV) { reglees.push(l); creditV -= l.partPatient; }
+      });
+    } else if (opts.lignes && opts.lignes.length) {
       var vises = {};
       opts.lignes.forEach(function (id) { vises[id] = true; });
       toutes.forEach(function (l) {
@@ -2471,10 +2701,13 @@
       });
     });
     var totalPaye = (fac.montantPaye || 0) + paye;
-    var restantDu = lignesMaj.length
-      ? lignesMaj.filter(function (l) { return l.statutPaiement !== 'paye'; })
-        .reduce(function (n, l) { return n + (l.partPatient || 0); }, 0)
-      : Math.max(0, duTotal - totalPaye);
+    var restantDu = versementsOk
+      /* Avec des versements, le reste dû se CALCULE de ce qui a été versé (jamais des seules lignes payées). */
+      ? Math.max(0, (lignesMaj.length ? C.sum(lignesMaj.filter(function (l) { return !ligneSansPrix(l); }), 'partPatient') : duTotal) - totalPaye)
+      : (lignesMaj.length
+        ? lignesMaj.filter(function (l) { return l.statutPaiement !== 'paye'; })
+          .reduce(function (n, l) { return n + (l.partPatient || 0); }, 0)
+        : Math.max(0, duTotal - totalPaye));
     /* Une ligne sans prix restante : le reste dû est NON CALCULABLE et la pièce n'est jamais soldée. */
     var resteSansPrix = lignesMaj.some(function (l) { return ligneSansPrix(l) && l.statutPaiement !== 'paye'; });
     var solde = !resteSansPrix && restantDu <= 0;
@@ -2489,19 +2722,25 @@
       if (mv.ok) baseVersement = mv.base;
     }
     var baseMecef = baseVersement != null ? (fac.montantPaye || 0) + baseVersement : totalPaye;
+    if (versementsOk) {
+      /* Avec des versements, la base normalisée est celle des lignes PAYÉES (un acompte non affecté n'est pas encore une vente normalisable). */
+      var payeesApres = lignesMaj.filter(function (l) { return l.statutPaiement === 'paye'; });
+      var mvApres = payeesApres.length ? mecefMontants({ lignes: payeesApres.map(ligneVersMecef) }) : null;
+      baseMecef = !toutes.length ? totalPaye : (mvApres && mvApres.ok ? mvApres.base : (payeesApres.length ? totalPaye : 0));
+    }
 
     col('factures').update(factureId, Object.assign({
       lignes: lignesMaj,
       montantPaye: totalPaye,
       reliquat: resteSansPrix ? null : restantDu,
-      modePaiement: opts.mode || 'especes',
+      modePaiement: versementsOk ? modePieceDepuis(versementsOk.lignes) : (opts.mode || 'especes'),
       statutPaiement: solde ? 'soldee' : (totalPaye > 0 ? 'partielle' : 'impayee'),
       /* TOUTE VENTE EST NORMALISÉE (Direction, 07/11/2026) : l'état se décide plus bas, par la normalisation de la vente soldée. */
       statutMecef: 'en_attente',
       /* Le point fiscal du dossier : seule la part réglée est normalisée. */
       baseMecef: baseMecef,
       dernierReglement: {
-        date: new Date().toISOString(), montant: paye, mode: opts.mode || 'especes',
+        date: new Date().toISOString(), montant: paye, mode: versementsOk ? modePieceDepuis(versementsOk.lignes) : (opts.mode || 'especes'),
         lignes: reglees.map(function (l) { return l.id; }),
         encaissePar: opts.utilisateur || S.currentUser(),
       },
@@ -2580,20 +2819,33 @@
     /* Le comptable est informé — par une écriture, pas par un message.
        Elle est posée à CHAQUE versement, y compris partiel : attendre le
        solde laisserait la caisse et la comptabilité divergentes entre-temps. */
-    var ecritures = paye > 0 ? ecrireEncaissement(fac, paye) : [];
+    var ecritures, versementsPoses = [];
+    if (versementsOk) {
+      /* UNE écriture équilibrée PAR versement (RG-10), au compte de sa modalité ; puis la fiche de chaque versement, liée à ses écritures. */
+      var parVersement = ecrireVersements(fac, versementsOk.lignes);
+      ecritures = [].concat.apply([], parVersement);
+      versementsPoses = fichesVersements(fac, versementsOk.lignes, parVersement, { date: aujIso(), agent: opts.utilisateur || S.currentUser(), horsJour: String(fac.date || '').slice(0, 10) !== aujIso() });
+    } else {
+      ecritures = paye > 0 ? ecrireEncaissement(fac, paye) : [];
+      if (paye > 0) versementHeritage(fac, paye, opts.mode || 'especes');
+    }
 
     S.log('Encaissement', 'M8', 'facture', fac.numero, { statutPaiement: 'impayee' },
       {
         statutPaiement: fac.statutPaiement, montantPaye: totalPaye,
-        verse: paye, lignes: reglees.length, restantDu: restantDu,
+        verse: paye, lignes: reglees.length, restantDu: restantDu, versements: versementsPoses.length || null,
       });
 
     return {
       facture: fac, debloquees: debloquees, ecritures: ecritures,
       lignesReglees: reglees, montantRegle: paye,
       restantDu: resteSansPrix ? null : restantDu, restantSansPrix: resteSansPrix, demandesLiberees: demandesLiberees,
-      normalisation: normalisation,
+      normalisation: normalisation, versements: versementsPoses,
     };
+  }
+  /** Le refus nommé d'un lot de versements, au format des autres refus de l'encaissement : rien n'est écrit. */
+  function refusDeVersements(fac, r) {
+    return { facture: fac, refus: r.code + ' : ' + r.motif + ' ' + (r.geste || ''), refusNomme: r, debloquees: [], ecritures: [], lignesReglees: [], montantRegle: 0, restantDu: resteDuPiece(fac), demandesLiberees: [], versements: [] };
   }
 
   /* ==========================================================================

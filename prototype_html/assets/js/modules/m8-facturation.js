@@ -263,10 +263,7 @@
          les confondre empêcherait d'expliquer au guichet pourquoi telle ligne
          est intégralement à la charge du patient. */
       { k: 'dont part NON ASSURÉE (aucune couverture)', v: C.money(partNonAssuree(f, lignes), false) },
-      { k: 'TOTAL DÛ', v: C.money(f.reliquat != null ? f.reliquat : f.partPatient, false) },
-      { k: 'Montant réglé', v: C.money(f.montantPaye, false) },
-      { k: 'Reste à payer', v: C.money(f.reliquat, false) },
-      { k: 'Base normalisée MECeF', v: C.money(f.baseMecef != null ? f.baseMecef : f.montantPaye, false) },
+      /* LOT PAIE-V (Direction, 20/11/2026) : la facture normalisée ne porte QUE le montant total (ci-dessous, en chiffres et en lettres). Ni mode, ni versement, ni réglé, ni reste : le reçu de paiement les détaille. */
     ].filter(Boolean)));
     contenu.appendChild(rep);
 
@@ -278,8 +275,7 @@
     contenu.appendChild(el('p.mt-4.text-\\[9px\\].leading-relaxed.text-slate-600', {
       text: o.proforma
         ? 'Facture pro-forma — document non fiscal, établi à titre d’estimation. Elle ne vaut pas facture normalisée et ne peut servir de justificatif comptable.'
-        : 'Facture normalisée conforme au dispositif de facturation électronique en vigueur en République du Bénin. '
-          + 'Mode de règlement : ' + modeLabel(f.modePaiement) + '.',
+        : 'Facture normalisée conforme au dispositif de facturation électronique en vigueur en République du Bénin.',
     }));
 
     if (!o.proforma && f.numeroMecef) {
@@ -955,6 +951,9 @@
           if (!proforma) {
             var posees = PR.ecrireEncaissement(res.record, reglePiece);
             annulations.push(function () { posees.forEach(function (e) { S.collection('ecritures').archive(e.id); }); });
+            /* LOT PAIE-V : le règlement saisi à l'émission laisse AUSSI sa fiche de versement (une seule fiche, sans exigence de référence : l'écran « Encaisser » porte la saisie complète). */
+            var vh = reglePiece > 0 ? global.SIGH.versements.heritage(res.record, reglePiece, selMode.value) : null;
+            if (vh) annulations.push(function () { S.collection('versementsCaisse').archive(vh.id, 'Création annulée'); });
             /* TOUTE VENTE SOLDÉE EST NORMALISÉE ; une pièce à la charge de l'assureur seul (part patient nulle) n'a rien à normaliser. */
             if (res.record.statutPaiement === 'soldee' && patPiece > 0) {
               var norm = PR.mecef.normaliser(res.record.id, {});
@@ -1609,6 +1608,75 @@
         ] });
       }
 
+      /* LOT PAIE-V : les types de versement, les modalités et les opérateurs de mobile money sont des PARAMÈTRES DE CLINIQUE (en base, datés, défaut semé « à valider »). La commande de
+         réglage est ABSENTE sans le geste réservé `regler_modalites_versement` ; le moteur refuse aussi. Un code archivé ne se supprime pas : il reste lisible sur les pièces passées. */
+      host.appendChild(carteModalitesVersement());
+      function carteModalitesVersement() {
+        var VS = global.SIGH.versements, jour = C.iso(C.aujourdhui()), peut = VS.peutRegler();
+        var NOMS = { type: 'Types de versement', modalite: 'Modalités', operateur: 'Opérateurs de mobile money' };
+        var corps = el('div.space-y-3', { 'data-modalites-versement': '' });
+        D.FAMILLES_VERSEMENT.forEach(function (fam) {
+          var vus = {}, lignes = [];
+          D.versionsModalitesVersement(fam).forEach(function (r) { if (!vus[r.code]) { vus[r.code] = true; var v = D.modaliteVersementALaDate(fam, r.code, jour); if (v) lignes.push(v); } });
+          var bloc = el('div', { 'data-famille-versement': fam }, [el('p.text-xs.font-bold.uppercase.text-navy-900', { text: NOMS[fam] })]);
+          lignes.forEach(function (v) {
+            var exig = fam === 'modalite' ? ' · compte ' + v.compte + (v.exigeOperateur ? ' · opérateur exigé' : '') + (v.exigeReference ? ' · référence exigée' : '') : '';
+            bloc.appendChild(el('div.flex.items-center.justify-between.gap-2.border-b.border-slate-100.py-1', { 'data-modalite-code': v.code }, [
+              el('span.text-sm', null, [el('span.font-semibold', { text: v.libelle }), ' (' + v.code + ')' + exig,
+                v.actif === false ? U.badge('Archivée depuis le ' + C.dateFR(v.dateEffet || jour), 'neutral') : null,
+                v.source && /valider/i.test(v.source) && !v.dateEffet ? U.badge('À valider', 'warning') : null]),
+              peut ? el('span.flex.gap-1', null, [
+                K.btn('Modifier', { size: 'sm', attrs: { 'data-modifier-modalite': v.code }, onclick: function () { ouvrir(fam, v); } }),
+                v.actif === false ? K.btn('Réactiver', { size: 'sm', attrs: { 'data-reactiver-modalite': v.code }, onclick: function () { ouvrir(fam, Object.assign({}, v, { actif: true })); } })
+                  : K.btn('Archiver', { size: 'sm', attrs: { 'data-archiver-modalite': v.code }, onclick: function () { archiver(fam, v); } }),
+              ]) : null,
+            ]));
+          });
+          if (peut) bloc.appendChild(el('div.mt-1', null, [K.btn('Ajouter', { size: 'sm', icon: 'plus', attrs: { 'data-ajouter-modalite': fam }, onclick: function () { ouvrir(fam, null); } })]));
+          corps.appendChild(bloc);
+        });
+        if (!peut) corps.appendChild(K.note('Les modalités se règlent par un rôle qui détient le droit « Régler les modalités de versement de la caisse » : ' + global.SIGH.nav.rolesAvecGeste(VS.GESTE).map(function (r) { return global.SIGH.nav.ROLES[r] ? global.SIGH.nav.ROLES[r].label : r; }).join(', ') + '.', { tone: 'info', icon: 'lock' }));
+        function archiver(fam, v) {
+          var fm = U.form([
+            { name: 'dateEffet', label: 'Archivée à partir du', type: 'date', required: true, value: jour },
+            { name: 'motif', label: 'Motif', required: true, col: 'full' },
+          ], { dateEffet: jour });
+          var mo = U.modal({ title: 'Archiver « ' + v.libelle + ' »', subtitle: 'Elle reste lisible sur les pièces passées ; elle n’est plus proposée à la saisie.', size: 'md', body: fm, footer: [
+            K.btn('Annuler', { onclick: function () { mo.close(); } }),
+            K.btn('Archiver', { variant: 'primary', icon: 'archive', attrs: { 'data-confirmer-archivage': '' }, onclick: function () {
+              var x = fm.collect(); if (!x) return;
+              var r = VS.archiver({ famille: fam, code: v.code, dateEffet: x.dateEffet, motif: x.motif });
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+              mo.close(); U.toast('« ' + v.libelle + ' » archivée à partir du ' + C.dateFR(r.dateEffet) + '.', { type: 'success' }); global.SIGH.app.go('m8-paiements');
+            } }),
+          ] });
+        }
+        function ouvrir(fam, v) {
+          var champs = [
+            { name: 'code', label: 'Code', required: true, readonly: !!v, help: 'Minuscules, chiffres et tiret bas (par exemple celtiis).' },
+            { name: 'libelle', label: 'Libellé affiché au guichet', required: true },
+          ];
+          if (fam === 'modalite') {
+            champs.push({ name: 'compte', label: 'Compte comptable de l’encaissement', required: true, help: 'Six chiffres : 571000 pour la caisse, 521000 pour la banque et le mobile money.' });
+            champs.push({ name: 'exigeOperateur', label: 'Exige l’opérateur', type: 'checkbox' });
+            champs.push({ name: 'exigeReference', label: 'Exige la référence de la transaction', type: 'checkbox' });
+          }
+          champs.push({ name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: jour });
+          champs.push({ name: 'motif', label: 'Motif', required: true, col: 'full' });
+          var fm = U.form(champs, Object.assign({ dateEffet: jour }, v || {}));
+          var mo = U.modal({ title: (v ? 'Modifier « ' + v.libelle + ' »' : 'Ajouter : ' + NOMS[fam]), size: 'md', body: fm, footer: [
+            K.btn('Annuler', { onclick: function () { mo.close(); } }),
+            K.btn('Enregistrer', { variant: 'primary', icon: 'save', attrs: { 'data-enregistrer-modalite': '' }, onclick: function () {
+              var x = fm.collect(); if (!x) return;
+              var r = VS.definir(Object.assign({ famille: fam, actif: true }, x));
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+              mo.close(); U.toast('Nouvelle version enregistrée, à effet du ' + C.dateFR(r.dateEffet) + '.', { type: 'success' }); global.SIGH.app.go('m8-paiements');
+            } }),
+          ] });
+        }
+        return U.card('Modalités de versement', corps);
+      }
+
       host.appendChild(U.kpiGrid(D.MODES_PAIEMENT.slice(0, 4).map(function (m) {
         var f = factures().filter(function (x) { return x.modePaiement === m.id; });
         return { label: m.label, value: C.money(C.sum(f, 'montantPaye')), icon: m.icon, tone: 'navy', hint: C.num(f.length) + ' opération(s)' };
@@ -1662,53 +1730,110 @@
       return null;
 
       function encaisser(f) {
+        /* LOT PAIE-V (Direction, 20/11/2026) : autant de versements que nécessaire, de modes différents, saisis dans UNE fenêtre. Le reste dû se calcule en direct (jamais saisi) ;
+           le moteur refuse un versement qui dépasse le dû, une modalité mobile money sans référence, une modalité archivée ; il ne règle que la part du PATIENT. */
+        var VS = global.SIGH.versements, jour = C.iso(C.aujourdhui());
         var epf = PR.etatCaissePrix(f);
-        var resteCalc = epf.manques.length ? C.sum((f.lignes || []).filter(function (l) { return !PR.ligneSansPrix(l) && l.statutPaiement !== 'paye'; }), 'partPatient') : f.reliquat;
-        var form = U.form([
-          { name: 'montant', label: 'Montant encaissé (FCFA)', type: 'money', required: true, min: 1, value: resteCalc },
-          { name: 'modePaiement', label: 'Mode de règlement', type: 'select', required: true, options: D.MODES_PAIEMENT.slice(0, 4).map(function (m) { return { value: m.id, label: m.label }; }) },
-          { name: 'reference', label: 'Référence de la transaction', help: 'N° de transaction Mobile Money ou ticket TPE, le cas échéant.' },
-          { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
-        ], { montant: f.reliquat, modePaiement: f.modePaiement });
+        var resteCalc = VS.reste(f);
+        var types = VS.actives('type', jour), modalites = VS.actives('modalite', jour), operateurs = VS.actives('operateur', jour);
+        var liste = el('div.space-y-2', { 'data-versements': '' });
+        var recap = el('div.rounded.border.border-slate-200.bg-slate-50.p-2.text-sm', { 'data-recap-versements': '' });
+        var rangs = [];
+
+        function optionsDe(rows, vide) {
+          var o = vide ? [el('option', { value: '' }, vide)] : [];
+          rows.forEach(function (r) { o.push(el('option', { value: r.code }, r.libelle)); });
+          return o;
+        }
+        function lire() {
+          return rangs.filter(function (r) { return !r.retire; }).map(function (r) {
+            var v = { type: r.type.value, modalite: r.modalite.value, montant: r.montant.value === '' ? '' : Number(r.montant.value) };
+            var m = VS.aLaDate('modalite', v.modalite, jour);
+            if (m && m.exigeOperateur) v.operateur = r.operateur.value;
+            if (r.reference.value.trim()) v.referenceTransaction = r.reference.value.trim();
+            return v;
+          });
+        }
+        function majRecap() {
+          var saisis = lire(), total = saisis.reduce(function (n, v) { return n + (Number(v.montant) || 0); }, 0);
+          var apres = resteCalc - total;
+          recap.innerHTML = '';
+          recap.appendChild(el('p', { 'data-total-saisi': total }, 'Total saisi : ' + C.money(total)));
+          recap.appendChild(el('p.font-semibold' + (apres < 0 ? '.text-danger-600' : ''), { 'data-reste-apres': apres },
+            apres < 0 ? 'Dépasse le dû de ' + C.money(-apres) : 'Reste dû après ces versements : ' + C.money(apres)));
+          if (apres > 0 && total > 0) recap.appendChild(el('p.text-xs.text-slate-500', { text: 'Le reste se règle le jour même. Une prestation n’est exécutée que lorsque sa ligne est entièrement payée.' }));
+        }
+        function ajouter(init) {
+          init = init || {};
+          var r = { retire: false };
+          r.type = el('select.select', { 'data-v-type': '' }, optionsDe(types));
+          r.modalite = el('select.select', { 'data-v-modalite': '' }, optionsDe(modalites));
+          r.operateur = el('select.select', { 'data-v-operateur': '' }, optionsDe(operateurs));
+          r.reference = el('input.input', { type: 'text', 'data-v-reference': '', placeholder: 'Référence de la transaction' });
+          r.montant = el('input.input', { type: 'number', min: 1, step: 1, 'data-v-montant': '', placeholder: 'Montant (FCFA)' });
+          if (init.type) r.type.value = init.type;
+          if (init.modalite) r.modalite.value = init.modalite;
+          if (init.montant != null) r.montant.value = init.montant;
+          var champOp = el('div', null, [el('label.label', { text: 'Opérateur' }), r.operateur]);
+          var champRef = el('div', null, [el('label.label', { 'data-v-ref-label': '', text: 'Référence de la transaction' }), r.reference]);
+          function majChamps() {
+            var m = VS.aLaDate('modalite', r.modalite.value, jour) || {};
+            champOp.style.display = m.exigeOperateur ? '' : 'none';
+            champRef.querySelector('label').textContent = 'Référence de la transaction' + (m.exigeReference ? ' (obligatoire)' : ' (si elle existe)');
+            majRecap();
+          }
+          r.modalite.addEventListener('change', majChamps);
+          [r.type, r.operateur, r.reference, r.montant].forEach(function (c) { c.addEventListener('input', majRecap); c.addEventListener('change', majRecap); });
+          var retirer = el('button.btn.btn-ghost.btn-sm', { type: 'button', 'data-v-retirer': '', title: 'Retirer ce versement' }, 'Retirer');
+          r.ligne = el('div.grid.grid-cols-2.gap-2.rounded.border.border-slate-200.p-2', { 'data-versement-ligne': '' }, [
+            el('div', null, [el('label.label', { text: 'Type' }), r.type]),
+            el('div', null, [el('label.label', { text: 'Modalité' }), r.modalite]),
+            champOp, champRef,
+            el('div', null, [el('label.label', { text: 'Montant (FCFA)' }), r.montant]),
+            el('div.flex.items-end', null, [retirer]),
+          ]);
+          retirer.addEventListener('click', function () {
+            if (rangs.filter(function (x) { return !x.retire; }).length <= 1) return;
+            r.retire = true; r.ligne.remove(); majRecap();
+          });
+          rangs.push(r); liste.appendChild(r.ligne); majChamps();
+        }
+        ajouter({ type: types.some(function (t) { return t.code === 'solde'; }) ? 'solde' : (types[0] && types[0].code), montant: resteCalc > 0 ? resteCalc : null });
 
         var body = el('div.space-y-3', null, [
           U.descList([['Facture', f.numero], ['Patient', f.patient],
             ['Montant total', C.money(f.montantTTC)], ['Part patient', C.money(f.partPatient)],
-            ['Déjà réglé', C.money(f.montantPaye)], ['Reste à payer', C.money(f.reliquat)]], 'grid-cols-2'),
-          form,
+            ['Déjà réglé', C.money(f.montantPaye)], ['Reste à payer', C.money(resteCalc)]], 'grid-cols-2'),
+          f.assureur ? K.note('Seule la part du patient se règle en caisse : la part de l’assureur (' + C.money(f.partAssurance) + ') suit le circuit des règlements d’assureurs.', { tone: 'info', icon: 'shield-check' }) : null,
+          liste,
+          el('div', null, [K.btn('Ajouter un versement', { size: 'sm', icon: 'plus', attrs: { 'data-ajouter-versement': '' }, onclick: function () { ajouter({ type: 'solde' }); } })]),
+          recap,
+          el('div', null, [el('label.label', { text: 'Observation' }), el('textarea.textarea', { rows: 2, 'data-v-observation': '' })]),
         ].filter(Boolean));
+        var observation = body.querySelector('[data-v-observation]');
 
         var m = U.modal({
-          title: 'Encaissement', subtitle: f.numero + ' — ' + f.patient, size: 'md', body: body,
+          title: 'Encaissement', subtitle: f.numero + ' — ' + f.patient, size: 'lg', body: body,
           footer: [
             K.btn('Annuler', { onclick: function () { m.close(); } }),
-            K.btn('Valider l’encaissement', {
-              variant: 'primary', icon: 'check',
+            K.commande('Valider les versements', {
+              variant: 'primary', icon: 'check', attrs: { 'data-valider-versements': '' },
               onclick: function () {
-                var v = form.collect();
-                if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-                if (v.montant > resteCalc) { U.toast('Le montant dépasse le reste dû (' + C.money(resteCalc) + ').', { type: 'error' }); return; }
-                /* L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval ouvertes, base MECeF et
-                   ÉCRITURE comptable. Il écrivait la facture seule : ni journal, ni déblocage, ni créance de l'assureur. Un versement refusé
-                   (au-delà du dû) l'est en le disant. Un encaissement ne s'annule pas : la correction passe par un remboursement ou un avoir. */
-                var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement });
-                if (r.refus) { U.toast(r.refus, { type: 'error', duration: 9000 }); return; }
-                if (!(r.montantRegle > 0)) { U.toast('Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.', { type: 'error' }); return; }
-                /* La référence et l'observation du versement s'ÉCRIVENT sur la facture (même champ que m8-caisse) : sans cela elles
-                   ne vivaient que sur le reçu imprimé une fois, et la réimpression affichait « — ». */
-                var patchReglement = {};
-                if (v.reference) patchReglement.referenceTransaction = v.reference;
-                if (v.observation) patchReglement.observationReglement = v.observation;
-                if (Object.keys(patchReglement).length) S.collection('factures').update(f.id, patchReglement);
+                var saisis = lire();
+                /* L'encaissement passe par le MOTEUR : lignes réglées, analyses et imagerie libérées, tâches d'aval ouvertes, base MECeF et ÉCRITURE comptable par versement. Un
+                   refus nommé (au-delà du dû, référence absente, modalité archivée, part d'un assureur) n'écrit rien. Un encaissement ne s'annule pas : la correction passe par un avoir. */
+                var r = PR.encaisser(f.id, { versements: saisis });
+                if (r.refus) { U.toast(r.refus, { type: 'error', duration: 9000, detail: r.refusNomme && r.refusNomme.code }); return; }
+                if (observation.value.trim()) S.collection('factures').update(f.id, { observationReglement: observation.value.trim() });
                 m.close();
                 if (table) table.refresh();
                 annonceNormalisation(r.normalisation);
-                U.toast('Encaissement de ' + C.money(r.montantRegle) + ' enregistré.', {
+                U.toast('Encaissement de ' + C.money(r.montantRegle) + ' enregistré (' + r.versements.length + ' versement' + (r.versements.length > 1 ? 's' : '') + ').', {
                   type: 'success',
                   detail: (r.restantDu > 0 ? 'Reliquat de ' + C.money(r.restantDu) + '.' : 'Facture soldée.')
-                    + (r.ecritures.length ? ' Écriture comptable posée en brouillon.' : ''),
+                    + (r.ecritures.length ? ' Une écriture comptable par versement, en brouillon.' : ''),
                 });
-                recu(r.facture, v);
+                recu(r.facture, { versements: r.versements });
               },
             }),
           ],
@@ -1721,6 +1846,11 @@
        * examen précis a été payé, et lequel attend encore son règlement.
        */
       function recu(f, v) {
+        /* LOT PAIE-V : le reçu DÉTAILLE les versements de la pièce (type, modalité, opérateur, référence, montant) ; « encaissé ce jour » est la somme du lot qui vient d'être saisi. */
+        var versementsPiece = global.SIGH.versements.deLaPiece(f.id);
+        var lotVerse = v && v.versements ? v.versements : null;
+        var encaisseJour = lotVerse ? C.sum(lotVerse, 'montant') : (v && v.montant != null ? v.montant : (f.dernierReglement ? f.dernierReglement.montant : f.montantPaye));
+        var referencesPiece = versementsPiece.filter(function (x) { return x.referenceTransaction; }).map(function (x) { return x.referenceTransaction; });
         var lignes = f.lignes || [];
         var payees = lignes.filter(function (l) { return l.statutPaiement === 'paye'; });
         var dues = lignes.filter(function (l) { return l.statutPaiement !== 'paye'; });
@@ -1751,11 +1881,22 @@
           /* L'identité imprimée est celle de la date du versement. */
           date: (f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ),
           cartouche: [['Facture', f.numero], ['Patient', f.patient], ['Dossier', f.patientCode],
-            ['Date', C.dateFR(AUJ)], ['Mode de règlement', modeLabel(v ? v.modePaiement : f.modePaiement)],
+            ['Date', C.dateFR(AUJ)], ['Mode de règlement', modeLabel(v && v.modePaiement ? v.modePaiement : f.modePaiement)],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
-            ['Référence transaction', (v && v.reference) || f.referenceTransaction || '—'],
+            ['Référence transaction', (v && v.reference) || referencesPiece.join(', ') || f.referenceTransaction || '—'],
             ['RCCM', C.identiteALaDate((f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ)).rccm]],
           contenu: el('div.space-y-3', null, [
+            versementsPiece.length ? el('div', { 'data-recu-versements': '' }, [
+              el('p.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Versements' }),
+              P.tableau([
+                { label: 'N°', value: function (x) { return String(x.rang); } },
+                { label: 'Heure', value: function (x) { return String(x.horodatage || '').slice(11, 16); } },
+                { label: 'Type', key: 'typeLibelle' },
+                { label: 'Modalité', value: function (x) { return x.modaliteLibelle + (x.operateurLibelle ? ' (' + x.operateurLibelle + ')' : ''); } },
+                { label: 'Référence', value: function (x) { return x.referenceTransaction || '—'; } },
+                { label: 'Montant', align: 'right', somme: function (x) { return x.montant || 0; }, value: function (x) { return C.money(x.montant, false); } },
+              ], versementsPiece, { total: true, totalLabel: 'TOTAL VERSÉ' }),
+            ]) : null,
             payees.length ? el('div', null, [
               el('p.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Prestations réglées' }),
               tableauLignes(payees),
@@ -1764,7 +1905,7 @@
               [{ label: 'Rubrique', key: 'k' }, { label: 'Montant', key: 'v', align: 'right' }], [
                 { k: 'Montant total de la facture', v: C.money(f.montantTTC, false) },
                 { k: 'Part à la charge du patient', v: C.money(f.partPatient, false) },
-                { k: 'Montant encaissé ce jour', v: C.money(v ? v.montant : f.montantPaye, false) },
+                { k: 'Montant encaissé ce jour', v: C.money(encaisseJour, false) },
               ]) : null,
             dues.length ? el('div', null, [
               el('p.mt-3.text-\\[11px\\].font-bold.uppercase.text-danger-700', { text: 'Reste à régler' }),
@@ -1778,7 +1919,7 @@
               { k: 'Montant total de la facture', v: C.money(f.montantTTC, false) },
               f.partAssurance ? { k: 'Part assureur — ' + (f.assureur || ''), v: C.money(f.partAssurance, false) } : null,
               { k: 'Part à la charge du patient', v: C.money(f.partPatient, false) },
-              { k: 'ENCAISSÉ CE JOUR', v: C.money(v ? v.montant : (f.dernierReglement ? f.dernierReglement.montant : f.montantPaye), false) },
+              { k: 'ENCAISSÉ CE JOUR', v: C.money(encaisseJour, false) },
               { k: 'Total réglé à ce jour', v: C.money(f.montantPaye, false) },
               { k: 'RESTE À PAYER', v: C.money(f.reliquat, false) },
             ].filter(Boolean)),

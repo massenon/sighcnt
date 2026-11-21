@@ -340,6 +340,9 @@
     return tete + ' ' + centaineEnLettres(r);
   }
 
+  /* Devant « mille », « cent » et « vingt » ne prennent pas de s (« deux cent mille », « quatre-vingt mille ») : le s ne reste que devant un nom (« deux cents millions »). */
+  function sansSFinal(mots) { return /(cents|vingts)$/.test(mots) ? mots.slice(0, -1) : mots; }
+
   function nombreEnLettres(n) {
     n = Math.round(Math.abs(Number(n) || 0));
     if (n === 0) return 'zéro';
@@ -354,15 +357,19 @@
       if (!q) return;
       n -= q * t.valeur;
       if (t.valeur === 1e3 && q === 1) mots.push('mille');
+      else if (t.valeur === 1e3) mots.push(sansSFinal(centaineEnLettres(q)) + ' mille');
       else mots.push(centaineEnLettres(q) + ' ' + (q > 1 ? t.pluriel : t.singulier));
     });
     if (n > 0) mots.push(centaineEnLettres(n));
     return mots.join(' ');
   }
 
-  /** Montant en lettres suivi de la devise, prêt pour la mention légale. */
+  /** Montant en lettres suivi de la devise, prêt pour la mention légale (lot PAIE-V) : « franc » au singulier jusqu'à un, « de francs » quand le nombre finit par un million ou un
+   *  milliard rond (« un million de francs CFA »). */
   function montantEnLettres(v) {
-    return nombreEnLettres(v) + ' francs CFA';
+    var n = Math.round(Math.abs(Number(v) || 0));
+    var devise = n >= 1e6 && n % 1e6 === 0 ? ' de francs CFA' : (n <= 1 ? ' franc CFA' : ' francs CFA');
+    return nombreEnLettres(n) + devise;
   }
 
   /* --- Identifiants ------------------------------------------------------- */

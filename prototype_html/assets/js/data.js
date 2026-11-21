@@ -1242,6 +1242,9 @@
     { id: 'mtn', label: 'MTN Mobile Money', icon: 'smartphone', compte: '521000' },
     { id: 'moov', label: 'Moov Money', icon: 'smartphone', compte: '521000' },
     { id: 'assurance', label: 'Prise en charge assurance', icon: 'shield-check', compte: '411200' },
+    /* Lot PAIE-V : le mode PORTÉ PAR LA PIÈCE quand elle a été réglée en plusieurs versements (`mixte`) ou par un opérateur de mobile money autre que MTN et Moov. */
+    { id: 'mobile_money', label: 'Mobile money (autre opérateur)', icon: 'smartphone', compte: '521000' },
+    { id: 'mixte', label: 'Plusieurs modes de règlement', icon: 'layers', compte: null },
   ];
 
   /* --------------------------------------------------------------------------
@@ -2102,6 +2105,60 @@
   }
 
   /* ==========================================================================
+   * LES MODALITÉS DE VERSEMENT, DATÉES (lot PAIE-V, Direction, 20/11/2026)
+   * --------------------------------------------------------------------------
+   * Un patient règle sa part en plusieurs versements, de modes différents. Les TYPES de versement, les MODALITÉS (espèces, mobile money, TPE) et les OPÉRATEURS de mobile money
+   * sont des paramètres de clinique en base, jamais des constantes : une collection, `modalitesVersement`, UNE FICHE PAR VERSION (jamais réécrite), qui porte sa `famille` (`type`,
+   * `modalite`, `operateur`), son `code`, son `libelle`, `actif` (vrai ou faux) et sa `dateEffet` (`null` : depuis toujours, le défaut semé). La version en vigueur à une date est celle
+   * de la plus grande date d'effet qui ne la dépasse pas. ARCHIVER un code pose une version `actif: false` à une date : il n'est plus proposé à la saisie, il reste lisible sur les pièces
+   * passées (RG-14, rien ne se supprime). Une modalité porte son compte comptable (`compte`) et ce qu'elle exige (`exigeReference`, `exigeOperateur`). Réglage de BRANCHE : posé à la mère,
+   * il voyage aux fileuls, jamais aux téléphones. Régler est un geste réservé de la fiche RBAC (`regler_modalites_versement`). Défauts : PROPOSITION À VALIDER par la Direction.
+   * ======================================================================== */
+  var SOURCE_MODALITES_VERSEMENT = 'Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)';
+  var FAMILLES_VERSEMENT = ['type', 'modalite', 'operateur'];
+  var MODALITES_VERSEMENT_SEMENCE = [
+    { famille: 'type', code: 'acompte', libelle: 'Acompte' },
+    { famille: 'type', code: 'solde', libelle: 'Solde' },
+    { famille: 'modalite', code: 'especes', libelle: 'Espèces', compte: '571000', compteLibelle: 'Caisse', exigeReference: false, exigeOperateur: false },
+    { famille: 'modalite', code: 'mobile_money', libelle: 'Mobile money', compte: '521000', compteLibelle: 'Banques et mobile money', exigeReference: true, exigeOperateur: true },
+    { famille: 'modalite', code: 'tpe', libelle: 'TPE (carte bancaire)', compte: '521000', compteLibelle: 'Banques et mobile money', exigeReference: false, exigeOperateur: false },
+    { famille: 'operateur', code: 'mtn', libelle: 'MTN Mobile Money' },
+    { famille: 'operateur', code: 'moov', libelle: 'Moov Money' },
+    { famille: 'operateur', code: 'celtiis', libelle: 'Celtiis Cash' },
+  ];
+  function semenceModalitesVersement() {
+    return MODALITES_VERSEMENT_SEMENCE.map(function (d, i) {
+      return Object.assign({ id: 'MVS-' + C.pad(i + 1, 3), statut: 'actif', actif: true, dateEffet: null, source: SOURCE_MODALITES_VERSEMENT, motif: 'Défaut semé',
+        creeLe: '2026-11-20', creePar: 'Semence du socle' }, d);
+    });
+  }
+  /** Les fiches (toutes versions) d'une famille, de la plus ancienne à la plus récente ; les archivées de la collection (annulation d'une version à venir) n'y sont pas. */
+  function versionsModalitesVersement(famille) {
+    var rows = magasinPret() ? lireCollection('modalitesVersement') : [];
+    if (!rows.length) rows = semenceModalitesVersement();
+    return rows.filter(function (r) { return r.statut !== 'archive' && (!famille || r.famille === famille); }).sort(function (a, b) {
+      return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')) || String(a.creeLe || '').localeCompare(String(b.creeLe || '')) || String(a.id).localeCompare(String(b.id));
+    });
+  }
+  /** La version d'un code EN VIGUEUR à une date (même archivée : `actif` dit si elle est proposée) ; null si le code n'a aucune version à cette date. */
+  function modaliteVersementALaDate(famille, code, date) {
+    var d = dateIso(date), v = null;
+    versionsModalitesVersement(famille).forEach(function (r) { if (r.code === code && (!r.dateEffet || String(r.dateEffet).slice(0, 10) <= d)) v = r; });
+    return v;
+  }
+  /** Les codes PROPOSÉS à la saisie à une date (version en vigueur `actif`), dans l'ordre de la semence puis de création. */
+  function modalitesVersementActives(famille, date) {
+    var vus = {}, out = [];
+    versionsModalitesVersement(famille).forEach(function (r) { if (!vus[r.code]) { vus[r.code] = true; var v = modaliteVersementALaDate(famille, r.code, date); if (v && v.actif !== false) out.push(v); } });
+    return out;
+  }
+  /** Le libellé d'un code À LA DATE de la pièce (une pièce passée lit sa modalité même archivée depuis) ; le code lui-même si le code est inconnu. */
+  function libelleModaliteVersement(famille, code, date) {
+    var v = modaliteVersementALaDate(famille, code, date) || versionsModalitesVersement(famille).filter(function (r) { return r.code === code; })[0];
+    return v ? v.libelle : (code || '');
+  }
+
+  /* ==========================================================================
    * LE PLAN ANNUEL DE TRAVAIL (lot PTA, 16/11/2026 ; Direction : « rien ne doit rester en dur »)
    * --------------------------------------------------------------------------
    * Les axes et les états d'avancement sont des RÉFÉRENTIELS EN BASE (`referentielsPlan`, défauts semés). Un état porte une NATURE (`planifiee`, `en_cours`, `realisee`) : c'est
@@ -2669,6 +2726,8 @@
     ACTES: ACTES, SECTEURS_ACTIVITE: SECTEURS_ACTIVITE, NS145: NS145,
     NATURES_FACTURE: NATURES_FACTURE, CENTRES_COUTS: CENTRES_COUTS,
     PARAM_STOCK: PARAM_STOCK, FAMILLES_ARTICLES: FAMILLES_ARTICLES, GROUPES_ARTICLES: GROUPES_ARTICLES,
+    MODALITES_VERSEMENT_SEMENCE: MODALITES_VERSEMENT_SEMENCE, FAMILLES_VERSEMENT: FAMILLES_VERSEMENT, semenceModalitesVersement: semenceModalitesVersement, versionsModalitesVersement: versionsModalitesVersement,
+    modaliteVersementALaDate: modaliteVersementALaDate, modalitesVersementActives: modalitesVersementActives, libelleModaliteVersement: libelleModaliteVersement,
     PARAMETRES_CLINIQUE: PARAMETRES_CLINIQUE, semenceParametresClinique: semenceParametresClinique, definitionParametreClinique: definitionParametreClinique,
     PLAN: { semenceReferentiels: semenceReferentielsPlan, referentiel: planReferentiel, etat: planEtat, axe: planAxe, nature: planNature, finTrimestre: planFinTrimestre, pourcentage: planPourcentage, nombre: planNombre,
       atteinteIndicateur: planAtteinteIndicateur, totaux: planTotaux, retard: planRetard },

@@ -178,8 +178,11 @@
      semés), `reglagesPlan` (signataires de l'impression : fonction par référence à un poste, versions datées) et `adoptionsPlan` (adoption par la Direction, une par exercice) ; le geste
      réservé `adopter_plan_annuel` entre au manifeste, la clé `plan.graceRetardJours` aux paramètres de clinique. Sans incrément, un poste garderait l'ancien plan écrit en dur.     99 (17/11/2026, lot MAJ) : TROIS PARAMÈTRES DE CLINIQUE pour la mise à jour du logiciel (`maj.ageMaxCopieHeures`, `maj.retourArriereMinutes`, `maj.ecartVersionTolere`). Sans incrément, un poste n'aurait pas leurs défauts semés.     98 (17/11/2026, lot TIERS) : LA FACTURE À UN TIERS PAYEUR. Cinq collections neuves (`tiersPayeurs`, fiches versionnées par date ; `facturesTiers` ; `avoirsTiers` ; `reglementsTiers` ;
      `lettragesTiers`) et deux gestes réservés (`emettre_facture_tiers`, `corriger_facture_tiers`) entrent au manifeste. Sans incrément, un poste n'aurait ni les collections ni les droits.
+     100 (20/11/2026, lot PAIE-V) : LE PAIEMENT PAR VERSEMENTS SUCCESSIFS ET MODES MULTIPLES. La collection `versementsCaisse` (une fiche par versement : pièce, type, modalité, opérateur, référence de la
+     transaction, montant, agent, instant, jamais réécrite) et la collection `modalitesVersement` (types, modalités et opérateurs de mobile money, versions datées, défauts semés) entrent au socle ;
+     le geste réservé `regler_modalites_versement` entre au manifeste. Sans incrément, un poste n'aurait pas les collections et l'écran de caisse retomberait sur un montant et un mode uniques.
   */
-  var VERSION = 99;
+  var VERSION = 100;
   var db = null;
   var listeners = {};
 
@@ -1888,6 +1891,9 @@
          registre fiscal (MECeF). Lue par les deux modules ET par la
          comptabilité : amorcée ICI. */
       avoirs: [],
+      /* LES VERSEMENTS DE CAISSE (20/11/2026, lot PAIE-V) : vide au départ (un versement naît d'un encaissement). Les modalités (types, modes, opérateurs) sont une configuration SEMÉE : huit fiches, mesurées (moins de trois kilo-octets). */
+      versementsCaisse: [],
+      modalitesVersement: D.semenceModalitesVersement(),
       /* PV de réception (M7) — consommables et réactifs, deux écrans d'un
          même module. Vide au socle pour la corbeille. */
       pvReceptions: [],
@@ -4259,7 +4265,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'regimesIndividuels', 'planningsPersonnalises', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux', 'parametresClinique', 'referentielsPlan', 'reglagesPlan',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux', 'parametresClinique', 'modalitesVersement', 'referentielsPlan', 'reglagesPlan',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -4585,6 +4591,7 @@
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
     tiersPayeurs: 'M8|Tiers payeurs (fiches versionnées par date)', facturesTiers: 'M8|Factures aux tiers payeurs', avoirsTiers: 'M8|Avoirs des factures aux tiers payeurs',
     reglementsTiers: 'M8|Règlements reçus des tiers payeurs', lettragesTiers: 'M8|Lettrages des règlements de tiers payeurs',
+    versementsCaisse: 'M8|Versements de caisse', modalitesVersement: 'M8|Modalités de versement (types, modes, opérateurs de mobile money)',
     avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',
     secteurs: 'CFG|Secteurs de la clinique', postes: 'CFG|Postes de l’organigramme',
     ressources: 'CFG|Ressources graphiques',
