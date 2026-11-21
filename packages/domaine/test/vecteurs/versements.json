@@ -1,0 +1,5573 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-versements.js : le moteur des versements piloté dans Chrome, ne pas éditer. Horloge : 30/10/2026 midi.",
+ "aujourdhui": "2026-10-30",
+ "geste": "regler_modalites_versement",
+ "detenteurs": [
+  "admin",
+  "da"
+ ],
+ "lettres": [
+  {
+   "valeur": 0,
+   "nombre": "zéro",
+   "montant": "zéro franc CFA"
+  },
+  {
+   "valeur": 1,
+   "nombre": "un",
+   "montant": "un franc CFA"
+  },
+  {
+   "valeur": 2,
+   "nombre": "deux",
+   "montant": "deux francs CFA"
+  },
+  {
+   "valeur": 16,
+   "nombre": "seize",
+   "montant": "seize francs CFA"
+  },
+  {
+   "valeur": 17,
+   "nombre": "dix-sept",
+   "montant": "dix-sept francs CFA"
+  },
+  {
+   "valeur": 21,
+   "nombre": "vingt et un",
+   "montant": "vingt et un francs CFA"
+  },
+  {
+   "valeur": 71,
+   "nombre": "soixante et onze",
+   "montant": "soixante et onze francs CFA"
+  },
+  {
+   "valeur": 72,
+   "nombre": "soixante-douze",
+   "montant": "soixante-douze francs CFA"
+  },
+  {
+   "valeur": 77,
+   "nombre": "soixante-dix-sept",
+   "montant": "soixante-dix-sept francs CFA"
+  },
+  {
+   "valeur": 80,
+   "nombre": "quatre-vingts",
+   "montant": "quatre-vingts francs CFA"
+  },
+  {
+   "valeur": 81,
+   "nombre": "quatre-vingt-un",
+   "montant": "quatre-vingt-un francs CFA"
+  },
+  {
+   "valeur": 91,
+   "nombre": "quatre-vingt-onze",
+   "montant": "quatre-vingt-onze francs CFA"
+  },
+  {
+   "valeur": 99,
+   "nombre": "quatre-vingt-dix-neuf",
+   "montant": "quatre-vingt-dix-neuf francs CFA"
+  },
+  {
+   "valeur": 100,
+   "nombre": "cent",
+   "montant": "cent francs CFA"
+  },
+  {
+   "valeur": 101,
+   "nombre": "cent un",
+   "montant": "cent un francs CFA"
+  },
+  {
+   "valeur": 200,
+   "nombre": "deux cents",
+   "montant": "deux cents francs CFA"
+  },
+  {
+   "valeur": 280,
+   "nombre": "deux cent quatre-vingts",
+   "montant": "deux cent quatre-vingts francs CFA"
+  },
+  {
+   "valeur": 300,
+   "nombre": "trois cents",
+   "montant": "trois cents francs CFA"
+  },
+  {
+   "valeur": 999,
+   "nombre": "neuf cent quatre-vingt-dix-neuf",
+   "montant": "neuf cent quatre-vingt-dix-neuf francs CFA"
+  },
+  {
+   "valeur": 1000,
+   "nombre": "mille",
+   "montant": "mille francs CFA"
+  },
+  {
+   "valeur": 1001,
+   "nombre": "mille un",
+   "montant": "mille un francs CFA"
+  },
+  {
+   "valeur": 2000,
+   "nombre": "deux mille",
+   "montant": "deux mille francs CFA"
+  },
+  {
+   "valeur": 8500,
+   "nombre": "huit mille cinq cents",
+   "montant": "huit mille cinq cents francs CFA"
+  },
+  {
+   "valeur": 15000,
+   "nombre": "quinze mille",
+   "montant": "quinze mille francs CFA"
+  },
+  {
+   "valeur": 21000,
+   "nombre": "vingt et un mille",
+   "montant": "vingt et un mille francs CFA"
+  },
+  {
+   "valeur": 23500,
+   "nombre": "vingt-trois mille cinq cents",
+   "montant": "vingt-trois mille cinq cents francs CFA"
+  },
+  {
+   "valeur": 80000,
+   "nombre": "quatre-vingt mille",
+   "montant": "quatre-vingt mille francs CFA"
+  },
+  {
+   "valeur": 81000,
+   "nombre": "quatre-vingt-un mille",
+   "montant": "quatre-vingt-un mille francs CFA"
+  },
+  {
+   "valeur": 100000,
+   "nombre": "cent mille",
+   "montant": "cent mille francs CFA"
+  },
+  {
+   "valeur": 180000,
+   "nombre": "cent quatre-vingt mille",
+   "montant": "cent quatre-vingt mille francs CFA"
+  },
+  {
+   "valeur": 200000,
+   "nombre": "deux cent mille",
+   "montant": "deux cent mille francs CFA"
+  },
+  {
+   "valeur": 280000,
+   "nombre": "deux cent quatre-vingt mille",
+   "montant": "deux cent quatre-vingt mille francs CFA"
+  },
+  {
+   "valeur": 999999,
+   "nombre": "neuf cent quatre-vingt-dix-neuf mille neuf cent quatre-vingt-dix-neuf",
+   "montant": "neuf cent quatre-vingt-dix-neuf mille neuf cent quatre-vingt-dix-neuf francs CFA"
+  },
+  {
+   "valeur": 1000000,
+   "nombre": "un million",
+   "montant": "un million de francs CFA"
+  },
+  {
+   "valeur": 1000001,
+   "nombre": "un million un",
+   "montant": "un million un francs CFA"
+  },
+  {
+   "valeur": 1200000,
+   "nombre": "un million deux cent mille",
+   "montant": "un million deux cent mille francs CFA"
+  },
+  {
+   "valeur": 2000000,
+   "nombre": "deux millions",
+   "montant": "deux millions de francs CFA"
+  },
+  {
+   "valeur": 2500000,
+   "nombre": "deux millions cinq cent mille",
+   "montant": "deux millions cinq cent mille francs CFA"
+  },
+  {
+   "valeur": 80000000,
+   "nombre": "quatre-vingts millions",
+   "montant": "quatre-vingts millions de francs CFA"
+  },
+  {
+   "valeur": 200000000,
+   "nombre": "deux cents millions",
+   "montant": "deux cents millions de francs CFA"
+  },
+  {
+   "valeur": 1000000000,
+   "nombre": "un milliard",
+   "montant": "un milliard de francs CFA"
+  },
+  {
+   "valeur": 2000000000,
+   "nombre": "deux milliards",
+   "montant": "deux milliards de francs CFA"
+  },
+  {
+   "valeur": 1200000000,
+   "nombre": "un milliard deux cents millions",
+   "montant": "un milliard deux cents millions de francs CFA"
+  }
+ ],
+ "formuleArrete": "Arrêtée la présente facture à la somme de",
+ "semence": [
+  {
+   "id": "MVS-001",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "type",
+   "code": "acompte",
+   "libelle": "Acompte"
+  },
+  {
+   "id": "MVS-002",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "type",
+   "code": "solde",
+   "libelle": "Solde"
+  },
+  {
+   "id": "MVS-003",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "modalite",
+   "code": "especes",
+   "libelle": "Espèces",
+   "compte": "571000",
+   "compteLibelle": "Caisse",
+   "exigeReference": false,
+   "exigeOperateur": false
+  },
+  {
+   "id": "MVS-004",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "modalite",
+   "code": "mobile_money",
+   "libelle": "Mobile money",
+   "compte": "521000",
+   "compteLibelle": "Banques et mobile money",
+   "exigeReference": true,
+   "exigeOperateur": true
+  },
+  {
+   "id": "MVS-005",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "modalite",
+   "code": "tpe",
+   "libelle": "TPE (carte bancaire)",
+   "compte": "521000",
+   "compteLibelle": "Banques et mobile money",
+   "exigeReference": false,
+   "exigeOperateur": false
+  },
+  {
+   "id": "MVS-006",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "operateur",
+   "code": "mtn",
+   "libelle": "MTN Mobile Money"
+  },
+  {
+   "id": "MVS-007",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "operateur",
+   "code": "moov",
+   "libelle": "Moov Money"
+  },
+  {
+   "id": "MVS-008",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "operateur",
+   "code": "celtiis",
+   "libelle": "Celtiis Cash"
+  }
+ ],
+ "posees": [
+  {
+   "nom": "archiver Moov à partir du 25/11/2026",
+   "entree": {
+    "famille": "operateur",
+    "code": "moov",
+    "libelle": "Moov Money",
+    "actif": false,
+    "dateEffet": "2026-11-25",
+    "motif": "Vecteur : contrat résilié"
+   },
+   "sortie": {
+    "ok": true,
+    "actif": false,
+    "dateEffet": "2026-11-25"
+   }
+  },
+  {
+   "nom": "réactiver Moov à partir du 10/12/2026",
+   "entree": {
+    "famille": "operateur",
+    "code": "moov",
+    "libelle": "Moov Money",
+    "actif": true,
+    "dateEffet": "2026-12-10",
+    "motif": "Vecteur : contrat renouvelé"
+   },
+   "sortie": {
+    "ok": true,
+    "actif": true,
+    "dateEffet": "2026-12-10"
+   }
+  },
+  {
+   "nom": "ajouter la modalité chèque",
+   "entree": {
+    "famille": "modalite",
+    "code": "cheque",
+    "libelle": "Chèque",
+    "compte": "521000",
+    "exigeReference": true,
+    "exigeOperateur": false,
+    "dateEffet": "2026-11-05",
+    "motif": "Vecteur : nouvelle modalité"
+   },
+   "sortie": {
+    "ok": true,
+    "actif": true,
+    "dateEffet": "2026-11-05"
+   }
+  },
+  {
+   "nom": "archiver la modalité TPE à partir du 25/11/2026",
+   "entree": {
+    "famille": "modalite",
+    "code": "tpe",
+    "libelle": "TPE (carte bancaire)",
+    "compte": "521000",
+    "actif": false,
+    "dateEffet": "2026-11-25",
+    "motif": "Vecteur : terminal rendu"
+   },
+   "sortie": {
+    "ok": true,
+    "actif": false,
+    "dateEffet": "2026-11-25"
+   }
+  },
+  {
+   "nom": "famille inconnue",
+   "entree": {
+    "famille": "banque",
+    "code": "abc",
+    "libelle": "Banque",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_FAMILLE_INCONNUE"
+   }
+  },
+  {
+   "nom": "code invalide",
+   "entree": {
+    "famille": "operateur",
+    "code": "Moov 2",
+    "libelle": "Moov",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_CODE_INVALIDE"
+   }
+  },
+  {
+   "nom": "libellé absent",
+   "entree": {
+    "famille": "operateur",
+    "code": "orange",
+    "libelle": " ",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_LIBELLE_ABSENT"
+   }
+  },
+  {
+   "nom": "compte absent",
+   "entree": {
+    "famille": "modalite",
+    "code": "virement",
+    "libelle": "Virement",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_COMPTE_INVALIDE"
+   }
+  },
+  {
+   "nom": "motif absent",
+   "entree": {
+    "famille": "operateur",
+    "code": "orange",
+    "libelle": "Orange",
+    "motif": ""
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MOTIF_ABSENT"
+   }
+  },
+  {
+   "nom": "date antérieure à la dernière version",
+   "entree": {
+    "famille": "operateur",
+    "code": "moov",
+    "libelle": "Moov Money",
+    "actif": true,
+    "dateEffet": "2026-11-01",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "DATE_EFFET_ANTERIEURE"
+   }
+  },
+  {
+   "nom": "archiver le mobile money à partir du 20/12/2026",
+   "entree": {
+    "famille": "modalite",
+    "code": "mobile_money",
+    "libelle": "Mobile money",
+    "compte": "521000",
+    "exigeReference": true,
+    "exigeOperateur": true,
+    "actif": false,
+    "dateEffet": "2026-12-20",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": true,
+    "actif": false,
+    "dateEffet": "2026-12-20"
+   }
+  },
+  {
+   "nom": "archiver le chèque à partir du 20/12/2026",
+   "entree": {
+    "famille": "modalite",
+    "code": "cheque",
+    "libelle": "Chèque",
+    "compte": "521000",
+    "exigeReference": true,
+    "actif": false,
+    "dateEffet": "2026-12-20",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": true,
+    "actif": false,
+    "dateEffet": "2026-12-20"
+   }
+  },
+  {
+   "nom": "archiver la dernière modalité proposée (espèces le 20/12/2026)",
+   "entree": {
+    "famille": "modalite",
+    "code": "especes",
+    "libelle": "Espèces",
+    "compte": "571000",
+    "actif": false,
+    "dateEffet": "2026-12-20",
+    "motif": "Vecteur"
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_DERNIERE_MODALITE"
+   }
+  }
+ ],
+ "fiches": [
+  {
+   "id": "MVSxmvux6yzldbjke",
+   "statut": "actif",
+   "famille": "modalite",
+   "code": "cheque",
+   "libelle": "Chèque",
+   "actif": false,
+   "dateEffet": "2026-12-20",
+   "motif": "Vecteur",
+   "source": null,
+   "creeLe": "2026-10-30T12:00:00.417Z",
+   "creePar": "Admin Vecteur",
+   "compte": "521000",
+   "compteLibelle": "Chèque",
+   "exigeReference": true,
+   "exigeOperateur": false
+  },
+  {
+   "id": "MVSxmvux6yzlzckzq",
+   "statut": "actif",
+   "famille": "modalite",
+   "code": "mobile_money",
+   "libelle": "Mobile money",
+   "actif": false,
+   "dateEffet": "2026-12-20",
+   "motif": "Vecteur",
+   "source": null,
+   "creeLe": "2026-10-30T12:00:00.417Z",
+   "creePar": "Admin Vecteur",
+   "compte": "521000",
+   "compteLibelle": "Mobile money",
+   "exigeReference": true,
+   "exigeOperateur": true
+  },
+  {
+   "id": "MVSxmvux6yzlv1k2w",
+   "statut": "actif",
+   "famille": "modalite",
+   "code": "tpe",
+   "libelle": "TPE (carte bancaire)",
+   "actif": false,
+   "dateEffet": "2026-11-25",
+   "motif": "Vecteur : terminal rendu",
+   "source": null,
+   "creeLe": "2026-10-30T12:00:00.417Z",
+   "creePar": "Admin Vecteur",
+   "compte": "521000",
+   "compteLibelle": "TPE (carte bancaire)",
+   "exigeReference": false,
+   "exigeOperateur": false
+  },
+  {
+   "id": "MVSxmvux6yzl5fczi",
+   "statut": "actif",
+   "famille": "modalite",
+   "code": "cheque",
+   "libelle": "Chèque",
+   "actif": true,
+   "dateEffet": "2026-11-05",
+   "motif": "Vecteur : nouvelle modalité",
+   "source": null,
+   "creeLe": "2026-10-30T12:00:00.417Z",
+   "creePar": "Admin Vecteur",
+   "compte": "521000",
+   "compteLibelle": "Chèque",
+   "exigeReference": true,
+   "exigeOperateur": false
+  },
+  {
+   "id": "MVSxmvux6yzlebw14",
+   "statut": "actif",
+   "famille": "operateur",
+   "code": "moov",
+   "libelle": "Moov Money",
+   "actif": true,
+   "dateEffet": "2026-12-10",
+   "motif": "Vecteur : contrat renouvelé",
+   "source": null,
+   "creeLe": "2026-10-30T12:00:00.417Z",
+   "creePar": "Admin Vecteur"
+  },
+  {
+   "id": "MVSxmvux6yzkeu8ef",
+   "statut": "actif",
+   "famille": "operateur",
+   "code": "moov",
+   "libelle": "Moov Money",
+   "actif": false,
+   "dateEffet": "2026-11-25",
+   "motif": "Vecteur : contrat résilié",
+   "source": null,
+   "creeLe": "2026-10-30T12:00:00.416Z",
+   "creePar": "Admin Vecteur"
+  },
+  {
+   "id": "MVS-001",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "type",
+   "code": "acompte",
+   "libelle": "Acompte"
+  },
+  {
+   "id": "MVS-002",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "type",
+   "code": "solde",
+   "libelle": "Solde"
+  },
+  {
+   "id": "MVS-003",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "modalite",
+   "code": "especes",
+   "libelle": "Espèces",
+   "compte": "571000",
+   "compteLibelle": "Caisse",
+   "exigeReference": false,
+   "exigeOperateur": false
+  },
+  {
+   "id": "MVS-004",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "modalite",
+   "code": "mobile_money",
+   "libelle": "Mobile money",
+   "compte": "521000",
+   "compteLibelle": "Banques et mobile money",
+   "exigeReference": true,
+   "exigeOperateur": true
+  },
+  {
+   "id": "MVS-005",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "modalite",
+   "code": "tpe",
+   "libelle": "TPE (carte bancaire)",
+   "compte": "521000",
+   "compteLibelle": "Banques et mobile money",
+   "exigeReference": false,
+   "exigeOperateur": false
+  },
+  {
+   "id": "MVS-006",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "operateur",
+   "code": "mtn",
+   "libelle": "MTN Mobile Money"
+  },
+  {
+   "id": "MVS-007",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "operateur",
+   "code": "moov",
+   "libelle": "Moov Money"
+  },
+  {
+   "id": "MVS-008",
+   "statut": "actif",
+   "actif": true,
+   "dateEffet": null,
+   "source": "Proposition à valider : réponses de la Direction du 20/11/2026 (DECISIONS-A-VALIDER, section BI)",
+   "motif": "Défaut semé",
+   "creeLe": "2026-11-20",
+   "creePar": "Semence du socle",
+   "famille": "operateur",
+   "code": "celtiis",
+   "libelle": "Celtiis Cash"
+  }
+ ],
+ "resolutions": [
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-10-30",
+   "existe": true,
+   "actif": true,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-11-04",
+   "existe": true,
+   "actif": true,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-11-05",
+   "existe": true,
+   "actif": true,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-11-24",
+   "existe": true,
+   "actif": true,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-11-25",
+   "existe": true,
+   "actif": false,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-12-09",
+   "existe": true,
+   "actif": false,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-12-10",
+   "existe": true,
+   "actif": true,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "moov",
+   "date": "2026-12-20",
+   "existe": true,
+   "actif": true,
+   "libelle": "Moov Money",
+   "libelleLu": "Moov Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-10-30",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-11-04",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-11-05",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-11-24",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-11-25",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-12-09",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-12-10",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "operateur",
+   "code": "mtn",
+   "date": "2026-12-20",
+   "existe": true,
+   "actif": true,
+   "libelle": "MTN Mobile Money",
+   "libelleLu": "MTN Mobile Money"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-10-30",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-11-04",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-11-05",
+   "existe": true,
+   "actif": true,
+   "libelle": "Chèque",
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-11-24",
+   "existe": true,
+   "actif": true,
+   "libelle": "Chèque",
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-11-25",
+   "existe": true,
+   "actif": true,
+   "libelle": "Chèque",
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-12-09",
+   "existe": true,
+   "actif": true,
+   "libelle": "Chèque",
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-12-10",
+   "existe": true,
+   "actif": true,
+   "libelle": "Chèque",
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "cheque",
+   "date": "2026-12-20",
+   "existe": true,
+   "actif": false,
+   "libelle": "Chèque",
+   "libelleLu": "Chèque"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-10-30",
+   "existe": true,
+   "actif": true,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-11-04",
+   "existe": true,
+   "actif": true,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-11-05",
+   "existe": true,
+   "actif": true,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-11-24",
+   "existe": true,
+   "actif": true,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-11-25",
+   "existe": true,
+   "actif": false,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-12-09",
+   "existe": true,
+   "actif": false,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-12-10",
+   "existe": true,
+   "actif": false,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "tpe",
+   "date": "2026-12-20",
+   "existe": true,
+   "actif": false,
+   "libelle": "TPE (carte bancaire)",
+   "libelleLu": "TPE (carte bancaire)"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-10-30",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-11-04",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-11-05",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-11-24",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-11-25",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-12-09",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-12-10",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "modalite",
+   "code": "especes",
+   "date": "2026-12-20",
+   "existe": true,
+   "actif": true,
+   "libelle": "Espèces",
+   "libelleLu": "Espèces"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-10-30",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-11-04",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-11-05",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-11-24",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-11-25",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-12-09",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-12-10",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "type",
+   "code": "solde",
+   "date": "2026-12-20",
+   "existe": true,
+   "actif": true,
+   "libelle": "Solde",
+   "libelleLu": "Solde"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-10-30",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-11-04",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-11-05",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-11-24",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-11-25",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-12-09",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-12-10",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  },
+  {
+   "famille": "modalite",
+   "code": "inconnue",
+   "date": "2026-12-20",
+   "existe": false,
+   "actif": null,
+   "libelle": null,
+   "libelleLu": "inconnue"
+  }
+ ],
+ "actives": [
+  {
+   "date": "2026-10-30",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes",
+    "mobile_money",
+    "tpe"
+   ],
+   "operateur": [
+    "mtn",
+    "moov",
+    "celtiis"
+   ]
+  },
+  {
+   "date": "2026-11-04",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes",
+    "mobile_money",
+    "tpe"
+   ],
+   "operateur": [
+    "mtn",
+    "moov",
+    "celtiis"
+   ]
+  },
+  {
+   "date": "2026-11-05",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes",
+    "mobile_money",
+    "tpe",
+    "cheque"
+   ],
+   "operateur": [
+    "mtn",
+    "moov",
+    "celtiis"
+   ]
+  },
+  {
+   "date": "2026-11-24",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes",
+    "mobile_money",
+    "tpe",
+    "cheque"
+   ],
+   "operateur": [
+    "mtn",
+    "moov",
+    "celtiis"
+   ]
+  },
+  {
+   "date": "2026-11-25",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes",
+    "mobile_money",
+    "cheque"
+   ],
+   "operateur": [
+    "mtn",
+    "celtiis"
+   ]
+  },
+  {
+   "date": "2026-12-09",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes",
+    "mobile_money",
+    "cheque"
+   ],
+   "operateur": [
+    "mtn",
+    "celtiis"
+   ]
+  },
+  {
+   "date": "2026-12-10",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes",
+    "mobile_money",
+    "cheque"
+   ],
+   "operateur": [
+    "mtn",
+    "moov",
+    "celtiis"
+   ]
+  },
+  {
+   "date": "2026-12-20",
+   "type": [
+    "acompte",
+    "solde"
+   ],
+   "modalite": [
+    "especes"
+   ],
+   "operateur": [
+    "mtn",
+    "moov",
+    "celtiis"
+   ]
+  }
+ ],
+ "controle": [
+  {
+   "nom": "deux versements qui soldent (15 000 mobile money + 8 500 espèces)",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "mtn",
+     "montant": 15000,
+     "referenceTransaction": "M123"
+    },
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 8500
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": true,
+    "total": 23500,
+    "lignes": [
+     {
+      "type": "acompte",
+      "typeLibelle": "Acompte",
+      "modalite": "mobile_money",
+      "modaliteLibelle": "Mobile money",
+      "compte": "521000",
+      "compteLibelle": "Banques et mobile money",
+      "montant": 15000,
+      "operateur": "mtn",
+      "operateurLibelle": "MTN Mobile Money",
+      "referenceTransaction": "M123"
+     },
+     {
+      "type": "solde",
+      "typeLibelle": "Solde",
+      "modalite": "especes",
+      "modaliteLibelle": "Espèces",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "montant": 8500
+     }
+    ]
+   }
+  },
+  {
+   "nom": "un seul versement en espèces",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 23500
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": true,
+    "total": 23500,
+    "lignes": [
+     {
+      "type": "solde",
+      "typeLibelle": "Solde",
+      "modalite": "especes",
+      "modaliteLibelle": "Espèces",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "montant": 23500
+     }
+    ]
+   }
+  },
+  {
+   "nom": "trois versements",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "especes",
+     "montant": 10000
+    },
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "mtn",
+     "montant": 10000,
+     "referenceTransaction": "R9"
+    },
+    {
+     "type": "solde",
+     "modalite": "tpe",
+     "montant": 3500
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": true,
+    "total": 23500,
+    "lignes": [
+     {
+      "type": "acompte",
+      "typeLibelle": "Acompte",
+      "modalite": "especes",
+      "modaliteLibelle": "Espèces",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "montant": 10000
+     },
+     {
+      "type": "acompte",
+      "typeLibelle": "Acompte",
+      "modalite": "mobile_money",
+      "modaliteLibelle": "Mobile money",
+      "compte": "521000",
+      "compteLibelle": "Banques et mobile money",
+      "montant": 10000,
+      "operateur": "mtn",
+      "operateurLibelle": "MTN Mobile Money",
+      "referenceTransaction": "R9"
+     },
+     {
+      "type": "solde",
+      "typeLibelle": "Solde",
+      "modalite": "tpe",
+      "modaliteLibelle": "TPE (carte bancaire)",
+      "compte": "521000",
+      "compteLibelle": "Banques et mobile money",
+      "montant": 3500
+     }
+    ]
+   }
+  },
+  {
+   "nom": "mobile money sans référence",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "mtn",
+     "montant": 15000
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_REFERENCE_ABSENTE",
+    "motif": "La modalité « Mobile money » exige la référence de la transaction (saisie à la main).",
+    "geste": "Saisir la référence de la transaction relevée sur le message de l’opérateur.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "mobile money référence d’espaces",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "mtn",
+     "montant": 15000,
+     "referenceTransaction": "   "
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_REFERENCE_ABSENTE",
+    "motif": "La modalité « Mobile money » exige la référence de la transaction (saisie à la main).",
+    "geste": "Saisir la référence de la transaction relevée sur le message de l’opérateur.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "mobile money sans opérateur",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "referenceTransaction": "M1",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_OPERATEUR_ABSENT",
+    "motif": "La modalité « Mobile money » exige l’opérateur.",
+    "geste": "Choisir l’opérateur de la transaction.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "mobile money opérateur inconnu",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "orange",
+     "referenceTransaction": "M1",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_OPERATEUR_INCONNU",
+    "motif": "L’opérateur « orange » n’existe pas.",
+    "geste": "Choisir un opérateur de la liste.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "espèces avec un opérateur superflu (ignoré)",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "especes",
+     "operateur": "mtn",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": true,
+    "total": 1000,
+    "lignes": [
+     {
+      "type": "acompte",
+      "typeLibelle": "Acompte",
+      "modalite": "especes",
+      "modaliteLibelle": "Espèces",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "montant": 1000
+     }
+    ]
+   }
+  },
+  {
+   "nom": "dépasse le dû",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 23501
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_SUPERIEUR_AU_DU",
+    "motif": "Versement de 23 501 FCFA refusé : la pièce FV-X ne doit plus que 23 500 FCFA. Un versement ne dépasse jamais le dû de la part du patient.",
+    "geste": "Réduire le montant (le reste dû est 23 500 FCFA) ; un trop-perçu se rend, il ne s’enregistre pas.",
+    "rang": 1,
+    "famille": null,
+    "reste": 23500
+   }
+  },
+  {
+   "nom": "le deuxième versement dépasse le dû",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "especes",
+     "montant": 20000
+    },
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 3501
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_SUPERIEUR_AU_DU",
+    "motif": "Versement 2 : Versement de 3 501 FCFA refusé : la pièce FV-X ne doit plus que 3 500 FCFA. Un versement ne dépasse jamais le dû de la part du patient.",
+    "geste": "Réduire le montant (le reste dû est 3 500 FCFA) ; un trop-perçu se rend, il ne s’enregistre pas.",
+    "rang": 2,
+    "famille": null,
+    "reste": 3500
+   }
+  },
+  {
+   "nom": "dépasse le reste après un acompte déjà reçu",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "partielle",
+    "montantPaye": 20000,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 3501
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_SUPERIEUR_AU_DU",
+    "motif": "Versement de 3 501 FCFA refusé : la pièce FV-X ne doit plus que 3 500 FCFA. Un versement ne dépasse jamais le dû de la part du patient.",
+    "geste": "Réduire le montant (le reste dû est 3 500 FCFA) ; un trop-perçu se rend, il ne s’enregistre pas.",
+    "rang": 1,
+    "famille": null,
+    "reste": 3500
+   }
+  },
+  {
+   "nom": "solde exact du reste",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "partielle",
+    "montantPaye": 20000,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 3500
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": true,
+    "total": 3500,
+    "lignes": [
+     {
+      "type": "solde",
+      "typeLibelle": "Solde",
+      "modalite": "especes",
+      "modaliteLibelle": "Espèces",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "montant": 3500
+     }
+    ]
+   }
+  },
+  {
+   "nom": "pièce soldée",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "soldee",
+    "montantPaye": 23500,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 1
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_PIECE_SOLDEE",
+    "motif": "La pièce FV-X est soldée : aucun versement ne s’y ajoute.",
+    "geste": "Pour rendre un trop-perçu ou corriger, émettre un avoir ou un remboursement ; la pièce ne se réécrit pas.",
+    "rang": null,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "versement sur la part de l’assureur",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 1000,
+     "partie": "assureur"
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_PART_ASSUREUR",
+    "motif": "Un versement de caisse ne règle que la part du PATIENT : la part d’un assureur ou d’un tiers payeur n’est pas un versement de caisse.",
+    "geste": "Régler la part de l’assureur par le circuit des règlements d’assureurs ou des tiers payeurs.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "pièce à la charge de l’assureur seul",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 0,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 0
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_PART_ASSUREUR",
+    "motif": "Un versement de caisse ne règle que la part du PATIENT : la part d’un assureur ou d’un tiers payeur n’est pas un versement de caisse.",
+    "geste": "Régler la part de l’assureur par le circuit des règlements d’assureurs ou des tiers payeurs.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "montant nul",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 0
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MONTANT_INVALIDE",
+    "motif": "Le montant d’un versement est un nombre entier de francs strictement positif (reçu « 0 »).",
+    "geste": "Saisir un montant entier supérieur à 0.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "montant négatif",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": -500
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MONTANT_INVALIDE",
+    "motif": "Le montant d’un versement est un nombre entier de francs strictement positif (reçu « -500 »).",
+    "geste": "Saisir un montant entier supérieur à 0.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "montant décimal",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 100.5
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MONTANT_INVALIDE",
+    "motif": "Le montant d’un versement est un nombre entier de francs strictement positif (reçu « 100.5 »).",
+    "geste": "Saisir un montant entier supérieur à 0.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "montant absent",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes"
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MONTANT_INVALIDE",
+    "motif": "Le montant d’un versement est un nombre entier de francs strictement positif (reçu «  »).",
+    "geste": "Saisir un montant entier supérieur à 0.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "aucun versement",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_AUCUN",
+    "motif": "Aucun versement à enregistrer.",
+    "geste": "Ajouter au moins un versement.",
+    "rang": null,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "type inconnu",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "avance",
+     "modalite": "especes",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_TYPE_INCONNU",
+    "motif": "Le type de versement « avance » n’existe pas.",
+    "geste": "Choisir un type de versement de la liste.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "modalité inconnue",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "troc",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MODALITE_INCONNUE",
+    "motif": "La modalité de versement « troc » n’existe pas.",
+    "geste": "Choisir une modalité de la liste.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "modalité archivée à la date (TPE le 26/11/2026)",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "tpe",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-11-26",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MODALITE_ARCHIVEE",
+    "motif": "La modalité « TPE (carte bancaire) » est archivée : elle n’est plus proposée à la saisie.",
+    "geste": "Choisir une modalité proposée (une modalité archivée reste lisible sur les pièces passées).",
+    "rang": 1,
+    "famille": "modalite",
+    "reste": null
+   }
+  },
+  {
+   "nom": "modalité encore proposée la veille de l’archivage (TPE le 24/11/2026)",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "tpe",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-11-24",
+   "sortie": {
+    "ok": true,
+    "total": 1000,
+    "lignes": [
+     {
+      "type": "solde",
+      "typeLibelle": "Solde",
+      "modalite": "tpe",
+      "modaliteLibelle": "TPE (carte bancaire)",
+      "compte": "521000",
+      "compteLibelle": "Banques et mobile money",
+      "montant": 1000
+     }
+    ]
+   }
+  },
+  {
+   "nom": "opérateur archivé à la date (Moov le 26/11/2026)",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "moov",
+     "referenceTransaction": "M5",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-11-26",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MODALITE_ARCHIVEE",
+    "motif": "L’opérateur « Moov Money » est archivé : il n’est plus proposé à la saisie.",
+    "geste": "Choisir un opérateur proposé.",
+    "rang": 1,
+    "famille": "operateur",
+    "reste": null
+   }
+  },
+  {
+   "nom": "opérateur réactivé (Moov le 10/12/2026)",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "moov",
+     "referenceTransaction": "M5",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-12-10",
+   "sortie": {
+    "ok": true,
+    "total": 1000,
+    "lignes": [
+     {
+      "type": "acompte",
+      "typeLibelle": "Acompte",
+      "modalite": "mobile_money",
+      "modaliteLibelle": "Mobile money",
+      "compte": "521000",
+      "compteLibelle": "Banques et mobile money",
+      "montant": 1000,
+      "operateur": "moov",
+      "operateurLibelle": "Moov Money",
+      "referenceTransaction": "M5"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "modalité ajoutée : chèque avec référence",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "cheque",
+     "referenceTransaction": "CHQ1",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-11-05",
+   "sortie": {
+    "ok": true,
+    "total": 1000,
+    "lignes": [
+     {
+      "type": "solde",
+      "typeLibelle": "Solde",
+      "modalite": "cheque",
+      "modaliteLibelle": "Chèque",
+      "compte": "521000",
+      "compteLibelle": "Chèque",
+      "montant": 1000,
+      "referenceTransaction": "CHQ1"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "modalité ajoutée : chèque sans référence",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "cheque",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-11-05",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_REFERENCE_ABSENTE",
+    "motif": "La modalité « Chèque » exige la référence de la transaction (saisie à la main).",
+    "geste": "Saisir la référence de la transaction relevée sur le message de l’opérateur.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "modalité pas encore en vigueur : chèque le 04/11/2026",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "cheque",
+     "referenceTransaction": "CHQ1",
+     "montant": 1000
+    }
+   ],
+   "date": "2026-11-04",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_MODALITE_INCONNUE",
+    "motif": "La modalité de versement « cheque » n’existe pas.",
+    "geste": "Choisir une modalité de la liste.",
+    "rang": 1,
+    "famille": null,
+    "reste": null
+   }
+  },
+  {
+   "nom": "pièce sans lignes",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": []
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 23500
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": true,
+    "total": 23500,
+    "lignes": [
+     {
+      "type": "solde",
+      "typeLibelle": "Solde",
+      "modalite": "especes",
+      "modaliteLibelle": "Espèces",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "montant": 23500
+     }
+    ]
+   }
+  },
+  {
+   "nom": "pièce sans lignes : dépasse",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": []
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 23501
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_SUPERIEUR_AU_DU",
+    "motif": "Versement de 23 501 FCFA refusé : la pièce FV-X ne doit plus que 23 500 FCFA. Un versement ne dépasse jamais le dû de la part du patient.",
+    "geste": "Réduire le montant (le reste dû est 23 500 FCFA) ; un trop-perçu se rend, il ne s’enregistre pas.",
+    "rang": 1,
+    "famille": null,
+    "reste": 23500
+   }
+  },
+  {
+   "nom": "pièce assurée : seule la part du patient compte",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 7000,
+    "partAssurance": 16500,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 4000,
+      "partAssureur": 11000
+     },
+     {
+      "id": "L002",
+      "partPatient": 3000,
+      "partAssureur": 5500
+     }
+    ]
+   },
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 7001
+    }
+   ],
+   "date": "2026-10-30",
+   "sortie": {
+    "ok": false,
+    "code": "VERSEMENT_SUPERIEUR_AU_DU",
+    "motif": "Versement de 7 001 FCFA refusé : la pièce FV-X ne doit plus que 7 000 FCFA. Un versement ne dépasse jamais le dû de la part du patient.",
+    "geste": "Réduire le montant (le reste dû est 7 000 FCFA) ; un trop-perçu se rend, il ne s’enregistre pas.",
+    "rang": 1,
+    "famille": null,
+    "reste": 7000
+   }
+  }
+ ],
+ "sequences": [
+  {
+   "nom": "PRD : 23 500 en deux versements (15 000 mobile money MTN, 8 500 espèces)",
+   "depart": {
+    "id": "FV-S1",
+    "statut": "actif",
+    "numero": "FV-S1",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 23500,
+    "montantHT": 23500,
+    "partAssurance": 0,
+    "partPatient": 23500,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 23500,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 15000,
+      "montant": 15000,
+      "partAssureur": 0,
+      "partPatient": 15000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte 2",
+      "quantite": 1,
+      "prixUnitaire": 8500,
+      "montant": 8500,
+      "partAssureur": 0,
+      "partPatient": 8500,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.419Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "mobile_money",
+       "operateur": "mtn",
+       "montant": 15000,
+       "referenceTransaction": "M123"
+      },
+      {
+       "type": "solde",
+       "modalite": "especes",
+       "montant": 8500
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S1",
+      "statut": "actif",
+      "numero": "FV-S1",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 0,
+      "partPatient": 23500,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 23500,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 15000,
+        "montant": 15000,
+        "partAssureur": 0,
+        "partPatient": 15000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 8500,
+        "montant": 8500,
+        "partAssureur": 0,
+        "partPatient": 8500,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.419Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 23500,
+      "restantDu": 0,
+      "lignesReglees": [
+       "L001",
+       "L002"
+      ],
+      "facture": {
+       "statutPaiement": "soldee",
+       "montantPaye": 23500,
+       "reliquat": 0,
+       "modePaiement": "mixte",
+       "baseMecef": 23500,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "paye"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        8500
+       ],
+       [
+        "571000",
+        8500,
+        0
+       ],
+       [
+        "706000",
+        0,
+        15000
+       ],
+       [
+        "521000",
+        15000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "mobile_money",
+        "operateur": "mtn",
+        "referenceTransaction": "M123",
+        "montant": 15000,
+        "resteApres": 8500,
+        "compte": "521000",
+        "horsJour": false
+       },
+       {
+        "rang": 2,
+        "type": "solde",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 8500,
+        "resteApres": 0,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  },
+  {
+   "nom": "un versement partiel qui solde une ligne entière mais pas la suivante",
+   "depart": {
+    "id": "FV-S2",
+    "statut": "actif",
+    "numero": "FV-S2",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 27000,
+    "montantHT": 27000,
+    "partAssurance": 0,
+    "partPatient": 27000,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 27000,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 10000,
+      "montant": 10000,
+      "partAssureur": 0,
+      "partPatient": 10000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte 2",
+      "quantite": 1,
+      "prixUnitaire": 12000,
+      "montant": 12000,
+      "partAssureur": 0,
+      "partPatient": 12000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L003",
+      "categorie": "acte",
+      "designation": "Acte 3",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "montant": 5000,
+      "partAssureur": 0,
+      "partPatient": 5000,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.424Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "especes",
+       "montant": 10000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S2",
+      "statut": "actif",
+      "numero": "FV-S2",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 27000,
+      "montantHT": 27000,
+      "partAssurance": 0,
+      "partPatient": 27000,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 27000,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 10000,
+        "montant": 10000,
+        "partAssureur": 0,
+        "partPatient": 10000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 12000,
+        "montant": 12000,
+        "partAssureur": 0,
+        "partPatient": 12000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L003",
+        "categorie": "acte",
+        "designation": "Acte 3",
+        "quantite": 1,
+        "prixUnitaire": 5000,
+        "montant": 5000,
+        "partAssureur": 0,
+        "partPatient": 5000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.424Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 10000,
+      "restantDu": 17000,
+      "lignesReglees": [
+       "L001"
+      ],
+      "facture": {
+       "statutPaiement": "partielle",
+       "montantPaye": 10000,
+       "reliquat": 17000,
+       "modePaiement": "especes",
+       "baseMecef": 10000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "du"
+        ],
+        [
+         "L003",
+         "du"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        10000
+       ],
+       [
+        "571000",
+        10000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 10000,
+        "resteApres": 17000,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    },
+    {
+     "versements": [
+      {
+       "type": "solde",
+       "modalite": "especes",
+       "montant": 17000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S2",
+      "statut": "actif",
+      "numero": "FV-S2",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 27000,
+      "montantHT": 27000,
+      "partAssurance": 0,
+      "partPatient": 27000,
+      "assureur": null,
+      "montantPaye": 10000,
+      "reliquat": 17000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 10000,
+        "montant": 10000,
+        "partAssureur": 0,
+        "partPatient": 10000,
+        "statutPaiement": "paye",
+        "montantRegle": 10000,
+        "payeLe": "2026-10-30T12:00:00.424Z",
+        "payePar": "Admin Vecteur"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 12000,
+        "montant": 12000,
+        "partAssureur": 0,
+        "partPatient": 12000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L003",
+        "categorie": "acte",
+        "designation": "Acte 3",
+        "quantite": 1,
+        "prixUnitaire": 5000,
+        "montant": 5000,
+        "partAssureur": 0,
+        "partPatient": 5000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.424Z",
+      "modePaiement": "especes",
+      "baseMecef": 10000,
+      "dernierReglement": {
+       "date": "2026-10-30T12:00:00.424Z",
+       "montant": 10000,
+       "mode": "especes",
+       "lignes": [
+        "L001"
+       ],
+       "encaissePar": "Admin Vecteur"
+      },
+      "_modifiePar": "Admin Vecteur",
+      "_modifieLe": "2026-10-30T12:00:00.424Z"
+     },
+     "ecrituresAvant": [
+      {
+       "id": "ECRxmvux6yztpei4g",
+       "pieceId": "FV-S2",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 10000,
+       "numero": "CAI-2026-00128",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzt9acp7",
+       "pieceId": "FV-S2",
+       "compte": "571000",
+       "debit": 10000,
+       "credit": 0,
+       "numero": "CAI-2026-00128",
+       "journal": "CAI",
+       "statut": "brouillon"
+      }
+     ],
+     "rangDepart": 1,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 17000,
+      "restantDu": 0,
+      "lignesReglees": [
+       "L002",
+       "L003"
+      ],
+      "facture": {
+       "statutPaiement": "soldee",
+       "montantPaye": 27000,
+       "reliquat": 0,
+       "modePaiement": "especes",
+       "baseMecef": 27000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "paye"
+        ],
+        [
+         "L003",
+         "paye"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        17000
+       ],
+       [
+        "571000",
+        17000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 2,
+        "type": "solde",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 17000,
+        "resteApres": 0,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  },
+  {
+   "nom": "un acompte qui ne couvre aucune ligne entière reste non affecté",
+   "depart": {
+    "id": "FV-S3",
+    "statut": "actif",
+    "numero": "FV-S3",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 22000,
+    "montantHT": 22000,
+    "partAssurance": 0,
+    "partPatient": 22000,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 22000,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 10000,
+      "montant": 10000,
+      "partAssureur": 0,
+      "partPatient": 10000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte 2",
+      "quantite": 1,
+      "prixUnitaire": 12000,
+      "montant": 12000,
+      "partAssureur": 0,
+      "partPatient": 12000,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.426Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "especes",
+       "montant": 5000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S3",
+      "statut": "actif",
+      "numero": "FV-S3",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 22000,
+      "montantHT": 22000,
+      "partAssurance": 0,
+      "partPatient": 22000,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 22000,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 10000,
+        "montant": 10000,
+        "partAssureur": 0,
+        "partPatient": 10000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 12000,
+        "montant": 12000,
+        "partAssureur": 0,
+        "partPatient": 12000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.426Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 5000,
+      "restantDu": 17000,
+      "lignesReglees": [],
+      "facture": {
+       "statutPaiement": "partielle",
+       "montantPaye": 5000,
+       "reliquat": 17000,
+       "modePaiement": "especes",
+       "baseMecef": 0,
+       "lignes": [
+        [
+         "L001",
+         "du"
+        ],
+        [
+         "L002",
+         "du"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        5000
+       ],
+       [
+        "571000",
+        5000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 5000,
+        "resteApres": 17000,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    },
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "especes",
+       "montant": 5000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S3",
+      "statut": "actif",
+      "numero": "FV-S3",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 22000,
+      "montantHT": 22000,
+      "partAssurance": 0,
+      "partPatient": 22000,
+      "assureur": null,
+      "montantPaye": 5000,
+      "reliquat": 17000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 10000,
+        "montant": 10000,
+        "partAssureur": 0,
+        "partPatient": 10000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 12000,
+        "montant": 12000,
+        "partAssureur": 0,
+        "partPatient": 12000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.426Z",
+      "modePaiement": "especes",
+      "baseMecef": 0,
+      "dernierReglement": {
+       "date": "2026-10-30T12:00:00.426Z",
+       "montant": 5000,
+       "mode": "especes",
+       "lignes": [],
+       "encaissePar": "Admin Vecteur"
+      },
+      "_modifiePar": "Admin Vecteur",
+      "_modifieLe": "2026-10-30T12:00:00.426Z"
+     },
+     "ecrituresAvant": [
+      {
+       "id": "ECRxmvux6yzuuopj0",
+       "pieceId": "FV-S3",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 5000,
+       "numero": "CAI-2026-00129",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzug7ash",
+       "pieceId": "FV-S3",
+       "compte": "571000",
+       "debit": 5000,
+       "credit": 0,
+       "numero": "CAI-2026-00129",
+       "journal": "CAI",
+       "statut": "brouillon"
+      }
+     ],
+     "rangDepart": 1,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 5000,
+      "restantDu": 12000,
+      "lignesReglees": [
+       "L001"
+      ],
+      "facture": {
+       "statutPaiement": "partielle",
+       "montantPaye": 10000,
+       "reliquat": 12000,
+       "modePaiement": "especes",
+       "baseMecef": 10000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "du"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        5000
+       ],
+       [
+        "571000",
+        5000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 2,
+        "type": "acompte",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 5000,
+        "resteApres": 12000,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    },
+    {
+     "versements": [
+      {
+       "type": "solde",
+       "modalite": "especes",
+       "montant": 12000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S3",
+      "statut": "actif",
+      "numero": "FV-S3",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 22000,
+      "montantHT": 22000,
+      "partAssurance": 0,
+      "partPatient": 22000,
+      "assureur": null,
+      "montantPaye": 10000,
+      "reliquat": 12000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 10000,
+        "montant": 10000,
+        "partAssureur": 0,
+        "partPatient": 10000,
+        "statutPaiement": "paye",
+        "montantRegle": 10000,
+        "payeLe": "2026-10-30T12:00:00.426Z",
+        "payePar": "Admin Vecteur"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 12000,
+        "montant": 12000,
+        "partAssureur": 0,
+        "partPatient": 12000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.426Z",
+      "modePaiement": "especes",
+      "baseMecef": 10000,
+      "dernierReglement": {
+       "date": "2026-10-30T12:00:00.426Z",
+       "montant": 5000,
+       "mode": "especes",
+       "lignes": [
+        "L001"
+       ],
+       "encaissePar": "Admin Vecteur"
+      },
+      "_modifiePar": "Admin Vecteur",
+      "_modifieLe": "2026-10-30T12:00:00.426Z"
+     },
+     "ecrituresAvant": [
+      {
+       "id": "ECRxmvux6yzvpghnd",
+       "pieceId": "FV-S3",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 5000,
+       "numero": "CAI-2026-00129",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzuatnui",
+       "pieceId": "FV-S3",
+       "compte": "571000",
+       "debit": 5000,
+       "credit": 0,
+       "numero": "CAI-2026-00129",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzuuopj0",
+       "pieceId": "FV-S3",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 5000,
+       "numero": "CAI-2026-00129",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzug7ash",
+       "pieceId": "FV-S3",
+       "compte": "571000",
+       "debit": 5000,
+       "credit": 0,
+       "numero": "CAI-2026-00129",
+       "journal": "CAI",
+       "statut": "brouillon"
+      }
+     ],
+     "rangDepart": 2,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 12000,
+      "restantDu": 0,
+      "lignesReglees": [
+       "L002"
+      ],
+      "facture": {
+       "statutPaiement": "soldee",
+       "montantPaye": 22000,
+       "reliquat": 0,
+       "modePaiement": "especes",
+       "baseMecef": 22000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "paye"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        12000
+       ],
+       [
+        "571000",
+        12000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 3,
+        "type": "solde",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 12000,
+        "resteApres": 0,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  },
+  {
+   "nom": "trois versements de trois modes",
+   "depart": {
+    "id": "FV-S4",
+    "statut": "actif",
+    "numero": "FV-S4",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 23500,
+    "montantHT": 23500,
+    "partAssurance": 0,
+    "partPatient": 23500,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 23500,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 9000,
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte 2",
+      "quantite": 1,
+      "prixUnitaire": 9000,
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L003",
+      "categorie": "acte",
+      "designation": "Acte 3",
+      "quantite": 1,
+      "prixUnitaire": 5500,
+      "montant": 5500,
+      "partAssureur": 0,
+      "partPatient": 5500,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.427Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "especes",
+       "montant": 9000
+      },
+      {
+       "type": "acompte",
+       "modalite": "mobile_money",
+       "operateur": "mtn",
+       "montant": 9000,
+       "referenceTransaction": "R2"
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S4",
+      "statut": "actif",
+      "numero": "FV-S4",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 0,
+      "partPatient": 23500,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 23500,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 9000,
+        "montant": 9000,
+        "partAssureur": 0,
+        "partPatient": 9000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 9000,
+        "montant": 9000,
+        "partAssureur": 0,
+        "partPatient": 9000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L003",
+        "categorie": "acte",
+        "designation": "Acte 3",
+        "quantite": 1,
+        "prixUnitaire": 5500,
+        "montant": 5500,
+        "partAssureur": 0,
+        "partPatient": 5500,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.427Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 18000,
+      "restantDu": 5500,
+      "lignesReglees": [
+       "L001",
+       "L002"
+      ],
+      "facture": {
+       "statutPaiement": "partielle",
+       "montantPaye": 18000,
+       "reliquat": 5500,
+       "modePaiement": "mixte",
+       "baseMecef": 18000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "paye"
+        ],
+        [
+         "L003",
+         "du"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        9000
+       ],
+       [
+        "521000",
+        9000,
+        0
+       ],
+       [
+        "706000",
+        0,
+        9000
+       ],
+       [
+        "571000",
+        9000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 9000,
+        "resteApres": 14500,
+        "compte": "571000",
+        "horsJour": false
+       },
+       {
+        "rang": 2,
+        "type": "acompte",
+        "modalite": "mobile_money",
+        "operateur": "mtn",
+        "referenceTransaction": "R2",
+        "montant": 9000,
+        "resteApres": 5500,
+        "compte": "521000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    },
+    {
+     "versements": [
+      {
+       "type": "solde",
+       "modalite": "tpe",
+       "montant": 5500
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S4",
+      "statut": "actif",
+      "numero": "FV-S4",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 0,
+      "partPatient": 23500,
+      "assureur": null,
+      "montantPaye": 18000,
+      "reliquat": 5500,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 9000,
+        "montant": 9000,
+        "partAssureur": 0,
+        "partPatient": 9000,
+        "statutPaiement": "paye",
+        "montantRegle": 9000,
+        "payeLe": "2026-10-30T12:00:00.427Z",
+        "payePar": "Admin Vecteur"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 9000,
+        "montant": 9000,
+        "partAssureur": 0,
+        "partPatient": 9000,
+        "statutPaiement": "paye",
+        "montantRegle": 9000,
+        "payeLe": "2026-10-30T12:00:00.427Z",
+        "payePar": "Admin Vecteur"
+       },
+       {
+        "id": "L003",
+        "categorie": "acte",
+        "designation": "Acte 3",
+        "quantite": 1,
+        "prixUnitaire": 5500,
+        "montant": 5500,
+        "partAssureur": 0,
+        "partPatient": 5500,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.427Z",
+      "modePaiement": "mixte",
+      "baseMecef": 18000,
+      "dernierReglement": {
+       "date": "2026-10-30T12:00:00.427Z",
+       "montant": 18000,
+       "mode": "mixte",
+       "lignes": [
+        "L001",
+        "L002"
+       ],
+       "encaissePar": "Admin Vecteur"
+      },
+      "_modifiePar": "Admin Vecteur",
+      "_modifieLe": "2026-10-30T12:00:00.427Z"
+     },
+     "ecrituresAvant": [
+      {
+       "id": "ECRxmvux6yzwpwgud",
+       "pieceId": "FV-S4",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 9000,
+       "numero": "CAI-2026-00130",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzw1840s",
+       "pieceId": "FV-S4",
+       "compte": "521000",
+       "debit": 9000,
+       "credit": 0,
+       "numero": "CAI-2026-00130",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzwrwcvt",
+       "pieceId": "FV-S4",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 9000,
+       "numero": "CAI-2026-00130",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzwrro79",
+       "pieceId": "FV-S4",
+       "compte": "571000",
+       "debit": 9000,
+       "credit": 0,
+       "numero": "CAI-2026-00130",
+       "journal": "CAI",
+       "statut": "brouillon"
+      }
+     ],
+     "rangDepart": 2,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 5500,
+      "restantDu": 0,
+      "lignesReglees": [
+       "L003"
+      ],
+      "facture": {
+       "statutPaiement": "soldee",
+       "montantPaye": 23500,
+       "reliquat": 0,
+       "modePaiement": "tpe",
+       "baseMecef": 23500,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "paye"
+        ],
+        [
+         "L003",
+         "paye"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        5500
+       ],
+       [
+        "521000",
+        5500,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 3,
+        "type": "solde",
+        "modalite": "tpe",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 5500,
+        "resteApres": 0,
+        "compte": "521000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  },
+  {
+   "nom": "pièce assurée : la part de l’assureur ne se constate qu’une fois et n’est jamais un versement",
+   "depart": {
+    "id": "FV-S5",
+    "statut": "actif",
+    "numero": "FV-S5",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 23500,
+    "montantHT": 23500,
+    "partAssurance": 16500,
+    "partPatient": 7000,
+    "assureur": "Assureur Vecteur",
+    "montantPaye": 0,
+    "reliquat": 7000,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 15000,
+      "montant": 15000,
+      "partAssureur": 11000,
+      "partPatient": 4000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte 2",
+      "quantite": 1,
+      "prixUnitaire": 8500,
+      "montant": 8500,
+      "partAssureur": 5500,
+      "partPatient": 3000,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.429Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "especes",
+       "montant": 4000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S5",
+      "statut": "actif",
+      "numero": "FV-S5",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 16500,
+      "partPatient": 7000,
+      "assureur": "Assureur Vecteur",
+      "montantPaye": 0,
+      "reliquat": 7000,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 15000,
+        "montant": 15000,
+        "partAssureur": 11000,
+        "partPatient": 4000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 8500,
+        "montant": 8500,
+        "partAssureur": 5500,
+        "partPatient": 3000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.429Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 4000,
+      "restantDu": 3000,
+      "lignesReglees": [
+       "L001"
+      ],
+      "facture": {
+       "statutPaiement": "partielle",
+       "montantPaye": 4000,
+       "reliquat": 3000,
+       "modePaiement": "especes",
+       "baseMecef": 4000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "du"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        20500
+       ],
+       [
+        "411110",
+        16500,
+        0
+       ],
+       [
+        "571000",
+        4000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 4000,
+        "resteApres": 3000,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    },
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "mobile_money",
+       "operateur": "mtn",
+       "montant": 3000,
+       "referenceTransaction": "M123"
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S5",
+      "statut": "actif",
+      "numero": "FV-S5",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 16500,
+      "partPatient": 7000,
+      "assureur": "Assureur Vecteur",
+      "montantPaye": 4000,
+      "reliquat": 3000,
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 15000,
+        "montant": 15000,
+        "partAssureur": 11000,
+        "partPatient": 4000,
+        "statutPaiement": "paye",
+        "montantRegle": 4000,
+        "payeLe": "2026-10-30T12:00:00.429Z",
+        "payePar": "Admin Vecteur"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 8500,
+        "montant": 8500,
+        "partAssureur": 5500,
+        "partPatient": 3000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.429Z",
+      "modePaiement": "especes",
+      "baseMecef": 4000,
+      "dernierReglement": {
+       "date": "2026-10-30T12:00:00.429Z",
+       "montant": 4000,
+       "mode": "especes",
+       "lignes": [
+        "L001"
+       ],
+       "encaissePar": "Admin Vecteur"
+      },
+      "_modifiePar": "Admin Vecteur",
+      "_modifieLe": "2026-10-30T12:00:00.429Z"
+     },
+     "ecrituresAvant": [
+      {
+       "id": "ECRxmvux6yzy1xu43",
+       "pieceId": "FV-S5",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 20500,
+       "numero": "CAI-2026-00131",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzyr6my2",
+       "pieceId": "FV-S5",
+       "compte": "411110",
+       "debit": 16500,
+       "credit": 0,
+       "numero": "CAI-2026-00131",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6yzxdryxq",
+       "pieceId": "FV-S5",
+       "compte": "571000",
+       "debit": 4000,
+       "credit": 0,
+       "numero": "CAI-2026-00131",
+       "journal": "CAI",
+       "statut": "brouillon"
+      }
+     ],
+     "rangDepart": 1,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 3000,
+      "restantDu": 0,
+      "lignesReglees": [
+       "L002"
+      ],
+      "facture": {
+       "statutPaiement": "soldee",
+       "montantPaye": 7000,
+       "reliquat": 0,
+       "modePaiement": "mtn",
+       "baseMecef": 7000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "paye"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        3000
+       ],
+       [
+        "521000",
+        3000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 2,
+        "type": "acompte",
+        "modalite": "mobile_money",
+        "operateur": "mtn",
+        "referenceTransaction": "M123",
+        "montant": 3000,
+        "resteApres": 0,
+        "compte": "521000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  },
+  {
+   "nom": "refus : dépasse le dû, rien n’est écrit",
+   "depart": {
+    "id": "FV-S6",
+    "statut": "actif",
+    "numero": "FV-S6",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 23500,
+    "montantHT": 23500,
+    "partAssurance": 0,
+    "partPatient": 23500,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 23500,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 15000,
+      "montant": 15000,
+      "partAssureur": 0,
+      "partPatient": 15000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte 2",
+      "quantite": 1,
+      "prixUnitaire": 8500,
+      "montant": 8500,
+      "partAssureur": 0,
+      "partPatient": 8500,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.431Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "solde",
+       "modalite": "especes",
+       "montant": 23501
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S6",
+      "statut": "actif",
+      "numero": "FV-S6",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 0,
+      "partPatient": 23500,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 23500,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 15000,
+        "montant": 15000,
+        "partAssureur": 0,
+        "partPatient": 15000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 8500,
+        "montant": 8500,
+        "partAssureur": 0,
+        "partPatient": 8500,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.431Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": false,
+      "code": "VERSEMENT_SUPERIEUR_AU_DU",
+      "motif": "Versement de 23 501 FCFA refusé : la pièce FV-S6 ne doit plus que 23 500 FCFA. Un versement ne dépasse jamais le dû de la part du patient.",
+      "rang": 1,
+      "restantDu": 23500
+     },
+     "rien": {
+      "versements": true,
+      "ecritures": true
+     }
+    },
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "especes",
+       "montant": 15000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S6",
+      "statut": "actif",
+      "numero": "FV-S6",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 0,
+      "partPatient": 23500,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 23500,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 15000,
+        "montant": 15000,
+        "partAssureur": 0,
+        "partPatient": 15000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 8500,
+        "montant": 8500,
+        "partAssureur": 0,
+        "partPatient": 8500,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.431Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 15000,
+      "restantDu": 8500,
+      "lignesReglees": [
+       "L001"
+      ],
+      "facture": {
+       "statutPaiement": "partielle",
+       "montantPaye": 15000,
+       "reliquat": 8500,
+       "modePaiement": "especes",
+       "baseMecef": 15000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "du"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        15000
+       ],
+       [
+        "571000",
+        15000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 15000,
+        "resteApres": 8500,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  },
+  {
+   "nom": "refus : mobile money sans référence, puis lot accepté",
+   "depart": {
+    "id": "FV-S7",
+    "statut": "actif",
+    "numero": "FV-S7",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 23500,
+    "montantHT": 23500,
+    "partAssurance": 0,
+    "partPatient": 23500,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 23500,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 15000,
+      "montant": 15000,
+      "partAssureur": 0,
+      "partPatient": 15000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L002",
+      "categorie": "acte",
+      "designation": "Acte 2",
+      "quantite": 1,
+      "prixUnitaire": 8500,
+      "montant": 8500,
+      "partAssureur": 0,
+      "partPatient": 8500,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.431Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "mobile_money",
+       "operateur": "mtn",
+       "montant": 1000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S7",
+      "statut": "actif",
+      "numero": "FV-S7",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 0,
+      "partPatient": 23500,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 23500,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 15000,
+        "montant": 15000,
+        "partAssureur": 0,
+        "partPatient": 15000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 8500,
+        "montant": 8500,
+        "partAssureur": 0,
+        "partPatient": 8500,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.431Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": false,
+      "code": "VERSEMENT_REFERENCE_ABSENTE",
+      "motif": "La modalité « Mobile money » exige la référence de la transaction (saisie à la main).",
+      "rang": 1,
+      "restantDu": 23500
+     },
+     "rien": {
+      "versements": true,
+      "ecritures": true
+     }
+    },
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "mobile_money",
+       "operateur": "mtn",
+       "montant": 1000,
+       "referenceTransaction": "R7"
+      },
+      {
+       "type": "solde",
+       "modalite": "especes",
+       "montant": 22500
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S7",
+      "statut": "actif",
+      "numero": "FV-S7",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 23500,
+      "montantHT": 23500,
+      "partAssurance": 0,
+      "partPatient": 23500,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 23500,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 15000,
+        "montant": 15000,
+        "partAssureur": 0,
+        "partPatient": 15000,
+        "statutPaiement": "du"
+       },
+       {
+        "id": "L002",
+        "categorie": "acte",
+        "designation": "Acte 2",
+        "quantite": 1,
+        "prixUnitaire": 8500,
+        "montant": 8500,
+        "partAssureur": 0,
+        "partPatient": 8500,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.431Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 23500,
+      "restantDu": 0,
+      "lignesReglees": [
+       "L001",
+       "L002"
+      ],
+      "facture": {
+       "statutPaiement": "soldee",
+       "montantPaye": 23500,
+       "reliquat": 0,
+       "modePaiement": "mixte",
+       "baseMecef": 23500,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ],
+        [
+         "L002",
+         "paye"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        22500
+       ],
+       [
+        "571000",
+        22500,
+        0
+       ],
+       [
+        "706000",
+        0,
+        1000
+       ],
+       [
+        "521000",
+        1000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "mobile_money",
+        "operateur": "mtn",
+        "referenceTransaction": "R7",
+        "montant": 1000,
+        "resteApres": 22500,
+        "compte": "521000",
+        "horsJour": false
+       },
+       {
+        "rang": 2,
+        "type": "solde",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 22500,
+        "resteApres": 0,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  },
+  {
+   "nom": "refus : pièce soldée",
+   "depart": {
+    "id": "FV-S8",
+    "statut": "actif",
+    "numero": "FV-S8",
+    "date": "2026-10-30",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 5000,
+    "montantHT": 5000,
+    "partAssurance": 0,
+    "partPatient": 5000,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 5000,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "montant": 5000,
+      "partAssureur": 0,
+      "partPatient": 5000,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.433Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "solde",
+       "modalite": "especes",
+       "montant": 5000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S8",
+      "statut": "actif",
+      "numero": "FV-S8",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 5000,
+      "montantHT": 5000,
+      "partAssurance": 0,
+      "partPatient": 5000,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 5000,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 5000,
+        "montant": 5000,
+        "partAssureur": 0,
+        "partPatient": 5000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.433Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 5000,
+      "restantDu": 0,
+      "lignesReglees": [
+       "L001"
+      ],
+      "facture": {
+       "statutPaiement": "soldee",
+       "montantPaye": 5000,
+       "reliquat": 0,
+       "modePaiement": "especes",
+       "baseMecef": 5000,
+       "lignes": [
+        [
+         "L001",
+         "paye"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        5000
+       ],
+       [
+        "571000",
+        5000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "solde",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 5000,
+        "resteApres": 0,
+        "compte": "571000",
+        "horsJour": false
+       }
+      ]
+     },
+     "rien": null
+    },
+    {
+     "versements": [
+      {
+       "type": "solde",
+       "modalite": "especes",
+       "montant": 1
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S8",
+      "statut": "actif",
+      "numero": "FV-S8",
+      "date": "2026-10-30",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 5000,
+      "montantHT": 5000,
+      "partAssurance": 0,
+      "partPatient": 5000,
+      "assureur": null,
+      "montantPaye": 5000,
+      "reliquat": 0,
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 5000,
+        "montant": 5000,
+        "partAssureur": 0,
+        "partPatient": 5000,
+        "statutPaiement": "paye",
+        "montantRegle": 5000,
+        "payeLe": "2026-10-30T12:00:00.433Z",
+        "payePar": "Admin Vecteur"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.433Z",
+      "modePaiement": "especes",
+      "baseMecef": 5000,
+      "dernierReglement": {
+       "date": "2026-10-30T12:00:00.433Z",
+       "montant": 5000,
+       "mode": "especes",
+       "lignes": [
+        "L001"
+       ],
+       "encaissePar": "Admin Vecteur"
+      },
+      "_modifiePar": "Admin Vecteur",
+      "_modifieLe": "2026-10-30T12:00:00.433Z",
+      "codeRetour": "OK-200",
+      "motifRefusMecef": null,
+      "ifuClient": null,
+      "acheteurNom": null,
+      "modeMecef": "boitier",
+      "mecefSimule": true,
+      "aibTaux": 0,
+      "aibSituation": null,
+      "aibVersion": null,
+      "aibArrete": null,
+      "aibDateBareme": null,
+      "aibCharge": null,
+      "aibChargeArretee": null,
+      "numeroMecef": "MECEF2000007",
+      "dateTransmission": "2026-10-30T12:00:00.433Z",
+      "aibMontant": 0,
+      "normalisePar": "Admin Vecteur"
+     },
+     "ecrituresAvant": [
+      {
+       "id": "ECRxmvux6z0129933",
+       "pieceId": "FV-S8",
+       "compte": "706000",
+       "debit": 0,
+       "credit": 5000,
+       "numero": "CAI-2026-00134",
+       "journal": "CAI",
+       "statut": "brouillon"
+      },
+      {
+       "id": "ECRxmvux6z01bnos9",
+       "pieceId": "FV-S8",
+       "compte": "571000",
+       "debit": 5000,
+       "credit": 0,
+       "numero": "CAI-2026-00134",
+       "journal": "CAI",
+       "statut": "brouillon"
+      }
+     ],
+     "rangDepart": 1,
+     "sortie": {
+      "ok": false,
+      "code": "VERSEMENT_PIECE_SOLDEE",
+      "motif": "La pièce FV-S8 est soldée : aucun versement ne s’y ajoute.",
+      "rang": null,
+      "restantDu": 0
+     },
+     "rien": {
+      "versements": true,
+      "ecritures": true
+     }
+    }
+   ]
+  },
+  {
+   "nom": "un jour de décalage : versement un autre jour que la pièce (marqué horsJour)",
+   "depart": {
+    "id": "FV-S9",
+    "statut": "actif",
+    "numero": "FV-S9",
+    "date": "2026-10-29",
+    "patientId": "PAT0001",
+    "patient": "Patient Vecteur",
+    "patientCode": "CNT/1/25",
+    "type": "Facture",
+    "montantTTC": 5000,
+    "montantHT": 5000,
+    "partAssurance": 0,
+    "partPatient": 5000,
+    "assureur": null,
+    "montantPaye": 0,
+    "reliquat": 5000,
+    "statutPaiement": "impayee",
+    "statutMecef": "en_attente",
+    "lignes": [
+     {
+      "id": "L001",
+      "categorie": "acte",
+      "designation": "Acte 1",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "montant": 5000,
+      "partAssureur": 0,
+      "partPatient": 5000,
+      "statutPaiement": "du"
+     }
+    ],
+    "_creePar": "Admin Vecteur",
+    "_creeLe": "2026-10-30T12:00:00.433Z"
+   },
+   "etapes": [
+    {
+     "versements": [
+      {
+       "type": "acompte",
+       "modalite": "especes",
+       "montant": 2000
+      }
+     ],
+     "factureAvant": {
+      "id": "FV-S9",
+      "statut": "actif",
+      "numero": "FV-S9",
+      "date": "2026-10-29",
+      "patientId": "PAT0001",
+      "patient": "Patient Vecteur",
+      "patientCode": "CNT/1/25",
+      "type": "Facture",
+      "montantTTC": 5000,
+      "montantHT": 5000,
+      "partAssurance": 0,
+      "partPatient": 5000,
+      "assureur": null,
+      "montantPaye": 0,
+      "reliquat": 5000,
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "lignes": [
+       {
+        "id": "L001",
+        "categorie": "acte",
+        "designation": "Acte 1",
+        "quantite": 1,
+        "prixUnitaire": 5000,
+        "montant": 5000,
+        "partAssureur": 0,
+        "partPatient": 5000,
+        "statutPaiement": "du"
+       }
+      ],
+      "_creePar": "Admin Vecteur",
+      "_creeLe": "2026-10-30T12:00:00.433Z"
+     },
+     "ecrituresAvant": [],
+     "rangDepart": 0,
+     "sortie": {
+      "ok": true,
+      "montantRegle": 2000,
+      "restantDu": 3000,
+      "lignesReglees": [],
+      "facture": {
+       "statutPaiement": "partielle",
+       "montantPaye": 2000,
+       "reliquat": 3000,
+       "modePaiement": "especes",
+       "baseMecef": 0,
+       "lignes": [
+        [
+         "L001",
+         "du"
+        ]
+       ]
+      },
+      "ecritures": [
+       [
+        "706000",
+        0,
+        2000
+       ],
+       [
+        "571000",
+        2000,
+        0
+       ]
+      ],
+      "numeroUnique": true,
+      "versements": [
+       {
+        "rang": 1,
+        "type": "acompte",
+        "modalite": "especes",
+        "operateur": null,
+        "referenceTransaction": null,
+        "montant": 2000,
+        "resteApres": 3000,
+        "compte": "571000",
+        "horsJour": true
+       }
+      ]
+     },
+     "rien": null
+    }
+   ]
+  }
+ ],
+ "rejeu": [
+  {
+   "nom": "rejeu qui tient dans le dû",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "dejaVerse": 10000,
+   "entrant": {
+    "type": "solde",
+    "modalite": "especes",
+    "montant": 13500
+   },
+   "date": "2026-10-30",
+   "sortie": null
+  },
+  {
+   "nom": "rejeu qui dépasse le dû (deux fileuls ont encaissé la même pièce)",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "dejaVerse": 20000,
+   "entrant": {
+    "type": "solde",
+    "modalite": "especes",
+    "montant": 3501
+   },
+   "date": "2026-10-30",
+   "sortie": {
+    "code": "VERSEMENT_SUPERIEUR_AU_DU",
+    "motif": "Versement de 3 501 FCFA refusé : la pièce FV-X ne doit plus que 3 500 FCFA. Un versement ne dépasse jamais le dû de la part du patient."
+   }
+  },
+  {
+   "nom": "rejeu sans référence mobile money",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "dejaVerse": 0,
+   "entrant": {
+    "type": "acompte",
+    "modalite": "mobile_money",
+    "operateur": "mtn",
+    "montant": 1000
+   },
+   "date": "2026-10-30",
+   "sortie": {
+    "code": "VERSEMENT_REFERENCE_ABSENTE",
+    "motif": "La modalité « Mobile money » exige la référence de la transaction (saisie à la main)."
+   }
+  },
+  {
+   "nom": "rejeu sur modalité archivée à sa date",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "dejaVerse": 0,
+   "entrant": {
+    "type": "solde",
+    "modalite": "tpe",
+    "montant": 1000
+   },
+   "date": "2026-11-26",
+   "sortie": {
+    "code": "VERSEMENT_MODALITE_ARCHIVEE",
+    "motif": "La modalité « TPE (carte bancaire) » est archivée : elle n’est plus proposée à la saisie."
+   }
+  },
+  {
+   "nom": "rejeu sur la part de l’assureur",
+   "piece": {
+    "id": "FV-X",
+    "numero": "FV-X",
+    "statutPaiement": "impayee",
+    "montantPaye": 0,
+    "partPatient": 23500,
+    "partAssurance": 0,
+    "montantTTC": 23500,
+    "lignes": [
+     {
+      "id": "L001",
+      "partPatient": 15000
+     },
+     {
+      "id": "L002",
+      "partPatient": 8500
+     }
+    ]
+   },
+   "dejaVerse": 0,
+   "entrant": {
+    "type": "solde",
+    "modalite": "especes",
+    "montant": 1000,
+    "partie": "assureur"
+   },
+   "date": "2026-10-30",
+   "sortie": {
+    "code": "VERSEMENT_PART_ASSUREUR",
+    "motif": "Un versement de caisse ne règle que la part du PATIENT : la part d’un assureur ou d’un tiers payeur n’est pas un versement de caisse."
+   }
+  }
+ ],
+ "modes": [
+  {
+   "versements": [
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "mtn",
+     "montant": 1,
+     "referenceTransaction": "a"
+    }
+   ],
+   "mode": "mtn"
+  },
+  {
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 1
+    }
+   ],
+   "mode": "especes"
+  },
+  {
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 1
+    },
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 1
+    }
+   ],
+   "mode": "especes"
+  },
+  {
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "especes",
+     "montant": 1
+    },
+    {
+     "type": "acompte",
+     "modalite": "mobile_money",
+     "operateur": "mtn",
+     "montant": 1,
+     "referenceTransaction": "a"
+    }
+   ],
+   "mode": "mixte"
+  },
+  {
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "mobile_money",
+     "operateur": "celtiis",
+     "montant": 1,
+     "referenceTransaction": "x"
+    }
+   ],
+   "mode": "mobile_money"
+  },
+  {
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "mobile_money",
+     "operateur": "moov",
+     "montant": 1,
+     "referenceTransaction": "x"
+    }
+   ],
+   "mode": "moov"
+  },
+  {
+   "versements": [
+    {
+     "type": "solde",
+     "modalite": "tpe",
+     "montant": 1
+    }
+   ],
+   "mode": "tpe"
+  }
+ ]
+}

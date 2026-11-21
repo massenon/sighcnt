@@ -16,6 +16,7 @@ import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../mecef/montants.dart';
 import 'prix_manquant.dart';
+import 'versements.dart';
 
 const compteCaisse = '571000';
 const compteClientsAssurance = '411110';
@@ -30,7 +31,9 @@ class ResultatEncaissement {
       required this.restantDu,
       required this.ecritures,
       this.refus,
-      this.refusCode});
+      this.refusCode,
+      this.versements = const [],
+      this.ecrituresParVersement = const []});
 
   /// La facture APRÈS versement (copie ; l'entrée n'est jamais modifiée).
   final Map<String, Object?> facture;
@@ -44,6 +47,10 @@ class ResultatEncaissement {
 
   /// Versement REFUSÉ (E2) : le motif nomme le défaut, rien n'est écrit ; `facture` est inchangée.
   final String? refus;
+
+  /// LOT PAIE-V : les fiches de versement à écrire (une par versement, sans identifiant ni lien d'écriture : le poste les pose) et, pour chacune, ses écritures.
+  final List<Map<String, Object?>> versements;
+  final List<List<Map<String, Object?>>> ecrituresParVersement;
 
   /// Le code nommé du refus de la fenêtre « Facture normalisée » (`IFU_INVALIDE`, `NOM_ACHETEUR_ABSENT`, `AIB_TAUX_INVALIDE`), sinon null.
   final String? refusCode;
@@ -67,8 +74,25 @@ ResultatEncaissement encaisser(
 
   /// LOT TARIF-FIX-2 : le réglage de clinique « encaissement partiel d'une pièce en attente de prix » à la date du geste (défaut semé : non).
   bool encaissementPartiel = false,
+
+  /// LOT PAIE-V : des versements successifs de modes différents (type, modalite, operateur, referenceTransaction, montant) au lieu d'un montant et d'un mode uniques ;
+  /// [modalites] : les fiches de `modalitesVersement` (vide : la semence), [rangDepart] : le nombre de versements déjà enregistrés pour la pièce.
+  List<Map<String, Object?>>? versements,
+  List<Map<String, Object?>> modalites = const [],
+  int rangDepart = 0,
+  String agent = '',
 }) {
+  ResultatEncaissement refusV(RefusVersement r) => ResultatEncaissement(
+      facture: facture,
+      deja: false,
+      lignesReglees: const [],
+      montantRegle: 0,
+      restantDu: resteDuPiece(facture),
+      ecritures: const [],
+      refus: '${r.code} : ${r.motif} ${r.geste ?? ''}',
+      refusCode: r.code);
   if (facture['statutPaiement'] == 'soldee') {
+    if (versements != null) return refusV(controlerVersements(facture, versements, aujourdhui, modalites).refus!);
     return ResultatEncaissement(
         facture: facture,
         deja: true,
@@ -106,6 +130,12 @@ ResultatEncaissement encaisser(
           refusCode: r.code);
     }
   }
+  // LOT PAIE-V : les versements se contrôlent AVANT toute écriture, un par un, contre le reste dû de la part du patient ; un refus nomme le versement fautif.
+  ControleVersements? cv;
+  if (versements != null) {
+    cv = controlerVersements(facture, versements, aujourdhui, modalites);
+    if (!cv.ok) return refusV(cv.refus!);
+  }
   // Un acheteur (IFU, nom) se contrôle AVANT toute écriture : un refus nommé n'écrit rien (E2299) ; un taux d'AIB demandé est refusé AIB_FACTURE_PATIENT (lot FISC-2).
   AcheteurMecef? acheteurSaisi;
   if (acheteur != null) {
@@ -142,7 +172,20 @@ ResultatEncaissement encaisser(
 
   final reglees = <Map<String, Object?>>[];
   var paye = 0.0;
-  if (lignes != null && lignes.isNotEmpty) {
+  if (cv != null) {
+    // Les versements s'ajoutent à ce que la pièce a déjà reçu ; une ligne n'est réglée que si le CUMUL la couvre ENTIÈREMENT, dans l'ordre de la pièce.
+    // Ce qui ne couvre pas encore une ligne entière reste un acompte non affecté : il compte dans le réglé, il ne débloque rien.
+    paye = cv.total;
+    var credit = _n(facture['montantPaye']) + paye - toutes.where((l) => l['statutPaiement'] == 'paye').fold<double>(0, (n, l) => n + _n(l['partPatient']));
+    for (final l in toutes) {
+      if (l['statutPaiement'] == 'paye' || ligneSansPrix(l)) continue;
+      final part = _n(l['partPatient']);
+      if (part <= credit) {
+        reglees.add(l);
+        credit -= part;
+      }
+    }
+  } else if (lignes != null && lignes.isNotEmpty) {
     final vises = lignes.toSet();
     for (final l in toutes) {
       if (l['statutPaiement'] == 'paye' || !vises.contains(l['id'])) continue;
@@ -194,13 +237,19 @@ ResultatEncaissement encaisser(
     };
   }).toList();
   final totalPaye = _n(facture['montantPaye']) + paye;
-  final restantDu = lignesMaj.isNotEmpty
-      ? lignesMaj
-          .where((l) => l['statutPaiement'] != 'paye')
-          .fold(0.0, (n, l) => n + _n(l['partPatient']))
-      : (duTotal - totalPaye) > 0
-          ? duTotal - totalPaye
-          : 0.0;
+  final restantDu = cv != null
+      // Avec des versements, le reste dû se CALCULE de ce qui a été versé (jamais des seules lignes payées).
+      ? () {
+          final du = lignesMaj.isNotEmpty ? lignesMaj.where((l) => !ligneSansPrix(l)).fold<double>(0, (n, l) => n + _n(l['partPatient'])) : duTotal;
+          return du - totalPaye > 0 ? du - totalPaye : 0.0;
+        }()
+      : lignesMaj.isNotEmpty
+          ? lignesMaj
+              .where((l) => l['statutPaiement'] != 'paye')
+              .fold(0.0, (n, l) => n + _n(l['partPatient']))
+          : (duTotal - totalPaye) > 0
+              ? duTotal - totalPaye
+              : 0.0;
   // Une ligne sans prix restante : le reste dû est NON CALCULABLE et la pièce n'est jamais soldée.
   final resteSansPrix = lignesMaj.any((l) => ligneSansPrix(l) && l['statutPaiement'] != 'paye');
   final solde = !resteSansPrix && restantDu <= 0;
@@ -212,10 +261,16 @@ ResultatEncaissement encaisser(
     final mv = mecefMontants(lignes: [for (final l in reglees) ligneVersMecef(l)]);
     if (mv.ok) baseVersement = mv.montants!.base.toDouble();
   }
-  final baseMecef = baseVersement != null
+  var baseMecef = baseVersement != null
       ? _n(facture['montantPaye']) + baseVersement
       : totalPaye;
-  final modeRetenu = _vrai(mode) ? mode! : 'especes';
+  if (cv != null) {
+    // Avec des versements, la base normalisée est celle des lignes PAYÉES (un acompte non affecté n'est pas encore une vente normalisable).
+    final payeesApres = lignesMaj.where((l) => l['statutPaiement'] == 'paye').toList();
+    final mvApres = payeesApres.isNotEmpty ? mecefMontants(lignes: [for (final l in payeesApres) ligneVersMecef(l)]) : null;
+    baseMecef = toutes.isEmpty ? totalPaye : (mvApres != null && mvApres.ok ? mvApres.montants!.base.toDouble() : (payeesApres.isNotEmpty ? totalPaye : 0.0));
+  }
+  final modeRetenu = cv != null ? modePieceDepuis(cv.lignes) : (_vrai(mode) ? mode! : 'especes');
 
   final apres = <String, Object?>{
     ...facture,
@@ -244,6 +299,48 @@ ResultatEncaissement encaisser(
     },
   };
 
+  if (cv != null) {
+    // UNE écriture équilibrée PAR versement (RG-10), au compte de sa modalité ; puis la fiche de chaque versement.
+    final parVersement = <List<Map<String, Object?>>>[];
+    final toutesEcritures = <Map<String, Object?>>[];
+    for (final l in cv.lignes) {
+      final e = ecritureEncaissement(apres, _n(l['montant']), aujourdhui, [...ecritures, ...toutesEcritures], '${l['compte']}',
+          '${l['modaliteLibelle']}${l['operateurLibelle'] != null ? ' ${l['operateurLibelle']}' : ''}${l['referenceTransaction'] != null ? ' réf. ${l['referenceTransaction']}' : ''}');
+      parVersement.add(e);
+      toutesEcritures.addAll(e);
+    }
+    var cumul = totalPaye - paye;
+    final fiches = <Map<String, Object?>>[];
+    for (var i = 0; i < cv.lignes.length; i++) {
+      final l = cv.lignes[i];
+      cumul += _n(l['montant']);
+      fiches.add({
+        ...l,
+        'factureId': facture['id'],
+        'factureNumero': facture['numero'],
+        'patientId': facture['patientId'],
+        'patient': facture['patient'],
+        if (_vrai(facture['patientCode'])) 'patientCode': facture['patientCode'],
+        'rang': rangDepart + i + 1,
+        'date': aujourdhui,
+        'horodatage': maintenant,
+        'agent': agent.isEmpty ? utilisateur : agent,
+        'origine': 'caisse',
+        'resteApres': resteDuPiece(apres, montantPaye: cumul),
+        if ('${facture['date'] ?? ''}'.length >= 10 && '${facture['date']}'.substring(0, 10) != aujourdhui) 'horsJour': true,
+      });
+    }
+    return ResultatEncaissement(
+      facture: apres,
+      deja: false,
+      lignesReglees: [for (final l in reglees) '${l['id']}'],
+      montantRegle: paye,
+      restantDu: resteSansPrix ? null : restantDu,
+      ecritures: toutesEcritures,
+      versements: fiches,
+      ecrituresParVersement: parVersement,
+    );
+  }
   final posees = paye > 0
       ? ecritureEncaissement(apres, paye, aujourdhui, ecritures)
       : <Map<String, Object?>>[];
@@ -289,7 +386,7 @@ String numeroPieceCaisse(Map<String, Object?> facture, String date,
 /// crédit 706 du total. Contrôlée ÉQUILIBRÉE avant d'exister (RG-10) : un déséquilibre rend une liste vide. Brouillon.
 List<Map<String, Object?>> ecritureEncaissement(
     Map<String, Object?> facture, double montantRegle, String aujourdhui,
-    [List<Map<String, Object?>> ecritures = const []]) {
+    [List<Map<String, Object?>> ecritures = const [], String? compte, String? libelleMode]) {
   // L'EN-TÊTE d'une facture porte `partAssurance` ; `partAssureur` n'existe que sur les LIGNES (E2260) : lire ce dernier sur l'en-tête donnait zéro,
   // et la créance de l'assureur (débit 411, crédit 706) n'entrait jamais au journal.
   final partAssureur = creanceAssureurConstatee(facture, ecritures)
@@ -305,7 +402,7 @@ List<Map<String, Object?>> ecritureEncaissement(
     'date': aujourdhui,
     'journal': 'CAI',
     'journalLibelle': 'Journal de caisse-dépenses',
-    'libelle': 'Encaissement facture $ref — ${facture['patient'] ?? ''}',
+    'libelle': 'Encaissement facture $ref — ${facture['patient'] ?? ''}${libelleMode != null ? ' : $libelleMode' : ''}',
     'pieceId': facture['id'],
     'pieceNumero': facture['numero'],
     'origine': 'Automatique — Caisse',
@@ -315,7 +412,7 @@ List<Map<String, Object?>> ecritureEncaissement(
   if (montantRegle > 0)
     l.add({
       ...base,
-      'compte': compteCaisse,
+      'compte': compte ?? compteCaisse,
       'debit': montantRegle,
       'credit': 0.0
     });

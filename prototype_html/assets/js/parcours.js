@@ -2270,7 +2270,7 @@
       numero: numero, date: date,
       journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
       libelle: 'Encaissement facture ' + (facture.numero || facture.id)
-        + ' — ' + (facture.patient || '') + (opts.libelleMode ? ' — ' + opts.libelleMode : ''),
+        + ' — ' + (facture.patient || '') + (opts.libelleMode ? ' : ' + opts.libelleMode : ''),
       pieceId: facture.id, pieceNumero: facture.numero,
       origine: 'Automatique — Caisse',
       statut: 'brouillon',
