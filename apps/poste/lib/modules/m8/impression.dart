@@ -37,7 +37,7 @@ Future<void> imprimerRecu(BuildContext ctx, Fiche f, {Fiche? versement, List<Fic
       ctx,
       pieceRecu(f,
           versement: versement,
-          versementsPiece: versementsDePiecePoste(c.magasin, f['id']),
+          versementsPiece: versementsDePiecePoste(c.magasin, f),
           lot: lot,
           utilisateur: acteur(c).nom,
           edite: c.aujourdhui,

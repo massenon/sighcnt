@@ -11,11 +11,25 @@ import 'magasin.dart';
 /// Les fiches (toutes versions, sans les archives de la collection) des types, modalités et opérateurs.
 List<Fiche> modalitesVersementPoste(Magasin m) => m.collection('modalitesVersement').actives;
 
-/// Les versements ACTIFS d'une pièce, dans l'ordre d'enregistrement.
-List<Fiche> versementsDePiecePoste(Magasin m, Object? factureId) => [
-      for (final v in m.collection('versementsCaisse').actives.reversed)
-        if (v['factureId'] == factureId) v
-    ];
+/// Les versements ACTIFS d'une pièce, dans l'ordre d'enregistrement. Le lien est le NUMÉRO de la pièce (le même sur tous les postes) : l'identifiant local d'une pièce née chez un fileul n'est
+/// pas celui de la mère ni d'un autre poste (identité de synchronisation distincte) ; à défaut de numéro, l'identifiant.
+List<Fiche> versementsDePiecePoste(Magasin m, Fiche facture) {
+  // L'ordre est celui du RANG (puis de l'instant), jamais celui d'arrivée : un versement reçu d'un autre poste prend sa place.
+  final l = [
+    for (final v in m.collection('versementsCaisse').actives)
+      if (_memePiece(v, facture)) v
+  ];
+  l.sort((a, b) {
+    final c = _n(a['rang']).compareTo(_n(b['rang']));
+    return c != 0 ? c : '${a['horodatage'] ?? ''}'.compareTo('${b['horodatage'] ?? ''}');
+  });
+  return l;
+}
+
+bool _memePiece(Fiche versement, Fiche facture) {
+  final n = '${facture['numero'] ?? ''}', vn = '${versement['factureNumero'] ?? ''}';
+  return n.isNotEmpty && vn.isNotEmpty ? n == vn : versement['factureId'] == facture['id'];
+}
 
 double _n(Object? v) => v is num ? v.toDouble() : (double.tryParse('${v ?? ''}') ?? 0);
 
@@ -34,7 +48,7 @@ String? gardeVersementPoste(Magasin m, String operation, Fiche apres) {
   if (operation != 'inserer' || apres['origine'] == 'encaissement_direct') return null;
   final fac = m.collection('factures').parId(apres['factureId']);
   if (fac == null) return 'VERSEMENT_PIECE_INTROUVABLE : la pièce du versement n’existe pas.';
-  final deja = versementsDePiecePoste(m, fac['id']).fold<double>(0, (n, v) => n + _n(v['montant']));
+  final deja = versementsDePiecePoste(m, fac).fold<double>(0, (n, v) => n + _n(v['montant']));
   final date = '${apres['date'] ?? ''}'.length >= 10 ? '${apres['date']}'.substring(0, 10) : d.iso(m.horloge());
   final r = d.refusUnVersement(fac, apres, date, deja, modalitesVersementPoste(m));
   return r == null ? null : '${r.code} : ${r.motif}';
@@ -108,6 +122,13 @@ Fiche reglerModaliteVersementPoste(
   if (motif.trim().length < 3) throw const RefusReglageVersement('VERSEMENT_MOTIF_ABSENT', 'Un motif est obligatoire pour régler une modalité de versement.', 'Saisir le motif du changement.');
   final jour = dateEffet ?? d.iso(m.horloge());
   if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(jour)) throw const RefusReglageVersement('DATE_EFFET_INVALIDE', 'Date d’effet illisible : attendu AAAA-MM-JJ.', 'Choisir la date d’effet.');
+  // Un poste installé AVANT le lot n'a pas la collection : le domaine lit alors la semence. Poser une première version sans la semence la ferait DISPARAÎTRE (la liste cesserait d'être vide) :
+  // la semence est donc posée d'abord, par les gestes du magasin (journalisée, elle voyage à la mère).
+  if (m.collection('modalitesVersement').actives.isEmpty) {
+    for (final f in d.semenceModalitesVersement()) {
+      m.collection('modalitesVersement').inserer({...f}, prefixe: 'MVS');
+    }
+  }
   final fiches = modalitesVersementPoste(m);
   final versions = d.versionsModalitesVersement(fiches, famille).where((r) => r['code'] == code && r['dateEffet'] != null).toList();
   if (versions.isNotEmpty && jour.compareTo('${versions.last['dateEffet']}'.substring(0, 10)) < 0) {
@@ -168,7 +189,7 @@ Fiche? versementHeritagePoste(Magasin m, Fiche facture, num montant, String mode
     'patientId': facture['patientId'],
     'patient': facture['patient'],
     if ('${facture['patientCode'] ?? ''}'.isNotEmpty) 'patientCode': facture['patientCode'],
-    'rang': versementsDePiecePoste(m, facture['id']).length + 1,
+    'rang': versementsDePiecePoste(m, facture).length + 1,
     'date': jour,
     'horodatage': maintenant.toIso8601String(),
     'agent': m.utilisateur,

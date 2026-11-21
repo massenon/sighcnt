@@ -474,15 +474,20 @@ class Mere {
           }
         }
       } else if (f == null) {
-        final fac = await lire('factures', '${champsOp['factureId']}');
-        if (fac == null) return refus('VERSEMENT_PIECE_INTROUVABLE', 'La pièce du versement n’est pas connue de la mère.', 'Attendre la synchronisation de la pièce');
+        // La pièce se désigne par son NUMÉRO (le même sur tous les postes : l'identifiant local d'une pièce née chez un fileul n'est pas celui de la mère), à défaut par son identifiant.
+        final numero = '${champsOp['factureNumero'] ?? ''}';
+        final pieces = <Map<String, Object?>>[
+          for (final r in await base.select("SELECT data FROM fiches WHERE collection='factures' AND archive=0")) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
+        ];
+        final facData = pieces.where((p) => numero.isNotEmpty ? '${p['numero']}' == numero : p['id'] == champsOp['factureId']).firstOrNull;
+        if (facData == null) return refus('VERSEMENT_PIECE_INTROUVABLE', 'La pièce du versement n’est pas connue de la mère.', 'Attendre la synchronisation de la pièce');
         final deja = <Map<String, Object?>>[
           for (final r in await base.select("SELECT data FROM fiches WHERE collection='versementsCaisse' AND archive=0")) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
-        ].where((v) => v['factureId'] == champsOp['factureId']).fold<double>(0, (n, v) => n + (v['montant'] is num ? (v['montant'] as num).toDouble() : 0));
+        ].where((v) => numero.isNotEmpty && '${v['factureNumero'] ?? ''}'.isNotEmpty ? '${v['factureNumero']}' == numero : v['factureId'] == champsOp['factureId']).fold<double>(0, (n, v) => n + (v['montant'] is num ? (v['montant'] as num).toDouble() : 0));
         final modalites = <Map<String, Object?>>[
           for (final r in await base.select("SELECT data FROM fiches WHERE collection='modalitesVersement' AND archive=0")) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
         ];
-        final r = refusRejeuVersement(fac.data, champsOp, deja, modalites);
+        final r = refusRejeuVersement(facData, champsOp, deja, modalites);
         if (r != null) return refus(r.code, r.motif, r.geste ?? 'Rendre le trop-perçu ou corriger par un avoir');
       }
     }

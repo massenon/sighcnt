@@ -114,7 +114,7 @@ String _centaine(int n) {
 /// Devant « mille », « cent » et « vingt » ne prennent pas de s (« deux cent mille », « quatre-vingt mille ») : le s ne reste que devant un nom (« deux cents millions »).
 String _sansSFinal(String mots) => (mots.endsWith('cents') || mots.endsWith('vingts')) ? mots.substring(0, mots.length - 1) : mots;
 
-/// `C.nombreEnLettres(n)` — accords français : « quatre-vingts » et « cents » prennent un s en fin de nombre, mais pas devant « mille » (lot PAIE-V).
+/// `C.nombreEnLettres(n)` : accords français : « quatre-vingts » et « cents » prennent un s en fin de nombre, mais pas devant « mille » (lot PAIE-V).
 String nombreEnLettres(Object? v) {
   var n = arrondiJs(nombreOuZero(v).abs()).toInt();
   if (n == 0) return 'zéro';
@@ -139,7 +139,7 @@ String nombreEnLettres(Object? v) {
   return mots.join(' ');
 }
 
-/// `C.montantEnLettres(v)` — mention légale des factures normalisées (lot PAIE-V) : « franc » au singulier jusqu'à un, « de francs » quand le nombre finit par
+/// `C.montantEnLettres(v)` : mention légale des factures normalisées (lot PAIE-V) : « franc » au singulier jusqu'à un, « de francs » quand le nombre finit par
 /// un million ou un milliard rond (« un million de francs CFA »).
 String montantEnLettres(Object? v) {
   final n = arrondiJs(nombreOuZero(v).abs()).toInt();

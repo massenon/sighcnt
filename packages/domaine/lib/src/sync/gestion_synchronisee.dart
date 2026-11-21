@@ -98,8 +98,11 @@ String? identiteSyncGestion(String collection, Map<String, Object?> f, {String? 
       if ('${f['reglementRef'] ?? ''}'.isEmpty || '${f['factureNumero'] ?? ''}'.isEmpty) return null;
       return 'LTP-${_empreinte([f['tiersCode'], f['reglementRef'], f['factureNumero'], f['montant']])}';
     case 'versementsCaisse':
-      if ('${f['factureId'] ?? ''}'.isEmpty || '${f['horodatage'] ?? ''}'.isEmpty || '${f['montant'] ?? ''}'.isEmpty || '${f['modalite'] ?? ''}'.isEmpty) return null;
-      return 'VRS-${_empreinte([f['factureId'], f['horodatage'], f['modalite'], f['operateur'], f['referenceTransaction'], f['montant']])}';
+      // La pièce se désigne par son NUMÉRO (le même sur tous les postes ; l'identifiant local d'une pièce née chez un fileul n'est pas celui de la mère), à défaut par son identifiant.
+      final piece = '${f['factureNumero'] ?? ''}'.isNotEmpty ? '${f['factureNumero']}' : '${f['factureId'] ?? ''}';
+      if (piece.isEmpty || '${f['horodatage'] ?? ''}'.isEmpty || '${f['montant'] ?? ''}'.isEmpty || '${f['modalite'] ?? ''}'.isEmpty) return null;
+      // Le RANG de la pièce fait partie de la clé : deux versements identiques d'un même lot (5 000 en espèces deux fois, même instant) sont deux versements, pas un seul.
+      return 'VRS-${_empreinte([piece, f['horodatage'], f['modalite'], f['operateur'], f['referenceTransaction'], f['montant'], f['rang']])}';
     case 'couverturesAssurance':
       final p = (patientSync == null || patientSync.isEmpty) ? '${f['patientId'] ?? ''}' : patientSync;
       if (p.isEmpty) return null;

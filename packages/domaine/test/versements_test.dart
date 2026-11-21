@@ -168,6 +168,26 @@ void main() {
     }
   });
 
+  group('la synchronisation : famille A, identité par le contenu, jamais vers un téléphone', () {
+    test('versementsCaisse voyage (gestion synchronisée) et ne va JAMAIS vers un téléphone (RG-13) ; les modalités sont de la configuration de la mère, jamais vers un téléphone', () {
+      expect(collectionsGestionSynchronisees, contains('versementsCaisse'));
+      expect(collectionsGestionJamaisMobile, contains('versementsCaisse'));
+      expect(collectionsGestionJamaisMobile, contains('modalitesVersement'));
+      expect(collectionsVersementsConfiguration, {'modalitesVersement'});
+    });
+    test('l’identité est celle du CONTENU : le même versement rejoué est le même, deux versements différents ne fusionnent pas', () {
+      M v(Object? montant, {String h = '2026-11-20T09:00:00.000Z', String? ref}) =>
+          {'factureId': 'F1', 'horodatage': h, 'modalite': 'mobile_money', 'operateur': 'mtn', 'referenceTransaction': ref ?? 'M1', 'montant': montant};
+      expect(identiteSyncGestion('versementsCaisse', v(15000)), identiteSyncGestion('versementsCaisse', v(15000)));
+      expect(identiteSyncGestion('versementsCaisse', v(15000)), startsWith('VRS-'));
+      expect(identiteSyncGestion('versementsCaisse', v(15000)), isNot(identiteSyncGestion('versementsCaisse', v(8500))));
+      expect(identiteSyncGestion('versementsCaisse', v(15000)), isNot(identiteSyncGestion('versementsCaisse', v(15000, h: '2026-11-20T09:00:01.000Z'))));
+      expect(identiteSyncGestion('versementsCaisse', v(15000)), isNot(identiteSyncGestion('versementsCaisse', v(15000, ref: 'M2'))));
+      expect(identiteSyncGestion('versementsCaisse', {...v(5000), 'rang': 1}), isNot(identiteSyncGestion('versementsCaisse', {...v(5000), 'rang': 2})), reason: 'deux versements identiques d’un même lot restent deux');
+      expect(identiteSyncGestion('versementsCaisse', {'factureId': 'F1', 'montant': 1}), isNull, reason: 'sans instant ni modalité, aucune identité inventée');
+    });
+  });
+
   group('le rejeu de la mère : un versement qui ferait dépasser le dû est refusé', () {
     for (final c in liste(v['rejeu'])) {
       test('${c['nom']}', () {

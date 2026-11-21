@@ -227,9 +227,11 @@ function traiter(op, app) {
       const fige = Object.keys(f.data).find((k) => !k.startsWith('_') && k !== 'statut' && Object.prototype.hasOwnProperty.call(op.champs || {}, k) && JSON.stringify(f.data[k]) !== JSON.stringify(op.champs[k]));
       if (fige) return refus('VERSEMENT_FIGE', `Un versement enregistré ne se réécrit jamais : le champ « ${fige} » est figé.`, 'Corriger par un avoir ou un remboursement');
     } else if (op.type === 'creer' && !f) {
-      const fac = lire('factures', String((op.champs || {}).factureId));
+      /* La pièce se désigne par son NUMÉRO (le même sur tous les postes), à défaut par son identifiant. */
+      const numero = String((op.champs || {}).factureNumero || '');
+      const fac = db.prepare("SELECT data FROM fiches WHERE collection='factures' AND archive=0").all().map((r) => ({ data: JSON.parse(r.data) })).find((p) => (numero ? String(p.data.numero) === numero : p.data.id === op.champs.factureId));
       if (!fac) return refus('VERSEMENT_PIECE_INTROUVABLE', 'La pièce du versement n’est pas connue de la mère.', 'Attendre la synchronisation de la pièce');
-      const deja = db.prepare("SELECT data FROM fiches WHERE collection='versementsCaisse' AND archive=0").all().map((r) => JSON.parse(r.data)).filter((v) => v.factureId === op.champs.factureId).reduce((n, v) => n + (Number(v.montant) || 0), 0);
+      const deja = db.prepare("SELECT data FROM fiches WHERE collection='versementsCaisse' AND archive=0").all().map((r) => JSON.parse(r.data)).filter((v) => (numero && v.factureNumero ? String(v.factureNumero) === numero : v.factureId === op.champs.factureId)).reduce((n, v) => n + (Number(v.montant) || 0), 0);
       const reste = Math.max(0, Number(fac.data.partPatient != null ? fac.data.partPatient : fac.data.montantTTC) - deja);
       if (!(Number(op.champs.montant) > 0) || Number(op.champs.montant) > reste) return refus('VERSEMENT_SUPERIEUR_AU_DU', `Versement de ${op.champs.montant} refusé : la pièce ${fac.data.numero || ''} ne doit plus que ${reste}. Un versement ne dépasse jamais le dû de la part du patient.`, 'Rendre le trop-perçu ou corriger par un avoir');
     }

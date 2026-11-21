@@ -134,7 +134,7 @@ ResultatCaisse encaisserFacture(
     encaissementPartiel: encaissementPartielPoste(m, maintenant),
     versements: versements,
     modalites: modalitesVersementPoste(m),
-    rangDepart: versementsDePiecePoste(m, factureId).length,
+    rangDepart: versementsDePiecePoste(m, fac).length,
     agent: m.utilisateur,
   );
   // E2 (corrigé le 31/10/2026) : un versement au-delà du dû d'une pièce sans lignes est REFUSÉ en nommant le défaut ; rien n'est écrit.

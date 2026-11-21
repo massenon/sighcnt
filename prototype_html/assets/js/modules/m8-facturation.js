@@ -1893,7 +1893,7 @@
                 { label: 'Heure', value: function (x) { return String(x.horodatage || '').slice(11, 16); } },
                 { label: 'Type', key: 'typeLibelle' },
                 { label: 'Modalité', value: function (x) { return x.modaliteLibelle + (x.operateurLibelle ? ' (' + x.operateurLibelle + ')' : ''); } },
-                { label: 'Référence', value: function (x) { return x.referenceTransaction || '—'; } },
+                { label: 'Référence', value: function (x) { return x.referenceTransaction || 'Sans référence'; } },
                 { label: 'Montant', align: 'right', somme: function (x) { return x.montant || 0; }, value: function (x) { return C.money(x.montant, false); } },
               ], versementsPiece, { total: true, totalLabel: 'TOTAL VERSÉ' }),
             ]) : null,

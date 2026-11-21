@@ -59,6 +59,8 @@ Magasin jeu() => Magasin({
       'modalitesVersement': semenceModalitesVersement(),
     })..horloge = () => auj;
 
+List<Fiche> vp(Magasin m, String id) => versementsDePiecePoste(m, m.collection('factures').parId(id)!);
+
 Map<String, Object?> mtn(num montant, [String? ref = 'M123']) =>
     {'type': 'acompte', 'modalite': 'mobile_money', 'operateur': 'mtn', 'montant': montant, if (ref != null && ref.isNotEmpty) 'referenceTransaction': ref};
 Map<String, Object?> esp(num montant, [String type = 'solde']) => {'type': type, 'modalite': 'especes', 'montant': montant};
@@ -93,7 +95,7 @@ void main() {
       final f = m.collection('factures').parId('A')!;
       expect([f['statutPaiement'], f['reliquat'], f['montantPaye'], f['modePaiement']], ['soldee', 0, 23500, 'mixte']);
       expect(r.versements.length, 2);
-      final vs = versementsDePiecePoste(m, 'A');
+      final vs = vp(m, 'A');
       expect([for (final v in vs) [v['rang'], v['modalite'], v['operateur'], v['referenceTransaction'], v['montant'], v['resteApres']]],
           [[1, 'mobile_money', 'mtn', 'M123', 15000, 8500], [2, 'especes', null, null, 8500, 0]]);
       final ecr = m.collection('ecritures').actives;
@@ -157,14 +159,14 @@ void main() {
           throwsA(isA<EcritureRefusee>().having((e) => e.motif, 'motif', contains('VERSEMENT_REFERENCE_ABSENTE'))));
       expect(m.collection('versementsCaisse').actives, isEmpty);
       encaisserFacture(m, 'A', versements: [esp(1000, 'acompte')], maintenant: auj);
-      final v = versementsDePiecePoste(m, 'A').single;
+      final v = vp(m, 'A').single;
       expect(() => m.collection('versementsCaisse').mettreAJour('${v['id']}', {'montant': 1}), throwsA(isA<EcritureRefusee>().having((e) => e.motif, 'motif', contains('VERSEMENT_FIGE'))));
     });
 
     test('l’encaissement par montant et mode uniques (ancien chemin) laisse AUSSI une fiche de versement', () {
       final m = jeu();
       encaisserFacture(m, 'A', montant: 15000, mode: 'mtn', maintenant: auj);
-      final v = versementsDePiecePoste(m, 'A').single;
+      final v = vp(m, 'A').single;
       expect([v['modalite'], v['operateur'], v['montant'], v['origine']], ['mobile_money', 'mtn', 15000, 'encaissement_direct']);
     });
   });
@@ -178,6 +180,16 @@ void main() {
       expect(() => regler(m, droit: false), throwsA(isA<RefusReglageVersement>().having((e) => e.code, 'code', 'VERSEMENT_REGLAGE_RESERVE')));
       expect(() => regler(m, fileul: true), throwsA(isA<RefusReglageVersement>().having((e) => e.code, 'code', 'FILEUL_LECTURE_SEULE')));
       expect(m.collection('modalitesVersement').actives.length, 8);
+    });
+
+    test('un poste installé AVANT le lot (collection absente) : la première version pose d’abord la semence, les huit modalités ne disparaissent pas', () {
+      final m = Magasin({'factures': const [], 'ecritures': const []})..horloge = () => auj;
+      expect(m.collection('modalitesVersement').actives, isEmpty);
+      expect([for (final x in modalitesVersementActives(modalitesVersementPoste(m), 'modalite', '2026-10-30')) x['code']], ['especes', 'mobile_money', 'tpe'], reason: 'la semence tient lieu de défaut');
+      regler(m, dateEffet: '2026-10-30');
+      expect(m.collection('modalitesVersement').actives.length, 9);
+      expect([for (final x in modalitesVersementActives(modalitesVersementPoste(m), 'modalite', '2026-10-30')) x['code']], ['especes', 'mobile_money', 'tpe']);
+      expect([for (final x in modalitesVersementActives(modalitesVersementPoste(m), 'operateur', '2026-10-30')) x['code']], ['mtn', 'moov', 'celtiis', 'orange']);
     });
 
     test('un opérateur ajouté est proposé à sa date, archivé il n’est plus proposé mais reste lisible, la version posée ne se réécrit pas', () {
@@ -216,7 +228,7 @@ void main() {
       } on RefusCaisse catch (e) {
         expect(e.code, 'VERSEMENT_MODALITE_ARCHIVEE');
       }
-      expect(versementsDePiecePoste(m, 'A').single['modaliteLibelle'], 'TPE (carte bancaire)');
+      expect(vp(m, 'A').single['modaliteLibelle'], 'TPE (carte bancaire)');
     });
   });
 
@@ -250,7 +262,7 @@ void main() {
       final m = jeu();
       encaisserFacture(m, 'A', versements: [mtn(15000), esp(8500)], maintenant: auj);
       final f = m.collection('factures').parId('A')!;
-      final p = pieceRecu(f, versementsPiece: versementsDePiecePoste(m, 'A'), utilisateur: 'T', edite: auj, reference: 'R');
+      final p = pieceRecu(f, versementsPiece: vp(m, 'A'), utilisateur: 'T', edite: auj, reference: 'R');
       final tableaux = [for (final b in p.blocs) if (b is BlocTableau && b.titre == 'Versements') b.tableau];
       expect(tableaux.length, 1);
       expect([for (final l in tableaux.single.lignes) l['modaliteLibelle']], ['Mobile money', 'Espèces']);
@@ -277,7 +289,7 @@ void main() {
     await toucher(t, find.byKey(const ValueKey('valider-versements')));
     final f = m.collection('factures').parId('A')!;
     expect([f['statutPaiement'], f['reliquat']], ['soldee', 0]);
-    expect(versementsDePiecePoste(m, 'A').length, 1);
+    expect(vp(m, 'A').length, 1);
     expect(find.text('Reçu de paiement'), findsWidgets);
     expect(find.textContaining('VERSEMENTS'), findsWidgets, reason: 'le reçu détaille les versements');
     await t.pump(const Duration(seconds: 15));

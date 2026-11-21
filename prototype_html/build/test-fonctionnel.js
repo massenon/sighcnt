@@ -13800,7 +13800,7 @@ async function viderMessages(page) {
       if (!bouton) return { trouve: false };
       bouton.click();
       await new Promise((r) => setTimeout(r, 400));
-      const valider = [...document.querySelectorAll('button')].find((b) => /Valider l.encaissement/.test(b.textContent));
+      const valider = [...document.querySelectorAll('button')].find((b) => /Valider les versements/.test(b.textContent));
       if (!valider) return { trouve: true, modale: false };
       valider.click();
       await new Promise((r) => setTimeout(r, 600));
@@ -13810,7 +13810,7 @@ async function viderMessages(page) {
       return { trouve: true, modale: true, statut: f.statutPaiement, ass: f.partAssurance, pat: f.partPatient, d411: som('411', 'debit'), d571: som('571', 'debit'), c706: som('706', 'credit'), nb: ecr.length,
         lignesPayees: (f.lignes || []).filter((l) => l.statutPaiement === 'paye').length };
     }, pai);
-    verifier('L’écran Paiements : « Valider l’encaissement » solde la pièce, règle ses lignes et pose l’écriture (571, 411 de l’assureur, 706)',
+    verifier('L’écran Paiements : « Valider les versements » solde la pièce, règle ses lignes et pose l’écriture (571, 411 de l’assureur, 706)',
       vue.trouve && vue.modale && vue.statut === 'soldee' && vue.lignesPayees > 0 && vue.d571 === vue.pat && vue.d411 === vue.ass && vue.c706 === vue.d571 + vue.d411 && vue.nb >= 2, JSON.stringify(vue));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   });
@@ -16304,7 +16304,7 @@ async function viderMessages(page) {
       /* Lot FISC-2 (16/11/2026) : le bloc « Facture normalisée » est retiré (la facture d'un patient ne porte ni IFU, ni nom d'acheteur, ni AIB) ; l'encaissement passe et la vente est normalisée sans acheteur. */
       const sec = document.querySelector('[data-section="facture-normalisee"]');
       out.section = !!sec; out.texteSection = document.querySelector('.drawer-backdrop') ? document.querySelector('.drawer-backdrop').textContent : '';
-      clic(/Valider l.encaissement/);
+      clic(/Valider les versements/);
       await pause(900);
       const g = window.SIGH.store.collection('factures').get(i);
       out.apres = { statutMecef: g.statutMecef, numero: g.numeroMecef, ifu: g.ifuClient || null, taux: g.aibTaux, soldee: g.statutPaiement };
@@ -16547,7 +16547,7 @@ async function viderMessages(page) {
       const sec = document.querySelector('[data-section="facture-normalisee"]');
       out.section = !!sec;
       out.texte = document.querySelector('.drawer-backdrop') ? document.querySelector('.drawer-backdrop').textContent : '';
-      clic(/Valider l.encaissement/);
+      clic(/Valider les versements/);
       await pause(900);
       const f = window.SIGH.store.collection('factures').get(i);
       out.vente = { aibTaux: f.aibTaux, aibSituation: f.aibSituation || null, statut: f.statutMecef, numero: f.numeroMecef, base: f.baseMecef, aibMontant: f.aibMontant };
@@ -28191,7 +28191,7 @@ async function viderMessages(page) {
       out.bloc = !!document.querySelector('[data-section="facture-normalisee"]');
       out.texte = /IFU de l.acheteur|Nom de l.acheteur|Taux d.AIB/.test(document.querySelector('.drawer-backdrop') ? document.querySelector('.drawer-backdrop').textContent : '');
       out.modal = !!document.querySelector('.drawer-backdrop');
-      clic(/Valider l.encaissement/);
+      clic(/Valider les versements/);
       await pause(900);
       const g = window.SIGH.store.collection('factures').get(i);
       out.apres = { statutMecef: g.statutMecef, numero: g.numeroMecef, taux: g.aibTaux, ifu: g.ifuClient || null, soldee: g.statutPaiement };
